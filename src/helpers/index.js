@@ -1,0 +1,35 @@
+import httpBuildQuery from 'http-build-query';
+
+export const Header = function (data = '') {
+    // your custom header here
+    return {
+        'Content-Type': 'application/json',
+    };
+}
+
+export const jsonToQueryString = function (json) {
+    return httpBuildQuery(json);
+}
+
+export const CONSTANT = {
+    KEY_LOADER_TOGGLE: "LOADER_TOGGLE",
+    KEY_ISLOGIN: "islogin",
+    KEY_PROMOTION: 'PROMOTION_BANNER',
+    KEY_CHECK_LOGIN: "CHECK_LOGIN",
+    KEY_SEND_OTP: "SEND_OTP",
+    KEY_AUTH_LOGIN: "AUTH_LOGIN",
+    KEY_AUTH_REGISTER: "AUTH_REGISTER",
+    DEFAULT_OUTLET: "DEFAULT_OUTLET",
+    LIST_CATEGORY: "LIST_CATEGORY",
+    LIST_PRODUCT: "LIST_PRODUCT",
+    KEY_GET_CAMPAIGN_STAMPS: "GET_CAMPAIGN_STAMPS",
+    KEY_GET_CAMPAIGN_POINTS: "GET_CAMPAIGN_POINTS",
+    KEY_GET_CAMPAIGN_BY_POINTS: "GET_CAMPAIGN_BY_POINTS",
+    KEY_GET_CUSTOMER_PROFILE: "GET_CUSTOMER_PROFILE",
+    KEY_UPDATE_CUSTOMER_PROFILE: "UPDATE_CUSTOMER_PROFILE",
+    KEY_MANDATORY_FIELD_CUSTOMER: "MANDATORY_FIELD_CUSTOMER",
+    DATA_BASKET: "DATA_BASKET",
+    LIST_OUTLET: "LIST_OUTLET",
+    DATA_PRODUCT: "DATA_PRODUCT",
+    KEY_GET_BROADCAST: "KEY_GET_BROADCAST",
+}
