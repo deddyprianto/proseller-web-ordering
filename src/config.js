@@ -1,8 +1,8 @@
 import logo from './assets/images/logo_placeholder.png'
 let config = {}
 
-let stage = "demo";
-let companyHost = "magmarvel";
+let stage = "dev";
+let companyHost = "qiji";
 let endPoint = `https://${companyHost}${stage !== '' ? "-" + stage : ""}.proseller.io`
 
 if (process.env.REACT_APP_STAGE === 'local') {
