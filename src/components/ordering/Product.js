@@ -98,7 +98,7 @@ class Product extends Component {
                         </div>
                         <div className="product-content-wrapper">
                             <p>
-                                <h3 className="color"><span className="text-muted">{this.getQuantityProduct()} </span><b>{item.product.name}</b></h3>
+                                <h3 className="color" onClick={() => this.validateOutlet()} style={{ cursor: "pointer" }}><span className="text-muted">{this.getQuantityProduct()} </span><b>{item.product.name}</b></h3>
                                 <div itemProp="description">
                                     <p className="color" style={{ maxHeight: 'none', whiteSpace: 'pre-line' }}>{item.product.description}</p>
                                 </div>
