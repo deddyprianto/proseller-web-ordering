@@ -7,6 +7,7 @@ import {
 import CheckIcon from '../../assets/images/icon-check.png';
 import KeranjangIcon from '../../assets/images/keranjang.png';
 import ModalStatus from './ModalSatatus';
+import config from '../../config';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2')
@@ -25,10 +26,10 @@ export default class SettleSuccess extends Component {
   componentDidMount = async () => {
     Swal.close()
     document.getElementById('open-modal-status').click()
-    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_infoCompany')));
-    let settleSuccess = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_settleSuccess')));
-    let dataBasket = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_dataBasket")));
-    let orderingMode = localStorage.getItem('webordering_ordering_mode');
+    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+    let settleSuccess = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_settleSuccess`)));
+    let dataBasket = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`)));
+    let orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
     this.setState({ countryCode: infoCompany.countryCode, settleSuccess, orderingMode, dataBasket })
     setTimeout(() => {
       try {
@@ -69,10 +70,10 @@ export default class SettleSuccess extends Component {
   }
 
   goBack = async () => {
-    localStorage.removeItem('webordering_dataBasket')
-    localStorage.removeItem('webordering_scanTable')
-    localStorage.removeItem('webordering_selectedVoucher')
-    localStorage.removeItem('webordering_selectedPoint')
+    localStorage.removeItem(`${config.prefix}_dataBasket`)
+    localStorage.removeItem(`${config.prefix}_scanTable`)
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
     this.props.history.push('/history')
   }
 

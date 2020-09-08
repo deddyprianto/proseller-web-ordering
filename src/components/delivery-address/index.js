@@ -5,12 +5,11 @@ import {
   Button,
 } from 'reactstrap';
 import Shimmer from "react-shimmer-effect";
-import Loading from "../loading";
+import config from "../../config";
 import { CustomerAction } from '../../redux/actions/CustomerAction';
 import { MasterdataAction } from '../../redux/actions/MaterdataAction';
 import { connect } from "react-redux";
 import ModalDeliveryAddress from './ModalDeliveryAddress';
-import { forEach } from 'lodash';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2')
@@ -40,13 +39,13 @@ class DeliveryAddress extends Component {
   }
 
   componentDidMount = async () => {
-    let getDeliveryAddress = JSON.parse(localStorage.getItem('webordering_getDeliveryAddress') || false);
+    let getDeliveryAddress = JSON.parse(localStorage.getItem(`${config.prefix}_getDeliveryAddress`) || false);
     this.setState({ getDeliveryAddress })
     this.getDataDeliferyAddress()
   }
 
   getDataDeliferyAddress = async () => {
-    let deliveryAddress = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_deliveryAddress')));
+    let deliveryAddress = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`)));
     let infoCompany = await this.props.dispatch(MasterdataAction.getInfoCompany());
     let addressDelivery = await this.props.dispatch(CustomerAction.getDeliferyAddress());
     if (addressDelivery.ResultCode === 200) {
@@ -157,8 +156,8 @@ class DeliveryAddress extends Component {
   }
 
   handleSelected = async (items) => {
-    localStorage.setItem("webordering_deliveryAddress", JSON.stringify(encryptor.encrypt(items)));
-    localStorage.removeItem('webordering_getDeliveryAddress')
+    localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
+    localStorage.removeItem(`${config.prefix}_getDeliveryAddress`)
     this.props.history.goBack()
   }
 

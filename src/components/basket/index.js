@@ -13,6 +13,7 @@ import _ from 'lodash';
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 import loadable from '@loadable/component';
+import config from '../../config';
 
 
 const ViewCartBasket = loadable(() => import('./viewCartBasket'))
@@ -56,11 +57,12 @@ class Basket extends Component {
       pointsToRebateRatio: "0:0",
       roundingOptions: "INTEGER",
       xstep: 1,
-      orderingMode: "DELIVERY",
+      orderingMode: window.location.pathname.includes('emenu') ? "DINEIN" : "DELIVERY",
       btnBasketOrder: true,
       play: false,
       deliveryProvaider: [],
-      dataCVV: ""
+      dataCVV: "",
+      isEmenu: window.location.pathname.includes('emenu')
     };
     this.audio = new Audio(Sound_Effect)
   }
@@ -83,9 +85,9 @@ class Basket extends Component {
     let param = this.getUrlParameters()
     if (param && param['input']) {
       param = this.getUrlParameters(base64.decode(decodeURI(param['input'])))
-      localStorage.setItem("webordering_scanTable", JSON.stringify(encryptor.encrypt(param)));
+      localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
     } else {
-      localStorage.removeItem('webordering_scanTable')
+      localStorage.removeItem(`${config.prefix}_scanTable`)
     }
 
     setInterval(() => {
@@ -116,7 +118,7 @@ class Basket extends Component {
   checkOfflineCart = async () => {
     let { account } = this.props
     try {
-      let offlineCart = localStorage.getItem('webordering_offlineCart');
+      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
 
       if (isEmptyObject(offlineCart)) return;
@@ -144,27 +146,28 @@ class Basket extends Component {
           payload.details.push(product);
           await this.props.dispatch(OrderAction.addCart(payload));
         }
-        localStorage.removeItem('webordering_offlineCart');
+        localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
     } catch (e) { }
   }
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props
-    let selectedVoucher = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_selectedVoucher")));
-    let selectedPoint = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_selectedPoint")));
-    let scanTable = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_scanTable")));
-    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_infoCompany')));
-    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_selectedCard')));
-    let deliveryAddress = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_deliveryAddress')));
-    let dataBasket = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_dataBasket')));
+    let { isEmenu } = this.state
+    let selectedVoucher = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`)));
+    let selectedPoint = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedPoint`)));
+    let scanTable = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_scanTable`)));
+    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
+    let deliveryAddress = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`)));
+    let dataBasket = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`)));
 
-    if (!orderingMode) orderingMode = localStorage.getItem('webordering_ordering_mode') || 'DELIVERY';
+    if (!orderingMode) orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || (isEmenu ? 'DINEIN' : 'DELIVERY');
 
     console.log('scanTable', scanTable)
     if (!infoCompany) {
       let time = setInterval(() => {
-        infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_infoCompany')));
+        infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
         if (infoCompany) clearInterval(time)
       }, 0);
     } else {
@@ -193,7 +196,7 @@ class Basket extends Component {
 
       if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
         selectedVoucher = dataBasket.confirmationInfo.voucher
-        localStorage.setItem("webordering_selectedVoucher", JSON.stringify(encryptor.encrypt(selectedVoucher)));
+        localStorage.setItem(`${config.prefix}_selectedVoucher`, JSON.stringify(encryptor.encrypt(selectedVoucher)));
       } else if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.redeemPoint > 0) {
         selectedPoint = this.setPoint(dataBasket.confirmationInfo.redeemPoint, dataBasket)
       }
@@ -222,7 +225,7 @@ class Basket extends Component {
         let surcharge = await this.props.dispatch(OrderAction.changeOrderingMode({ orderingMode }))
         if (surcharge.resultCode === 200) {
           dataBasket = surcharge.data
-          localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(dataBasket)));
+          localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(dataBasket)));
         }
       }
 
@@ -298,7 +301,7 @@ class Basket extends Component {
       !response.data.message &&
       response.data.status !== "failed"
     ) {
-      localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(response.data)));
+      localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
       this.setState({ dataBasket: response.data })
       return response.data
     }
@@ -307,7 +310,7 @@ class Basket extends Component {
   getDataBasketPending = async (id, status) => {
     let response = await this.props.dispatch(OrderAction.getCartPending(id));
     if (response.resultCode === 200) {
-      localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(response.data)));
+      localStorage.setItem(`${config.prefix}g_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
       this.checkViewCart(response.data)
       this.setState({ dataBasket: response.data })
     } else {
@@ -319,7 +322,7 @@ class Basket extends Component {
         clearInterval(this.timeGetBasket)
         setTimeout(() => {
           this.props.history.push('/history')
-          localStorage.removeItem('webordering_dataBasket')
+          localStorage.removeItem(`${config.prefix}_dataBasket`)
           window.location.reload()
         }, 2000);
       } else if (response.data && response.data.status && response.data.status === "CANCELLED") {
@@ -329,7 +332,7 @@ class Basket extends Component {
         clearInterval(this.timeGetBasket)
         setTimeout(() => {
           this.props.history.push('/history')
-          localStorage.removeItem('webordering_dataBasket')
+          localStorage.removeItem(`${config.prefix}_dataBasket`)
           window.location.reload()
         }, 2000);
       } else {
@@ -341,7 +344,7 @@ class Basket extends Component {
           response.data.status !== "failed" &&
           status !== response.data.status
         ) {
-          localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(response.data)));
+          localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
           // console.log(response.data)
           this.setState({ dataBasket: response.data })
         }
@@ -439,7 +442,7 @@ class Basket extends Component {
   }
 
   setRemoveVoucher = (message) => {
-    localStorage.removeItem('webordering_selectedVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
     this.setState({ statusSelectedVoucher: false, selectedVoucher: null })
     Swal.fire('Oppss!', message, 'error')
   }
@@ -457,24 +460,24 @@ class Basket extends Component {
 
   cancelSelectVoucher = async () => {
     this.setState({ discountVoucher: 0, newTotalPrice: "0", isLoading: true, selectedVoucher: false })
-    localStorage.removeItem('webordering_selectedVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
     await this.getDataBasket();
   }
 
   cancelSelectPoint = async () => {
     this.setState({ discountPoint: 0, selectedPoint: 0, newTotalPrice: "0", isLoading: true })
-    localStorage.removeItem('webordering_selectedPoint')
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
     await this.getDataBasket();
   }
 
   handleRedeemVoucher = async () => {
     this.setState({ discountPoint: 0 })
-    localStorage.removeItem('webordering_selectedPoint')
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
     this.props.history.push('/myVoucher')
   }
 
   handleRedeemPoint = async () => {
-    localStorage.removeItem('webordering_selectedVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
     let selectedPoint = this.state.selectedPoint;
     let totalPoint = this.state.totalPoint;
     let pointsToRebateRatio = this.state.pointsToRebateRatio;
@@ -516,7 +519,7 @@ class Basket extends Component {
   }
 
   setOrderingMode = async (orderingMode) => {
-    localStorage.setItem('webordering_ordering_mode', orderingMode);
+    localStorage.setItem(`${config.prefix}_ordering_mode`, orderingMode);
     this.setState({ orderingMode, isLoading: true })
     await this.getDataBasket(true, orderingMode)
     this.setState({ isLoading: false })
@@ -531,7 +534,7 @@ class Basket extends Component {
     }
     let totalPrice = (point / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1]
     totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
-    localStorage.setItem('webordering_selectedPoint', JSON.stringify(encryptor.encrypt(point)));
+    localStorage.setItem(`${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)));
     this.setState({ selectedPoint: point, discountPoint: point, totalPrice, newTotalPrice: totalPrice })
     return point
   }
@@ -559,7 +562,7 @@ class Basket extends Component {
                 await this.props.dispatch(OrderAction.processUpdateCart(dataBasket, items));
               }
             }
-            localStorage.removeItem('webordering_dataBasket')
+            localStorage.removeItem(`${config.prefix}_dataBasket`)
             window.location.reload();
           }
         } else {
@@ -594,65 +597,8 @@ class Basket extends Component {
   }
 
   submitSettle = async (need = null) => {
-    localStorage.setItem("webordering_dataSettle", JSON.stringify(encryptor.encrypt(this.state)));
+    localStorage.setItem(`${config.prefix}_dataSettle`, JSON.stringify(encryptor.encrypt(this.state)));
     this.props.history.push('/payment')
-    // this.setState({ isLoading: true })
-    // let {
-    //   orderingMode, selectedCard, dataBasket, dataCVV,
-    //   deliveryAddress, provaiderDelivery, selectedVoucher,
-    //   selectedPoint, storeDetail
-    // } = this.state
-
-    // let payload = {}
-    // if (selectedCard) {
-    //   payload = {
-    //     paymentType: "CREDITCARD",
-    //     creditCardPayload: {
-    //       accountId: selectedCard.accountID,
-    //       companyID: this.props.account.companyId,
-    //       referenceNo: uuid(),
-    //       remark: '-',
-    //     }
-    //   };
-    //   if (need === 'cardCVV') payload.creditCardPayload['cardCVV'] = Number(dataCVV)
-    // }
-
-    // payload.orderingMode = orderingMode
-    // payload.cartID = dataBasket.cartID
-
-
-
-    // if (selectedVoucher !== null) {
-    //   payload.statusAdd = "addVoucher";
-    //   payload.voucherId = selectedVoucher.voucherId || selectedVoucher.id;
-    //   payload.voucherSerialNumber = selectedVoucher.voucherSerialNumber || selectedVoucher.serialNumber;
-    // } else if (selectedPoint > 0) {
-    //   payload.statusAdd = "addPoint";
-    //   payload.redeemValue = selectedPoint;
-    // }
-
-    // let response
-    // if (
-    //   orderingMode === "TAKEAWAY" ||
-    //   orderingMode === "DELIVERY" ||
-    //   storeDetail.outletType === "QUICKSERVICE"
-    // ) {
-    //   response = await this.props.dispatch(OrderAction.submitTakeAway(payload));
-    // } else {
-    //   response = await this.props.dispatch(OrderAction.submitSettle(payload));
-    // }
-
-    // if (response && response.resultCode === 400) {
-    //   Swal.fire('Oppss!', response.message || 'Submit error!', 'error')
-    // } else {
-    //   localStorage.setItem("webordering_settleSuccess", JSON.stringify(encryptor.encrypt(response.data)));
-    //   localStorage.removeItem('webordering_selectedPoint')
-    //   localStorage.removeItem('webordering_selectedVoucher')
-    //   this.togglePlay()
-    //   this.props.history.push('/settleSuccess')
-    // }
-
-    // this.setState({ isLoading: false })
   }
 
   handleSubmit = async () => {
@@ -717,10 +663,10 @@ class Basket extends Component {
       let response = await this.props.dispatch(OrderAction.submitBasket(payload));
       if (response && response.resultCode === 200) {
         this.setState({ dataBasket: response.data })
-        localStorage.removeItem('webordering_dataBasket')
+        localStorage.removeItem(`${config.prefix}_dataBasket`)
         response = await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
         this.setState({ isLoading: false })
-        localStorage.setItem("webordering_dataSettle", JSON.stringify(encryptor.encrypt(this.state)));
+        localStorage.setItem(`${config.prefix}_dataSettle`, JSON.stringify(encryptor.encrypt(this.state)));
         this.props.history.push('/payment')
       } else {
         Swal.fire('Oppss!', response.message || response.data.message || 'Submit error!', 'error')
@@ -791,7 +737,7 @@ class Basket extends Component {
     this.setState({ [field]: value })
     if (field === 'dataBasket') {
       // this.setState({ isLoading: true })
-      localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(value)));
+      localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(value)));
       // await this.getDataBasket();
       window.location.reload();
     }

@@ -7,8 +7,10 @@ import { AuthActions } from "../../redux/actions/AuthAction";
 import { Switch, Route, Redirect } from "react-router-dom";
 import config from "../../config";
 
-const Header = loadable(() => import('./Header'))
-const Footer = loadable(() => import('./Footer'))
+const HeaderEmenu = loadable(() => import('./HeaderEmenu'))
+const HeaderWebOrdering = loadable(() => import('./HeaderWebOrdering'))
+const FooterEmenu = loadable(() => import('./FooterEmenu'))
+const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'))
 const Home = loadable(() => import('../../pages/Home'))
 const Profile = loadable(() => import('../../pages/Profile'))
 const History = loadable(() => import('../../pages/History'))
@@ -31,14 +33,18 @@ const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Layout extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isEmenu: window.location.pathname.includes('emenu')
+    };
   }
 
   componentDidMount = async () => {
+    const { isEmenu } = this.state
     let infoCompany = await this.props.dispatch(MasterdataAction.getInfoCompany());
-    localStorage.setItem("webordering_infoCompany", JSON.stringify(encryptor.encrypt(infoCompany)));
+    localStorage.setItem(`${config.prefix}_infoCompany`, JSON.stringify(encryptor.encrypt(infoCompany)));
 
     if (infoCompany) {
-      document.title = `Web Ordering - ${infoCompany.companyName}`
+      document.title = `${isEmenu ? 'E-Menu' : 'Web Ordering'} - ${infoCompany.companyName}`
       try {
         document.getElementById('icon-theme').href = infoCompany.imageURL || config.url_logo
       } catch (error) { }
@@ -49,15 +55,17 @@ class Layout extends Component {
 
     let response = await this.props.dispatch(OrderAction.getCart());
     if (response && response.data && Object.keys(response.data).length > 0 && response.data.status !== "failed") {
-      localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(response.data)));
+      localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
     }
   }
 
   render() {
     const { isLoggedIn } = this.props
+    const { isEmenu } = this.state
+    console.log("mode emenu", isEmenu)
     return (
       <div id="page" className="hfeed site">
-        <Header />
+        {isEmenu ? <HeaderEmenu /> : <HeaderWebOrdering />}
         <div id="content" className="site-content" >
           <Switch>
             <Route exact path={"/"} component={Home} />
@@ -80,7 +88,7 @@ class Layout extends Component {
           </Switch>
           <div style={{ clear: "both" }}></div>
         </div>
-        <Footer />
+        {isEmenu ? <FooterEmenu /> : <FooterWebOrdering />}
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
 import CreditCard from "@material-ui/icons/CreditCard";
+import config from "../../config";
 import { Link } from 'react-router-dom';
 
 export default class PaymentMethodBasket extends Component {
@@ -14,7 +15,7 @@ export default class PaymentMethodBasket extends Component {
             <Link to="/payment-method">
               <Button
                 disabled={(props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0 ? (this.props.roleBtnClear ? true : false) : true}
-                onClick={() => localStorage.setItem('webordering_getPaymentMethod', true)}
+                onClick={() => localStorage.setItem(`${config.prefix}_getPaymentMethod`, true)}
                 style={{
                   fontWeight: "bold", color: "#FFF", cursor: "pointer",
                   backgroundColor: (props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ? "#c00a27" : "#20a8d8",

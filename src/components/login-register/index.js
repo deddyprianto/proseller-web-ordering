@@ -6,6 +6,7 @@ import generate from "password-generation";
 import { Button, Input } from "reactstrap";
 import { AuthActions } from "../../redux/actions/AuthAction";
 import Loading from "../loading";
+import config from "../../config";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
@@ -56,11 +57,11 @@ class LoginRegister extends Component {
 
   componentDidMount = async () => {
     let infoCompany = await encryptor.decrypt(
-      JSON.parse(localStorage.getItem("webordering_infoCompany"))
+      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
     let time = setInterval(async () => {
       infoCompany = await encryptor.decrypt(
-        JSON.parse(localStorage.getItem("webordering_infoCompany"))
+        JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
       );
       // console.log(infoCompany)
       if (infoCompany) {
@@ -277,13 +278,13 @@ class LoginRegister extends Component {
       // console.log(response)
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = localStorage.getItem("webordering_offlineCart");
+      const offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       localStorage.clear();
       localStorage.setItem(
-        "webordering_account",
+        `${config.prefix}_account`,
         JSON.stringify(encryptor.encrypt(response))
       );
-      localStorage.setItem("webordering_offlineCart", offlineCart);
+      localStorage.setItem(`${config.prefix}_offlineCart`, offlineCart);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -625,7 +626,7 @@ class LoginRegister extends Component {
         Swal.fire("Oppss!", response.message, "error");
       } else {
         localStorage.setItem(
-          "webordering_account",
+          `${config.prefix}_account`,
           JSON.stringify(
             encryptor.encrypt({
               phoneNumber: payloadResponse.phoneNumber,
@@ -1116,13 +1117,13 @@ class LoginRegister extends Component {
       // console.log(response)
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = localStorage.getItem("webordering_offlineCart");
+      const offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       localStorage.clear();
       localStorage.setItem(
-        "webordering_account",
+        `${config.prefix}_account`,
         JSON.stringify(encryptor.encrypt(response))
       );
-      localStorage.setItem("webordering_offlineCart", offlineCart);
+      localStorage.setItem(`${config.prefix}_offlineCart`, offlineCart);
       window.location.reload();
     } catch (err) {
       console.log(`error on handleEmailLogin : ${err}`);
@@ -1295,7 +1296,7 @@ class LoginRegister extends Component {
         Swal.fire("Oppss!", response.message, "error");
       } else {
         localStorage.setItem(
-          "webordering_account",
+          `${config.prefix}_account`,
           JSON.stringify(
             encryptor.encrypt({
               phoneNumber: phoneNumber,

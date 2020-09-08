@@ -5,7 +5,7 @@ import {
   Button,
 } from 'reactstrap';
 import Shimmer from "react-shimmer-effect";
-import Loading from "../loading";
+import config from "../../config";
 import { MasterdataAction } from '../../redux/actions/MaterdataAction';
 import { PaymentAction } from '../../redux/actions/PaymentAction';
 import { connect } from "react-redux";
@@ -35,7 +35,7 @@ class PaymentMethod extends Component {
   }
 
   componentDidMount = async () => {
-    let getPaymentMethod = JSON.parse(localStorage.getItem('webordering_getPaymentMethod') || false);
+    let getPaymentMethod = JSON.parse(localStorage.getItem(`${config.prefix}_getPaymentMethod`) || false);
     this.setState({ getPaymentMethod })
     this.getDataPaymentCard()
   }
@@ -43,8 +43,8 @@ class PaymentMethod extends Component {
   getDataPaymentCard = async () => {
     let infoCompany = await this.props.dispatch(MasterdataAction.getInfoCompany());
     let paymentCardAccount = await this.props.dispatch(PaymentAction.getPaymentCard());
-    let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_paymentCardAccountDefault')));
-    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_selectedCard')));
+    let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
+    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
 
     if (infoCompany.paymentTypes && paymentCardAccount.resultCode === 200) {
       let paymentTypes = infoCompany.paymentTypes
@@ -95,7 +95,7 @@ class PaymentMethod extends Component {
       if (result.value) {
         this.setState({ isLoading: true })
         try {
-          if (detailCard.default) localStorage.removeItem('webordering_paymentCardAccountDefault')
+          if (detailCard.default) localStorage.removeItem(`${config.prefix}_paymentCardAccountDefault`)
           await this.props.dispatch(PaymentAction.removePaymentCard(detailCard.accountID));
           await this.getDataPaymentCard();
           this.setState({ accountCard: null })
@@ -111,10 +111,10 @@ class PaymentMethod extends Component {
     this.setState({ isLoading: true })
     let detailCard = this.state.detailCard;
     if (detailCard.default) {
-      localStorage.removeItem('webordering_paymentCardAccountDefault');
+      localStorage.removeItem(`${config.prefix}_paymentCardAccountDefault`);
     } else {
       detailCard.default = true;
-      localStorage.setItem('webordering_paymentCardAccountDefault', JSON.stringify(encryptor.encrypt(detailCard)));
+      localStorage.setItem(`${config.prefix}_paymentCardAccountDefault`, JSON.stringify(encryptor.encrypt(detailCard)));
     }
     await this.getDataPaymentCard();
     this.setState({ detailCard: null, isLoading: false })
@@ -158,7 +158,7 @@ class PaymentMethod extends Component {
           for (let index = 0; index < 100000; index++) {
             response = await this.props.dispatch(PaymentAction.checkPaymentCard(accountID));
             if (response.data && response.data.registrationStatus === "completed") {
-              localStorage.setItem('webordering_paymentCardAccountDefault', JSON.stringify(encryptor.encrypt(response.data)));
+              localStorage.setItem(`${config.prefix}_paymentCardAccountDefault`, JSON.stringify(encryptor.encrypt(response.data)));
               await this.getDataPaymentCard();
               newWindow.close()
               this.handleSelectCard(response.data)
@@ -210,8 +210,8 @@ class PaymentMethod extends Component {
   handleSelectCard = async (card) => {
     let getPaymentMethod = this.state.getPaymentMethod
     if (getPaymentMethod) {
-      localStorage.setItem("webordering_selectedCard", JSON.stringify(encryptor.encrypt(card)));
-      localStorage.removeItem('webordering_getPaymentMethod')
+      localStorage.setItem(`${config.prefix}_selectedCard`, JSON.stringify(encryptor.encrypt(card)));
+      localStorage.removeItem(`${config.prefix}_getPaymentMethod`)
       this.props.history.goBack()
     } else {
       this.setState({ detailCard: card })

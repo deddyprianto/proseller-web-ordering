@@ -8,11 +8,12 @@ import { AuthActions } from '../../redux/actions/AuthAction';
 import { connect } from "react-redux";
 import moment from "moment";
 import Loading from "../loading";
+import config from "../../config";
 import { CONSTANT } from '../../helpers';
 
 const Swal = require('sweetalert2')
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-let account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+let account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 class ModalEditProfile extends Component {
   constructor(props) {
@@ -131,7 +132,7 @@ class ModalEditProfile extends Component {
     // console.log(response)
     if (response.ResultCode === 200) {
       await this.props.dispatch(AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN));
-      localStorage.setItem('webordering_account', JSON.stringify(encryptor.encrypt(account)));
+      localStorage.setItem(`${config.prefix}_account`, JSON.stringify(encryptor.encrypt(account)));
       let message = 'Profile Updated'
       if (this.state.editPassword) {
         message = 'Profile & Password Updated'

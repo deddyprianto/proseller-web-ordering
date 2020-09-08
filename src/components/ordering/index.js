@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Categories from './Categories';
+import CategoriesEmenu from './CategoriesEmenu';
+import CategoriesWebOrdering from './CategoriesWebOrdering';
 import Product from './Product';
-import DefaultOutlet from '../outlet/';
 import { OutletAction } from '../../redux/actions/OutletAction';
 import { OrderAction } from '../../redux/actions/OrderAction';
 import { ProductAction } from '../../redux/actions/ProductAction';
@@ -12,6 +12,7 @@ import LoadingFixed from "../loading/LoadingFixed";
 import LoaderCircle from "../loading/LoaderCircle";
 import Lottie from 'lottie-react-web';
 import emptyGif from '../../assets/gif/empty-and-lost.json';
+import config from '../../config';
 
 
 class Ordering extends Component {
@@ -29,16 +30,19 @@ class Ordering extends Component {
       selectedCategory: 0,
       finished: false,
       loading: true,
-      loadingSearching: false
+      loadingSearching: false,
+      offlineMessage: '',
+      isEmenu: window.location.pathname.includes('emenu')
     }
   }
 
   componentDidMount = async () => {
-    localStorage.removeItem('webordering_dataBasket')
-    localStorage.removeItem('webordering_scanTable')
-    localStorage.removeItem('webordering_selectedVoucher')
-    localStorage.removeItem('webordering_selectedPoint')
-    window.addEventListener('scroll', this.handleScroll);
+    const { isEmenu } = this.state
+    localStorage.removeItem(`${config.prefix}_dataBasket`)
+    localStorage.removeItem(`${config.prefix}_scanTable`)
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
+    window.addEventListener('scroll', isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering);
 
     await this.props.dispatch(OutletAction.fetchDefaultOutlet());
     await this.props.dispatch(OrderAction.getCart());
@@ -47,10 +51,11 @@ class Ordering extends Component {
   };
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    const { isEmenu } = this.state
+    window.removeEventListener('scroll', isEmenu ? this.handleScrollEmenu() : this.handleScrollWebOrdering());
   }
 
-  handleScroll = (e) => {
+  handleScrollWebOrdering = (e) => {
     var header = document.getElementById("header-categories");
     var headerCWO = document.getElementById("masthead");
     var headerOffset = document.getElementById("offset-header");
@@ -65,6 +70,23 @@ class Ordering extends Component {
           header.classList.remove("sticky");
           header.classList.add("relative-position");
           header.style.top = 0;
+        }
+      }
+    } catch (e) { }
+  }
+
+  handleScrollEmenu = (e) => {
+    var searchButton = document.getElementById("search-button-category");
+    var headerOffset = document.getElementById("offset-header");
+    try {
+      if (headerOffset != undefined && headerOffset.offsetTop != null) {
+        var sticky = headerOffset.offsetTop;
+        if (window.pageYOffset > sticky) {
+          searchButton.classList.remove("search-button-absolute");
+          searchButton.classList.add("search-button-fixed");
+        } else {
+          searchButton.classList.remove("search-button-fixed");
+          searchButton.classList.add("search-button-absolute");
         }
       }
     } catch (e) { }
@@ -288,11 +310,38 @@ class Ordering extends Component {
   }
 
   render() {
-    let { products, defaultOutlet, categories, loading, finished, loadingSearching } = this.state;
+    let { categories, loading, finished, loadingSearching, offlineMessage, isEmenu } = this.state;
+    let products = []
+    if (this.props.productsSearch) products = this.props.productsSearch
+    else products = this.state.products
+
+    if (offlineMessage != "") {
+      return (
+        <div className="section-tabs container-product" data-toggle="modal" data-target="#modal-product">
+          <div className="full-width list-view columns-2 archive woocommerce-page html-change" style={{ marginTop: 100 }}>
+            <div className="tab-content">
+              <Lottie options={{ animationData: emptyGif }} style={{ height: 250 }} />
+              <div style={{
+                margin: 10, padding: 10, textAlign: "center",
+                fontSize: 16, backgroundColor: "rgba(0,0,0, 0.5)",
+                borderRadius: 5, color: "#FFF"
+              }}>
+                {offlineMessage}
+              </div>
+              <div className="profile-dashboard" style={{
+                margin: 10, padding: 10, textAlign: "center",
+                fontSize: 16, borderRadius: 5, color: "#FFF", fontWeight: "bold"
+              }}>
+                Let's find another outlet.
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="section-tabs container-product" data-toggle="modal" data-target="#modal-product">
-
-        {/* <DefaultOutlet fetchCategories={this.fetchCategories} stopProcessing={this.stopProcessing} /> */}
 
         <ModalProduct selectedItem={this.state.selectedItem} />
 
@@ -302,16 +351,27 @@ class Ordering extends Component {
 
         <div id="offset-header" />
 
-        <Categories
-          loadingSearching={this.loadingSearching}
-          finished={finished}
-          setLoading={this.setLoading}
-          searchProduct={this.searchProduct}
-          categories={categories}
-          selectedCategory={this.state.selectedCategory}
-        />
+        {
+          isEmenu ?
+            <CategoriesEmenu
+              loadingSearching={this.loadingSearching}
+              finished={finished}
+              setLoading={this.setLoading}
+              searchProduct={this.searchProduct}
+              categories={categories}
+              selectedCategory={this.state.selectedCategory}
+            /> :
+            <CategoriesWebOrdering
+              loadingSearching={this.loadingSearching}
+              finished={finished}
+              setLoading={this.setLoading}
+              searchProduct={this.searchProduct}
+              categories={categories}
+              selectedCategory={this.state.selectedCategory}
+            />
+        }
 
-        <div className="full-width list-view columns-2 archive woocommerce-page html-change" style={{ marginTop: 5 }}>
+        <div className="full-width list-view columns-2 archive woocommerce-page html-change" style={{ marginTop: (isEmenu ? 35 : 5) }}>
           <div className="tab-content">
             <div className="tab-pane active" id="h1-tab-products-2">
               <ul className="products">

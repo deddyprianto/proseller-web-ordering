@@ -12,11 +12,12 @@ import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyObject, isEmptyArray } from '../../helpers/CheckEmpty';
 import Lottie from 'lottie-react-web';
 import emptyGif from '../../assets/gif/empty-and-lost.json';
+import config from '../../config';
 
 const Swal = require('sweetalert2')
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const companyInfo = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_infoCompany')));
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+const companyInfo = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 class Payment extends Component {
   constructor(props) {
@@ -124,10 +125,10 @@ class Payment extends Component {
           createdAt: new Date()
         }
 
-        localStorage.setItem("webordering_settleSuccess", JSON.stringify(encryptor.encrypt(data)));
-        localStorage.removeItem('webordering_selectedPoint')
-        localStorage.removeItem('webordering_selectedVoucher')
-        localStorage.removeItem('webordering_dataSettle')
+        localStorage.setItem(`${config.prefix}_settleSuccess`, JSON.stringify(encryptor.encrypt(data)));
+        localStorage.removeItem(`${config.prefix}_selectedPoint`)
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+        localStorage.removeItem(`${config.prefix}_dataSettle`)
         this.togglePlay()
         await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
         this.props.history.push('/settleSuccess')
@@ -157,10 +158,10 @@ class Payment extends Component {
         createdAt: new Date()
       }
 
-      localStorage.setItem("webordering_settleSuccess", JSON.stringify(encryptor.encrypt(data)));
-      localStorage.removeItem('webordering_selectedPoint')
-      localStorage.removeItem('webordering_selectedVoucher')
-      localStorage.removeItem('webordering_dataSettle')
+      localStorage.setItem(`${config.prefix}_settleSuccess`, JSON.stringify(encryptor.encrypt(data)));
+      localStorage.removeItem(`${config.prefix}_selectedPoint`)
+      localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+      localStorage.removeItem(`${config.prefix}_dataSettle`)
       this.togglePlay()
       await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
       this.props.history.push('/settleSuccess')
@@ -169,11 +170,11 @@ class Payment extends Component {
   }
 
   getDataBasket = async () => {
-    let dataSettle = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_dataSettle")));
-    let selectedVoucher = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_selectedVoucher")));
-    let selectedPoint = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_selectedPoint")));
-    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_selectedCard')));
-    let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_paymentCardAccountDefault')));
+    let dataSettle = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_dataSettle`)));
+    let selectedVoucher = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`)));
+    let selectedPoint = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedPoint`)));
+    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
+    let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
 
     if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault
     console.log(dataSettle)
@@ -302,24 +303,24 @@ class Payment extends Component {
 
   cancelSelectVoucher = async () => {
     this.setState({ discountVoucher: 0, newTotalPrice: "0", isLoading: true, selectedVoucher: false })
-    localStorage.removeItem('webordering_selectedVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
     await this.getDataBasket();
   }
 
   cancelSelectPoint = async () => {
     this.setState({ discountPoint: 0, selectedPoint: 0, newTotalPrice: "0", isLoading: true })
-    localStorage.removeItem('webordering_selectedPoint')
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
     await this.getDataBasket();
   }
 
   handleRedeemVoucher = async () => {
     this.setState({ discountPoint: 0 })
-    localStorage.removeItem('webordering_selectedPoint')
-    this.props.history.push('/myVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
+    this.props.history.push(`/myVoucher`)
   }
 
   handleRedeemPoint = async () => {
-    localStorage.removeItem('webordering_selectedVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
     let selectedPoint = this.state.selectedPoint || 0;
     let totalPoint = this.state.totalPoint;
     let pointsToRebateRatio = this.state.pointsToRebateRatio;
@@ -376,13 +377,13 @@ class Payment extends Component {
     }
     let totalPrice = (point / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1]
     totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
-    localStorage.setItem('webordering_selectedPoint', JSON.stringify(encryptor.encrypt(point)));
+    localStorage.setItem(`${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)));
     this.setState({ selectedPoint: point, discountPoint: point, totalPrice, newTotalPrice: totalPrice })
     return point
   }
 
   setRemoveVoucher = (message) => {
-    localStorage.removeItem('webordering_selectedVoucher')
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
     this.setState({ statusSelectedVoucher: false, selectedVoucher: null })
     Swal.fire('Oppss!', message, 'error')
   }
@@ -406,7 +407,7 @@ class Payment extends Component {
   }
 
   submitSettle = async (need = null, payAtPOS) => {
-    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_infoCompany')));
+    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
     Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
@@ -486,7 +487,7 @@ class Payment extends Component {
 
     if (orderingMode === 'DINEIN') {
       try {
-        const tableNo = encryptor.decrypt(JSON.parse(localStorage.getItem("webordering_scanTable")));
+        const tableNo = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_scanTable`)));
         payload.tableNo = tableNo.table;
       } catch (e) { }
     }
@@ -512,10 +513,10 @@ class Payment extends Component {
           this.getPendingPayment(response.data)
         }
       } else {
-        localStorage.setItem("webordering_settleSuccess", JSON.stringify(encryptor.encrypt(response.data)));
-        localStorage.removeItem('webordering_selectedPoint')
-        localStorage.removeItem('webordering_selectedVoucher')
-        localStorage.removeItem('webordering_dataSettle')
+        localStorage.setItem(`${config.prefix}_settleSuccess`, JSON.stringify(encryptor.encrypt(response.data)));
+        localStorage.removeItem(`${config.prefix}_selectedPoint`)
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+        localStorage.removeItem(`${config.prefix}_dataSettle`)
         this.togglePlay()
         await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
         this.props.history.push('/settleSuccess')

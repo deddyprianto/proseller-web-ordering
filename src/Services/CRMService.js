@@ -1,7 +1,7 @@
 import { Header, jsonToQueryString } from "../helpers";
 import config from '../config';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 export const CRMService = {
   api,

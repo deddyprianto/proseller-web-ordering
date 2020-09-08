@@ -77,7 +77,7 @@ class Product extends Component {
                     confirmButtonText: 'Yes'
                 }).then((result) => {
                     if (result.value) {
-                        localStorage.removeItem('webordering_offlineCart');
+                        localStorage.removeItem(`${config.prefix}_offlineCart`);
                         this.openModal();
                     }
                 })

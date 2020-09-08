@@ -1,6 +1,8 @@
 import { CONSTANT } from '../../helpers';
+import config from '../../config';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 let defaultState = { isLoggedIn: false };
 

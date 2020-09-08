@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 
 export default class ModalOrderingMode extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEmenu: window.location.pathname.includes('emenu')
+    };
+  }
+
   render() {
     let props = this.props.data
+    const { isEmenu } = this.state
     return (
       <div className="modal fade" id="ordering-mode-basket-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div className="modal-dialog modal-dialog-product modal-dialog-centered modal-full" role="document" style={{ justifyContent: 'center', width: "100%" }}>
@@ -16,8 +24,8 @@ export default class ModalOrderingMode extends Component {
                   display: 'flex', justifyContent: 'center', overflowX: 'auto',
                   overflowY: 'hidden', marginLeft: -30, marginRight: -30,
                 }}>
-                  {/* {
-                    props.storeDetail.enableDineIn !== false &&
+                  {
+                    props.storeDetail.enableDineIn !== false && isEmenu &&
                     <div className="order-mode" data-dismiss="modal"
                       onClick={() => this.props.setOrderingMode('DINEIN')}>
                       <h5 className="color" style={{ fontWeight: 1000 }}>DINEIN</h5>
@@ -26,21 +34,21 @@ export default class ModalOrderingMode extends Component {
                     </div>
                   }
                   {
-                    props.storeDetail.enableTakeAway !== false &&
+                    props.storeDetail.enableTakeAway !== false && isEmenu &&
                     <div className="order-mode" data-dismiss="modal" onClick={() => this.props.setOrderingMode('TAKEAWAY')}>
                       <h5 className="color" style={{ fontWeight: 1000 }}>TAKE AWAY</h5>
                       <i className="fa fa-shopping-basket color icon-order"></i>
                       <button className="btn btn-block btn-footer" style={{ marginTop: 37 }}><b>Select</b></button>
                     </div>
-                  } */}
-                  {/* {
-                    props.storeDetail.enableDelivery !== false && */}
-                  <div className="order-mode" data-dismiss="modal" onClick={() => this.props.setOrderingMode('DELIVERY')}>
-                    <h5 className="color" style={{ fontWeight: 1000 }}>DELIVERY</h5>
-                    <i className="fa fa-car color icon-order"></i>
-                    <button className="btn btn-block btn-footer" style={{ marginTop: 37 }}><b>Select</b></button>
-                  </div>
-                  {/* } */}
+                  }
+                  {
+                    props.storeDetail.enableDelivery !== false || !isEmenu &&
+                    <div className="order-mode" data-dismiss="modal" onClick={() => this.props.setOrderingMode('DELIVERY')}>
+                      <h5 className="color" style={{ fontWeight: 1000 }}>DELIVERY</h5>
+                      <i className="fa fa-car color icon-order"></i>
+                      <button className="btn btn-block btn-footer" style={{ marginTop: 37 }}><b>Select</b></button>
+                    </div>
+                  }
                 </div>
                 <p id="dismiss-ordering-mode-basket-modal" data-dismiss="modal" className="color" style={{ cursor: 'pointer', textDecoration: 'underline', textAlign: 'center', marginTop: 30, marginBottom: 20 }}>
                   I'm just browsing

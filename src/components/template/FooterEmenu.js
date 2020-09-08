@@ -45,14 +45,39 @@ class Footer extends Component {
       document.getElementById('login-register-btn').click()
     }
   }
+
   render() {
+    let { dataBasket } = this.state
     let { isLoggedIn } = this.props
+    let basketLength = 0
+    if (dataBasket && dataBasket.details) {
+      dataBasket.details.forEach(cart => {
+        basketLength += cart.quantity
+      });
+    }
     return (
       <div>
         <div className="pizzaro-handheld-footer-bar" style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#FFF" }}>
           <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             <i className={`fa fa-th ${this.activeRoute({ path: "/", name: "Home" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
             <div className={`${this.activeRoute({ path: "/", name: "Home" })}`} style={{ marginTop: -22, fontSize: 12 }}>Menu</div>
+          </Link>
+          <Link onClick={() => this.removeDataPayment()} to="/basket" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <i className={`fa fa-shopping-cart ${this.activeRoute({ path: "/basket", name: "Basket" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
+            <div className={`${this.activeRoute({ path: "/basket", name: "Basket" })}`} style={{ marginTop: -22, fontSize: 12 }}>Cart</div>
+            {
+              basketLength > 0 &&
+              <div style={{
+                backgroundColor: "red", fontSize: 10, position: "absolute", marginTop: -18,
+                minWidth: 20, borderRadius: 20, height: 20, display: "flex", color: "#FFF",
+                alignItems: "center", justifyContent: "center", marginRight: -25,
+                border: "2px solid #FFF", paddingLeft: 4, paddingRight: 4
+              }}>{basketLength}</div>
+            }
+          </Link>
+          <Link onClick={() => this.removeDataPayment(true)} to="/payment" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <i className={`fa fa-credit-card ${this.activeRoute({ path: "/payment", name: "Payment" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
+            <div className={`${this.activeRoute({ path: "/payment", name: "Payment" })}`} style={{ marginTop: -22, fontSize: 12 }}>Payment</div>
           </Link>
           <Link onClick={() => this.removeDataPayment(true)} to="/history" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             <i className={`fa fa-history ${this.activeRoute({ path: "/history", name: "History" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>

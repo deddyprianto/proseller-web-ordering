@@ -4,7 +4,7 @@ import {
   Row,
 } from 'reactstrap';
 import Shimmer from "react-shimmer-effect";
-import Loading from "../loading";
+import config from "../../config";
 import { connect } from "react-redux";
 import HistoryCard from './HistoryCardPending';
 import Lottie from 'lottie-react-web';
@@ -37,7 +37,7 @@ class HistoryPending extends Component {
   }
 
   handleDetail = (items) => {
-    localStorage.setItem("webordering_dataBasket", JSON.stringify(encryptor.encrypt(items)));
+    localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(items)));
   }
 
   render() {

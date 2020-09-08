@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import QrReader from 'react-qr-reader';
+import config from '../../config';
 
 const base64 = require('base-64');
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -17,10 +18,10 @@ export default class ScanTable extends Component {
             scan: true,
             outlet: param.outletId || param.outlet
           }
-          localStorage.setItem("webordering_scanTable", JSON.stringify(encryptor.encrypt(scanTable)));
+          localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(scanTable)));
           this.props.history.goBack();
         } else {
-          localStorage.removeItem('webordering_scanTable')
+          localStorage.removeItem(`${config.prefix}_scanTable`)
         }
       } catch (error) {
         console.log(error)

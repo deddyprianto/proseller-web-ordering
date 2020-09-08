@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import MyVoucher from './MyVoucher';
+import config from '../../config';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 export default class SelectVoucher extends Component {
   handleSelect = (item) => {
-    localStorage.setItem("webordering_selectedVoucher", JSON.stringify(encryptor.encrypt(item)));
+    localStorage.setItem(`${config.prefix}_selectedVoucher`, JSON.stringify(encryptor.encrypt(item)));
     this.props.history.goBack()
   }
 

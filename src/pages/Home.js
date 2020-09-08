@@ -2,20 +2,21 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
-import { OutletAction } from "../redux/actions/OutletAction";
 import { OrderAction } from "../redux/actions/OrderAction";
 import { PromotionAction } from "../redux/actions/PromotionAction";
 import LoadingAddCart from '../components/loading/LoadingAddCart';
-import { isEmptyData, isEmptyArray, isEmptyObject } from "../helpers/CheckEmpty";
+import { isEmptyArray, isEmptyObject } from "../helpers/CheckEmpty";
+import config from "../config";
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false
+      loading: false,
+      isEmenu: window.location.pathname.includes('emenu')
     };
   }
 
@@ -32,7 +33,7 @@ class Home extends Component {
 
   checkOfflineCart = async () => {
     try {
-      let offlineCart = localStorage.getItem('webordering_offlineCart');
+      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
 
       if (isEmptyObject(offlineCart)) return;
@@ -56,19 +57,20 @@ class Home extends Component {
           payload.details.push(product);
           await this.props.dispatch(OrderAction.addCart(payload));
         }
-        localStorage.removeItem('webordering_offlineCart');
+        localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
     } catch (e) { }
   }
 
   render() {
+    const { isEmenu } = this.state
     return (
       <div className="col-full">
         <div id="primary" className="content-area" style={{ paddingBottom: 100 }}>
           {this.state.loading ? <LoadingAddCart /> : null}
           <div className="stretch-full-width">
             <main id="main" className="site-main">
-              <Promotion />
+              {!isEmenu && <Promotion />}
               <Ordering />
             </main>
           </div>

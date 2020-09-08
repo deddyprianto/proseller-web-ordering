@@ -19,7 +19,8 @@ class ModalProduct extends Component {
       message: {
         title: "",
         message: ""
-      }
+      },
+      isEmenu: window.location.pathname.includes('emenu')
     };
   }
 
@@ -555,7 +556,7 @@ class ModalProduct extends Component {
   }
 
   setOrderingMode = (mode) => {
-    localStorage.setItem('webordering_ordering_mode', mode);
+    localStorage.setItem(`${config.prefix}_ordering_mode`, mode);
     try {
       document.getElementById('dismiss-ordering-mode').click();
       // document.getElementById('open-modal-product').click();
@@ -563,6 +564,7 @@ class ModalProduct extends Component {
   }
 
   modalOrderingMode = () => {
+    const { isEmenu } = this.state;
     const { defaultOutlet } = this.props;
 
     return (
@@ -578,8 +580,8 @@ class ModalProduct extends Component {
                   display: 'flex', justifyContent: 'center', overflowX: 'auto',
                   overflowY: 'hidden', marginLeft: -30, marginRight: -30,
                 }}>
-                  {/* {
-                    defaultOutlet.enableDineIn || defaultOutlet.enableDineIn == undefined ?
+                  {
+                    (defaultOutlet.enableDineIn || defaultOutlet.enableDineIn == undefined) && isEmenu ?
                       <div className="order-mode" onClick={() => this.setOrderingMode('DINEIN')}>
                         <h5 className="color" style={{ fontWeight: 1000 }}>DINE IN</h5>
                         <i className="fa fa-cutlery color icon-order"></i>
@@ -587,10 +589,10 @@ class ModalProduct extends Component {
                       </div>
                       :
                       null
-                  } */}
+                  }
 
-                  {/* {
-                    defaultOutlet.enableTakeAway || defaultOutlet.enableTakeAway == undefined ?
+                  {
+                    (defaultOutlet.enableTakeAway || defaultOutlet.enableTakeAway == undefined) && isEmenu ?
                       <div className="order-mode" onClick={() => this.setOrderingMode('TAKEAWAY')}>
                         <h5 className="color" style={{ fontWeight: 1000 }}>TAKE AWAY</h5>
                         <i className="fa fa-shopping-basket color icon-order"></i>
@@ -598,17 +600,17 @@ class ModalProduct extends Component {
                       </div>
                       :
                       null
-                  } */}
+                  }
 
                   {
-                    // defaultOutlet.enableDelivery || defaultOutlet.enableDelivery == undefined ?
-                    <div className="order-mode" onClick={() => this.setOrderingMode('DELIVERY')}>
-                      <h5 className="color" style={{ fontWeight: 1000 }}>DELIVERY</h5>
-                      <i className="fa fa-car color icon-order"></i>
-                      <button className="btn btn-block btn-footer" style={{ marginTop: 37 }}><b>Select</b></button>
-                    </div>
-                    // :
-                    // null
+                    (defaultOutlet.enableDelivery || defaultOutlet.enableDelivery == undefined) || !isEmenu ?
+                      <div className="order-mode" onClick={() => this.setOrderingMode('DELIVERY')}>
+                        <h5 className="color" style={{ fontWeight: 1000 }}>DELIVERY</h5>
+                        <i className="fa fa-car color icon-order"></i>
+                        <button className="btn btn-block btn-footer" style={{ marginTop: 37 }}><b>Select</b></button>
+                      </div>
+                      :
+                      null
                   }
                 </div>
                 <p id="dismiss-ordering-mode" data-dismiss="modal" className="color" style={{ cursor: 'pointer', textDecoration: 'underline', textAlign: 'center', marginTop: 30, marginBottom: 20 }}>

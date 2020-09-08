@@ -3,8 +3,10 @@ import { OrderingService } from "../../Services/OrderingService";
 import { AuthActions } from '../actions/AuthAction';
 import { isEmptyData, isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 import _ from 'lodash';
+import config from '../../config';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 export const OrderAction = {
   addCart,
@@ -121,7 +123,7 @@ function processAddCart(defaultOutlet, selectedItem) {
     if (account != undefined && account != null) dispatch(addCart(payload));
     else dispatch(processOfflineCart(payload, 'Add'));
     // document.getElementById("close-modal").click();
-    const orderMode = localStorage.getItem('webordering_ordering_mode');
+    const orderMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
     if (orderMode == undefined) document.getElementById('open-modal-ordering-mode').click();
   }
 }
@@ -207,7 +209,7 @@ function processUpdateCart(basket, product) {
 function processOfflineCart(payload, mode) {
   try {
     return async dispatch => {
-      let offlineCart = localStorage.getItem('webordering_offlineCart');
+      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (isEmptyObject(offlineCart) || isEmptyArray(offlineCart.details)) {
         return await dispatch(buildCart(payload));
@@ -217,7 +219,7 @@ function processOfflineCart(payload, mode) {
             offlineCart.details.push(payload.details[0]);
             return await dispatch(buildCart(offlineCart));
           } else {
-            localStorage.removeItem('webordering_offlineCart');
+            localStorage.removeItem(`${config.prefix}_offlineCart`);
             return await dispatch(buildCart(payload));
           }
         } else {
@@ -250,7 +252,7 @@ function addCart(payload) {
 function buildCart(payload = {}) {
   return async dispatch => {
     try {
-      payload.orderingMode = localStorage.getItem('webordering_ordering_mode') || 'DINEIN';
+      payload.orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || 'DINEIN';
     } catch (error) { }
     const response = await OrderingService.api('POST', payload, `cart/build`, 'Bearer');
 
@@ -260,7 +262,7 @@ function buildCart(payload = {}) {
 
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
     else {
-      localStorage.setItem('webordering_offlineCart', JSON.stringify(response.data));
+      localStorage.setItem(`${config.prefix}_offlineCart`, JSON.stringify(response.data));
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
   }
@@ -278,7 +280,7 @@ function getCart(isSetData = true) {
   return async dispatch => {
     // IF CUSTOMER NOT LOGIN
     if (account == undefined) {
-      let offlineCart = localStorage.getItem('webordering_offlineCart');
+      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {
         if (isSetData) return dispatch(setData(offlineCart, CONSTANT.DATA_BASKET));
@@ -301,17 +303,17 @@ function getCart(isSetData = true) {
 
 function deleteCart(isDeleteServer = false) {
   return async dispatch => {
-    localStorage.removeItem('webordering_selectedVoucher')
-    localStorage.removeItem('webordering_selectedPoint')
-    localStorage.removeItem('webordering_scanTable');
-    localStorage.removeItem('webordering_dataBasket');
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
+    localStorage.removeItem(`${config.prefix}_scanTable`);
+    localStorage.removeItem(`${config.prefix}_dataBasket`);
 
     // IF CUSTOMER NOT LOGIN
     if (account == undefined && !isDeleteServer) {
-      let offlineCart = localStorage.getItem('webordering_offlineCart');
+      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {
-        localStorage.removeItem('webordering_offlineCart')
+        localStorage.removeItem(`${config.prefix}_offlineCart`)
         return dispatch(setData({}, CONSTANT.DATA_BASKET));
       }
     }

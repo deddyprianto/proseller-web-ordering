@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button } from 'reactstrap';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import { Link } from 'react-router-dom';
+import config from '../../config';
 
 export default class DeliveryAddressBasket extends Component {
   render() {
@@ -13,7 +14,7 @@ export default class DeliveryAddressBasket extends Component {
           <div>
             <Link to="/delivery-address">
               <Button disabled={this.props.roleBtnClear ? true : false}
-                onClick={() => localStorage.setItem('webordering_getDeliveryAddress', true)}
+                onClick={() => localStorage.setItem(`${config.prefix}_getDeliveryAddress`, true)}
                 style={{
                   fontWeight: "bold", color: "#FFF", cursor: "pointer",
                   backgroundColor: (!props.deliveryAddress ? "#c00a27" : "#20a8d8"),

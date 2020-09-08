@@ -1,8 +1,10 @@
 import { CONSTANT } from "../../helpers";
 import { loader } from "../actions/LoaderAction";
 import { CRMService } from "../../Services/CRMService";
+import config from "../../config";
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem('webordering_account')));
+const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
 
 export const AuthActions = {
   check,
@@ -63,7 +65,7 @@ function refreshToken() {
       if (response != undefined) {
         account.accessToken.jwtToken = response.jwtToken;
         account.accessToken.payload = response.payload;
-        localStorage.setItem('webordering_account', JSON.stringify(encryptor.encrypt(account)));
+        localStorage.setItem(`${config.prefix}_account`, JSON.stringify(encryptor.encrypt(account)));
       } else {
         localStorage.clear();
         window.location.reload();

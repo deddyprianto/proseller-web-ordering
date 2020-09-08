@@ -6,6 +6,7 @@ import { HistoryAction } from '../redux/actions/HistoryAction';
 import { MasterdataAction } from '../redux/actions/MaterdataAction';
 import Lottie from 'lottie-react-web';
 import emptyGif from '../assets/gif/empty-and-lost.json';
+import config from '../config';
 
 const HistoryTransaction = loadable(() => import('../components/history/HistoryTransaction'))
 const HistoryPending = loadable(() => import('../components/history/HistoryPending'))
@@ -24,10 +25,10 @@ class History extends Component {
   }
 
   componentDidMount = async () => {
-    localStorage.removeItem('webordering_dataBasket')
-    localStorage.removeItem('webordering_scanTable')
-    localStorage.removeItem('webordering_selectedVoucher')
-    localStorage.removeItem('webordering_selectedPoint')
+    localStorage.removeItem(`${config.prefix}_dataBasket`)
+    localStorage.removeItem(`${config.prefix}_scanTable`)
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`)
+    localStorage.removeItem(`${config.prefix}_selectedPoint`)
     try {
       document.getElementsByClassName('modal-backdrop')[0].remove()
     } catch (error) { }

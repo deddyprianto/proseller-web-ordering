@@ -465,10 +465,10 @@ td, th {
   overflow-x: auto;
   overflow-y: hidden;
   z-index: 99;
-  /* width: 100%; */
+  right: 0;
+  width: 100%;
   background: white;
-  padding: 10px 0px 10px 10px;
-  /* box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 15px rgba(0,0,0,0.1); */
+  padding: 10px 0px 10px 0px;
 }
 
 .category-item {
@@ -2774,9 +2774,9 @@ a {
   flex-direction: column;
   height: 220px;
   box-shadow: 0 0 2px 2px rgb(224 224 224 / 60%);
-  margin: 10px;
+  margin: 5px;
   border-radius: 8px;
-  min-width: 120px;
+  min-width: 105px;
   margin-top: 10px;
 }
 
@@ -2790,7 +2790,7 @@ a {
 }
 
 #input-txt.active {
-  width: 70%;
+  width: 75%;
 }
 
 .icon-order {
@@ -2946,6 +2946,7 @@ a {
 .control-promotion {
   font-size: 37px;
   padding: 10px;
+  background: #a1a1a1;
   cursor: pointer;
   margin-top: 10px;
 }
@@ -15805,8 +15806,8 @@ p.order-again .button:after {
   /**
 	 * Handheld footer bar
 	 */
-  .pizzaro-handheld-footer-bar {
-    display: none !important; }
+  /* .pizzaro-handheld-footer-bar {
+    display: none !important; } */
   .site-content:before, .site-content:after {
     content: "";
     display: table; }
