@@ -252,7 +252,7 @@ function addCart(payload) {
 function buildCart(payload = {}) {
   return async dispatch => {
     try {
-      payload.orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || 'DINEIN';
+      payload.orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || (window.location.pathname.includes('emenu') ? 'DINEIN' : 'DELIVERY');
     } catch (error) { }
     const response = await OrderingService.api('POST', payload, `cart/build`, 'Bearer');
 
