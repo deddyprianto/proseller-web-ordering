@@ -212,6 +212,9 @@ class Basket extends Component {
       let totalPrice = (dataBasket.totalNettAmount - discount) < 0 ? 0 : (dataBasket.totalNettAmount - discount)
 
       if (dataBasket.orderingMode) {
+        if (dataBasket.orderingMode === "DELIVERY" && isEmenu) dataBasket.orderingMode = "DINEIN"
+        if (dataBasket.orderingMode === "DINEIN" && !isEmenu) dataBasket.orderingMode = "DELIVERY"
+
         orderingMode = !isChangeMode && dataBasket.orderingMode || orderingMode
         scanTable = {
           ...scanTable,
