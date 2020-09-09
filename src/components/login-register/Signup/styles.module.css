@@ -1,0 +1,60 @@
+.modalTitle {
+  font-size: 20;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: center;
+}
+
+.fieldGroup {
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.fieldGroup > .react-tel-input {
+  width: 50%;
+}
+
+.phoneField {
+  margin-left: 2.5rem;
+}
+
+.phoneCountryCodeGroup {
+  display: flex;
+  position: relative;
+}
+
+.phoneCountryCode {
+  height: 45px;
+  width: 40px;
+  left: 70%;
+  top: -10%;
+  position: absolute;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.errorMessage {
+  margin-top: 14px;
+  margin-bottom: 20px;
+  color: red;
+}
+
+.switchMethodButton {
+  margin-top: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.submitButton {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.closeButton {
+  font-size: 30;
+}
