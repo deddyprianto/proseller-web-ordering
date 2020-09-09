@@ -11,6 +11,8 @@ import SignUp from "./Signup";
 
 import { lsLoad, lsStore } from "../../helpers/localStorage";
 
+import config from "../../config";
+
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
 
@@ -58,7 +60,7 @@ class LoginRegister extends Component {
   }
 
   componentDidMount = async () => {
-    const otpData = lsLoad("webordering_otp") || null;
+    const otpData = lsLoad(config.prefix + "_otp") || null;
     if (otpData) {
       const countdown =
         300 - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
@@ -318,13 +320,13 @@ class LoginRegister extends Component {
       // console.log(response)
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = localStorage.getItem("webordering_offlineCart");
+      const offlineCart = localStorage.getItem(config.prefix + "_offlineCart");
       localStorage.clear();
       localStorage.setItem(
-        "webordering_account",
+        config.prefix + "_account",
         JSON.stringify(encryptor.encrypt(response))
       );
-      localStorage.setItem("webordering_offlineCart", offlineCart);
+      localStorage.setItem(config.prefix + "_offlineCart", offlineCart);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -389,7 +391,7 @@ class LoginRegister extends Component {
       } else {
         enableRegisterWithPassword &&
           localStorage.setItem(
-            "webordering_account",
+            config.prefix + "_account",
             JSON.stringify(
               encryptor.encrypt({
                 phoneNumber: payloadResponse.phoneNumber,
@@ -498,7 +500,10 @@ class LoginRegister extends Component {
 
     const otpLastTry = new Date();
     this.setState({ otpLastTry });
-    lsStore("webordering_otp", { lastTry: otpLastTry, counter: sendCounter });
+    lsStore(config.prefix + "_otp", {
+      lastTry: otpLastTry,
+      counter: sendCounter,
+    });
 
     let timer = setInterval(() => {
       let seconds = this.state.seconds - 1;
@@ -544,13 +549,13 @@ class LoginRegister extends Component {
       console.log(response);
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = localStorage.getItem("webordering_offlineCart");
+      const offlineCart = localStorage.getItem(config.prefix + "_offlineCart");
       localStorage.clear();
       localStorage.setItem(
-        "webordering_account",
+        config.prefix + "_account",
         JSON.stringify(encryptor.encrypt(response))
       );
-      localStorage.setItem("webordering_offlineCart", offlineCart);
+      localStorage.setItem(config.prefix + "_offlineCart", offlineCart);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -613,7 +618,7 @@ class LoginRegister extends Component {
       } else {
         enableRegisterWithPassword &&
           localStorage.setItem(
-            "webordering_account",
+            config.prefix + "_account",
             JSON.stringify(
               encryptor.encrypt({
                 phoneNumber: phoneNumber,
