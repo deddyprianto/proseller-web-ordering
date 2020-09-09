@@ -47,7 +47,8 @@ class ModalEditProfile extends Component {
       textValidate: "",
       showOldPassword: false,
       showNewPassword: false,
-      showRePassword: false
+      showRePassword: false,
+      isDisableBirthDate: false
     };
   }
 
@@ -57,7 +58,10 @@ class ModalEditProfile extends Component {
 
   getData = async () => {
     let dataCustomer = await this.props.dispatch(CustomerAction.getCustomerProfile());
-    if (dataCustomer.ResultCode === 200) this.setState({ dataCustomer: dataCustomer.Data[0] })
+    if (dataCustomer.ResultCode === 200) {
+      if (dataCustomer.Data[0].birthDate) this.setState({ isDisableBirthDate: true })
+      this.setState({ dataCustomer: dataCustomer.Data[0] })
+    }
     let mandatoryField = await this.props.dispatch(CustomerAction.mandatoryField());
     if (mandatoryField.resultCode === 200) this.setState({ mandatoryField: mandatoryField.data.fields })
     this.setState({ loadingShow: false })
@@ -178,7 +182,7 @@ class ModalEditProfile extends Component {
 
   render() {
 
-    let { editPassword, showOldPassword, showNewPassword, showRePassword } = this.state;
+    let { editPassword, showOldPassword, showNewPassword, showRePassword, isDisableBirthDate } = this.state;
 
     let birthMonthOption = this.state.birthMonthOption
     let mandatoryField = this.state.mandatoryField
@@ -231,6 +235,7 @@ class ModalEditProfile extends Component {
                       {
                         fieldBirthDate.format === "MMM" ?
                           <Input type="select"
+                            disabled={isDisableBirthDate}
                             className="woocommerce-Input woocommerce-Input--text input-text"
                             value={dataCustomer.birthDate} style={{ height: 40 }}
                             onChange={(e) => this.handleChange('birthDate', e.target.value)}>
@@ -243,11 +248,12 @@ class ModalEditProfile extends Component {
                           </Input> :
                           <div className="customDatePickerWidth">
                             <div htmlFor="birthDate"
-                              style={{ position: "absolute", backgroundColor: "#FFF", top: 146, left: 28, paddingLeft: 10, paddingRight: 50 }}>
-                              {moment(birthDate).format('DD-MM-YYYY')}
+                              style={{ position: "absolute", backgroundColor: (isDisableBirthDate ? "#FAFAFA" : "#FFF"), top: 146, left: 28, paddingLeft: 10, paddingRight: 50 }}>
+                              {dataCustomer.birthDate ? moment(birthDate).format('DD-MM-YYYY') : fieldBirthDate.format}
                             </div >
-                            <input type="date" id="birthDate" className="woocommerce-Input woocommerce-Input--text input-text"
-                              value={birthDate} onChange={(e) => this.handleChange('birthDate', moment(e.target.value).format('YYYY-MM-DD'))} />
+                            <input type="date" id="birthDate" disabled={isDisableBirthDate}
+                              className="woocommerce-Input woocommerce-Input--text input-text" value={birthDate}
+                              onChange={(e) => this.handleChange('birthDate', moment(e.target.value).format('YYYY-MM-DD'))} />
                           </div>
                       }
                     </div>
