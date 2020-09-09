@@ -125,7 +125,7 @@ const Portal = ({
 };
 
 Portal.propTypes = {
-  initialMethod: PropTypes.oneOf("phone", "email").isRequired,
+  initialMethod: PropTypes.oneOf(["phone", "email"]).isRequired,
   handleMethodChange: PropTypes.func,
   handleChange: PropTypes.func,
   handleEmailCheck: PropTypes.func,

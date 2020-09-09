@@ -92,7 +92,7 @@ const Login = ({
 };
 
 Login.propTypes = {
-  method: PropTypes.oneOf("phone", "email").isRequired,
+  method: PropTypes.oneOf(["phone", "email"]).isRequired,
   handleBackButtonClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   handleChange: PropTypes.func,

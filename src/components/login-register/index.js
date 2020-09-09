@@ -96,20 +96,23 @@ class LoginRegister extends Component {
         }, 1000);
       }
     }
-
-    let infoCompany = await encryptor.decrypt(
-      JSON.parse(localStorage.getItem("webordering_infoCompany"))
-    );
-    infoCompany = await encryptor.decrypt(
-      JSON.parse(localStorage.getItem("webordering_infoCompany"))
-    );
-    if (infoCompany) {
-      this.setState({
-        enableRegisterWithPassword: infoCompany.enableRegisterWithPassword,
-        otp: false,
-      });
-    }
   };
+
+  componentDidUpdate(prevProps) {
+    if (this.props !== prevProps) {
+      if (
+        !this.props.fetchingCompanyInfo &&
+        !this.props.companyInfoError &&
+        this.props.companyInfo
+      ) {
+        this.setState({
+          enableRegisterWithPassword: this.props.companyInfo
+            .enableRegisterWithPassword,
+          otp: false,
+        });
+      }
+    }
+  }
 
   handleInput = (jenis, data) => {
     this.setState({ [jenis]: data });
@@ -734,9 +737,13 @@ class LoginRegister extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {};
-};
+const reducer = "masterdata";
+
+const mapStateToProps = (state) => ({
+  companyInfo: state[reducer].companyInfo.data,
+  fetchingCompanyInfo: state[reducer].companyInfo.isFetching,
+  companyInfoError: state[reducer].companyInfo.errors,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,

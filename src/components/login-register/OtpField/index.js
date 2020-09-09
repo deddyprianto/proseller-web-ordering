@@ -54,7 +54,7 @@ const OtpField = ({
 };
 
 OtpField.propTypes = {
-  method: PropTypes.oneOf("phone", "email"),
+  method: PropTypes.oneOf(["phone", "email"]),
   handleChange: PropTypes.func,
   sendCounter: PropTypes.number,
   counterMinutes: PropTypes.string,

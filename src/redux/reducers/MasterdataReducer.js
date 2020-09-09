@@ -1,25 +1,49 @@
-import { CONSTANT } from '../../helpers';
+import { CONSTANT } from "../../helpers";
 
-const defaultState = {};
+const defaultState = {
+  infoCompany: {
+    data: null,
+    isFetching: false,
+    errors: false,
+  },
+};
 
 export default function reducer(state = defaultState, action) {
-    switch (action.type) {
-        case CONSTANT.DATA_PRODUCT:
-            return Object.assign({}, state, {
-                product: action.data
-            });
-            case 'FETCH_COMPANY':
-                return { ...state, data: {}, isFetching: true };
-              case 'FETCH_COMPANY_SUCCESS':
-                return {
-                  ...state,
-                  data: action.payload,
-                  isFetching: false,
-                  errors: false
-                };
-              case 'FETCH_COMPANY_FAILED':
-                return { ...state, isFetching: false, errors: true };
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case CONSTANT.DATA_PRODUCT:
+      return Object.assign({}, state, {
+        product: action.data,
+      });
+    case "GET_COMPANY_INFO":
+      return {
+        ...state,
+        companyInfo: {
+          ...state.companyInfo,
+          data: null,
+          isFetching: true,
+        },
+      };
+    case "GET_COMPANY_INFO_SUCCESS":
+      console.log("success dispatching get company info success, data:");
+      console.log(action.payload);
+      return {
+        ...state,
+        companyInfo: {
+          ...state.companyInfo,
+          data: action.payload,
+          isFetching: false,
+          errors: false,
+        },
+      };
+    case "GET_COMPANY_INFO_FAILED":
+      return {
+        ...state,
+        companyInfo: {
+          isFetching: false,
+          errors: true,
+        },
+      };
+    default:
+      return state;
+  }
 }

@@ -108,7 +108,7 @@ const SignUp = ({
 };
 
 SignUp.propTypes = {
-  method: PropTypes.oneOf("phone", "email"),
+  method: PropTypes.oneOf(["phone", "email"]),
   initialUserData: PropTypes.object,
   handleChange: PropTypes.func,
   handleEmailSubmit: PropTypes.func,
