@@ -177,7 +177,7 @@ class Payment extends Component {
     let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
 
     if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault
-    console.log(dataSettle)
+    console.log(selectedVoucher)
 
     await this.getStatusVoucher(selectedVoucher, dataSettle.storeDetail, dataSettle.dataBasket)
 
@@ -232,11 +232,11 @@ class Payment extends Component {
                   discount = voucherValue;
                 }
 
-                // if (selectedVoucher.capAmount != undefined) {
-                //   if (discount > selectedVoucher.capAmount && selectedVoucher.capAmount > 0) {
-                //     discount = selectedVoucher.capAmount;
-                //   }
-                // }
+                if (selectedVoucher.capAmount != undefined) {
+                  if (discount > selectedVoucher.capAmount && selectedVoucher.capAmount > 0) {
+                    discount = selectedVoucher.capAmount;
+                  }
+                }
 
                 this.setState({ discountVoucher: discount, statusSelectedVoucher: true, selectedVoucher });
               } else {
@@ -255,11 +255,11 @@ class Payment extends Component {
             discount = voucherValue;
           }
 
-          // if (selectedVoucher.capAmount != undefined) {
-          //   if (discount > selectedVoucher.capAmount && selectedVoucher.capAmount > 0) {
-          //     discount = selectedVoucher.capAmount;
-          //   }
-          // }
+          if (selectedVoucher.capAmount != undefined) {
+            if (discount > selectedVoucher.capAmount && selectedVoucher.capAmount > 0) {
+              discount = selectedVoucher.capAmount;
+            }
+          }
 
           this.setState({ discountVoucher: discount, statusSelectedVoucher: true, selectedVoucher });
         }
