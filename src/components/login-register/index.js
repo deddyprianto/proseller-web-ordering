@@ -664,7 +664,7 @@ class LoginRegister extends Component {
     let { isLoading, userStatus, method, email, phoneNumber } = this.state;
     return (
       <div>
-        {isLoading && <Loading />}
+        {isLoading ? Swal.showLoading() : Swal.close()}
         <div
           className="modal fade"
           id="login-register-modal"

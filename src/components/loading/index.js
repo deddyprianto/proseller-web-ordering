@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { LoopCircleLoading } from "react-loadingg";
 
+import styles from "./styles.module.css";
+
 class Loading extends Component {
   constructor(props) {
     super(props);
@@ -44,22 +46,9 @@ class Loading extends Component {
       //   />
       // </div>
 
-      <dialog
-        className="animated fadeIn pt-3 text-center"
-        id="loading-load"
-        style={{
-          zIndex: 200,
-          position: "fixed",
-          border: "1px solid #FFF",
-          width: 80,
-          height: 80,
-          borderRadius: 80,
-          backgroundColor: "#fff",
-          boxShadow: "-1px 1px 5px rgba(128, 128, 128, 0.7)",
-        }}
-      >
+      <div className={styles.loaderContainer}>
         <LoopCircleLoading />
-      </dialog>
+      </div>
     );
   }
 }
