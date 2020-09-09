@@ -36,6 +36,8 @@ class LoginRegister extends Component {
       infoCompany: null,
 
       otpLastTry: null,
+      allowSendEmailOTP: true,
+      allowSendPhoneOTP: true,
       otp: true,
       box: false,
       btnSend: true,
@@ -62,12 +64,16 @@ class LoginRegister extends Component {
   componentDidMount = async () => {
     const otpData = lsLoad(config.prefix + "_otp") || null;
     if (otpData) {
+      const waitTime = this.state.method === "phone" ? 60 : 300;
       const countdown =
-        300 - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
+        waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
       if (countdown > 0) {
+        console.log("OTP cant be sent now");
         const counterMinutes = Math.floor(countdown / 60);
         const counter = countdown % 60;
         this.setState({
+          allowSendEmailOTP: false,
+          allowSendPhoneOTP: false,
           btnSend: false,
           otpLastTry: new Date(otpData.lastTry),
           sendCounter: otpData.counter,
@@ -85,6 +91,7 @@ class LoginRegister extends Component {
             let counterMinutes =
               minutes.toString().length < 2 ? "0" + minutes : minutes;
             this.setState({
+              allowSendPhoneOTP: true,
               counterMinutes,
               minutes,
               seconds: 59,
@@ -92,7 +99,7 @@ class LoginRegister extends Component {
             });
             if (minutes < 0 && seconds === 0) {
               clearInterval(timer);
-              this.setState({ btnSend: true });
+              this.setState({ btnSend: true, allowSendEmailOTP: true });
             }
           }
         }, 1000);
@@ -100,18 +107,65 @@ class LoginRegister extends Component {
     }
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props !== prevProps) {
       if (
         !this.props.fetchingCompanyInfo &&
         !this.props.companyInfoError &&
         this.props.companyInfo
       ) {
-        this.setState({
-          enableRegisterWithPassword: this.props.companyInfo
-            .enableRegisterWithPassword,
-          otp: false,
-        });
+        // this.setState({
+        //   enableRegisterWithPassword: this.props.companyInfo
+        //     .enableRegisterWithPassword,
+        //   otp: false,
+        // });
+      }
+    }
+    if (this.state.method !== prevState.method) {
+      const otpData = lsLoad(config.prefix + "_otp") || null;
+      if (otpData) {
+        const waitTime = this.state.method === "phone" ? 60 : 300;
+        const countdown =
+          waitTime -
+          Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
+        if (countdown > 0) {
+          console.log("OTP cant be sent now");
+          const counterMinutes = Math.floor(countdown / 60);
+          const counter = countdown % 60;
+          this.setState({
+            allowSendEmailOTP: false,
+            allowSendPhoneOTP: false,
+            btnSend: false,
+            otpLastTry: new Date(otpData.lastTry),
+            sendCounter: otpData.counter,
+            minutes: counterMinutes,
+            counterMinutes: `${counterMinutes}`,
+            seconds: counter,
+            counter: `${counter}`,
+          });
+          let timer = setInterval(() => {
+            let seconds = this.state.seconds - 1;
+            let counter =
+              seconds.toString().length < 2 ? "0" + seconds : seconds;
+            this.setState({ counter, seconds });
+            if (seconds === 0) {
+              let minutes = this.state.minutes - 1;
+              let counterMinutes =
+                minutes.toString().length < 2 ? "0" + minutes : minutes;
+              this.setState({
+                allowSendPhoneOTP: true,
+                counterMinutes,
+                minutes,
+                seconds: 59,
+                counter: "59",
+              });
+              if (minutes < 0 && seconds === 0) {
+                clearInterval(timer);
+                this.setState({ btnSend: true, allowSendEmailOTP: true });
+              }
+            }
+          }, 1000);
+        }
       }
     }
   }
@@ -215,12 +269,14 @@ class LoginRegister extends Component {
             "error"
           );
         } else if (response.data.confirmation) {
+          this.handleSendOTP();
           this.setState({
             userStatus: "REGISTERED",
             payloadResponse: response.data,
             btnSubmit: false,
           });
         } else {
+          this.handleSendOTP();
           this.setState({
             userStatus: "REGISTERED",
             payloadResponse: response.data,
@@ -233,76 +289,88 @@ class LoginRegister extends Component {
   };
 
   handleSendOTP = async () => {
-    let payloadResponse = this.state.payloadResponse;
-    let phoneNumber = this.state.phoneNumber;
-    let sendCounter = this.state.sendCounter + 1;
-    if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
+    if (this.state.allowSendPhoneOTP) {
+      let payloadResponse = this.state.payloadResponse;
+      let phoneNumber = this.state.phoneNumber;
+      let sendCounter = this.state.sendCounter + 1;
+      if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
 
-    if (sendCounter <= 2) {
-      this.setState({
-        isLoading: false,
-        sendCounter,
-        btnSend: false,
-        minutes: 0,
-        counterMinutes: "00",
-        seconds: 59,
-        counter: "59",
-      });
-      let timer = setInterval(() => {
-        let seconds = this.state.seconds - 1;
-        let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-        this.setState({ counter, seconds });
-        if (seconds === 0) {
-          clearInterval(timer);
-          this.setState({ btnSend: true });
-        }
-      }, 1000);
-    } else {
-      this.setState({
-        isLoading: false,
-        sendCounter,
-        btnSend: false,
-        minutes: 4,
-        counterMinutes: "04",
-        seconds: 59,
-        counter: "59",
-      });
-      let timer = setInterval(() => {
-        let seconds = this.state.seconds - 1;
-        let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-        this.setState({ counter, seconds });
-        if (seconds === 0) {
-          let minutes = this.state.minutes - 1;
-          let counterMinutes =
-            minutes.toString().length < 2 ? "0" + minutes : minutes;
-          this.setState({
-            counterMinutes,
-            minutes,
-            seconds: 59,
-            counter: "59",
-          });
-          if (minutes < 0 && seconds === 0) {
+      if (sendCounter <= 2) {
+        const countdown = 59;
+        const counterMinutes = Math.floor(countdown / 60);
+        const counter = countdown % 60;
+        this.setState({
+          isLoading: false,
+          sendCounter,
+          btnSend: false,
+          minutes: counterMinutes,
+          counterMinutes: `${counterMinutes}`,
+          seconds: counter,
+          counter: `${counter}`,
+        });
+        let timer = setInterval(() => {
+          let seconds = this.state.seconds - 1;
+          let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
+          this.setState({ counter, seconds });
+          if (seconds === 0) {
             clearInterval(timer);
             this.setState({ btnSend: true });
           }
-        }
-      }, 1000);
-    }
+        }, 1000);
+      } else {
+        this.setState({
+          isLoading: false,
+          sendCounter,
+          btnSend: false,
+          minutes: 4,
+          counterMinutes: "04",
+          seconds: 59,
+          counter: "59",
+        });
+        let timer = setInterval(() => {
+          let seconds = this.state.seconds - 1;
+          let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
+          this.setState({ counter, seconds });
+          if (seconds === 0) {
+            let minutes = this.state.minutes - 1;
+            let counterMinutes =
+              minutes.toString().length < 2 ? "0" + minutes : minutes;
+            this.setState({
+              counterMinutes,
+              minutes,
+              seconds: 59,
+              counter: "59",
+            });
+            if (minutes < 0 && seconds === 0) {
+              clearInterval(timer);
+              this.setState({ btnSend: true });
+            }
+          }
+        }, 1000);
+      }
 
-    try {
-      let payload = { phoneNumber: payloadResponse.phoneNumber };
-      if (this.state.sendCounter >= 2)
-        payload = { email: payloadResponse.email };
+      const otpLastTry = new Date();
+      this.setState({ otpLastTry });
+      lsStore(config.prefix + "_otp", {
+        lastTry: otpLastTry,
+        counter: sendCounter,
+      });
 
-      let response = await this.props.dispatch(AuthActions.sendOtp(payload));
-      response = response.Data;
-      // console.log(response)
+      try {
+        let payload = { phoneNumber: this.state.phoneNumber };
+        if (this.state.sendCounter >= 2)
+          payload = { email: payloadResponse.email };
 
-      if (response.status === false) throw response.status;
-      this.setState({ isLoading: false, box: true });
-    } catch (error) {
-      console.log(error);
-      this.setState({ isLoading: false });
+        let response = await this.props.dispatch(AuthActions.sendOtp(payload));
+        response = response.Data;
+        // console.log(response)
+
+        if (response.status === false) throw response.status;
+        this.setState({ isLoading: false, box: true });
+      } catch (error) {
+        console.log(error);
+        this.setState({ isLoading: false });
+      }
     }
   };
 
@@ -458,12 +526,14 @@ class LoginRegister extends Component {
               "error"
             );
           } else if (response.data.confirmation) {
+            this.handleSendEmailOTP();
             this.setState({
               userStatus: "REGISTERED",
               payloadResponse: response.data,
               btnSubmit: false,
             });
           } else {
+            this.handleSendEmailOTP();
             this.setState({
               userStatus: "REGISTERED",
               payloadResponse: response.data,
@@ -479,55 +549,62 @@ class LoginRegister extends Component {
   };
 
   handleSendEmailOTP = async () => {
-    let payloadResponse = this.state.payloadResponse;
-    let sendCounter = this.state.sendCounter + 1;
-    const countdown = 299;
-    const counterMinutes = Math.floor(countdown / 60);
-    const counter = countdown % 60;
-    this.setState({
-      isLoading: false,
-      sendCounter,
-      btnSend: false,
-      minutes: 4,
-      counterMinutes,
-      seconds: counter,
-      counter: `${counter}`,
-    });
+    if (this.state.allowSendEmailOTP) {
+      let payloadResponse = this.state.payloadResponse;
+      let sendCounter = this.state.sendCounter + 1;
+      const countdown = 299;
+      const counterMinutes = Math.floor(countdown / 60);
+      const counter = countdown % 60;
+      this.setState({
+        isLoading: false,
+        sendCounter,
+        btnSend: false,
+        minutes: 4,
+        counterMinutes,
+        seconds: counter,
+        counter: `${counter}`,
+      });
 
-    const otpLastTry = new Date();
-    this.setState({ otpLastTry });
-    lsStore(config.prefix + "_otp", {
-      lastTry: otpLastTry,
-      counter: sendCounter,
-    });
+      const otpLastTry = new Date();
+      this.setState({ otpLastTry });
+      lsStore(config.prefix + "_otp", {
+        lastTry: otpLastTry,
+        counter: sendCounter,
+      });
 
-    let timer = setInterval(() => {
-      let seconds = this.state.seconds - 1;
-      let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-      this.setState({ counter, seconds });
-      if (seconds === 0) {
-        let minutes = this.state.minutes - 1;
-        let counterMinutes =
-          minutes.toString().length < 2 ? "0" + minutes : minutes;
-        this.setState({ counterMinutes, minutes, seconds: 59, counter: "59" });
-        if (minutes < 0 && seconds === 0) {
-          clearInterval(timer);
-          this.setState({ btnSend: true });
+      let timer = setInterval(() => {
+        let seconds = this.state.seconds - 1;
+        let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
+        this.setState({ counter, seconds });
+        if (seconds === 0) {
+          let minutes = this.state.minutes - 1;
+          let counterMinutes =
+            minutes.toString().length < 2 ? "0" + minutes : minutes;
+          this.setState({
+            counterMinutes,
+            minutes,
+            seconds: 59,
+            counter: "59",
+          });
+          if (minutes < 0 && seconds === 0) {
+            clearInterval(timer);
+            this.setState({ btnSend: true });
+          }
         }
+      }, 1000);
+
+      try {
+        let payload = { email: this.state.email };
+        let response = await this.props.dispatch(AuthActions.sendOtp(payload));
+        response = response.Data;
+        // console.log(response)
+
+        if (response.status === false) throw response.status;
+        this.setState({ isLoading: false, box: true });
+      } catch (error) {
+        console.log(error);
+        this.setState({ isLoading: false });
       }
-    }, 1000);
-
-    try {
-      let payload = { email: payloadResponse.email };
-      let response = await this.props.dispatch(AuthActions.sendOtp(payload));
-      response = response.Data;
-      // console.log(response)
-
-      if (response.status === false) throw response.status;
-      this.setState({ isLoading: false, box: true });
-    } catch (error) {
-      console.log(error);
-      this.setState({ isLoading: false });
     }
   };
 
@@ -720,7 +797,9 @@ class LoginRegister extends Component {
             ) : (
               <Portal
                 initialMethod={method}
-                handleMethodChange={(value) => this.setState({ method: value })}
+                handleMethodChange={(value) => {
+                  this.setState({ method: value });
+                }}
                 handlePhoneCheck={this.handleMobileCheck}
                 handleChange={this.handleInput}
                 handleEmailCheck={this.handleEmailCheck}
