@@ -1,6 +1,7 @@
-const lsLoad = (item) => {
+const lsLoad = (item, persist = true) => {
+  const storage = !persist ? sessionStorage : localStorage;
   try {
-    const serializedState = localStorage.getItem(item);
+    const serializedState = storage.getItem(item);
     if (serializedState === null) {
       return null;
     }
@@ -10,15 +11,16 @@ const lsLoad = (item) => {
   }
 };
 
-const lsStore = (key, item) => {
+const lsStore = (key, item, persist = true) => {
+  const storage = !persist ? sessionStorage : localStorage;
   try {
     const stringified = JSON.stringify(item);
     if (stringified === null) {
       return null;
     }
-    localStorage.setItem(key, stringified);
+    storage.setItem(key, stringified);
   } catch (error) {
-    localStorage.setItem(key, item);
+    storage.setItem(key, item);
   }
 };
 

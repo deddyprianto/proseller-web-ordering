@@ -320,13 +320,10 @@ class LoginRegister extends Component {
       // console.log(response)
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = localStorage.getItem(config.prefix + "_offlineCart");
+      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
       localStorage.clear();
-      localStorage.setItem(
-        config.prefix + "_account",
-        JSON.stringify(encryptor.encrypt(response))
-      );
-      localStorage.setItem(config.prefix + "_offlineCart", offlineCart);
+      lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
+      lsStore(config.prefix + "_offlineCart", offlineCart, true);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -390,14 +387,13 @@ class LoginRegister extends Component {
         Swal.fire("Oppss!", response.message, "error");
       } else {
         enableRegisterWithPassword &&
-          localStorage.setItem(
+          lsStore(
             config.prefix + "_account",
-            JSON.stringify(
-              encryptor.encrypt({
-                phoneNumber: payloadResponse.phoneNumber,
-                email: this.state.email.toLowerCase().trim(),
-              })
-            )
+            encryptor.encrypt({
+              phoneNumber: payloadResponse.phoneNumber,
+              email: this.state.email.toLowerCase().trim(),
+            }),
+            true
           );
 
         try {
@@ -549,13 +545,10 @@ class LoginRegister extends Component {
       console.log(response);
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = localStorage.getItem(config.prefix + "_offlineCart");
+      const offlineCart = lsStore(config.prefix + "_offlineCart", true);
       localStorage.clear();
-      localStorage.setItem(
-        config.prefix + "_account",
-        JSON.stringify(encryptor.encrypt(response))
-      );
-      localStorage.setItem(config.prefix + "_offlineCart", offlineCart);
+      lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
+      lsStore(config.prefix + "_offlineCart", offlineCart, true);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -617,14 +610,13 @@ class LoginRegister extends Component {
         Swal.fire("Oppss!", response.message, "error");
       } else {
         enableRegisterWithPassword &&
-          localStorage.setItem(
+          lsStore(
             config.prefix + "_account",
-            JSON.stringify(
-              encryptor.encrypt({
-                phoneNumber: phoneNumber,
-                email: payloadResponse.email,
-              })
-            )
+            encryptor.encrypt({
+              phoneNumber: phoneNumber,
+              email: payloadResponse.email,
+            }),
+            true
           );
 
         try {
