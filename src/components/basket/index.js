@@ -174,16 +174,7 @@ class Basket extends Component {
       this.setState({ countryCode: infoCompany.countryCode })
     }
 
-    if (isLoggedIn) {
-      let response = await this.props.dispatch(CustomerAction.getVoucher());
-      if (response.ResultCode === 200) this.setState({ myVoucher: response.Data })
-
-      response = await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, infoCompany.companyId));
-      if (response.ResultCode === 200) {
-        this.setState(response.Data)
-        if (response.Data.detailPoint.roundingOptions === "DECIMAL") this.setState({ xstep: 0.01 });
-      }
-    } else if (!isLoggedIn && dataBasket) {
+    if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode
       let response = await this.props.dispatch(OrderAction.buildCart(dataBasket));
       if (!response.message) dataBasket = response.data
@@ -207,7 +198,6 @@ class Basket extends Component {
       console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket)
-      let deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
       let discount = (selectedPoint || 0) + this.state.discountVoucher
       let totalPrice = (dataBasket.totalNettAmount - discount) < 0 ? 0 : (dataBasket.totalNettAmount - discount)
 
@@ -234,6 +224,7 @@ class Basket extends Component {
 
       console.log('dataBasket', dataBasket)
 
+      let deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
       if (dataBasket.deliveryProviderId) {
         let provaiderDelivery = deliveryProvaider.find(items => { return items.id === dataBasket.deliveryProviderId })
         this.setState({ provaiderDelivery })
@@ -770,7 +761,7 @@ class Basket extends Component {
                 !loadingShow && !dataBasket &&
                 <div>
                   <Lottie options={{ animationData: emptyGif }} style={{ height: 250 }} />
-                  <div>Data is empty</div>
+                  <div>Choose items you like to order</div>
                 </div>
               }
               {

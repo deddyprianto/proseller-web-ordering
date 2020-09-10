@@ -566,7 +566,6 @@ class ModalProduct extends Component {
   modalOrderingMode = () => {
     const { isEmenu } = this.state;
     const { defaultOutlet } = this.props;
-    console.log(defaultOutlet)
     return (
       <div className="modal fade" id="ordering-mode" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div className="modal-dialog modal-dialog-product modal-dialog-centered modal-full" role="document" style={{ justifyContent: 'center', width: "50%" }}>

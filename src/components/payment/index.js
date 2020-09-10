@@ -228,6 +228,8 @@ class Payment extends Component {
       )
     );
 
+    if (!dataSettle) return
+
     if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault
     console.log(selectedVoucher)
 
@@ -691,7 +693,15 @@ class Payment extends Component {
       storeDetail,
       dataSettle,
     } = this.state;
-    if (!this.props.isLoggedIn || !isEmptyObject(dataSettle)) {
+    let { basket } = this.props
+    let basketLength = 0
+    if (basket && basket.details) {
+      basket.details.forEach(cart => {
+        basketLength += cart.quantity
+      });
+    }
+
+    if (!this.props.isLoggedIn || isEmptyObject(dataSettle) || dataSettle === null) {
       return (
         <div
           className="col-full"
@@ -708,12 +718,23 @@ class Payment extends Component {
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
                   />
-                  <div style={{ textAlign: "center" }}>No Pending Payment</div>
+                  {
+                    basketLength > 0 ?
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: 10, marginRight: 10 }}>
+                        <div style={{ textAlign: "center" }}>Confirm your cart to proceed with payment</div>
+                        <Button className="color" style={{
+                          color: "#FFF", fontWeight: "bold", borderRadius: 5, height: 35, marginTop: 10, width: 100
+                        }} onClick={() => this.props.history.push('/basket')}>
+                          Go to Cart
+                        </Button>
+                      </div> :
+                      <div style={{ textAlign: "center" }}>No Pending Payment</div>
+                  }
                 </div>
               </main>
             </div>
           </div>
-        </div>
+        </div >
       );
     }
     return (
@@ -933,6 +954,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account && state.auth.account.idToken.payload,
     isLoggedIn: state.auth.isLoggedIn,
+    basket: state.order.basket,
   };
 };
 
