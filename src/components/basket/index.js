@@ -175,10 +175,10 @@ class Basket extends Component {
     }
 
     if (isLoggedIn) {
-      let response = this.props.dispatch(CustomerAction.getVoucher());
+      let response = await this.props.dispatch(CustomerAction.getVoucher());
       if (response.ResultCode === 200) this.setState({ myVoucher: response.Data })
 
-      response = this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, infoCompany.companyId));
+      response = await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, infoCompany.companyId));
       if (response.ResultCode === 200) {
         this.setState(response.Data)
         if (response.Data.detailPoint.roundingOptions === "DECIMAL") this.setState({ xstep: 0.01 });
@@ -770,7 +770,7 @@ class Basket extends Component {
                 !loadingShow && !dataBasket &&
                 <div>
                   <Lottie options={{ animationData: emptyGif }} style={{ height: 250 }} />
-                  <div>Choose items you like to order</div>
+                  <div>Data is empty</div>
                 </div>
               }
               {
