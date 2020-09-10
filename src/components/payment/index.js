@@ -228,7 +228,9 @@ class Payment extends Component {
       )
     );
 
-    if (!dataSettle) return
+    if (dataSettle === null) return
+
+    this.setState({ dataSettle })
 
     if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault
     console.log(selectedVoucher)
@@ -701,7 +703,7 @@ class Payment extends Component {
       });
     }
 
-    if (!this.props.isLoggedIn || isEmptyObject(dataSettle) || dataSettle === null) {
+    if (!this.props.isLoggedIn || isEmptyObject(dataSettle)) {
       return (
         <div
           className="col-full"
