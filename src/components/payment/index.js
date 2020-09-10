@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import _ from "lodash";
 import moment from "moment";
+
+import Iframe from "react-iframe";
+
 import LoadingPayAtPOS from "../loading/LoadingPayAtPOS";
 import KeranjangIcon from "../../assets/images/keranjang.png";
 import AddPromo from "../basket/addPromo";
@@ -15,6 +18,8 @@ import emptyGif from "../../assets/gif/empty-and-lost.json";
 import config from "../../config";
 
 import { lsLoad } from "../../helpers/localStorage";
+
+import styles from "./styles.module.css";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -66,6 +71,8 @@ class Payment extends Component {
       cartDetails: {},
       dataSettle: {},
       failed: false,
+      showPaymentPage: false,
+      paymentUrl: "",
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -120,27 +127,33 @@ class Payment extends Component {
 
   getPendingPayment = async (payment) => {
     // this.openTab(payment.action.url);
-    let hostedPage = window.open(payment.action.url, "_blank");
-    if (hostedPage == null || typeof hostedPage == "undefined") {
-      Swal.fire({
-        icon: "info",
-        timer: 1500,
-        showConfirmButton: false,
-        title: "Please disable your pop-up blocker and try again.",
-      });
-      return;
-    } else {
-      hostedPage.focus();
-    }
+    this.setState({
+      isLoading: false,
+      showPaymentPage: true,
+      paymentUrl: payment.action.url,
+    });
+
+    // let hostedPage = window.open(payment.action.url, "_blank");
+    // if (hostedPage == null || typeof hostedPage == "undefined") {
+    //   Swal.fire({
+    //     icon: "info",
+    //     timer: 1500,
+    //     showConfirmButton: false,
+    //     title: "Please disable your pop-up blocker and try again.",
+    //   });
+    //   return;
+    // } else {
+    //   hostedPage.focus();
+    // }
 
     for (let i = 0; i < 1000; i++) {
       const response = await this.props.dispatch(OrderAction.getCart());
       console.log(response);
       if (
-        response.resultCode == 400 ||
-        response.data.isPaymentComplete == true
+        (response && response.resultCode === 400) ||
+        response.data.isPaymentComplete === true
       ) {
-        hostedPage.close();
+        // hostedPage.close();
         let data = {
           message: "Congratulations, payment success",
           paymentType: payment.paymentType || "CASH",
@@ -160,19 +173,23 @@ class Payment extends Component {
         this.togglePlay();
         await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
         this.props.history.push("/settleSuccess");
-        this.setState({ isLoading: false });
+        this.setState({ isLoading: false, showPaymentPage: false });
         return;
       } else if (
         response.data.confirmationInfo == undefined ||
         response.data.action == undefined
       ) {
-        hostedPage.close();
+        // hostedPage.close();
         Swal.fire(
           "Payment Failed",
           response.message || "Please try again",
           "error"
         );
-        this.setState({ isLoading: false, failed: true });
+        this.setState({
+          isLoading: false,
+          failed: true,
+          showPaymentPage: false,
+        });
         return;
       }
     }
@@ -666,7 +683,7 @@ class Payment extends Component {
         this.togglePlay();
         await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
         this.props.history.push("/settleSuccess");
-        this.setState({ isLoading: false });
+        // this.setState({ isLoading: false });
       }
     } else {
       await this.setState({
@@ -947,6 +964,15 @@ class Payment extends Component {
           </div>
         </div>
         {isLoading ? Swal.showLoading() : Swal.close()}
+        {this.state.showPaymentPage && this.state.paymentUrl && (
+          <div className={styles.modalContainer}>
+            <Iframe
+              loading="auto"
+              url={this.state.paymentUrl}
+              className={styles.paymentModal}
+            />
+          </div>
+        )}
       </div>
     );
   }
