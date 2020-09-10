@@ -710,7 +710,7 @@ class LoginRegister extends Component {
           });
           if (enableRegisterWithPassword) this.handleEmailLogin();
           else {
-            this.setState({ showPage: "emailSignUp" });
+            this.setState({ showPage: "emailSignUp", signUpSuccess: true });
             this.handleSendEmailOTP();
           }
         } catch (error) {
