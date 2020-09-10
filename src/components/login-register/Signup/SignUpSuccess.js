@@ -39,9 +39,15 @@ const SignUpSuccess = ({
             You will receive 4-digit verification code via{" "}
             {method === "phone" ? "SMS" : "Email"} at
           </p>
-          <h2 style={{ textAlign: "center", marginTop: 10 }}>
-            {username || "-"}
-          </h2>
+          {method === "phone" ? (
+            <h2 style={{ textAlign: "center", marginTop: 10 }}>
+              {username || "-"}
+            </h2>
+          ) : (
+            <h4 style={{ textAlign: "center", marginTop: 10 }}>
+              {username || "-"}
+            </h4>
+          )}
         </div>
       )}
 
