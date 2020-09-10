@@ -39,7 +39,7 @@ const OtpField = ({
               method === "phone" ? sendPhoneOtp() : sendEmailOtp()
             }
           >
-            {sendCounter > 0 ? "Resend OTP" : "Get OTP via Email"}
+            {sendCounter < 2 ? "Resend OTP" : "Get OTP via Email"}
           </Button>
           {isSending && (
             <span
