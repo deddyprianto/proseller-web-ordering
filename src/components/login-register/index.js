@@ -478,7 +478,7 @@ class LoginRegister extends Component {
           });
           if (enableRegisterWithPassword) this.handleMobileLogin();
           else {
-            this.setState({ showPage: "mobileSignUp" });
+            this.setState({ showPage: "mobileSignUp", signUpSuccess: true });
             this.handleSendOTP();
           }
         } catch (error) {
