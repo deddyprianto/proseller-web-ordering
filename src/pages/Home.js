@@ -4,19 +4,21 @@ import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
 import { OrderAction } from "../redux/actions/OrderAction";
 import { PromotionAction } from "../redux/actions/PromotionAction";
-import LoadingAddCart from '../components/loading/LoadingAddCart';
+import LoadingAddCart from "../components/loading/LoadingAddCart";
 import { isEmptyArray, isEmptyObject } from "../helpers/CheckEmpty";
 import config from "../config";
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_account`)));
+import { lsLoad } from "../helpers/localStorage";
+
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.pathname.includes('emenu')
+      isEmenu: window.location.pathname.includes("emenu"),
     };
   }
 
@@ -29,7 +31,7 @@ class Home extends Component {
     //   console.log("Latitude is :", position.coords.latitude);
     //   console.log("Longitude is :", position.coords.longitude);
     // });
-  }
+  };
 
   checkOfflineCart = async () => {
     try {
@@ -43,7 +45,7 @@ class Home extends Component {
           let product = {
             productID: offlineCart.details[i].productID,
             unitPrice: offlineCart.details[i].retailPrice,
-            quantity: offlineCart.details[i].quantity
+            quantity: offlineCart.details[i].quantity,
           };
 
           if (!isEmptyArray(offlineCart.details[i].modifiers)) {
@@ -52,21 +54,25 @@ class Home extends Component {
 
           let payload = {
             outletID: offlineCart.outletID,
-            details: []
+            details: [],
           };
           payload.details.push(product);
           await this.props.dispatch(OrderAction.addCart(payload));
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) { }
-  }
+    } catch (e) {}
+  };
 
   render() {
-    const { isEmenu } = this.state
+    const { isEmenu } = this.state;
     return (
       <div className="col-full">
-        <div id="primary" className="content-area" style={{ paddingBottom: 100 }}>
+        <div
+          id="primary"
+          className="content-area"
+          style={{ paddingBottom: 100 }}
+        >
           {this.state.loading ? <LoadingAddCart /> : null}
           <div className="stretch-full-width">
             <main id="main" className="site-main">
