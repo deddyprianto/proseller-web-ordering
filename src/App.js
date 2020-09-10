@@ -34,9 +34,10 @@ addLocaleData([...locale_id, ...locale_en]);
 class App extends Component {
   componentDidMount = async () => {
     if (!this.props.isLoggedIn || !account) {
-      console.log("User is not logged in");
-      this.props.dispatch(AuthActions.refreshToken());
       localStorage.removeItem(`${config.prefix}_account`);
+    }
+    if (account) {
+      this.props.dispatch(AuthActions.refreshToken());
     }
     let param = this.getUrlParameters();
     if (param && param["input"]) {
