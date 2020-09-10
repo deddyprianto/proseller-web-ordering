@@ -66,7 +66,15 @@ const EmailForm = ({
         </div>
       </div>
       {error === "" ? null : (
-        <div style={{ marginTop: -14, marginBottom: 20, color: "red" }}>
+        <div
+          style={{
+            marginTop: 5,
+            marginBottom: 5,
+            color: "red",
+            fontSize: 10,
+            lineHeight: "15px",
+          }}
+        >
           {error}
         </div>
       )}

@@ -109,16 +109,18 @@ class LoginRegister extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props !== prevProps) {
+      console.log("login-register props changed");
       if (
         !this.props.fetchingCompanyInfo &&
         !this.props.companyInfoError &&
         this.props.companyInfo
       ) {
-        // this.setState({
-        //   enableRegisterWithPassword: this.props.companyInfo
-        //     .enableRegisterWithPassword,
-        //   otp: false,
-        // });
+        console.log("setting state to match fetched company info...");
+        this.setState({
+          enableRegisterWithPassword: this.props.companyInfo
+            .enableRegisterWithPassword,
+          otp: false,
+        });
       }
     }
     if (this.state.method !== prevState.method) {
@@ -210,11 +212,13 @@ class LoginRegister extends Component {
       if (
         this.state.name !== "" &&
         this.state.phoneNumber.trim() !== "" &&
-        this.state.phoneNumber.trim().length > 7 &&
+        this.state.phoneNumber.trim().length > 5 &&
         !enableRegisterWithPassword
       ) {
         this.setState({ btnSubmit: true });
       } else if (!enableRegisterWithPassword) {
+        this.setState({ btnSubmit: false });
+      } else {
         this.setState({ btnSubmit: false });
       }
     } else if (jenis === "txtOtp") {
@@ -639,7 +643,7 @@ class LoginRegister extends Component {
   };
 
   handleEmailRegister = async () => {
-    let phoneNumber = this.state.codePhoneNumber + this.state.phoneNumber;
+    let phoneNumber = this.state.phoneNumber;
     let password = this.state.password;
     let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
     if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
@@ -650,7 +654,7 @@ class LoginRegister extends Component {
     try {
       let errorPhone = "";
       if (phoneNumber === "") errorPhone = "Phone number is empty";
-      if (phoneNumber.length <= 10) errorPhone = "Phone number is not valid";
+      if (phoneNumber.length < 6) errorPhone = "Phone number is not valid";
 
       let errorPassword = "";
       if (password === "") errorPassword = "Password is empty";
