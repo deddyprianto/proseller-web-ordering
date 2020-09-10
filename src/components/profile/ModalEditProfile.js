@@ -39,6 +39,9 @@ class ModalEditProfile extends Component {
         { value: '2000-11-01', lable: 'November' },
         { value: '2000-12-01', lable: 'December' },
       ],
+      editName: false,
+      editEmail: false,
+      editPhoneNumber: false,
       editPassword: false,
       newPassword: "",
       oldPassword: "",
@@ -60,6 +63,7 @@ class ModalEditProfile extends Component {
     let dataCustomer = await this.props.dispatch(CustomerAction.getCustomerProfile());
     if (dataCustomer.ResultCode === 200) {
       if (dataCustomer.Data[0].birthDate) this.setState({ isDisableBirthDate: true })
+      console.log(dataCustomer.Data[0])
       this.setState({ dataCustomer: dataCustomer.Data[0] })
     }
     let mandatoryField = await this.props.dispatch(CustomerAction.mandatoryField());
@@ -70,7 +74,9 @@ class ModalEditProfile extends Component {
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
     dataCustomer[field] = value;
-    this.setState({ dataCustomer })
+    if (field === "phoneNumber") this.setState({ editPhoneNumber: true })
+    if (field === "email") this.setState({ editEmail: true })
+    this.setState({ dataCustomer, isLoading: false })
   }
 
   handleUpdateProfile = async () => {
@@ -123,14 +129,17 @@ class ModalEditProfile extends Component {
 
     let payload = {
       username: this.state.dataCustomer.username,
-      newName: this.state.dataCustomer.name,
       birthDate: this.state.dataCustomer.birthDate,
       gender: this.state.dataCustomer.gender,
       address: this.state.dataCustomer.address
     }
 
+    if (this.state.editName) payload.newName = this.state.dataCustomer.name
+    if (this.state.editPhoneNumber) payload.newPhoneNumber = this.state.dataCustomer.phoneNumber
+    if (this.state.editEmail) payload.newEmail = this.state.dataCustomer.email
+
     account.idToken.payload = this.state.dataCustomer
-    // console.log(account)
+    // console.log(payload)
     // return
     let response = await this.props.dispatch(CustomerAction.updateCustomerProfile(payload));
     // console.log(response)
@@ -225,7 +234,22 @@ class ModalEditProfile extends Component {
                   <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
                     <label>Name <span className="required">*</span></label>
                     <input type="text" className="woocommerce-Input woocommerce-Input--text input-text"
+                      style={{ borderRadius: 5 }}
                       value={dataCustomer.name} onChange={(e) => this.handleChange('name', e.target.value)} />
+                  </div>
+
+                  <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
+                    <label>Phone Number <span className="required">*</span></label>
+                    <input type="text" className="woocommerce-Input woocommerce-Input--text input-text"
+                      style={{ borderRadius: 5 }}
+                      value={dataCustomer.phoneNumber} onChange={(e) => this.handleChange('phoneNumber', e.target.value)} />
+                  </div>
+
+                  <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
+                    <label>Email <span className="required">*</span></label>
+                    <input type="text" className="woocommerce-Input woocommerce-Input--text input-text"
+                      style={{ borderRadius: 5 }}
+                      value={dataCustomer.email} onChange={(e) => this.handleChange('email', e.target.value)} />
                   </div>
 
                   {
@@ -237,7 +261,7 @@ class ModalEditProfile extends Component {
                           <Input type="select"
                             disabled={isDisableBirthDate}
                             className="woocommerce-Input woocommerce-Input--text input-text"
-                            value={dataCustomer.birthDate} style={{ height: 40 }}
+                            value={dataCustomer.birthDate} style={{ height: 40, borderRadius: 5 }}
                             onChange={(e) => this.handleChange('birthDate', e.target.value)}>
                             <option value="">Select Birth Month</option>
                             {
@@ -248,10 +272,10 @@ class ModalEditProfile extends Component {
                           </Input> :
                           <div className="customDatePickerWidth">
                             <div htmlFor="birthDate"
-                              style={{ position: "absolute", backgroundColor: (isDisableBirthDate ? "#FAFAFA" : "#FFF"), top: 146, left: 28, paddingLeft: 10, paddingRight: 50 }}>
+                              style={{ position: "absolute", backgroundColor: (isDisableBirthDate ? "#FAFAFA" : "#FFF"), top: 321, left: 28, paddingLeft: 10, paddingRight: 50 }}>
                               {dataCustomer.birthDate ? moment(birthDate).format('DD-MM-YYYY') : fieldBirthDate.format}
                             </div >
-                            <input type="date" id="birthDate" disabled={isDisableBirthDate}
+                            <input type="date" id="birthDate" disabled={isDisableBirthDate} style={{ borderRadius: 5 }}
                               className="woocommerce-Input woocommerce-Input--text input-text" value={birthDate}
                               onChange={(e) => this.handleChange('birthDate', moment(e.target.value).format('YYYY-MM-DD'))} />
                           </div>
