@@ -312,23 +312,21 @@ class Basket extends Component {
     } else {
       response = await this.props.dispatch(OrderAction.getCartCompleted(id));
       if (response.data && response.data.status && response.data.status === "COMPLETED") {
-        this.togglePlay()
+        // this.togglePlay()
         this.setState({ isLoading: false })
         Swal.fire('Congratulations!', 'Your order has been completed.', 'success')
         clearInterval(this.timeGetBasket)
         setTimeout(() => {
           this.props.history.push('/history')
-          localStorage.removeItem(`${config.prefix}_dataBasket`)
           window.location.reload()
         }, 2000);
       } else if (response.data && response.data.status && response.data.status === "CANCELLED") {
-        this.togglePlay()
+        // this.togglePlay()
         this.setState({ isLoading: false })
         Swal.fire('Oppss!', `Your order has been ${response.data.status}.`, 'error')
         clearInterval(this.timeGetBasket)
         setTimeout(() => {
           this.props.history.push('/history')
-          localStorage.removeItem(`${config.prefix}_dataBasket`)
           window.location.reload()
         }, 2000);
       } else {
