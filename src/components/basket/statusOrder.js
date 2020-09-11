@@ -8,7 +8,7 @@ export default class StatusOrder extends Component {
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
           <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>Status Order</div>
           {
-            props.dataBasket.status === "PENDING" || props.dataBasket.status === "PENDING_PAYMENT" &&
+            (props.dataBasket.status === "PENDING" || props.dataBasket.status === "PENDING_PAYMENT") &&
             <div style={{
               fontWeight: "bold", borderRadius: 5, fontSize: 13, color: "#c00a27",
               textAlign: "right", backgroundColor: "#FFF"
