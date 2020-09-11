@@ -1,158 +1,287 @@
-import React, { Component } from 'react';
-import {
-  Input,
-  Button
-} from 'reactstrap';
+import React, { Component } from "react";
+import { Input, Button } from "reactstrap";
 import Loading from "../loading";
 import { connect } from "react-redux";
-import Select from 'react-select';
-import { MasterdataAction } from '../../redux/actions/MaterdataAction';
-import { CustomerAction } from '../../redux/actions/CustomerAction';
+import Select from "react-select";
+import { MasterdataAction } from "../../redux/actions/MaterdataAction";
+import { CustomerAction } from "../../redux/actions/CustomerAction";
 
-const Swal = require('sweetalert2')
+const Swal = require("sweetalert2");
 
 class ModalDeliveryAdderss extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      optionsCity: []
+      optionsCity: [],
     };
   }
 
-  componentDidMount = async () => { }
-
-  handleChange = (field, value) => {
-    console.log(field)
-    console.log(value)
-    let { deliveryAddress } = this.props
-    deliveryAddress[field] = value;
-  }
-
   setProvince = async (e) => {
-    let { deliveryAddress, countryCode } = this.props
-    deliveryAddress.province = e.value
+    let { deliveryAddress, countryCode } = this.props;
+    deliveryAddress.province = e.value;
 
     try {
-      this.setState({ isLoading: true })
-      let city = await this.props.dispatch(MasterdataAction.getAddressLocation(countryCode, e.code));
-      let optionsCity = []
-      city.data.forEach(element => {
-        optionsCity.push({ value: element.name, label: element.name, code: element.code })
+      this.setState({ isLoading: true });
+      let city = await this.props.dispatch(
+        MasterdataAction.getAddressLocation(countryCode, e.code)
+      );
+      let optionsCity = [];
+      city.data.forEach((element) => {
+        optionsCity.push({
+          value: element.name,
+          label: element.name,
+          code: element.code,
+        });
       });
-      this.setState({ isLoading: false, optionsCity })
+      this.setState({ isLoading: false, optionsCity });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   handleSaveAddress = async (isEdit = false) => {
-    this.setState({ isLoading: true })
-    let { deliveryAddress, addressDelivery, isNew, indexEdit, getDataDeliferyAddress, countryCode } = this.props
+    this.setState({ isLoading: true });
+    let {
+      deliveryAddress,
+      addressDelivery,
+      isNew,
+      indexEdit,
+      getDataDeliveryAddress,
+      countryCode,
+    } = this.props;
 
     if (!deliveryAddress.city) {
-      let province = await this.props.dispatch(MasterdataAction.getAddressLocation(countryCode));
-      if (province.resultCode === 200) deliveryAddress.city = province.data[0].name
+      let province = await this.props.dispatch(
+        MasterdataAction.getAddressLocation(countryCode)
+      );
+      if (province.resultCode === 200)
+        deliveryAddress.city = province.data[0].name;
     }
 
-    if (!addressDelivery) addressDelivery = []
+    if (!addressDelivery) addressDelivery = [];
     if (isNew) addressDelivery.push(deliveryAddress);
-    else addressDelivery[indexEdit] = deliveryAddress
+    else addressDelivery[indexEdit] = deliveryAddress;
 
     let payload = {
       username: this.props.account.username,
       deliveryAddress: addressDelivery,
-    }
+    };
 
     // console.log(payload)
     // return
-    let response = await this.props.dispatch(CustomerAction.updateCustomerProfile(payload));
-    console.log(response)
+    let response = await this.props.dispatch(
+      CustomerAction.updateCustomerProfile(payload)
+    );
+    console.log(response);
     if (response.ResultCode === 200) {
-      await getDataDeliferyAddress()
-      this.setState({ isLoading: false })
-      document.getElementById('btn-close-address').click()
+      await getDataDeliveryAddress();
+      this.setState({ isLoading: false });
+      document.getElementById("btn-close-address").click();
       Swal.fire({
-        icon: 'success', timer: 1500,
-        title: response.message, showConfirmButton: false,
-      })
+        icon: "success",
+        timer: 1500,
+        title: response.message,
+        showConfirmButton: false,
+      });
     } else {
-      this.setState({ isLoading: false })
+      this.setState({ isLoading: false });
       Swal.fire({
-        icon: 'error', timer: 1500,
-        title: response.message, showConfirmButton: false,
-      })
+        icon: "error",
+        timer: 1500,
+        title: response.message,
+        showConfirmButton: false,
+      });
     }
-  }
+  };
 
   render() {
-    let { hidden, deliveryAddress, optionsAddressName, optionsProvince, optionsCity } = this.props
-    if (this.state.optionsCity.length !== 0) optionsCity = this.state.optionsCity
+    let {
+      hidden,
+      deliveryAddress,
+      optionsAddressName,
+      optionsProvince,
+      optionsCity,
+    } = this.props;
+    if (this.state.optionsCity.length !== 0)
+      optionsCity = this.state.optionsCity;
     return (
       <div>
-        <div className="modal fade" id="delivery-address-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div
+          className="modal fade"
+          id="delivery-address-modal"
+          tabIndex={-1}
+          role="dialog"
+          aria-labelledby="exampleModalCenterTitle"
+          aria-hidden="true"
+        >
           <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content" style={{ width: "100%", marginTop: 100, marginBottom: 100 }}>
-              <div className="modal-header" style={{ display: "flex", justifyContent: "center" }}>
-                <h5 className="modal-title" id="exampleModalLabel" style={{ fontSize: 20 }}>Delivery Address</h5>
-                <button type="button" id="btn-close-address" className="close" data-dismiss="modal" aria-label="Close" style={{
-                  position: "absolute", right: 10, top: 16
-                }}>
-                  <span aria-hidden="true" style={{ fontSize: 30 }}>×</span>
+            <div
+              className="modal-content"
+              style={{ width: "100%", marginTop: 100, marginBottom: 100 }}
+            >
+              <div
+                className="modal-header"
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <h5
+                  className="modal-title"
+                  id="exampleModalLabel"
+                  style={{ fontSize: 20 }}
+                >
+                  Delivery Address
+                </h5>
+                <button
+                  type="button"
+                  id="btn-close-address"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 16,
+                  }}
+                >
+                  <span aria-hidden="true" style={{ fontSize: 30 }}>
+                    ×
+                  </span>
                 </button>
               </div>
-              {
-                deliveryAddress &&
+              {deliveryAddress && (
                 <div className="modal-body" style={{ textAlign: "left" }}>
-
                   <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-                    <label>Address Name <span className="required">*</span></label>
+                    <label>
+                      Address Name <span className="required">*</span>
+                    </label>
                     <Select
-                      value={optionsAddressName.find(items => { return items.value === deliveryAddress.addressName }) || ''}
+                      value={
+                        optionsAddressName.find((items) => {
+                          return items.value === deliveryAddress.addressName;
+                        }) || ""
+                      }
                       options={optionsAddressName}
-                      onChange={(e) => this.props.handleChange('addressName', e.value)}
+                      onChange={(e) =>
+                        this.props.handleChange("addressName", e.value)
+                      }
                     />
                   </div>
 
-                  {
-                    !hidden &&
-                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                      <label>Province <span className="required">*</span></label>
+                  {!hidden && (
+                    <div
+                      className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                      style={{ marginTop: 10 }}
+                    >
+                      <label>
+                        Province <span className="required">*</span>
+                      </label>
                       <Select
-                        value={optionsProvince.find(items => { return items.value === deliveryAddress.province }) || ''}
+                        value={
+                          optionsProvince.find((items) => {
+                            return items.value === deliveryAddress.province;
+                          }) || ""
+                        }
                         options={optionsProvince}
                         onChange={(e) => this.setProvince(e)}
                       />
                     </div>
-                  }
+                  )}
 
-                  {
-                    !hidden &&
-                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                      <label>City <span className="required">*</span></label>
+                  {!hidden && (
+                    <div
+                      className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                      style={{ marginTop: 10 }}
+                    >
+                      <label>
+                        City <span className="required">*</span>
+                      </label>
                       <Select
-                        value={optionsCity.find(items => { return items.value === deliveryAddress.city }) || ''}
+                        value={
+                          optionsCity.find((items) => {
+                            return items.value === deliveryAddress.city;
+                          }) || ""
+                        }
                         options={optionsCity}
-                        onChange={(e) => this.props.handleChange('city', e.value)}
+                        onChange={(e) =>
+                          this.props.handleChange("city", e.value)
+                        }
                       />
                     </div>
-                  }
+                  )}
 
-                  <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                    <label>Address <span className="required">*</span></label>
-                    <Input type="textarea" value={deliveryAddress.address || ''} onChange={(e) => this.props.handleChange('address', e.target.value)} />
+                  <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label>
+                      Street Name<span className="required">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      value={
+                        deliveryAddress.address &&
+                        typeof deliveryAddress.address !== "string"
+                          ? deliveryAddress.address.street
+                          : ""
+                      }
+                      onChange={(e) =>
+                        this.props.handleChange("street", e.target.value)
+                      }
+                    />
                   </div>
 
-                  <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                    <label>Postal Code <span className="required">*</span></label>
-                    <Input type="number" style={{ height: 40 }} value={deliveryAddress.postalCode || ''} onChange={(e) => this.props.handleChange('postalCode', e.target.value)} />
+                  <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label>
+                      Unit No. <span className="required">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      value={
+                        deliveryAddress.address &&
+                        typeof deliveryAddress.address !== "string"
+                          ? deliveryAddress.address.unitNo
+                          : ""
+                      }
+                      onChange={(e) =>
+                        this.props.handleChange("unitNo", e.target.value)
+                      }
+                    />
                   </div>
 
-                  <Button className="button" style={{
-                    width: "100%", marginTop: 10, borderRadius: 5, height: 50
-                  }} onClick={() => this.handleSaveAddress()}>Save Address</Button>
+                  <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label>
+                      Postal Code <span className="required">*</span>
+                    </label>
+                    <Input
+                      type="number"
+                      style={{ height: 40 }}
+                      value={deliveryAddress.postalCode || ""}
+                      onChange={(e) =>
+                        this.props.handleChange("postalCode", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <Button
+                    className="button"
+                    style={{
+                      width: "100%",
+                      marginTop: 10,
+                      borderRadius: 5,
+                      height: 50,
+                    }}
+                    onClick={() => this.handleSaveAddress()}
+                  >
+                    Save Address
+                  </Button>
                 </div>
-              }
+              )}
             </div>
           </div>
         </div>
@@ -168,8 +297,11 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModalDeliveryAdderss);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ModalDeliveryAdderss);

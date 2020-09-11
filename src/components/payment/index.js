@@ -84,13 +84,13 @@ class Payment extends Component {
   componentWillUnmount = () => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getPendingOrder = async (cart) => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) { }
+    } catch (e) {}
 
     this.loopCart = setInterval(async () => {
       await this.getCart(cart);
@@ -151,7 +151,7 @@ class Payment extends Component {
       console.log(response);
       if (
         (response && response.resultCode === 400) ||
-        response.data.isPaymentComplete === true
+        (response.data && response.data.isPaymentComplete)
       ) {
         // hostedPage.close();
         let data = {
@@ -245,12 +245,12 @@ class Payment extends Component {
       )
     );
 
-    if (dataSettle === null) return
+    if (dataSettle === null) return;
 
-    this.setState({ dataSettle })
+    this.setState({ dataSettle });
 
-    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault
-    console.log(selectedVoucher)
+    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
+    console.log(selectedVoucher);
 
     await this.getStatusVoucher(
       selectedVoucher,
@@ -329,7 +329,10 @@ class Payment extends Component {
                 }
 
                 if (selectedVoucher.capAmount != undefined) {
-                  if (discount > selectedVoucher.capAmount && selectedVoucher.capAmount > 0) {
+                  if (
+                    discount > selectedVoucher.capAmount &&
+                    selectedVoucher.capAmount > 0
+                  ) {
                     discount = selectedVoucher.capAmount;
                   }
                 }
@@ -357,7 +360,10 @@ class Payment extends Component {
           }
 
           if (selectedVoucher.capAmount != undefined) {
-            if (discount > selectedVoucher.capAmount && selectedVoucher.capAmount > 0) {
+            if (
+              discount > selectedVoucher.capAmount &&
+              selectedVoucher.capAmount > 0
+            ) {
               discount = selectedVoucher.capAmount;
             }
           }
@@ -463,9 +469,9 @@ class Payment extends Component {
 
     let textRasio = `Redeem ${
       pointsToRebateRatio.split(":")[0]
-      } point to ${this.getCurrency(
-        parseInt(pointsToRebateRatio.split(":")[1])
-      )}`;
+    } point to ${this.getCurrency(
+      parseInt(pointsToRebateRatio.split(":")[1])
+    )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -645,7 +651,7 @@ class Payment extends Component {
           JSON.parse(localStorage.getItem(`${config.prefix}_scanTable`))
         );
         payload.tableNo = tableNo.table;
-      } catch (e) { }
+      } catch (e) {}
     }
 
     let response;
@@ -712,11 +718,11 @@ class Payment extends Component {
       storeDetail,
       dataSettle,
     } = this.state;
-    let { basket } = this.props
-    let basketLength = 0
+    let { basket } = this.props;
+    let basketLength = 0;
     if (basket && basket.details) {
-      basket.details.forEach(cart => {
-        basketLength += cart.quantity
+      basket.details.forEach((cart) => {
+        basketLength += cart.quantity;
       });
     }
 
@@ -737,23 +743,44 @@ class Payment extends Component {
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
                   />
-                  {
-                    basketLength > 0 ?
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: 10, marginRight: 10 }}>
-                        <div style={{ textAlign: "center" }}>Confirm your cart to proceed with payment</div>
-                        <Button className="color" style={{
-                          color: "#FFF", fontWeight: "bold", borderRadius: 5, height: 35, marginTop: 10, width: 100
-                        }} onClick={() => this.props.history.push('/basket')}>
-                          Go to Cart
-                        </Button>
-                      </div> :
-                      <div style={{ textAlign: "center" }}>No Pending Payment</div>
-                  }
+                  {basketLength > 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        marginLeft: 10,
+                        marginRight: 10,
+                      }}
+                    >
+                      <div style={{ textAlign: "center" }}>
+                        Confirm your cart to proceed with payment
+                      </div>
+                      <Button
+                        className="color"
+                        style={{
+                          color: "#FFF",
+                          fontWeight: "bold",
+                          borderRadius: 5,
+                          height: 35,
+                          marginTop: 10,
+                          width: 100,
+                        }}
+                        onClick={() => this.props.history.push("/basket")}
+                      >
+                        Go to Cart
+                      </Button>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "center" }}>
+                      No Pending Payment
+                    </div>
+                  )}
                 </div>
               </main>
             </div>
           </div>
-        </div >
+        </div>
       );
     }
     return (
@@ -916,11 +943,11 @@ class Payment extends Component {
                         {isEmptyObject(selectedCard)
                           ? `Pay ${this.getCurrency(totalPrice)}`
                           : `Pay ${this.getCurrency(
-                            totalPrice
-                          )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
-                            selectedCard.details.maskedAccountNumber.toString()
-                              .length - 4
-                          )}`}
+                              totalPrice
+                            )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
+                              selectedCard.details.maskedAccountNumber.toString()
+                                .length - 4
+                            )}`}
                       </Button>
                     </div>
 
