@@ -19,7 +19,9 @@ class ModalEditProfile extends Component {
     super(props);
     this.state = {
       radioSelected: 2,
-      dataCustomer: null,
+      dataCustomer: {
+        address: {},
+      },
       mandatoryField: null,
       loadingShow: true,
       isLoading: false,
@@ -50,7 +52,7 @@ class ModalEditProfile extends Component {
       showOldPassword: false,
       showNewPassword: false,
       showRePassword: false,
-      isDisableBirthDate: false
+      isDisableBirthDate: false,
     };
   }
 
@@ -59,24 +61,35 @@ class ModalEditProfile extends Component {
   };
 
   getData = async () => {
-    let dataCustomer = await this.props.dispatch(CustomerAction.getCustomerProfile());
+    let dataCustomer = await this.props.dispatch(
+      CustomerAction.getCustomerProfile()
+    );
     if (dataCustomer.ResultCode === 200) {
-      if (dataCustomer.Data[0].birthDate) this.setState({ isDisableBirthDate: true })
-      console.log(dataCustomer.Data[0])
-      this.setState({ dataCustomer: dataCustomer.Data[0] })
+      if (dataCustomer.Data[0].birthDate)
+        this.setState({ isDisableBirthDate: true });
+      console.log(dataCustomer.Data[0]);
+      this.setState({ dataCustomer: dataCustomer.Data[0] });
     }
-    let mandatoryField = await this.props.dispatch(CustomerAction.mandatoryField());
-    if (mandatoryField.resultCode === 200) this.setState({ mandatoryField: mandatoryField.data.fields })
-    this.setState({ loadingShow: false })
-  }
+    let mandatoryField = await this.props.dispatch(
+      CustomerAction.mandatoryField()
+    );
+    if (mandatoryField.resultCode === 200)
+      this.setState({ mandatoryField: mandatoryField.data.fields });
+    this.setState({ loadingShow: false });
+  };
 
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
-    dataCustomer[field] = value;
-    if (field === "phoneNumber") this.setState({ editPhoneNumber: true })
-    if (field === "email") this.setState({ editEmail: true })
-    this.setState({ dataCustomer, isLoading: false })
-  }
+
+    if (field === "phoneNumber") this.setState({ editPhoneNumber: true });
+    if (field === "email") this.setState({ editEmail: true });
+    if (field === "street" || field === "unitNo") {
+      dataCustomer.address[field] = value;
+    } else {
+      dataCustomer[field] = value;
+    }
+    this.setState({ dataCustomer, isLoading: false });
+  };
 
   handleUpdateProfile = async () => {
     this.setState({ isLoading: true });
@@ -140,11 +153,12 @@ class ModalEditProfile extends Component {
       address: this.state.dataCustomer.address,
     };
 
-    if (this.state.editName) payload.newName = this.state.dataCustomer.name
-    if (this.state.editPhoneNumber) payload.newPhoneNumber = this.state.dataCustomer.phoneNumber
-    if (this.state.editEmail) payload.newEmail = this.state.dataCustomer.email
+    if (this.state.editName) payload.newName = this.state.dataCustomer.name;
+    if (this.state.editPhoneNumber)
+      payload.newPhoneNumber = this.state.dataCustomer.phoneNumber;
+    if (this.state.editEmail) payload.newEmail = this.state.dataCustomer.email;
 
-    account.idToken.payload = this.state.dataCustomer
+    account.idToken.payload = this.state.dataCustomer;
     // console.log(payload)
     // return
     let response = await this.props.dispatch(
@@ -204,11 +218,16 @@ class ModalEditProfile extends Component {
   };
 
   render() {
+    let {
+      editPassword,
+      showOldPassword,
+      showNewPassword,
+      showRePassword,
+      isDisableBirthDate,
+    } = this.state;
 
-    let { editPassword, showOldPassword, showNewPassword, showRePassword, isDisableBirthDate } = this.state;
-
-    let birthMonthOption = this.state.birthMonthOption
-    let mandatoryField = this.state.mandatoryField
+    let birthMonthOption = this.state.birthMonthOption;
+    let mandatoryField = this.state.mandatoryField;
     let dataCustomer = this.state.dataCustomer;
     let loadingShow = this.state.loadingShow;
     let birthDate = dataCustomer && dataCustomer.birthDate;
@@ -281,56 +300,122 @@ class ModalEditProfile extends Component {
               {!loadingShow && dataCustomer && (
                 <div className="modal-body" style={{ textAlign: "left" }}>
                   <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-                    <label>Name <span className="required">*</span></label>
-                    <input type="text" className="woocommerce-Input woocommerce-Input--text input-text"
+                    <label>
+                      Name <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="woocommerce-Input woocommerce-Input--text input-text"
                       style={{ borderRadius: 5 }}
-                      value={dataCustomer.name} onChange={(e) => this.handleChange('name', e.target.value)} />
-                  </div>
-
-                  <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                    <label>Phone Number <span className="required">*</span></label>
-                    <input type="text" className="woocommerce-Input woocommerce-Input--text input-text"
-                      style={{ borderRadius: 5 }}
-                      value={dataCustomer.phoneNumber} onChange={(e) => this.handleChange('phoneNumber', e.target.value)} />
-                  </div>
-
-                  <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                    <label>Email <span className="required">*</span></label>
-                    <input type="text" className="woocommerce-Input woocommerce-Input--text input-text"
-                      style={{ borderRadius: 5 }}
-                      value={dataCustomer.email} onChange={(e) => this.handleChange('email', e.target.value)} />
-                  </div>
-
-                  {
-                    fieldBirthDate &&
-                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
-                      <label>Birthday <span className="required">{fieldBirthDate && fieldBirthDate.mandatory && "*"}</span></label>
-                      {
-                        fieldBirthDate.format === "MMM" ?
-                          <Input type="select"
-                            disabled={isDisableBirthDate}
-                            className="woocommerce-Input woocommerce-Input--text input-text"
-                            value={dataCustomer.birthDate} style={{ height: 40, borderRadius: 5 }}
-                            onChange={(e) => this.handleChange('birthDate', e.target.value)}>
-                            <option value="">Select Birth Month</option>
-                            {
-                              birthMonthOption.map((items, key) => (
-                                <option key={key} value={items.value}>{moment(items.value).format('MMM')}</option>
-                              ))
-                            }
-                          </Input> :
-                          <div className="customDatePickerWidth">
-                            <div htmlFor="birthDate"
-                              style={{ position: "absolute", backgroundColor: (isDisableBirthDate ? "#FAFAFA" : "#FFF"), top: 321, left: 28, paddingLeft: 10, paddingRight: 50 }}>
-                              {dataCustomer.birthDate ? moment(birthDate).format('DD-MM-YYYY') : fieldBirthDate.format}
-                            </div >
-                            <input type="date" id="birthDate" disabled={isDisableBirthDate} style={{ borderRadius: 5 }}
-                              className="woocommerce-Input woocommerce-Input--text input-text" value={birthDate}
-                              onChange={(e) => this.handleChange('birthDate', moment(e.target.value).format('YYYY-MM-DD'))} />
-                          </div>
+                      value={dataCustomer.name}
+                      onChange={(e) =>
+                        this.handleChange("name", e.target.value)
                       }
+                    />
+                  </div>
+
+                  <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label>
+                      Phone Number <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="woocommerce-Input woocommerce-Input--text input-text"
+                      style={{ borderRadius: 5 }}
+                      value={dataCustomer.phoneNumber}
+                      onChange={(e) =>
+                        this.handleChange("phoneNumber", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label>
+                      Email <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="woocommerce-Input woocommerce-Input--text input-text"
+                      style={{ borderRadius: 5 }}
+                      value={dataCustomer.email}
+                      onChange={(e) =>
+                        this.handleChange("email", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  {fieldBirthDate && (
+                    <div
+                      className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                      style={{ marginTop: 10 }}
+                    >
+                      <label>
+                        Birthday{" "}
+                        <span className="required">
+                          {fieldBirthDate && fieldBirthDate.mandatory && "*"}
+                        </span>
+                      </label>
+                      {fieldBirthDate.format === "MMM" ? (
+                        <Input
+                          type="select"
+                          disabled={isDisableBirthDate}
+                          className="woocommerce-Input woocommerce-Input--text input-text"
+                          value={dataCustomer.birthDate}
+                          style={{ height: 40, borderRadius: 5 }}
+                          onChange={(e) =>
+                            this.handleChange("birthDate", e.target.value)
+                          }
+                        >
+                          <option value="">Select Birth Month</option>
+                          {birthMonthOption.map((items, key) => (
+                            <option key={key} value={items.value}>
+                              {moment(items.value).format("MMM")}
+                            </option>
+                          ))}
+                        </Input>
+                      ) : (
+                        <div className="customDatePickerWidth">
+                          <div
+                            htmlFor="birthDate"
+                            style={{
+                              position: "absolute",
+                              backgroundColor: isDisableBirthDate
+                                ? "#FAFAFA"
+                                : "#FFF",
+                              top: 321,
+                              left: 28,
+                              paddingLeft: 10,
+                              paddingRight: 50,
+                            }}
+                          >
+                            {dataCustomer.birthDate
+                              ? moment(birthDate).format("DD-MM-YYYY")
+                              : fieldBirthDate.format}
+                          </div>
+                          <input
+                            type="date"
+                            id="birthDate"
+                            disabled={isDisableBirthDate}
+                            style={{ borderRadius: 5 }}
+                            className="woocommerce-Input woocommerce-Input--text input-text"
+                            value={birthDate}
+                            onChange={(e) =>
+                              this.handleChange(
+                                "birthDate",
+                                moment(e.target.value).format("YYYY-MM-DD")
+                              )
+                            }
+                          />
+                        </div>
+                      )}
                     </div>
-                  }
+                  )}
 
                   {fieldGender && (
                     <div style={{ marginTop: 10 }}>
@@ -417,20 +502,45 @@ class ModalEditProfile extends Component {
 
                   {fieldAddress && (
                     <div style={{ marginTop: 10 }}>
-                      <label htmlFor="address">
-                        Address{" "}
+                      <label htmlFor="street">
+                        Street Name{" "}
                         <span className="required">
                           {fieldAddress && fieldAddress.mandatory && "*"}
                         </span>
                       </label>
                       <Input
-                        type="textarea"
-                        id="address"
-                        placeholder="Enter your address"
+                        type="text"
+                        id="street"
+                        placeholder="Enter your address street name"
                         rows="2"
-                        value={dataCustomer.address}
+                        value={
+                          dataCustomer.address && dataCustomer.address.street
+                        }
                         onChange={(e) =>
-                          this.handleChange("address", e.target.value)
+                          this.handleChange("street", e.target.value)
+                        }
+                      />
+                    </div>
+                  )}
+
+                  {fieldAddress && (
+                    <div style={{ marginTop: 10 }}>
+                      <label htmlFor="unitNo">
+                        Unit No.{" "}
+                        <span className="required">
+                          {fieldAddress && fieldAddress.mandatory && "*"}
+                        </span>
+                      </label>
+                      <Input
+                        type="text"
+                        id="unitNo"
+                        placeholder="Enter your address unit no."
+                        rows="2"
+                        value={
+                          dataCustomer.address && dataCustomer.address.unitNo
+                        }
+                        onChange={(e) =>
+                          this.handleChange("unitNo", e.target.value)
                         }
                       />
                     </div>
@@ -441,13 +551,13 @@ class ModalEditProfile extends Component {
                     {editPassword ? (
                       <b>Cancel Change Password </b>
                     ) : (
-                        <b>Change Password </b>
-                      )}
+                      <b>Change Password </b>
+                    )}
                     {editPassword ? (
                       <i className="fa fa-chevron-up" />
                     ) : (
-                        <i className="fa fa-chevron-down" />
-                      )}
+                      <i className="fa fa-chevron-down" />
+                    )}
                   </p>
 
                   {editPassword && (

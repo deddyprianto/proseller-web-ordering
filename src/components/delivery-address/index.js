@@ -1,18 +1,14 @@
-import React, { Component } from 'react';
-import {
-  Col,
-  Row,
-  Button,
-} from 'reactstrap';
+import React, { Component } from "react";
+import { Col, Row, Button } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 import config from "../../config";
-import { CustomerAction } from '../../redux/actions/CustomerAction';
-import { MasterdataAction } from '../../redux/actions/MaterdataAction';
+import { CustomerAction } from "../../redux/actions/CustomerAction";
+import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { connect } from "react-redux";
-import ModalDeliveryAddress from './ModalDeliveryAddress';
+import ModalDeliveryAddress from "./ModalDeliveryAddress";
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const Swal = require('sweetalert2')
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const Swal = require("sweetalert2");
 
 class DeliveryAddress extends Component {
   constructor(props) {
@@ -21,7 +17,7 @@ class DeliveryAddress extends Component {
       loadingShow: true,
       isLoading: false,
       addressDelivery: null,
-      countryCode: 'ID',
+      countryCode: "ID",
       optionsProvince: [],
       optionsCity: [],
       optionsAddressName: [
@@ -31,7 +27,9 @@ class DeliveryAddress extends Component {
         { value: "Office", label: "Office" },
         { value: "Other", label: "Other" },
       ],
-      deliveryAddress: null,
+      deliveryAddress: {
+        address: null,
+      },
       indexEdit: 0,
       isNew: false,
       getDeliveryAddress: false,
@@ -39,133 +37,174 @@ class DeliveryAddress extends Component {
   }
 
   componentDidMount = async () => {
-    let getDeliveryAddress = JSON.parse(localStorage.getItem(`${config.prefix}_getDeliveryAddress`) || false);
-    this.setState({ getDeliveryAddress })
-    this.getDataDeliferyAddress()
-  }
+    let getDeliveryAddress = JSON.parse(
+      localStorage.getItem(`${config.prefix}_getDeliveryAddress`) || false
+    );
+    this.setState({ getDeliveryAddress });
+    this.getDataDeliveryAddress();
+  };
 
-  getDataDeliferyAddress = async () => {
-    let deliveryAddress = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`)));
-    let infoCompany = await this.props.dispatch(MasterdataAction.getInfoCompany());
-    let addressDelivery = await this.props.dispatch(CustomerAction.getDeliferyAddress());
+  getDataDeliveryAddress = async () => {
+    let deliveryAddress = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`))
+    );
+    let infoCompany = await this.props.dispatch(
+      MasterdataAction.getInfoCompany()
+    );
+    let addressDelivery = await this.props.dispatch(
+      CustomerAction.getDeliferyAddress()
+    );
     if (addressDelivery.ResultCode === 200) {
       if (deliveryAddress) {
-        addressDelivery.Data.forEach(address => {
+        addressDelivery.Data.forEach((address) => {
           if (deliveryAddress.addressName === address.addressName) {
-            address.selected = true
+            address.selected = true;
           } else {
-            delete address.selected
+            delete address.selected;
           }
         });
       }
 
-      this.setState({ addressDelivery: addressDelivery.Data })
+      this.setState({ addressDelivery: addressDelivery.Data });
     }
-    await this.handleGetProvider()
-    this.setState({ loadingShow: false, countryCode: infoCompany.countryCode })
+    await this.handleGetProvider();
+    this.setState({ loadingShow: false, countryCode: infoCompany.countryCode });
     // this.setState({ loadingShow: false })
-  }
+  };
 
   handleGetProvider = async (countryCode = null) => {
     try {
-      if (!countryCode) countryCode = this.state.countryCode
-      let province = await this.props.dispatch(MasterdataAction.getAddressLocation(countryCode));
-      let optionsProvince = []
-      province.data.forEach(element => {
-        optionsProvince.push({ value: element.name, label: element.name, code: element.code })
+      if (!countryCode) countryCode = this.state.countryCode;
+      let province = await this.props.dispatch(
+        MasterdataAction.getAddressLocation(countryCode)
+      );
+      let optionsProvince = [];
+      province.data.forEach((element) => {
+        optionsProvince.push({
+          value: element.name,
+          label: element.name,
+          code: element.code,
+        });
       });
-      this.setState({ optionsProvince })
+      this.setState({ optionsProvince });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   viewShimmer = (isHeight = 100) => {
     return (
       <Shimmer>
-        <div style={{
-          width: "100%", height: isHeight, alignSelf: "center",
-          borderRadius: "8px", marginBottom: 10
-        }} />
+        <div
+          style={{
+            width: "100%",
+            height: isHeight,
+            alignSelf: "center",
+            borderRadius: "8px",
+            marginBottom: 10,
+          }}
+        />
       </Shimmer>
-    )
-  }
+    );
+  };
 
   handleAdd = async () => {
-    this.setState({ deliveryAddress: {}, isNew: true })
-  }
+    this.setState({ deliveryAddress: { address: {} }, isNew: true });
+  };
 
   handleEdit = async (indexEdit, item) => {
-    let countryCode = this.state.countryCode
-    let optionsProvince = this.state.optionsProvince
-    let province = optionsProvince.find(items => { return items.value === item.province })
+    console.log(item);
+    let countryCode = this.state.countryCode;
+    let optionsProvince = this.state.optionsProvince;
+    let province = optionsProvince.find((items) => {
+      return items.value === item.province;
+    });
     if (province) {
-      this.setState({ isLoading: true })
-      let city = await this.props.dispatch(MasterdataAction.getAddressLocation(countryCode, province.code));
-      let optionsCity = []
-      city.data.forEach(element => {
-        optionsCity.push({ value: element.name, label: element.name, code: element.code })
+      this.setState({ isLoading: true });
+      let city = await this.props.dispatch(
+        MasterdataAction.getAddressLocation(countryCode, province.code)
+      );
+      let optionsCity = [];
+      city.data.forEach((element) => {
+        optionsCity.push({
+          value: element.name,
+          label: element.name,
+          code: element.code,
+        });
       });
       // console.log(optionsCity)
-      this.setState({ optionsCity, isLoading: false })
+      this.setState({ optionsCity, isLoading: false });
     }
-    this.setState({ deliveryAddress: item, isNew: false, indexEdit })
-  }
+    this.setState({ deliveryAddress: item, isNew: false, indexEdit });
+  };
 
   handleDelete = async (data) => {
     Swal.fire({
       title: `Remove ${data.addressName}?`,
       text: `The address ${data.addressName} will be deleted.`,
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
-        this.setState({ isLoading: true })
-        let addressDelivery = this.state.addressDelivery
+        this.setState({ isLoading: true });
+        let addressDelivery = this.state.addressDelivery;
         addressDelivery = addressDelivery.filter(function (a) {
-          return a.addressName !== data.addressName
-        })
+          return a.addressName !== data.addressName;
+        });
 
         let payload = {
           username: this.props.account.username,
           deliveryAddress: addressDelivery,
-        }
+        };
 
         // console.log(payload)
-        let response = await this.props.dispatch(CustomerAction.updateCustomerProfile(payload));
+        let response = await this.props.dispatch(
+          CustomerAction.updateCustomerProfile(payload)
+        );
         // console.log(response)
         if (response.ResultCode === 200) {
-          await this.getDataDeliferyAddress()
-          this.setState({ isLoading: false })
+          await this.getDataDeliveryAddress();
+          this.setState({ isLoading: false });
           Swal.fire({
-            icon: 'success', timer: 1500,
-            title: response.message, showConfirmButton: false,
-          })
+            icon: "success",
+            timer: 1500,
+            title: response.message,
+            showConfirmButton: false,
+          });
         } else {
-          this.setState({ isLoading: false })
+          this.setState({ isLoading: false });
           Swal.fire({
-            icon: 'error', timer: 1500,
-            title: response.message, showConfirmButton: false,
-          })
+            icon: "error",
+            timer: 1500,
+            title: response.message,
+            showConfirmButton: false,
+          });
         }
       }
-    })
-  }
+    });
+  };
 
   handleSelected = async (items) => {
-    localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
-    localStorage.removeItem(`${config.prefix}_getDeliveryAddress`)
-    this.props.history.goBack()
-  }
+    localStorage.setItem(
+      `${config.prefix}_deliveryAddress`,
+      JSON.stringify(encryptor.encrypt(items))
+    );
+    localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
+    this.props.history.goBack();
+  };
 
   handleChange = (field, value) => {
-    let { deliveryAddress } = this.state
-    deliveryAddress[field] = value;
-    this.setState({ deliveryAddress })
-  }
+    let { deliveryAddress } = this.state;
+    if (field === "street" || field === "unitNo") {
+      deliveryAddress.address[field] = value;
+    } else {
+      deliveryAddress[field] = value;
+    }
+    this.setState({ deliveryAddress });
+  };
 
   render() {
     let {
@@ -176,14 +215,15 @@ class DeliveryAddress extends Component {
       optionsProvince,
       countryCode,
       addressDelivery,
-      isNew, indexEdit,
-      getDeliveryAddress
-    } = this.state
+      isNew,
+      indexEdit,
+      getDeliveryAddress,
+    } = this.state;
 
     return (
       <div className="col-full" style={{ marginTop: 120, marginBottom: 50 }}>
         <ModalDeliveryAddress
-          getDataDeliferyAddress={() => this.getDataDeliferyAddress()}
+          getDataDeliveryAddress={() => this.getDataDeliveryAddress()}
           handleChange={(field, value) => this.handleChange(field, value)}
           addressDelivery={addressDelivery}
           deliveryAddress={deliveryAddress}
@@ -193,99 +233,197 @@ class DeliveryAddress extends Component {
           countryCode={countryCode}
           isNew={isNew}
           indexEdit={indexEdit}
-          hidden={
-            countryCode === undefined ||
-            countryCode === 'SG'
-          } />
+          hidden={countryCode === undefined || countryCode === "SG"}
+        />
 
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
-            <div style={{
-              flexDirection: "row", position: "fixed", zIndex: 10, width: "100%", marginTop: -60,
-              backgroundColor: "#FFF", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
-              height: 40
-            }}>
-              <button type="button" className="close" style={{ marginLeft: 10, fontSize: 16 }}
-                onClick={() => this.props.history.goBack()}>
+            <div
+              style={{
+                flexDirection: "row",
+                position: "fixed",
+                zIndex: 10,
+                width: "100%",
+                marginTop: -60,
+                backgroundColor: "#FFF",
+                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                display: "flex",
+                height: 40,
+              }}
+            >
+              <button
+                type="button"
+                className="close"
+                style={{ marginLeft: 10, fontSize: 16 }}
+                onClick={() => this.props.history.goBack()}
+              >
                 <i className="fa fa-chevron-left"></i> Back
               </button>
             </div>
-            <main id="main" className="site-main" style={{ textAlign: "center" }}>
+            <main
+              id="main"
+              className="site-main"
+              style={{ textAlign: "center" }}
+            >
               <div style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                  <div className="customer-group-name" style={{ fontWeight: "bold" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 20,
+                  }}
+                >
+                  <div
+                    className="customer-group-name"
+                    style={{ fontWeight: "bold" }}
+                  >
                     Delivery Address
                   </div>
-                  <Button className="button" data-toggle="modal" data-target="#delivery-address-modal" style={{
-                    width: 150, paddingLeft: 5, paddingRight: 5, borderRadius: 5, height: 50
-                  }} onClick={() => this.handleAdd()}>Add New Address</Button>
+                  <Button
+                    className="button"
+                    data-toggle="modal"
+                    data-target="#delivery-address-modal"
+                    style={{
+                      width: 150,
+                      paddingLeft: 5,
+                      paddingRight: 5,
+                      borderRadius: 5,
+                      height: 50,
+                    }}
+                    onClick={() => this.handleAdd()}
+                  >
+                    Add New Address
+                  </Button>
                 </div>
 
-                {
-                  loadingShow &&
+                {loadingShow && (
                   <Row>
                     <Col sm={6}>{this.viewShimmer()}</Col>
                     <Col sm={6}>{this.viewShimmer()}</Col>
                   </Row>
-                }
+                )}
 
-                {
-                  !loadingShow &&
+                {!loadingShow && (
                   <Row>
-                    {
-                      addressDelivery && addressDelivery.map((items, key) => (
+                    {addressDelivery &&
+                      addressDelivery.map((items, key) => (
                         <Col key={key} sm={6}>
-                          <div style={{
-                            borderRadius: 0, backgroundColor: "#FFFFFF", marginBottom: 10,
-                            width: "100%", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                            cursor: "pointer", borderRadius: 5, textAlign: "left", padding: 10
-                          }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                              <div className="customer-group-name" style={{ fontWeight: "bold" }}>
+                          <div
+                            style={{
+                              borderRadius: 0,
+                              backgroundColor: "#FFFFFF",
+                              marginBottom: 10,
+                              width: "100%",
+                              boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                              cursor: "pointer",
+                              borderRadius: 5,
+                              textAlign: "left",
+                              padding: 10,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                width: "100%",
+                              }}
+                            >
+                              <div
+                                className="customer-group-name"
+                                style={{ fontWeight: "bold" }}
+                              >
                                 {items.addressName}
                               </div>
-                              {
-                                items.selected === true &&
-                                <div className="profile-dashboard" style={{
-                                  paddingLeft: 10, paddingRight: 10, borderBottomLeftRadius: 5,
-                                  marginRight: -10, fontSize: 12, fontWeight: "bold",
-                                  color: "#FFF", marginTop: -20
-                                }}>
+                              {items.selected === true && (
+                                <div
+                                  className="profile-dashboard"
+                                  style={{
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                    borderBottomLeftRadius: 5,
+                                    marginRight: -10,
+                                    fontSize: 12,
+                                    fontWeight: "bold",
+                                    color: "#FFF",
+                                    marginTop: -20,
+                                  }}
+                                >
                                   SELECTED
                                 </div>
-                              }
+                              )}
                             </div>
                             <div style={{ fontSize: 14 }}>
-                              {items.address}
+                              {typeof items.address === "string"
+                                ? items.address
+                                : `${items.address.street}, ${items.address.unitNo}`}
                             </div>
                             <div style={{ fontSize: 12 }}>
-                              {`${items.province ? items.province + ", " : ''}${items.city}, ${items.postalCode}`}
+                              {`${items.province ? items.province + ", " : ""}${
+                                items.city
+                              }, ${items.postalCode}`}
                             </div>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10 }}>
-                              <Button className="profile-dashboard"
-                                data-toggle="modal" data-target="#delivery-address-modal" style={{
-                                  width: 150, paddingLeft: 5, paddingRight: 5, borderRadius: 5, height: 40,
-                                }} onClick={() => this.handleEdit(key, items)}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginTop: 10,
+                              }}
+                            >
+                              <Button
+                                className="profile-dashboard"
+                                data-toggle="modal"
+                                data-target="#delivery-address-modal"
+                                style={{
+                                  width: 150,
+                                  paddingLeft: 5,
+                                  paddingRight: 5,
+                                  borderRadius: 5,
+                                  height: 40,
+                                }}
+                                onClick={() => this.handleEdit(key, items)}
+                              >
                                 Edit
                               </Button>
-                              {
-                                getDeliveryAddress ?
-                                  <Button className="profile-dashboard"
-                                    disabled={items.selected || false} style={{
-                                      width: 150, paddingLeft: 5, paddingRight: 5, borderRadius: 5, height: 40,
-                                    }} onClick={() => this.handleSelected(items)}>Selected</Button> :
-                                  <Button style={{
-                                    width: 150, paddingLeft: 5, paddingRight: 5, borderRadius: 5, height: 40,
-                                    backgroundColor: "#FFF", color: "#c00a27", border: "1px solid #CDCDCD"
-                                  }} onClick={() => this.handleDelete(items)}>Delete</Button>
-                              }
+                              {getDeliveryAddress ? (
+                                <Button
+                                  className="profile-dashboard"
+                                  disabled={items.selected || false}
+                                  style={{
+                                    width: 150,
+                                    paddingLeft: 5,
+                                    paddingRight: 5,
+                                    borderRadius: 5,
+                                    height: 40,
+                                  }}
+                                  onClick={() => this.handleSelected(items)}
+                                >
+                                  Selected
+                                </Button>
+                              ) : (
+                                <Button
+                                  style={{
+                                    width: 150,
+                                    paddingLeft: 5,
+                                    paddingRight: 5,
+                                    borderRadius: 5,
+                                    height: 40,
+                                    backgroundColor: "#FFF",
+                                    color: "#c00a27",
+                                    border: "1px solid #CDCDCD",
+                                  }}
+                                  onClick={() => this.handleDelete(items)}
+                                >
+                                  Delete
+                                </Button>
+                              )}
                             </div>
                           </div>
                         </Col>
-                      ))
-                    }
+                      ))}
                   </Row>
-                }
+                )}
               </div>
             </main>
           </div>
@@ -302,7 +440,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 
