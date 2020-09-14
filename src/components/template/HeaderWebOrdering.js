@@ -76,7 +76,7 @@ class Header extends Component {
     return (
       <div id="header-cwo">
         <LoginRegister />
-        <header id="masthead" className="site-header header-v4 lite-bg" style={{ position: "fixed", width: "100%", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)" }}>
+        <header id="masthead" className="site-header header-v4 lite-bg" style={{ position: "fixed", width: "100%", }}>
           <div className="col-full" style={{ display: "flex", justifyContent: "center" }}>
             <div className="site-branding">
               <Link to="/">

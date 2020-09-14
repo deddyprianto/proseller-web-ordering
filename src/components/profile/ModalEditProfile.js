@@ -387,40 +387,40 @@ class ModalEditProfile extends Component {
                           ))}
                         </Input>
                       ) : (
-                        <div className="customDatePickerWidth">
-                          <div
-                            htmlFor="birthDate"
-                            style={{
-                              position: "absolute",
-                              backgroundColor: isDisableBirthDate
-                                ? "#FAFAFA"
-                                : "#FFF",
-                              top: 321,
-                              left: 28,
-                              paddingLeft: 10,
-                              paddingRight: 50,
-                            }}
-                          >
-                            {dataCustomer.birthDate
-                              ? moment(birthDate).format("DD-MM-YYYY")
-                              : fieldBirthDate.format}
+                          <div className="customDatePickerWidth">
+                            <div
+                              htmlFor="birthDate"
+                              style={{
+                                position: "absolute",
+                                backgroundColor: isDisableBirthDate
+                                  ? "#FAFAFA"
+                                  : "#FFF",
+                                top: 321,
+                                left: 28,
+                                paddingLeft: 10,
+                                paddingRight: 50,
+                              }}
+                            >
+                              {dataCustomer.birthDate
+                                ? moment(birthDate).format("DD-MM-YYYY")
+                                : fieldBirthDate.format}
+                            </div>
+                            <input
+                              type="date"
+                              id="birthDate"
+                              disabled={isDisableBirthDate}
+                              style={{ borderRadius: 5 }}
+                              className="woocommerce-Input woocommerce-Input--text input-text"
+                              value={birthDate}
+                              onChange={(e) =>
+                                this.handleChange(
+                                  "birthDate",
+                                  moment(e.target.value).format("YYYY-MM-DD")
+                                )
+                              }
+                            />
                           </div>
-                          <input
-                            type="date"
-                            id="birthDate"
-                            disabled={isDisableBirthDate}
-                            style={{ borderRadius: 5 }}
-                            className="woocommerce-Input woocommerce-Input--text input-text"
-                            value={birthDate}
-                            onChange={(e) =>
-                              this.handleChange(
-                                "birthDate",
-                                moment(e.target.value).format("YYYY-MM-DD")
-                              )
-                            }
-                          />
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
 
@@ -508,7 +508,7 @@ class ModalEditProfile extends Component {
                   )}
 
                   {fieldAddress && (
-                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
                       <label htmlFor="street">
                         Street Name{" "}
                         <span className="required">
@@ -533,7 +533,7 @@ class ModalEditProfile extends Component {
                   )}
 
                   {fieldAddress && (
-                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
                       <label htmlFor="unitNo">
                         Unit No.{" "}
                         <span className="required">
@@ -562,13 +562,13 @@ class ModalEditProfile extends Component {
                     {editPassword ? (
                       <b>Cancel Change Password </b>
                     ) : (
-                      <b>Change Password </b>
-                    )}
+                        <b>Change Password </b>
+                      )}
                     {editPassword ? (
                       <i className="fa fa-chevron-up" />
                     ) : (
-                      <i className="fa fa-chevron-down" />
-                    )}
+                        <i className="fa fa-chevron-down" />
+                      )}
                   </p>
 
                   {editPassword && (

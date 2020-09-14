@@ -218,9 +218,10 @@ class ModalDeliveryAdderss extends Component {
                     </label>
                     <Input
                       type="text"
+                      style={{ height: 40, borderRadius: 5 }}
                       value={
                         deliveryAddress.address &&
-                        typeof deliveryAddress.address !== "string"
+                          typeof deliveryAddress.address !== "string"
                           ? deliveryAddress.address.street
                           : ""
                       }
@@ -239,9 +240,10 @@ class ModalDeliveryAdderss extends Component {
                     </label>
                     <Input
                       type="text"
+                      style={{ height: 40, borderRadius: 5 }}
                       value={
                         deliveryAddress.address &&
-                        typeof deliveryAddress.address !== "string"
+                          typeof deliveryAddress.address !== "string"
                           ? deliveryAddress.address.unitNo
                           : ""
                       }
