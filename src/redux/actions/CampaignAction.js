@@ -79,14 +79,17 @@ function getCampaignPoints(payload = null, companyId = null) {
         point: totalPoint,
         detail: response.Data.history,
         netSpendToPoint,
-        roundingOptions
+        roundingOptions,
       }
 
       if (response.Data.trigger && response.Data.trigger.campaignTrigger === "COMPLETE_PROFILE" && !response.Data.trigger.status) {
         campaignPointAnnouncement = true
       }
 
-      response.Data = { totalPoint, campaignPointActive, campaignPointAnnouncement, detailPoint, pointsToRebateRatio }
+      response.Data = {
+        totalPoint, campaignPointActive, campaignPointAnnouncement, detailPoint, pointsToRebateRatio,
+        xstep: roundingOptions === "DECIMAL" ? 0.01 : 1
+      }
     }
     dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_POINTS))
     return response

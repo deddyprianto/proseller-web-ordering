@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import _ from "lodash";
 import moment from "moment";
+import { Col, Row } from 'reactstrap';
+import Shimmer from "react-shimmer-effect";
 
 import Iframe from "react-iframe";
 
@@ -16,7 +18,8 @@ import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import Lottie from "lottie-react-web";
 import emptyGif from "../../assets/gif/empty-and-lost.json";
 import config from "../../config";
-
+import { CustomerAction } from '../../redux/actions/CustomerAction';
+import { CampaignAction } from '../../redux/actions/CampaignAction';
 import { lsLoad } from "../../helpers/localStorage";
 
 import styles from "./styles.module.css";
@@ -32,7 +35,7 @@ class Payment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loadingShow: true,
+      loadingShow: false,
       isLoading: false,
       isLoadingPOS: false,
       dataBasket: null,
@@ -79,7 +82,38 @@ class Payment extends Component {
 
   componentDidMount = async () => {
     await this.getDataBasket();
+    this.setState({ loadingShow: true })
+    if (this.props.isLoggedIn) {
+      let response = this.props.dispatch(CustomerAction.getVoucher());
+      if (response.ResultCode === 200) this.setState({ myVoucher: response.Data })
+
+      response = await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, companyInfo && companyInfo.companyId));
+      if (response.ResultCode === 200) this.setState(response.Data)
+    }
+    this.setState({ loadingShow: false })
   };
+
+  componentDidUpdate() {
+    // let state = this.state
+    if (this.props.campaignPoint.detailPoint && !this.state.detailPoint) {
+      this.setState(this.props.campaignPoint)
+      // state = { ...state, ...this.props.campaignPoint }
+    } else if (this.props.myVoucher && !this.state.myVoucher) {
+      this.setState({ myVoucher: this.props.myVoucher })
+      // state = { ...state, myVoucher: this.props.myVoucher }
+    }
+  }
+
+  viewShimmer = (isHeight = 100) => {
+    return (
+      <Shimmer>
+        <div style={{
+          width: "100%", height: isHeight, alignSelf: "center",
+          borderRadius: "8px", marginBottom: 10
+        }} />
+      </Shimmer>
+    )
+  }
 
   componentWillUnmount = () => {
     try {
@@ -245,12 +279,12 @@ class Payment extends Component {
       )
     );
 
-    if (dataSettle === null) return;
+    // console.log(dataSettle)
+    if (dataSettle === null || !dataSettle.dataBasket) return;
 
     this.setState({ dataSettle });
 
     if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
-    console.log(selectedVoucher);
 
     await this.getStatusVoucher(
       selectedVoucher,
@@ -726,6 +760,22 @@ class Payment extends Component {
       });
     }
 
+    if (this.state.loadingShow) {
+      return (
+        <div className="col-full" style={{ marginTop: 50, marginBottom: 50, }}>
+          <div id="primary" className="content-area">
+            <div className="stretch-full-width">
+              <main id="main" className="site-main" style={{ textAlign: "center" }}>
+              </main>
+              <Row>
+                <Col sm={6}>{this.viewShimmer()}</Col>
+              </Row>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     if (!this.props.isLoggedIn || isEmptyObject(dataSettle)) {
       return (
         <div
@@ -1010,6 +1060,8 @@ const mapStateToProps = (state, ownProps) => {
     account: state.auth.account && state.auth.account.idToken.payload,
     isLoggedIn: state.auth.isLoggedIn,
     basket: state.order.basket,
+    campaignPoint: state.campaign.data,
+    myVoucher: state.customer.myVoucher
   };
 };
 

@@ -109,13 +109,11 @@ class LoginRegister extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props !== prevProps) {
-      console.log("login-register props changed");
       if (
         !this.props.fetchingCompanyInfo &&
         !this.props.companyInfoError &&
         this.props.companyInfo
       ) {
-        console.log("setting state to match fetched company info...");
         this.setState({
           enableRegisterWithPassword: this.props.companyInfo
             .enableRegisterWithPassword,
@@ -799,17 +797,17 @@ class LoginRegister extends Component {
                 enablePassword={this.state.enableRegisterWithPassword}
               ></SignUp>
             ) : (
-              <Portal
-                initialMethod={method}
-                handleMethodChange={(value) => {
-                  this.setState({ method: value });
-                }}
-                handlePhoneCheck={this.handleMobileCheck}
-                handleChange={this.handleInput}
-                handleEmailCheck={this.handleEmailCheck}
-                error={this.state.errorPhone || this.state.errorEmail}
-              ></Portal>
-            )}
+                  <Portal
+                    initialMethod={method}
+                    handleMethodChange={(value) => {
+                      this.setState({ method: value });
+                    }}
+                    handlePhoneCheck={this.handleMobileCheck}
+                    handleChange={this.handleInput}
+                    handleEmailCheck={this.handleEmailCheck}
+                    error={this.state.errorPhone || this.state.errorEmail}
+                  ></Portal>
+                )}
           </div>
         </div>
       </div>
