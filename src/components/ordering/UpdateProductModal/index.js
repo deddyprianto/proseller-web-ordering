@@ -5,11 +5,20 @@ import cx from "classnames";
 
 import styles from "./styles.module.css";
 
-const UpdateProductModal = ({ product, productInCart, onClose }) => {
+const UpdateProductModal = ({
+  productInCart,
+  onClose,
+  setAddNew,
+  setSelectedItem,
+}) => {
   const handleAdd = () => {
+    setAddNew(true);
     document.getElementById("open-modal-product").click();
   };
-  const handleEdit = () => {
+
+  const handleEdit = (item) => {
+    setAddNew(false);
+    setSelectedItem(item);
     document.getElementById("open-modal-product").click();
   };
 
@@ -39,7 +48,10 @@ const UpdateProductModal = ({ product, productInCart, onClose }) => {
                 <div className={styles.price}>
                   <b class="price-product color">SGD&nbsp;{item.nettAmount}</b>
                 </div>
-                <button className={styles.editButton} onClick={handleEdit}>
+                <button
+                  className={styles.editButton}
+                  onClick={() => handleEdit(item)}
+                >
                   Edit
                 </button>
               </div>
@@ -55,9 +67,10 @@ const UpdateProductModal = ({ product, productInCart, onClose }) => {
 };
 
 UpdateProductModal.propTypes = {
-  product: PropTypes.object,
   productInCart: PropTypes.array,
   onClose: PropTypes.func,
+  setAddNew: PropTypes.func,
+  setSelectedItem: PropTypes.func,
 };
 
 export default UpdateProductModal;

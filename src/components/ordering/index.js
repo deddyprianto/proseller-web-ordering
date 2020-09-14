@@ -34,6 +34,7 @@ class Ordering extends Component {
       isEmenu: window.location.pathname.includes("emenu"),
 
       showUpdateModal: false,
+      addNew: false,
     };
   }
 
@@ -426,11 +427,15 @@ class Ordering extends Component {
                   return item.productID === this.state.selectedItem.productID;
                 })
               }
-              product={this.state.selectedItem}
               onClose={() => this.setState({ showUpdateModal: false })}
+              setAddNew={(addNew) => this.setState({ addNew })}
+              setSelectedItem={(item) => this.setState({ selectedItem: item })}
             ></UpdateProductModal>
           )}
-        <ModalProduct selectedItem={this.state.selectedItem} />
+        <ModalProduct
+          addNew={this.state.addNew}
+          selectedItem={this.state.selectedItem}
+        />
         {this.state.processing == false ? <LoadingFixed /> : null}
         <br /> <br /> <br />
         <div id="offset-header" />
