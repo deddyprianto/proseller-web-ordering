@@ -6,6 +6,7 @@ import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { connect } from "react-redux";
 import ModalDeliveryAddress from "./ModalDeliveryAddress";
+import { findKey } from "lodash";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
@@ -199,7 +200,14 @@ class DeliveryAddress extends Component {
   handleChange = (field, value) => {
     let { deliveryAddress } = this.state;
     if (field === "street" || field === "unitNo") {
-      deliveryAddress.address[field] = value;
+      const address =
+        typeof deliveryAddress.address !== "string"
+          ? { ...deliveryAddress.address, [field]: value }
+          : { [field]: value };
+      deliveryAddress = {
+        ...deliveryAddress,
+        address,
+      };
     } else {
       deliveryAddress[field] = value;
     }
