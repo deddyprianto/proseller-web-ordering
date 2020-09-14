@@ -80,7 +80,6 @@ class ModalProduct extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    console.log("Modal Product will receive props...");
     let { selectedItem } = nextProps;
     if (nextProps.addNew) {
       selectedItem = { ...selectedItem, quantity: 0 };
