@@ -67,10 +67,8 @@ class Product extends Component {
     const { item, labelButton } = this.props;
     this.props.selectProduct(item, labelButton);
     if (labelButton.toLowerCase() === "update") {
-      console.log("this product is already in cart");
       this.props.showUpdateModal();
     } else {
-      console.log("this is a new product");
       // if (isEmptyObject(basket)) document.getElementById('open-modal-ordering-mode').click();
       // else document.getElementById('open-modal-product').click();
       document.getElementById("open-modal-product").click();

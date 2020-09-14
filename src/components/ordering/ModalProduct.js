@@ -80,13 +80,9 @@ class ModalProduct extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    console.log("Modal Product will receive props...");
     let { selectedItem } = nextProps;
     if (nextProps.addNew) {
-      console.log("this is add New existing items!");
       selectedItem = { ...selectedItem, quantity: 0 };
-      console.log("selectedItem now :");
-      console.log(selectedItem);
     }
     this.setState({ selectedItem });
     this.setState({ basket: nextProps.basket, disableButton: false });
