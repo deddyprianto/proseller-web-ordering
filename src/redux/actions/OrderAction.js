@@ -148,9 +148,7 @@ function processAddCart(defaultOutlet, selectedItem) {
 function processUpdateCart(basket, product) {
   return async (dispatch) => {
     console.log(product, "product");
-    const find = basket.details.find(
-      (data) => data.product.id == product.product.id
-    );
+    const find = basket.details.find((data) => data.id === product.id);
 
     let dataproduct = {
       id: find.id,
