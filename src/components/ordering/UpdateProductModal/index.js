@@ -9,6 +9,9 @@ const UpdateProductModal = ({ product, productInCart, onClose }) => {
   const handleAdd = () => {
     document.getElementById("open-modal-product").click();
   };
+  const handleEdit = () => {
+    document.getElementById("open-modal-product").click();
+  };
 
   return (
     <div className={styles.modalContainer}>
@@ -36,6 +39,9 @@ const UpdateProductModal = ({ product, productInCart, onClose }) => {
                 <div className={styles.price}>
                   <b class="price-product color">SGD&nbsp;{item.nettAmount}</b>
                 </div>
+                <button className={styles.editButton} onClick={handleEdit}>
+                  Edit
+                </button>
               </div>
             ))}
           </div>
