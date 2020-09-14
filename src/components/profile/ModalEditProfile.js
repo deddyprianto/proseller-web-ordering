@@ -84,7 +84,14 @@ class ModalEditProfile extends Component {
     if (field === "phoneNumber") this.setState({ editPhoneNumber: true });
     if (field === "email") this.setState({ editEmail: true });
     if (field === "street" || field === "unitNo") {
-      dataCustomer.address[field] = value;
+      const address =
+        typeof dataCustomer.address !== "string"
+          ? { ...dataCustomer.address, [field]: value }
+          : { [field]: value };
+      dataCustomer = {
+        ...dataCustomer,
+        address,
+      };
     } else {
       dataCustomer[field] = value;
     }
@@ -501,15 +508,17 @@ class ModalEditProfile extends Component {
                   )}
 
                   {fieldAddress && (
-                    <div style={{ marginTop: 10 }}>
+                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
                       <label htmlFor="street">
                         Street Name{" "}
                         <span className="required">
                           {fieldAddress && fieldAddress.mandatory && "*"}
                         </span>
                       </label>
-                      <Input
+                      <input
                         type="text"
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        style={{ borderRadius: 5 }}
                         id="street"
                         placeholder="Enter your address street name"
                         rows="2"
@@ -519,21 +528,23 @@ class ModalEditProfile extends Component {
                         onChange={(e) =>
                           this.handleChange("street", e.target.value)
                         }
-                      />
+                      ></input>
                     </div>
                   )}
 
                   {fieldAddress && (
-                    <div style={{ marginTop: 10 }}>
+                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
                       <label htmlFor="unitNo">
                         Unit No.{" "}
                         <span className="required">
                           {fieldAddress && fieldAddress.mandatory && "*"}
                         </span>
                       </label>
-                      <Input
+                      <input
                         type="text"
                         id="unitNo"
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        style={{ borderRadius: 5 }}
                         placeholder="Enter your address unit no."
                         rows="2"
                         value={
@@ -542,7 +553,7 @@ class ModalEditProfile extends Component {
                         onChange={(e) =>
                           this.handleChange("unitNo", e.target.value)
                         }
-                      />
+                      ></input>
                     </div>
                   )}
 
