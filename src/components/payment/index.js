@@ -84,13 +84,13 @@ class Payment extends Component {
   componentWillUnmount = () => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   getPendingOrder = async (cart) => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) {}
+    } catch (e) { }
 
     this.loopCart = setInterval(async () => {
       await this.getCart(cart);
@@ -155,7 +155,7 @@ class Payment extends Component {
       ) {
         // hostedPage.close();
         let data = {
-          message: "Congratulations, payment success",
+          message: response.data.confirmationInfo.message || "Congratulations, payment success",
           paymentType: payment.paymentType || "CASH",
           price: this.state.totalPrice,
           outletName: this.state.dataBasket.outlet.name,
@@ -275,6 +275,7 @@ class Payment extends Component {
       selectedPoint,
       selectedCard,
       totalPrice,
+      isLoading: false
     });
   };
 
@@ -467,11 +468,10 @@ class Payment extends Component {
 
     if (needPoint > totalPoint) needPoint = totalPoint;
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -651,7 +651,7 @@ class Payment extends Component {
           JSON.parse(localStorage.getItem(`${config.prefix}_scanTable`))
         );
         payload.tableNo = tableNo.table;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     let response;
@@ -772,10 +772,10 @@ class Payment extends Component {
                       </Button>
                     </div>
                   ) : (
-                    <div style={{ textAlign: "center" }}>
-                      No Pending Payment
-                    </div>
-                  )}
+                      <div style={{ textAlign: "center" }}>
+                        No Pending Payment
+                      </div>
+                    )}
                 </div>
               </main>
             </div>
@@ -943,11 +943,11 @@ class Payment extends Component {
                         {isEmptyObject(selectedCard)
                           ? `Pay ${this.getCurrency(totalPrice)}`
                           : `Pay ${this.getCurrency(
-                              totalPrice
-                            )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
-                              selectedCard.details.maskedAccountNumber.toString()
-                                .length - 4
-                            )}`}
+                            totalPrice
+                          )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
+                            selectedCard.details.maskedAccountNumber.toString()
+                              .length - 4
+                          )}`}
                       </Button>
                     </div>
 
