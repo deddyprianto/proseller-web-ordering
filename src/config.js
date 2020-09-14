@@ -5,7 +5,7 @@ let stage = "demo";
 let companyHost = "magmarvel";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""
-  }.proseller.io`;
+}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {
@@ -36,7 +36,7 @@ if (process.env.REACT_APP_STAGE === "demo") {
 } else {
   config.url_payment = `https://payment${
     stage !== "" ? "-" + stage : ""
-    }.proseller.io/api/`;
+  }.proseller.io/api/`;
 }
 
 config.url_logo = logo;

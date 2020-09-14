@@ -1,147 +1,211 @@
-import React, { Component } from 'react';
-import { isEmptyData } from '../../helpers/CheckEmpty';
+import React, { Component } from "react";
+import { isEmptyData } from "../../helpers/CheckEmpty";
 import { connect } from "react-redux";
-import { isEmptyObject } from 'jquery';
-import config from '../../config';
+import { isEmptyObject } from "jquery";
+import config from "../../config";
 
-const Swal = require('sweetalert2')
+const Swal = require("sweetalert2");
 
 class Product extends Component {
-    renderImageProduct = (item) => {
-        if (item.product.defaultImageURL && !isEmptyData(item.product.defaultImageURL)) {
-            return item.product.defaultImageURL;
-        } else {
-            return config.image_placeholder;
-        }
+  renderImageProduct = (item) => {
+    if (
+      item.product.defaultImageURL &&
+      !isEmptyData(item.product.defaultImageURL)
+    ) {
+      return item.product.defaultImageURL;
+    } else {
+      return config.image_placeholder;
     }
+  };
 
-    getCurrency = (price) => {
-        const { defaultOutlet } = this.props;
-        const code = defaultOutlet.countryCode;
+  getCurrency = (price) => {
+    const { defaultOutlet } = this.props;
+    const code = defaultOutlet.countryCode;
 
-        let currency = { code: 'en-US', currency: 'SGD' };
-        if (code === "SG") currency = { code: 'en-US', currency: 'SGD' };
+    let currency = { code: "en-US", currency: "SGD" };
+    if (code === "SG") currency = { code: "en-US", currency: "SGD" };
 
-        if (price != undefined) {
-            if (price === "-") {
-                price = 0;
-            }
-            let result = price.toLocaleString(currency.code, { style: 'currency', currency: currency.currency });
-            return result
-        } else {
-            price = 0;
-            return price.toLocaleString(currency.code, { style: 'currency', currency: currency.currency });
-        }
-    };
-
-    getQuantityProduct = () => {
-        const { basket, defaultOutlet } = this.props;
-        const { item } = this.props;
-        try {
-            if (!isEmptyObject(basket)) {
-                const find = basket.details.find(data => data.product.id == item.product.id && defaultOutlet.sortKey == basket.outletID);
-                if (find != undefined) return `${find.quantity}x`;
-                else return false;
-            } else {
-                return false;
-            }
-        } catch (e) {
-            return false;
-        }
+    if (price != undefined) {
+      if (price === "-") {
+        price = 0;
+      }
+      let result = price.toLocaleString(currency.code, {
+        style: "currency",
+        currency: currency.currency,
+      });
+      return result;
+    } else {
+      price = 0;
+      return price.toLocaleString(currency.code, {
+        style: "currency",
+        currency: currency.currency,
+      });
     }
+  };
 
-    openModal = () => {
-        const { basket } = this.props;
-        const { item } = this.props;
-
-        this.props.selectProduct(item, this.props.labelButton);
-        // if (isEmptyObject(basket)) document.getElementById('open-modal-ordering-mode').click();
-        // else document.getElementById('open-modal-product').click();
-        document.getElementById('open-modal-product').click();
-    }
-
-    validateOutlet = () => {
-        const { basket, defaultOutlet } = this.props;
-        if (basket == undefined || basket.details == undefined) {
-            this.openModal();
-        } else {
-            if (basket.outletID == defaultOutlet.sortKey) this.openModal();
-            else {
-                Swal.fire({
-                    title: 'Change Outlet ?',
-                    text: "You will delete order in previous outlet..",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes'
-                }).then((result) => {
-                    if (result.value) {
-                        localStorage.removeItem(`${config.prefix}_offlineCart`);
-                        this.openModal();
-                    }
-                })
-            }
-        }
-    }
-
-    render() {
-        const { item } = this.props;
-        return (
-            <li style={{ marginBottom: 5 }} className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product">
-                <div className="product-outer" className={item.product.orderingStatus === 'UNAVAILABLE' ? 'product-unavailable' : null}>
-                    <div className="product-inner product-card" style={{ padding: 10 }}>
-                        <div className="product-image-wrapper">
-                            <span className="woocommerce-LoopProduct-link">
-                                <img src={this.renderImageProduct(item)} className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product" alt={84} title={84} />
-                            </span>
-                        </div>
-                        <div className="product-content-wrapper">
-                            <p>
-                                <h3 className="color" onClick={() => this.validateOutlet()} style={{ cursor: "pointer" }}><span className="text-muted">{this.getQuantityProduct()} </span><b>{item.product.name}</b></h3>
-                                <div itemProp="description">
-                                    <p className="color" style={{ maxHeight: 'none', whiteSpace: 'pre-line' }}>{item.product.description}</p>
-                                </div>
-                            </p>
-                            <div className="yith_wapo_groups_container">
-                                <div className="row" style={{ marginTop: 10 }}>
-                                    {
-                                        item.product.orderingStatus === 'UNAVAILABLE' ?
-                                            <div className="col-lg-12 col-md-12 col-xs-12">
-                                                <h3 className="text text-muted"><b>UNAVAILABLE</b></h3>
-                                            </div>
-                                            :
-                                            <>
-                                                <div className="col-lg-12 col-md-12 col-xs-7">
-                                                    <b style={{ float: 'left' }} className="price-product color">{this.getCurrency(item.product.retailPrice)}</b>
-                                                </div>
-                                                <div onClick={() => this.validateOutlet()} className="col-lg-12 col-md-12 col-xs-4">
-                                                    <p style={{ float: 'left', borderRadius: 5, width: 90, paddingLeft: 5, paddingRight: 5 }} rel="nofollow" className="button btn-info product_type_simple add_to_cart_button ajax_add_to_cart">
-                                                        {this.props.labelButton}
-                                                    </p>
-                                                </div>
-                                            </>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </li>
+  getQuantityProduct = () => {
+    const { basket, defaultOutlet } = this.props;
+    const { item } = this.props;
+    try {
+      if (!isEmptyObject(basket)) {
+        const find = basket.details.find(
+          (data) =>
+            data.product.id == item.product.id &&
+            defaultOutlet.sortKey == basket.outletID
         );
+        if (find != undefined) return `${find.quantity}x`;
+        else return false;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
+  };
+
+  openModal = () => {
+    const { item, labelButton } = this.props;
+    this.props.selectProduct(item, labelButton);
+    if (labelButton.toLowerCase() === "update") {
+      console.log("this product is already in cart");
+      this.props.showUpdateModal();
+    } else {
+      console.log("this is a new product");
+      // if (isEmptyObject(basket)) document.getElementById('open-modal-ordering-mode').click();
+      // else document.getElementById('open-modal-product').click();
+      document.getElementById("open-modal-product").click();
+    }
+  };
+
+  validateOutlet = () => {
+    const { basket, defaultOutlet } = this.props;
+    if (basket == undefined || basket.details == undefined) {
+      this.openModal();
+    } else {
+      if (basket.outletID == defaultOutlet.sortKey) this.openModal();
+      else {
+        Swal.fire({
+          title: "Change Outlet ?",
+          text: "You will delete order in previous outlet..",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.value) {
+            localStorage.removeItem(`${config.prefix}_offlineCart`);
+            this.openModal();
+          }
+        });
+      }
+    }
+  };
+
+  render() {
+    const { item } = this.props;
+    return (
+      <li
+        style={{ marginBottom: 5 }}
+        className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
+      >
+        <div
+          className="product-outer"
+          className={
+            item.product.orderingStatus === "UNAVAILABLE"
+              ? "product-unavailable"
+              : null
+          }
+        >
+          <div className="product-inner product-card" style={{ padding: 10 }}>
+            <div className="product-image-wrapper">
+              <span className="woocommerce-LoopProduct-link">
+                <img
+                  src={this.renderImageProduct(item)}
+                  className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
+                  alt={84}
+                  title={84}
+                />
+              </span>
+            </div>
+            <div className="product-content-wrapper">
+              <p>
+                <h3
+                  className="color"
+                  onClick={() => this.validateOutlet()}
+                  style={{ cursor: "pointer" }}
+                >
+                  <span className="text-muted">
+                    {this.getQuantityProduct()}{" "}
+                  </span>
+                  <b>{item.product.name}</b>
+                </h3>
+                <div itemProp="description">
+                  <p
+                    className="color"
+                    style={{ maxHeight: "none", whiteSpace: "pre-line" }}
+                  >
+                    {item.product.description}
+                  </p>
+                </div>
+              </p>
+              <div className="yith_wapo_groups_container">
+                <div className="row" style={{ marginTop: 10 }}>
+                  {item.product.orderingStatus === "UNAVAILABLE" ? (
+                    <div className="col-lg-12 col-md-12 col-xs-12">
+                      <h3 className="text text-muted">
+                        <b>UNAVAILABLE</b>
+                      </h3>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="col-lg-12 col-md-12 col-xs-7">
+                        <b
+                          style={{ float: "left" }}
+                          className="price-product color"
+                        >
+                          {this.getCurrency(item.product.retailPrice)}
+                        </b>
+                      </div>
+                      <div
+                        onClick={() => this.validateOutlet()}
+                        className="col-lg-12 col-md-12 col-xs-4"
+                      >
+                        <p
+                          style={{
+                            float: "left",
+                            borderRadius: 5,
+                            width: 90,
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                          }}
+                          rel="nofollow"
+                          className="button btn-info product_type_simple add_to_cart_button ajax_add_to_cart"
+                        >
+                          {this.props.labelButton}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    );
+  }
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        basket: state.order.basket,
-        defaultOutlet: state.outlet.defaultOutlet,
-    };
+  return {
+    basket: state.order.basket,
+    defaultOutlet: state.outlet.defaultOutlet,
+  };
 };
 
-const mapDispatchToProps = dispatch => ({
-    dispatch,
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product);
-
