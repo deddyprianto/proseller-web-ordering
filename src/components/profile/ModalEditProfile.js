@@ -65,9 +65,7 @@ class ModalEditProfile extends Component {
       CustomerAction.getCustomerProfile()
     );
     if (dataCustomer.ResultCode === 200) {
-      if (dataCustomer.Data[0].birthDate)
-        this.setState({ isDisableBirthDate: true });
-      console.log(dataCustomer.Data[0]);
+      if (dataCustomer.Data[0].birthDate) this.setState({ isDisableBirthDate: true });
       this.setState({ dataCustomer: dataCustomer.Data[0] });
     }
     let mandatoryField = await this.props.dispatch(
