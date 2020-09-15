@@ -422,6 +422,7 @@ class Ordering extends Component {
           "update" &&
           this.state.showUpdateModal && (
             <UpdateProductModal
+              product={this.state.selectedItem}
               productInCart={
                 this.props.basket &&
                 this.props.basket.details.filter((item) => {

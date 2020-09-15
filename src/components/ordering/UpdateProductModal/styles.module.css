@@ -11,6 +11,7 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 .modal {
+  animation: fadeIn 500ms;
   position: relative;
   min-height: 50vh;
   width: 100vw;
@@ -39,7 +40,7 @@
   flex-direction: column;
   padding: 1rem;
   max-height: 30vh;
-  overflow: scroll;
+  overflow-y: scroll;
   background-color: #eee;
 }
 
@@ -74,4 +75,28 @@
 .editButton:active,
 .editButton:hover {
   color: #c00a27;
+}
+
+@media only screen and (min-width: 768px) {
+  .modalContainer {
+    align-items: center;
+  }
+
+  .modal {
+    height: 50vh;
+    width: 40vw;
+  }
+
+  .body {
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

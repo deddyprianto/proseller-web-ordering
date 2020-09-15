@@ -90,6 +90,7 @@ class ModalProduct extends Component {
 
   renderImageProduct = (item) => {
     if (
+      item.product &&
       item.product.defaultImageURL &&
       !isEmptyData(item.product.defaultImageURL)
     ) {
@@ -541,7 +542,6 @@ class ModalProduct extends Component {
           <div style={{ marginLeft: 5, marginRight: 10 }}>
             {item.modifier.details.map((data) => (
               <div
-                className="item-modifier"
                 className={
                   data.orderingStatus === "UNAVAILABLE"
                     ? "item-modifier product-unavailable"
@@ -575,7 +575,7 @@ class ModalProduct extends Component {
   };
 
   detailProduct = () => {
-    let { selectedItem, disableButton } = this.state;
+    let { disableButton, selectedItem } = this.state;
     let { defaultOutlet, data } = this.props;
     if (data) {
       defaultOutlet = data.storeDetail;
