@@ -30,10 +30,13 @@ const UpdateProductModal = ({
       }
     );
     setAddNew(true);
-    setSelectedItem({
-      ...product,
-      product: { ...product.product, productModifiers: newProductModifiers },
-    });
+    setSelectedItem(
+      {
+        ...product,
+        product: { ...product.product, productModifiers: newProductModifiers },
+      },
+      "Add"
+    );
     document.getElementById("open-modal-product").click();
   };
 
@@ -78,13 +81,16 @@ const UpdateProductModal = ({
       }
     );
     setAddNew(false);
-    setSelectedItem({
-      ...product,
-      quantity,
-      id,
-      modifiers,
-      product: { ...product.product, productModifiers: newProductModifiers },
-    });
+    setSelectedItem(
+      {
+        ...product,
+        quantity,
+        id,
+        modifiers,
+        product: { ...product.product, productModifiers: newProductModifiers },
+      },
+      "Update"
+    );
     document.getElementById("open-modal-product").click();
   };
 

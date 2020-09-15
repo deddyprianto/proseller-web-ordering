@@ -240,7 +240,7 @@ function processOfflineCart(payload, mode) {
           }
         } else {
           for (let i = 0; i < offlineCart.details.length; i++) {
-            if (offlineCart.details[i].productID == payload[0].productID) {
+            if (offlineCart.details[i].id === payload[0].id) {
               offlineCart.details[i] = payload[0];
             }
           }

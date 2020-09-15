@@ -225,11 +225,8 @@ class Ordering extends Component {
       product.remark = "";
     } else {
       if (!isEmptyArray(basket.details)) {
-        const find = await basket.details.find(
-          (data) => data.product.id == product.product.id
-        );
-        if (find != undefined) {
-          await this.setState({ selectedItem: {} });
+        const find = await basket.details.find((data) => data.id == product.id);
+        if (find !== undefined) {
           if (mode === "Update") {
             product.quantity = find.quantity;
 
@@ -274,6 +271,7 @@ class Ordering extends Component {
       }
     }
     product.mode = mode;
+    console.log(product);
     await this.setState({ selectedItem: product });
   };
 
@@ -446,7 +444,7 @@ class Ordering extends Component {
               }
               onClose={() => this.setState({ showUpdateModal: false })}
               setAddNew={(addNew) => this.setState({ addNew })}
-              setSelectedItem={(item) => this.setState({ selectedItem: item })}
+              setSelectedItem={(item, type) => this.selectProduct(item, type)}
             ></UpdateProductModal>
           )}
         <ModalProduct
