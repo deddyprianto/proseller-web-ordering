@@ -275,7 +275,8 @@ class Basket extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.campaignPoint.detailPoint && !this.state.detailPoint) this.setState(this.props.campaignPoint)
+    if (this.props.campaignPoint && this.props.campaignPoint.detailPoint && !this.state.detailPoint)
+      this.setState(this.props.campaignPoint)
     if (this.props.myVoucher && !this.state.myVoucher) this.setState({ myVoucher: this.props.myVoucher })
   }
 
