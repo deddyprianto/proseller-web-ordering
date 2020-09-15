@@ -72,7 +72,7 @@ export default class ModalPointsDetail extends Component {
                                   Expiry :
                                 </div>
                                 <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5 }}>
-                                  {moment(items.startAccumulationDate).format('DD-MM-YYYY')}
+                                  {moment(items.expiryDate).format('DD-MM-YYYY')}
                                 </div>
                               </div>
                             </div>
