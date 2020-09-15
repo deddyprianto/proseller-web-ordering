@@ -4,7 +4,6 @@ import CategoriesEmenu from "./CategoriesEmenu";
 import CategoriesWebOrdering from "./CategoriesWebOrdering";
 import Product from "./Product";
 import { OutletAction } from "../../redux/actions/OutletAction";
-import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
@@ -49,9 +48,6 @@ class Ordering extends Component {
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
 
-    if (!window.location.pathname.includes("emenu")) await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-
-    await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet: this.props.defaultOutlet });
     this.fetchCategories(this.props.defaultOutlet);
   };
@@ -81,7 +77,7 @@ class Ordering extends Component {
           header.style.top = 0;
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   handleScrollEmenu = (e) => {
@@ -98,7 +94,7 @@ class Ordering extends Component {
           searchButton.classList.add("search-button-absolute");
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   fetchCategories = async (outlet) => {
@@ -203,7 +199,7 @@ class Ordering extends Component {
             }
           });
       });
-    } catch (e) {}
+    } catch (e) { }
 
     if (isEmptyObject(basket)) {
       product.quantity = 1;
@@ -325,7 +321,7 @@ class Ordering extends Component {
               items.push(productsBackup[i].items[j]);
             }
           }
-        } catch (e) {}
+        } catch (e) { }
 
         if (items.length != 0) {
           if (productsSearch == undefined) {
@@ -343,7 +339,7 @@ class Ordering extends Component {
 
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
-    } catch (e) {}
+    } catch (e) { }
   };
 
   loadingSearching = async (loadingSearching) => {
@@ -451,15 +447,15 @@ class Ordering extends Component {
             selectedCategory={this.state.selectedCategory}
           />
         ) : (
-          <CategoriesWebOrdering
-            loadingSearching={this.loadingSearching}
-            finished={finished}
-            setLoading={this.setLoading}
-            searchProduct={this.searchProduct}
-            categories={categories}
-            selectedCategory={this.state.selectedCategory}
-          />
-        )}
+            <CategoriesWebOrdering
+              loadingSearching={this.loadingSearching}
+              finished={finished}
+              setLoading={this.setLoading}
+              searchProduct={this.searchProduct}
+              categories={categories}
+              selectedCategory={this.state.selectedCategory}
+            />
+          )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
