@@ -60,10 +60,8 @@ class App extends Component {
       localStorage.removeItem(`${config.prefix}_scanTable`);
     }
 
-    // ?input=b3V0bGV0PW91dGxldDo6MzkzZTdiMzAtNmUxYi00ODNlLWJjYmMtY2QwYTg4OTFkY2Y1JnRhYmxlPTMmb3JkZXJpbmdNb2RlPURJTkVJTg==#/
-    if (!this.getUrlParameters() || !window.location.pathname.includes("emenu"))
+    if (!this.getUrlParameters())
       await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-
     await this.props.dispatch(OrderAction.getCart());
 
     try {
