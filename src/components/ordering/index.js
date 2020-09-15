@@ -227,7 +227,6 @@ class Ordering extends Component {
       if (!isEmptyArray(basket.details)) {
         const find = await basket.details.find((data) => data.id == product.id);
         if (find !== undefined) {
-          await this.setState({ selectedItem: {} });
           if (mode === "Update") {
             product.quantity = find.quantity;
 
@@ -272,6 +271,7 @@ class Ordering extends Component {
       }
     }
     product.mode = mode;
+    console.log(product);
     await this.setState({ selectedItem: product });
   };
 

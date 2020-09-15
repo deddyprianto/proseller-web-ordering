@@ -270,8 +270,6 @@ function addCart(payload) {
 }
 
 function buildCart(payload = {}) {
-  console.log(`buildingCart with payload:`);
-  console.log(payload);
   return async (dispatch) => {
     try {
       payload.orderingMode =

@@ -80,6 +80,7 @@ class ModalProduct extends Component {
   };
 
   // componentWillReceiveProps(nextProps) {
+  //   console.log(nextProps);
   //   let { selectedItem } = nextProps;
   //   if (nextProps.addNew) {
   //     selectedItem = { ...selectedItem, quantity: 0 };
