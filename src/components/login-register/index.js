@@ -62,6 +62,18 @@ class LoginRegister extends Component {
   }
 
   componentDidMount = async () => {
+    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+    if (!infoCompany) {
+      let time = setInterval(async () => {
+        infoCompany = await encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+        if (infoCompany) clearInterval(time)
+      }, 0);
+    }
+
+    if (infoCompany && infoCompany.enableRegisterWithPassword) {
+      this.setState({ enableRegisterWithPassword: infoCompany.enableRegisterWithPassword })
+    }
+
     const otpData = lsLoad(config.prefix + "_otp") || null;
     if (otpData) {
       const waitTime = this.state.method === "phone" ? 60 : 300;
@@ -291,7 +303,7 @@ class LoginRegister extends Component {
   };
 
   handleSendOTP = async () => {
-    if (this.state.allowSendPhoneOTP) {
+    if (!this.state.enableRegisterWithPassword) {
       let payloadResponse = this.state.payloadResponse;
       let phoneNumber = this.state.phoneNumber;
       let sendCounter = this.state.sendCounter + 1;
@@ -551,8 +563,7 @@ class LoginRegister extends Component {
   };
 
   handleSendEmailOTP = async () => {
-    if (this.state.allowSendEmailOTP) {
-      let payloadResponse = this.state.payloadResponse;
+    if (!this.state.enableRegisterWithPassword) {
       let sendCounter = this.state.sendCounter + 1;
       const countdown = 299;
       const counterMinutes = Math.floor(countdown / 60);
