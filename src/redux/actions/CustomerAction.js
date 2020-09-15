@@ -93,6 +93,7 @@ function getVoucher() {
         },
       );
       response.Data = myVoucher
+      dispatch(setData(response, CONSTANT.GET_VOUCHER))
     }
     return response
   };

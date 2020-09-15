@@ -164,10 +164,10 @@ class Basket extends Component {
 
     if (!orderingMode) orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || (isEmenu ? 'DINEIN' : 'DELIVERY');
 
-    console.log('scanTable', scanTable)
+    // console.log('scanTable', scanTable)
     if (!infoCompany) {
-      let time = setInterval(() => {
-        infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+      let time = setInterval(async () => {
+        infoCompany = await encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
         if (infoCompany) clearInterval(time)
       }, 0);
     } else {
@@ -175,14 +175,11 @@ class Basket extends Component {
     }
 
     if (isLoggedIn) {
-      let response = await this.props.dispatch(CustomerAction.getVoucher());
-      if (response.ResultCode === 200) this.setState({ myVoucher: response.Data })
+      let response = this.props.dispatch(CustomerAction.getVoucher());
+      // if (response.ResultCode === 200) this.setState({ myVoucher: response.Data })
 
-      response = await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, infoCompany.companyId));
-      if (response.ResultCode === 200) {
-        this.setState(response.Data)
-        if (response.Data.detailPoint.roundingOptions === "DECIMAL") this.setState({ xstep: 0.01 });
-      }
+      response = this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, infoCompany && infoCompany.companyId));
+      // if (response.ResultCode === 200) this.setState(response.Data)
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode
       let response = await this.props.dispatch(OrderAction.buildCart(dataBasket));
@@ -204,7 +201,7 @@ class Basket extends Component {
       let storeDetail = null;
       if (!isEmptyObject(this.props.defaultOutlet)) storeDetail = this.props.defaultOutlet
       else storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id))
-      console.log('storeDetail', storeDetail)
+      // console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket)
       let deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
@@ -232,7 +229,7 @@ class Basket extends Component {
         }
       }
 
-      console.log('dataBasket', dataBasket)
+      // console.log('dataBasket', dataBasket)
 
       if (dataBasket.deliveryProviderId) {
         let provaiderDelivery = deliveryProvaider.find(items => { return items.id === dataBasket.deliveryProviderId })
@@ -275,6 +272,12 @@ class Basket extends Component {
       discountPoint: selectedPoint || 0, orderingMode, selectedCard,
       deliveryAddress
     })
+  }
+
+  componentDidUpdate() {
+    if (this.props.campaignPoint && this.props.campaignPoint.detailPoint && !this.state.detailPoint)
+      this.setState(this.props.campaignPoint)
+    if (this.props.myVoucher && !this.state.myVoucher) this.setState({ myVoucher: this.props.myVoucher })
   }
 
   checkViewCart = (dataBasket) => {
@@ -829,6 +832,8 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,
+    campaignPoint: state.campaign.data,
+    myVoucher: state.customer.myVoucher
   };
 };
 

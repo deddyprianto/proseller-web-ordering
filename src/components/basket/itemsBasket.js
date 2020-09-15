@@ -123,7 +123,7 @@ export default class ItemsBasket extends Component {
       this.selectProduct(item, 'Update');
       document.getElementById('detail-product-btn').click()
     } else {
-      this.setState({ isLoading: true })
+      Swal.fire({ onOpen: () => { Swal.showLoading() } })
       let time = setInterval(() => {
         if (props.storeDetail && props.storeDetail.product) {
           this.selectProduct(item, 'Update');

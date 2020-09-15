@@ -24,8 +24,6 @@ export default function reducer(state = defaultState, action) {
         },
       };
     case "GET_COMPANY_INFO_SUCCESS":
-      console.log("success dispatching get company info success, data:");
-      console.log(action.payload);
       return {
         ...state,
         companyInfo: {

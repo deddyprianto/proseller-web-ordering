@@ -49,7 +49,8 @@ class Ordering extends Component {
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
 
-    await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+    if (!window.location.pathname.includes("emenu")) await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet: this.props.defaultOutlet });
     this.fetchCategories(this.props.defaultOutlet);

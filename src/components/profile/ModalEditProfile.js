@@ -84,7 +84,14 @@ class ModalEditProfile extends Component {
     if (field === "phoneNumber") this.setState({ editPhoneNumber: true });
     if (field === "email") this.setState({ editEmail: true });
     if (field === "street" || field === "unitNo") {
-      dataCustomer.address[field] = value;
+      const address =
+        typeof dataCustomer.address !== "string"
+          ? { ...dataCustomer.address, [field]: value }
+          : { [field]: value };
+      dataCustomer = {
+        ...dataCustomer,
+        address,
+      };
     } else {
       dataCustomer[field] = value;
     }
@@ -380,40 +387,40 @@ class ModalEditProfile extends Component {
                           ))}
                         </Input>
                       ) : (
-                        <div className="customDatePickerWidth">
-                          <div
-                            htmlFor="birthDate"
-                            style={{
-                              position: "absolute",
-                              backgroundColor: isDisableBirthDate
-                                ? "#FAFAFA"
-                                : "#FFF",
-                              top: 321,
-                              left: 28,
-                              paddingLeft: 10,
-                              paddingRight: 50,
-                            }}
-                          >
-                            {dataCustomer.birthDate
-                              ? moment(birthDate).format("DD-MM-YYYY")
-                              : fieldBirthDate.format}
+                          <div className="customDatePickerWidth">
+                            <div
+                              htmlFor="birthDate"
+                              style={{
+                                position: "absolute",
+                                backgroundColor: isDisableBirthDate
+                                  ? "#FAFAFA"
+                                  : "#FFF",
+                                top: 321,
+                                left: 28,
+                                paddingLeft: 10,
+                                paddingRight: 50,
+                              }}
+                            >
+                              {dataCustomer.birthDate
+                                ? moment(birthDate).format("DD-MM-YYYY")
+                                : fieldBirthDate.format}
+                            </div>
+                            <input
+                              type="date"
+                              id="birthDate"
+                              disabled={isDisableBirthDate}
+                              style={{ borderRadius: 5 }}
+                              className="woocommerce-Input woocommerce-Input--text input-text"
+                              value={birthDate}
+                              onChange={(e) =>
+                                this.handleChange(
+                                  "birthDate",
+                                  moment(e.target.value).format("YYYY-MM-DD")
+                                )
+                              }
+                            />
                           </div>
-                          <input
-                            type="date"
-                            id="birthDate"
-                            disabled={isDisableBirthDate}
-                            style={{ borderRadius: 5 }}
-                            className="woocommerce-Input woocommerce-Input--text input-text"
-                            value={birthDate}
-                            onChange={(e) =>
-                              this.handleChange(
-                                "birthDate",
-                                moment(e.target.value).format("YYYY-MM-DD")
-                              )
-                            }
-                          />
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
 
@@ -501,15 +508,17 @@ class ModalEditProfile extends Component {
                   )}
 
                   {fieldAddress && (
-                    <div style={{ marginTop: 10 }}>
+                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
                       <label htmlFor="street">
                         Street Name{" "}
                         <span className="required">
                           {fieldAddress && fieldAddress.mandatory && "*"}
                         </span>
                       </label>
-                      <Input
+                      <input
                         type="text"
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        style={{ borderRadius: 5 }}
                         id="street"
                         placeholder="Enter your address street name"
                         rows="2"
@@ -519,21 +528,23 @@ class ModalEditProfile extends Component {
                         onChange={(e) =>
                           this.handleChange("street", e.target.value)
                         }
-                      />
+                      ></input>
                     </div>
                   )}
 
                   {fieldAddress && (
-                    <div style={{ marginTop: 10 }}>
+                    <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" style={{ marginTop: 10 }}>
                       <label htmlFor="unitNo">
                         Unit No.{" "}
                         <span className="required">
                           {fieldAddress && fieldAddress.mandatory && "*"}
                         </span>
                       </label>
-                      <Input
+                      <input
                         type="text"
                         id="unitNo"
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        style={{ borderRadius: 5 }}
                         placeholder="Enter your address unit no."
                         rows="2"
                         value={
@@ -542,7 +553,7 @@ class ModalEditProfile extends Component {
                         onChange={(e) =>
                           this.handleChange("unitNo", e.target.value)
                         }
-                      />
+                      ></input>
                     </div>
                   )}
 
@@ -551,13 +562,13 @@ class ModalEditProfile extends Component {
                     {editPassword ? (
                       <b>Cancel Change Password </b>
                     ) : (
-                      <b>Change Password </b>
-                    )}
+                        <b>Change Password </b>
+                      )}
                     {editPassword ? (
                       <i className="fa fa-chevron-up" />
                     ) : (
-                      <i className="fa fa-chevron-down" />
-                    )}
+                        <i className="fa fa-chevron-down" />
+                      )}
                   </p>
 
                   {editPassword && (
