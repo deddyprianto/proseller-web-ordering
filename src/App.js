@@ -60,9 +60,12 @@ class App extends Component {
       localStorage.removeItem(`${config.prefix}_scanTable`);
     }
 
-    if (!this.getUrlParameters())
-      await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-    await this.props.dispatch(OrderAction.getCart());
+    let url = window.location.hash.split("#")[1]
+    if (url !== "/") {
+      if (!this.getUrlParameters())
+        await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+      await this.props.dispatch(OrderAction.getCart());
+    }
 
     try {
       document.getElementById("color-theme").href = color;
