@@ -79,13 +79,24 @@ class ModalProduct extends Component {
     this.setState({ update: false });
   };
 
-  componentWillReceiveProps(nextProps) {
-    let { selectedItem } = nextProps;
-    if (nextProps.addNew) {
-      selectedItem = { ...selectedItem, quantity: 0 };
+  // componentWillReceiveProps(nextProps) {
+  //   let { selectedItem } = nextProps;
+  //   if (nextProps.addNew) {
+  //     selectedItem = { ...selectedItem, quantity: 0 };
+  //   }
+  //   this.setState({ selectedItem });
+  //   this.setState({ basket: nextProps.basket, disableButton: false });
+  // }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.selectedItem !== this.props.selectedItem) {
+      let { selectedItem } = this.props;
+      if (this.props.addNew) {
+        selectedItem = { ...selectedItem, quantity: 0 };
+      }
+      this.setState({ selectedItem });
+      this.setState({ basket: this.props.basket, disableButton: false });
     }
-    this.setState({ selectedItem });
-    this.setState({ basket: nextProps.basket, disableButton: false });
   }
 
   renderImageProduct = (item) => {

@@ -148,7 +148,6 @@ function processAddCart(defaultOutlet, selectedItem) {
 function processUpdateCart(basket, product) {
   return async (dispatch) => {
     let find = basket.details.find((data) => data.id === product.id);
-
     let dataproduct = {
       id: find.id,
       productID: product.productID,
@@ -161,12 +160,9 @@ function processUpdateCart(basket, product) {
 
     if (!isEmptyArray(product.product.productModifiers)) {
       let totalModifier = 0;
-      const productModifierClone = JSON.stringify(
-        product.product.productModifiers
-      );
-      let productModifiers = JSON.parse(productModifierClone);
+      let productModifiers = [...product.product.productModifiers];
       productModifiers = productModifiers.filter(
-        (item) => item.postToServer == true
+        (item) => item.postToServer === true
       );
       // add moodifier to data product
       dataproduct.modifiers = productModifiers;
