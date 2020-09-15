@@ -240,7 +240,7 @@ function processOfflineCart(payload, mode) {
           }
         } else {
           for (let i = 0; i < offlineCart.details.length; i++) {
-            if (offlineCart.details[i].productID == payload[0].productID) {
+            if (offlineCart.details[i].id === payload[0].id) {
               offlineCart.details[i] = payload[0];
             }
           }
@@ -270,6 +270,8 @@ function addCart(payload) {
 }
 
 function buildCart(payload = {}) {
+  console.log(`buildingCart with payload:`);
+  console.log(payload);
   return async (dispatch) => {
     try {
       payload.orderingMode =
