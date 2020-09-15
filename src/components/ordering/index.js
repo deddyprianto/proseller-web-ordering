@@ -4,7 +4,6 @@ import CategoriesEmenu from "./CategoriesEmenu";
 import CategoriesWebOrdering from "./CategoriesWebOrdering";
 import Product from "./Product";
 import { OutletAction } from "../../redux/actions/OutletAction";
-import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
@@ -49,26 +48,8 @@ class Ordering extends Component {
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
 
-    if (!this.getUrlParameters() || !window.location.pathname.includes("emenu"))
-      await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-
-    await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet: this.props.defaultOutlet });
     this.fetchCategories(this.props.defaultOutlet);
-  };
-
-  getUrlParameters = (pageParamString = null) => {
-    if (!pageParamString) pageParamString = window.location.href.split("?")[1];
-    if (pageParamString) {
-      var paramsArray = pageParamString.split("&");
-      var paramsHash = {};
-
-      for (var i = 0; i < paramsArray.length; i++) {
-        var singleParam = paramsArray[i].split("=");
-        paramsHash[singleParam[0]] = singleParam[1];
-      }
-      return paramsHash;
-    }
   };
 
   componentWillUnmount() {

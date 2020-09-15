@@ -6,6 +6,7 @@ import { Redirect, Switch, Route, HashRouter } from "react-router-dom";
 import { IntlProvider, addLocaleData } from "react-intl";
 import { OutletAction } from "./redux/actions/OutletAction";
 import { MasterdataAction } from "./redux/actions/MaterdataAction";
+import { OrderAction } from "./redux/actions/OrderAction";
 
 import locale_en from "react-intl/locale-data/en";
 import locale_id from "react-intl/locale-data/id";
@@ -59,9 +60,15 @@ class App extends Component {
       localStorage.removeItem(`${config.prefix}_scanTable`);
     }
 
+    // ?input=b3V0bGV0PW91dGxldDo6MzkzZTdiMzAtNmUxYi00ODNlLWJjYmMtY2QwYTg4OTFkY2Y1JnRhYmxlPTMmb3JkZXJpbmdNb2RlPURJTkVJTg==#/
+    if (!this.getUrlParameters() || !window.location.pathname.includes("emenu"))
+      await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+
+    await this.props.dispatch(OrderAction.getCart());
+
     try {
       document.getElementById("color-theme").href = color;
-    } catch (error) {}
+    } catch (error) { }
   };
 
   getUrlParameters = (pageParamString = null) => {
