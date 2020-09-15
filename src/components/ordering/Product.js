@@ -48,13 +48,17 @@ class Product extends Component {
     const { item } = this.props;
     try {
       if (!isEmptyObject(basket)) {
-        const find = basket.details.find(
+        const products = basket.details.filter(
           (data) =>
-            data.product.id == item.product.id &&
-            defaultOutlet.sortKey == basket.outletID
+            data.product.id === item.product.id &&
+            defaultOutlet.sortKey === basket.outletID
         );
-        if (find != undefined) return `${find.quantity}x`;
-        else return false;
+        if (products.length > 0) {
+          const total = products.reduce((acc, product) => {
+            return { quantity: acc.quantity + product.quantity };
+          });
+          return `${total.quantity}x`;
+        } else return false;
       } else {
         return false;
       }
