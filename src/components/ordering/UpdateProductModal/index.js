@@ -73,6 +73,7 @@ const UpdateProductModal = ({
               });
               return {
                 ...modifierItem,
+                isSelected: quantity ? true : false,
                 quantity: quantity ? quantity.quantity : 0,
               };
             }),
