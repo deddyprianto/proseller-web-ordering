@@ -69,7 +69,6 @@ class Product extends Component {
 
   openModal = () => {
     const { item, labelButton } = this.props;
-    console.log(item);
     this.props.selectProduct(item, labelButton);
     if (labelButton.toLowerCase() === "update") {
       this.props.showUpdateModal(item);
