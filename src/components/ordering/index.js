@@ -51,15 +51,21 @@ class Ordering extends Component {
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
 
-    let defaultOutlet = null
+    let defaultOutlet = null;
     if (!this.getUrlParameters()) {
-      defaultOutlet = await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+      defaultOutlet = await this.props.dispatch(
+        OutletAction.fetchDefaultOutlet()
+      );
     } else {
-      defaultOutlet = await encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_defaultOutlet`)));
+      defaultOutlet = await encryptor.decrypt(
+        JSON.parse(localStorage.getItem(`${config.prefix}_defaultOutlet`))
+      );
     }
 
     await this.props.dispatch(OrderAction.getCart());
-    await this.setState({ defaultOutlet: defaultOutlet || this.props.defaultOutlet });
+    await this.setState({
+      defaultOutlet: defaultOutlet || this.props.defaultOutlet,
+    });
     await this.fetchCategories(defaultOutlet || this.props.defaultOutlet);
   };
 
@@ -102,7 +108,7 @@ class Ordering extends Component {
           header.style.top = 0;
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   handleScrollEmenu = (e) => {
@@ -119,18 +125,20 @@ class Ordering extends Component {
           searchButton.classList.add("search-button-absolute");
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   fetchCategories = async (outlet) => {
     try {
       await this.setState({ loading: true });
-      const categories = await this.props.dispatch(ProductAction.fetchCategoryProduct(outlet));
+      const categories = await this.props.dispatch(
+        ProductAction.fetchCategoryProduct(outlet)
+      );
       await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({ categories, processing: true });
       await this.getProductPreset(categories, outlet);
       await this.setState({ loading: false });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   componentWillUnmount() {
@@ -224,7 +232,7 @@ class Ordering extends Component {
             }
           });
       });
-    } catch (e) { }
+    } catch (e) {}
 
     if (isEmptyObject(basket)) {
       product.quantity = 1;
@@ -343,7 +351,7 @@ class Ordering extends Component {
               items.push(productsBackup[i].items[j]);
             }
           }
-        } catch (e) { }
+        } catch (e) {}
 
         if (items.length != 0) {
           if (productsSearch == undefined) {
@@ -361,7 +369,7 @@ class Ordering extends Component {
 
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   loadingSearching = async (loadingSearching) => {
@@ -469,15 +477,15 @@ class Ordering extends Component {
             selectedCategory={this.state.selectedCategory}
           />
         ) : (
-            <CategoriesWebOrdering
-              loadingSearching={this.loadingSearching}
-              finished={finished}
-              setLoading={this.setLoading}
-              searchProduct={this.searchProduct}
-              categories={categories}
-              selectedCategory={this.state.selectedCategory}
-            />
-          )}
+          <CategoriesWebOrdering
+            loadingSearching={this.loadingSearching}
+            finished={finished}
+            setLoading={this.setLoading}
+            searchProduct={this.searchProduct}
+            categories={categories}
+            selectedCategory={this.state.selectedCategory}
+          />
+        )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
@@ -509,14 +517,12 @@ class Ordering extends Component {
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
                               selectProduct={this.selectProduct}
-                              showUpdateModal={(item) => {
-                                console.log("Item params in showUpdateModal");
-                                console.log(item);
+                              showUpdateModal={(item) =>
                                 this.setState({
                                   showUpdateModal: true,
                                   selectedProduct: item,
-                                });
-                              }}
+                                })
+                              }
                               key={j}
                               item={item}
                             />
