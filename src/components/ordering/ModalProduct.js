@@ -434,7 +434,6 @@ class ModalProduct extends Component {
           <div style={{ marginLeft: 5, marginRight: 10 }}>
             {item.modifier.details.map((data) => (
               <div
-                className="item-modifier"
                 className={
                   data.orderingStatus === "UNAVAILABLE"
                     ? "item-modifier product-unavailable"

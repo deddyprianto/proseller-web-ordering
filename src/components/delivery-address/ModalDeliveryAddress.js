@@ -219,12 +219,7 @@ class ModalDeliveryAdderss extends Component {
                     <Input
                       type="text"
                       style={{ height: 40, borderRadius: 5 }}
-                      value={
-                        deliveryAddress.address &&
-                          typeof deliveryAddress.address !== "string"
-                          ? deliveryAddress.address.street
-                          : ""
-                      }
+                      value={deliveryAddress.street || ""}
                       onChange={(e) =>
                         this.props.handleChange("street", e.target.value)
                       }
@@ -241,12 +236,7 @@ class ModalDeliveryAdderss extends Component {
                     <Input
                       type="text"
                       style={{ height: 40, borderRadius: 5 }}
-                      value={
-                        deliveryAddress.address &&
-                          typeof deliveryAddress.address !== "string"
-                          ? deliveryAddress.address.unitNo
-                          : ""
-                      }
+                      value={deliveryAddress.unitNo || ""}
                       onChange={(e) =>
                         this.props.handleChange("unitNo", e.target.value)
                       }
