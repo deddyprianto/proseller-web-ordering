@@ -125,6 +125,7 @@ class Header extends Component {
 
   render() {
     let { defaultOutlet, isLoggedIn } = this.props;
+    // console.log(defaultOutlet)
     let { infoCompany, openSearch, shareURL } = this.state;
     let broadcastUnreadLength =
       (this.props.broadcast && this.props.broadcast.broadcastUnreadLength) || 0;

@@ -31,6 +31,7 @@ export default class ItemsBasket extends Component {
       storeDetail.product.forEach(group => {
         group.items.forEach(product => {
           if (product.productID === productSelected.productID) {
+            product.id = productSelected.id
             productSelected = product
           }
         });
@@ -70,7 +71,7 @@ export default class ItemsBasket extends Component {
       product.remark = "";
     } else {
       if (!isEmptyArray(dataBasket.details)) {
-        const find = await dataBasket.details.find(data => data.product.id == product.product.id);
+        const find = await dataBasket.details.find(data => data.id == product.id);
         if (find != undefined) {
           await this.setState({ selectedItem: {} });
           if (mode === 'Update') {

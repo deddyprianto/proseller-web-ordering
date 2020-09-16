@@ -105,7 +105,7 @@ class Basket extends Component {
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) {}
+      } catch (error) { }
     }, 0);
     this.getDataBasket();
   };
@@ -129,8 +129,6 @@ class Basket extends Component {
     try {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
-      console.log("offlineCart : ");
-      console.log(offlineCart);
 
       if (isEmptyObject(offlineCart)) return;
       await this.props.dispatch(OrderAction.deleteCart(true));
@@ -162,7 +160,7 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
@@ -248,18 +246,12 @@ class Basket extends Component {
       }
 
       let storeDetail = null;
-      if (!isEmptyObject(this.props.defaultOutlet))
-        storeDetail = this.props.defaultOutlet;
-      else
-        storeDetail = await this.props.dispatch(
-          MasterdataAction.getOutletByID(dataBasket.outlet.id)
-        );
+      if (!isEmptyObject(this.props.defaultOutlet)) storeDetail = this.props.defaultOutlet;
+      else storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
       // console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
-      let deliveryProvaider = await this.props.dispatch(
-        OrderAction.getProvider()
-      );
+      let deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
       let discount = (selectedPoint || 0) + this.state.discountVoucher;
       let totalPrice =
         dataBasket.totalNettAmount - discount < 0
@@ -654,11 +646,10 @@ class Basket extends Component {
       selectedPoint = 0;
     }
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
