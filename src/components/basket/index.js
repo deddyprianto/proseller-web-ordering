@@ -409,6 +409,7 @@ class Basket extends Component {
 
   getDataBasketPending = async (id, status) => {
     let response = await this.props.dispatch(OrderAction.getCartPending(id));
+    console.log("Calling GET cart/pending from Basket component...");
     if (response.resultCode === 200) {
       localStorage.setItem(
         `${config.prefix}g_dataBasket`,

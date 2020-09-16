@@ -186,21 +186,21 @@ class Ordering extends Component {
       await product.product.productModifiers.map((group, i) => {
         if (!isEmptyArray(group.modifier.details))
           group.modifier.details.map((detail, j) => {
-            delete detail.quantity;
+            detail.quantity = 0;
 
-            if (group.modifier.min != 0 && group.modifier.min != undefined) {
+            if (group.modifier.min !== 0 && group.modifier.min !== undefined) {
               product.product.productModifiers[i].modifier.show = true;
             } else {
               product.product.productModifiers[i].modifier.show = false;
             }
 
             if (
-              group.modifier.isYesNo == true &&
-              detail.orderingStatus == "AVAILABLE"
+              group.modifier.isYesNo === true &&
+              detail.orderingStatus === "AVAILABLE"
             ) {
               if (
-                group.modifier.yesNoDefaultValue == true &&
-                detail.yesNoValue == "no"
+                group.modifier.yesNoDefaultValue === true &&
+                detail.yesNoValue === "no"
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
@@ -208,8 +208,8 @@ class Ordering extends Component {
               }
 
               if (
-                group.modifier.yesNoDefaultValue == false &&
-                detail.yesNoValue == "yes"
+                group.modifier.yesNoDefaultValue === false &&
+                detail.yesNoValue === "yes"
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
@@ -271,6 +271,7 @@ class Ordering extends Component {
       }
     }
     product.mode = mode;
+    console.log("selected Product changed to :");
     console.log(product);
     await this.setState({ selectedItem: product });
   };

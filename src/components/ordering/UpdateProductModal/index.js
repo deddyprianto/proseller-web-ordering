@@ -65,7 +65,7 @@ const UpdateProductModal = ({
           modifier: {
             ...modifierGroup.modifier,
             details: modifierGroup.modifier.details.map((modifierItem) => {
-              const quantity = flatModifier.find((item) => {
+              const modifierOfProduct = flatModifier.find((item) => {
                 return (
                   item.id === modifierItem.id &&
                   item.groupModifierID === modifierGroup.modifierID
@@ -73,14 +73,17 @@ const UpdateProductModal = ({
               });
               return {
                 ...modifierItem,
-                isSelected: quantity ? true : false,
-                quantity: quantity ? quantity.quantity : 0,
+                isSelected: modifierOfProduct
+                  ? modifierOfProduct.isSelected
+                  : false,
+                quantity: modifierOfProduct ? modifierOfProduct.quantity : 0,
               };
             }),
           },
         };
       }
     );
+    console.log(newProductModifiers);
     setAddNew(false);
     setSelectedItem(
       {
