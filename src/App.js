@@ -34,28 +34,19 @@ addLocaleData([...locale_id, ...locale_en]);
 
 class App extends Component {
   componentDidMount = async () => {
-    if (!this.props.isLoggedIn || !account) {
-      localStorage.removeItem(`${config.prefix}_account`);
-    }
-    if (account) {
-      this.props.dispatch(AuthActions.refreshToken());
-    }
+    if (!this.props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
+    if (account) this.props.dispatch(AuthActions.refreshToken());
+
     let param = this.getUrlParameters();
     if (param && param["input"]) {
       param = this.getUrlParameters(base64.decode(decodeURI(param["input"])));
-      let defaultOutlet = await this.props.dispatch(
-        MasterdataAction.getOutletByID(param["outlet"].split("::")[1], false)
-      );
+      localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
+      if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
+
+      let defaultOutlet = await this.props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
+      localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(defaultOutlet)));
       await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
-      localStorage.setItem(
-        `${config.prefix}_scanTable`,
-        JSON.stringify(encryptor.encrypt(param))
-      );
-      if (param.orderingMode)
-        localStorage.setItem(
-          `${config.prefix}_ordering_mode`,
-          param.orderingMode
-        );
+
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
     }
