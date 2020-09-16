@@ -13,30 +13,8 @@ const UpdateProductModal = ({
   setSelectedItem,
 }) => {
   const handleAdd = () => {
-    const newProductModifiers = product.product.productModifiers.map(
-      (modifierGroup) => {
-        return {
-          ...modifierGroup,
-          modifier: {
-            ...modifierGroup.modifier,
-            details: modifierGroup.modifier.details.map((modifierItem) => {
-              return {
-                ...modifierItem,
-                quantity: 0,
-              };
-            }),
-          },
-        };
-      }
-    );
     setAddNew(true);
-    setSelectedItem(
-      {
-        ...product,
-        // product: { ...product.product, productModifiers: newProductModifiers },
-      },
-      "Add"
-    );
+    setSelectedItem(product, "Add");
     document.getElementById("open-modal-product").click();
   };
 

@@ -79,26 +79,28 @@ class ModalProduct extends Component {
     this.setState({ update: false });
   };
 
-  // componentWillReceiveProps(nextProps) {
-  //   console.log(nextProps);
-  //   let { selectedItem } = nextProps;
-  //   if (nextProps.addNew) {
-  //     selectedItem = { ...selectedItem, quantity: 0 };
-  //   }
-  //   this.setState({ selectedItem });
-  //   this.setState({ basket: nextProps.basket, disableButton: false });
-  // }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.selectedItem !== this.props.selectedItem) {
-      let { selectedItem } = this.props;
-      if (this.props.addNew) {
-        selectedItem = { ...selectedItem, quantity: 1 };
-      }
-      this.setState({ selectedItem });
-      this.setState({ basket: this.props.basket, disableButton: false });
+  componentWillReceiveProps(nextProps) {
+    // console.log(nextProps);
+    let { selectedItem } = nextProps;
+    if (nextProps.addNew) {
+      selectedItem = { ...selectedItem, quantity: 0 };
     }
+    this.setState({ selectedItem });
+    this.setState({ basket: nextProps.basket, disableButton: false });
   }
+
+  // componentDidUpdate(prevProps) {
+  //   if (prevProps.selectedItem !== this.props.selectedItem) {
+  //     let { selectedItem } = this.props;
+  //     if (this.props.addNew) {
+  //       selectedItem = { ...selectedItem, quantity: 1 };
+  //     }
+  //     this.setState({ selectedItem });
+  //   }
+  //   if (prevProps.basket !== this.props.basket) {
+  //     this.setState({ basket: this.props.basket, disableButton: false });
+  //   }
+  // }
 
   renderImageProduct = (item) => {
     if (

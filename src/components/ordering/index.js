@@ -237,55 +237,56 @@ class Ordering extends Component {
     if (isEmptyObject(basket)) {
       product.quantity = 1;
       product.remark = "";
-    } else {
-      if (!isEmptyArray(basket.details)) {
-        const find = await basket.details.find((data) => data.id == product.id);
-        if (find !== undefined) {
-          if (mode === "Update") {
-            product.quantity = find.quantity;
-
-            // fill the modifier
-            if (!isEmptyArray(find.modifiers)) {
-              product.product.productModifiers.map((group, i) => {
-                group.modifier.details.map((detail, j) => {
-                  find.modifiers.map((data) => {
-                    data.modifier.details.map((item) => {
-                      // make mark that item is in basket
-                      if (data.modifierID == group.modifierID) {
-                        product.product.productModifiers[i].postToServer = true;
-                        // set quantity basket to product that openend
-                        if (item.id == detail.id) {
-                          // check for radio button
-                          if (group.modifier.max == 1) {
-                            product.product.productModifiers[i].modifier.show =
-                              data.modifier.show;
-                          }
-                          product.product.productModifiers[i].modifier.details[
-                            j
-                          ].quantity = item.quantity;
-                          // for is selected
-                          product.product.productModifiers[i].modifier.details[
-                            j
-                          ].isSelected = item.isSelected;
-                        }
-                      }
-                    });
-                  });
-                });
-              });
-            }
-          }
-        } else {
-          product.quantity = 1;
-          product.remark = "";
-        }
-      } else {
-        product.quantity = 1;
-        product.remark = "";
-      }
     }
+    // else {
+    //   if (!isEmptyArray(basket.details)) {
+    //     const find = await basket.details.find((data) => data.id === product.id);
+    //     if (find !== undefined) {
+    //       if (mode === "Update") {
+    //         product.quantity = find.quantity;
+
+    //         // fill the modifier
+    //         if (!isEmptyArray(find.modifiers)) {
+    //           product.product.productModifiers.map((group, i) => {
+    //             group.modifier.details.map((detail, j) => {
+    //               find.modifiers.map((data) => {
+    //                 data.modifier.details.map((item) => {
+    //                   // make mark that item is in basket
+    //                   if (data.modifierID == group.modifierID) {
+    //                     product.product.productModifiers[i].postToServer = true;
+    //                     // set quantity basket to product that openend
+    //                     if (item.id == detail.id) {
+    //                       // check for radio button
+    //                       if (group.modifier.max == 1) {
+    //                         product.product.productModifiers[i].modifier.show =
+    //                           data.modifier.show;
+    //                       }
+    //                       product.product.productModifiers[i].modifier.details[
+    //                         j
+    //                       ].quantity = item.quantity;
+    //                       // for is selected
+    //                       product.product.productModifiers[i].modifier.details[
+    //                         j
+    //                       ].isSelected = item.isSelected;
+    //                     }
+    //                   }
+    //                 });
+    //               });
+    //             });
+    //           });
+    //         }
+    //       }
+    //     } else {
+    //       product.quantity = 1;
+    //       product.remark = "";
+    //     }
+    //   } else {
+    //     product.quantity = 1;
+    //     product.remark = "";
+    //   }
+    // }
     product.mode = mode;
-    await this.setState({ selectedItem: product });
+    this.setState({ selectedItem: product, selectedProduct: product });
   };
 
   getLabelButton = (item) => {
@@ -293,7 +294,7 @@ class Ordering extends Component {
     try {
       if (!isEmptyObject(basket)) {
         const find = basket.details.find(
-          (data) => data.product.id == item.product.id
+          (data) => data.product.id === item.product.id
         );
         if (find != undefined) return "Update";
         else return "Add";

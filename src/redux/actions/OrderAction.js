@@ -148,9 +148,6 @@ function processAddCart(defaultOutlet, selectedItem) {
 function processUpdateCart(basket, product) {
   return async (dispatch) => {
     let find = basket.details.find((data) => data.id === product.id);
-    console.log(basket)
-    console.log(product)
-    console.log(find)
     let dataproduct = {
       id: find.id,
       productID: product.productID,
@@ -215,8 +212,6 @@ function processUpdateCart(basket, product) {
     const payload = [];
     payload.push(dataproduct);
 
-    console.log(payload);
-
     let basketUpdate = {};
     if (account != undefined)
       basketUpdate = await dispatch(updateCart(payload));
@@ -251,7 +246,7 @@ function processOfflineCart(payload, mode) {
         }
       }
     };
-  } catch (e) { }
+  } catch (e) {}
 }
 
 function addCart(payload) {
@@ -265,7 +260,7 @@ function addCart(payload) {
 
     try {
       document.getElementById("close-modal").click();
-    } catch (e) { }
+    } catch (e) {}
 
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
     else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
@@ -278,7 +273,7 @@ function buildCart(payload = {}) {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
         (window.location.pathname.includes("emenu") ? "DINEIN" : "DELIVERY");
-    } catch (error) { }
+    } catch (error) {}
     const response = await OrderingService.api(
       "POST",
       payload,
@@ -288,7 +283,7 @@ function buildCart(payload = {}) {
 
     try {
       document.getElementById("close-modal").click();
-    } catch (e) { }
+    } catch (e) {}
 
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
     else {
@@ -335,7 +330,7 @@ function getCart(isSetData = true) {
     );
     try {
       document.getElementById("close-modal").click();
-    } catch (error) { }
+    } catch (error) {}
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
     else if (response.data && response.data.message !== "No details data") {
       if (isSetData)
