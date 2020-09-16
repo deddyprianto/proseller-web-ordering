@@ -69,9 +69,10 @@ class Product extends Component {
 
   openModal = () => {
     const { item, labelButton } = this.props;
+    console.log(item);
     this.props.selectProduct(item, labelButton);
     if (labelButton.toLowerCase() === "update") {
-      this.props.showUpdateModal();
+      this.props.showUpdateModal(item);
     } else {
       // if (isEmptyObject(basket)) document.getElementById('open-modal-ordering-mode').click();
       // else document.getElementById('open-modal-product').click();

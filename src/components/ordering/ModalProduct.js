@@ -410,9 +410,8 @@ class ModalProduct extends Component {
     );
   };
 
-  selectModifier = async (selectedModifier) => {
-    await this.setState({ selectedModifier: {} });
-    await this.setState({ selectedModifier });
+  selectModifier = (selectedModifier) => {
+    this.setState({ selectedModifier });
   };
 
   renderItemCheckbox = (item, i) => {
@@ -900,20 +899,27 @@ class ModalProduct extends Component {
     );
   };
 
-  increaseModifier = async () => {
-    let { selectedModifier } = this.state;
-    selectedModifier.quantity += 1;
-    await this.setState({ selectedModifier });
+  increaseModifier = () => {
+    this.setState((prevState) => ({
+      selectedModifier: {
+        ...prevState.selectedModifier,
+        quantity: prevState.selectedModifier.quantity + 1,
+      },
+    }));
   };
 
-  decreaseModifier = async () => {
-    let { selectedModifier } = this.state;
+  decreaseModifier = () => {
+    const { selectedModifier } = this.state;
     if (
-      selectedModifier.quantity != undefined &&
+      selectedModifier.quantity !== undefined &&
       selectedModifier.quantity > 0
     ) {
-      selectedModifier.quantity -= 1;
-      await this.setState({ selectedModifier });
+      this.setState((prevState) => ({
+        selectedModifier: {
+          ...prevState.selectedModifier,
+          quantity: prevState.selectedModifier.quantity - 1,
+        },
+      }));
     }
   };
 

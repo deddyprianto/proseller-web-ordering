@@ -33,7 +33,7 @@ const UpdateProductModal = ({
     setSelectedItem(
       {
         ...product,
-        product: { ...product.product, productModifiers: newProductModifiers },
+        // product: { ...product.product, productModifiers: newProductModifiers },
       },
       "Add"
     );
@@ -73,9 +73,7 @@ const UpdateProductModal = ({
               });
               return {
                 ...modifierItem,
-                isSelected: modifierOfProduct
-                  ? modifierOfProduct.isSelected
-                  : false,
+                isSelected: modifierOfProduct ? true : false,
                 quantity: modifierOfProduct ? modifierOfProduct.quantity : 0,
               };
             }),
@@ -83,7 +81,6 @@ const UpdateProductModal = ({
         };
       }
     );
-    console.log(newProductModifiers);
     setAddNew(false);
     setSelectedItem(
       {

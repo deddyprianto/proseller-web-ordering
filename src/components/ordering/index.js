@@ -19,6 +19,7 @@ class Ordering extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedProduct: {},
       products: [],
       productsBackup: [],
       categories: [],
@@ -271,8 +272,6 @@ class Ordering extends Component {
       }
     }
     product.mode = mode;
-    console.log("selected Product changed to :");
-    console.log(product);
     await this.setState({ selectedItem: product });
   };
 
@@ -436,7 +435,7 @@ class Ordering extends Component {
           "update" &&
           this.state.showUpdateModal && (
             <UpdateProductModal
-              product={this.state.selectedItem}
+              product={this.state.selectedProduct}
               productInCart={
                 this.props.basket &&
                 this.props.basket.details.filter((item) => {
@@ -445,7 +444,7 @@ class Ordering extends Component {
               }
               onClose={() => this.setState({ showUpdateModal: false })}
               setAddNew={(addNew) => this.setState({ addNew })}
-              setSelectedItem={(item, type) => this.selectProduct(item, type)}
+              setSelectedItem={(item) => this.setState({ selectedItem: item })}
             ></UpdateProductModal>
           )}
         <ModalProduct
@@ -498,22 +497,27 @@ class Ordering extends Component {
                       >
                         {cat.category.name}
                       </h3>
-                      {cat.items.map((item, j) => (
-                        <>
-                          {item.product && (
+                      {cat.items.map((item, j) => {
+                        return (
+                          item.product && (
                             <Product
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
                               selectProduct={this.selectProduct}
-                              showUpdateModal={() =>
-                                this.setState({ showUpdateModal: true })
-                              }
+                              showUpdateModal={(item) => {
+                                console.log("Item params in showUpdateModal");
+                                console.log(item);
+                                this.setState({
+                                  showUpdateModal: true,
+                                  selectedProduct: item,
+                                });
+                              }}
                               key={j}
                               item={item}
                             />
-                          )}
-                        </>
-                      ))}
+                          )
+                        );
+                      })}
                     </>
                   ))}
 
