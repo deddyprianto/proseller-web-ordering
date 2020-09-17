@@ -234,10 +234,8 @@ class Ordering extends Component {
       });
     } catch (e) {}
 
-    if (isEmptyObject(basket)) {
-      product.quantity = 1;
-      product.remark = "";
-    }
+    product.quantity = 1;
+    product.remark = "";
     // else {
     //   if (!isEmptyArray(basket.details)) {
     //     const find = await basket.details.find((data) => data.id === product.id);
@@ -286,7 +284,7 @@ class Ordering extends Component {
     //   }
     // }
     product.mode = mode;
-    this.setState({ selectedItem: product, selectedProduct: product });
+    this.setState({ selectedItem: product });
   };
 
   getLabelButton = (item) => {

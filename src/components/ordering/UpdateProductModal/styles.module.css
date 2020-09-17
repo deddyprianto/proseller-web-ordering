@@ -35,6 +35,20 @@
   height: 30vh;
 }
 
+.addOns {
+  font-size: 0.8em;
+}
+
+.addOns .items {
+  padding-left: 0;
+  list-style-type: none;
+  list-style-position: inside;
+}
+
+.addOns .items div {
+  font-style: italic;
+}
+
 .productList {
   display: flex;
   flex-direction: column;

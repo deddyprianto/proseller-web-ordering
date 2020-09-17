@@ -89,6 +89,16 @@ const UpdateProductModal = ({
         <div className={styles.body}>
           <div className={styles.productList}>
             {productInCart.map((item) => {
+              const modifiersList = item.modifiers.map((modifierGroup) =>
+                modifierGroup.modifier.details.map((modifierItem) => {
+                  return {
+                    ...modifierItem,
+                    groupModifierID: modifierGroup.modifierID,
+                  };
+                })
+              );
+              const flatModifier = modifiersList.flat();
+              console.log(flatModifier);
               return (
                 <div className={styles.product}>
                   <div className={styles.productName}>
@@ -97,6 +107,21 @@ const UpdateProductModal = ({
                     </span>
                     {item.product.name}
                   </div>
+                  {flatModifier.length > 0 && (
+                    <div className={styles.addOns}>
+                      <div>Add ons:</div>
+                      <div className={styles.items}>
+                        {flatModifier.map((modifierItem) => {
+                          return (
+                            <div key={modifierItem.id}>
+                              <span>{modifierItem.quantity}x </span>
+                              {modifierItem.name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                   <div className={styles.price}>
                     <b class="price-product color">
                       SGD&nbsp;{item.grossAmount}
