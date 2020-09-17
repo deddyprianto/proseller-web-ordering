@@ -83,7 +83,7 @@ class ModalProduct extends Component {
     // console.log(nextProps);
     let { selectedItem } = nextProps;
     if (nextProps.addNew) {
-      selectedItem = { ...selectedItem, quantity: 0 };
+      selectedItem = { ...selectedItem, quantity: 1 };
     }
     this.setState({ selectedItem });
     this.setState({ basket: nextProps.basket, disableButton: false });
