@@ -165,8 +165,6 @@ function processUpdateCart(basket, product) {
       //   (item) => item.postToServer === true
       // );
       // add moodifier to data product
-      console.log("Modifiers i got in processUpdateCart");
-      console.log(productModifiers);
       dataproduct.modifiers = productModifiers;
 
       let tempDetails = [];
@@ -307,7 +305,6 @@ function updateCart(payload) {
       "Bearer"
     );
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
-    dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     return dispatch(getCart());
   };
 }
@@ -315,7 +312,7 @@ function updateCart(payload) {
 function getCart(isSetData = true) {
   return async (dispatch) => {
     // IF CUSTOMER NOT LOGIN
-    if (account === undefined) {
+    if (account == undefined) {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {
@@ -342,8 +339,6 @@ function getCart(isSetData = true) {
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
       return {};
-    } else {
-      if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
   };
 }

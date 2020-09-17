@@ -926,20 +926,20 @@ class ModalProduct extends Component {
   //   }
   // };
 
-  increaseModifier = async () => {
+  increaseModifier = () => {
     let { selectedModifier } = this.state;
     selectedModifier.quantity += 1;
-    await this.setState({ selectedModifier });
+    this.setState({ selectedModifier });
   };
 
-  decreaseModifier = async () => {
+  decreaseModifier = () => {
     let { selectedModifier } = this.state;
     if (
       selectedModifier.quantity != undefined &&
       selectedModifier.quantity > 0
     ) {
       selectedModifier.quantity -= 1;
-      await this.setState({ selectedModifier });
+      this.setState({ selectedModifier });
     }
   };
 
