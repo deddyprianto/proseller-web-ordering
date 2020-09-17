@@ -48,6 +48,7 @@ export default class MenuBasket extends Component {
             data={props}
             roleDisableNotPending={this.props.roleDisableNotPending}
             setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
+            isLoggedIn={this.props.isLoggedIn}
           />
         </div>
 
@@ -66,7 +67,14 @@ export default class MenuBasket extends Component {
         {
           props.orderingMode && props.orderingMode === "DELIVERY" &&
           <div>
-            {<DeliveryAddressBasket data={props} roleBtnClear={this.props.roleBtnClear} />}
+            {
+              <DeliveryAddressBasket
+                data={props}
+                roleBtnClear={this.props.roleBtnClear}
+                handleOpenLogin={() => this.props.handleOpenLogin()}
+                isLoggedIn={this.props.isLoggedIn}
+              />
+            }
             {
               <ProviderDeliveryBasket
                 data={props}

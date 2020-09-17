@@ -185,6 +185,8 @@ export default class ViewCartBasket extends Component {
               setPoint={(point) => this.props.setPoint(point)}
               setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
               handleSetProvaider={(item) => this.props.handleSetProvaider(item)}
+              handleOpenLogin={() => this.props.handleOpenLogin()}
+              isLoggedIn={this.props.isLoggedIn}
             />
           </Col>
         </Row>

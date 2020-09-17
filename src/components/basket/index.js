@@ -478,6 +478,7 @@ class Basket extends Component {
   };
 
   checkOperationalHours = (storeDetail) => {
+    if (!storeDetail.operationalHours) return { status: true }
     let operationalHours = storeDetail.operationalHours.filter(function (a) {
       return a.nameOfDay === moment().format("dddd");
     })[0];
@@ -768,13 +769,19 @@ class Basket extends Component {
     });
   };
 
-  handleSettle = async () => {
-    let { selectedCard } = this.state;
+  handleOpenLogin() {
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
       document.getElementById("login-register-btn").click();
-      return;
+      return false;
     }
+    return true
+  }
+
+  handleSettle = async () => {
+    let { selectedCard } = this.state;
+
+    if (!this.handleOpenLogin()) return
 
     if (selectedCard) {
       let userInput = selectedCard.details.userInput;
@@ -1044,6 +1051,7 @@ class Basket extends Component {
                       handleSetState={(field, value) =>
                         this.handleSetState(field, value)
                       }
+                      handleOpenLogin={() => this.handleOpenLogin()}
                     />
                   )}
                   {!viewCart && (

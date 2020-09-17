@@ -42,7 +42,7 @@ export default class ModalOrderingMode extends Component {
                     </div>
                   }
                   {
-                    props.storeDetail.enableDelivery !== false || !isEmenu &&
+                    props.storeDetail.enableDelivery !== false && !isEmenu &&
                     <div className="order-mode" data-dismiss="modal" onClick={() => this.props.setOrderingMode('DELIVERY')}>
                       <h5 className="color" style={{ fontWeight: 1000 }}>DELIVERY</h5>
                       <i className="fa fa-car color icon-order"></i>

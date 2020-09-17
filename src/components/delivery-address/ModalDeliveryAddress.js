@@ -285,7 +285,7 @@ class ModalDeliveryAdderss extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    account: state.auth.account.idToken.payload,
+    account: state.auth.account && state.auth.account.idToken.payload,
   };
 };
 

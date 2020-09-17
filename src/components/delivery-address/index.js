@@ -198,9 +198,8 @@ class DeliveryAddress extends Component {
   handleChange = (field, value) => {
     let { deliveryAddress } = this.state;
     deliveryAddress[field] = value;
-    deliveryAddress.address = `${deliveryAddress.street || ""}, ${
-      deliveryAddress.unitNo || ""
-    }, ${deliveryAddress.postalCode || ""}`;
+    deliveryAddress.address = `${deliveryAddress.street || ""}, ${deliveryAddress.unitNo || ""
+      }, ${deliveryAddress.postalCode || ""}`;
     this.setState({ deliveryAddress });
   };
 
@@ -358,9 +357,8 @@ class DeliveryAddress extends Component {
                                 : `${items.address.street}, ${items.address.unitNo}`}
                             </div>
                             <div style={{ fontSize: 12 }}>
-                              {`${items.province ? items.province + ", " : ""}${
-                                items.city
-                              }, ${items.postalCode}`}
+                              {`${items.province ? items.province + ", " : ""}${items.city
+                                }, ${items.postalCode}`}
                             </div>
                             <div
                               style={{
@@ -400,22 +398,22 @@ class DeliveryAddress extends Component {
                                   Selected
                                 </Button>
                               ) : (
-                                <Button
-                                  style={{
-                                    width: 150,
-                                    paddingLeft: 5,
-                                    paddingRight: 5,
-                                    borderRadius: 5,
-                                    height: 40,
-                                    backgroundColor: "#FFF",
-                                    color: "#c00a27",
-                                    border: "1px solid #CDCDCD",
-                                  }}
-                                  onClick={() => this.handleDelete(items)}
-                                >
-                                  Delete
-                                </Button>
-                              )}
+                                  <Button
+                                    style={{
+                                      width: 150,
+                                      paddingLeft: 5,
+                                      paddingRight: 5,
+                                      borderRadius: 5,
+                                      height: 40,
+                                      backgroundColor: "#FFF",
+                                      color: "#c00a27",
+                                      border: "1px solid #CDCDCD",
+                                    }}
+                                    onClick={() => this.handleDelete(items)}
+                                  >
+                                    Delete
+                                  </Button>
+                                )}
                             </div>
                           </div>
                         </Col>
@@ -434,7 +432,7 @@ class DeliveryAddress extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    account: state.auth.account.idToken.payload,
+    account: state.auth.account && state.auth.account.idToken.payload,
   };
 };
 

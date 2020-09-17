@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom';
 import config from '../../config';
 
 export default class DeliveryAddressBasket extends Component {
+  handleGet() {
+    if (!this.props.handleOpenLogin()) return
+    localStorage.setItem(`${config.prefix}_getDeliveryAddress`, true)
+  }
   render() {
     let props = this.props.data
     return (
@@ -12,9 +16,9 @@ export default class DeliveryAddressBasket extends Component {
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
           <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>Delivery Address *</div>
           <div>
-            <Link to="/delivery-address">
+            <Link to={this.props.isLoggedIn && "/delivery-address"}>
               <Button disabled={this.props.roleBtnClear ? true : false}
-                onClick={() => localStorage.setItem(`${config.prefix}_getDeliveryAddress`, true)}
+                onClick={() => this.handleGet()}
                 style={{
                   fontWeight: "bold", color: "#FFF", cursor: "pointer",
                   backgroundColor: (!props.deliveryAddress ? "#c00a27" : "#20a8d8"),
