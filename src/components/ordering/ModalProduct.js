@@ -260,8 +260,10 @@ class ModalProduct extends Component {
           OrderAction.processAddCart(defaultOutlet, selectedItem)
         );
       else {
+        console.log("Updating item :");
+        console.log(selectedItem);
         let response = await this.props.dispatch(
-          OrderAction.processUpdateCart(basket, selectedItem)
+          OrderAction.processUpdateCart(basket, { ...selectedItem })
         );
         this.props.handleSetState("dataBasket", response.data);
         document.getElementById("detail-product-modal").click();
@@ -398,7 +400,7 @@ class ModalProduct extends Component {
               >
                 <input
                   type="checkbox"
-                  checked={!data.isSelected}
+                  checked={data.isSelected}
                   className="scaled-checkbox form-check-input checkbox-modifier"
                   onClick={() => this.addItemIsYesNo(data)}
                 />
@@ -900,27 +902,44 @@ class ModalProduct extends Component {
     );
   };
 
-  increaseModifier = () => {
-    this.setState((prevState) => ({
-      selectedModifier: {
-        ...prevState.selectedModifier,
-        quantity: prevState.selectedModifier.quantity + 1,
-      },
-    }));
+  // increaseModifier = () => {
+  //   this.setState((prevState) => ({
+  //     selectedModifier: {
+  //       ...prevState.selectedModifier,
+  //       quantity: prevState.selectedModifier.quantity + 1,
+  //     },
+  //   }));
+  // };
+
+  // decreaseModifier = () => {
+  //   const { selectedModifier } = this.state;
+  //   if (
+  //     selectedModifier.quantity !== undefined &&
+  //     selectedModifier.quantity > 0
+  //   ) {
+  //     this.setState((prevState) => ({
+  //       selectedModifier: {
+  //         ...prevState.selectedModifier,
+  //         quantity: prevState.selectedModifier.quantity - 1,
+  //       },
+  //     }));
+  //   }
+  // };
+
+  increaseModifier = async () => {
+    let { selectedModifier } = this.state;
+    selectedModifier.quantity += 1;
+    await this.setState({ selectedModifier });
   };
 
-  decreaseModifier = () => {
-    const { selectedModifier } = this.state;
+  decreaseModifier = async () => {
+    let { selectedModifier } = this.state;
     if (
-      selectedModifier.quantity !== undefined &&
+      selectedModifier.quantity != undefined &&
       selectedModifier.quantity > 0
     ) {
-      this.setState((prevState) => ({
-        selectedModifier: {
-          ...prevState.selectedModifier,
-          quantity: prevState.selectedModifier.quantity - 1,
-        },
-      }));
+      selectedModifier.quantity -= 1;
+      await this.setState({ selectedModifier });
     }
   };
 

@@ -200,7 +200,7 @@ class Ordering extends Component {
       await product.product.productModifiers.map((group, i) => {
         if (!isEmptyArray(group.modifier.details))
           group.modifier.details.map((detail, j) => {
-            detail.quantity = 0;
+            delete detail.quantity;
 
             if (group.modifier.min !== 0 && group.modifier.min !== undefined) {
               product.product.productModifiers[i].modifier.show = true;

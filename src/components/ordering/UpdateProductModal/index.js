@@ -65,7 +65,7 @@ const UpdateProductModal = ({
         ...product,
         quantity,
         id,
-        modifiers,
+        // modifiers,
         product: { ...product.product, productModifiers: newProductModifiers },
       },
       "Update"

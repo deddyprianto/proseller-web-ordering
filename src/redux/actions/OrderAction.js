@@ -161,10 +161,12 @@ function processUpdateCart(basket, product) {
     if (!isEmptyArray(product.product.productModifiers)) {
       let totalModifier = 0;
       let productModifiers = [...product.product.productModifiers];
-      productModifiers = productModifiers.filter(
-        (item) => item.postToServer === true
-      );
+      // productModifiers = productModifiers.filter(
+      //   (item) => item.postToServer === true
+      // );
       // add moodifier to data product
+      console.log("Modifiers i got in processUpdateCart");
+      console.log(productModifiers);
       dataproduct.modifiers = productModifiers;
 
       let tempDetails = [];
