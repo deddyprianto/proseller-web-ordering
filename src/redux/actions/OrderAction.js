@@ -285,13 +285,25 @@ function buildCart(payload = {}) {
       document.getElementById("close-modal").click();
     } catch (e) {}
 
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
+    console.log(response);
+    if (response.ResultCode === 400) {
+      console.log("Status is 400");
+      localStorage.removeItem(`${config.prefix}_offlineCart`);
+      await dispatch(AuthActions.refreshToken());
+    }
+    // else if(response)
     else {
+      let { data } = response;
+
+      if (data.message) {
+        data = {};
+      }
+      console.log("Status is not 400");
       localStorage.setItem(
         `${config.prefix}_offlineCart`,
-        JSON.stringify(response.data)
+        JSON.stringify(data)
       );
-      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+      return dispatch(setData(data, CONSTANT.DATA_BASKET));
     }
   };
 }
@@ -340,6 +352,9 @@ function getCart(isSetData = true) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
       return {};
     }
+    // else if (response.data === null) {
+    //   if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
+    // }
   };
 }
 
