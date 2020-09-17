@@ -53,8 +53,13 @@ class App extends Component {
 
     let url = window.location.hash.split("#")[1]
     if (url !== "/") {
-      if (!this.getUrlParameters())
-        await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+      if (!param) {
+        let defaultOutlet = await this.props.dispatch(OutletAction.fetchDefaultOutlet());
+        defaultOutlet = await this.props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.sortKey.split("::")[1], true));
+        localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(defaultOutlet)));
+        await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+      }
+
       await this.props.dispatch(OrderAction.getCart());
     }
 
