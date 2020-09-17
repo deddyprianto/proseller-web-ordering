@@ -89,16 +89,21 @@ const UpdateProductModal = ({
         <div className={styles.body}>
           <div className={styles.productList}>
             {productInCart.map((item) => {
-              const modifiersList = item.modifiers.map((modifierGroup) =>
-                modifierGroup.modifier.details.map((modifierItem) => {
-                  return {
-                    ...modifierItem,
-                    groupModifierID: modifierGroup.modifierID,
-                  };
-                })
-              );
-              const flatModifier = modifiersList.flat();
-              console.log(flatModifier);
+              const modifiersList = item.modifiers.map((modifierGroup) => {
+                return {
+                  ...modifierGroup,
+                  modifiersList: modifierGroup.modifier.details.map(
+                    (modifierItem) => {
+                      return {
+                        ...modifierItem,
+                        groupModifierID: modifierGroup.modifierID,
+                      };
+                    }
+                  ),
+                };
+              });
+              // const flatModifier = modifiersList.flat();
+              // console.log(modifiersList);
               return (
                 <div className={styles.product}>
                   <div className={styles.productName}>
@@ -107,21 +112,29 @@ const UpdateProductModal = ({
                     </span>
                     {item.product.name}
                   </div>
-                  {flatModifier.length > 0 && (
-                    <div className={styles.addOns}>
-                      <div>Add ons:</div>
-                      <div className={styles.items}>
-                        {flatModifier.map((modifierItem) => {
-                          return (
-                            <div key={modifierItem.id}>
-                              <span>{modifierItem.quantity}x </span>
-                              {modifierItem.name}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+                  {modifiersList.length > 0 &&
+                    modifiersList.map((modifierGroup) => {
+                      return (
+                        <div className={styles.addOns}>
+                          <div>
+                            <strong>
+                              {modifierGroup.modifierName || ""}{" "}
+                              {modifierGroup.modifierName && ":"}{" "}
+                            </strong>
+                          </div>
+                          <div className={styles.items}>
+                            {modifierGroup.modifiersList.map((modifierItem) => {
+                              return (
+                                <div key={modifierItem.id}>
+                                  <span>{modifierItem.quantity}x </span>
+                                  {modifierItem.name}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
                   <div className={styles.price}>
                     <b class="price-product color">
                       SGD&nbsp;{item.grossAmount}
