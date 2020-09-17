@@ -44,7 +44,7 @@ class Home extends Component {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,
-            unitPrice: offlineCart.details[i].retailPrice,
+            unitPrice: offlineCart.details[i].unitPrice,
             quantity: offlineCart.details[i].quantity,
           };
 
@@ -61,7 +61,7 @@ class Home extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   render() {
