@@ -294,16 +294,18 @@ function buildCart(payload = {}) {
     // else if(response)
     else {
       let { data } = response;
+      let basketData = { ...data };
 
       if (data.message) {
-        data = {};
+        data = null;
+        basketData = {};
       }
       console.log("Status is not 400");
       localStorage.setItem(
         `${config.prefix}_offlineCart`,
         JSON.stringify(data)
       );
-      return dispatch(setData(data, CONSTANT.DATA_BASKET));
+      return dispatch(setData(basketData, CONSTANT.DATA_BASKET));
     }
   };
 }
@@ -351,10 +353,9 @@ function getCart(isSetData = true) {
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
       return {};
+    } else if (response.data === null) {
+      if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
-    // else if (response.data === null) {
-    //   if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
-    // }
   };
 }
 

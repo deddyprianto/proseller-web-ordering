@@ -62,16 +62,22 @@ class LoginRegister extends Component {
   }
 
   componentDidMount = async () => {
-    let infoCompany = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+    let infoCompany = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+    );
     if (!infoCompany) {
       let time = setInterval(async () => {
-        infoCompany = await encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
-        if (infoCompany) clearInterval(time)
+        infoCompany = await encryptor.decrypt(
+          JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+        );
+        if (infoCompany) clearInterval(time);
       }, 0);
     }
 
     if (infoCompany && infoCompany.enableRegisterWithPassword) {
-      this.setState({ enableRegisterWithPassword: infoCompany.enableRegisterWithPassword })
+      this.setState({
+        enableRegisterWithPassword: infoCompany.enableRegisterWithPassword,
+      });
     }
 
     const otpData = lsLoad(config.prefix + "_otp") || null;
@@ -635,10 +641,12 @@ class LoginRegister extends Component {
       console.log(response);
       if (response.status === false) throw response;
       response.isLogin = true;
-      const offlineCart = lsStore(config.prefix + "_offlineCart", true);
+      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
       localStorage.clear();
       lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
-      lsStore(config.prefix + "_offlineCart", offlineCart, true);
+      if (offlineCart !== null) {
+        lsStore(config.prefix + "_offlineCart", offlineCart, true);
+      }
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -808,17 +816,17 @@ class LoginRegister extends Component {
                 enablePassword={this.state.enableRegisterWithPassword}
               ></SignUp>
             ) : (
-                  <Portal
-                    initialMethod={method}
-                    handleMethodChange={(value) => {
-                      this.setState({ method: value });
-                    }}
-                    handlePhoneCheck={this.handleMobileCheck}
-                    handleChange={this.handleInput}
-                    handleEmailCheck={this.handleEmailCheck}
-                    error={this.state.errorPhone || this.state.errorEmail}
-                  ></Portal>
-                )}
+              <Portal
+                initialMethod={method}
+                handleMethodChange={(value) => {
+                  this.setState({ method: value });
+                }}
+                handlePhoneCheck={this.handleMobileCheck}
+                handleChange={this.handleInput}
+                handleEmailCheck={this.handleEmailCheck}
+                error={this.state.errorPhone || this.state.errorEmail}
+              ></Portal>
+            )}
           </div>
         </div>
       </div>
