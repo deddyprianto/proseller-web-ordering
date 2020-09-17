@@ -87,6 +87,8 @@ class Basket extends Component {
   componentDidMount = async () => {
     await this.checkOfflineCart();
     this.audio.addEventListener("ended", () => this.setState({ play: false }));
+    let offlineCart = JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`));
+    console.log(offlineCart)
 
     let param = this.getUrlParameters();
     if (param && param["input"]) {
@@ -105,7 +107,7 @@ class Basket extends Component {
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) {}
+      } catch (error) { }
     }, 0);
     this.getDataBasket();
   };
@@ -137,7 +139,7 @@ class Basket extends Component {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,
-            unitPrice: offlineCart.details[i].retailPrice,
+            unitPrice: offlineCart.details[i].unitPrice,
             quantity: offlineCart.details[i].quantity,
           };
 
@@ -161,7 +163,7 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
@@ -653,11 +655,10 @@ class Basket extends Component {
       selectedPoint = 0;
     }
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
