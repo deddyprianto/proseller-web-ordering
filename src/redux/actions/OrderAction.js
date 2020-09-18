@@ -241,10 +241,13 @@ function processOfflineCart(payload, mode) {
           }
         } else {
           for (let i = 0; i < offlineCart.details.length; i++) {
-            if (offlineCart.details[i].id === payload[0].id) {
-              offlineCart.details[i] = payload[0];
+            for (let j = 0; j < payload.length; j++) {
+              if (offlineCart.details[i].id === payload[j].id) {
+                offlineCart.details[i] = payload[j];
+              }
             }
           }
+          offlineCart.details = offlineCart.details.filter(item => { return item.quantity !== 0 })
           return await dispatch(buildCart(offlineCart));
         }
       }
