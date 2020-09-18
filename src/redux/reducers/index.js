@@ -11,6 +11,7 @@ import campaign from "./CampaignReducer";
 import language from "./LanguageReducer";
 import promotion from "./PromotionReducer";
 import masterdata from "./MasterdataReducer";
+import theme from "./ThemeReducer";
 
 const rootReducer = combineReducers({
   auth,
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
   promotion,
   product,
   masterdata,
-  broadcast
+  broadcast,
+  theme,
 });
 
 export default rootReducer;

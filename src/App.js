@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
 import { AuthActions } from "./redux/actions/AuthAction";
@@ -14,10 +14,11 @@ import locale_id from "react-intl/locale-data/id";
 import messages_id from "./languages/id.json";
 import messages_en from "./languages/en.json";
 
-import color from "./assets/colors/red.css";
 import config from "./config";
 
 import { lsLoad } from "./helpers/localStorage";
+
+import useStyles from "./styles/theme";
 
 const Layout = loadable(() => import("./components/template/Layout"));
 // import Layout from "./components/template/Layout";
@@ -32,43 +33,102 @@ const messages = {
 
 addLocaleData([...locale_id, ...locale_en]);
 
-class App extends Component {
-  componentDidMount = async () => {
-    if (!this.props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
-    if (account) this.props.dispatch(AuthActions.refreshToken());
+// class App extends Component {
+//   componentDidMount = async () => {
+//     if (!this.props.isLoggedIn || !account)
+//       localStorage.removeItem(`${config.prefix}_account`);
+//     if (account) this.props.dispatch(AuthActions.refreshToken());
 
-    let param = this.getUrlParameters();
-    if (param && param["input"]) {
-      param = this.getUrlParameters(base64.decode(decodeURI(param["input"])));
-      localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
-      if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
+//     let param = this.getUrlParameters();
+//     if (param && param["input"]) {
+//       param = this.getUrlParameters(base64.decode(decodeURI(param["input"])));
+//       localStorage.setItem(
+//         `${config.prefix}_scanTable`,
+//         JSON.stringify(encryptor.encrypt(param))
+//       );
+//       if (param.orderingMode)
+//         localStorage.setItem(
+//           `${config.prefix}_ordering_mode`,
+//           param.orderingMode
+//         );
 
-      let defaultOutlet = await this.props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
-      localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(defaultOutlet)));
-      await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+//       let defaultOutlet = await this.props.dispatch(
+//         MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
+//       );
+//       localStorage.setItem(
+//         `${config.prefix}_defaultOutlet`,
+//         JSON.stringify(encryptor.encrypt(defaultOutlet))
+//       );
+//       await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+//     } else {
+//       localStorage.removeItem(`${config.prefix}_scanTable`);
+//     }
 
-    } else {
-      localStorage.removeItem(`${config.prefix}_scanTable`);
-    }
+//     let url = window.location.hash.split("#")[1];
+//     if (url !== "/") {
+//       if (!param) {
+//         let defaultOutlet = await this.props.dispatch(
+//           OutletAction.fetchDefaultOutlet()
+//         );
+//         defaultOutlet = await this.props.dispatch(
+//           MasterdataAction.getOutletByID(
+//             defaultOutlet.sortKey.split("::")[1],
+//             true
+//           )
+//         );
+//         localStorage.setItem(
+//           `${config.prefix}_defaultOutlet`,
+//           JSON.stringify(encryptor.encrypt(defaultOutlet))
+//         );
+//         await this.props.dispatch(
+//           OutletAction.fetchDefaultOutlet(defaultOutlet)
+//         );
+//       }
 
-    let url = window.location.hash.split("#")[1]
-    if (url !== "/") {
-      if (!param) {
-        let defaultOutlet = await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-        defaultOutlet = await this.props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.sortKey.split("::")[1], true));
-        localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(defaultOutlet)));
-        await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
-      }
+//       await this.props.dispatch(OrderAction.getCart());
+//     }
 
-      await this.props.dispatch(OrderAction.getCart());
-    }
+//     // try {
+//     //   document.getElementById("color-theme").href = color;
+//     // } catch (error) {}
+//   };
 
-    try {
-      document.getElementById("color-theme").href = color;
-    } catch (error) { }
-  };
+//   getUrlParameters = (pageParamString = null) => {
+//     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
+//     if (pageParamString) {
+//       var paramsArray = pageParamString.split("&");
+//       var paramsHash = {};
 
-  getUrlParameters = (pageParamString = null) => {
+//       for (var i = 0; i < paramsArray.length; i++) {
+//         var singleParam = paramsArray[i].split("=");
+//         paramsHash[singleParam[0]] = singleParam[1];
+//       }
+//       return paramsHash;
+//     }
+//   };
+
+//   render() {
+//     const { lang } = this.props;
+//     useStyles(this.props);
+
+//     return (
+//       <IntlProvider locale={lang} messages={messages[lang]}>
+//         <HashRouter>
+//           <Switch>
+//             <Route component={Layout} />
+//             <Redirect from="*" to="/" />
+//           </Switch>
+//         </HashRouter>
+//       </IntlProvider>
+//     );
+//   }
+// }
+
+const App = (props) => {
+  const { lang } = props;
+  useStyles({ theme: { color: "" } });
+
+  const getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
     if (pageParamString) {
       var paramsArray = pageParamString.split("&");
@@ -82,26 +142,84 @@ class App extends Component {
     }
   };
 
-  render() {
-    const { lang } = this.props;
+  const checkUser = async () => {
+    if (!props.isLoggedIn || !account)
+      localStorage.removeItem(`${config.prefix}_account`);
+    if (account) props.dispatch(AuthActions.refreshToken());
 
-    return (
-      <IntlProvider locale={lang} messages={messages[lang]}>
-        <HashRouter>
-          <Switch>
-            <Route component={Layout} />
-            <Redirect from="*" to="/" />
-          </Switch>
-        </HashRouter>
-      </IntlProvider>
-    );
-  }
-}
+    let param = getUrlParameters();
+    if (param && param["input"]) {
+      param = getUrlParameters(base64.decode(decodeURI(param["input"])));
+      localStorage.setItem(
+        `${config.prefix}_scanTable`,
+        JSON.stringify(encryptor.encrypt(param))
+      );
+      if (param.orderingMode)
+        localStorage.setItem(
+          `${config.prefix}_ordering_mode`,
+          param.orderingMode
+        );
+
+      let defaultOutlet = await props.dispatch(
+        MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
+      );
+      localStorage.setItem(
+        `${config.prefix}_defaultOutlet`,
+        JSON.stringify(encryptor.encrypt(defaultOutlet))
+      );
+      await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+    } else {
+      localStorage.removeItem(`${config.prefix}_scanTable`);
+    }
+
+    let url = window.location.hash.split("#")[1];
+    if (url !== "/") {
+      if (!param) {
+        let defaultOutlet = await props.dispatch(
+          OutletAction.fetchDefaultOutlet()
+        );
+        defaultOutlet = await props.dispatch(
+          MasterdataAction.getOutletByID(
+            defaultOutlet.sortKey.split("::")[1],
+            true
+          )
+        );
+        localStorage.setItem(
+          `${config.prefix}_defaultOutlet`,
+          JSON.stringify(encryptor.encrypt(defaultOutlet))
+        );
+        await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+      }
+
+      await props.dispatch(OrderAction.getCart());
+    }
+
+    // try {
+    //   document.getElementById("color-theme").href = color;
+    // } catch (error) {}
+  };
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  return (
+    <IntlProvider locale={lang} messages={messages[lang]}>
+      <HashRouter>
+        <Switch>
+          <Route component={Layout} />
+          <Redirect from="*" to="/" />
+        </Switch>
+      </HashRouter>
+    </IntlProvider>
+  );
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
     lang: state.language.lang,
+    theme: state.theme,
   };
 };
 
