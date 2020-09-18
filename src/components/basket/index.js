@@ -88,7 +88,6 @@ class Basket extends Component {
     await this.checkOfflineCart();
     this.audio.addEventListener("ended", () => this.setState({ play: false }));
     let offlineCart = JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`));
-    console.log(offlineCart)
 
     let param = this.getUrlParameters();
     if (param && param["input"]) {
@@ -131,7 +130,6 @@ class Basket extends Component {
     try {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
-      console.log(offlineCart);
 
       if (isEmptyObject(offlineCart)) return;
       await this.props.dispatch(OrderAction.deleteCart(true));
@@ -255,7 +253,7 @@ class Basket extends Component {
         storeDetail = await this.props.dispatch(
           MasterdataAction.getOutletByID(dataBasket.outlet.id)
         );
-      // console.log('storeDetail', storeDetail)
+      console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
       let deliveryProvaider = await this.props.dispatch(

@@ -825,7 +825,8 @@ class ModalProduct extends Component {
                     marginRight: -30,
                   }}
                 >
-                  {defaultOutlet.enableDineIn !== false && isEmenu && (
+                  {
+                    defaultOutlet.enableDineIn === true &&
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("DINEIN")}
@@ -841,9 +842,10 @@ class ModalProduct extends Component {
                         <b>Select</b>
                       </button>
                     </div>
-                  )}
+                  }
 
-                  {defaultOutlet.enableTakeAway !== false && isEmenu && (
+                  {
+                    defaultOutlet.enableTakeAway === true &&
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("TAKEAWAY")}
@@ -859,9 +861,10 @@ class ModalProduct extends Component {
                         <b>Select</b>
                       </button>
                     </div>
-                  )}
+                  }
 
-                  {!isEmenu && (
+                  {
+                    defaultOutlet.enableDelivery === true &&
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("DELIVERY")}
@@ -877,7 +880,7 @@ class ModalProduct extends Component {
                         <b>Select</b>
                       </button>
                     </div>
-                  )}
+                  }
                 </div>
                 <p
                   id="dismiss-ordering-mode"
