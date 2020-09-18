@@ -749,15 +749,17 @@ class Basket extends Component {
           if (dataBasket.details.length === selected.length)
             await this.props.dispatch(OrderAction.deleteCart());
           else {
+            let payload = []
             for (let index = 0; index < selected.length; index++) {
               let items = selected[index];
               if (items.selected !== false) {
                 items.quantity = 0;
-                await this.props.dispatch(
-                  OrderAction.processUpdateCart(dataBasket, items)
-                );
               }
+              payload.push(items)
             }
+            await this.props.dispatch(
+              OrderAction.processUpdateCart(dataBasket, payload)
+            );
             localStorage.removeItem(`${config.prefix}_dataBasket`);
             window.location.reload();
           }

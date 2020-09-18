@@ -145,76 +145,79 @@ function processAddCart(defaultOutlet, selectedItem) {
   };
 }
 
-function processUpdateCart(basket, product) {
+function processUpdateCart(basket, products) {
   return async (dispatch) => {
-    let find = basket.details.find((data) => data.id === product.id);
-    let dataproduct = {
-      id: find.id,
-      productID: product.productID,
-      unitPrice: product.product.retailPrice,
-      quantity: product.quantity,
-    };
+    let payload = [];
+    for (let index = 0; index < products.length; index++) {
+      let product = products[index];
+      let find = await basket.details.find((data) => data.id === product.id);
+      let dataproduct = {
+        id: find.id,
+        productID: product.productID,
+        unitPrice: product.product.retailPrice,
+        quantity: product.quantity,
+      };
 
-    if (product.remark != "" && product.remark != undefined)
-      dataproduct.remark = product.remark;
+      if (product.remark != "" && product.remark != undefined)
+        dataproduct.remark = product.remark;
 
-    if (!isEmptyArray(product.product.productModifiers)) {
-      let totalModifier = 0;
-      let productModifiers = [...product.product.productModifiers];
-      // productModifiers = productModifiers.filter(
-      //   (item) => item.postToServer === true
-      // );
-      // add moodifier to data product
-      dataproduct.modifiers = productModifiers;
+      if (!isEmptyArray(product.product.productModifiers)) {
+        let totalModifier = 0;
+        let productModifiers = [...product.product.productModifiers];
+        // productModifiers = productModifiers.filter(
+        //   (item) => item.postToServer === true
+        // );
+        // add moodifier to data product
+        dataproduct.modifiers = productModifiers;
 
-      let tempDetails = [];
-      for (let i = 0; i < dataproduct.modifiers.length; i++) {
-        tempDetails = [];
-        let data = dataproduct.modifiers[i];
+        let tempDetails = [];
+        for (let i = 0; i < dataproduct.modifiers.length; i++) {
+          tempDetails = [];
+          let data = dataproduct.modifiers[i];
 
-        for (let j = 0; j < data.modifier.details.length; j++) {
-          if (
-            data.modifier.details[j].quantity != undefined &&
-            data.modifier.details[j].quantity > 0
-          ) {
-            // check if price is undefined
-            if (data.modifier.details[j].price == undefined) {
-              data.modifier.details[j].price = 0;
+          for (let j = 0; j < data.modifier.details.length; j++) {
+            if (
+              data.modifier.details[j].quantity != undefined &&
+              data.modifier.details[j].quantity > 0
+            ) {
+              // check if price is undefined
+              if (data.modifier.details[j].price == undefined) {
+                data.modifier.details[j].price = 0;
+              }
+              tempDetails.push(data.modifier.details[j]);
             }
-            tempDetails.push(data.modifier.details[j]);
           }
+
+          // if not null, then replace details
+          dataproduct.modifiers[i].modifier.details = tempDetails;
         }
 
-        // if not null, then replace details
-        dataproduct.modifiers[i].modifier.details = tempDetails;
+        //  calculate total modifier
+        await dataproduct.modifiers.map((group, i) => {
+          if (group.postToServer == true) {
+            group.modifier.details.map((detail) => {
+              if (detail.quantity != undefined && detail.quantity > 0) {
+                totalModifier += parseFloat(detail.quantity * detail.price);
+              }
+            });
+          }
+        });
+
+        // check if item modifier was deleted, if yes, then remove array modifier
+        dataproduct.modifiers = await _.remove(dataproduct.modifiers, (group) => {
+          return group.modifier.details.length > 0;
+        });
+
+        //  add total item modifier to subtotal product
+        dataproduct.unitPrice += totalModifier;
       }
 
-      //  calculate total modifier
-      await dataproduct.modifiers.map((group, i) => {
-        if (group.postToServer == true) {
-          group.modifier.details.map((detail) => {
-            if (detail.quantity != undefined && detail.quantity > 0) {
-              totalModifier += parseFloat(detail.quantity * detail.price);
-            }
-          });
-        }
-      });
-
-      // check if item modifier was deleted, if yes, then remove array modifier
-      dataproduct.modifiers = await _.remove(dataproduct.modifiers, (group) => {
-        return group.modifier.details.length > 0;
-      });
-
-      //  add total item modifier to subtotal product
-      dataproduct.unitPrice += totalModifier;
+      payload.push(dataproduct);
     }
 
-    const payload = [];
-    payload.push(dataproduct);
-
+    console.log(payload)
     let basketUpdate = {};
-    if (account != undefined)
-      basketUpdate = await dispatch(updateCart(payload));
+    if (account != undefined) basketUpdate = await dispatch(updateCart(payload));
     else basketUpdate = await dispatch(processOfflineCart(payload, "Update"));
     return basketUpdate;
   };
@@ -246,7 +249,7 @@ function processOfflineCart(payload, mode) {
         }
       }
     };
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function addCart(payload) {
@@ -260,7 +263,7 @@ function addCart(payload) {
 
     try {
       document.getElementById("close-modal").click();
-    } catch (e) {}
+    } catch (e) { }
 
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
     else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
@@ -273,7 +276,7 @@ function buildCart(payload = {}) {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
         (window.location.pathname.includes("emenu") ? "DINEIN" : "DELIVERY");
-    } catch (error) {}
+    } catch (error) { }
     const response = await OrderingService.api(
       "POST",
       payload,
@@ -283,7 +286,7 @@ function buildCart(payload = {}) {
 
     try {
       document.getElementById("close-modal").click();
-    } catch (e) {}
+    } catch (e) { }
 
     console.log(response);
     if (response.ResultCode === 400) {
@@ -344,7 +347,7 @@ function getCart(isSetData = true) {
     );
     try {
       document.getElementById("close-modal").click();
-    } catch (error) {}
+    } catch (error) { }
     if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken());
     else if (response.data && response.data.message !== "No details data") {
       if (isSetData)
