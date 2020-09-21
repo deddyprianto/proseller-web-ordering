@@ -151,16 +151,14 @@ class ModalProduct extends Component {
       }
 
       if (!isEmptyArray(selectedItem.product.productModifiers)) {
-        selectedItem.product.productModifiers.map((group) => {
-          if (group.postToServer == true) {
-            group.modifier.details.map((detail) => {
-              if (detail.quantity != undefined && detail.quantity > 0) {
-                let price = detail.price;
-                if (price == undefined) price = 0;
-                totalModifier += parseFloat(detail.quantity * price);
-              }
-            });
-          }
+        selectedItem.product.productModifiers.forEach((group) => {
+          group.modifier.details.forEach((detail) => {
+            if (detail.quantity !== undefined && detail.quantity > 0) {
+              let price = detail.price;
+              if (price === undefined) price = 0;
+              totalModifier += parseFloat(detail.quantity * price);
+            }
+          });
         });
       }
 
