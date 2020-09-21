@@ -610,7 +610,7 @@ class ModalProduct extends Component {
         >
           <button
             id="close-modal"
-            className="close close-modal"
+            className="close close-modal btn-close-modal-product"
             data-dismiss="modal"
             aria-label="Close"
             style={{
@@ -1122,6 +1122,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
+    color: state.theme.color,
   };
 };
 

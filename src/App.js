@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import loadable from "@loadable/component";
-import moment from "moment"
+import moment from "moment";
 import { connect } from "react-redux";
 import { AuthActions } from "./redux/actions/AuthAction";
 import { Redirect, Switch, Route, HashRouter } from "react-router-dom";
@@ -55,7 +55,7 @@ const App = (props) => {
 
   const hoverColor = `#${lightenDarkenColor(
     props.theme.color.substring(1),
-    -20
+    -10
   )}`;
 
   sheet.update({ theme: { ...props.theme, hoverColor } });
@@ -75,13 +75,14 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
-    if (!props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
+    if (!props.isLoggedIn || !account)
+      localStorage.removeItem(`${config.prefix}_account`);
     if (account) {
       setInterval(async () => {
         account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
-        let timeExp = (account.accessToken.payload.exp * 1000) - 60000
-        let timeNow = moment().format()
-        console.log("token exp :", moment(timeExp).format())
+        let timeExp = account.accessToken.payload.exp * 1000 - 60000;
+        let timeNow = moment().format();
+        console.log("token exp :", moment(timeExp).format());
         if (moment(timeNow).isSameOrAfter(timeExp)) {
           await props.dispatch(AuthActions.refreshToken());
         }
