@@ -7,7 +7,7 @@ export default function reducer(state = initialState, action) {
     case "SET_THEME":
       return {
         ...state,
-        theme: action.data,
+        color: action.data,
       };
     default:
       return state;

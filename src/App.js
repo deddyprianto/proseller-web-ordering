@@ -44,22 +44,6 @@ addLocaleData([...locale_id, ...locale_en]);
 const App = (props) => {
   const { lang } = props;
 
-  const componentDidMount = async () => {
-    // if (!props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
-
-    // if (account) {
-    //   setInterval(async () => {
-    //     account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
-    //     let timeExp = (account.accessToken.payload.exp * 1000) - 60000
-    //     let timeNow = moment().format()
-    //     console.log("token exp :", moment(timeExp).format())
-    //     if (moment(timeNow).isSameOrAfter(timeExp)) {
-    //       await props.dispatch(AuthActions.refreshToken());
-    //     }
-    //   }, 1000);
-    // }
-  }
-
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
     const r = (num >> 16) + amt;
@@ -91,9 +75,18 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
-    if (!props.isLoggedIn || !account)
-      localStorage.removeItem(`${config.prefix}_account`);
-    if (account) props.dispatch(AuthActions.refreshToken());
+    if (!props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
+    if (account) {
+      setInterval(async () => {
+        account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+        let timeExp = (account.accessToken.payload.exp * 1000) - 60000
+        let timeNow = moment().format()
+        console.log("token exp :", moment(timeExp).format())
+        if (moment(timeNow).isSameOrAfter(timeExp)) {
+          await props.dispatch(AuthActions.refreshToken());
+        }
+      }, 1000);
+    }
 
     let param = getUrlParameters();
     if (param && param["input"]) {
@@ -148,7 +141,6 @@ const App = (props) => {
   };
 
   useEffect(() => {
-    componentDidMount();
     checkUser();
   }, []);
 

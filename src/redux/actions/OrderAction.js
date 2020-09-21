@@ -359,10 +359,8 @@ function getCart(isSetData = true) {
     try {
       document.getElementById("close-modal").click();
     } catch (error) { }
-    if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      await dispatch(AuthActions.refreshToken());
-      await dispatch(getCart(isSetData));
-    } else if (response.data && response.data.message !== "No details data") {
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken());
+    else if (response.data && response.data.message !== "No details data") {
       if (isSetData)
         return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
       return response.data;
