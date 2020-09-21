@@ -26,7 +26,8 @@ function getAddressLocation(
     url = url + prefix;
     // console.log(url)
     let response = await MasterDataService.api("GET", null, url, "Bearer");
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken());
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      await dispatch(AuthActions.refreshToken());
     return response;
   };
 }
@@ -38,6 +39,16 @@ function getInfoCompany() {
     if (response.ResultCode === 400) {
       dispatch({ type: "GET_COMPANY_INFO_FAILED" });
     } else {
+      if (response.data && response.data.countryCode === "SG") {
+        response.data.currency = {
+          symbol: "Rp.",
+          code: "IDR",
+          locale: "id-ID",
+        };
+      }
+      // if (response.data && response.data.countryCode === "SG") {
+      //   response.data.currency = { symbol: "$", code: "SGD", locale: "en-US" };
+      // }
       dispatch({ type: "GET_COMPANY_INFO_SUCCESS", payload: response.data });
       if (
         response.data &&
@@ -61,7 +72,8 @@ function getOutletByID(id, isProduct = true) {
       `outlets/get/${id}`,
       "Bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken());
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      await dispatch(AuthActions.refreshToken());
     else if (isProduct) dispatch(getProductByOutletID(id));
     return response.data;
   };
@@ -75,7 +87,8 @@ function getProductByOutletID(id) {
       `productpreset/load/CRM/${id}`,
       "Bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken());
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      await dispatch(AuthActions.refreshToken());
     dispatch(setData(response.data, CONSTANT.DATA_PRODUCT));
     return response.data;
   };

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import _ from "lodash";
 import moment from "moment";
-import { Col, Row } from 'reactstrap';
+import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 
 import Iframe from "react-iframe";
@@ -18,8 +18,8 @@ import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import Lottie from "lottie-react-web";
 import emptyGif from "../../assets/gif/empty-and-lost.json";
 import config from "../../config";
-import { CustomerAction } from '../../redux/actions/CustomerAction';
-import { CampaignAction } from '../../redux/actions/CampaignAction';
+import { CustomerAction } from "../../redux/actions/CustomerAction";
+import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { lsLoad } from "../../helpers/localStorage";
 
 import styles from "./styles.module.css";
@@ -82,24 +82,30 @@ class Payment extends Component {
 
   componentDidMount = async () => {
     await this.getDataBasket();
-    this.setState({ loadingShow: true })
+    this.setState({ loadingShow: true });
     if (this.props.isLoggedIn) {
       let response = this.props.dispatch(CustomerAction.getVoucher());
-      if (response.ResultCode === 200) this.setState({ myVoucher: response.Data })
+      if (response.ResultCode === 200)
+        this.setState({ myVoucher: response.Data });
 
-      response = await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "false" }, companyInfo && companyInfo.companyId));
-      if (response.ResultCode === 200) this.setState(response.Data)
+      response = await this.props.dispatch(
+        CampaignAction.getCampaignPoints(
+          { history: "false" },
+          companyInfo && companyInfo.companyId
+        )
+      );
+      if (response.ResultCode === 200) this.setState(response.Data);
     }
-    this.setState({ loadingShow: false })
+    this.setState({ loadingShow: false });
   };
 
   componentDidUpdate() {
     // let state = this.state
     if (this.props.campaignPoint.detailPoint && !this.state.detailPoint) {
-      this.setState(this.props.campaignPoint)
+      this.setState(this.props.campaignPoint);
       // state = { ...state, ...this.props.campaignPoint }
     } else if (this.props.myVoucher && !this.state.myVoucher) {
-      this.setState({ myVoucher: this.props.myVoucher })
+      this.setState({ myVoucher: this.props.myVoucher });
       // state = { ...state, myVoucher: this.props.myVoucher }
     }
   }
@@ -107,24 +113,29 @@ class Payment extends Component {
   viewShimmer = (isHeight = 100) => {
     return (
       <Shimmer>
-        <div style={{
-          width: "100%", height: isHeight, alignSelf: "center",
-          borderRadius: "8px", marginBottom: 10
-        }} />
+        <div
+          style={{
+            width: "100%",
+            height: isHeight,
+            alignSelf: "center",
+            borderRadius: "8px",
+            marginBottom: 10,
+          }}
+        />
       </Shimmer>
-    )
-  }
+    );
+  };
 
   componentWillUnmount = () => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getPendingOrder = async (cart) => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) { }
+    } catch (e) {}
 
     this.loopCart = setInterval(async () => {
       await this.getCart(cart);
@@ -189,7 +200,9 @@ class Payment extends Component {
       ) {
         // hostedPage.close();
         let data = {
-          message: response.data.confirmationInfo.message || "Congratulations, payment success",
+          message:
+            response.data.confirmationInfo.message ||
+            "Congratulations, payment success",
           paymentType: payment.paymentType || "CASH",
           price: this.state.totalPrice,
           outletName: this.state.dataBasket.outlet.name,
@@ -309,7 +322,7 @@ class Payment extends Component {
       selectedPoint,
       selectedCard,
       totalPrice,
-      isLoading: false
+      isLoading: false,
     });
   };
 
@@ -432,15 +445,16 @@ class Payment extends Component {
   };
 
   getCurrency = (price) => {
-    let { countryCode } = this.props;
     price = parseFloat(price);
-    if (price != undefined) {
-      let currency = { code: "en-US", currency: "SGD" };
-      if (countryCode === "SG") currency = { code: "en-US", currency: "SGD" };
-      if (!price || price === "-") price = 0;
-      let result = price.toLocaleString(currency.code, {
+    if (this.props.companyInfo) {
+      const { currency } = this.props.companyInfo;
+
+      if (price === undefined || price === "-") {
+        price = 0;
+      }
+      let result = price.toLocaleString(currency.locale, {
         style: "currency",
-        currency: currency.currency,
+        currency: currency.code,
       });
       return result;
     }
@@ -502,10 +516,11 @@ class Payment extends Component {
 
     if (needPoint > totalPoint) needPoint = totalPoint;
 
-    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
-      } point to ${this.getCurrency(
-        parseInt(pointsToRebateRatio.split(":")[1])
-      )}`;
+    let textRasio = `Redeem ${
+      pointsToRebateRatio.split(":")[0]
+    } point to ${this.getCurrency(
+      parseInt(pointsToRebateRatio.split(":")[1])
+    )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -685,7 +700,7 @@ class Payment extends Component {
           JSON.parse(localStorage.getItem(`${config.prefix}_scanTable`))
         );
         payload.tableNo = tableNo.table;
-      } catch (e) { }
+      } catch (e) {}
     }
 
     let response;
@@ -762,18 +777,21 @@ class Payment extends Component {
 
     if (this.state.loadingShow) {
       return (
-        <div className="col-full" style={{ marginTop: 50, marginBottom: 50, }}>
+        <div className="col-full" style={{ marginTop: 50, marginBottom: 50 }}>
           <div id="primary" className="content-area">
             <div className="stretch-full-width">
-              <main id="main" className="site-main" style={{ textAlign: "center" }}>
-              </main>
+              <main
+                id="main"
+                className="site-main"
+                style={{ textAlign: "center" }}
+              ></main>
               <Row>
                 <Col sm={6}>{this.viewShimmer()}</Col>
               </Row>
             </div>
           </div>
         </div>
-      )
+      );
     }
 
     if (!this.props.isLoggedIn || isEmptyObject(dataSettle)) {
@@ -822,10 +840,10 @@ class Payment extends Component {
                       </Button>
                     </div>
                   ) : (
-                      <div style={{ textAlign: "center" }}>
-                        No Pending Payment
-                      </div>
-                    )}
+                    <div style={{ textAlign: "center" }}>
+                      No Pending Payment
+                    </div>
+                  )}
                 </div>
               </main>
             </div>
@@ -876,7 +894,8 @@ class Payment extends Component {
                             marginTop: -10,
                           }}
                         >
-                          {this.getCurrency(totalPrice).split("SGD")[0]}
+                          {this.props.companyInfo &&
+                            this.props.companyInfo.currency.code}
                         </div>
                         <div
                           style={{
@@ -885,7 +904,7 @@ class Payment extends Component {
                             fontWeight: "bold",
                           }}
                         >
-                          {this.getCurrency(totalPrice).split("SGD")[1]}
+                          {totalPrice}
                         </div>
                       </div>
                     </div>
@@ -993,11 +1012,11 @@ class Payment extends Component {
                         {isEmptyObject(selectedCard)
                           ? `Pay ${this.getCurrency(totalPrice)}`
                           : `Pay ${this.getCurrency(
-                            totalPrice
-                          )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
-                            selectedCard.details.maskedAccountNumber.toString()
-                              .length - 4
-                          )}`}
+                              totalPrice
+                            )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
+                              selectedCard.details.maskedAccountNumber.toString()
+                                .length - 4
+                            )}`}
                       </Button>
                     </div>
 
@@ -1061,7 +1080,8 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     basket: state.order.basket,
     campaignPoint: state.campaign.data,
-    myVoucher: state.customer.myVoucher
+    myVoucher: state.customer.myVoucher,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 

@@ -19,27 +19,17 @@ class Product extends Component {
   };
 
   getCurrency = (price) => {
-    const { defaultOutlet } = this.props;
-    const code = defaultOutlet.countryCode;
+    if (this.props.companyInfo) {
+      const { currency } = this.props.companyInfo;
 
-    let currency = { code: "en-US", currency: "SGD" };
-    if (code === "SG") currency = { code: "en-US", currency: "SGD" };
-
-    if (price != undefined) {
-      if (price === "-") {
+      if (price === undefined || price === "-") {
         price = 0;
       }
-      let result = price.toLocaleString(currency.code, {
+      let result = price.toLocaleString(currency.locale, {
         style: "currency",
-        currency: currency.currency,
+        currency: currency.code,
       });
       return result;
-    } else {
-      price = 0;
-      return price.toLocaleString(currency.code, {
-        style: "currency",
-        currency: currency.currency,
-      });
     }
   };
 
@@ -203,6 +193,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 

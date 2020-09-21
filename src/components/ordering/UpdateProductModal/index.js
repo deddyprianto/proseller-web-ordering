@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 import cx from "classnames";
@@ -12,6 +13,7 @@ const UpdateProductModal = ({
   onClose,
   setAddNew,
   setSelectedItem,
+  companyInfo,
 }) => {
   const handleAdd = () => {
     setAddNew(true);
@@ -138,7 +140,10 @@ const UpdateProductModal = ({
                     })}
                   <div className={styles.price}>
                     <b class="price-product color">
-                      SGD&nbsp;{item.grossAmount}
+                      {companyInfo && companyInfo.currency.symbol}
+                      &nbsp;
+                      {Math.round((item.grossAmount + Number.EPSILON) * 100) /
+                        100}
                     </b>
                   </div>
                   <button
@@ -163,6 +168,7 @@ const UpdateProductModal = ({
 
 UpdateProductModal.propTypes = {
   color: PropTypes.string,
+  companyInfo: PropTypes.object,
   product: PropTypes.object,
   productInCart: PropTypes.array,
   onClose: PropTypes.func,
@@ -170,4 +176,10 @@ UpdateProductModal.propTypes = {
   setSelectedItem: PropTypes.func,
 };
 
-export default UpdateProductModal;
+const mapStateToProps = (state) => {
+  return {
+    companyInfo: state.masterdata.companyInfo.data,
+  };
+};
+
+export default connect(mapStateToProps, {})(UpdateProductModal);

@@ -115,27 +115,17 @@ class ModalProduct extends Component {
   };
 
   getCurrency = (price) => {
-    const { defaultOutlet } = this.props;
-    const code = defaultOutlet.countryCode;
+    if (this.props.companyInfo) {
+      const { currency } = this.props.companyInfo;
 
-    let currency = { code: "en-US", currency: "SGD" };
-    if (code === "SG") currency = { code: "en-US", currency: "SGD" };
-
-    if (price != undefined) {
-      if (price === "-") {
+      if (price === undefined || price === "-") {
         price = 0;
       }
-      let result = price.toLocaleString(currency.code, {
+      let result = price.toLocaleString(currency.locale, {
         style: "currency",
-        currency: currency.currency,
+        currency: currency.code,
       });
       return result;
-    } else {
-      price = 0;
-      return price.toLocaleString(currency.code, {
-        style: "currency",
-        currency: currency.currency,
-      });
     }
   };
 
@@ -750,7 +740,10 @@ class ModalProduct extends Component {
                   onClick={this.processCart}
                 >
                   <b style={{ color: "#FFF" }}>{`${
-                    selectedItem.quantity == 0 ? "Remove" : "Update"
+                    selectedItem.quantity === 0 ? "Remove" : "Update"
+                  } ${
+                    this.props.companyInfo &&
+                    this.props.companyInfo.currency.code
                   } ${this.calculateTotal()}`}</b>
                 </button>
               ) : (
@@ -759,7 +752,13 @@ class ModalProduct extends Component {
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b style={{ color: "#FFF" }}>Add ${this.calculateTotal()}</b>
+                  <b style={{ color: "#FFF" }}>
+                    Add{" "}
+                    {`${
+                      this.props.companyInfo &&
+                      this.props.companyInfo.currency.code
+                    } ${this.calculateTotal()}`}
+                  </b>
                 </button>
               )
             ) : (
@@ -1116,11 +1115,12 @@ class ModalProduct extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
     color: state.theme.color,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 

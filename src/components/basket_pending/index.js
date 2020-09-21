@@ -566,14 +566,12 @@ class Basket extends Component {
   };
 
   getCurrency = (price) => {
-    let { countryCode } = this.props;
     if (price != undefined) {
-      let currency = { code: "en-US", currency: "SGD" };
-      if (countryCode === "SG") currency = { code: "en-US", currency: "SGD" };
+      const {currency} = this.props.companyInfo;
       if (!price || price === "-") price = 0;
-      let result = price.toLocaleString(currency.code, {
+      let result = price.toLocaleString(currency.locale, {
         style: "currency",
-        currency: currency.currency,
+        currency: currency.code,
       });
       return result;
     }
@@ -1075,6 +1073,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 
