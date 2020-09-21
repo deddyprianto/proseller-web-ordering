@@ -39,16 +39,16 @@ function getInfoCompany() {
     if (response.ResultCode === 400) {
       dispatch({ type: "GET_COMPANY_INFO_FAILED" });
     } else {
-      if (response.data && response.data.countryCode === "SG") {
+      if (response.data && response.data.countryCode === "ID") {
         response.data.currency = {
           symbol: "Rp.",
           code: "IDR",
           locale: "id-ID",
         };
       }
-      // if (response.data && response.data.countryCode === "SG") {
-      //   response.data.currency = { symbol: "$", code: "SGD", locale: "en-US" };
-      // }
+      if (response.data && response.data.countryCode === "SG") {
+        response.data.currency = { symbol: "$", code: "SGD", locale: "en-US" };
+      }
       dispatch({ type: "GET_COMPANY_INFO_SUCCESS", payload: response.data });
       if (
         response.data &&
