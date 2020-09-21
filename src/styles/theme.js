@@ -1,11 +1,9 @@
-import { jss } from "react-jss";
-
-const useStyles = jss.use({
+const styles = {
   "@global": {
-    button: (props) => ({
-      backgroundColor: props.theme.color,
-    }),
-    '.button, #scrollUp, .header-v1, .header-v2, .header-v3, .header-v4, .header-v5, .added_to_cart, input[type="reset"], input[type="submit"], input[type="button"], .dark .create-your-own a, .owl-dots .owl-dot.active, .pizzaro-handheld-footer-bar, .widget_nav_menu .menu li:hover, .related > h2:first-child:after, .upsells > h2:first-child:after, .widget_nav_menu .menu li::after, .section-products .section-title:after, .pizzaro-handheld-footer-bar ul li > a, .banners .banner .caption .banner-price, .section-tabs .nav .nav-item.active a::after, .products-with-gallery-tabs.section-tabs .nav, .section-recent-post .post-info .btn-more:hover, .section-sale-product .price-action .button:hover, .list-no-image-view ul.products li.product::before, .woocommerce-account .customer-login-form h2::after, .section-coupon .caption .coupon-info .button:hover, .page-template-template-homepage-v2 .header-v2.stuck, .woocommerce-cart .pizzaro-order-steps ul .cart .step, .list-no-image-cat-view ul.products li.product::before, .pizzaro-handheld-footer-bar ul li.search .site-search, .widget.widget_price_filter .ui-slider .ui-slider-handle, .list-no-image-view .products .owl-item > .product::before, .list-no-image-view ul.products li.product .button:hover, .woocommerce-checkout .pizzaro-order-steps ul .cart .step, .woocommerce-cart .cart-collaterals + .cross-sells h2::after, .footer-v1.site-footer .site-address .address li + li::before, .list-no-image-cat-view ul.products li.product .button:hover, .header-v4.lite-bg .primary-navigation .menu > li > a::before, .woocommerce-checkout .pizzaro-order-steps ul .checkout .step, .kc-section-tab.kc_tabs .kc_tabs_nav > .ui-tabs-active > a::after, .list-no-image-view .products .owl-item > .product .button:hover, .page-template-template-homepage-v6 .footer-social-icons ul li a:hover, .list-view.left-sidebar.columns-1 ul.products li.product .button:hover, .products-card .media .media-left ul.products li.product .button:hover, .products-card .media .media-right ul.products li.product .button:hover, .page-template-template-homepage-v6 .primary-navigation > ul > li:hover, .list-view.right-sidebar.columns-1 ul.products li.product .button:hover, .page-template-template-homepage-v6 .secondary-navigation .menu li:hover, .page-template-template-homepage-v6 .secondary-navigation .menu li::after, .page-template-template-homepage-v6 .main-navigation ul.menu ul li:hover > a, .list-view.left-sidebar.columns-1 .products .owl-item > .product .button:hover, .list-view.right-sidebar.columns-1 .products .owl-item > .product .button:hover, .woocommerce-order-received.woocommerce-checkout .pizzaro-order-steps ul .step, .page-template-template-homepage-v6\n  .main-navigation\n  ul.nav-menu\n  ul\n  li:hover\n  > a, .page-template-template-homepage-v2\n  .products-with-gallery-tabs.section-tabs\n  .nav, .stretch-full-width .store-locator .store-search-form form .button, .banner.social-block .caption .button:hover, .wpsl-search #wpsl-search-btn, .lite-bg.header-v4 .primary-navigation .menu .current-menu-item > a::before': {
+    button: {
+      backgroundColor: (props) => props.theme.color,
+    },
+    'button.close, .button, #scrollUp, .header-v1, .header-v2, .header-v3, .header-v4, .header-v5, .added_to_cart, input[type="reset"], input[type="submit"], input[type="button"], .dark .create-your-own a, .owl-dots .owl-dot.active, .pizzaro-handheld-footer-bar, .widget_nav_menu .menu li:hover, .related > h2:first-child:after, .upsells > h2:first-child:after, .widget_nav_menu .menu li::after, .section-products .section-title:after, .pizzaro-handheld-footer-bar ul li > a, .banners .banner .caption .banner-price, .section-tabs .nav .nav-item.active a::after, .products-with-gallery-tabs.section-tabs .nav, .section-recent-post .post-info .btn-more:hover, .section-sale-product .price-action .button:hover, .list-no-image-view ul.products li.product::before, .woocommerce-account .customer-login-form h2::after, .section-coupon .caption .coupon-info .button:hover, .page-template-template-homepage-v2 .header-v2.stuck, .woocommerce-cart .pizzaro-order-steps ul .cart .step, .list-no-image-cat-view ul.products li.product::before, .pizzaro-handheld-footer-bar ul li.search .site-search, .widget.widget_price_filter .ui-slider .ui-slider-handle, .list-no-image-view .products .owl-item > .product::before, .list-no-image-view ul.products li.product .button:hover, .woocommerce-checkout .pizzaro-order-steps ul .cart .step, .woocommerce-cart .cart-collaterals + .cross-sells h2::after, .footer-v1.site-footer .site-address .address li + li::before, .list-no-image-cat-view ul.products li.product .button:hover, .header-v4.lite-bg .primary-navigation .menu > li > a::before, .woocommerce-checkout .pizzaro-order-steps ul .checkout .step, .kc-section-tab.kc_tabs .kc_tabs_nav > .ui-tabs-active > a::after, .list-no-image-view .products .owl-item > .product .button:hover, .page-template-template-homepage-v6 .footer-social-icons ul li a:hover, .list-view.left-sidebar.columns-1 ul.products li.product .button:hover, .products-card .media .media-left ul.products li.product .button:hover, .products-card .media .media-right ul.products li.product .button:hover, .page-template-template-homepage-v6 .primary-navigation > ul > li:hover, .list-view.right-sidebar.columns-1 ul.products li.product .button:hover, .page-template-template-homepage-v6 .secondary-navigation .menu li:hover, .page-template-template-homepage-v6 .secondary-navigation .menu li::after, .page-template-template-homepage-v6 .main-navigation ul.menu ul li:hover > a, .list-view.left-sidebar.columns-1 .products .owl-item > .product .button:hover, .list-view.right-sidebar.columns-1 .products .owl-item > .product .button:hover, .woocommerce-order-received.woocommerce-checkout .pizzaro-order-steps ul .step, .page-template-template-homepage-v6\n  .main-navigation\n  ul.nav-menu\n  ul\n  li:hover\n  > a, .page-template-template-homepage-v2\n  .products-with-gallery-tabs.section-tabs\n  .nav, .stretch-full-width .store-locator .store-search-form form .button, .banner.social-block .caption .button:hover, .wpsl-search #wpsl-search-btn, .lite-bg.header-v4 .primary-navigation .menu .current-menu-item > a::before': {
       backgroundColor: (props) => props.theme.color,
     },
     ".custom .tp-bullet.selected, .home-v1-slider .btn-primary, .home-v2-slider .btn-primary, .home-v3-slider .btn-primary, .products-with-gallery-tabs.kc_tabs > .kc_wrapper > .kc_tabs_nav, .products-with-gallery-tabs.kc_tabs .kc_tabs_nav li.ui-tabs-active a::after": {
@@ -24,10 +22,10 @@ const useStyles = jss.use({
       borderColor: (props) => props.theme.color,
     },
     ".pizzaro-order-steps ul .step": {
-      borderColor: "#c0392b",
+      borderColor: (props) => props.theme.color,
     },
-    'button, .button:hover, .added_to_cart:hover, #respond input[type="submit"], input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover, .dark .create-your-own a:hover, .wc-proceed-to-checkout .button, .main-navigation ul.menu ul a:hover, .main-navigation ul.menu ul li:hover > a, .main-navigation ul.nav-menu ul a:hover, .main-navigation ul.nav-menu ul li:hover > a, .main-navigation div.menu ul.nav-menu ul a:hover, .main-navigation div.menu ul.nav-menu ul li:hover > a, .stretch-full-width .store-locator .store-search-form form .button:hover': {
-      backgroundColor: "#960118",
+    '.button:hover, .added_to_cart:hover, #respond input[type="submit"], input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover, .dark .create-your-own a:hover, .wc-proceed-to-checkout .button, .main-navigation ul.menu ul a:hover, .main-navigation ul.menu ul li:hover > a, .main-navigation ul.nav-menu ul a:hover, .main-navigation ul.nav-menu ul li:hover > a, .main-navigation div.menu ul.nav-menu ul a:hover, .main-navigation div.menu ul.nav-menu ul li:hover > a, .stretch-full-width .store-locator .store-search-form form .button:hover': {
+      backgroundColor: (props) => props.theme.hoverColor,
     },
     '#respond input[type="submit"]:hover': {
       backgroundColor: "#86071b",
@@ -92,10 +90,7 @@ const useStyles = jss.use({
     ".color-nonactive": {
       color: "#beb9ba",
     },
-    ".custom-logo-link": {
-      backgroundColor: (props) => props.theme.color,
-    },
   },
-});
+};
 
-export default useStyles;
+export default styles;

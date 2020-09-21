@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import loadable from "@loadable/component";
 import moment from "moment"
 import { connect } from "react-redux";
@@ -15,10 +15,14 @@ import locale_id from "react-intl/locale-data/id";
 import messages_id from "./languages/id.json";
 import messages_en from "./languages/en.json";
 
-import color from "./assets/colors/red.css";
 import config from "./config";
 
 import { lsLoad } from "./helpers/localStorage";
+
+import jss from "jss";
+import preset from "jss-preset-default";
+
+import styles from "./styles/theme";
 
 const Layout = loadable(() => import("./components/template/Layout"));
 // import Layout from "./components/template/Layout";
@@ -31,56 +35,48 @@ const messages = {
   EN: messages_en,
 };
 
+jss.setup(preset());
+
+const sheet = jss.createStyleSheet(styles, { link: true }).attach();
+
 addLocaleData([...locale_id, ...locale_en]);
 
-class App extends Component {
-  componentDidMount = async () => {
-    if (!this.props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
+const App = (props) => {
+  const { lang } = props;
 
-    if (account) {
-      setInterval(async () => {
-        account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
-        let timeExp = (account.accessToken.payload.exp * 1000) - 60000
-        let timeNow = moment().format()
-        console.log("token exp :", moment(timeExp).format())
-        if (moment(timeNow).isSameOrAfter(timeExp)) {
-          await this.props.dispatch(AuthActions.refreshToken());
-        }
-      }, 1000);
-    }
+  const componentDidMount = async () => {
+    // if (!props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
 
-    let param = this.getUrlParameters();
-    if (param && param["input"]) {
-      param = this.getUrlParameters(base64.decode(decodeURI(param["input"])));
-      localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
-      if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
+    // if (account) {
+    //   setInterval(async () => {
+    //     account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+    //     let timeExp = (account.accessToken.payload.exp * 1000) - 60000
+    //     let timeNow = moment().format()
+    //     console.log("token exp :", moment(timeExp).format())
+    //     if (moment(timeNow).isSameOrAfter(timeExp)) {
+    //       await props.dispatch(AuthActions.refreshToken());
+    //     }
+    //   }, 1000);
+    // }
+  }
 
-      let defaultOutlet = await this.props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
-      localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(defaultOutlet)));
-      await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
-
-    } else {
-      localStorage.removeItem(`${config.prefix}_scanTable`);
-    }
-
-    let url = window.location.hash.split("#")[1]
-    if (url !== "/") {
-      if (!param) {
-        let defaultOutlet = await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-        defaultOutlet = await this.props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.sortKey.split("::")[1], true));
-        localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(defaultOutlet)));
-        await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
-      }
-
-      await this.props.dispatch(OrderAction.getCart());
-    }
-
-    try {
-      document.getElementById("color-theme").href = color;
-    } catch (error) { }
+  const lightenDarkenColor = (col, amt) => {
+    const num = parseInt(col, 16);
+    const r = (num >> 16) + amt;
+    const b = ((num >> 8) & 0x00ff) + amt;
+    const g = (num & 0x0000ff) + amt;
+    const newColor = g | (b << 8) | (r << 16);
+    return newColor.toString(16);
   };
 
-  getUrlParameters = (pageParamString = null) => {
+  const hoverColor = `#${lightenDarkenColor(
+    props.theme.color.substring(1),
+    -20
+  )}`;
+
+  sheet.update({ theme: { ...props.theme, hoverColor } });
+
+  const getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
     if (pageParamString) {
       var paramsArray = pageParamString.split("&");
@@ -94,26 +90,85 @@ class App extends Component {
     }
   };
 
-  render() {
-    const { lang } = this.props;
+  const checkUser = async () => {
+    if (!props.isLoggedIn || !account)
+      localStorage.removeItem(`${config.prefix}_account`);
+    if (account) props.dispatch(AuthActions.refreshToken());
 
-    return (
-      <IntlProvider locale={lang} messages={messages[lang]}>
-        <HashRouter>
-          <Switch>
-            <Route component={Layout} />
-            <Redirect from="*" to="/" />
-          </Switch>
-        </HashRouter>
-      </IntlProvider>
-    );
-  }
-}
+    let param = getUrlParameters();
+    if (param && param["input"]) {
+      param = getUrlParameters(base64.decode(decodeURI(param["input"])));
+      localStorage.setItem(
+        `${config.prefix}_scanTable`,
+        JSON.stringify(encryptor.encrypt(param))
+      );
+      if (param.orderingMode)
+        localStorage.setItem(
+          `${config.prefix}_ordering_mode`,
+          param.orderingMode
+        );
+
+      let defaultOutlet = await props.dispatch(
+        MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
+      );
+      localStorage.setItem(
+        `${config.prefix}_defaultOutlet`,
+        JSON.stringify(encryptor.encrypt(defaultOutlet))
+      );
+      await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+    } else {
+      localStorage.removeItem(`${config.prefix}_scanTable`);
+    }
+
+    let url = window.location.hash.split("#")[1];
+    if (url !== "/") {
+      if (!param) {
+        let defaultOutlet = await props.dispatch(
+          OutletAction.fetchDefaultOutlet()
+        );
+        defaultOutlet = await props.dispatch(
+          MasterdataAction.getOutletByID(
+            defaultOutlet.sortKey.split("::")[1],
+            true
+          )
+        );
+        localStorage.setItem(
+          `${config.prefix}_defaultOutlet`,
+          JSON.stringify(encryptor.encrypt(defaultOutlet))
+        );
+        await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+      }
+
+      await props.dispatch(OrderAction.getCart());
+    }
+
+    // try {
+    //   document.getElementById("color-theme").href = color;
+    // } catch (error) {}
+  };
+
+  useEffect(() => {
+    componentDidMount();
+    checkUser();
+  }, []);
+
+  return (
+    <IntlProvider locale={lang} messages={messages[lang]}>
+      <HashRouter>
+        <Switch>
+          <Route component={Layout} />
+          <Redirect from="*" to="/" />
+        </Switch>
+      </HashRouter>
+    </IntlProvider>
+  );
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
     lang: state.language.lang,
+    theme: state.theme,
   };
 };
 

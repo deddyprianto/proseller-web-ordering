@@ -447,6 +447,7 @@ class Ordering extends Component {
           "update" &&
           this.state.showUpdateModal && (
             <UpdateProductModal
+              color={this.props.theme.color}
               product={this.state.selectedProduct}
               productInCart={
                 this.props.basket &&
@@ -569,6 +570,7 @@ const mapStateToProps = (state, ownProps) => {
     defaultOutlet: state.outlet.defaultOutlet,
     products: state.product.products,
     basket: state.order.basket,
+    theme: state.theme,
   };
 };
 
