@@ -9,6 +9,7 @@ import { isEmptyArray, isEmptyObject } from "../helpers/CheckEmpty";
 import config from "../config";
 
 import { lsLoad } from "../helpers/localStorage";
+import { AuthActions } from "../redux/actions/AuthAction";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));

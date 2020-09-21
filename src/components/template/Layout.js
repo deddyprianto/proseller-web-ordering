@@ -51,7 +51,7 @@ class Layout extends Component {
     }
 
     // Refresh Token
-    await this.props.dispatch(AuthActions.refreshToken());
+    // await this.props.dispatch(AuthActions.refreshToken());
 
     let response = await this.props.dispatch(OrderAction.getCart());
     if (response && response.data && Object.keys(response.data).length > 0 && response.data.status !== "failed") {

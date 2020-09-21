@@ -16,7 +16,7 @@ export const CustomerAction = {
 function getCustomerProfile() {
   return async (dispatch) => {
     let response = await CRMService.api('GET', null, 'customer/getProfile', 'bearer')
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
     dispatch(setData(response, CONSTANT.KEY_GET_CUSTOMER_PROFILE))
     return response
   };
@@ -33,7 +33,7 @@ function checkStatusPayment(referenceNo) {
 function getDeliferyAddress() {
   return async (dispatch) => {
     let response = await CRMService.api('GET', null, 'customer/getProfile', 'bearer')
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
     else {
       let deliveryAddress = response.Data[0]
       if (deliveryAddress && deliveryAddress.deliveryAddress && deliveryAddress.deliveryAddress.length > 0) {
@@ -56,7 +56,7 @@ function getDeliferyAddress() {
 function updateCustomerProfile(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api('PUT', payload, 'customer/updateProfile', 'bearer')
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
     dispatch(setData(response, CONSTANT.KEY_UPDATE_CUSTOMER_PROFILE))
     return response
   };
@@ -65,7 +65,7 @@ function updateCustomerProfile(payload = null) {
 function updatePassword(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api('POST', payload, 'profile/changePassword', 'Bearer')
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
     return response
   };
 }
@@ -73,7 +73,7 @@ function updatePassword(payload = null) {
 function mandatoryField(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api('GET', payload, 'mandatoryfield/customer', 'bearer')
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
     dispatch(setData(response, CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER))
     return response
   };
@@ -82,7 +82,7 @@ function mandatoryField(payload = null) {
 function getVoucher() {
   return async (dispatch) => {
     let response = await CRMService.api('GET', null, 'customer/vouchers', 'bearer')
-    if (response.ResultCode === 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
     else {
       let myVoucher = [];
       _.forEach(

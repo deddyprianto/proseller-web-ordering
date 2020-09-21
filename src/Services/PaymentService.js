@@ -4,13 +4,14 @@ import config from "../config";
 import { lsLoad } from "../helpers/localStorage";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 export const PaymentService = {
   api,
 };
 
 function api(method, params, path, token = null) {
+  let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+
   const header = new Header(params);
   const url = `${config.url_payment}${path}`;
   let configuration = {

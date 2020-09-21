@@ -253,7 +253,7 @@ class Basket extends Component {
         storeDetail = await this.props.dispatch(
           MasterdataAction.getOutletByID(dataBasket.outlet.id)
         );
-      console.log('storeDetail', storeDetail)
+      // console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
       let deliveryProvaider = await this.props.dispatch(

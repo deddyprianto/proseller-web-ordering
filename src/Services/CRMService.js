@@ -4,13 +4,14 @@ import config from "../config";
 import { lsLoad } from "../helpers/localStorage";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 export const CRMService = {
   api,
 };
 
 async function api(method, params, path, token = null) {
+  let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+
   let header = new Header(params);
   let url = `${config.url_crm}${path}`;
   let configuration = {

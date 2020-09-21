@@ -5,8 +5,8 @@ import config from "../../config";
 
 import { lsLoad, lsStore } from "../../helpers/localStorage";
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+let encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 export const AuthActions = {
   check,
@@ -83,8 +83,9 @@ function refreshToken() {
         account.accessToken.payload = response.payload;
         lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
       } else {
-        localStorage.clear();
-        window.location.reload();
+        console.log("Refresh token", false)
+        // localStorage.clear();
+        // window.location.reload();
       }
     }
   };

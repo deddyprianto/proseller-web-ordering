@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import loadable from "@loadable/component";
+import moment from "moment"
 import { connect } from "react-redux";
 import { AuthActions } from "./redux/actions/AuthAction";
 import { Redirect, Switch, Route, HashRouter } from "react-router-dom";
@@ -23,7 +24,7 @@ const Layout = loadable(() => import("./components/template/Layout"));
 // import Layout from "./components/template/Layout";
 const base64 = require("base-64");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 const messages = {
   ID: messages_id,
@@ -35,7 +36,18 @@ addLocaleData([...locale_id, ...locale_en]);
 class App extends Component {
   componentDidMount = async () => {
     if (!this.props.isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
-    if (account) this.props.dispatch(AuthActions.refreshToken());
+
+    if (account) {
+      setInterval(async () => {
+        account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+        let timeExp = (account.accessToken.payload.exp * 1000) - 60000
+        let timeNow = moment().format()
+        console.log("token exp :", moment(timeExp).format())
+        if (moment(timeNow).isSameOrAfter(timeExp)) {
+          await this.props.dispatch(AuthActions.refreshToken());
+        }
+      }, 1000);
+    }
 
     let param = this.getUrlParameters();
     if (param && param["input"]) {
