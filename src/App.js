@@ -18,7 +18,10 @@ import config from "./config";
 
 import { lsLoad } from "./helpers/localStorage";
 
-import useStyles from "./styles/theme";
+import jss from "jss";
+import preset from "jss-preset-default";
+
+import styles from "./styles/theme";
 
 const Layout = loadable(() => import("./components/template/Layout"));
 // import Layout from "./components/template/Layout";
@@ -31,102 +34,30 @@ const messages = {
   EN: messages_en,
 };
 
+jss.setup(preset());
+
+const sheet = jss.createStyleSheet(styles, { link: true }).attach();
+
 addLocaleData([...locale_id, ...locale_en]);
-
-// class App extends Component {
-//   componentDidMount = async () => {
-//     if (!this.props.isLoggedIn || !account)
-//       localStorage.removeItem(`${config.prefix}_account`);
-//     if (account) this.props.dispatch(AuthActions.refreshToken());
-
-//     let param = this.getUrlParameters();
-//     if (param && param["input"]) {
-//       param = this.getUrlParameters(base64.decode(decodeURI(param["input"])));
-//       localStorage.setItem(
-//         `${config.prefix}_scanTable`,
-//         JSON.stringify(encryptor.encrypt(param))
-//       );
-//       if (param.orderingMode)
-//         localStorage.setItem(
-//           `${config.prefix}_ordering_mode`,
-//           param.orderingMode
-//         );
-
-//       let defaultOutlet = await this.props.dispatch(
-//         MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
-//       );
-//       localStorage.setItem(
-//         `${config.prefix}_defaultOutlet`,
-//         JSON.stringify(encryptor.encrypt(defaultOutlet))
-//       );
-//       await this.props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
-//     } else {
-//       localStorage.removeItem(`${config.prefix}_scanTable`);
-//     }
-
-//     let url = window.location.hash.split("#")[1];
-//     if (url !== "/") {
-//       if (!param) {
-//         let defaultOutlet = await this.props.dispatch(
-//           OutletAction.fetchDefaultOutlet()
-//         );
-//         defaultOutlet = await this.props.dispatch(
-//           MasterdataAction.getOutletByID(
-//             defaultOutlet.sortKey.split("::")[1],
-//             true
-//           )
-//         );
-//         localStorage.setItem(
-//           `${config.prefix}_defaultOutlet`,
-//           JSON.stringify(encryptor.encrypt(defaultOutlet))
-//         );
-//         await this.props.dispatch(
-//           OutletAction.fetchDefaultOutlet(defaultOutlet)
-//         );
-//       }
-
-//       await this.props.dispatch(OrderAction.getCart());
-//     }
-
-//     // try {
-//     //   document.getElementById("color-theme").href = color;
-//     // } catch (error) {}
-//   };
-
-//   getUrlParameters = (pageParamString = null) => {
-//     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
-//     if (pageParamString) {
-//       var paramsArray = pageParamString.split("&");
-//       var paramsHash = {};
-
-//       for (var i = 0; i < paramsArray.length; i++) {
-//         var singleParam = paramsArray[i].split("=");
-//         paramsHash[singleParam[0]] = singleParam[1];
-//       }
-//       return paramsHash;
-//     }
-//   };
-
-//   render() {
-//     const { lang } = this.props;
-//     useStyles(this.props);
-
-//     return (
-//       <IntlProvider locale={lang} messages={messages[lang]}>
-//         <HashRouter>
-//           <Switch>
-//             <Route component={Layout} />
-//             <Redirect from="*" to="/" />
-//           </Switch>
-//         </HashRouter>
-//       </IntlProvider>
-//     );
-//   }
-// }
 
 const App = (props) => {
   const { lang } = props;
-  useStyles({ theme: { color: "" } });
+
+  const lightenDarkenColor = (col, amt) => {
+    const num = parseInt(col, 16);
+    const r = (num >> 16) + amt;
+    const b = ((num >> 8) & 0x00ff) + amt;
+    const g = (num & 0x0000ff) + amt;
+    const newColor = g | (b << 8) | (r << 16);
+    return newColor.toString(16);
+  };
+
+  const hoverColor = `#${lightenDarkenColor(
+    props.theme.color.substring(1),
+    -20
+  )}`;
+
+  sheet.update({ theme: { ...props.theme, hoverColor } });
 
   const getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];

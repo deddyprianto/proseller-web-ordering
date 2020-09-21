@@ -6,6 +6,7 @@ import cx from "classnames";
 import styles from "./styles.module.css";
 
 const UpdateProductModal = ({
+  color,
   product,
   productInCart,
   onClose,
@@ -142,6 +143,7 @@ const UpdateProductModal = ({
                   </div>
                   <button
                     className={styles.editButton}
+                    style={{ color: color }}
                     onClick={() => handleEdit(item)}
                   >
                     Edit
@@ -160,6 +162,7 @@ const UpdateProductModal = ({
 };
 
 UpdateProductModal.propTypes = {
+  color: PropTypes.string,
   product: PropTypes.object,
   productInCart: PropTypes.array,
   onClose: PropTypes.func,

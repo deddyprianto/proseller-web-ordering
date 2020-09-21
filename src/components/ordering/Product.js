@@ -182,7 +182,7 @@ class Product extends Component {
                             paddingRight: 5,
                           }}
                           rel="nofollow"
-                          className="button btn-info product_type_simple add_to_cart_button ajax_add_to_cart"
+                          className="button product_type_simple add_to_cart_button ajax_add_to_cart"
                         >
                           {this.props.labelButton}
                         </p>
