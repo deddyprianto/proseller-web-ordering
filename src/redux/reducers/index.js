@@ -12,6 +12,7 @@ import language from "./LanguageReducer";
 import promotion from "./PromotionReducer";
 import masterdata from "./MasterdataReducer";
 import theme from "./ThemeReducer";
+import voucher from "./VoucherReducer";
 
 const rootReducer = combineReducers({
   auth,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   masterdata,
   broadcast,
   theme,
+  voucher,
 });
 
 export default rootReducer;

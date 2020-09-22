@@ -48,10 +48,12 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "simple-encryptor": "^4.0.0",
+    "source-map-explorer": "^2.5.0",
     "sweetalert2": "^9.17.0",
     "uuidv4": "^6.2.0"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e local react-scripts start",
     "build": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e local react-scripts build",
     "deploy-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://prod-web-ordering-1-0 --acl public-read",

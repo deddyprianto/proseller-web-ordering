@@ -1,7 +1,6 @@
 import { MasterDataService } from "../../Services/MasterDataService";
 import { ProductService } from "../../Services/ProductService";
 import { AuthActions } from "./AuthAction";
-import _ from "lodash";
 import { CONSTANT } from "../../helpers";
 
 export const MasterdataAction = {

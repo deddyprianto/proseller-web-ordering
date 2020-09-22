@@ -14,14 +14,16 @@ class InboxCard extends Component {
   }
 
   getCurrency = (price) => {
-    if (price != undefined) {
-      const { currency } = this.props.companyInfo;
-      if (!price || price === "-") price = 0;
-      let result = price.toLocaleString(currency.locale, {
-        style: "currency",
-        currency: currency.code,
-      });
-      return result;
+    if (this.props.companyInfo) {
+      if (price != undefined) {
+        const { currency } = this.props.companyInfo;
+        if (!price || price === "-") price = 0;
+        let result = price.toLocaleString(currency.locale, {
+          style: "currency",
+          currency: currency.code,
+        });
+        return result;
+      }
     }
   };
 
