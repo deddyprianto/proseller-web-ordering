@@ -122,13 +122,17 @@
   background-color: transparent;
 }
 
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @media only screen and (min-width: 768px) {
   .modalContainer {
     align-items: center;
   }
 
   .modal {
-    height: 80vh;
+    height: 90vh;
     width: 30vw;
   }
 
@@ -136,9 +140,6 @@
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
-  }
-  input[type="number"] {
-    -moz-appearance: textfield;
   }
 
   .body {
