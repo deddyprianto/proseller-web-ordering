@@ -173,7 +173,6 @@ class Ordering extends Component {
         ProductAction.fetchProduct(categories[i], outlet, 0, 5)
       );
       products = products.map((category, index) => {
-        console.log(category);
         if (index === i) {
           return {
             category: category.category,
