@@ -511,8 +511,36 @@ class Ordering extends Component {
                         {cat.category.name}
                       </h3>
                       {cat.items.map((item, j) => {
-                        return (
-                          item.product && (
+                        if (item.product) {
+                          const { salesPeriods, restricSalesPeriod } = item;
+                          if (restricSalesPeriod) {
+                            const isEnabled = salesPeriods.find((period) => {
+                              const timeArray = period.value.split("-");
+                              const startTime = timeArray[0];
+                              const endTime = timeArray[1];
+                              const startHour = parseInt(
+                                startTime.split(":")[0]
+                              );
+                              const startMinute = parseInt(
+                                startTime.split(":")[1]
+                              );
+                              const endHour = parseInt(endTime.split(":")[0]);
+                              const endMinute = parseInt(endTime.split(":")[1]);
+                              const start = startHour * 60 + startMinute;
+                              const end =
+                                startHour > endHour
+                                  ? endHour * 60 + endMinute + 24 * 60
+                                  : endHour * 60 + endMinute;
+                              const date = new Date();
+                              const now =
+                                date.getHours() * 60 + date.getMinutes();
+                              return now <= end && now >= start;
+                            });
+                            if (!isEnabled) {
+                              return null;
+                            }
+                          }
+                          return (
                             <Product
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
@@ -526,8 +554,8 @@ class Ordering extends Component {
                               key={j}
                               item={item}
                             />
-                          )
-                        );
+                          );
+                        }
                       })}
                     </>
                   ))}
