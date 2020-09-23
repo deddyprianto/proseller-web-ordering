@@ -21,20 +21,29 @@ const GiftVoucherModal = ({
   dispatch,
   errorMessage,
   successMessage,
+  account,
 }) => {
   const [count, setCount] = useState(0);
   const [method, setMethod] = useState("email");
   const [receiver, setReceiver] = useState("");
 
   const handleSubmit = () => {
-    const sendMethod =
-      method === "email" ? "transferToEmail" : "transferToPhoneNumber";
-    const payload = {
-      voucherID: voucher.id,
-      quantity: count,
-      [sendMethod]: receiver,
-    };
-    dispatch(VoucherAction.transferVoucher(payload));
+    const { email, phoneNumber } = account;
+    if (email === receiver || phoneNumber === receiver) {
+      dispatch({
+        type: "SEND_VOUCHER_FAILED",
+        payload: "Can't gift voucher to your own account",
+      });
+    } else {
+      const sendMethod =
+        method === "email" ? "transferToEmail" : "transferToPhoneNumber";
+      const payload = {
+        voucherID: voucher.id,
+        quantity: count,
+        [sendMethod]: receiver,
+      };
+      dispatch(VoucherAction.transferVoucher(payload));
+    }
   };
 
   useEffect(() => {
@@ -55,6 +64,9 @@ const GiftVoucherModal = ({
 
   useEffect(() => {
     setReceiver("");
+    dispatch({
+      type: "INIT_VOUCHER_SEND",
+    });
   }, [method]);
 
   return (
@@ -70,86 +82,87 @@ const GiftVoucherModal = ({
             <i className="fa fa-times"></i>
           </button>
         </div>
-
-        <div className={styles.body}>
-          <div className={styles.image}>
-            <img
-              src={voucher.image ? voucher.image : voucherIcon}
-              alt="voucher"
-            />
-          </div>
-          <div className={styles.name}>{voucher.name}</div>
-          <div className={styles.description}>{`Discount ${
-            voucher.voucherType === "discPercentage"
-              ? voucher.voucherValue + "%"
-              : "$" + voucher.voucherValue
-          }`}</div>
-          <div className={styles.receiverForm}>
-            {failed && (
-              <div className={styles.errorMessage}>{errorMessage}</div>
-            )}
-            {!isSubmitting && !failed && (
-              <div className={styles.successMessage}>{successMessage}</div>
-            )}
-            <div>Gift to:</div>
-            <div>
-              <input
-                type={method === "email" ? "email" : "number"}
-                name="receiver"
-                placeholder={`Enter ${
-                  method === "email" ? "email" : "phone number"
-                }`}
-                value={receiver}
-                onChange={(e) => setReceiver(e.target.value)}
-              ></input>
+        <div className={styles.scrollable}>
+          <div className={styles.body}>
+            <div className={styles.image}>
+              <img
+                src={voucher.image ? voucher.image : voucherIcon}
+                alt="voucher"
+              />
             </div>
-            <a
-              style={{ color: color }}
-              onClick={(e) =>
-                setMethod(method !== "email" ? "email" : "phone number")
-              }
-            >
-              <strong>
-                Use {method !== "email" ? "email" : "phone number"}
-              </strong>
-            </a>
+            <div className={styles.name}>{voucher.name}</div>
+            <div className={styles.description}>{`Discount ${
+              voucher.voucherType === "discPercentage"
+                ? voucher.voucherValue + "%"
+                : "$" + voucher.voucherValue
+            }`}</div>
+            <div className={styles.receiverForm}>
+              {failed && (
+                <div className={styles.errorMessage}>{errorMessage}</div>
+              )}
+              {!isSubmitting && !failed && (
+                <div className={styles.successMessage}>{successMessage}</div>
+              )}
+              <div>Gift to:</div>
+              <div>
+                <input
+                  type={method === "email" ? "email" : "number"}
+                  name="receiver"
+                  placeholder={`Enter ${
+                    method === "email" ? "email" : "phone number"
+                  }`}
+                  value={receiver}
+                  onChange={(e) => setReceiver(e.target.value)}
+                ></input>
+              </div>
+              <a
+                style={{ color: color }}
+                onClick={(e) =>
+                  setMethod(method !== "email" ? "email" : "phone number")
+                }
+              >
+                <strong>
+                  Use {method !== "email" ? "email" : "phone number"}
+                </strong>
+              </a>
+            </div>
+            <div>How many? (Owned: {voucher.totalRedeem})</div>
+            <div className={styles.counter}>
+              <button
+                className={styles.decrease}
+                onClick={() => count > 0 && setCount(count - 1)}
+                disabled={count === 0}
+              >
+                -
+              </button>
+              <input
+                type="number"
+                name="count"
+                min={0}
+                value={count}
+                onChange={(e) =>
+                  e.target.value !== ""
+                    ? setCount(parseInt(e.target.value))
+                    : setCount(0)
+                }
+              ></input>
+              <button
+                className={styles.increase}
+                onClick={() =>
+                  count <= voucher.totalRedeem && setCount(count + 1)
+                }
+                disabled={count === voucher.totalRedeem}
+              >
+                +
+              </button>
+            </div>
           </div>
-          <div>How many? (Owned: {voucher.totalRedeem})</div>
-          <div className={styles.counter}>
-            <button
-              className={styles.decrease}
-              onClick={() => count > 0 && setCount(count - 1)}
-              disabled={count === 0}
-            >
-              -
-            </button>
-            <input
-              type="number"
-              name="count"
-              min={0}
-              value={count}
-              onChange={(e) =>
-                e.target.value !== ""
-                  ? setCount(parseInt(e.target.value))
-                  : setCount(0)
-              }
-            ></input>
-            <button
-              className={styles.increase}
-              onClick={() =>
-                count <= voucher.totalRedeem && setCount(count + 1)
-              }
-              disabled={count === voucher.totalRedeem}
-            >
-              +
-            </button>
-          </div>
-        </div>
 
-        <div className={styles.footer}>
-          <button onClick={handleSubmit} disabled={isSubmitting || count < 1}>
-            Gift
-          </button>
+          <div className={styles.footer}>
+            <button onClick={handleSubmit} disabled={isSubmitting || count < 1}>
+              Gift
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -165,6 +178,7 @@ GiftVoucherModal.propTypes = {
   dispatch: PropTypes.func,
   errorMessage: PropTypes.string,
   successMessage: PropTypes.string,
+  account: PropTypes.object,
 };
 
 const mapStateToProps = (state) => {
@@ -174,6 +188,7 @@ const mapStateToProps = (state) => {
     errorMessage: state.voucher.errorMessage,
     successMessage: state.voucher.successMessage,
     color: state.theme.color,
+    account: state.auth.account.idToken.payload,
   };
 };
 

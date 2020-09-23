@@ -13,13 +13,18 @@
 .modal {
   animation: fadeIn 500ms;
   position: relative;
-  height: 80vh;
+  height: 90vh;
   width: 95vw;
   background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1rem;
+}
+
+.scrollable {
+  height: 80vh;
+  overflow-y: scroll;
 }
 
 .header {
@@ -33,7 +38,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  height: 60vh;
+  /* height: 60vh; */
 }
 
 .image {
@@ -101,6 +106,7 @@
 
 .errorMessage {
   color: #c00a27;
+  font-size: 1.2rem;
 }
 
 .successMessage {
