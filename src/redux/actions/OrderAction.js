@@ -34,6 +34,7 @@ export const OrderAction = {
   setData,
   changeOrderingMode,
   buildCart,
+  getTheme,
 };
 
 function shareURL(tableNo, outletID, orderMode) {
@@ -54,6 +55,19 @@ function shareURL(tableNo, outletID, orderMode) {
 
     if (response.data != undefined) return response;
     else return false;
+  };
+}
+
+function getTheme() {
+  return async (dispatch) => {
+    const appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
+    const response = await OrderingService.api(
+      "GET",
+      null,
+      `orderingsetting/${appType}`
+    );
+    const data = await response.data;
+    dispatch({ type: "SET_THEME", payload: data.theme.color });
   };
 }
 

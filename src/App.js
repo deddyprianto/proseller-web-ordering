@@ -142,6 +142,7 @@ const App = (props) => {
   };
 
   useEffect(() => {
+    props.dispatch(OrderAction.getTheme());
     checkUser();
   }, []);
 
