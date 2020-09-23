@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import CategoriesEmenu from "./CategoriesEmenu";
@@ -155,17 +156,37 @@ class Ordering extends Component {
     let products = [];
     let i = 0;
 
+    const productListWithCategory = categories.map((category) => ({
+      category,
+      items: [],
+    }));
+
+    this.setState({
+      products: productListWithCategory,
+      productsBackup: productListWithCategory,
+    });
+
+    products = productListWithCategory;
+
     while (i < categories.length && this.state.processing) {
       let data = await this.props.dispatch(
         ProductAction.fetchProduct(categories[i], outlet, 0, 5)
       );
-      let items = {
-        category: categories[i],
-        items: data.data,
-      };
+      products = products.map((category, index) => {
+        console.log(category);
+        if (index === i) {
+          return {
+            category: category.category,
+            items: data.data,
+          };
+        }
+        return category;
+      });
 
-      products.push(items);
-      await this.setState({ products, productsBackup: products });
+      await this.setState({
+        products,
+        productsBackup: products,
+      });
 
       if (data.dataLength > 0) {
         let j = 5;

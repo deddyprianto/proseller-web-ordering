@@ -105,8 +105,6 @@ const UpdateProductModal = ({
                   ),
                 };
               });
-              // const flatModifier = modifiersList.flat();
-              // console.log(modifiersList);
               return (
                 <div className={styles.product}>
                   <div className={styles.productName}>
