@@ -827,6 +827,8 @@ class Basket extends Component {
       let payload = {
         tableNo: scanTable.tableNo || scanTable.table,
         orderingMode: orderingMode,
+        partitionKey: this.props.basket.partitionKey,
+        sortKey: this.props.basket.sortKey,
       };
 
       let response;
@@ -1097,6 +1099,7 @@ const mapStateToProps = (state, ownProps) => {
     campaignPoint: state.campaign.data,
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,
+    basket: state.order.basket,
   };
 };
 

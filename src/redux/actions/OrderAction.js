@@ -447,13 +447,15 @@ function submitOrdering(payload) {
 }
 
 function submitTakeAway(payload) {
-  const newPayload = {
+  let newPayload = {
     ...payload,
     cartDetails: {
       partitionKey: payload.partitionKey,
       sortKey: payload.sortKey,
     },
   };
+  delete newPayload.partitionKey;
+  delete newPayload.sortKey;
   return async (dispatch) => {
     let response = await OrderingService.api(
       "POST",
@@ -475,6 +477,8 @@ function submitSettle(payload) {
       sortKey: payload.sortKey,
     },
   };
+  delete newPayload.partitionKey;
+  delete newPayload.sortKey;
   return async (dispatch) => {
     let response = await OrderingService.api(
       "POST",

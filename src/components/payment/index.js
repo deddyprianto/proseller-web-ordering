@@ -703,6 +703,9 @@ class Payment extends Component {
       } catch (e) {}
     }
 
+    payload.partitionKey = this.props.basket.partitionKey;
+    payload.sortKey = this.props.basket.sortKey;
+
     let response;
     if (
       orderingMode === "TAKEAWAY" ||
@@ -904,7 +907,8 @@ class Payment extends Component {
                             fontWeight: "bold",
                           }}
                         >
-                          {totalPrice}
+                          {Math.round((totalPrice + Number.EPSILON) * 100) /
+                            100}
                         </div>
                       </div>
                     </div>
