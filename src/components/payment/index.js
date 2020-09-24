@@ -292,7 +292,6 @@ class Payment extends Component {
       )
     );
 
-    // console.log(dataSettle)
     if (dataSettle === null || !dataSettle.dataBasket) return;
 
     this.setState({ dataSettle });
@@ -305,8 +304,13 @@ class Payment extends Component {
       dataSettle.dataBasket
     );
 
-    let money =
-      (selectedPoint || 0) / dataSettle.pointsToRebateRatio.split(":")[0];
+    const point = selectedPoint || 0;
+    const pointToRebate =
+      parseInt(dataSettle.pointsToRebateRatio.split(":")[0]) > 0
+        ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
+        : 1;
+
+    let money = point / pointToRebate;
     if (dataSettle.detailPoint.roundingOptions !== "DECIMAL")
       money = Math.floor(money);
     else money = money.toFixed(2);
