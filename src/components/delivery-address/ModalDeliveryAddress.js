@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
+import GoogleMaps from "./GoogleMaps";
 
 const Swal = require("sweetalert2");
 
@@ -258,6 +259,14 @@ class ModalDeliveryAdderss extends Component {
                         this.props.handleChange("postalCode", e.target.value)
                       }
                     />
+                  </div>
+                  <div
+                    style={{
+                      height: "300px",
+                      width: "300px",
+                    }}
+                  >
+                    <GoogleMaps></GoogleMaps>
                   </div>
 
                   <Button
