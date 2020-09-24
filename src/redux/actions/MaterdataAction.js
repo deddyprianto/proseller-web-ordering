@@ -49,14 +49,14 @@ function getInfoCompany() {
         response.data.currency = { symbol: "$", code: "SGD", locale: "en-US" };
       }
       dispatch({ type: "GET_COMPANY_INFO_SUCCESS", payload: response.data });
-      if (
-        response.data &&
-        response.data.companyId ===
-          "company::e902cee7-6650-447e-989a-9209944192fc"
-      ) {
-        console.log("this is auntieanne");
-        dispatch({ type: "SET_THEME", data: "#003da5" });
-      }
+      // if (
+      //   response.data &&
+      //   response.data.companyId ===
+      //     "company::e902cee7-6650-447e-989a-9209944192fc"
+      // ) {
+      //   console.log("this is auntieanne");
+      //   dispatch({ type: "SET_THEME", data: "#003da5" });
+      // }
     }
     response = response.data;
     return response;

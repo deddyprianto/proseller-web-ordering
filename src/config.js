@@ -1,10 +1,11 @@
 import logo from "./assets/images/logo_placeholder.png";
 let config = {};
 
-let stage = "dev";
-let companyHost = "qiji";
-let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""
-  }.proseller.io`;
+let stage = "demo";
+let companyHost = "auntieanne";
+let endPoint = `https://${companyHost}${
+  stage !== "" ? "-" + stage : ""
+}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {
@@ -33,8 +34,9 @@ if (process.env.REACT_APP_STAGE === "demo") {
 } else if (process.env.REACT_APP_STAGE === "prod") {
   config.url_payment = `https://payment.proseller.io/api/`;
 } else {
-  config.url_payment = `https://payment${stage !== "" ? "-" + stage : ""
-    }.proseller.io/api/`;
+  config.url_payment = `https://payment${
+    stage !== "" ? "-" + stage : ""
+  }.proseller.io/api/`;
 }
 
 config.url_logo = logo;
