@@ -153,9 +153,6 @@ function processAddCart(defaultOutlet, selectedItem) {
     if (account != undefined && account != null) dispatch(addCart(payload));
     else dispatch(processOfflineCart(payload, "Add"));
     // document.getElementById("close-modal").click();
-    const orderMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
-    if (orderMode == undefined)
-      document.getElementById("open-modal-ordering-mode").click();
   };
 }
 

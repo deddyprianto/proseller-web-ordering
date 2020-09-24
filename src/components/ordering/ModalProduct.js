@@ -180,81 +180,86 @@ class ModalProduct extends Component {
   };
 
   processCart = async () => {
+    const orderMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
     try {
-      const { defaultOutlet } = this.props;
-      const { selectedItem } = this.state;
-      const { basket } = this.state;
+      if (!orderMode) {
+        document.getElementById("open-modal-ordering-mode").click();
+      } else {
+        const { defaultOutlet } = this.props;
+        const { selectedItem } = this.state;
+        const { basket } = this.state;
 
-      if (this.ruleModifierNotPassed()) {
-        // dummy variable created, so even the code below is error, then alert still showing
-        let name = "Item";
-        let qty = 1;
-        let status = "lack";
+        if (this.ruleModifierNotPassed()) {
+          // dummy variable created, so even the code below is error, then alert still showing
+          let name = "Item";
+          let qty = 1;
+          let status = "lack";
 
-        // check name and quantity modifier that hasnt been success passed min & max
-        try {
-          let productModifiers = this.state.selectedItem.product
-            .productModifiers;
-          for (let i = 0; i < productModifiers.length; i++) {
-            let lengthDetail = 0;
+          // check name and quantity modifier that hasnt been success passed min & max
+          try {
+            let productModifiers = this.state.selectedItem.product
+              .productModifiers;
+            for (let i = 0; i < productModifiers.length; i++) {
+              let lengthDetail = 0;
 
-            for (
-              let x = 0;
-              x < productModifiers[i].modifier.details.length;
-              x++
-            ) {
-              if (
-                productModifiers[i].modifier.details[x].quantity > 0 &&
-                productModifiers[i].modifier.details[x].quantity != undefined
+              for (
+                let x = 0;
+                x < productModifiers[i].modifier.details.length;
+                x++
               ) {
-                lengthDetail +=
-                  productModifiers[i].modifier.details[x].quantity;
+                if (
+                  productModifiers[i].modifier.details[x].quantity > 0 &&
+                  productModifiers[i].modifier.details[x].quantity != undefined
+                ) {
+                  lengthDetail +=
+                    productModifiers[i].modifier.details[x].quantity;
+                }
+              }
+
+              if (productModifiers[i].modifier.min > lengthDetail) {
+                name = productModifiers[i].modifierName;
+                qty = productModifiers[i].modifier.min;
+                status = "lack";
+                break;
+              }
+
+              if (lengthDetail > productModifiers[i].modifier.max) {
+                name = productModifiers[i].modifierName;
+                qty = productModifiers[i].modifier.max;
+                status = "excess";
+                break;
               }
             }
+          } catch (e) {}
 
-            if (productModifiers[i].modifier.min > lengthDetail) {
-              name = productModifiers[i].modifierName;
-              qty = productModifiers[i].modifier.min;
-              status = "lack";
-              break;
-            }
-
-            if (lengthDetail > productModifiers[i].modifier.max) {
-              name = productModifiers[i].modifierName;
-              qty = productModifiers[i].modifier.max;
-              status = "excess";
-              break;
+          if (name != "Item") {
+            let message = { title: "Warning", message: "" };
+            document.getElementById("btn-mesage-modifier").click();
+            if (status === "lack") {
+              message.message = `Please pick minimum ${qty} ${name}`;
+              this.setState({ message });
+            } else {
+              message.message = `The maximum ${name} that can be taken is ${qty}`;
+              this.setState({ message });
             }
           }
-        } catch (e) {}
-
-        if (name != "Item") {
-          let message = { title: "Warning", message: "" };
-          document.getElementById("btn-mesage-modifier").click();
-          if (status === "lack") {
-            message.message = `Please pick minimum ${qty} ${name}`;
-            this.setState({ message });
-          } else {
-            message.message = `The maximum ${name} that can be taken is ${qty}`;
-            this.setState({ message });
-          }
+          return;
         }
-        return;
-      }
 
-      await this.setState({ disableButton: true });
-      if (selectedItem.mode == "Add" || this.props.addNew)
-        await this.props.dispatch(
-          OrderAction.processAddCart(defaultOutlet, selectedItem)
-        );
-      else {
-        console.log("Updating item :");
-        console.log(selectedItem);
-        let response = await this.props.dispatch(
-          OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
-        );
-        this.props.handleSetState("dataBasket", response.data);
-        document.getElementById("detail-product-modal").click();
+        await this.setState({ disableButton: true });
+        if (selectedItem.mode == "Add" || this.props.addNew) {
+          this.props.dispatch(
+            OrderAction.processAddCart(defaultOutlet, selectedItem)
+          );
+        } else {
+          console.log("Updating item :");
+          console.log(selectedItem);
+          let response = await this.props.dispatch(
+            OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
+          );
+          this.props.handleSetState("dataBasket", response.data);
+          document.getElementById("detail-product-modal").click();
+        }
       }
     } catch (e) {}
   };

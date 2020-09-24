@@ -1,0 +1,17 @@
+.orderMode {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  flex-direction: column;
+  height: 400px;
+  box-shadow: 0 0 2px 2px rgb(224 224 224 / 60%);
+  margin: 5px;
+  border-radius: 8px;
+  min-width: 105px;
+  margin-top: 10px;
+}
+
+.validation {
+  text-align: center;
+  margin-top: 2rem;
+}
