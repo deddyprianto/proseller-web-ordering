@@ -62,20 +62,26 @@ class ModalOrderingMode extends Component {
                       <i className="fa fa-cutlery color icon-order"></i>
 
                       <div className={styles.validation}>
-                        <div>
+                        {outlet.orderValidation.dineIn.minAmount ||
+                        outlet.orderValidation.dineIn.maxAmount ? (
                           <div>
-                            <strong>Amount range :</strong>
-                          </div>{" "}
-                          {outlet.orderValidation.dineIn.minAmount} to{" "}
-                          {outlet.orderValidation.dineIn.maxAmount}
-                        </div>
-                        <div>
+                            <div>
+                              <strong>Amount range :</strong>
+                            </div>{" "}
+                            {outlet.orderValidation.dineIn.minAmount} to{" "}
+                            {outlet.orderValidation.dineIn.maxAmount}
+                          </div>
+                        ) : null}
+                        {outlet.orderValidation.dineIn.minQty ||
+                        outlet.orderValidation.dineIn.maxQty ? (
                           <div>
-                            <strong>Item quantity range :</strong>
-                          </div>{" "}
-                          {outlet.orderValidation.dineIn.minQty} to{" "}
-                          {outlet.orderValidation.dineIn.maxQty}
-                        </div>
+                            <div>
+                              <strong>Item quantity range :</strong>
+                            </div>{" "}
+                            {outlet.orderValidation.dineIn.minQty} to{" "}
+                            {outlet.orderValidation.dineIn.maxQty}
+                          </div>
+                        ) : null}
                       </div>
                       <button
                         className="btn btn-block btn-footer"
@@ -97,20 +103,26 @@ class ModalOrderingMode extends Component {
                       <i className="fa fa-shopping-basket color icon-order"></i>
 
                       <div className={styles.validation}>
-                        <div>
+                        {outlet.orderValidation.takeAway.minAmount ||
+                        outlet.orderValidation.takeAway.maxAmount ? (
                           <div>
-                            <strong>Amount range :</strong>
-                          </div>{" "}
-                          {outlet.orderValidation.takeAway.minAmount} to{" "}
-                          {outlet.orderValidation.takeAway.maxAmount}
-                        </div>
-                        <div>
+                            <div>
+                              <strong>Amount range :</strong>
+                            </div>{" "}
+                            {outlet.orderValidation.takeAway.minAmount} to{" "}
+                            {outlet.orderValidation.takeAway.maxAmount}
+                          </div>
+                        ) : null}
+                        {outlet.orderValidation.takeAway.minQty ||
+                        outlet.orderValidation.takeAway.maxQty ? (
                           <div>
-                            <strong>Item quantity range :</strong>
-                          </div>{" "}
-                          {outlet.orderValidation.takeAway.minQty} to{" "}
-                          {outlet.orderValidation.takeAway.maxQty}
-                        </div>
+                            <div>
+                              <strong>Item quantity range :</strong>
+                            </div>{" "}
+                            {outlet.orderValidation.takeAway.minQty} to{" "}
+                            {outlet.orderValidation.takeAway.maxQty}
+                          </div>
+                        ) : null}
                       </div>
                       <button
                         className="btn btn-block btn-footer"
@@ -132,20 +144,26 @@ class ModalOrderingMode extends Component {
                       <i className="fa fa-car color icon-order"></i>
 
                       <div className={styles.validation}>
-                        <div>
+                        {outlet.orderValidation.delivery.minAmount ||
+                        outlet.orderValidation.delivery.maxAmount ? (
                           <div>
-                            <strong>Amount range :</strong>
-                          </div>{" "}
-                          {outlet.orderValidation.delivery.minAmount} to{" "}
-                          {outlet.orderValidation.delivery.maxAmount}
-                        </div>
-                        <div>
+                            <div>
+                              <strong>Amount range :</strong>
+                            </div>{" "}
+                            {outlet.orderValidation.delivery.minAmount} to{" "}
+                            {outlet.orderValidation.delivery.maxAmount}
+                          </div>
+                        ) : null}
+                        {outlet.orderValidation.delivery.minQty ||
+                        outlet.orderValidation.delivery.maxQty ? (
                           <div>
-                            <strong>Item quantity range :</strong>
-                          </div>{" "}
-                          {outlet.orderValidation.delivery.minQty} to{" "}
-                          {outlet.orderValidation.delivery.maxQty}
-                        </div>
+                            <div>
+                              <strong>Item quantity range :</strong>
+                            </div>{" "}
+                            {outlet.orderValidation.delivery.minQty} to{" "}
+                            {outlet.orderValidation.delivery.maxQty}
+                          </div>
+                        ) : null}
                       </div>
                       <button
                         className="btn btn-block btn-footer"
