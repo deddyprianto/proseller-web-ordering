@@ -41,8 +41,17 @@ class ModalEditProfile extends Component {
         { value: "2000-12-01", lable: "December" },
       ],
       editName: false,
+
       editEmail: false,
+      emailUsed: true,
+      emailCheckTimeout: null,
+      checkingEmail: false,
+
       editPhoneNumber: false,
+      phoneCheckTimeout: null,
+      phoneUsed: true,
+      checkingPhone: false,
+
       editPassword: false,
       newPassword: "",
       oldPassword: "",
@@ -79,9 +88,58 @@ class ModalEditProfile extends Component {
 
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
-
-    if (field === "phoneNumber") this.setState({ editPhoneNumber: true });
-    if (field === "email") this.setState({ editEmail: true });
+    if (field === "email") {
+      if (this.state.emailCheckTimeout)
+        clearTimeout(this.state.emailCheckTimeout);
+      const isMyEmail = this.props.account.email === value;
+      if (!isMyEmail) {
+        this.setState({ checkingEmail: true });
+        const emailTimeout = setTimeout(async () => {
+          const response = await this.props.dispatch(
+            AuthActions.check({ email: value })
+          );
+          const isUsed = await response.Data.status;
+          this.setState({
+            emailUsed: isUsed || isMyEmail,
+            editEmail: !isMyEmail,
+            checkingEmail: false,
+          });
+        }, 2000);
+        this.setState({ emailCheckTimeout: emailTimeout });
+      } else {
+        this.setState({
+          editEmail: false,
+          checkingEmail: false,
+          emailUsed: true,
+        });
+      }
+    }
+    if (field === "phoneNumber") {
+      if (this.state.phoneCheckTimeout)
+        clearTimeout(this.state.phoneCheckTimeout);
+      const isMyPhone = this.props.account.phoneNumber === value;
+      if (!isMyPhone) {
+        this.setState({ checkingPhone: true });
+        const phoneTimeout = setTimeout(async () => {
+          const response = await this.props.dispatch(
+            AuthActions.check({ phoneNumber: value })
+          );
+          const isUsed = await response.Data.status;
+          this.setState({
+            phoneUsed: isUsed || isMyPhone,
+            editPhoneNumber: !isMyPhone,
+            checkingPhone: false,
+          });
+        }, 2000);
+        this.setState({ phoneCheckTimeout: phoneTimeout });
+      } else {
+        this.setState({
+          editPhoneNumber: false,
+          checkingPhone: false,
+          phoneUsed: true,
+        });
+      }
+    }
     dataCustomer[field] = value;
     dataCustomer.address = `${dataCustomer.street || ""}, ${
       dataCustomer.unitNo || ""
@@ -328,6 +386,25 @@ class ModalEditProfile extends Component {
                         this.handleChange("phoneNumber", e.target.value)
                       }
                     />
+                    {this.state.editPhoneNumber && !this.state.checkingPhone ? (
+                      this.state.phoneUsed ? (
+                        <div className="text text-danger small">
+                          <em>Phone no. already used</em>
+                        </div>
+                      ) : (
+                        <div className="text text-success small">
+                          <em>Phone no. is available</em>
+                          <span>
+                            <i className="fa fa-check"></i>
+                          </span>
+                        </div>
+                      )
+                    ) : null}
+                    {this.state.checkingPhone && (
+                      <div className="text small">
+                        <em>Checking phone no. availability...</em>
+                      </div>
+                    )}
                   </div>
 
                   <div
@@ -346,6 +423,25 @@ class ModalEditProfile extends Component {
                         this.handleChange("email", e.target.value)
                       }
                     />
+                    {this.state.editEmail && !this.state.checkingEmail ? (
+                      this.state.emailUsed ? (
+                        <div className="text text-danger small">
+                          <em>Email already used</em>
+                        </div>
+                      ) : (
+                        <div className="text text-success small">
+                          <em>Email is available</em>
+                          <span>
+                            <i className="fa fa-check"></i>
+                          </span>
+                        </div>
+                      )
+                    ) : null}
+                    {this.state.checkingEmail && (
+                      <div className="text small">
+                        <em>Checking email availability...</em>
+                      </div>
+                    )}
                   </div>
 
                   {fieldBirthDate && (
@@ -392,9 +488,9 @@ class ModalEditProfile extends Component {
                               paddingRight: 50,
                             }}
                           >
-                            {dataCustomer.birthDate
+                            {/* {dataCustomer.birthDate
                               ? moment(birthDate).format("DD-MM-YYYY")
-                              : fieldBirthDate.format}
+                              : fieldBirthDate.format} */}
                           </div>
                           <input
                             type="date"
