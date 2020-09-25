@@ -67,7 +67,13 @@ function getTheme() {
       `orderingsetting/${appType}`
     );
     const data = await response.data;
-    data && dispatch({ type: "SET_THEME", payload: data.theme.color });
+    data &&
+      dispatch({
+        type: "SET_THEME",
+        payload: data.theme.color.secondary
+          ? data.theme.color
+          : { primary: data.theme.color, secondary: data.theme.color },
+      });
   };
 }
 

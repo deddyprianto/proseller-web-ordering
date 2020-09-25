@@ -467,7 +467,7 @@ class Ordering extends Component {
           "update" &&
           this.state.showUpdateModal && (
             <UpdateProductModal
-              color={this.props.theme.color}
+              color={this.props.theme.color.primary}
               product={this.state.selectedProduct}
               productInCart={
                 this.props.basket &&

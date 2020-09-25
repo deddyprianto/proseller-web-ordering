@@ -1,5 +1,8 @@
 const initialState = {
-  color: "#c00a27",
+  color: {
+    primary: "#c00a27",
+    secondary: "#c00a27",
+  },
 };
 
 export default function reducer(state = initialState, action) {

@@ -54,7 +54,7 @@ const App = (props) => {
   };
 
   const hoverColor = `#${lightenDarkenColor(
-    props.theme.color.substring(1),
+    props.theme.color.primary.substring(1),
     -10
   )}`;
 
