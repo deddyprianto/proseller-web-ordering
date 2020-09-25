@@ -15,6 +15,8 @@ import Lottie from "lottie-react-web";
 import emptyGif from "../../assets/gif/empty-and-lost.json";
 import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
+import WebOrderingCategories from "./WebOrderingCategories";
+import EMenuCategories from "./EMenuCategories";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Ordering extends Component {
@@ -488,23 +490,36 @@ class Ordering extends Component {
         <br /> <br /> <br />
         <div id="offset-header" />
         {isEmenu ? (
-          <CategoriesEmenu
-            loadingSearching={this.loadingSearching}
-            finished={finished}
-            setLoading={this.setLoading}
-            searchProduct={this.searchProduct}
+          <EMenuCategories
             categories={categories}
             selectedCategory={this.state.selectedCategory}
-          />
+            setSelectedCategory={(category) =>
+              this.setState({ selectedCategory: category })
+            }
+          ></EMenuCategories>
         ) : (
-          <CategoriesWebOrdering
+          // <CategoriesWebOrdering
+          //   loadingSearching={this.loadingSearching}
+          //   finished={finished}
+          //   setLoading={this.setLoading}
+          //   searchProduct={this.searchProduct}
+          //   categories={categories}
+          //   selectedCategory={this.state.selectedCategory}
+          //   setSelectedCategory={(category) =>
+          //     this.setState({ selectedCategory: category })
+          //   }
+          // />
+          <WebOrderingCategories
             loadingSearching={this.loadingSearching}
             finished={finished}
             setLoading={this.setLoading}
             searchProduct={this.searchProduct}
             categories={categories}
             selectedCategory={this.state.selectedCategory}
-          />
+            setSelectedCategory={(category) =>
+              this.setState({ selectedCategory: category })
+            }
+          ></WebOrderingCategories>
         )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
