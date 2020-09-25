@@ -31,7 +31,7 @@ const EMenuCategories = ({
   useEffect(() => {
     try {
       window.scrollTo({
-        top: document.getElementById(selectedCategory).offsetTop - 40,
+        top: document.getElementById(selectedCategory).offsetTop - 80,
         behavior: "smooth",
       });
     } catch (error) {

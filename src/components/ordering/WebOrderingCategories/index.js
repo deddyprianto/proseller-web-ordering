@@ -55,7 +55,7 @@ const WebOrderingCategories = ({
   useEffect(() => {
     try {
       window.scrollTo({
-        top: document.getElementById(selectedCategory).offsetTop - 40,
+        top: document.getElementById(selectedCategory).offsetTop - 45,
         behavior: "smooth",
       });
     } catch (error) {
