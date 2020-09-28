@@ -204,7 +204,7 @@ class Ordering extends Component {
     }
 
     if (!this.state.processing) {
-      await this.setState({ products: [], productsBackup: [], categories: [] });
+      await this.setState({ products: [], productsBackup: [] });
     }
 
     await this.setState({ finished: true });
@@ -407,6 +407,11 @@ class Ordering extends Component {
       isEmenu,
     } = this.state;
     let products = [];
+    const categoryRefs = categories.map((category, i) => {
+      const ref = React.createRef();
+      return ref;
+    });
+
     if (this.props.productsSearch) products = this.props.productsSearch;
     else products = this.state.products;
 
@@ -510,6 +515,7 @@ class Ordering extends Component {
           //   }
           // />
           <WebOrderingCategories
+            categoryRefs={categoryRefs}
             loadingSearching={this.loadingSearching}
             finished={finished}
             setLoading={this.setLoading}
@@ -533,6 +539,7 @@ class Ordering extends Component {
                     <>
                       <h3
                         id={i}
+                        ref={categoryRefs[i]}
                         className="title"
                         style={{
                           fontSize: 14,

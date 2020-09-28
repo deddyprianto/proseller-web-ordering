@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const WebOrderingCategories = ({
+  categoryRefs,
   categories,
   finished,
   loadingSearching,
@@ -12,6 +13,9 @@ const WebOrderingCategories = ({
 }) => {
   const [openSearch, setOpenSearch] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [prevSelectedCategory, setPrevSelectedCategory] = useState(
+    selectedCategory
+  );
 
   const isItemsFinishedToLoad = (query) => {
     try {
@@ -29,7 +33,6 @@ const WebOrderingCategories = ({
       }
     } catch (e) {}
   };
-
   useEffect(() => {
     const scrollEventListener = document.addEventListener("scroll", () => {
       categories.forEach((element, i) => {
@@ -40,11 +43,6 @@ const WebOrderingCategories = ({
             target.offsetTop + 110 >= window.pageYOffset
           ) {
             setSelectedCategory(i);
-            try {
-              document
-                .getElementById(`cat-${i}`)
-                .scrollIntoView({ behavior: "smooth", inline: "center" });
-            } catch (e) {}
           }
         } catch (e) {}
       });
@@ -53,14 +51,30 @@ const WebOrderingCategories = ({
   }, []);
 
   useEffect(() => {
+    const headerHeight =
+      prevSelectedCategory === 0
+        ? document.getElementById("masthead").clientHeight +
+          document.getElementById("header-categories").clientHeight * 2
+        : document.getElementById("masthead").clientHeight +
+          document.getElementById("header-categories").clientHeight;
+    console.log(prevSelectedCategory);
+    console.log(headerHeight);
     try {
       window.scrollTo({
-        top: document.getElementById(selectedCategory).offsetTop - 45,
+        top: document.getElementById(selectedCategory).offsetTop - headerHeight,
         behavior: "smooth",
       });
     } catch (error) {
       console.log("fetching categories....");
     }
+    setPrevSelectedCategory(selectedCategory);
+    // console.log(categoryRefs[selectedCategory]);
+    // if (categoryRefs[selectedCategory]) {
+    //   categoryRefs[selectedCategory].current.scrollIntoView({
+    //     behavior: "smooth",
+    //     block: "start",
+    //   });
+    // }
   }, [selectedCategory]);
 
   return (
