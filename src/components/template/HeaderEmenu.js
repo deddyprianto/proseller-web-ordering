@@ -102,7 +102,7 @@ class Header extends Component {
               items.push(productsBackup[i].items[j]);
             }
           }
-        } catch (e) { }
+        } catch (e) {}
 
         if (items.length != 0) {
           if (productsSearch == undefined) {
@@ -120,7 +120,7 @@ class Header extends Component {
       await this.props.dispatch(OrderAction.setData(productsSearch, "SEARCH"));
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   render() {
@@ -178,15 +178,15 @@ class Header extends Component {
                 </div>
               </div>
             ) : (
-                <input
-                  onKeyUp={(e) => this.searchProduct(e.target.value)}
-                  id="input-txt"
-                  type="text"
-                  style={{ height: 35, fontSize: 14, marginTop: -5 }}
-                  autoFocus={true}
-                  placeholder="Search your product here..."
-                />
-              )}
+              <input
+                onKeyUp={(e) => this.searchProduct(e.target.value)}
+                id="input-txt"
+                type="text"
+                style={{ height: 35, fontSize: 14, marginTop: -5 }}
+                autoFocus={true}
+                placeholder="Search your product here..."
+              />
+            )}
             <div>
               {openSearch && (
                 <i
