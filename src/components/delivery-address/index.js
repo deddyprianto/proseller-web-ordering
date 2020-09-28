@@ -220,7 +220,7 @@ class DeliveryAddress extends Component {
     } = this.state;
 
     return (
-      <div className="col-full" style={{ marginTop: 120, marginBottom: 50 }}>
+      <div className="col-full" style={{ marginTop: 140, marginBottom: 50 }}>
         <ModalDeliveryAddress
           getDataDeliveryAddress={() => this.getDataDeliveryAddress()}
           handleChange={(field, value) => this.handleChange(field, value)}
@@ -426,14 +426,6 @@ class DeliveryAddress extends Component {
               </div>
             </main>
           </div>
-        </div>
-        <div
-          style={{
-            height: "300px",
-            width: "300px",
-          }}
-        >
-          <GoogleMaps></GoogleMaps>
         </div>
         {this.state.isLoading ? Swal.showLoading() : Swal.close()}
       </div>

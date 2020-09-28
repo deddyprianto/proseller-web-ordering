@@ -261,12 +261,21 @@ class ModalDeliveryAdderss extends Component {
                     />
                   </div>
                   <div
-                    style={{
-                      height: "300px",
-                      width: "300px",
-                    }}
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
                   >
-                    <GoogleMaps></GoogleMaps>
+                    <label>
+                      Select location <span className="required">*</span>
+                    </label>
+                    <div
+                      style={{
+                        height: "300px",
+                        width: "100%",
+                        marginTop: "1rem",
+                      }}
+                    >
+                      <GoogleMaps></GoogleMaps>
+                    </div>
                   </div>
 
                   <Button

@@ -1,25 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import GoogleMapReact from "google-map-react";
+import Geocode from "react-geocode";
 
-const GoogleMaps = ({ children }) => {
+import LocationOnIcon from "@material-ui/icons/LocationOn";
+
+Geocode.setApiKey("AIzaSyBdczjp19vUQp41WsHATUlOP6781gHy-MA");
+
+Geocode.setLanguage("en");
+
+const GoogleMaps = ({ defaultCenter }) => {
+  const [center, setCenter] = useState(defaultCenter);
+  const [addressInfo, setAddressInfo] = useState(null);
+  const [showInfo, setShowInfo] = useState(false);
+
+  useEffect(() => {
+    Geocode.fromLatLng(center.lat, center.lng).then(
+      (response) => {
+        const address = response.results[0].formatted_address;
+        console.log(address);
+        setAddressInfo(address);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }, [center]);
   return (
     <GoogleMapReact
-      bootstrapURLKeys={{ key: "AIzaSyAkoWVxFc3Bzl74bqgYl3umkue3MacqVvE" }}
-      defaultCenter={{
-        center: {
-          lat: 59.95,
-          lng: 30.33,
-        },
-      }}
+      bootstrapURLKeys={{ key: "AIzaSyBdczjp19vUQp41WsHATUlOP6781gHy-MA" }}
+      defaultCenter={defaultCenter}
+      center={center}
       defaultZoom={11}
-      yesIWantToUseGoogleMapApiInternals
+      onDragEnd={({ center }) => setCenter(center.toJSON())}
+      onChildClick={() => {
+        console.log("You clicked me!");
+      }}
     >
-      <div>Marker</div>
+      <div style={{ position: "relative" }} lat={center.lat} lng={center.lng}>
+        <LocationOnIcon
+          className="color"
+          style={{
+            fontSize: 40,
+            position: "absolute",
+            top: -20,
+            left: -20,
+          }}
+        />
+      </div>
     </GoogleMapReact>
   );
 };
 
-GoogleMaps.propTypes = {};
+GoogleMaps.propTypes = {
+  defaultCenter: PropTypes.object.isRequired,
+};
+
+GoogleMaps.defaultProps = {
+  defaultCenter: {
+    lat: 1.354989,
+    lng: 103.867794,
+  },
+};
 
 export default GoogleMaps;
