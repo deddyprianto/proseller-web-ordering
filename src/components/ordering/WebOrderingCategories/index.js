@@ -51,13 +51,16 @@ const WebOrderingCategories = ({
   }, []);
 
   useEffect(() => {
-    const headerHeight =
-      prevSelectedCategory === 0
-        ? document.getElementById("masthead").clientHeight +
-          document.getElementById("header-categories").clientHeight * 2
-        : document.getElementById("masthead").clientHeight +
-          document.getElementById("header-categories").clientHeight;
     try {
+      // const bannerHeight = document.getElementById("owl-main").childNodes[0]
+      //   .clientHeight;
+      // console.log(bannerHeight);
+      const headerHeight =
+        prevSelectedCategory === 0
+          ? document.getElementById("masthead").clientHeight +
+            document.getElementById("header-categories").clientHeight * 2
+          : document.getElementById("masthead").clientHeight +
+            document.getElementById("header-categories").clientHeight;
       window.scrollTo({
         top: document.getElementById(selectedCategory).offsetTop - headerHeight,
         behavior: "smooth",
@@ -66,20 +69,15 @@ const WebOrderingCategories = ({
       console.log("fetching categories....");
     }
     setPrevSelectedCategory(selectedCategory);
-    // console.log(categoryRefs[selectedCategory]);
-    // if (categoryRefs[selectedCategory]) {
-    //   categoryRefs[selectedCategory].current.scrollIntoView({
-    //     behavior: "smooth",
-    //     block: "start",
-    //   });
-    // }
   }, [selectedCategory]);
 
   return (
     <ul
       id="header-categories"
       className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position"
-      style={{ marginBottom: 0 }}
+      style={{
+        marginBottom: 0,
+      }}
     >
       {!openSearch ? (
         categories.map((item, i) => (

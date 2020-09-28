@@ -83,14 +83,26 @@ class Header extends Component {
         <header
           id="masthead"
           className="site-header header-v4 lite-bg"
-          style={{ position: "fixed", width: "100%" }}
+          style={{
+            position: "fixed",
+            width: "100%",
+            borderBottom: "1px solid #DADADA",
+            height: "8rem",
+          }}
         >
           <div
             className="col-full"
-            style={{ display: "flex", justifyContent: "center" }}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              position: "relative",
+            }}
           >
             <div
-              style={{ display: "flex", alignItems: "center", marginTop: -10 }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
             >
               <Link to="/">
                 <img
@@ -104,12 +116,20 @@ class Header extends Component {
                   }}
                 />
               </Link>
-              <div style={{ marginLeft: 5, fontWeight: "bold" }}>
+              <div
+                style={{
+                  marginLeft: 5,
+                  fontWeight: "bold",
+                  position: "absolute",
+                  top: 18,
+                  left: 10,
+                }}
+              >
                 <LocationOnIcon
                   className="color"
-                  style={{ fontSize: 25, marginBottom: -5 }}
+                  style={{ fontSize: 22, marginBottom: -5 }}
                 />
-                <span className="color" style={{ fontSize: 16 }}>
+                <span className="color" style={{ fontSize: 15 }}>
                   {defaultOutlet.name && defaultOutlet.name.substring(0, 8)}
                 </span>
               </div>
