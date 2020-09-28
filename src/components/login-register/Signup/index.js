@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+
 import EmailForm from "./EmailForm";
 import PhoneForm from "./PhoneForm";
 import SignUpSuccess from "./SignUpSuccess";
+import CustomFields from "./CustomFields";
 
 const SignUp = ({
   method,
@@ -22,8 +25,10 @@ const SignUp = ({
   errorPassword,
   enablePassword,
   signUpSuccess,
+  fields,
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
+
   return (
     <div className="modal-content" style={{ width: "100%" }}>
       <div
@@ -92,7 +97,12 @@ const SignUp = ({
           error={errorEmail}
           errorPassword={errorPassword}
           enablePassword={enablePassword}
-        ></PhoneForm>
+        >
+          <CustomFields
+            fields={fields}
+            handleChange={handleChange}
+          ></CustomFields>
+        </PhoneForm>
       ) : (
         <EmailForm
           email={initialUserData.email}
@@ -101,7 +111,12 @@ const SignUp = ({
           error={errorPhone}
           errorPassword={errorPassword}
           enablePassword={enablePassword}
-        ></EmailForm>
+        >
+          <CustomFields
+            fields={fields}
+            handleChange={handleChange}
+          ></CustomFields>
+        </EmailForm>
       )}
     </div>
   );
@@ -125,6 +140,17 @@ SignUp.propTypes = {
   errorEmail: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
+  fields: PropTypes.array,
 };
 
-export default SignUp;
+const mapStateToProps = (state) => {
+  return {
+    fields: state.customer.fields,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

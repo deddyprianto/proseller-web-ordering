@@ -11,6 +11,7 @@ const PhoneForm = ({
   errorPassword,
   enablePassword,
   error,
+  children,
 }) => {
   return (
     <div className="modal-body">
@@ -41,6 +42,7 @@ const PhoneForm = ({
           </div>
         )}
       </p>
+      {children}
       {enablePassword && (
         <PasswordField
           handleChange={handleChange}
