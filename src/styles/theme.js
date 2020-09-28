@@ -25,7 +25,7 @@ const styles = {
       borderColor: (props) => props.theme.color.primary,
     },
     '.button:hover, .added_to_cart:hover, #respond input[type="submit"], input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover, .dark .create-your-own a:hover, .wc-proceed-to-checkout .button, .main-navigation ul.menu ul a:hover, .main-navigation ul.menu ul li:hover > a, .main-navigation ul.nav-menu ul a:hover, .main-navigation ul.nav-menu ul li:hover > a, .main-navigation div.menu ul.nav-menu ul a:hover, .main-navigation div.menu ul.nav-menu ul li:hover > a, .stretch-full-width .store-locator .store-search-form form .button:hover': {
-      backgroundColor: (props) => props.theme.hoverColor,
+      backgroundColor: (props) => props.theme.color.secondary,
     },
     '#respond input[type="submit"]:hover': {
       backgroundColor: "#86071b",

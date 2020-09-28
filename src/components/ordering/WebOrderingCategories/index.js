@@ -57,8 +57,6 @@ const WebOrderingCategories = ({
           document.getElementById("header-categories").clientHeight * 2
         : document.getElementById("masthead").clientHeight +
           document.getElementById("header-categories").clientHeight;
-    console.log(prevSelectedCategory);
-    console.log(headerHeight);
     try {
       window.scrollTo({
         top: document.getElementById(selectedCategory).offsetTop - headerHeight,

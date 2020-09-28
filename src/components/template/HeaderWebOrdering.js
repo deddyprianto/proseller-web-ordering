@@ -157,7 +157,7 @@ class Header extends Component {
                     <div
                       style={{
                         position: "absolute",
-                        backgroundColor: "red",
+                        backgroundColor: this.props.color.primary,
                         fontSize: 8,
                         width: 15,
                         borderRadius: 15,
@@ -395,6 +395,7 @@ const mapStateToProps = (state, ownProps) => {
     lang: state.language.lang,
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
+    color: state.theme.color,
   };
 };
 const mapDispatchToProps = (dispatch) => {

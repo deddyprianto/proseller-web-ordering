@@ -293,12 +293,20 @@ class ViewCartBasket extends Component {
               }}
             >
               <div
-                style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}
+                style={{
+                  fontWeight: "bold",
+                  color: this.props.color.primary,
+                  fontSize: 16,
+                }}
               >
                 TOTAL
               </div>
               <div
-                style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}
+                style={{
+                  fontWeight: "bold",
+                  color: this.props.color.primary,
+                  fontSize: 16,
+                }}
               >
                 {this.props.getCurrency(props.dataBasket.totalNettAmount)}
               </div>
@@ -400,6 +408,7 @@ class ViewCartBasket extends Component {
 const mapStateToProps = (state) => {
   return {
     outlet: state.outlet.defaultOutlet,
+    color: state.theme.color,
   };
 };
 
