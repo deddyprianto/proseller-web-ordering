@@ -110,12 +110,15 @@ function mandatoryField(payload = null) {
     let response = await CRMService.api(
       "GET",
       payload,
-      "mandatoryfield/customer",
-      "bearer"
+      "mandatoryfield/customer"
     );
+    const data = await response.data;
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       await dispatch(AuthActions.refreshToken());
-    dispatch(setData(response, CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER));
+    dispatch({
+      type: CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER,
+      data: data.fields,
+    });
     return response;
   };
 }

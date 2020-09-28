@@ -8,6 +8,7 @@ import { IntlProvider, addLocaleData } from "react-intl";
 import { OutletAction } from "./redux/actions/OutletAction";
 import { MasterdataAction } from "./redux/actions/MaterdataAction";
 import { OrderAction } from "./redux/actions/OrderAction";
+import { CustomerAction } from "./redux/actions/CustomerAction";
 
 import locale_en from "react-intl/locale-data/en";
 import locale_id from "react-intl/locale-data/id";
@@ -135,6 +136,8 @@ const App = (props) => {
 
       await props.dispatch(OrderAction.getCart());
     }
+
+    props.dispatch(CustomerAction.mandatoryField());
 
     // try {
     //   document.getElementById("color-theme").href = color;
