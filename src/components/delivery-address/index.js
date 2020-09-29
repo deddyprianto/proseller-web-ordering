@@ -152,7 +152,10 @@ class DeliveryAddress extends Component {
       if (result.value) {
         this.setState({ isLoading: true });
         let addressDelivery = this.state.addressDelivery;
-        if (this.props.deliveryAddress.addressName === data.addressName) {
+        if (
+          this.props.deliveryAddress &&
+          this.props.deliveryAddress.addressName === data.addressName
+        ) {
           this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: null });
         }
         addressDelivery = addressDelivery.filter(function (a) {
@@ -347,6 +350,7 @@ class DeliveryAddress extends Component {
                                 {items.addressName}
                               </div>
                               {getDeliveryAddress &&
+                                this.props.deliveryAddress &&
                                 items.addressName ===
                                   this.props.deliveryAddress.addressName && (
                                   <div
@@ -402,8 +406,10 @@ class DeliveryAddress extends Component {
                                 <Button
                                   className="profile-dashboard"
                                   disabled={
-                                    items.addressName ===
-                                      this.props.deliveryAddress.addressName ||
+                                    (this.props.deliveryAddress &&
+                                      items.addressName ===
+                                        this.props.deliveryAddress
+                                          .addressName) ||
                                     false
                                   }
                                   style={{
