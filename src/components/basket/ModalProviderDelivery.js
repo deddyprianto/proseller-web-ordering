@@ -111,82 +111,83 @@ const ModalProviderDelivery = ({
             </button>
           </div>
           <div className="modal-body">
-            {deliveryProviders.map((item, key) => (
-              <button
-                key={key}
-                className={item.default && "border-theme"}
-                style={{
-                  boxShadow: "1px 1px 5px rgba(128, 128, 128, 0.3)",
-                  padding: 10,
-                  borderRadius: 5,
-                  marginBottom: 5,
-                  border: !item.default && "1px solid gray",
-                  backgroundColor: "white",
-                  width: "100%",
-                }}
-                disabled={!item.deliveryFee || item.deliveryFeeFloat < 0}
-                data-dismiss="modal"
-                onClick={() => handleProviderClick(item)}
-              >
-                <div
+            {deliveryProviders &&
+              deliveryProviders.map((item, key) => (
+                <button
+                  key={key}
+                  className={item.default && "border-theme"}
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
+                    boxShadow: "1px 1px 5px rgba(128, 128, 128, 0.3)",
+                    padding: 10,
+                    borderRadius: 5,
+                    marginBottom: 5,
+                    border: !item.default && "1px solid gray",
+                    backgroundColor: "white",
                     width: "100%",
                   }}
+                  disabled={!item.deliveryFee || item.deliveryFeeFloat < 0}
+                  data-dismiss="modal"
+                  onClick={() => handleProviderClick(item)}
                 >
                   <div
                     style={{
                       display: "flex",
-                      justifyContent: "space-between",
+                      flexDirection: "column",
                       width: "100%",
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
-                        alignItems: "center",
-                        cursor: "pointer",
+                        justifyContent: "space-between",
+                        width: "100%",
                       }}
                     >
-                      <AssignmentIndIcon style={{ color: "gray" }} />
-                      <div style={{ marginLeft: 10 }}>
-                        <div
-                          style={{
-                            fontWeight: "bold",
-                            fontSize: 14,
-                            color: "gray",
-                          }}
-                        >
-                          {item.name}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <AssignmentIndIcon style={{ color: "gray" }} />
+                        <div style={{ marginLeft: 10 }}>
+                          <div
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: 14,
+                              color: "gray",
+                            }}
+                          >
+                            {item.name}
+                          </div>
                         </div>
                       </div>
+                      <div
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: 14,
+                          color: "gray",
+                        }}
+                      >
+                        {item.deliveryFee && item.deliveryFeeFloat > -1
+                          ? item.deliveryFee
+                          : "-"}
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: 14,
-                        color: "gray",
-                      }}
-                    >
-                      {item.deliveryFee && item.deliveryFeeFloat > -1
-                        ? item.deliveryFee
-                        : "-"}
-                    </div>
+                    {item.deliveryFeeFloat && item.deliveryFeeFloat < 0 ? (
+                      <div
+                        className="text-left text-danger text-small"
+                        style={{ fontSize: "1.1rem", fontWeight: "600" }}
+                      >
+                        <em>
+                          This delivery provider is not available for your area.
+                        </em>
+                      </div>
+                    ) : null}
                   </div>
-                  {item.deliveryFeeFloat && item.deliveryFeeFloat < 0 ? (
-                    <div
-                      className="text-left text-danger text-small"
-                      style={{ fontSize: "1.1rem", fontWeight: "600" }}
-                    >
-                      <em>
-                        This delivery provider is not available for your area.
-                      </em>
-                    </div>
-                  ) : null}
-                </div>
-              </button>
-            ))}
+                </button>
+              ))}
           </div>
         </div>
       </div>
