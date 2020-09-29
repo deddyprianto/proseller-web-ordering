@@ -56,13 +56,14 @@ class DeliveryAddress extends Component {
     );
     if (addressDelivery.ResultCode === 200) {
       if (deliveryAddress) {
-        addressDelivery.Data.forEach((address) => {
-          if (deliveryAddress.addressName === address.addressName) {
-            address.selected = true;
-          } else {
-            delete address.selected;
-          }
-        });
+        deliveryAddress.Data &&
+          addressDelivery.Data.forEach((address) => {
+            if (deliveryAddress.addressName === address.addressName) {
+              address.selected = true;
+            } else {
+              delete address.selected;
+            }
+          });
       }
 
       this.setState({ addressDelivery: addressDelivery.Data });
@@ -151,6 +152,9 @@ class DeliveryAddress extends Component {
       if (result.value) {
         this.setState({ isLoading: true });
         let addressDelivery = this.state.addressDelivery;
+        if (this.props.deliveryAddress.addressName === data.addressName) {
+          this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: null });
+        }
         addressDelivery = addressDelivery.filter(function (a) {
           return a.addressName !== data.addressName;
         });
@@ -342,23 +346,25 @@ class DeliveryAddress extends Component {
                               >
                                 {items.addressName}
                               </div>
-                              {items.selected === true && (
-                                <div
-                                  className="profile-dashboard"
-                                  style={{
-                                    paddingLeft: 10,
-                                    paddingRight: 10,
-                                    borderBottomLeftRadius: 5,
-                                    marginRight: -10,
-                                    fontSize: 12,
-                                    fontWeight: "bold",
-                                    color: "#FFF",
-                                    marginTop: -20,
-                                  }}
-                                >
-                                  SELECTED
-                                </div>
-                              )}
+                              {getDeliveryAddress &&
+                                items.addressName ===
+                                  this.props.deliveryAddress.addressName && (
+                                  <div
+                                    className="profile-dashboard"
+                                    style={{
+                                      paddingLeft: 10,
+                                      paddingRight: 10,
+                                      borderBottomLeftRadius: 5,
+                                      marginRight: -10,
+                                      fontSize: 12,
+                                      fontWeight: "bold",
+                                      color: "#FFF",
+                                      marginTop: -20,
+                                    }}
+                                  >
+                                    SELECTED
+                                  </div>
+                                )}
                             </div>
                             <div style={{ fontSize: 14 }}>
                               {typeof items.address === "string"
@@ -395,7 +401,11 @@ class DeliveryAddress extends Component {
                               {getDeliveryAddress ? (
                                 <Button
                                   className="profile-dashboard"
-                                  disabled={items.selected || false}
+                                  disabled={
+                                    items.addressName ===
+                                      this.props.deliveryAddress.addressName ||
+                                    false
+                                  }
                                   style={{
                                     width: 150,
                                     paddingLeft: 5,
@@ -405,7 +415,7 @@ class DeliveryAddress extends Component {
                                   }}
                                   onClick={() => this.handleSelected(items)}
                                 >
-                                  Selected
+                                  Select
                                 </Button>
                               ) : (
                                 <Button
@@ -443,6 +453,7 @@ class DeliveryAddress extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account && state.auth.account.idToken.payload,
+    deliveryAddress: state.order.deliveryAddress,
   };
 };
 
