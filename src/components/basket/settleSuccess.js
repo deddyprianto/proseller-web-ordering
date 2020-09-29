@@ -103,7 +103,10 @@ class SettleSuccess extends Component {
 
   render() {
     let { settleSuccess, orderingMode, dataBasket } = this.state;
-    const { currency } = this.props.companyInfo;
+    const currency = this.props.companyInfo && this.props.companyInfo.currency;
+    const deliveryFee = this.props.deliveryProvider
+      ? this.props.deliveryProvider.deliveryFeeFloat
+      : 0;
     return (
       <div>
         <ModalStatus
@@ -167,11 +170,8 @@ class SettleSuccess extends Component {
                             marginRight: 5,
                           }}
                         >
-                          {
-                            this.getCurrency(settleSuccess.price).split(
-                              currency.code
-                            )[0]
-                          }
+                          {this.props.companyInfo &&
+                            this.props.companyInfo.currency.code}
                         </div>
                         <div
                           style={{
@@ -181,9 +181,9 @@ class SettleSuccess extends Component {
                           }}
                         >
                           {
-                            this.getCurrency(settleSuccess.price).split(
-                              currency.code
-                            )[1]
+                            this.getCurrency(
+                              settleSuccess.price + deliveryFee
+                            ).split(currency.code)[1]
                           }
                         </div>
                       </div>
@@ -351,6 +351,7 @@ class SettleSuccess extends Component {
 const mapStateToProps = (state) => {
   return {
     companyInfo: state.masterdata.companyInfo.data,
+    deliveryProvider: state.order.selectedDeliveryProvider,
   };
 };
 

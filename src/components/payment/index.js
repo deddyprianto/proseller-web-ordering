@@ -247,13 +247,16 @@ class Payment extends Component {
       OrderAction.getCartPending(cart.id)
     );
 
+    const deliveryFee = this.props.deliveryProvider
+      ? this.props.deliveryProvider.deliveryFeeFloat
+      : 0;
     if (response.resultCode == 400 || response.data.isPaymentComplete == true) {
       clearInterval(this.loopCart);
 
       let data = {
         message: "Congratulations, payment success",
         paymentType: "CASH",
-        price: this.state.totalPrice,
+        price: this.state.totalPrice + deliveryFee,
         outletName: this.state.dataBasket.outlet.name,
         orderingMode: this.state.dataBasket.orderingMode,
         createdAt: new Date(),
@@ -611,6 +614,11 @@ class Payment extends Component {
   };
 
   submitSettle = async (need = null, payAtPOS) => {
+    const deliveryFee = this.props.deliveryProvider
+      ? this.props.deliveryProvider.deliveryFeeFloat
+      : 0;
+    console.log(`delivery provider:`);
+    console.log(this.props.deliveryProvider);
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
@@ -709,6 +717,7 @@ class Payment extends Component {
 
     payload.partitionKey = this.props.basket.partitionKey;
     payload.sortKey = this.props.basket.sortKey;
+    payload.price = this.state.totalPrice + deliveryFee;
 
     let response;
     if (
@@ -773,7 +782,16 @@ class Payment extends Component {
       cartDetails,
       storeDetail,
       dataSettle,
+      orderingMode,
     } = this.state;
+    const deliveryFee = this.props.deliveryProvider
+      ? this.props.deliveryProvider.deliveryFeeFloat
+      : 0;
+    const currency = this.props.companyInfo && this.props.companyInfo.currency;
+    const formattedPrice =
+      this.getCurrency(totalPrice + deliveryFee) &&
+      this.getCurrency(totalPrice + deliveryFee).split(currency.code)[1];
+    console.log(formattedPrice);
     let { basket } = this.props;
     let basketLength = 0;
     if (basket && basket.details) {
@@ -925,8 +943,7 @@ class Payment extends Component {
                             fontWeight: "bold",
                           }}
                         >
-                          {Math.round((totalPrice + Number.EPSILON) * 100) /
-                            100}
+                          {formattedPrice}
                         </div>
                       </div>
                     </div>
@@ -1032,9 +1049,9 @@ class Payment extends Component {
                         }}
                       >
                         {isEmptyObject(selectedCard)
-                          ? `Pay ${this.getCurrency(totalPrice)}`
+                          ? `Pay ${this.getCurrency(totalPrice + deliveryFee)}`
                           : `Pay ${this.getCurrency(
-                              totalPrice
+                              totalPrice + deliveryFee
                             )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
                               selectedCard.details.maskedAccountNumber.toString()
                                 .length - 4
@@ -1104,6 +1121,7 @@ const mapStateToProps = (state, ownProps) => {
     campaignPoint: state.campaign.data,
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,
+    deliveryProvider: state.order.selectedDeliveryProvider,
   };
 };
 

@@ -28,6 +28,14 @@ const ModalProviderDelivery = ({
     return price;
   };
 
+  const handleProviderClick = (data) => {
+    dispatch({
+      type: "SET_SELECTED_DELIVERY_PROVIDERS",
+      payload: data,
+    });
+    handleSetProvaider(data);
+  };
+
   const refreshDeliveryProvider = async () => {
     const newDeliveryProvider = await Promise.all(
       deliveryProviders.map(async (provider) => {
@@ -112,7 +120,7 @@ const ModalProviderDelivery = ({
                 }}
                 disabled={!item.deliveryFee || item.deliveryFeeFloat < 0}
                 data-dismiss="modal"
-                onClick={() => handleSetProvaider(item)}
+                onClick={() => handleProviderClick(item)}
               >
                 <div
                   style={{
