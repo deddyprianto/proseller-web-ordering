@@ -238,6 +238,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     account: state,
     basket: state.order.basket,
+    color: state.theme.color,
   };
 };
 const mapDispatchToProps = (dispatch) => {
