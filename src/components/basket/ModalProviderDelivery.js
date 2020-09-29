@@ -55,6 +55,10 @@ const ModalProviderDelivery = ({
       })
     );
     dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: newDeliveryProvider });
+    dispatch({
+      type: "SET_SELECTED_DELIVERY_PROVIDERS",
+      payload: null,
+    });
   };
   useEffect(() => {
     if (deliveryAddress) {

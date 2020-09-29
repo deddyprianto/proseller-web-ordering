@@ -312,7 +312,13 @@ class PaymentMethod extends Component {
       getPaymentMethod,
     } = this.state;
     return (
-      <div className="col-full" style={{ marginTop: 120, marginBottom: 50 }}>
+      <div
+        className="col-full"
+        style={{
+          marginTop: config.prefix === "emenu" ? 120 : 140,
+          marginBottom: 50,
+        }}
+      >
         <a id="newTabLink" target="_blank" href="https://www.google.com/" />
         <ModalPaymentMethod
           detailCard={detailCard}
