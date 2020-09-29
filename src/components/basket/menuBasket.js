@@ -169,19 +169,7 @@ export default class MenuBasket extends Component {
                   fontSize: 16,
                 }}
               >
-                {props.provaiderDelivery
-                  ? this.props.getCurrency(
-                      props.newTotalPrice === "0"
-                        ? props.totalPrice +
-                            props.provaiderDelivery.deliveryFeeFloat
-                        : props.newTotalPrice +
-                            props.provaiderDelivery.deliveryFeeFloat
-                    )
-                  : this.props.getCurrency(
-                      props.newTotalPrice === "0"
-                        ? props.totalPrice
-                        : props.newTotalPrice
-                    )}
+                {this.props.getCurrency(props.dataBasket.totalNettAmount)}
               </div>
             </div>
 
