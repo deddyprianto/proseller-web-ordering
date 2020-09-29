@@ -161,6 +161,7 @@ class ViewCartBasket extends Component {
           </Col>
           <Col xs="12" sm="6">
             <MenuBasket
+              color={this.props.color}
               data={this.props.data}
               isLoggedIn={this.props.isLoggedIn}
               cancelSelectVoucher={() => this.props.cancelSelectVoucher()}

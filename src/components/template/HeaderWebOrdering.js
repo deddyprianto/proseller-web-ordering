@@ -377,7 +377,7 @@ class Header extends Component {
                       <div
                         style={{
                           position: "absolute",
-                          backgroundColor: "red",
+                          backgroundColor: this.props.color.primary,
                           fontSize: 8,
                           width: 15,
                           borderRadius: 15,
