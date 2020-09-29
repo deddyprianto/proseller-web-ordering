@@ -56,7 +56,7 @@ class ViewCartBasket extends Component {
         props.dataBasket.status !== "PENDING" &&
         props.dataBasket.status !== "PENDING_PAYMENT") ||
       (this.props.isLoggedIn &&
-        !props.provaiderDelivery &&
+        !this.props.deliveryProvider &&
         props.orderingMode &&
         props.orderingMode === "DELIVERY")
       ? true
@@ -215,11 +215,12 @@ class ViewCartBasket extends Component {
               </div>
             </div> */}
 
-            {props.provaiderDelivery &&
+            {this.props.deliveryProvider &&
               props.orderingMode &&
               props.orderingMode === "DELIVERY" && (
                 <div style={{ marginLeft: 10, marginRight: 10 }}>
-                  {props.provaiderDelivery.deliveryFeeFloat < 0 ? (
+                  {this.props.deliveryProvider &&
+                  this.props.deliveryProvider.deliveryFeeFloat < 0 ? (
                     <div
                       style={{
                         display: "flex",
@@ -242,9 +243,10 @@ class ViewCartBasket extends Component {
                       <div style={{ fontWeight: "bold", color: "gray" }}>
                         Delivery Fee
                       </div>
-                      <div
-                        style={{ fontWeight: "bold", color: "gray" }}
-                      >{`${props.provaiderDelivery.deliveryFee}`}</div>
+                      <div style={{ fontWeight: "bold", color: "gray" }}>{`${
+                        this.props.deliveryProvider &&
+                        this.props.deliveryProvider.deliveryFee
+                      }`}</div>
                     </div>
                   )}
                 </div>
@@ -384,7 +386,8 @@ class ViewCartBasket extends Component {
                     (basket.totalGrossAmount > maxAmount && maxAmount > 0) ||
                     productQuantity < minQty ||
                     (productQuantity > maxQty && maxQty > 0) ||
-                    props.provaiderDelivery.deliveryFeeFloat < 0
+                    (this.props.deliveryProvider &&
+                      this.props.deliveryProvider.deliveryFeeFloat < 0)
                   }
                   onClick={() => {
                     this.roleTitleSettle()
@@ -425,6 +428,7 @@ const mapStateToProps = (state) => {
   return {
     outlet: state.outlet.defaultOutlet,
     color: state.theme.color,
+    deliveryProvider: state.order.selectedDeliveryProvider,
   };
 };
 

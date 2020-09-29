@@ -130,7 +130,7 @@ class Header extends Component {
                   style={{ fontSize: 22, marginBottom: -5 }}
                 />
                 <span className="color" style={{ fontSize: 15 }}>
-                  {defaultOutlet.name && defaultOutlet.name.substring(0, 8)}
+                  {defaultOutlet.name}
                 </span>
               </div>
             </div>

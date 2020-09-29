@@ -57,7 +57,9 @@ const ModalProviderDelivery = ({
     dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: newDeliveryProvider });
   };
   useEffect(() => {
-    refreshDeliveryProvider();
+    if (deliveryAddress) {
+      refreshDeliveryProvider();
+    }
   }, [deliveryAddress]);
   return (
     <div
