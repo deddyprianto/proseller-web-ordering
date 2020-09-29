@@ -1007,7 +1007,11 @@ class Basket extends Component {
       this.setState({ storeDetail });
     }
     return (
-      <div className="col-full" style={{ marginTop: 80 }} id="cardItem">
+      <div
+        className="col-full"
+        style={{ marginTop: config.prefix === "emenu" ? 60 : 80 }}
+        id="cardItem"
+      >
         <div id="close-modal" />
         <div id="primary" className="content-area">
           <div className="stretch-full-width">

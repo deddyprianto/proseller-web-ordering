@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import loadable from "@loadable/component";
 
+import config from "../config";
+
 const DetailRewords = loadable(() =>
   import("../components/profile/DetailRewords")
 );
@@ -19,7 +21,13 @@ export default class Profile extends Component {
   render() {
     let { isProfile } = this.state;
     return (
-      <div className="col-full" style={{ marginTop: 120, marginBottom: 50 }}>
+      <div
+        className="col-full"
+        style={{
+          marginTop: config.prefix === "emenu" ? 100 : 120,
+          marginBottom: 50,
+        }}
+      >
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div

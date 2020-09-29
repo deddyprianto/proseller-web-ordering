@@ -784,7 +784,13 @@ class Payment extends Component {
 
     if (this.state.loadingShow) {
       return (
-        <div className="col-full" style={{ marginTop: 50, marginBottom: 50 }}>
+        <div
+          className="col-full"
+          style={{
+            marginTop: config.prefix === "emenu" ? 30 : 50,
+            marginBottom: 50,
+          }}
+        >
           <div id="primary" className="content-area">
             <div className="stretch-full-width">
               <main
@@ -805,7 +811,11 @@ class Payment extends Component {
       return (
         <div
           className="col-full"
-          style={{ marginTop: 90, marginBottom: 50, padding: 0 }}
+          style={{
+            marginTop: config.prefix === "emenu" ? 70 : 90,
+            marginBottom: 50,
+            padding: 0,
+          }}
         >
           <div id="primary" className="content-area">
             <div
@@ -864,7 +874,11 @@ class Payment extends Component {
         <a id="newTabLink" target="_blank" href="https://www.google.com/" />
         <div
           className="col-full"
-          style={{ marginTop: 90, marginBottom: 50, padding: 0 }}
+          style={{
+            marginTop: config.prefix === "emenu" ? 70 : 90,
+            marginBottom: 50,
+            padding: 0,
+          }}
         >
           <div id="primary" className="content-area">
             <div

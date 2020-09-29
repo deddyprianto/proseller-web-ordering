@@ -220,7 +220,13 @@ class DeliveryAddress extends Component {
     } = this.state;
 
     return (
-      <div className="col-full" style={{ marginTop: 140, marginBottom: 50 }}>
+      <div
+        className="col-full"
+        style={{
+          marginTop: config.prefix === "emenu" ? 120 : 140,
+          marginBottom: 50,
+        }}
+      >
         <ModalDeliveryAddress
           getDataDeliveryAddress={() => this.getDataDeliveryAddress()}
           handleChange={(field, value) => this.handleChange(field, value)}

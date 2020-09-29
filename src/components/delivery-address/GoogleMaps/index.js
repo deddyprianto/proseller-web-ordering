@@ -5,7 +5,9 @@ import Geocode from "react-geocode";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 
-Geocode.setApiKey("AIzaSyBdczjp19vUQp41WsHATUlOP6781gHy-MA");
+const API_KEY = "AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4";
+
+Geocode.setApiKey(API_KEY);
 
 Geocode.setLanguage("en");
 
@@ -28,7 +30,7 @@ const GoogleMaps = ({ defaultCenter }) => {
   }, [center]);
   return (
     <GoogleMapReact
-      bootstrapURLKeys={{ key: "AIzaSyBdczjp19vUQp41WsHATUlOP6781gHy-MA" }}
+      bootstrapURLKeys={{ key: API_KEY }}
       defaultCenter={defaultCenter}
       center={center}
       defaultZoom={11}

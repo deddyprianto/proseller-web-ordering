@@ -74,7 +74,11 @@ class History extends Component {
       return (
         <div
           className="col-full"
-          style={{ marginTop: 110, marginBottom: 50, padding: 0 }}
+          style={{
+            marginTop: config.prefix === "emenu" ? 90 : 110,
+            marginBottom: 50,
+            padding: 0,
+          }}
         >
           <div id="primary" className="content-area">
             <div
@@ -96,7 +100,13 @@ class History extends Component {
       );
     }
     return (
-      <div className="col-full" style={{ marginTop: 120, marginBottom: 50 }}>
+      <div
+        className="col-full"
+        style={{
+          marginTop: config.prefix === "emenu" ? 100 : 120,
+          marginBottom: 50,
+        }}
+      >
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div
