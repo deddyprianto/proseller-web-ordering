@@ -219,20 +219,34 @@ class ViewCartBasket extends Component {
               props.orderingMode &&
               props.orderingMode === "DELIVERY" && (
                 <div style={{ marginLeft: 10, marginRight: 10 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ fontWeight: "bold", color: "gray" }}>
-                      Delivery Fee
-                    </div>
+                  {props.provaiderDelivery.deliveryFeeFloat < 0 ? (
                     <div
-                      style={{ fontWeight: "bold", color: "gray" }}
-                    >{`${props.provaiderDelivery.deliveryFee}`}</div>
-                  </div>
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div style={{ fontWeight: "bold", color: "gray" }}>
+                        Delivery is not available in your area.
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div style={{ fontWeight: "bold", color: "gray" }}>
+                        Delivery Fee
+                      </div>
+                      <div
+                        style={{ fontWeight: "bold", color: "gray" }}
+                      >{`${props.provaiderDelivery.deliveryFee}`}</div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -369,7 +383,8 @@ class ViewCartBasket extends Component {
                     basket.totalGrossAmount < minAmount ||
                     (basket.totalGrossAmount > maxAmount && maxAmount > 0) ||
                     productQuantity < minQty ||
-                    (productQuantity > maxQty && maxQty > 0)
+                    (productQuantity > maxQty && maxQty > 0) ||
+                    props.provaiderDelivery.deliveryFeeFloat < 0
                   }
                   onClick={() => {
                     this.roleTitleSettle()

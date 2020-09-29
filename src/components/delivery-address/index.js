@@ -192,6 +192,7 @@ class DeliveryAddress extends Component {
       `${config.prefix}_deliveryAddress`,
       JSON.stringify(encryptor.encrypt(items))
     );
+    this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
     this.props.history.goBack();
   };

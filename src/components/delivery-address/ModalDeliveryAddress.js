@@ -260,7 +260,7 @@ class ModalDeliveryAdderss extends Component {
                       }
                     />
                   </div>
-                  <div
+                  {/* <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
@@ -276,7 +276,7 @@ class ModalDeliveryAdderss extends Component {
                     >
                       <GoogleMaps></GoogleMaps>
                     </div>
-                  </div>
+                  </div> */}
 
                   <Button
                     className="button"

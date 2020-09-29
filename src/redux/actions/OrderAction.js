@@ -495,14 +495,23 @@ function submitSettle(payload) {
   };
 }
 
-function getProvider() {
+function getProvider(
+  payload = {
+    take: "10",
+    skip: 0,
+    sortBy: "name",
+    sortDirection: "ASC",
+  }
+) {
   return async (dispatch) => {
     let response = await OrderingService.api(
       "POST",
-      null,
+      payload,
       `delivery/providers`,
       "Bearer"
     );
+    const data = await response.data;
+    dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: data });
     return response.data;
   };
 }
