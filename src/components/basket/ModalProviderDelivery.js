@@ -37,28 +37,33 @@ const ModalProviderDelivery = ({
   };
 
   const refreshDeliveryProvider = async () => {
-    const newDeliveryProvider = await Promise.all(
-      deliveryProviders.map(async (provider) => {
-        const payload = {
-          outletId: basket.outlet.id,
-          cartID: basket.cartID,
-          provider: provider.id,
-          service: provider.name,
-          deliveryAddress,
-        };
-        const response = await dispatch(OrderAction.getCalculateFee(payload));
-        return {
-          ...provider,
-          deliveryFee: getCurrency(response.deliveryFee),
-          deliveryFeeFloat: response.deliveryFee,
-        };
-      })
-    );
-    dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: newDeliveryProvider });
-    dispatch({
-      type: "SET_SELECTED_DELIVERY_PROVIDERS",
-      payload: null,
-    });
+    if (deliveryProviders) {
+      const newDeliveryProvider = await Promise.all(
+        deliveryProviders.map(async (provider) => {
+          const payload = {
+            outletId: basket.outlet.id,
+            cartID: basket.cartID,
+            provider: provider.id,
+            service: provider.name,
+            deliveryAddress,
+          };
+          const response = await dispatch(OrderAction.getCalculateFee(payload));
+          return {
+            ...provider,
+            deliveryFee: getCurrency(response.deliveryFee),
+            deliveryFeeFloat: response.deliveryFee,
+          };
+        })
+      );
+      dispatch({
+        type: "SET_DELIVERY_PROVIDERS",
+        payload: newDeliveryProvider,
+      });
+      dispatch({
+        type: "SET_SELECTED_DELIVERY_PROVIDERS",
+        payload: null,
+      });
+    }
   };
   useEffect(() => {
     if (deliveryAddress) {
