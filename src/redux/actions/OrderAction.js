@@ -374,9 +374,9 @@ function getCart(isSetData = true) {
       `cart/getcart`,
       "Bearer"
     );
-    try {
-      document.getElementById("close-modal").click();
-    } catch (error) {}
+    // try {
+    //   document.getElementById("close-modal").click();
+    // } catch (error) {}
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       await dispatch(AuthActions.refreshToken());
     else if (response.data && response.data.message !== "No details data") {

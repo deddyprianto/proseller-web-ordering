@@ -60,9 +60,7 @@ class Ordering extends Component {
         OutletAction.fetchDefaultOutlet()
       );
     } else {
-      defaultOutlet = await encryptor.decrypt(
-        JSON.parse(localStorage.getItem(`${config.prefix}_defaultOutlet`))
-      );
+      defaultOutlet = this.props.defaultOutlet;
     }
 
     await this.props.dispatch(OrderAction.getCart());

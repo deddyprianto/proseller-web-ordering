@@ -1,10 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import config from "../../config";
-import LoginRegister from "../login-register";
+
+import config from "../../../config";
+import { OutletAction } from "../../../redux/actions/OutletAction";
+
+import LoginRegister from "../../login-register";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+
+import styles from "./styles.module.css";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -24,6 +29,7 @@ class Header extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
     this.setState({ infoCompany: infoCompany || {} });
+    this.props.dispatch(OutletAction.fetchAllOutlet());
   };
 
   handleNavigation = () => {
@@ -31,7 +37,6 @@ class Header extends Component {
   };
 
   activeRoute = (route) => {
-    // current-menu-item menu-item
     let active = false;
     let check = 0;
     let url = window.location.hash.split("#")[1];
@@ -52,24 +57,14 @@ class Header extends Component {
   handleLogout() {
     localStorage.clear();
     window.location.reload();
-    // Swal.fire({
-    //   title: "Do you want to Logout ?",
-    //   text: "You are about to leave this session.",
-    //   icon: 'question',
-    //   showCancelButton: true,
-    //   confirmButtonColor: '#3085d6',
-    //   cancelButtonColor: '#d33',
-    //   confirmButtonText: "Yes"
-    // }).then(async (result) => {
-    //   if (result.value) {
-    //     localStorage.clear();
-    //     window.location.reload();
-    //   }
-    // })
+  }
+
+  handleOutletChange(e) {
+    this.props.dispatch(OutletAction.fetchSingleOutlet({ id: e.target.value }));
   }
 
   render() {
-    let { isLoggedIn, basket, defaultOutlet } = this.props;
+    let { isLoggedIn, basket, defaultOutlet, outlets } = this.props;
     let { infoCompany } = this.state;
     let basketLength = 0;
     if (basket && basket.details) {
@@ -121,7 +116,7 @@ class Header extends Component {
                   marginLeft: 5,
                   fontWeight: "bold",
                   position: "absolute",
-                  top: 18,
+                  top: 20,
                   left: 10,
                 }}
               >
@@ -130,7 +125,20 @@ class Header extends Component {
                   style={{ fontSize: 22, marginBottom: -5 }}
                 />
                 <span className="color" style={{ fontSize: 15 }}>
-                  {defaultOutlet.name}
+                  <select
+                    className={styles.outletNameSelect}
+                    onChange={(e) => this.handleOutletChange(e)}
+                  >
+                    {outlets &&
+                      outlets.map((outlet) => (
+                        <option
+                          value={outlet.id}
+                          selected={outlet.id === defaultOutlet.id}
+                        >
+                          {outlet.name}
+                        </option>
+                      ))}
+                  </select>
                 </span>
               </div>
             </div>
@@ -416,9 +424,10 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
     color: state.theme.color,
+    outlets: state.outlet.outlets,
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return { dispatch };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

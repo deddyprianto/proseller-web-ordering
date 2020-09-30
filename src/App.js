@@ -103,13 +103,11 @@ const App = (props) => {
           param.orderingMode
         );
 
-      let defaultOutlet = await props.dispatch(
-        MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
-      );
-      localStorage.setItem(
-        `${config.prefix}_defaultOutlet`,
-        JSON.stringify(encryptor.encrypt(defaultOutlet))
-      );
+      let defaultOutlet =
+        this.props.defaultOutlet ||
+        (await props.dispatch(
+          MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
+        ));
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
@@ -118,19 +116,16 @@ const App = (props) => {
     let url = window.location.hash.split("#")[1];
     if (url !== "/") {
       if (!param) {
-        let defaultOutlet = await props.dispatch(
-          OutletAction.fetchDefaultOutlet()
-        );
+        let defaultOutlet =
+          this.props.defaultOutlet ||
+          (await props.dispatch(OutletAction.fetchDefaultOutlet()));
         defaultOutlet = await props.dispatch(
           MasterdataAction.getOutletByID(
             defaultOutlet.sortKey.split("::")[1],
             true
           )
         );
-        localStorage.setItem(
-          `${config.prefix}_defaultOutlet`,
-          JSON.stringify(encryptor.encrypt(defaultOutlet))
-        );
+
         await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
       }
 
@@ -166,6 +161,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     lang: state.language.lang,
     theme: state.theme,
+    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 

@@ -20,9 +20,9 @@ class Outlet extends Component {
 
   componentDidMount = async () => {
     let { optionsOutlet } = this.state;
-    const defaultOutlet = await this.props.dispatch(
-      OutletAction.fetchDefaultOutlet()
-    );
+    const defaultOutlet =
+      this.props.defaultOutlet ||
+      (await this.props.dispatch(OutletAction.fetchDefaultOutlet()));
     const outlets = await this.props.dispatch(OutletAction.fetchAllOutlet());
     if (!isEmptyObject(defaultOutlet)) {
       await this.setState({
