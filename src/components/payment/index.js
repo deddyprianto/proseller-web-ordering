@@ -684,11 +684,11 @@ class Payment extends Component {
 
     if (orderingMode === "DELIVERY") {
       payload.deliveryAddress = deliveryAddress;
-      payload.deliveryProvider = provaiderDelivery.name;
-      payload.deliveryProviderName = provaiderDelivery.name;
+      payload.deliveryProvider = this.props.deliveryProvider.name;
+      payload.deliveryProviderName = this.props.deliveryProvider.name;
       payload.deliveryService = "-";
-      payload.deliveryProviderId = provaiderDelivery.id;
-      payload.deliveryFee = provaiderDelivery.deliveryFeeFloat;
+      payload.deliveryProviderId = this.props.deliveryProvider.id;
+      payload.deliveryFee = this.props.deliveryProvider.deliveryFeeFloat;
     }
 
     if (selectedVoucher !== null && !payAtPOS) {

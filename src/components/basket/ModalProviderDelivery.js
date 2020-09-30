@@ -38,6 +38,7 @@ const ModalProviderDelivery = ({
 
   const refreshDeliveryProvider = async () => {
     if (deliveryProviders) {
+      console.log("Refreshing delivery providers...");
       const newDeliveryProvider = await Promise.all(
         deliveryProviders.map(async (provider) => {
           const payload = {
@@ -58,10 +59,6 @@ const ModalProviderDelivery = ({
       dispatch({
         type: "SET_DELIVERY_PROVIDERS",
         payload: newDeliveryProvider,
-      });
-      dispatch({
-        type: "SET_SELECTED_DELIVERY_PROVIDERS",
-        payload: null,
       });
     }
   };

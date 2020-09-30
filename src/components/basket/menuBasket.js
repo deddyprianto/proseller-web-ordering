@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import AddPromo from "./addPromo";
 import TableNo from "./tableNo";
 import StatusOrder from "./statusOrder";
@@ -12,7 +13,7 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
-export default class MenuBasket extends Component {
+class MenuBasket extends Component {
   render() {
     let props = this.props.data;
     return (
@@ -84,15 +85,16 @@ export default class MenuBasket extends Component {
                 isLoggedIn={this.props.isLoggedIn}
               />
             }
-            {
-              <ProviderDeliveryBasket
-                data={props}
-                roleBtnClear={this.props.roleBtnClear}
-                handleSetProvaider={(item) =>
-                  this.props.handleSetProvaider(item)
-                }
-              />
-            }
+            {this.props.deliveryProviders &&
+              this.props.deliveryProviders.length > 1 && (
+                <ProviderDeliveryBasket
+                  data={props}
+                  roleBtnClear={this.props.roleBtnClear}
+                  handleSetProvaider={(item) =>
+                    this.props.handleSetProvaider(item)
+                  }
+                />
+              )}
           </div>
         )}
 
@@ -252,3 +254,13 @@ export default class MenuBasket extends Component {
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    deliveryProviders: state.order.deliveryProviders,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return { dispatch };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(MenuBasket);

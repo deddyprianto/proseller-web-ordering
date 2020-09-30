@@ -184,9 +184,7 @@ class Basket extends Component {
     let selectedCard = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
-    let deliveryAddress = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`))
-    );
+    let deliveryAddress = this.props.deliveryAddress;
     let dataBasket = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
@@ -1104,6 +1102,7 @@ const mapStateToProps = (state, ownProps) => {
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,
     basket: state.order.basket,
+    deliveryAddress: state.order.deliveryAddress,
   };
 };
 

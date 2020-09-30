@@ -43,7 +43,15 @@ const sheet = jss.createStyleSheet(styles, { link: true }).attach();
 addLocaleData([...locale_id, ...locale_en]);
 
 const App = (props) => {
-  const { lang } = props;
+  const {
+    lang,
+    isLoggedIn,
+    deliveryProviders,
+    basket,
+    deliveryAddress,
+    dispatch,
+    companyInfo,
+  } = props;
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -75,15 +83,30 @@ const App = (props) => {
     }
   };
 
+  const getCurrency = (price) => {
+    if (companyInfo && companyInfo.data) {
+      if (price !== undefined) {
+        const { currency } = companyInfo.data;
+        if (!price || price === "-") price = 0;
+        let result = price.toLocaleString(currency.locale, {
+          style: "currency",
+          currency: currency.code,
+        });
+        return result;
+      }
+    }
+    return price;
+  };
+
   const checkUser = async () => {
-    if (!props.isLoggedIn || !account)
+    if (!isLoggedIn || !account)
       localStorage.removeItem(`${config.prefix}_account`);
     if (account) {
       setInterval(async () => {
         account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
         let timeExp = account.accessToken.payload.exp * 1000 - 60000;
         let timeNow = moment().format();
-        console.log("token exp :", moment(timeExp).format());
+        // console.log("token exp :", moment(timeExp).format());
         if (moment(timeNow).isSameOrAfter(timeExp)) {
           await props.dispatch(AuthActions.refreshToken());
         }
@@ -104,7 +127,7 @@ const App = (props) => {
         );
 
       let defaultOutlet =
-        this.props.defaultOutlet ||
+        props.defaultOutlet ||
         (await props.dispatch(
           MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
         ));
@@ -117,7 +140,7 @@ const App = (props) => {
     if (url !== "/") {
       if (!param) {
         let defaultOutlet =
-          this.props.defaultOutlet ||
+          props.defaultOutlet ||
           (await props.dispatch(OutletAction.fetchDefaultOutlet()));
         defaultOutlet = await props.dispatch(
           MasterdataAction.getOutletByID(
@@ -139,8 +162,60 @@ const App = (props) => {
     // } catch (error) {}
   };
 
+  const refreshDeliveryProvider = async () => {
+    if (deliveryProviders && basket && basket.outlet) {
+      console.log("Refreshing delivery providers...");
+      console.log(deliveryProviders);
+      const newDeliveryProvider = await Promise.all(
+        deliveryProviders.map(async (provider) => {
+          const payload = {
+            outletId: basket.outlet.id,
+            cartID: basket.cartID,
+            provider: provider.id,
+            service: provider.name,
+            deliveryAddress,
+          };
+          const response = await dispatch(OrderAction.getCalculateFee(payload));
+          const deliveryFee = await response.deliveryFee;
+          return {
+            ...provider,
+            deliveryFee: getCurrency(deliveryFee),
+            deliveryFeeFloat: deliveryFee,
+          };
+        })
+      );
+      // console.log(newDeliveryProvider);
+      // dispatch({
+      //   type: "SET_DELIVERY_PROVIDERS",
+      //   payload: await newDeliveryProvider,
+      // });
+      if (newDeliveryProvider.length === 1) {
+        const newSelectedDeliveryProvider = await newDeliveryProvider[0];
+        dispatch({
+          type: "SET_SELECTED_DELIVERY_PROVIDERS",
+          payload: newSelectedDeliveryProvider,
+        });
+      } else {
+        dispatch({
+          type: "SET_SELECTED_DELIVERY_PROVIDERS",
+          payload: null,
+        });
+      }
+    } else {
+      console.log(
+        "Trying to refresh delivery providers, but current delivery providers is null :("
+      );
+    }
+  };
+  useEffect(() => {
+    if (deliveryAddress) {
+      refreshDeliveryProvider();
+    }
+  }, [deliveryAddress, deliveryProviders]);
+
   useEffect(() => {
     props.dispatch(OrderAction.getTheme());
+    refreshDeliveryProvider();
     checkUser();
   }, []);
 
@@ -162,6 +237,10 @@ const mapStateToProps = (state, ownProps) => {
     lang: state.language.lang,
     theme: state.theme,
     defaultOutlet: state.outlet.defaultOutlet,
+    deliveryProviders: state.order.deliveryProviders,
+    deliveryAddress: state.order.deliveryAddress,
+    basket: state.order.basket,
+    companyInfo: state.masterdata.companyInfo,
   };
 };
 

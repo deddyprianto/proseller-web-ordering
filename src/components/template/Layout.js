@@ -86,7 +86,7 @@ class Layout extends Component {
   render() {
     const { isLoggedIn } = this.props;
     const { isEmenu } = this.state;
-    console.log("mode emenu", isEmenu);
+    // console.log("mode emenu", isEmenu);
     return (
       <div id="page" className="hfeed site">
         {isEmenu ? <HeaderEmenu /> : <HeaderWebOrdering />}
