@@ -237,7 +237,8 @@ const ViewCartBasket = ({
               </div>
             </div> */}
 
-          {deliveryProvider &&
+          {isLoggedIn &&
+            deliveryProvider &&
             props.orderingMode &&
             props.orderingMode === "DELIVERY" && (
               <div style={{ marginLeft: 10, marginRight: 10 }}>
