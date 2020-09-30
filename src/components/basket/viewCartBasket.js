@@ -140,7 +140,6 @@ const ViewCartBasket = ({
     return roleIconSettle();
   };
 
-  console.log(deliveryProvider.deliveryFeeFloat);
   let props = data;
   const basket = data.dataBasket;
   const orderingModeField =
