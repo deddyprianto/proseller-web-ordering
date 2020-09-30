@@ -1,5 +1,6 @@
 import { CONSTANT } from "../../helpers";
 import { CRMService } from "../../Services/CRMService";
+import { MasterDataService } from "../../Services/MasterDataService";
 import { AuthActions } from "./AuthAction";
 import _ from "lodash";
 
@@ -115,10 +116,73 @@ function mandatoryField(payload = null) {
     const data = await response.data;
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       await dispatch(AuthActions.refreshToken());
-    dispatch({
-      type: CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER,
-      data: data.fields,
-    });
+    else {
+      const customFieldsResponse = await MasterDataService.api(
+        "GET",
+        payload,
+        "customfields/customer"
+      );
+      const customFields = await customFieldsResponse.data;
+      const fields = data.fields.map((field) => {
+        switch (field.fieldName) {
+          case "birthDate":
+            return {
+              ...field,
+              type: "date",
+            };
+          case "gender":
+            return {
+              ...field,
+              type: "radio",
+              options: [
+                {
+                  value: "male",
+                  text: "Male",
+                },
+                {
+                  value: "female",
+                  text: "Female",
+                },
+              ],
+            };
+          case "address":
+            return {
+              ...field,
+              type: "multipleField",
+              children: [
+                {
+                  fieldName: "street",
+                  displayName: "Street",
+                  type: "text",
+                },
+                {
+                  fieldName: "unitNo",
+                  displayName: "Unit No.",
+                  type: "text",
+                },
+              ],
+            };
+          default:
+            const customField = customFields.find(
+              (item) => item.fieldName === field.fieldName
+            );
+            const type =
+              customField.dataType === "dropdown"
+                ? "select"
+                : customField.dataType;
+            return {
+              ...field,
+              ...customField,
+              type,
+              options: customField.items,
+            };
+        }
+      });
+      dispatch({
+        type: CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER,
+        data: fields,
+      });
+    }
     return response;
   };
 }

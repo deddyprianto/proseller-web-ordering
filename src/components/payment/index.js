@@ -199,6 +199,7 @@ class Payment extends Component {
         (response.data && response.data.isPaymentComplete)
       ) {
         // hostedPage.close();
+        console.log("payment success");
         let data = {
           message:
             response.data.confirmationInfo.message ||
@@ -223,8 +224,8 @@ class Payment extends Component {
         this.setState({ isLoading: false, showPaymentPage: false });
         return;
       } else if (
-        response.data.confirmationInfo == undefined ||
-        response.data.action == undefined
+        response.data.confirmationInfo === undefined ||
+        response.data.action === undefined
       ) {
         // hostedPage.close();
         Swal.fire(
@@ -617,8 +618,6 @@ class Payment extends Component {
     const deliveryFee = this.props.deliveryProvider
       ? this.props.deliveryProvider.deliveryFeeFloat
       : 0;
-    console.log(`delivery provider:`);
-    console.log(this.props.deliveryProvider);
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
@@ -791,7 +790,6 @@ class Payment extends Component {
     const formattedPrice =
       this.getCurrency(totalPrice + deliveryFee) &&
       this.getCurrency(totalPrice + deliveryFee).split(currency.code)[1];
-    console.log(formattedPrice);
     let { basket } = this.props;
     let basketLength = 0;
     if (basket && basket.details) {

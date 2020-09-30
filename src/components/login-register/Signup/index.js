@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import EmailForm from "./EmailForm";
 import PhoneForm from "./PhoneForm";
 import SignUpSuccess from "./SignUpSuccess";
-import CustomFields from "./CustomFields";
+import CustomFields from "../../profile/CustomFields";
 
 const SignUp = ({
   method,
@@ -101,6 +101,7 @@ const SignUp = ({
           <CustomFields
             fields={fields}
             handleChange={handleChange}
+            showSignUpFields={true}
           ></CustomFields>
         </PhoneForm>
       ) : (
@@ -115,6 +116,7 @@ const SignUp = ({
           <CustomFields
             fields={fields}
             handleChange={handleChange}
+            showSignUpFields={true}
           ></CustomFields>
         </EmailForm>
       )}
