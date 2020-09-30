@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import loadable from "@loadable/component";
 import moment from "moment";
 import { connect } from "react-redux";
+import _ from "lodash";
+
 import { AuthActions } from "./redux/actions/AuthAction";
 import { Redirect, Switch, Route, HashRouter } from "react-router-dom";
 import { IntlProvider, addLocaleData } from "react-intl";
@@ -138,10 +140,12 @@ const App = (props) => {
 
     let url = window.location.hash.split("#")[1];
     if (url !== "/") {
-      if (!param) {
-        let defaultOutlet =
-          props.defaultOutlet ||
-          (await props.dispatch(OutletAction.fetchDefaultOutlet()));
+      if (!param && props.defaultOutlet) {
+        console.log("I'm not from home");
+
+        let defaultOutlet = !_.isEmpty(props.defaultOutlet)
+          ? props.defaultOutlet
+          : await props.dispatch(OutletAction.fetchDefaultOutlet());
         defaultOutlet = await props.dispatch(
           MasterdataAction.getOutletByID(
             defaultOutlet.sortKey.split("::")[1],

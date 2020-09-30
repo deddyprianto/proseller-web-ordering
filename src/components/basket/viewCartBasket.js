@@ -148,9 +148,11 @@ const ViewCartBasket = ({
       : data.dataBasket.orderingMode === "DELIVERY"
       ? "delivery"
       : "takeAway";
-  const productQuantity = basket.details.reduce((acc, item) => ({
-    quantity: acc.quantity + item.quantity,
-  })).quantity;
+  const productQuantity =
+    basket &&
+    basket.details.reduce((acc, item) => ({
+      quantity: acc.quantity + item.quantity,
+    })).quantity;
   const { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[
     orderingModeField
   ];
@@ -178,7 +180,7 @@ const ViewCartBasket = ({
             handleSetState={(field, value) =>
               props.handleSetState(field, value)
             }
-            handleClear={(dataBasket) => props.handleClear(dataBasket)}
+            handleClear={(dataBasket) => handleClear(dataBasket)}
             roleBtnClear={roleBtnClear()}
           />
         </Col>
