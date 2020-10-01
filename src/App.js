@@ -168,6 +168,7 @@ const App = (props) => {
 
   const refreshDeliveryProvider = async () => {
     if (deliveryProviders && basket && basket.outlet) {
+      let isEqual = true;
       console.log("Refreshing delivery providers...");
       console.log(deliveryProviders);
       const newDeliveryProvider = await Promise.all(
@@ -181,6 +182,7 @@ const App = (props) => {
           };
           const response = await dispatch(OrderAction.getCalculateFee(payload));
           const deliveryFee = await response.deliveryFee;
+          if (provider.deliveryFeeFloat !== deliveryFee) isEqual = false;
           return {
             ...provider,
             deliveryFee: getCurrency(deliveryFee),
@@ -188,11 +190,12 @@ const App = (props) => {
           };
         })
       );
-      // console.log(newDeliveryProvider);
-      // dispatch({
-      //   type: "SET_DELIVERY_PROVIDERS",
-      //   payload: await newDeliveryProvider,
-      // });
+      if (!isEqual) {
+        dispatch({
+          type: "SET_SELECTED_PROVIDERS",
+          payload: newDeliveryProvider,
+        });
+      }
       if (newDeliveryProvider.length === 1) {
         const newSelectedDeliveryProvider = await newDeliveryProvider[0];
         dispatch({

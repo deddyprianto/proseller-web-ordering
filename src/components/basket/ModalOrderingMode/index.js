@@ -13,7 +13,7 @@ class ModalOrderingMode extends Component {
 
   render() {
     let props = this.props.data;
-    const { outlet } = this.props;
+    const { outlet, companyInfo } = this.props;
     const { isEmenu } = this.state;
     return (
       <div
@@ -40,16 +40,7 @@ class ModalOrderingMode extends Component {
             </div>
             <div className="modal-body">
               <div className="col-md-12">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    overflowX: "auto",
-                    overflowY: "hidden",
-                    marginLeft: -30,
-                    marginRight: -30,
-                  }}
-                >
+                <div className={styles.orderingModes}>
                   {props.storeDetail.enableDineIn === true && (
                     <div
                       className={styles.orderMode}
@@ -68,7 +59,9 @@ class ModalOrderingMode extends Component {
                             <div>
                               <strong>Amount range :</strong>
                             </div>{" "}
+                            {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.dineIn.minAmount} to{" "}
+                            {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.dineIn.maxAmount}
                           </div>
                         ) : null}
@@ -79,7 +72,7 @@ class ModalOrderingMode extends Component {
                               <strong>Item quantity range :</strong>
                             </div>{" "}
                             {outlet.orderValidation.dineIn.minQty} to{" "}
-                            {outlet.orderValidation.dineIn.maxQty}
+                            {outlet.orderValidation.dineIn.maxQty} items
                           </div>
                         ) : null}
                       </div>
@@ -109,7 +102,9 @@ class ModalOrderingMode extends Component {
                             <div>
                               <strong>Amount range :</strong>
                             </div>{" "}
+                            {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.takeAway.minAmount} to{" "}
+                            {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.takeAway.maxAmount}
                           </div>
                         ) : null}
@@ -120,7 +115,7 @@ class ModalOrderingMode extends Component {
                               <strong>Item quantity range :</strong>
                             </div>{" "}
                             {outlet.orderValidation.takeAway.minQty} to{" "}
-                            {outlet.orderValidation.takeAway.maxQty}
+                            {outlet.orderValidation.takeAway.maxQty} items
                           </div>
                         ) : null}
                       </div>
@@ -150,7 +145,9 @@ class ModalOrderingMode extends Component {
                             <div>
                               <strong>Amount range :</strong>
                             </div>{" "}
+                            {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.delivery.minAmount} to{" "}
+                            {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.delivery.maxAmount}
                           </div>
                         ) : null}
@@ -161,7 +158,7 @@ class ModalOrderingMode extends Component {
                               <strong>Item quantity range :</strong>
                             </div>{" "}
                             {outlet.orderValidation.delivery.minQty} to{" "}
-                            {outlet.orderValidation.delivery.maxQty}
+                            {outlet.orderValidation.delivery.maxQty} items
                           </div>
                         ) : null}
                       </div>
@@ -200,6 +197,7 @@ class ModalOrderingMode extends Component {
 const mapStateToProps = (state) => {
   return {
     outlet: state.outlet.defaultOutlet,
+    companyInfo: state.masterdata.companyInfo,
   };
 };
 

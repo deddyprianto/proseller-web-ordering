@@ -1,9 +1,18 @@
+.orderingModes {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-left: -30px;
+  margin-right: -30px;
+}
 .orderMode {
   display: flex;
   align-items: center;
   padding: 10px;
   flex-direction: column;
-  height: 400px;
+  height: auto;
   box-shadow: 0 0 2px 2px rgb(224 224 224 / 60%);
   margin: 5px;
   border-radius: 8px;
