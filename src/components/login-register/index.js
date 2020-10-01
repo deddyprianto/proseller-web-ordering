@@ -432,6 +432,28 @@ class LoginRegister extends Component {
       let password = this.state.password;
       let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
       let email = this.state.email.toLowerCase().trim();
+      const fields = this.props.fields;
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) {
+            return {
+              ...acc,
+            };
+          }
+          return {
+            ...acc,
+            [field.fieldName]: this.state[field.fieldName] || "",
+          };
+        });
+      delete customFields.displayName;
+      delete customFields.fieldName;
+      delete customFields.format;
+      delete customFields.mandatory;
+      delete customFields.sequence;
+      delete customFields.signUpField;
+      delete customFields.show;
+      delete customFields.type;
       let errorEmail = "";
       let cekEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
         email
@@ -456,9 +478,12 @@ class LoginRegister extends Component {
       let payload = {
         phoneNumber: payloadResponse.phoneNumber,
         email: email,
-        password: generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 }),
+        password: enableRegisterWithPassword
+          ? password
+          : generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 }),
         username: payloadResponse.phoneNumber,
         name: this.state.name,
+        ...customFields,
       };
 
       if (this.state.password !== "") payload.password = this.state.password;
@@ -670,6 +695,28 @@ class LoginRegister extends Component {
 
     try {
       let errorPhone = "";
+      const fields = this.props.fields;
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) {
+            return {
+              ...acc,
+            };
+          }
+          return {
+            ...acc,
+            [field.fieldName]: this.state[field.fieldName] || "",
+          };
+        });
+      delete customFields.displayName;
+      delete customFields.fieldName;
+      delete customFields.format;
+      delete customFields.mandatory;
+      delete customFields.sequence;
+      delete customFields.signUpField;
+      delete customFields.show;
+      delete customFields.type;
       if (phoneNumber === "") errorPhone = "Phone number is empty";
       if (phoneNumber.length < 6) errorPhone = "Phone number is not valid";
 
@@ -691,9 +738,12 @@ class LoginRegister extends Component {
       let payload = {
         phoneNumber: phoneNumber,
         email: payloadResponse.email,
-        password: generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 }),
+        password: enableRegisterWithPassword
+          ? password
+          : generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 }),
         username: payloadResponse.email,
         name: this.state.name,
+        ...customFields,
       };
       if (this.state.password !== "") payload.password = password;
       // console.log(payload)
@@ -840,6 +890,7 @@ const mapStateToProps = (state) => ({
   companyInfo: state[reducer].companyInfo.data,
   fetchingCompanyInfo: state[reducer].companyInfo.isFetching,
   companyInfoError: state[reducer].companyInfo.errors,
+  fields: state.customer.fields,
 });
 
 const mapDispatchToProps = (dispatch) => ({
