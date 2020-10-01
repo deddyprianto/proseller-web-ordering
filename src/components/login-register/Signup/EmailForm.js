@@ -14,6 +14,7 @@ const EmailForm = ({
   errorPassword,
   enablePassword,
   error,
+  children,
 }) => {
   const initialCountry = "SG";
   const [phoneCountryCode, setPhoneCountryCode] = useState("+65");
@@ -78,6 +79,7 @@ const EmailForm = ({
           {error}
         </div>
       )}
+      {children}
       {enablePassword && (
         <PasswordField
           handleChange={handleChange}
