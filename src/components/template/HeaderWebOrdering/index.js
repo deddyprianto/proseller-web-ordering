@@ -160,7 +160,9 @@ class Header extends Component {
                     className={styles.outletNameSelect}
                     style={{
                       width: `${
-                        defaultOutlet && defaultOutlet.name.length * 9 + 40
+                        defaultOutlet &&
+                        defaultOutlet.name &&
+                        defaultOutlet.name.length * 9 + 40
                       }px`,
                     }}
                     onChange={(e) => this.handleOutletChange(e)}
