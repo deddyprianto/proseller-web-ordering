@@ -166,15 +166,16 @@ function mandatoryField(payload = null) {
             const customField = customFields.find(
               (item) => item.fieldName === field.fieldName
             );
-            const type =
-              customField.dataType === "dropdown"
+            const type = customField
+              ? customField.dataType === "dropdown"
                 ? "select"
-                : customField.dataType;
+                : customField.dataType
+              : "text";
             return {
               ...field,
               ...customField,
               type,
-              options: customField.items,
+              options: customField ? customField.items : [],
             };
         }
       });

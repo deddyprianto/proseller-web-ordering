@@ -73,6 +73,12 @@ const Field = ({ field, handleValueChange, value }) => {
           onChange={handleValueChange}
           className={styles.select}
         >
+          <option
+            value=""
+            disabled={value[field.fieldName] && value[field.fieldName] !== ""}
+          >
+            Select {field.displayName}
+          </option>
           {field.options.map((option) => {
             return <option value={option.value}>{option.text}</option>;
           })}
