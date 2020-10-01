@@ -407,17 +407,18 @@ function deleteCart(isDeleteServer = false) {
         localStorage.removeItem(`${config.prefix}_offlineCart`);
         return dispatch(setData({}, CONSTANT.DATA_BASKET));
       }
+    } else {
+      const response = await OrderingService.api(
+        "DELETE",
+        null,
+        `cart/delete`,
+        "Bearer"
+      );
+      if (response.ResultCode >= 400 || response.resultCode >= 400)
+        await dispatch(AuthActions.refreshToken());
+      else return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
-
-    const response = await OrderingService.api(
-      "DELETE",
-      null,
-      `cart/delete`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
-    else return dispatch(setData({}, CONSTANT.DATA_BASKET));
+    dispatch(setData({}, CONSTANT.DATA_BASKET));
   };
 }
 

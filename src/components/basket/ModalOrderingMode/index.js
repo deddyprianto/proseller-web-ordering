@@ -57,7 +57,7 @@ class ModalOrderingMode extends Component {
                         outlet.orderValidation.dineIn.maxAmount ? (
                           <div>
                             <div>
-                              <strong>Amount range :</strong>
+                              <strong>Amount range</strong>
                             </div>{" "}
                             {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.dineIn.minAmount} to{" "}
@@ -69,7 +69,7 @@ class ModalOrderingMode extends Component {
                         outlet.orderValidation.dineIn.maxQty ? (
                           <div>
                             <div>
-                              <strong>Item quantity range :</strong>
+                              <strong>Item quantity range</strong>
                             </div>{" "}
                             {outlet.orderValidation.dineIn.minQty} to{" "}
                             {outlet.orderValidation.dineIn.maxQty} items
@@ -100,7 +100,7 @@ class ModalOrderingMode extends Component {
                         outlet.orderValidation.takeAway.maxAmount ? (
                           <div>
                             <div>
-                              <strong>Amount range :</strong>
+                              <strong>Amount range</strong>
                             </div>{" "}
                             {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.takeAway.minAmount} to{" "}
@@ -112,7 +112,7 @@ class ModalOrderingMode extends Component {
                         outlet.orderValidation.takeAway.maxQty ? (
                           <div>
                             <div>
-                              <strong>Item quantity range :</strong>
+                              <strong>Item quantity range</strong>
                             </div>{" "}
                             {outlet.orderValidation.takeAway.minQty} to{" "}
                             {outlet.orderValidation.takeAway.maxQty} items
@@ -143,7 +143,7 @@ class ModalOrderingMode extends Component {
                         outlet.orderValidation.delivery.maxAmount ? (
                           <div>
                             <div>
-                              <strong>Amount range :</strong>
+                              <strong>Amount range</strong>
                             </div>{" "}
                             {companyInfo && companyInfo.data.currency.code}{" "}
                             {outlet.orderValidation.delivery.minAmount} to{" "}
@@ -155,7 +155,7 @@ class ModalOrderingMode extends Component {
                         outlet.orderValidation.delivery.maxQty ? (
                           <div>
                             <div>
-                              <strong>Item quantity range :</strong>
+                              <strong>Item quantity range</strong>
                             </div>{" "}
                             {outlet.orderValidation.delivery.minQty} to{" "}
                             {outlet.orderValidation.delivery.maxQty} items

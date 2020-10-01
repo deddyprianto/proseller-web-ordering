@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import config from "../../../config";
 import { OutletAction } from "../../../redux/actions/OutletAction";
+import { OrderAction } from "../../../redux/actions/OrderAction";
 
 import LoginRegister from "../../login-register";
 
@@ -21,6 +22,7 @@ class Header extends Component {
       isLoading: false,
       showLoginRegister: false,
       infoCompany: {},
+      outletsRefs: {},
     };
   }
 
@@ -30,6 +32,19 @@ class Header extends Component {
     );
     this.setState({ infoCompany: infoCompany || {} });
     this.props.dispatch(OutletAction.fetchAllOutlet());
+  };
+
+  componentDidUpdate = (prevProps) => {
+    if (prevProps.outlets !== this.props.outlets) {
+      this.props.outlets.forEach((outlet) => {
+        this.setState((prevState) => ({
+          outletsRefs: {
+            ...prevState.outletsRefs,
+            [outlet.id]: React.createRef(),
+          },
+        }));
+      });
+    }
   };
 
   handleNavigation = () => {
@@ -60,12 +75,28 @@ class Header extends Component {
   }
 
   handleOutletChange(e) {
-    this.props.dispatch(OutletAction.fetchSingleOutlet({ id: e.target.value }));
+    const outletId = e.target.value;
+    Swal.fire({
+      title: "Change Outlet ?",
+      text: "Cart from previous outlet will be removed",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result && result.value) {
+        this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
+        localStorage.removeItem(`${config.prefix}_offlineCart`);
+        this.props.dispatch(OrderAction.deleteCart(this.props.isLoggedIn));
+      }
+    });
   }
 
   render() {
     let { isLoggedIn, basket, defaultOutlet, outlets } = this.props;
     let { infoCompany } = this.state;
+
     let basketLength = 0;
     if (basket && basket.details) {
       basket.details.forEach((cart) => {
@@ -127,11 +158,18 @@ class Header extends Component {
                 <span className="color" style={{ fontSize: 15 }}>
                   <select
                     className={styles.outletNameSelect}
+                    style={{
+                      width: `${
+                        defaultOutlet && defaultOutlet.name.length * 9 + 40
+                      }px`,
+                    }}
                     onChange={(e) => this.handleOutletChange(e)}
+                    value={defaultOutlet.id}
                   >
                     {outlets &&
                       outlets.map((outlet) => (
                         <option
+                          ref={this.state.outletsRefs[outlet.id]}
                           value={outlet.id}
                           selected={outlet.id === defaultOutlet.id}
                         >

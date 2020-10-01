@@ -186,7 +186,7 @@ class ItemsBasket extends Component {
 
   render() {
     let { data } = this.props;
-    let { dataBasket } = this.state;
+    let dataBasket = this.props.basket;
     let selected = 0;
     if (dataBasket && dataBasket.details && dataBasket.details.length > 0) {
       dataBasket.details.forEach((items) => {
@@ -215,7 +215,7 @@ class ItemsBasket extends Component {
                 style={{ fontWeight: "bold", color: this.props.color.primary }}
               >
                 {" "}
-                {data.storeDetail.name}{" "}
+                {data.dataBasket.outlet.name}{" "}
               </div>
               <Link to="/">
                 <div
@@ -356,6 +356,7 @@ class ItemsBasket extends Component {
 const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
+    basket: state.order.basket,
   };
 };
 

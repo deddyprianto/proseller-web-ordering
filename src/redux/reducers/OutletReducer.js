@@ -18,9 +18,10 @@ export default function reducer(state = defaultState, action) {
         `${config.prefix}_defaultOutlet`,
         JSON.stringify(encryptor.encrypt(action.data))
       );
-      return Object.assign({}, state, {
+      return {
+        ...state,
         defaultOutlet: action.data,
-      });
+      };
     case CONSTANT.LIST_OUTLET:
       return {
         ...state,

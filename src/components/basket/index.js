@@ -1024,7 +1024,7 @@ class Basket extends Component {
                   <Col sm={6}>{this.viewShimmer()}</Col>
                 </Row>
               )}
-              {!loadingShow && !dataBasket && (
+              {!loadingShow && (!dataBasket || !this.props.basket.details) && (
                 <div>
                   <Lottie
                     options={{ animationData: emptyGif }}
@@ -1033,7 +1033,7 @@ class Basket extends Component {
                   <div>Data is empty</div>
                 </div>
               )}
-              {!loadingShow && dataBasket && (
+              {!loadingShow && dataBasket && this.props.basket.details && (
                 <div style={{ marginBottom: 250 }}>
                   {viewCart && (
                     <ViewCartBasket
@@ -1103,6 +1103,7 @@ const mapStateToProps = (state, ownProps) => {
     companyInfo: state.masterdata.companyInfo.data,
     basket: state.order.basket,
     deliveryAddress: state.order.deliveryAddress,
+    basket: state.order.basket,
   };
 };
 

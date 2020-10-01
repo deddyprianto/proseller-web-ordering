@@ -30,52 +30,57 @@ const ViewCartBasket = ({
   handleSetProvaider,
   handleOpenLogin,
   isLoggedIn,
+  basket,
 }) => {
   const roleBtnClear = () => {
     let props = data;
-    return (props.dataBasket.status === "SUBMITTED" &&
+    return (basket &&
+      basket.status === "SUBMITTED" &&
       props.orderingMode &&
       props.orderingMode === "TAKEAWAY") ||
-      (props.dataBasket.status !== "PENDING" &&
-        props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE") ||
-      (props.dataBasket.orderingMode === "DELIVERY" &&
-        props.dataBasket.status !== "PENDING") ||
-      props.dataBasket.status === "CONFIRMED" ||
-      props.dataBasket.status === "PROCESSING" ||
-      props.dataBasket.status === "READY_FOR_COLLECTION"
+      (basket &&
+        basket.status !== "PENDING" &&
+        basket.orderingMode === "DINEIN" &&
+        basket.outlet.outletType === "QUICKSERVICE") ||
+      (basket &&
+        basket.orderingMode === "DELIVERY" &&
+        basket.status !== "PENDING") ||
+      basket.status === "CONFIRMED" ||
+      basket.status === "PROCESSING" ||
+      basket.status === "READY_FOR_COLLECTION"
       ? true
       : false;
   };
 
   const roleDisableNotPending = () => {
     let props = data;
-    return props.dataBasket && props.dataBasket.status !== "PENDING"
-      ? true
-      : false;
+    return basket && basket.status !== "PENDING" ? true : false;
   };
 
   const roleBtnSettle = () => {
     let props = data;
     return !props.btnBasketOrder ||
       props.storeDetail.orderingStatus === "UNAVAILABLE" ||
-      props.dataBasket.status === "PROCESSING" ||
-      props.dataBasket.status === "READY_FOR_COLLECTION" ||
-      (props.dataBasket.status === "SUBMITTED" &&
-        props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "RESTO") ||
+      basket.status === "PROCESSING" ||
+      basket.status === "READY_FOR_COLLECTION" ||
+      (basket &&
+        basket.status === "SUBMITTED" &&
+        basket.orderingMode === "DINEIN" &&
+        basket.outlet.outletType === "RESTO") ||
       // (props.isLoggedIn && props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ||
-      ((props.dataBasket.status === "SUBMITTED" ||
-        props.dataBasket.status === "CONFIRMED") &&
+      (((basket && basket.status === "SUBMITTED") ||
+        basket.status === "CONFIRMED") &&
         props.orderingMode &&
         props.orderingMode === "TAKEAWAY") ||
-      (props.dataBasket.status !== "PENDING" &&
-        props.dataBasket.status !== "PENDING_PAYMENT" &&
-        props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE") ||
-      (props.dataBasket.orderingMode === "DELIVERY" &&
-        props.dataBasket.status !== "PENDING" &&
-        props.dataBasket.status !== "PENDING_PAYMENT") ||
+      (basket &&
+        basket.status !== "PENDING" &&
+        basket.status !== "PENDING_PAYMENT" &&
+        basket.orderingMode === "DINEIN" &&
+        basket.outlet.outletType === "QUICKSERVICE") ||
+      (basket &&
+        basket.orderingMode === "DELIVERY" &&
+        basket.status !== "PENDING" &&
+        basket.status !== "PENDING_PAYMENT") ||
       (isLoggedIn &&
         !deliveryProvider &&
         props.orderingMode &&
@@ -93,10 +98,10 @@ const ViewCartBasket = ({
           props.orderingMode === "DELIVERY")) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
-        props.dataBasket &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
-        props.dataBasket.outlet.enableTableScan === false) ||
-      (props.dataBasket && props.dataBasket.status !== "PENDING")
+        basket &&
+        basket.outlet.outletType === "QUICKSERVICE" &&
+        basket.outlet.enableTableScan === false) ||
+      (basket && basket.status !== "PENDING")
     );
   };
 
@@ -109,10 +114,10 @@ const ViewCartBasket = ({
           props.orderingMode === "DELIVERY")) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
-        props.dataBasket &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
-        props.dataBasket.outlet.enableTableScan === false) ||
-      (props.dataBasket && props.dataBasket.status !== "PENDING")
+        basket &&
+        basket.outlet.outletType === "QUICKSERVICE" &&
+        basket.outlet.enableTableScan === false) ||
+      (basket && basket.status !== "PENDING")
     );
   };
 
@@ -125,11 +130,11 @@ const ViewCartBasket = ({
           props.orderingMode === "DELIVERY")) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
-        props.dataBasket &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
-        (props.dataBasket.outlet.enableTableScan === false ||
-          props.dataBasket.outlet.enableTableScan === "-")) ||
-      (props.dataBasket && props.dataBasket.status !== "PENDING") ||
+        basket &&
+        basket.outlet.outletType === "QUICKSERVICE" &&
+        ((basket && basket.outlet.enableTableScan === false) ||
+          basket.outlet.enableTableScan === "-")) ||
+      (basket && basket.status !== "PENDING") ||
       (props.storeDetail &&
         props.storeDetail.enableTableScan !== false &&
         props.scanTable)
@@ -141,7 +146,7 @@ const ViewCartBasket = ({
   };
 
   let props = data;
-  const basket = data.dataBasket;
+  // const basket = data.dataBasket;
   const orderingModeField =
     data.dataBasket.orderingMode === "DINEIN"
       ? "dineIn"
@@ -150,6 +155,7 @@ const ViewCartBasket = ({
       : "takeAway";
   const productQuantity =
     basket &&
+    basket.details &&
     basket.details.reduce((acc, item) => ({
       quantity: acc.quantity + item.quantity,
     })).quantity;
@@ -174,7 +180,7 @@ const ViewCartBasket = ({
         <Col xs="12" sm="6">
           <ItemsBasket
             data={data}
-            dataBasket={props.dataBasket}
+            dataBasket={basket}
             countryCode={props.countryCode}
             getCurrency={(price) => getCurrency(price)}
             handleSetState={(field, value) =>
@@ -234,7 +240,7 @@ const ViewCartBasket = ({
               <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                 <div style={{ fontWeight: "bold", color: "gray" }}>Sub Total</div>
                 <div style={{ fontWeight: "bold", color: "gray" }}>
-                  {getCurrency(props.dataBasket.totalNettAmount)}
+                  {getCurrency(basket && basket.totalNettAmount)}
                 </div>
               </div>
             </div> */}
@@ -315,8 +321,7 @@ const ViewCartBasket = ({
                 <div className="small text-left">
                   <strong>
                     Your order hasn't reached minimum allowed item quantity for{" "}
-                    {basket.orderingMode}. Please remove some item from your
-                    cart.
+                    {basket.orderingMode}. Please add some item to your cart.
                   </strong>
                 </div>
               )
@@ -332,7 +337,7 @@ const ViewCartBasket = ({
             <div className="small text-left">
               <strong>
                 Your order hasn't reached minimum allowed order amount for{" "}
-                {basket.orderingMode}. Please remove some item from your cart.
+                {basket.orderingMode}. Please add some item to your cart.
               </strong>
             </div>
           )}
@@ -361,14 +366,14 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              {getCurrency(props.dataBasket.totalNettAmount)}
+              {getCurrency(basket && basket.totalNettAmount)}
             </div>
           </div>
 
-          {props.dataBasket.status === "PROCESSING" ||
-          props.dataBasket.status === "READY_FOR_COLLECTION" ||
-          props.dataBasket.status === "READY_FOR_DELIVERY" ||
-          props.dataBasket.status === "ON_THE_WAY" ? (
+          {basket.status === "PROCESSING" ||
+          basket.status === "READY_FOR_COLLECTION" ||
+          basket.status === "READY_FOR_DELIVERY" ||
+          basket.status === "ON_THE_WAY" ? (
             <div
               style={{
                 padding: 10,
@@ -419,7 +424,9 @@ const ViewCartBasket = ({
                 disabled={
                   roleBtnSettle() ||
                   basket.totalGrossAmount < minAmount ||
-                  (basket.totalGrossAmount > maxAmount && maxAmount > 0) ||
+                  (basket &&
+                    basket.totalGrossAmount > maxAmount &&
+                    maxAmount > 0) ||
                   productQuantity < minQty ||
                   (productQuantity > maxQty && maxQty > 0) ||
                   !deliveryProvider ||
@@ -465,6 +472,7 @@ const mapStateToProps = (state) => {
     deliveryProvider: state.order.selectedDeliveryProvider,
     deliveryAddress: state.order.deliveryAddress,
     isLoggedIn: state.auth.isLoggedIn,
+    basket: state.order.basket,
   };
 };
 

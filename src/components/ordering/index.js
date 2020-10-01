@@ -1,6 +1,9 @@
 /* eslint-disable no-loop-func */
 import React, { Component } from "react";
 import { connect } from "react-redux";
+
+import _ from "lodash";
+
 import CategoriesEmenu from "./CategoriesEmenu";
 import CategoriesWebOrdering from "./CategoriesWebOrdering";
 import Product from "./Product";
@@ -56,18 +59,27 @@ class Ordering extends Component {
 
     let defaultOutlet = null;
     if (!this.getUrlParameters()) {
-      defaultOutlet = await this.props.dispatch(
-        OutletAction.fetchDefaultOutlet()
-      );
-    } else {
-      defaultOutlet = this.props.defaultOutlet;
+      if (_.isEmpty(this.props.defaultOutlet))
+        defaultOutlet = await this.props.dispatch(
+          OutletAction.fetchDefaultOutlet()
+        );
+      else {
+        defaultOutlet = this.props.defaultOutlet;
+      }
     }
 
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({
-      defaultOutlet: defaultOutlet || this.props.defaultOutlet,
+      defaultOutlet: defaultOutlet,
     });
-    await this.fetchCategories(defaultOutlet || this.props.defaultOutlet);
+    await this.fetchCategories(defaultOutlet);
+  };
+
+  componentDidUpdate = async (prevProps) => {
+    if (prevProps.defaultOutlet.id !== this.props.defaultOutlet.id) {
+      console.log("defaultOutlet Changed...");
+      this.fetchCategories(this.props.defaultOutlet);
+    }
   };
 
   getUrlParameters = (pageParamString = null) => {

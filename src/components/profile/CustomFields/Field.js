@@ -75,12 +75,22 @@ const Field = ({ field, handleValueChange, value }) => {
         >
           <option
             value=""
-            disabled={value[field.fieldName] && value[field.fieldName] !== ""}
+            disabled={
+              field.defaultValue ||
+              (value[field.fieldName] && value[field.fieldName] !== "")
+            }
           >
             Select {field.displayName}
           </option>
           {field.options.map((option) => {
-            return <option value={option.value}>{option.text}</option>;
+            return (
+              <option
+                value={option.value}
+                selected={field.defaultValue === option.value}
+              >
+                {option.text}
+              </option>
+            );
           })}
         </select>
       </div>
