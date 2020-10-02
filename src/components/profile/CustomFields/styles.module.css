@@ -1,8 +1,13 @@
-.select {
+.select,
+.input {
   padding: 0.473em 1.2em;
   color: #666666;
   border: 1px solid #cccccc;
   background-color: transparent;
   font-weight: normal;
+  border-radius: 5px;
+}
+
+.rounded {
   border-radius: 50px;
 }

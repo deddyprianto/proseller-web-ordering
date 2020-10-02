@@ -9,6 +9,7 @@ import config from "../../config";
 import { CONSTANT } from "../../helpers";
 
 import { lsLoad, lsStore } from "../../helpers/localStorage";
+import CustomFields from "./CustomFields";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -67,6 +68,21 @@ class ModalEditProfile extends Component {
 
   componentDidMount = async () => {
     this.getData();
+  };
+
+  componentDidUpdate = async (prevProps) => {
+    if (prevProps.fields !== this.props.fields) {
+      this.props.fields.forEach((field) => {
+        if (!this.state.dataCustomer[field.fieldName] && field.defaultValue) {
+          this.setState((prevState) => ({
+            dataCustomer: {
+              ...prevState.dataCustomer,
+              [field.fieldName]: field.defaultValue,
+            },
+          }));
+        }
+      });
+    }
   };
 
   getData = async () => {
@@ -208,6 +224,19 @@ class ModalEditProfile extends Component {
       gender: this.state.dataCustomer.gender,
       address: this.state.dataCustomer.address,
     };
+
+    this.props.fields.forEach((field) => {
+      if (this.state.dataCustomer[field.fieldName]) {
+        payload[field.fieldName] = this.state.dataCustomer[field.fieldName];
+      }
+      if (field.type === "multipleField") {
+        field.children.forEach((child) => {
+          if (this.state.dataCustomer[child.fieldName]) {
+            payload[child.fieldName] = this.state.dataCustomer[child.fieldName];
+          }
+        });
+      }
+    });
 
     if (this.state.editName) payload.newName = this.state.dataCustomer.name;
     if (this.state.editPhoneNumber)
@@ -444,7 +473,14 @@ class ModalEditProfile extends Component {
                     )}
                   </div>
 
-                  {fieldBirthDate && (
+                  <CustomFields
+                    defaultValue={this.state.dataCustomer}
+                    fields={this.props.fields.filter((field) => field.show)}
+                    handleChange={this.handleChange}
+                    roundedBorder={false}
+                  ></CustomFields>
+
+                  {/* {fieldBirthDate && (
                     <div
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
@@ -488,9 +524,6 @@ class ModalEditProfile extends Component {
                               paddingRight: 50,
                             }}
                           >
-                            {/* {dataCustomer.birthDate
-                              ? moment(birthDate).format("DD-MM-YYYY")
-                              : fieldBirthDate.format} */}
                           </div>
                           <input
                             type="date"
@@ -509,9 +542,9 @@ class ModalEditProfile extends Component {
                         </div>
                       )}
                     </div>
-                  )}
+                  )} */}
 
-                  {fieldGender && (
+                  {/* {fieldGender && (
                     <div style={{ marginTop: 10 }}>
                       <label>
                         Gender{" "}
@@ -592,9 +625,9 @@ class ModalEditProfile extends Component {
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
-                  {fieldAddress && (
+                  {/* {fieldAddress && (
                     <div
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
@@ -618,9 +651,9 @@ class ModalEditProfile extends Component {
                         }
                       ></input>
                     </div>
-                  )}
+                  )} */}
 
-                  {fieldAddress && (
+                  {/* {fieldAddress && (
                     <div
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
@@ -644,7 +677,7 @@ class ModalEditProfile extends Component {
                         }
                       ></input>
                     </div>
-                  )}
+                  )} */}
 
                   <br />
                   <p className="color" onClick={this.toggleEditPassword}>
@@ -856,6 +889,7 @@ class ModalEditProfile extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
+    fields: state.customer.fields,
   };
 };
 

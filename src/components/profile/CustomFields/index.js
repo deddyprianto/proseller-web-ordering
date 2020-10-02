@@ -4,12 +4,18 @@ import PropTypes from "prop-types";
 import moment from "moment";
 import Field from "./Field";
 
-const CustomFields = ({ fields, handleChange, showSignUpFields }) => {
+const CustomFields = ({
+  fields,
+  handleChange,
+  showSignUpFields,
+  defaultValue,
+  roundedBorder,
+}) => {
   const fieldsToRender = fields.filter((field) => {
     return showSignUpFields ? field.signUpField === true : true;
   });
 
-  const [value, setValue] = useState({});
+  const [value, setValue] = useState(defaultValue);
 
   const handleValueChange = (e) => {
     setValue({ ...value, [e.target.name]: e.target.value });
@@ -29,6 +35,7 @@ const CustomFields = ({ fields, handleChange, showSignUpFields }) => {
               handleValueChange={handleValueChange}
               value={value}
               field={child}
+              roundedBorder={roundedBorder}
             ></Field>
           ));
         }
@@ -37,6 +44,7 @@ const CustomFields = ({ fields, handleChange, showSignUpFields }) => {
             handleValueChange={handleValueChange}
             value={value}
             field={field}
+            roundedBorder={roundedBorder}
           ></Field>
         );
       })}
@@ -46,10 +54,15 @@ const CustomFields = ({ fields, handleChange, showSignUpFields }) => {
 
 CustomFields.propTypes = {
   fields: PropTypes.array,
+  showSignUpFields: PropTypes.bool.isRequired,
+  defaultValue: PropTypes.object.isRequired,
+  roundedBorder: PropTypes.bool.isRequired,
 };
 
 CustomFields.defaultProps = {
   showSignUpFields: false,
+  defaultValue: {},
+  roundedBorder: true,
 };
 
 export default CustomFields;

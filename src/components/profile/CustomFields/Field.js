@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 import moment from "moment";
 
 import styles from "./styles.module.css";
 
-const Field = ({ field, handleValueChange, value }) => {
+import cx from "classnames";
+
+const Field = ({ field, handleValueChange, value, roundedBorder }) => {
+  const [initialValue, setInitialValue] = useState(value[field.fieldName]);
   if (field.type === "radio") {
     return (
       <div style={{ marginTop: 10 }}>
@@ -71,7 +74,9 @@ const Field = ({ field, handleValueChange, value }) => {
         <select
           name={field.fieldName}
           onChange={handleValueChange}
-          className={styles.select}
+          className={cx(styles.select, {
+            [styles.rounded]: roundedBorder,
+          })}
         >
           <option
             value=""
@@ -86,7 +91,11 @@ const Field = ({ field, handleValueChange, value }) => {
             return (
               <option
                 value={option.value}
-                selected={field.defaultValue === option.value}
+                selected={
+                  value[field.fieldName]
+                    ? value[field.fieldName] === option.value
+                    : field.defaultValue === option.value
+                }
               >
                 {option.text}
               </option>
@@ -122,7 +131,11 @@ const Field = ({ field, handleValueChange, value }) => {
             type="date"
             id={field.fieldName}
             name={field.fieldName}
-            className="woocommerce-Input woocommerce-Input--text input-text"
+            value={value[field.fieldName]}
+            disabled={field.fieldName === "birthDate" && initialValue}
+            className={cx(styles.input, {
+              [styles.rounded]: roundedBorder,
+            })}
             onChange={(e) =>
               handleValueChange({
                 target: {
@@ -227,7 +240,9 @@ const Field = ({ field, handleValueChange, value }) => {
         <select
           name={field.fieldName}
           onChange={handleValueChange}
-          className={styles.select}
+          className={cx(styles.select, {
+            [styles.rounded]: roundedBorder,
+          })}
           multiple
         >
           {field.options.map((option) => {
@@ -247,8 +262,12 @@ const Field = ({ field, handleValueChange, value }) => {
         <span className="required">{field.mandatory && "*"}</span>
       </label>
       <input
+        autoComplete={false}
         type={field.type}
-        className="woocommerce-Input woocommerce-Input--text input-text"
+        className={cx(styles.input, {
+          [styles.rounded]: roundedBorder,
+        })}
+        style={{ borderRadius: roundedBorder ? "50px" : "5px" }}
         id={field.fieldName}
         name={field.fieldName}
         placeholder={`Enter your ${field.displayName}`}
@@ -262,6 +281,9 @@ const Field = ({ field, handleValueChange, value }) => {
 
 Field.propTypes = {
   field: PropTypes.object,
+  roundedBorder: PropTypes.bool,
+  value: PropTypes.object,
+  handleValueChange: PropTypes.func,
 };
 
 export default Field;
