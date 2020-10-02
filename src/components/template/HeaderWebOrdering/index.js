@@ -133,13 +133,8 @@ class Header extends Component {
               <Link to="/">
                 <img
                   alt="logo"
+                  className={styles.logo}
                   src={infoCompany.imageURL || config.url_logo}
-                  style={{
-                    height: 30,
-                    objectFit: "contain",
-                    marginTop: -10,
-                    marginBottom: -10,
-                  }}
                 />
               </Link>
               <div
