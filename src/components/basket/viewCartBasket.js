@@ -31,13 +31,18 @@ const ViewCartBasket = ({
   handleOpenLogin,
   isLoggedIn,
   basket,
+  handleSetState
 }) => {
   const roleBtnClear = () => {
     let props = data;
     return (basket &&
       basket.status === "SUBMITTED" &&
       props.orderingMode &&
-      props.orderingMode === "TAKEAWAY") ||
+      (
+        props.orderingMode === "TAKEAWAY" ||
+        props.orderingMode === "STOREPICKUP" ||
+        props.orderingMode === "STORECHECKOUT"
+      )) ||
       (basket &&
         basket.status !== "PENDING" &&
         basket.orderingMode === "DINEIN" &&
@@ -71,7 +76,12 @@ const ViewCartBasket = ({
       (((basket && basket.status === "SUBMITTED") ||
         basket.status === "CONFIRMED") &&
         props.orderingMode &&
-        props.orderingMode === "TAKEAWAY") ||
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT"
+        )
+      ) ||
       (basket &&
         basket.status !== "PENDING" &&
         basket.status !== "PENDING_PAYMENT" &&
@@ -94,8 +104,13 @@ const ViewCartBasket = ({
     return (
       props.settle ||
       (props.orderingMode &&
-        (props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "DELIVERY")) ||
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        )
+      ) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
         basket &&
@@ -110,8 +125,13 @@ const ViewCartBasket = ({
     return (
       props.settle ||
       (props.orderingMode &&
-        (props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "DELIVERY")) ||
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        )
+      ) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
         basket &&
@@ -126,8 +146,13 @@ const ViewCartBasket = ({
     return (
       props.settle ||
       (props.orderingMode &&
-        (props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "DELIVERY")) ||
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        )
+      ) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
         basket &&
@@ -151,8 +176,8 @@ const ViewCartBasket = ({
     data.dataBasket.orderingMode === "DINEIN"
       ? "dineIn"
       : data.dataBasket.orderingMode === "DELIVERY"
-      ? "delivery"
-      : "takeAway";
+        ? "delivery"
+        : "takeAway";
   const productQuantity =
     basket &&
     basket.details &&
@@ -169,6 +194,18 @@ const ViewCartBasket = ({
     }
   }, [deliveryAddress]);
 
+  const btnSattleStatusDisable = (
+    roleBtnSettle() ||
+    basket.totalGrossAmount < minAmount ||
+    (basket &&
+      basket.totalGrossAmount > maxAmount &&
+      maxAmount > 0) ||
+    productQuantity < minQty ||
+    (productQuantity > maxQty && maxQty > 0) ||
+    data.dataBasket.orderingMode === "DELIVERY" &&
+    !deliveryProvider
+  )
+
   return (
     <div
       style={{
@@ -184,7 +221,7 @@ const ViewCartBasket = ({
             countryCode={props.countryCode}
             getCurrency={(price) => getCurrency(price)}
             handleSetState={(field, value) =>
-              props.handleSetState(field, value)
+              handleSetState(field, value)
             }
             handleClear={(dataBasket) => handleClear(dataBasket)}
             roleBtnClear={roleBtnClear()}
@@ -215,6 +252,10 @@ const ViewCartBasket = ({
             setOrderingMode={(mode) => setOrderingMode(mode)}
             handleSetProvaider={(item) => handleSetProvaider(item)}
             handleOpenLogin={() => handleOpenLogin()}
+            btnSattleStatusDisable={btnSattleStatusDisable}
+            handleSetState={(field, value) =>
+              handleSetState(field, value)
+            }
           />
         </Col>
       </Row>
@@ -279,18 +320,18 @@ const ViewCartBasket = ({
                       >{`${deliveryProvider.deliveryFee}`}</div>
                     </div>
                   ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <div style={{ fontWeight: "bold", color: "gray" }}>
-                        Checking delivery availability...
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold", color: "gray" }}>
+                            Checking delivery availability...
                       </div>
-                    </div>
-                  )
+                        </div>
+                      )
                 ) : null}
               </div>
             )}
@@ -318,29 +359,29 @@ const ViewCartBasket = ({
                   </div>
                 )
               ) : (
+                  <div className="small text-left">
+                    <strong>
+                      Your order hasn't reached minimum allowed item quantity for{" "}
+                      {basket.orderingMode}. Please add some item to your cart.
+                  </strong>
+                  </div>
+                )
+            ) : (
                 <div className="small text-left">
                   <strong>
-                    Your order hasn't reached minimum allowed item quantity for{" "}
-                    {basket.orderingMode}. Please add some item to your cart.
-                  </strong>
+                    Your order has exceeded maximum allowed order amount for{" "}
+                    {basket.orderingMode}. Please remove some item from your cart.
+                </strong>
                 </div>
               )
-            ) : (
+          ) : (
               <div className="small text-left">
                 <strong>
-                  Your order has exceeded maximum allowed order amount for{" "}
-                  {basket.orderingMode}. Please remove some item from your cart.
-                </strong>
-              </div>
-            )
-          ) : (
-            <div className="small text-left">
-              <strong>
-                Your order hasn't reached minimum allowed order amount for{" "}
-                {basket.orderingMode}. Please add some item to your cart.
+                  Your order hasn't reached minimum allowed order amount for{" "}
+                  {basket.orderingMode}. Please add some item to your cart.
               </strong>
-            </div>
-          )}
+              </div>
+            )}
           <div
             style={{
               display: "flex",
@@ -371,48 +412,48 @@ const ViewCartBasket = ({
           </div>
 
           {basket.status === "PROCESSING" ||
-          basket.status === "READY_FOR_COLLECTION" ||
-          basket.status === "READY_FOR_DELIVERY" ||
-          basket.status === "ON_THE_WAY" ? (
-            <div
-              style={{
-                padding: 10,
-                backgroundColor: "#FFF",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Button
+            basket.status === "READY_FOR_COLLECTION" ||
+            basket.status === "READY_FOR_DELIVERY" ||
+            basket.status === "ON_THE_WAY" ? (
+              <div
                 style={{
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                  width: "100%",
-                  backgroundColor: "green",
-                  color: "#FFF",
-                  fontWeight: "bold",
+                  padding: 10,
+                  backgroundColor: "#FFF",
                   display: "flex",
-                  justifyContent: "center",
+                  flexDirection: "row",
                   alignItems: "center",
+                  justifyContent: "space-between",
                 }}
-                onClick={() => setViewCart(false)}
               >
-                <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
+                <Button
+                  style={{
+                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                    width: "100%",
+                    backgroundColor: "green",
+                    color: "#FFF",
+                    fontWeight: "bold",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onClick={() => setViewCart(false)}
+                >
+                  <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
                 Waiting Order
               </Button>
-            </div>
-          ) : (
-            <div
-              style={{
-                padding: 10,
-                backgroundColor: "#FFF",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              {/* <Button
+              </div>
+            ) : (
+              <div
+                style={{
+                  padding: 10,
+                  backgroundColor: "#FFF",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                {/* <Button
                     disabled={roleBtnClear()}
                     onClick={() => props.handleClear()} style={{
                       boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "45%", backgroundColor: "#c00a27",
@@ -420,45 +461,34 @@ const ViewCartBasket = ({
                     }} >
                     <DeleteIcon style={{ fontSize: 20, marginRight: 5 }} /> Clear
                   </Button> */}
-              <Button
-                disabled={
-                  roleBtnSettle() ||
-                  basket.totalGrossAmount < minAmount ||
-                  (basket &&
-                    basket.totalGrossAmount > maxAmount &&
-                    maxAmount > 0) ||
-                  productQuantity < minQty ||
-                  (productQuantity > maxQty && maxQty > 0) ||
-                  !deliveryProvider ||
-                  !deliveryProvider.deliveryFeeFloat ||
-                  deliveryProvider.deliveryFeeFloat < 0
-                }
-                onClick={() => {
-                  roleTitleSettle() ? handleSettle() : handleSubmit();
-                }}
-                style={{
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                  width: "100%",
-                  display: "flex",
-                  color: "#FFF",
-                  fontWeight: "bold",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: 40,
-                }}
-              >
-                {" "}
-                {roleIconSettle() ? (
-                  <MonetizationOnIcon
-                    style={{ fontSize: 20, marginRight: 5 }}
-                  />
-                ) : (
-                  <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                )}
-                {roleTitleSettle() ? "Confirm & Pay" : "Submit"}
-              </Button>
-            </div>
-          )}
+                <Button
+                  disabled={btnSattleStatusDisable}
+                  onClick={() => {
+                    roleTitleSettle() ? handleSettle() : handleSubmit();
+                  }}
+                  style={{
+                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                    width: "100%",
+                    display: "flex",
+                    color: "#FFF",
+                    fontWeight: "bold",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 40,
+                  }}
+                >
+                  {" "}
+                  {roleIconSettle() ? (
+                    <MonetizationOnIcon
+                      style={{ fontSize: 20, marginRight: 5 }}
+                    />
+                  ) : (
+                      <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    )}
+                  {roleTitleSettle() ? "Confirm & Pay" : "Submit"}
+                </Button>
+              </div>
+            )}
         </div>
       )}
     </div>

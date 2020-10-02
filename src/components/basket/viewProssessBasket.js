@@ -36,7 +36,11 @@ export default class ViewProsessBasket extends Component {
                   <div style={{ marginTop: 10, marginBottom: 10, color: "green", fontWeight: "bold", textAlign: "center" }}>
                     {
                       props.dataBasket.queueNo &&
-                      props.orderingMode === "TAKEAWAY" &&
+                      (
+                        props.orderingMode === "TAKEAWAY" ||
+                        props.orderingMode === "STOREPICKUP" ||
+                        props.orderingMode === "STORECHECKOUT"
+                      ) &&
                       ("Queue No : " + props.dataBasket.queueNo)
                     }
                     {

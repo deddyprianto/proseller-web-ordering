@@ -168,7 +168,7 @@ class ModalProduct extends Component {
         selectedItem.quantity -= 1;
         this.setState({ selectedItem });
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   increase = () => {
@@ -176,7 +176,7 @@ class ModalProduct extends Component {
       let { selectedItem } = this.state;
       selectedItem.quantity += 1;
       this.setState({ selectedItem });
-    } catch (e) {}
+    } catch (e) { }
   };
 
   processCart = async () => {
@@ -230,7 +230,7 @@ class ModalProduct extends Component {
                 break;
               }
             }
-          } catch (e) {}
+          } catch (e) { }
 
           if (name != "Item") {
             let message = { title: "Warning", message: "" };
@@ -261,7 +261,7 @@ class ModalProduct extends Component {
           document.getElementById("detail-product-modal").click();
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   isItemExist = (item) => {
@@ -442,8 +442,8 @@ class ModalProduct extends Component {
                     type="checkbox"
                     checked={
                       data.quantity != undefined &&
-                      data.quantity != 0 &&
-                      data.orderingStatus != "UNAVAILABLE"
+                        data.quantity != 0 &&
+                        data.orderingStatus != "UNAVAILABLE"
                         ? true
                         : false
                     }
@@ -475,8 +475,8 @@ class ModalProduct extends Component {
                 {data.orderingStatus === "UNAVAILABLE" ? (
                   <p>UNAVAILABLE</p>
                 ) : (
-                  <p>{this.getCurrency(data.price)}</p>
-                )}
+                    <p>{this.getCurrency(data.price)}</p>
+                  )}
               </div>
             ))}
           </div>
@@ -571,8 +571,8 @@ class ModalProduct extends Component {
                 {data.orderingStatus === "UNAVAILABLE" ? (
                   <p>UNAVAILABLE</p>
                 ) : (
-                  <p>{this.getCurrency(data.price)}</p>
-                )}
+                    <p>{this.getCurrency(data.price)}</p>
+                  )}
               </div>
             ))}
           </div>
@@ -744,37 +744,34 @@ class ModalProduct extends Component {
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b style={{ color: "#FFF" }}>{`${
-                    selectedItem.quantity === 0 ? "Remove" : "Update"
-                  } ${
-                    this.props.companyInfo &&
+                  <b style={{ color: "#FFF" }}>{`${selectedItem.quantity === 0 ? "Remove" : "Update"
+                    } ${this.props.companyInfo &&
                     this.props.companyInfo.currency.code
-                  } ${this.calculateTotal()}`}</b>
+                    } ${this.calculateTotal()}`}</b>
                 </button>
               ) : (
+                  <button
+                    disabled={disableButton}
+                    className="btn btn-block btn-footer"
+                    onClick={this.processCart}
+                  >
+                    <b style={{ color: "#FFF" }}>
+                      Add{" "}
+                      {`${this.props.companyInfo &&
+                        this.props.companyInfo.currency.code
+                        } ${this.calculateTotal()}`}
+                    </b>
+                  </button>
+                )
+            ) : (
                 <button
                   disabled={disableButton}
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b style={{ color: "#FFF" }}>
-                    Add{" "}
-                    {`${
-                      this.props.companyInfo &&
-                      this.props.companyInfo.currency.code
-                    } ${this.calculateTotal()}`}
-                  </b>
+                  <b style={{ color: "#FFF" }}>Loading...</b>
                 </button>
-              )
-            ) : (
-              <button
-                disabled={disableButton}
-                className="btn btn-block btn-footer"
-                onClick={this.processCart}
-              >
-                <b style={{ color: "#FFF" }}>Loading...</b>
-              </button>
-            )}
+              )}
           </div>
         </div>
       </div>
@@ -786,7 +783,7 @@ class ModalProduct extends Component {
     try {
       document.getElementById("dismiss-ordering-mode").click();
       // document.getElementById('open-modal-product').click();
-    } catch (error) {}
+    } catch (error) { }
   };
 
   modalOrderingMode = () => {
@@ -852,6 +849,42 @@ class ModalProduct extends Component {
                     >
                       <h5 className="color" style={{ fontWeight: 1000 }}>
                         TAKE AWAY
+                      </h5>
+                      <i className="fa fa-shopping-basket color icon-order"></i>
+                      <button
+                        className="btn btn-block btn-footer"
+                        style={{ marginTop: 37 }}
+                      >
+                        <b>Select</b>
+                      </button>
+                    </div>
+                  )}
+
+                  {defaultOutlet.enableStorePickUp === true && (
+                    <div
+                      className="order-mode"
+                      onClick={() => this.setOrderingMode("STOREPICKUP")}
+                    >
+                      <h5 className="color" style={{ fontWeight: 1000 }}>
+                        STOREPICKUP
+                      </h5>
+                      <i className="fa fa-shopping-basket color icon-order"></i>
+                      <button
+                        className="btn btn-block btn-footer"
+                        style={{ marginTop: 37 }}
+                      >
+                        <b>Select</b>
+                      </button>
+                    </div>
+                  )}
+
+                  {defaultOutlet.enableStoreCheckOut === true && (
+                    <div
+                      className="order-mode"
+                      onClick={() => this.setOrderingMode("STORECHECKOUT")}
+                    >
+                      <h5 className="color" style={{ fontWeight: 1000 }}>
+                        STORECHECKOUT
                       </h5>
                       <i className="fa fa-shopping-basket color icon-order"></i>
                       <button
@@ -1015,20 +1048,20 @@ class ModalProduct extends Component {
                     Remove
                   </button>
                 ) : (
-                  <button
-                    id="dismiss-ordering-mode"
-                    data-dismiss="modal"
-                    className="btn btn-block btn-footer"
-                    style={{
-                      marginTop: 30,
-                      marginBottom: 20,
-                      height: 40,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    OK
-                  </button>
-                )}
+                    <button
+                      id="dismiss-ordering-mode"
+                      data-dismiss="modal"
+                      className="btn btn-block btn-footer"
+                      style={{
+                        marginTop: 30,
+                        marginBottom: 20,
+                        height: 40,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      OK
+                    </button>
+                  )}
               </div>
             </div>
           </div>

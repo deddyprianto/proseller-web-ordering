@@ -17,12 +17,17 @@ class SettleSuccess extends Component {
       settleSuccess: null,
       orderingMode: "",
       dataBasket: null,
+      paymentSuccess: {},
+      infoCompany: {}
     };
   }
 
   componentDidMount = async () => {
     Swal.close();
     document.getElementById("open-modal-status").click();
+    let paymentSuccess = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_paymentSuccess`))
+    );
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
@@ -33,16 +38,22 @@ class SettleSuccess extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
     let orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
+    console.log(paymentSuccess)
+    console.log(settleSuccess)
+    console.log(infoCompany)
     this.setState({
       countryCode: infoCompany.countryCode,
+      currency: infoCompany.currency,
+      infoCompany,
       settleSuccess,
       orderingMode,
+      paymentSuccess,
       dataBasket,
     });
     setTimeout(() => {
       try {
         document.getElementById("open-modal-status").click();
-      } catch (error) {}
+      } catch (error) { }
     }, 2500);
   };
 
@@ -55,7 +66,8 @@ class SettleSuccess extends Component {
           style: "currency",
           currency: currency.code,
         });
-        return result;
+        console.log(result)
+        return result.split(currency.code)[1];
       }
     }
   };
@@ -102,8 +114,7 @@ class SettleSuccess extends Component {
   };
 
   render() {
-    let { settleSuccess, orderingMode, dataBasket } = this.state;
-    const currency = this.props.companyInfo && this.props.companyInfo.currency;
+    let { settleSuccess, orderingMode, paymentSuccess, infoCompany } = this.state;
     const deliveryFee = this.props.deliveryProvider
       ? this.props.deliveryProvider.deliveryFeeFloat
       : 0;
@@ -152,7 +163,7 @@ class SettleSuccess extends Component {
                           textAlign: "center",
                         }}
                       >
-                        You've Paid
+                        {settleSuccess.payAtPOS ? "Amount to Pay" : "You've Paid"}
                       </div>
                       <div
                         style={{
@@ -182,25 +193,24 @@ class SettleSuccess extends Component {
                         >
                           {
                             this.getCurrency(
-                              settleSuccess.price + deliveryFee
-                            ).split(currency.code)[1]
+                              (settleSuccess.price || paymentSuccess.totalPrice) + (deliveryFee || 0)
+                            )
                           }
                         </div>
                       </div>
-                      {settleSuccess.message !== undefined && (
-                        <div
-                          style={{
-                            color: "#20a8d8",
-                            fontSize: 12,
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            marginTop: -5,
-                            marginBottom: 5,
-                          }}
-                        >
-                          {settleSuccess.message}
-                        </div>
-                      )}
+
+                      <div
+                        style={{
+                          color: "#20a8d8",
+                          fontSize: 12,
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          marginTop: -5,
+                          marginBottom: 5,
+                        }}
+                      >
+                        {settleSuccess.message || "Please proceed payment at the store"}
+                      </div>
                     </div>
 
                     <div
@@ -238,30 +248,20 @@ class SettleSuccess extends Component {
                             color: "#20a8d8",
                             fontWeight: "bold",
                             textAlign: "left",
+                            fontSize: 14
                           }}
                         >
-                          {settleSuccess.outletName}
+                          {infoCompany.companyName}
                         </div>
                         <div
                           style={{
-                            display: "flex",
-                            flexDirection: "row",
+                            color: "#20a8d8",
+                            textAlign: "left",
                             marginTop: -8,
+                            fontSize: 12
                           }}
                         >
-                          <div style={{ color: "gray", fontSize: 10 }}>
-                            Ordering Mode
-                          </div>
-                          <div
-                            style={{
-                              color: "#20a8d8",
-                              fontSize: 10,
-                              marginLeft: 3,
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {orderingMode}
-                          </div>
+                          {settleSuccess.outlet.name}
                         </div>
                       </div>
                     </div>
@@ -289,18 +289,21 @@ class SettleSuccess extends Component {
                         }}
                       >
                         <div>Date & Time</div>
-                        <div>{this.getDate(settleSuccess.createdAt)}</div>
+                        <div>{this.getDate(settleSuccess.createdOn)}</div>
                       </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <div>Paid By</div>
-                        <div>{settleSuccess.paymentType || "-"}</div>
-                      </div>
+                      {
+                        settleSuccess.paymentType &&
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div>Paid By</div>
+                          <div>{settleSuccess.paymentType || "-"}</div>
+                        </div>
+                      }
                     </div>
                     <div
                       style={{

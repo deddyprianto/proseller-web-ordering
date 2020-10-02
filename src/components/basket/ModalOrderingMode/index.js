@@ -51,31 +51,33 @@ class ModalOrderingMode extends Component {
                         DINEIN
                       </h5>
                       <i className="fa fa-cutlery color icon-order"></i>
-
-                      <div className={styles.validation}>
-                        {outlet.orderValidation.dineIn.minAmount ||
-                        outlet.orderValidation.dineIn.maxAmount ? (
-                          <div>
-                            <div>
-                              <strong>Amount range</strong>
-                            </div>{" "}
-                            {companyInfo && companyInfo.data.currency.code}{" "}
-                            {outlet.orderValidation.dineIn.minAmount} to{" "}
-                            {companyInfo && companyInfo.data.currency.code}{" "}
-                            {outlet.orderValidation.dineIn.maxAmount}
-                          </div>
-                        ) : null}
-                        {outlet.orderValidation.dineIn.minQty ||
-                        outlet.orderValidation.dineIn.maxQty ? (
-                          <div>
-                            <div>
-                              <strong>Item quantity range</strong>
-                            </div>{" "}
-                            {outlet.orderValidation.dineIn.minQty} to{" "}
-                            {outlet.orderValidation.dineIn.maxQty} items
-                          </div>
-                        ) : null}
-                      </div>
+                      {
+                        outlet.orderValidation.dineIn &&
+                        <div className={styles.validation}>
+                          {outlet.orderValidation.dineIn.minAmount ||
+                            outlet.orderValidation.dineIn.maxAmount ? (
+                              <div>
+                                <div>
+                                  <strong>Amount range</strong>
+                                </div>{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.dineIn.minAmount} to{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.dineIn.maxAmount}
+                              </div>
+                            ) : null}
+                          {outlet.orderValidation.dineIn.minQty ||
+                            outlet.orderValidation.dineIn.maxQty ? (
+                              <div>
+                                <div>
+                                  <strong>Item quantity range</strong>
+                                </div>{" "}
+                                {outlet.orderValidation.dineIn.minQty} to{" "}
+                                {outlet.orderValidation.dineIn.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                       <button
                         className="btn btn-block btn-footer"
                         style={{ marginTop: 37 }}
@@ -94,31 +96,33 @@ class ModalOrderingMode extends Component {
                         TAKE AWAY
                       </h5>
                       <i className="fa fa-shopping-basket color icon-order"></i>
-
-                      <div className={styles.validation}>
-                        {outlet.orderValidation.takeAway.minAmount ||
-                        outlet.orderValidation.takeAway.maxAmount ? (
-                          <div>
-                            <div>
-                              <strong>Amount range</strong>
-                            </div>{" "}
-                            {companyInfo && companyInfo.data.currency.code}{" "}
-                            {outlet.orderValidation.takeAway.minAmount} to{" "}
-                            {companyInfo && companyInfo.data.currency.code}{" "}
-                            {outlet.orderValidation.takeAway.maxAmount}
-                          </div>
-                        ) : null}
-                        {outlet.orderValidation.takeAway.minQty ||
-                        outlet.orderValidation.takeAway.maxQty ? (
-                          <div>
-                            <div>
-                              <strong>Item quantity range</strong>
-                            </div>{" "}
-                            {outlet.orderValidation.takeAway.minQty} to{" "}
-                            {outlet.orderValidation.takeAway.maxQty} items
-                          </div>
-                        ) : null}
-                      </div>
+                      {
+                        outlet.orderValidation.takeAway &&
+                        <div className={styles.validation}>
+                          {outlet.orderValidation.takeAway.minAmount ||
+                            outlet.orderValidation.takeAway.maxAmount ? (
+                              <div>
+                                <div>
+                                  <strong>Amount range</strong>
+                                </div>{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.takeAway.minAmount} to{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.takeAway.maxAmount}
+                              </div>
+                            ) : null}
+                          {outlet.orderValidation.takeAway.minQty ||
+                            outlet.orderValidation.takeAway.maxQty ? (
+                              <div>
+                                <div>
+                                  <strong>Item quantity range</strong>
+                                </div>{" "}
+                                {outlet.orderValidation.takeAway.minQty} to{" "}
+                                {outlet.orderValidation.takeAway.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                       <button
                         className="btn btn-block btn-footer"
                         style={{ marginTop: 37 }}
@@ -127,6 +131,100 @@ class ModalOrderingMode extends Component {
                       </button>
                     </div>
                   )}
+
+                  {props.storeDetail.enableStorePickUp === true && (
+                    <div
+                      className={styles.orderMode}
+                      data-dismiss="modal"
+                      onClick={() => this.props.setOrderingMode("STOREPICKUP")}
+                    >
+                      <h5 className="color" style={{ fontWeight: 1000 }}>
+                        STOREPICKUP
+                      </h5>
+                      <i className="fa fa-shopping-basket color icon-order"></i>
+
+                      {
+                        outlet.orderValidation.stroepickup &&
+                        <div className={styles.validation}>
+                          {outlet.orderValidation.stroepickup.minAmount ||
+                            outlet.orderValidation.stroepickup.maxAmount ? (
+                              <div>
+                                <div>
+                                  <strong>Amount range</strong>
+                                </div>{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.stroepickup.minAmount} to{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.stroepickup.maxAmount}
+                              </div>
+                            ) : null}
+                          {outlet.orderValidation.stroepickup.minQty ||
+                            outlet.orderValidation.stroepickup.maxQty ? (
+                              <div>
+                                <div>
+                                  <strong>Item quantity range</strong>
+                                </div>{" "}
+                                {outlet.orderValidation.stroepickup.minQty} to{" "}
+                                {outlet.orderValidation.stroepickup.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
+                      <button
+                        className="btn btn-block btn-footer"
+                        style={{ marginTop: 37 }}
+                      >
+                        <b>Select</b>
+                      </button>
+                    </div>
+                  )}
+
+                  {props.storeDetail.enableStoreCheckOut === true && (
+                    <div
+                      className={styles.orderMode}
+                      data-dismiss="modal"
+                      onClick={() => this.props.setOrderingMode("STORECHECKOUT")}
+                    >
+                      <h5 className="color" style={{ fontWeight: 1000 }}>
+                        STORECHECKOUT
+                      </h5>
+                      <i className="fa fa-shopping-basket color icon-order"></i>
+                      {
+                        outlet.orderValidation.storecheckout &&
+                        <div className={styles.validation}>
+                          {outlet.orderValidation.storecheckout.minAmount ||
+                            outlet.orderValidation.storecheckout.maxAmount ? (
+                              <div>
+                                <div>
+                                  <strong>Amount range</strong>
+                                </div>{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.storecheckout.minAmount} to{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.storecheckout.maxAmount}
+                              </div>
+                            ) : null}
+                          {outlet.orderValidation.storecheckout.minQty ||
+                            outlet.orderValidation.storecheckout.maxQty ? (
+                              <div>
+                                <div>
+                                  <strong>Item quantity range</strong>
+                                </div>{" "}
+                                {outlet.orderValidation.storecheckout.minQty} to{" "}
+                                {outlet.orderValidation.storecheckout.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
+                      <button
+                        className="btn btn-block btn-footer"
+                        style={{ marginTop: 37 }}
+                      >
+                        <b>Select</b>
+                      </button>
+                    </div>
+                  )}
+
                   {props.storeDetail.enableDelivery === true && (
                     <div
                       className={styles.orderMode}
@@ -137,31 +235,33 @@ class ModalOrderingMode extends Component {
                         DELIVERY
                       </h5>
                       <i className="fa fa-car color icon-order"></i>
-
-                      <div className={styles.validation}>
-                        {outlet.orderValidation.delivery.minAmount ||
-                        outlet.orderValidation.delivery.maxAmount ? (
-                          <div>
-                            <div>
-                              <strong>Amount range</strong>
-                            </div>{" "}
-                            {companyInfo && companyInfo.data.currency.code}{" "}
-                            {outlet.orderValidation.delivery.minAmount} to{" "}
-                            {companyInfo && companyInfo.data.currency.code}{" "}
-                            {outlet.orderValidation.delivery.maxAmount}
-                          </div>
-                        ) : null}
-                        {outlet.orderValidation.delivery.minQty ||
-                        outlet.orderValidation.delivery.maxQty ? (
-                          <div>
-                            <div>
-                              <strong>Item quantity range</strong>
-                            </div>{" "}
-                            {outlet.orderValidation.delivery.minQty} to{" "}
-                            {outlet.orderValidation.delivery.maxQty} items
-                          </div>
-                        ) : null}
-                      </div>
+                      {
+                        outlet.orderValidation.delivery &&
+                        <div className={styles.validation}>
+                          {outlet.orderValidation.delivery.minAmount ||
+                            outlet.orderValidation.delivery.maxAmount ? (
+                              <div>
+                                <div>
+                                  <strong>Amount range</strong>
+                                </div>{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.delivery.minAmount} to{" "}
+                                {companyInfo && companyInfo.data.currency.code}{" "}
+                                {outlet.orderValidation.delivery.maxAmount}
+                              </div>
+                            ) : null}
+                          {outlet.orderValidation.delivery.minQty ||
+                            outlet.orderValidation.delivery.maxQty ? (
+                              <div>
+                                <div>
+                                  <strong>Item quantity range</strong>
+                                </div>{" "}
+                                {outlet.orderValidation.delivery.minQty} to{" "}
+                                {outlet.orderValidation.delivery.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                       <button
                         className="btn btn-block btn-footer"
                         style={{ marginTop: 37 }}

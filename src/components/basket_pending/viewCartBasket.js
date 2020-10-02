@@ -12,7 +12,11 @@ export default class ViewCartBasket extends Component {
     let props = this.props.data
     return ((
       (props.dataBasket.status === "SUBMITTED" &&
-        (props.orderingMode && props.orderingMode === "TAKEAWAY")
+        (props.orderingMode && (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT"
+        ))
       ) ||
       (
         props.dataBasket.status !== "PENDING" &&
@@ -48,7 +52,11 @@ export default class ViewCartBasket extends Component {
       (
         // (this.props.isLoggedIn && props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ||
         (props.dataBasket.status === "SUBMITTED" || props.dataBasket.status === "CONFIRMED") &&
-        (props.orderingMode && props.orderingMode === "TAKEAWAY")
+        (props.orderingMode && (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT"
+        ))
       ) ||
       (
         props.dataBasket.status !== "PENDING" &&
@@ -75,7 +83,12 @@ export default class ViewCartBasket extends Component {
     return ((
       props.settle ||
       (props.orderingMode &&
-        (props.orderingMode === "TAKEAWAY" || props.orderingMode === "DELIVERY")
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        )
       ) ||
       (
         props.orderingMode &&
@@ -95,7 +108,12 @@ export default class ViewCartBasket extends Component {
     let props = this.props.data
     return ((props.settle ||
       (props.orderingMode &&
-        (props.orderingMode === "TAKEAWAY" || props.orderingMode === "DELIVERY")
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        )
       ) ||
       (
         props.orderingMode &&
@@ -115,7 +133,12 @@ export default class ViewCartBasket extends Component {
     let props = this.props.data
     return ((props.settle ||
       (props.orderingMode &&
-        (props.orderingMode === "TAKEAWAY" || props.orderingMode === "DELIVERY")
+        (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        )
       ) ||
       (
         props.orderingMode &&
@@ -227,7 +250,7 @@ export default class ViewCartBasket extends Component {
             } */}
 
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginLeft: 10, marginRight: 10 }}>
-              <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>TOTAL</div>
+              <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>{`${props.dataBasket.payAtPOS ? "Pay At Store" : "TOTAL"}`}</div>
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>
                 {this.props.getCurrency(props.dataBasket.totalNettAmount)}
               </div>

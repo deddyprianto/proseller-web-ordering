@@ -42,7 +42,7 @@ class SettleSuccess extends Component {
     setTimeout(() => {
       try {
         document.getElementById("open-modal-status").click();
-      } catch (error) {}
+      } catch (error) { }
     }, 2500);
   };
 

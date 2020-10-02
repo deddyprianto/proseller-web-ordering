@@ -129,13 +129,13 @@ class Payment extends Component {
   componentWillUnmount = () => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   getPendingOrder = async (cart) => {
     try {
       clearInterval(this.loopCart);
-    } catch (e) {}
+    } catch (e) { }
 
     this.loopCart = setInterval(async () => {
       await this.getCart(cart);
@@ -439,8 +439,11 @@ class Payment extends Component {
   roleBtnClear = () => {
     let props = this.state;
     return (props.dataBasket.status === "SUBMITTED" &&
-      props.orderingMode &&
-      props.orderingMode === "TAKEAWAY") ||
+      props.orderingMode && (
+        props.orderingMode === "TAKEAWAY" ||
+        props.orderingMode === "STOREPICKUP" ||
+        props.orderingMode === "STORECHECKOUT"
+      )) ||
       (props.dataBasket.orderingMode === "DINEIN" &&
         props.dataBasket.outlet.outletType === "QUICKSERVICE") ||
       (props.dataBasket.orderingMode === "DELIVERY" &&
@@ -524,11 +527,10 @@ class Payment extends Component {
 
     if (needPoint > totalPoint) needPoint = totalPoint;
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -641,11 +643,13 @@ class Payment extends Component {
       storeDetail,
       totalPrice,
       scanTable,
+      orderActionDate,
+      orderActionTime
     } = this.state;
 
     let payload = {};
 
-    if (totalPrice != 0) {
+    if (totalPrice != 0 && !payAtPOS) {
       let paymentPayload = {
         accountId: selectedCard.accountID,
       };
@@ -690,13 +694,13 @@ class Payment extends Component {
       payload.deliveryFee = this.props.deliveryProvider.deliveryFeeFloat;
     }
 
-    if (selectedVoucher !== null && !payAtPOS) {
+    if (selectedVoucher !== null) {
       payload.statusAdd = "addVoucher";
       payload.voucherId = selectedVoucher.voucherId || selectedVoucher.id;
       payload.voucherSerialNumber =
         selectedVoucher.voucherSerialNumber || selectedVoucher.serialNumber;
       payload.price = totalPrice;
-    } else if (selectedPoint > 0 && !payAtPOS) {
+    } else if (selectedPoint > 0) {
       payload.statusAdd = "addPoint";
       payload.redeemValue = selectedPoint;
       payload.price = dataBasket.totalNettAmount;
@@ -711,7 +715,7 @@ class Payment extends Component {
           JSON.parse(localStorage.getItem(`${config.prefix}_scanTable`))
         );
         payload.tableNo = tableNo.table;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     payload.partitionKey = this.props.basket.partitionKey;
@@ -721,9 +725,13 @@ class Payment extends Component {
     let response;
     if (
       orderingMode === "TAKEAWAY" ||
+      orderingMode === "STOREPICKUP" ||
+      orderingMode === "STORECHECKOUT" ||
       orderingMode === "DELIVERY" ||
       storeDetail.outletType === "QUICKSERVICE"
     ) {
+      payload.orderActionDate = orderActionDate
+      payload.orderActionTime = orderActionTime
       response = await this.props.dispatch(OrderAction.submitTakeAway(payload));
     } else {
       response = await this.props.dispatch(OrderAction.submitSettle(payload));
@@ -736,7 +744,7 @@ class Payment extends Component {
         response.message || response.data.message || "Payment Failed!",
         "error"
       );
-    } else if (!payAtPOS) {
+    } else {
       // if need further actions
       if (response.data.action != undefined) {
         if (response.data.action.type === "url") {
@@ -747,6 +755,10 @@ class Payment extends Component {
           `${config.prefix}_settleSuccess`,
           JSON.stringify(encryptor.encrypt(response.data))
         );
+        localStorage.setItem(
+          `${config.prefix}_paymentSuccess`,
+          JSON.stringify(encryptor.encrypt(this.state))
+        );
         localStorage.removeItem(`${config.prefix}_selectedPoint`);
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
@@ -755,14 +767,15 @@ class Payment extends Component {
         this.props.history.push("/settleSuccess");
         // this.setState({ isLoading: false });
       }
-    } else {
-      await this.setState({
-        isLoading: false,
-        isLoadingPOS: true,
-        cartDetails: response.data,
-      });
-      this.getPendingOrder(response.data);
     }
+    // else {
+    //   await this.setState({
+    //     isLoading: false,
+    //     isLoadingPOS: true,
+    //     cartDetails: response.data,
+    //   });
+    //   this.getPendingOrder(response.data);
+    // }
   };
 
   togglePlay = () => {
@@ -873,10 +886,10 @@ class Payment extends Component {
                       </Button>
                     </div>
                   ) : (
-                    <div style={{ textAlign: "center" }}>
-                      No Pending Payment
-                    </div>
-                  )}
+                      <div style={{ textAlign: "center" }}>
+                        No Pending Payment
+                      </div>
+                    )}
                 </div>
               </main>
             </div>
@@ -1049,11 +1062,11 @@ class Payment extends Component {
                         {isEmptyObject(selectedCard)
                           ? `Pay ${this.getCurrency(totalPrice + deliveryFee)}`
                           : `Pay ${this.getCurrency(
-                              totalPrice + deliveryFee
-                            )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
-                              selectedCard.details.maskedAccountNumber.toString()
-                                .length - 4
-                            )}`}
+                            totalPrice + deliveryFee
+                          )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
+                            selectedCard.details.maskedAccountNumber.toString()
+                              .length - 4
+                          )}`}
                       </Button>
                     </div>
 
@@ -1081,7 +1094,7 @@ class Payment extends Component {
                               marginRight: 10,
                               height: 40,
                             }}
-                          >{`Pay at POS`}</Button>
+                          >{`Pay at Store`}</Button>
                         </div>
                       </div>
                     )}

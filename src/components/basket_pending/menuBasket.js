@@ -6,6 +6,7 @@ import OrderingMode from './orderingMode';
 import TaxAmount from './taxAmount';
 import TotalSurchargeAmount from './TotalSurchargeAmount';
 import DeliveryAddressBasket from './deliveryAddressBasket';
+import PickupDateTime from "./pickupDateTime";
 import ProviderDeliveryBasket from './providerDeliveryBasket';
 import { Button } from 'reactstrap';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
@@ -76,6 +77,26 @@ export default class MenuBasket extends Component {
             }
           </div>
         }
+
+        {props.orderingMode && (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "DELIVERY"
+        ) && (
+            <div>
+              {
+                <PickupDateTime
+                  data={props}
+                  roleBtnClear={this.props.roleBtnClear}
+                  handleOpenLogin={() => this.props.handleOpenLogin()}
+                  isLoggedIn={this.props.isLoggedIn}
+                  handleSetState={(field, value) =>
+                    this.props.handleSetState(field, value)
+                  }
+                />
+              }
+            </div>
+          )}
 
         {
           props.widthSelected >= 1200 &&

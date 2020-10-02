@@ -6,6 +6,7 @@ import StatusOrder from "./statusOrder";
 import OrderingMode from "./orderingMode";
 import TaxAmount from "./taxAmount";
 import TotalSurchargeAmount from "./TotalSurchargeAmount";
+import PickupDateTime from "./pickupDateTime";
 import DeliveryAddressBasket from "./deliveryAddressBasket";
 import ProviderDeliveryBasket from "./providerDeliveryBasket";
 import { Button } from "reactstrap";
@@ -98,6 +99,26 @@ class MenuBasket extends Component {
           </div>
         )}
 
+        {props.orderingMode && (
+          props.orderingMode === "TAKEAWAY" ||
+          props.orderingMode === "STOREPICKUP" ||
+          props.orderingMode === "STORECHECKOUT" ||
+          props.orderingMode === "DELIVERY"
+        ) && (
+            <div>
+              {
+                <PickupDateTime
+                  data={props}
+                  roleBtnClear={this.props.roleBtnClear}
+                  isLoggedIn={this.props.isLoggedIn}
+                  handleSetState={(field, value) =>
+                    this.props.handleSetState(field, value)
+                  }
+                />
+              }
+            </div>
+          )}
+
         {props.widthSelected >= 1200 && (
           <div
             style={{
@@ -176,78 +197,78 @@ class MenuBasket extends Component {
             </div>
 
             {props.dataBasket.status === "PROCESSING" ||
-            props.dataBasket.status === "READY_FOR_COLLECTION" ||
-            props.dataBasket.status === "READY_FOR_DELIVERY" ||
-            props.dataBasket.status === "ON_THE_WAY" ? (
-              <div
-                style={{
-                  padding: 10,
-                  backgroundColor: "#FFF",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Button
+              props.dataBasket.status === "READY_FOR_COLLECTION" ||
+              props.dataBasket.status === "READY_FOR_DELIVERY" ||
+              props.dataBasket.status === "ON_THE_WAY" ? (
+                <div
                   style={{
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                    width: "100%",
-                    backgroundColor: "green",
-                    color: "#FFF",
-                    fontWeight: "bold",
+                    padding: 10,
+                    backgroundColor: "#FFF",
                     display: "flex",
-                    justifyContent: "center",
+                    flexDirection: "row",
                     alignItems: "center",
+                    justifyContent: "space-between",
                   }}
-                  onClick={() => this.props.setViewCart(false)}
                 >
-                  <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
+                  <Button
+                    style={{
+                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                      width: "100%",
+                      backgroundColor: "green",
+                      color: "#FFF",
+                      fontWeight: "bold",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onClick={() => this.props.setViewCart(false)}
+                  >
+                    <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
                   Waiting Order
                 </Button>
-              </div>
-            ) : (
-              <div
-                style={{
-                  padding: 10,
-                  backgroundColor: "#FFF",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Button
-                  className="profile-dashboard"
-                  disabled={this.props.roleBtnSettle}
-                  onClick={() => {
-                    this.props.roleTitleSettle
-                      ? this.props.handleSettle()
-                      : this.props.handleSubmit();
-                  }}
+                </div>
+              ) : (
+                <div
                   style={{
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                    width: "100%",
+                    padding: 10,
+                    backgroundColor: "#FFF",
                     display: "flex",
-                    color: "#FFF",
-                    fontWeight: "bold",
+                    flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
-                    height: 40,
+                    justifyContent: "space-between",
                   }}
                 >
-                  {" "}
-                  {this.props.roleIconSettle ? (
-                    <MonetizationOnIcon
-                      style={{ fontSize: 20, marginRight: 5 }}
-                    />
-                  ) : (
-                    <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  )}
-                  {this.props.roleTitleSettle ? "Confirm & Pay" : "Submit"}
-                </Button>
-              </div>
-            )}
+                  <Button
+                    className="profile-dashboard"
+                    disabled={this.props.btnSattleStatusDisable}
+                    onClick={() => {
+                      this.props.roleTitleSettle
+                        ? this.props.handleSettle()
+                        : this.props.handleSubmit();
+                    }}
+                    style={{
+                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                      width: "100%",
+                      display: "flex",
+                      color: "#FFF",
+                      fontWeight: "bold",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 40,
+                    }}
+                  >
+                    {" "}
+                    {this.props.roleIconSettle ? (
+                      <MonetizationOnIcon
+                        style={{ fontSize: 20, marginRight: 5 }}
+                      />
+                    ) : (
+                        <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
+                      )}
+                    {this.props.roleTitleSettle ? "Confirm & Pay" : "Submit"}
+                  </Button>
+                </div>
+              )}
           </div>
         )}
       </div>

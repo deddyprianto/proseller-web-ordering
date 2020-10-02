@@ -64,6 +64,10 @@ class Basket extends Component {
       deliveryProvaider: [],
       dataCVV: "",
       isEmenu: window.location.pathname.includes("emenu"),
+      orderActionDate: moment().format("YYYY-MM-DD"),
+      orderActionTime: moment().format("HH") + ":00",
+      checkOperationalHours: {},
+      orderingTime: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -108,7 +112,7 @@ class Basket extends Component {
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) {}
+      } catch (error) { }
     }, 0);
     this.getDataBasket();
   };
@@ -163,7 +167,7 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
@@ -303,14 +307,20 @@ class Basket extends Component {
         this.setState({ provaiderDelivery });
       }
 
+      let checkOperationalHours = this.checkOperationalHours(storeDetail)
       this.setState({
         dataBasket,
         storeDetail,
         scanTable,
         totalPrice,
-        btnBasketOrder: !this.checkOperationalHours(storeDetail).status,
+        checkOperationalHours,
+        btnBasketOrder: checkOperationalHours.status,
         countryCode: infoCompany.countryCode,
       });
+
+      // check validate pick date time
+      let check = this.state.orderActionDate === moment().format("YYYY-MM-DD")
+      await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
 
       if (
         deliveryProvaider &&
@@ -359,6 +369,26 @@ class Basket extends Component {
       deliveryAddress,
     });
   };
+
+
+  checkPickUpDateTime = (checkOperationalHours, date, check) => {
+    let from = parseInt(moment(checkOperationalHours.beforeTime).format("HH"))
+    let to = parseInt(moment(checkOperationalHours.afterTime).format("HH"))
+
+    if (check) from = parseInt(moment().add(1, 'hours').format("HH"))
+
+    let orderingTime = []
+    for (let index = from; index <= to; index++) {
+      let time = index.toString().length === 1 ? `0${index}:00` : `${index}:00`
+      orderingTime.push(time)
+    }
+    this.setState({ orderingTime })
+    if (!checkOperationalHours.status) {
+      let orderActionTime = moment(checkOperationalHours.beforeTime).format('HH') + ":00";
+      let orderActionDate = moment(date).add(1, 'd').format("YYYY-MM-DD")
+      this.setState({ orderActionTime, orderActionDate })
+    }
+  }
 
   componentDidUpdate() {
     if (
@@ -489,7 +519,7 @@ class Basket extends Component {
     if (status) {
       let lastOrderOn = storeDetail.lastOrderOn ? storeDetail.lastOrderOn : 0;
       status = moment(moment().format("HH:mm"), "HH:mm");
-      beforeTime = moment(operationalHours.close, "HH:mm");
+      beforeTime = moment(operationalHours.open, "HH:mm");
       afterTime = moment(operationalHours.close, "HH:mm").subtract(
         lastOrderOn,
         "minutes"
@@ -655,11 +685,10 @@ class Basket extends Component {
       selectedPoint = 0;
     }
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -987,6 +1016,9 @@ class Basket extends Component {
       );
       // await this.getDataBasket();
       window.location.reload();
+    } else if (field === "orderActionDate") {
+      let check = value === moment().format("YYYY-MM-DD")
+      await this.checkPickUpDateTime(this.state.checkOperationalHours, value, check)
     }
   };
 
