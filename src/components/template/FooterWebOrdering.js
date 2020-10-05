@@ -10,6 +10,7 @@ class Footer extends Component {
       loadingShow: true,
       isLoading: false,
       dataBasket: null,
+      enableOrdering: true
     };
   }
 
@@ -20,6 +21,15 @@ class Footer extends Component {
       this.activeRoute({ path: url })
       this.setState({ dataBasket: basket })
     }, 2000);
+  }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (this.props !== prevProps) {
+      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
+      if (enableOrdering) {
+        this.setState({ enableOrdering: enableOrdering.settingValue });
+      }
+    }
   }
 
   activeRoute = (route) => {
@@ -47,19 +57,23 @@ class Footer extends Component {
   }
   render() {
     let { isLoggedIn } = this.props
+    let { enableOrdering } = this.state
     return (
       <div>
         <div className="pizzaro-handheld-footer-bar" style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#FFF" }}>
-          <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            <i className={`fa fa-th ${this.activeRoute({ path: "/", name: "Home" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
-            <div className={`${this.activeRoute({ path: "/", name: "Home" })}`} style={{ marginTop: -22, fontSize: 12 }}>Menu</div>
-          </Link>
+          {
+            enableOrdering &&
+            <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+              <i className={`fa fa-th ${this.activeRoute({ path: "/", name: "Home" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
+              <div className={`${this.activeRoute({ path: "/", name: "Home" })}`} style={{ marginTop: -22, fontSize: 12 }}>Menu</div>
+            </Link>
+          }
           <Link onClick={() => this.removeDataPayment(true)} to="/history" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             <i className={`fa fa-history ${this.activeRoute({ path: "/history", name: "History" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
             <div className={`${this.activeRoute({ path: "/history", name: "History" })}`} style={{ marginTop: -22, fontSize: 12 }}>History</div>
           </Link>
           {
-            isLoggedIn &&
+            (isLoggedIn || !enableOrdering) &&
             <Link onClick={() => this.removeDataPayment()} to="/profile" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
               <i className={`fa fa-user ${this.activeRoute({ path: "/profile", name: "Profile" })}`} aria-hidden=" true" style={{ fontSize: 22, margin: 15 }}></i>
               <div className={`${this.activeRoute({ path: "/profile", name: "Profile" })}`} style={{ marginTop: -22, fontSize: 12 }}>Profile</div>
@@ -76,6 +90,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     account: state,
     basket: state.order.basket,
+    setting: state.order.setting,
   };
 };
 const mapDispatchToProps = (dispatch) => {

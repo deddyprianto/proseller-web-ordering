@@ -6,20 +6,22 @@ import cx from "classnames";
 
 import styles from "./styles.module.css";
 
-const Portal = ({
-  initialMethod,
+let Portal = ({
+  method,
   handleMethodChange,
   handlePhoneCheck,
   handleEmailCheck,
   handleChange,
   error,
+  loginByEmail,
+  loginByMobile,
+  enableOrdering
 }) => {
-  const [method, setMethod] = useState(initialMethod);
-  const initialCountry = "SG";
-  const [phoneCountryCode, setPhoneCountryCode] = useState("+65");
-  const [value, setValue] = useState("");
-
-  const handleValueChange = (e) => {
+  // let [method, setMethod] = useState(initialMethod);
+  let initialCountry = "SG";
+  let [phoneCountryCode, setPhoneCountryCode] = useState("+65");
+  let [value, setValue] = useState("");
+  let handleValueChange = (e) => {
     setValue(e.target.value);
   };
 
@@ -32,7 +34,6 @@ const Portal = ({
 
   useEffect(() => {
     setValue("");
-    handleMethodChange(method);
   }, [method]);
 
   return (
@@ -46,6 +47,7 @@ const Portal = ({
           className="close"
           data-dismiss="modal"
           aria-label="Close"
+          disabled={!enableOrdering}
           style={{
             position: "absolute",
             right: 10,
@@ -60,9 +62,8 @@ const Portal = ({
       <div className="modal-body">
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
           <label for="email">
-            {`Enter your ${
-              method === "phone" ? "Mobile Number" : "Email Address"
-            } `}
+            {`Enter your ${method === "phone" ? "Mobile Number" : "Email Address"
+              } `}
             <span className="required">*</span>
           </label>
           <div className={styles.fieldGroup}>
@@ -93,16 +94,16 @@ const Portal = ({
                 onChange={handleValueChange}
               ></Input>
             ) : (
-              <input
-                type="email"
-                value={value}
-                className={cx(
-                  "woocommerce-Input woocommerce-Input--text input-text",
-                  styles.emailField
-                )}
-                onChange={handleValueChange}
-              ></input>
-            )}
+                <input
+                  type="email"
+                  value={value}
+                  className={cx(
+                    "woocommerce-Input woocommerce-Input--text input-text",
+                    styles.emailField
+                  )}
+                  onChange={handleValueChange}
+                ></input>
+              )}
           </div>
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
@@ -112,13 +113,16 @@ const Portal = ({
         >
           Next
         </Button>
-        <div
-          className={cx("modal-title", styles.switchMethodButton)}
-          onClick={() => setMethod(method === "phone" ? "email" : "phone")}
-        >
-          Use {method !== "phone" ? "Mobile Number" : "Email Address"} to Sign
-          In / Sign Up
-        </div>
+        {
+          (method === 'email' && loginByMobile || method === 'phone' && loginByEmail) &&
+          <div
+            className={cx("modal-title", styles.switchMethodButton)}
+            onClick={() => handleMethodChange(method === "phone" ? "email" : "phone")}
+          >
+            Use {method !== "phone" ? "Mobile Number" : "Email Address"} to Sign
+            In / Sign Up
+          </div>
+        }
       </div>
     </div>
   );

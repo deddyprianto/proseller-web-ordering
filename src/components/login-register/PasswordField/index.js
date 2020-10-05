@@ -16,6 +16,7 @@ const PasswordField = ({ handleChange, error }) => {
           className="woocommerce-Input woocommerce-Input--text input-text"
           name="password"
           id="password"
+          style={{ borderRadius: 5 }}
           onChange={(e) => handleChange("password", e.target.value)}
         />
         <div className={styles.showHideIcon}>

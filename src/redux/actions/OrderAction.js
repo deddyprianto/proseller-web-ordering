@@ -35,6 +35,7 @@ export const OrderAction = {
   changeOrderingMode,
   buildCart,
   getTheme,
+  getSettingOrdering,
 };
 
 function shareURL(tableNo, outletID, orderMode) {
@@ -74,6 +75,52 @@ function getTheme() {
           ? data.theme.color
           : { primary: data.theme.color, secondary: data.theme.color },
       });
+  };
+}
+
+function getSettingOrdering() {
+  return async (dispatch) => {
+    let defaultSetting = {
+      settings: [
+        {
+          settingKey: "LoginByEmail",
+          settingValue: true
+        },
+        {
+          settingKey: "LoginByMobile",
+          settingValue: true
+        },
+        {
+          settingKey: "EnableSMSOTP",
+          settingValue: false
+        },
+        {
+          settingKey: "EnableWhatsappOTP",
+          settingValue: true
+        },
+        {
+          settingKey: "EnableRegisterWithPassword",
+          settingValue: false
+        },
+        {
+          settingKey: "EnableOrdering",
+          settingValue: false
+        }
+      ]
+    }
+    let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
+    let response = await OrderingService.api("GET", null, `orderingsetting/${appType}`);
+    if (!response.data) response.data = defaultSetting
+    if (response.data && !response.data.settings) response.data.settings = defaultSetting.settings
+    if (response.data && response.data.settings) {
+      defaultSetting.settings.forEach(settings => {
+        let check = response.data.settings.find(items => { return items.settingKey === settings.settingKey })
+        if (!check) response.data.settings.push(settings)
+      });
+    }
+    console.log(response)
+    if (!response.data || response.data && !response.data.settings) return await dispatch(setData([], 'DATA_SETTING_ORDERING'));
+    return await dispatch(setData(response.data.settings, 'DATA_SETTING_ORDERING'));
   };
 }
 
@@ -275,7 +322,7 @@ function processOfflineCart(payload, mode) {
         }
       }
     };
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function addCart(payload) {
@@ -289,7 +336,7 @@ function addCart(payload) {
 
     try {
       document.getElementById("close-modal").click();
-    } catch (e) {}
+    } catch (e) { }
 
     // console.log(response)
     if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -304,7 +351,7 @@ function buildCart(payload = {}) {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
         (window.location.pathname.includes("emenu") ? "DINEIN" : "DELIVERY");
-    } catch (error) {}
+    } catch (error) { }
     const response = await OrderingService.api(
       "POST",
       payload,
@@ -314,7 +361,7 @@ function buildCart(payload = {}) {
 
     try {
       document.getElementById("close-modal").click();
-    } catch (e) {}
+    } catch (e) { }
 
     console.log(response);
     if (response.ResultCode >= 400 || response.resultCode >= 400) {

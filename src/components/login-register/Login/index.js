@@ -19,6 +19,9 @@ const Login = ({
   otpTimer,
   isSubmitting,
   enablePassword,
+  enableSMSOTP,
+  enableWhatsappOTP,
+  enableOrdering
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
   return (
@@ -39,6 +42,7 @@ const Login = ({
         </h5>
         <button
           type="button"
+          disabled={!enableOrdering}
           className={cx("close", styles.closeButton)}
           data-dismiss="modal"
           aria-label="Close"
@@ -48,36 +52,22 @@ const Login = ({
       </div>
       <div className="modal-body">
         <p className="text-muted">{`Sign in to ${username}`}</p>
-        {/* <div style={{ flexDirection: "row", marginBottom: 20 }}>
-          <Button
-            className={otp ? "use-select" : "un-select"}
-            style={{ height: 50 }}
-            onClick={() => setOtp(true)}
-          >
-            Use Email OTP
-          </Button>
-          <Button
-            className={!otp ? "use-select" : "un-select"}
-            style={{ height: 50 }}
-            onClick={() => setOtp(false)}
-          >
-            Use Password
-          </Button>
-        </div> */}
         {enablePassword ? (
           <PasswordField handleChange={handleChange}></PasswordField>
         ) : (
-          <OtpField
-            method={method}
-            sendEmailOtp={sendOtpToEmail}
-            sendPhoneOtp={sendOtpToPhone}
-            handleChange={handleChange}
-            sendCounter={sendCounter}
-            counterMinutes={counterMinutes}
-            counter={counter}
-            isSending={isSending}
-          ></OtpField>
-        )}
+            <OtpField
+              method={method}
+              sendEmailOtp={sendOtpToEmail}
+              sendPhoneOtp={sendOtpToPhone}
+              handleChange={handleChange}
+              sendCounter={sendCounter}
+              counterMinutes={counterMinutes}
+              counter={counter}
+              isSending={isSending}
+              enableSMSOTP={enableSMSOTP}
+              enableWhatsappOTP={enableWhatsappOTP}
+            ></OtpField>
+          )}
         <Button
           disabled={isSubmitting}
           className="button"

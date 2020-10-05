@@ -11,9 +11,85 @@ const OtpField = ({
   sendCounter,
   counterMinutes,
   counter,
+  enableSMSOTP,
+  enableWhatsappOTP
 }) => {
   return (
     <div>
+
+      {
+        !enableSMSOTP && method === "email" &&
+        <Button
+          disabled={isSending}
+          className="button"
+          style={{
+            width: "100%",
+            fontSize: 12,
+            paddingLeft: 5,
+            paddingRight: 5,
+            height: 40,
+            borderRadius: 5
+          }}
+          onClick={() =>
+            method === "phone" ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
+          }
+        >
+          {sendCounter <= 2 ? `${sendCounter >= 1 ? "Resend" : "Send"} OTP ${method === 'phone' && 'via SMS'}` : "Get OTP via Email"}
+        </Button>
+      }
+
+      {
+        enableSMSOTP &&
+        <Button
+          disabled={isSending}
+          className="button"
+          style={{
+            width: "100%",
+            fontSize: 12,
+            paddingLeft: 5,
+            paddingRight: 5,
+            height: 40,
+            borderRadius: 5
+          }}
+          onClick={() =>
+            method === "phone" ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
+          }
+        >
+          {sendCounter <= 2 ? `${sendCounter >= 1 ? "Resend" : "Send"} OTP ${method === 'phone' && 'via SMS'}` : "Get OTP via Email"}
+        </Button>
+      }
+
+      {
+        enableWhatsappOTP && (
+          enableSMSOTP && sendCounter <= 2 ||
+          !enableSMSOTP
+        ) && method === "phone" &&
+        <Button
+          disabled={isSending}
+          className="button"
+          style={{
+            width: "100%",
+            fontSize: 12,
+            paddingLeft: 5,
+            paddingRight: 5,
+            height: 40,
+            borderRadius: 5,
+            backgroundColor: "#12950A",
+            marginTop: 10
+          }}
+          onClick={() =>
+            method === "phone" ? sendPhoneOtp('WhatsappOTP') : sendEmailOtp()
+          }
+        >
+          {sendCounter <= 2 ? `${sendCounter >= 1 ? "Resend" : "Send"} OTP ${method === 'phone' && 'via WhatsApp'}` : "Get OTP via Email"}
+        </Button>
+      }
+      {isSending &&
+        <div
+          className="text-muted"
+          style={{ fontSize: 12, marginTop: 5, textAlign: "center" }}
+        >{`Resend after ${counterMinutes}:${counter}`}</div>
+      }
       <label for="txtOtp">
         Enter 4 digit OTP <span className="required">*</span>
       </label>
@@ -21,10 +97,10 @@ const OtpField = ({
         <input
           type="password"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          style={{ height: 50, width: "40%" }}
+          style={{ height: 50, width: "100%", borderRadius: 5, textAlign: "center" }}
           onChange={(e) => handleChange("txtOtp", e.target.value)}
         />
-        <div style={{ width: "57%" }}>
+        {/* <div style={{ width: "57%" }}>
           <Button
             disabled={isSending}
             className="button"
@@ -47,7 +123,7 @@ const OtpField = ({
               style={{ fontSize: 10, marginTop: 3, marginLeft: 10 }}
             >{`Resend after ${counterMinutes}:${counter}`}</span>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

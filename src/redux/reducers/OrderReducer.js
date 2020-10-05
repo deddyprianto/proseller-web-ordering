@@ -8,6 +8,7 @@ const defaultState = {
   basket: {},
   productsSearch: undefined,
   deliveryProviders: null,
+  setting: [],
   selectedDeliveryProvider:
     encryptor.decrypt(lsLoad(`${config.prefix}_deliveryProvider`, true)) ||
     null,
@@ -46,6 +47,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         deliveryAddress: action.payload,
+      };
+    case "DATA_SETTING_ORDERING":
+      return {
+        ...state,
+        setting: action.data,
       };
     default:
       return state;

@@ -55,9 +55,8 @@ class ModalDetailVoucher extends Component {
   }
 
   render() {
-    const { dataDetail } = this.props
+    const { dataDetail, getCurrency } = this.props
     let { isLoading } = this.state
-    console.log(isLoading)
     return (
       <div>
         <div className="modal fade" id="voucher-detail-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -83,7 +82,7 @@ class ModalDetailVoucher extends Component {
                       {dataDetail.voucherDesc}
                     </div>
                     <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {`Discount ${dataDetail.voucherType === "discPercentage" ? dataDetail.voucherValue + "%" : "$" + dataDetail.voucherValue}`}
+                      {`Discount ${dataDetail.voucherType === "discPercentage" ? dataDetail.voucherValue + "%" : getCurrency(dataDetail.voucherValue)}`}
                     </div>
                   </div>
 

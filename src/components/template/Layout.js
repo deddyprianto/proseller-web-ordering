@@ -43,6 +43,7 @@ class Layout extends Component {
     super(props);
     this.state = {
       isEmenu: window.location.pathname.includes("emenu"),
+      enableOrdering: true
     };
   }
 
@@ -57,13 +58,12 @@ class Layout extends Component {
     );
 
     if (infoCompany) {
-      document.title = `${isEmenu ? "E-Menu" : "Web Ordering"} - ${
-        infoCompany.companyName
-      }`;
+      document.title = `${isEmenu ? "E-Menu" : "Web Ordering"} - ${infoCompany.companyName
+        }`;
       try {
         document.getElementById("icon-theme").href =
           infoCompany.imageURL || config.url_logo;
-      } catch (error) {}
+      } catch (error) { }
     }
 
     // Refresh Token
@@ -83,19 +83,36 @@ class Layout extends Component {
     }
   };
 
+  componentDidUpdate = (prevProps, prevState) => {
+    if (this.props !== prevProps) {
+      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
+      if (enableOrdering) {
+        this.setState({ enableOrdering: enableOrdering.settingValue });
+      }
+    }
+  }
+
   render() {
     const { isLoggedIn } = this.props;
-    const { isEmenu } = this.state;
+    const { isEmenu, enableOrdering } = this.state;
     // console.log("mode emenu", isEmenu);
     return (
       <div id="page" className="hfeed site">
         {isEmenu ? <HeaderEmenu /> : <HeaderWebOrdering />}
         <div id="content" className="site-content">
           <Switch>
-            <Route exact path={"/"} component={Home} />
-            {isLoggedIn && (
+            {
+              enableOrdering &&
+              <Route exact path={"/"} component={Home} />
+            }
+            {
+              enableOrdering &&
+              <Route exact path={"/basket"} component={Basket} />
+            }
+            {
+              (isLoggedIn || !enableOrdering) &&
               <Route exact path={"/profile"} component={Profile} />
-            )}
+            }
             {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
             {isLoggedIn && (
               <Route exact path={"/voucher"} component={Voucher} />
@@ -130,9 +147,8 @@ class Layout extends Component {
             )}
             <Route exact path={"/history"} component={History} />
             <Route exact path={"/payment"} component={Payment} />
-            <Route exact path={"/basket"} component={Basket} />
             <Route exact path={"/404"} component={PageNotFound} />
-            <Redirect from="*" to="/" />
+            <Redirect from="*" to={!enableOrdering ? '/profile' : '/'} />
           </Switch>
           <div style={{ clear: "both" }}></div>
         </div>
@@ -145,6 +161,7 @@ class Layout extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
+    setting: state.order.setting,
   };
 };
 

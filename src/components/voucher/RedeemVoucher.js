@@ -39,12 +39,26 @@ class RedeemVoucher extends Component {
       </Shimmer>
     )
   }
+  getCurrency = (price) => {
+    if (this.props.companyInfo) {
+      if (price != undefined) {
+        const { currency } = this.props.companyInfo;
+        if (!price || price === "-") price = 0;
+        let result = price.toLocaleString(currency.locale, {
+          style: "currency",
+          currency: currency.code,
+        });
+        return result;
+      }
+    }
+    return price;
+  };
 
   render() {
     let { loadingShow, redeemVoucher, dataDetail } = this.state
     return (
       <div>
-        <ModalDetailVoucher dataDetail={dataDetail} />
+        <ModalDetailVoucher dataDetail={dataDetail} getCurrency={(price) => this.getCurrency(price)} />
         {
           loadingShow &&
           <Row>
@@ -67,14 +81,17 @@ class RedeemVoucher extends Component {
                     width: "100%", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer", display: "flex", borderRadius: 10
                   }} onClick={() => this.setState({ dataDetail: item })} data-toggle="modal" data-target="#voucher-detail-modal">
-                    <div className="profile-dashboard" style={{
-                      position: "absolute", width: 100,
-                      paddingLeft: 5, paddingRight: 5,
-                      color: "white", fontSize: 12, bottom: 10,
-                      borderTopLeftRadius: 5, right: 15,
-                      borderBottomLeftRadius: 5, fontWeight: "bold",
-                      textAlign: "left"
-                    }}>{item.redeemValue + " Points"}</div>
+                    {
+                      item.redeemValue &&
+                      <div className="profile-dashboard" style={{
+                        position: "absolute", width: 100,
+                        paddingLeft: 5, paddingRight: 5,
+                        color: "white", fontSize: 12, bottom: 10,
+                        borderTopLeftRadius: 5, right: 15,
+                        borderBottomLeftRadius: 5, fontWeight: "bold",
+                        textAlign: "left"
+                      }}>{item.redeemValue + " Points"}</div>
+                    }
 
                     <img style={{ width: '50%', height: 100, objectFit: "contain", overflow: 'hidden' }}
                       src={item.image ? item.image : voucherIcon} alt="voucher" />
@@ -87,7 +104,7 @@ class RedeemVoucher extends Component {
                         {item.voucherDesc}
                       </div>
                       <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold" }}>
-                        {`Discount ${item.voucherType === "discPercentage" ? item.voucherValue + "%" : "$" + item.voucherValue}`}
+                        {`Discount ${item.voucherType === "discPercentage" ? item.voucherValue + "%" : this.getCurrency(item.voucherValue)}`}
                       </div>
                     </div>
 
@@ -115,6 +132,7 @@ class RedeemVoucher extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 

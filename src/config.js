@@ -2,7 +2,7 @@ import logo from "./assets/images/logo_placeholder.png";
 let config = {};
 
 let stage = "demo";
-let companyHost = "ustars";
+let companyHost = "magmarvel";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""
   }.proseller.io`;
 

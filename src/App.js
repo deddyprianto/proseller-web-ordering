@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import loadable from "@loadable/component";
 import moment from "moment";
 import { connect } from "react-redux";
@@ -53,7 +53,10 @@ const App = (props) => {
     deliveryAddress,
     dispatch,
     companyInfo,
+    setting
   } = props;
+
+  const [enableOrdering, setEnableOrdering] = useState(false)
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -140,7 +143,7 @@ const App = (props) => {
 
     let url = window.location.hash.split("#")[1];
     if (url !== "/") {
-      if (!param && props.defaultOutlet) {
+      if (!param && props.defaultOutlet && enableOrdering) {
         console.log("I'm not from home");
 
         let defaultOutlet = !_.isEmpty(props.defaultOutlet)
@@ -218,10 +221,17 @@ const App = (props) => {
     if (deliveryAddress) {
       refreshDeliveryProvider();
     }
-  }, [deliveryAddress, deliveryProviders]);
+    if (setting) {
+      let enableOrdering = setting.find(items => { return items.settingKey === "EnableOrdering" })
+      if (enableOrdering) {
+        setEnableOrdering(enableOrdering.settingValue)
+      }
+    }
+  }, [deliveryAddress, deliveryProviders, setting]);
 
   useEffect(() => {
     props.dispatch(OrderAction.getTheme());
+    props.dispatch(OrderAction.getSettingOrdering());
     refreshDeliveryProvider();
     checkUser();
   }, []);
@@ -248,6 +258,7 @@ const mapStateToProps = (state, ownProps) => {
     deliveryAddress: state.order.deliveryAddress,
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo,
+    setting: state.order.setting,
   };
 };
 

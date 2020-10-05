@@ -58,28 +58,16 @@ class LoginRegister extends Component {
       enableRegisterWithPassword: false,
       errorPassword: "",
       signUpSuccess: false,
+
+      loginByMobile: false,
+      loginByEmail: false,
+      enableSMSOTP: false,
+      enableWhatsappOTP: false,
+      enableOrdering: false
     };
   }
 
   componentDidMount = async () => {
-    let infoCompany = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
-    );
-    if (!infoCompany) {
-      let time = setInterval(async () => {
-        infoCompany = await encryptor.decrypt(
-          JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
-        );
-        if (infoCompany) clearInterval(time);
-      }, 0);
-    }
-
-    if (infoCompany && infoCompany.enableRegisterWithPassword) {
-      this.setState({
-        enableRegisterWithPassword: infoCompany.enableRegisterWithPassword,
-      });
-    }
-
     const otpData = lsLoad(config.prefix + "_otp") || null;
     if (otpData) {
       const waitTime = this.state.method === "phone" ? 60 : 300;
@@ -127,18 +115,35 @@ class LoginRegister extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props !== prevProps) {
-      if (
-        !this.props.fetchingCompanyInfo &&
-        !this.props.companyInfoError &&
-        this.props.companyInfo
-      ) {
-        this.setState({
-          enableRegisterWithPassword: this.props.companyInfo
-            .enableRegisterWithPassword,
-          otp: false,
-        });
+      let enableRegisterWithPassword = this.props.setting.find(items => { return items.settingKey === "EnableRegisterWithPassword" })
+      let loginByEmail = this.props.setting.find(items => { return items.settingKey === "LoginByEmail" })
+      let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
+      let enableSMSOTP = this.props.setting.find(items => { return items.settingKey === "EnableSMSOTP" })
+      let enableWhatsappOTP = this.props.setting.find(items => { return items.settingKey === "EnableWhatsappOTP" })
+      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
+      if (enableRegisterWithPassword) {
+        this.setState({ enableRegisterWithPassword: enableRegisterWithPassword.settingValue });
+      }
+      if (loginByEmail) {
+        this.setState({ loginByEmail: loginByEmail.settingValue });
+      }
+      if (loginByMobile) {
+        this.setState({ loginByMobile: loginByMobile.settingValue });
+      }
+      if (loginByEmail && loginByEmail.settingValue && loginByMobile && !loginByMobile.settingValue) {
+        this.setState({ method: 'email' });
+      }
+      if (enableSMSOTP) {
+        this.setState({ enableSMSOTP: enableSMSOTP.settingValue });
+      }
+      if (enableWhatsappOTP) {
+        this.setState({ enableWhatsappOTP: enableWhatsappOTP.settingValue });
+      }
+      if (enableOrdering) {
+        this.setState({ enableOrdering: enableOrdering.settingValue });
       }
     }
+
     if (this.state.method !== prevState.method) {
       const otpData = lsLoad(config.prefix + "_otp") || null;
       if (otpData) {
@@ -259,6 +264,8 @@ class LoginRegister extends Component {
   };
 
   handleMobileCheck = async () => {
+    let enableSMSOTP = this.state.enableSMSOTP
+    let enableWhatsappOTP = this.state.enableWhatsappOTP
     let phoneNumber = this.state.phoneNumber;
     if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
 
@@ -289,14 +296,16 @@ class LoginRegister extends Component {
             "error"
           );
         } else if (response.data.confirmation) {
-          this.handleSendOTP();
+          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
+          if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
           this.setState({
             userStatus: "REGISTERED",
             payloadResponse: response.data,
             btnSubmit: false,
           });
         } else {
-          this.handleSendOTP();
+          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
+          if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
           this.setState({
             userStatus: "REGISTERED",
             payloadResponse: response.data,
@@ -308,7 +317,7 @@ class LoginRegister extends Component {
     this.setState({ isLoading: false });
   };
 
-  handleSendOTP = async () => {
+  handleSendOTP = async (sendBy = 'SMSOTP') => {
     if (!this.state.enableRegisterWithPassword) {
       let payloadResponse = this.state.payloadResponse;
       let phoneNumber = this.state.phoneNumber;
@@ -377,10 +386,12 @@ class LoginRegister extends Component {
       });
 
       try {
-        let payload = { phoneNumber: this.state.phoneNumber };
-        if (this.state.sendCounter >= 2)
+        let payload = { phoneNumber: this.state.phoneNumber, sendBy };
+        if (this.state.sendCounter > 2)
           payload = { email: payloadResponse.email };
 
+        // console.log(this.state.sendCounter)
+        console.log(payload)
         let response = await this.props.dispatch(AuthActions.sendOtp(payload));
         response = response.Data;
         // console.log(response)
@@ -425,6 +436,8 @@ class LoginRegister extends Component {
   };
 
   handleMobileRegister = async () => {
+    let enableSMSOTP = this.state.enableSMSOTP
+    let enableWhatsappOTP = this.state.enableWhatsappOTP
     let payloadResponse = this.state.payloadResponse;
     this.setState({ isLoading: true });
 
@@ -520,7 +533,8 @@ class LoginRegister extends Component {
           if (enableRegisterWithPassword) this.handleMobileLogin();
           else {
             this.setState({ showPage: "mobileSignUp", signUpSuccess: true });
-            this.handleSendOTP();
+            if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
+            if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
           }
         } catch (error) {
           console.log(error);
@@ -801,7 +815,7 @@ class LoginRegister extends Component {
   };
 
   render() {
-    let { isLoading, userStatus, method, email, phoneNumber } = this.state;
+    let { isLoading, userStatus, method, email, phoneNumber, loginByEmail, loginByMobile, enableSMSOTP, enableWhatsappOTP, enableOrdering } = this.state;
     return (
       <div>
         {isLoading ? Swal.showLoading() : Swal.close()}
@@ -828,7 +842,7 @@ class LoginRegister extends Component {
                   this.setState({ userStatus: "NOT_CHECKED" })
                 }
                 handleChange={this.handleInput}
-                sendOtpToPhone={this.handleSendOTP}
+                sendOtpToPhone={(sendBy) => this.handleSendOTP(sendBy)}
                 sendOtpToEmail={this.handleSendEmailOTP}
                 isSubmitting={!this.state.btnSubmit}
                 otpTimer={{
@@ -837,6 +851,9 @@ class LoginRegister extends Component {
                   counterMinutes: this.state.counterMinutes,
                   counter: this.state.counter,
                 }}
+                enableSMSOTP={enableSMSOTP}
+                enableWhatsappOTP={enableWhatsappOTP}
+                enableOrdering={enableOrdering}
               ></Login>
             ) : userStatus === "NOT_REGISTERED" ? (
               <SignUp
@@ -848,7 +865,7 @@ class LoginRegister extends Component {
                 handleChange={this.handleInputRegister}
                 handleEmailSubmit={this.handleEmailRegister}
                 handlePhoneSubmit={this.handleMobileRegister}
-                sendOtpToPhone={this.handleSendOTP}
+                sendOtpToPhone={(sendBy) => this.handleSendOTP(sendBy)}
                 sendOtpToEmail={this.handleSendEmailOTP}
                 handleEmailLogin={this.handleEmailLogin}
                 handlePhoneLogin={this.handleMobileLogin}
@@ -864,19 +881,23 @@ class LoginRegister extends Component {
                 errorEmail={this.state.errorEmail}
                 errorPassword={this.state.errorPassword}
                 enablePassword={this.state.enableRegisterWithPassword}
+                enableOrdering={enableOrdering}
               ></SignUp>
             ) : (
-              <Portal
-                initialMethod={method}
-                handleMethodChange={(value) => {
-                  this.setState({ method: value });
-                }}
-                handlePhoneCheck={this.handleMobileCheck}
-                handleChange={this.handleInput}
-                handleEmailCheck={this.handleEmailCheck}
-                error={this.state.errorPhone || this.state.errorEmail}
-              ></Portal>
-            )}
+                  <Portal
+                    method={method}
+                    handleMethodChange={(value) => {
+                      this.setState({ method: value });
+                    }}
+                    handlePhoneCheck={this.handleMobileCheck}
+                    handleChange={this.handleInput}
+                    handleEmailCheck={this.handleEmailCheck}
+                    error={this.state.errorPhone || this.state.errorEmail}
+                    loginByEmail={loginByEmail}
+                    loginByMobile={loginByMobile}
+                    enableOrdering={enableOrdering}
+                  ></Portal>
+                )}
           </div>
         </div>
       </div>
@@ -891,6 +912,7 @@ const mapStateToProps = (state) => ({
   fetchingCompanyInfo: state[reducer].companyInfo.isFetching,
   companyInfoError: state[reducer].companyInfo.errors,
   fields: state.customer.fields,
+  setting: state.order.setting,
 });
 
 const mapDispatchToProps = (dispatch) => ({
