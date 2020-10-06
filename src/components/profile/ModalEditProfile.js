@@ -72,7 +72,7 @@ class ModalEditProfile extends Component {
 
   componentDidUpdate = async (prevProps) => {
     if (prevProps.fields !== this.props.fields) {
-      this.props.fields.forEach((field) => {
+      this.props.field && this.props.fields.forEach((field) => {
         if (!this.state.dataCustomer[field.fieldName] && field.defaultValue) {
           this.setState((prevState) => ({
             dataCustomer: {
@@ -157,9 +157,8 @@ class ModalEditProfile extends Component {
       }
     }
     dataCustomer[field] = value;
-    dataCustomer.address = `${dataCustomer.street || ""}, ${
-      dataCustomer.unitNo || ""
-    }, ${dataCustomer.postalCode || ""}`;
+    dataCustomer.address = `${dataCustomer.street || ""}, ${dataCustomer.unitNo || ""
+      }, ${dataCustomer.postalCode || ""}`;
     this.setState({ dataCustomer, isLoading: false });
   };
 
@@ -225,7 +224,7 @@ class ModalEditProfile extends Component {
       address: this.state.dataCustomer.address,
     };
 
-    this.props.fields.forEach((field) => {
+    this.props.fields && this.props.fields.forEach((field) => {
       if (this.state.dataCustomer[field.fieldName]) {
         payload[field.fieldName] = this.state.dataCustomer[field.fieldName];
       }
@@ -421,13 +420,13 @@ class ModalEditProfile extends Component {
                           <em>Phone no. already used</em>
                         </div>
                       ) : (
-                        <div className="text text-success small">
-                          <em>Phone no. is available</em>
-                          <span>
-                            <i className="fa fa-check"></i>
-                          </span>
-                        </div>
-                      )
+                          <div className="text text-success small">
+                            <em>Phone no. is available</em>
+                            <span>
+                              <i className="fa fa-check"></i>
+                            </span>
+                          </div>
+                        )
                     ) : null}
                     {this.state.checkingPhone && (
                       <div className="text small">
@@ -458,13 +457,13 @@ class ModalEditProfile extends Component {
                           <em>Email already used</em>
                         </div>
                       ) : (
-                        <div className="text text-success small">
-                          <em>Email is available</em>
-                          <span>
-                            <i className="fa fa-check"></i>
-                          </span>
-                        </div>
-                      )
+                          <div className="text text-success small">
+                            <em>Email is available</em>
+                            <span>
+                              <i className="fa fa-check"></i>
+                            </span>
+                          </div>
+                        )
                     ) : null}
                     {this.state.checkingEmail && (
                       <div className="text small">
@@ -475,7 +474,7 @@ class ModalEditProfile extends Component {
 
                   <CustomFields
                     defaultValue={this.state.dataCustomer}
-                    fields={this.props.fields.filter((field) => field.show)}
+                    fields={this.props.fields && this.props.fields.filter((field) => field.show)}
                     handleChange={this.handleChange}
                     roundedBorder={false}
                   ></CustomFields>
@@ -684,13 +683,13 @@ class ModalEditProfile extends Component {
                     {editPassword ? (
                       <b>Cancel Change Password </b>
                     ) : (
-                      <b>Change Password </b>
-                    )}
+                        <b>Change Password </b>
+                      )}
                     {editPassword ? (
                       <i className="fa fa-chevron-up" />
                     ) : (
-                      <i className="fa fa-chevron-down" />
-                    )}
+                        <i className="fa fa-chevron-down" />
+                      )}
                   </p>
 
                   {editPassword && (

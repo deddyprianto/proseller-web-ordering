@@ -535,6 +535,7 @@ class LoginRegister extends Component {
             this.setState({ showPage: "mobileSignUp", signUpSuccess: true });
             if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
             if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
+            if (enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('SMSOTP');
           }
         } catch (error) {
           console.log(error);

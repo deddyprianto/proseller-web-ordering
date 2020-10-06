@@ -9,11 +9,16 @@ export const MasterDataService = {
   api,
 };
 
-function api(method, params, path, token = null) {
+function api(method, params, path, token = null, url_masterdata = null) {
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
   const header = new Header(params);
   let url = `${config.url_masterdata}${path}`;
+  if (url_masterdata) {
+    if (path === "order-magmarvel-demo.proseller.io") return "magmarvel-demo.proseller.io"
+    if (path === "order.pengenbisa.com") return "magmarvel-dev.proseller.io"
+  }
+
   let configuration = {
     headers: header,
     method: method,

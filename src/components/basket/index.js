@@ -257,12 +257,27 @@ class Basket extends Component {
         storeDetail = await this.props.dispatch(
           MasterdataAction.getOutletByID(dataBasket.outlet.id)
         );
-      // console.log('storeDetail', storeDetail)
+
+      let orderValidation = {
+        takeAway: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+        delivery: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+        dineIn: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 }
+      }
+      if (storeDetail && !storeDetail.orderValidation) {
+        storeDetail.orderValidation = orderValidation
+      } else if (storeDetail && storeDetail.orderValidation) {
+        if (!storeDetail.orderValidation.takeAway) storeDetail.orderValidation.takeAway = orderValidation.takeAway
+        if (!storeDetail.orderValidation.delivery) storeDetail.orderValidation.delivery = orderValidation.delivery
+        if (!storeDetail.orderValidation.dineIn) storeDetail.orderValidation.dineIn = orderValidation.dineIn
+      }
+      console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
-      let deliveryProvaider = await this.props.dispatch(
-        OrderAction.getProvider()
-      );
+
+      let deliveryProvaider = null
+      if (!isEmenu) {
+        deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
+      }
       let discount = (selectedPoint || 0) + this.state.discountVoucher;
       let totalPrice =
         dataBasket.totalNettAmount - discount < 0
@@ -300,7 +315,7 @@ class Basket extends Component {
 
       // console.log('dataBasket', dataBasket)
 
-      if (dataBasket.deliveryProviderId) {
+      if (dataBasket.deliveryProviderId && !isEmenu) {
         let provaiderDelivery = deliveryProvaider.find((items) => {
           return items.id === dataBasket.deliveryProviderId;
         });
@@ -323,6 +338,7 @@ class Basket extends Component {
       await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
 
       if (
+        !isEmenu &&
         deliveryProvaider &&
         deliveryProvaider.length > 0 &&
         deliveryAddress
@@ -344,7 +360,7 @@ class Basket extends Component {
         this.setState({ deliveryProvaider });
       }
 
-      this.submitOtomatis(dataBasket);
+      await this.submitOtomatis(dataBasket);
 
       this.timeGetBasket = setInterval(async () => {
         if (dataBasket.id)

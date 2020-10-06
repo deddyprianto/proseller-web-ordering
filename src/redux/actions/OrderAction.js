@@ -92,11 +92,11 @@ function getSettingOrdering() {
         },
         {
           settingKey: "EnableSMSOTP",
-          settingValue: false
+          settingValue: true
         },
         {
           settingKey: "EnableWhatsappOTP",
-          settingValue: true
+          settingValue: false
         },
         {
           settingKey: "EnableRegisterWithPassword",
@@ -104,7 +104,7 @@ function getSettingOrdering() {
         },
         {
           settingKey: "EnableOrdering",
-          settingValue: false
+          settingValue: true
         }
       ]
     }

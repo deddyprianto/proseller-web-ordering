@@ -11,7 +11,7 @@ const CustomFields = ({
   defaultValue,
   roundedBorder,
 }) => {
-  const fieldsToRender = fields.filter((field) => {
+  const fieldsToRender = fields && fields.filter((field) => {
     return showSignUpFields ? field.signUpField === true : true;
   });
 
@@ -28,7 +28,7 @@ const CustomFields = ({
 
   return (
     <div>
-      {fieldsToRender.map((field) => {
+      {fieldsToRender && fieldsToRender.map((field) => {
         if (field.type === "multipleField") {
           return field.children.map((child) => (
             <Field

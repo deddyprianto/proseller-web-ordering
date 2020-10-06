@@ -123,7 +123,7 @@ function mandatoryField(payload = null) {
         "customfields/customer"
       );
       const customFields = await customFieldsResponse.data;
-      const fields = data.fields.map((field) => {
+      const fields = data.fields && data.fields.map((field) => {
         switch (field.fieldName) {
           case "birthDate":
             return {

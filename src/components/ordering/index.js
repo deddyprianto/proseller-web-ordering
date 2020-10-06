@@ -67,12 +67,11 @@ class Ordering extends Component {
         defaultOutlet = this.props.defaultOutlet;
       }
     }
-
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({
-      defaultOutlet: defaultOutlet,
+      defaultOutlet: defaultOutlet || this.props.defaultOutlet,
     });
-    await this.fetchCategories(defaultOutlet);
+    await this.fetchCategories(defaultOutlet || this.props.defaultOutlet);
   };
 
   componentDidUpdate = async (prevProps) => {
@@ -121,7 +120,7 @@ class Ordering extends Component {
           header.style.top = 0;
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   handleScrollEmenu = (e) => {
@@ -138,7 +137,7 @@ class Ordering extends Component {
           searchButton.classList.add("search-button-absolute");
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   fetchCategories = async (outlet) => {
@@ -151,7 +150,7 @@ class Ordering extends Component {
       await this.setState({ categories, processing: true });
       await this.getProductPreset(categories, outlet);
       await this.setState({ loading: false });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   componentWillUnmount() {
@@ -264,7 +263,7 @@ class Ordering extends Component {
             }
           });
       });
-    } catch (e) {}
+    } catch (e) { }
 
     product.quantity = 1;
     product.remark = "";
@@ -382,7 +381,7 @@ class Ordering extends Component {
               items.push(productsBackup[i].items[j]);
             }
           }
-        } catch (e) {}
+        } catch (e) { }
 
         if (items.length != 0) {
           if (productsSearch == undefined) {
@@ -400,7 +399,7 @@ class Ordering extends Component {
 
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
-    } catch (e) {}
+    } catch (e) { }
   };
 
   loadingSearching = async (loadingSearching) => {
@@ -513,30 +512,30 @@ class Ordering extends Component {
             }
           ></EMenuCategories>
         ) : (
-          // <CategoriesWebOrdering
-          //   loadingSearching={this.loadingSearching}
-          //   finished={finished}
-          //   setLoading={this.setLoading}
-          //   searchProduct={this.searchProduct}
-          //   categories={categories}
-          //   selectedCategory={this.state.selectedCategory}
-          //   setSelectedCategory={(category) =>
-          //     this.setState({ selectedCategory: category })
-          //   }
-          // />
-          <WebOrderingCategories
-            categoryRefs={categoryRefs}
-            loadingSearching={this.loadingSearching}
-            finished={finished}
-            setLoading={this.setLoading}
-            searchProduct={this.searchProduct}
-            categories={categories}
-            selectedCategory={this.state.selectedCategory}
-            setSelectedCategory={(category) =>
-              this.setState({ selectedCategory: category })
-            }
-          ></WebOrderingCategories>
-        )}
+            // <CategoriesWebOrdering
+            //   loadingSearching={this.loadingSearching}
+            //   finished={finished}
+            //   setLoading={this.setLoading}
+            //   searchProduct={this.searchProduct}
+            //   categories={categories}
+            //   selectedCategory={this.state.selectedCategory}
+            //   setSelectedCategory={(category) =>
+            //     this.setState({ selectedCategory: category })
+            //   }
+            // />
+            <WebOrderingCategories
+              categoryRefs={categoryRefs}
+              loadingSearching={this.loadingSearching}
+              finished={finished}
+              setLoading={this.setLoading}
+              searchProduct={this.searchProduct}
+              categories={categories}
+              selectedCategory={this.state.selectedCategory}
+              setSelectedCategory={(category) =>
+                this.setState({ selectedCategory: category })
+              }
+            ></WebOrderingCategories>
+          )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}

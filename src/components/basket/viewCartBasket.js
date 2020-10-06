@@ -162,7 +162,12 @@ const ViewCartBasket = ({
       (basket && basket.status !== "PENDING") ||
       (props.storeDetail &&
         props.storeDetail.enableTableScan !== false &&
-        props.scanTable)
+        props.scanTable
+      ) ||
+      (
+        props.scanTable &&
+        props.scanTable.tableType
+      )
     );
   };
 

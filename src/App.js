@@ -229,9 +229,9 @@ const App = (props) => {
     }
   }, [deliveryAddress, deliveryProviders, setting]);
 
-  useEffect(() => {
-    props.dispatch(OrderAction.getTheme());
-    props.dispatch(OrderAction.getSettingOrdering());
+  useEffect(async () => {
+    await props.dispatch(OrderAction.getTheme());
+    await props.dispatch(OrderAction.getSettingOrdering());
     refreshDeliveryProvider();
     checkUser();
   }, []);
