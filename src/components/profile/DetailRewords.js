@@ -174,7 +174,7 @@ class DetailRewords extends Component {
                 <div style={{ width: '100%', textAlign: "center" }}>
                   <div style={{ textAlign: "center", fontWeight: "bold", paddingTop: 10 }}>My Points</div>
                   <div className="text-value" style={{ fontSize: 35, textAlign: "center", marginBottom: 13, marginTop: 5 }}>
-                    {this.state.totalPoint}
+                    {this.state.totalPoint.toFixed(2)}
                   </div>
                   <Button size="sm" color="ghost-warning"
                     style={{ marginTop: -4, fontWeight: "bold" }}

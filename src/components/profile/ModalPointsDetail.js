@@ -27,7 +27,7 @@ export default class ModalPointsDetail extends Component {
                       My Points
                     </div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, color: "#fff", marginBottom: 20 }}>
-                      {detailPoint.point}
+                      {detailPoint.point.toFixed(2)}
                     </div>
                   </div>
                   <div style={{
@@ -63,7 +63,7 @@ export default class ModalPointsDetail extends Component {
                                   Point :
                                 </div>
                                 <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
-                                  {items.pointBalance}
+                                  {items.pointBalance.toFixed(2)}
                                 </div>
                               </div>
 
