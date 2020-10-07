@@ -118,7 +118,7 @@ function getSettingOrdering() {
         if (!check) response.data.settings.push(settings)
       });
     }
-    console.log(response)
+    console.log('orderingSetting', response.data)
     if (!response.data || response.data && !response.data.settings) return await dispatch(setData([], 'DATA_SETTING_ORDERING'));
     return await dispatch(setData(response.data.settings, 'DATA_SETTING_ORDERING'));
   };
@@ -413,6 +413,7 @@ function getCart(isSetData = true) {
           return dispatch(setData(offlineCart, CONSTANT.DATA_BASKET));
         return offlineCart;
       }
+      return
     }
 
     const response = await OrderingService.api(
@@ -454,7 +455,7 @@ function deleteCart(isDeleteServer = false) {
         localStorage.removeItem(`${config.prefix}_offlineCart`);
         return dispatch(setData({}, CONSTANT.DATA_BASKET));
       }
-    } else {
+    } else if (account) {
       const response = await OrderingService.api(
         "DELETE",
         null,
@@ -620,15 +621,19 @@ function cartUpdate(payload) {
 
 function changeOrderingMode(payload) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      payload,
-      `cart/changeOrderingMode`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
-    return response;
+    if (account) {
+      let response = await OrderingService.api(
+        "POST",
+        payload,
+        `cart/changeOrderingMode`,
+        "Bearer"
+      );
+      if (response.ResultCode >= 400 || response.resultCode >= 400)
+        await dispatch(AuthActions.refreshToken());
+      return response;
+    } else {
+      return { resultCode: 400 }
+    }
   };
 }
 

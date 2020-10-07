@@ -122,7 +122,7 @@ class Product extends Component {
               </span>
             </div>
             <div className="product-content-wrapper">
-              <p>
+              <div>
                 <h3
                   className="color"
                   onClick={() => this.validateOutlet()}
@@ -134,14 +134,14 @@ class Product extends Component {
                   <b>{item.product.name}</b>
                 </h3>
                 <div itemProp="description">
-                  <p
+                  <div
                     className="color"
                     style={{ maxHeight: "none", whiteSpace: "pre-line" }}
                   >
                     {item.product.description}
-                  </p>
+                  </div>
                 </div>
-              </p>
+              </div>
               <div className="yith_wapo_groups_container">
                 <div className="row" style={{ marginTop: 10 }}>
                   {item.product.orderingStatus === "UNAVAILABLE" ? (
@@ -151,35 +151,35 @@ class Product extends Component {
                       </h3>
                     </div>
                   ) : (
-                    <>
-                      <div className="col-lg-12 col-md-12 col-xs-7">
-                        <b
-                          style={{ float: "left" }}
-                          className="price-product color"
+                      <>
+                        <div className="col-lg-12 col-md-12 col-xs-7">
+                          <b
+                            style={{ float: "left" }}
+                            className="price-product color"
+                          >
+                            {this.getCurrency(item.product.retailPrice)}
+                          </b>
+                        </div>
+                        <div
+                          onClick={() => this.validateOutlet()}
+                          className="col-lg-12 col-md-12 col-xs-4"
                         >
-                          {this.getCurrency(item.product.retailPrice)}
-                        </b>
-                      </div>
-                      <div
-                        onClick={() => this.validateOutlet()}
-                        className="col-lg-12 col-md-12 col-xs-4"
-                      >
-                        <p
-                          style={{
-                            float: "left",
-                            borderRadius: 5,
-                            width: 90,
-                            paddingLeft: 5,
-                            paddingRight: 5,
-                          }}
-                          rel="nofollow"
-                          className="button product_type_simple add_to_cart_button ajax_add_to_cart"
-                        >
-                          {this.props.labelButton}
-                        </p>
-                      </div>
-                    </>
-                  )}
+                          <p
+                            style={{
+                              float: "left",
+                              borderRadius: 5,
+                              width: 90,
+                              paddingLeft: 5,
+                              paddingRight: 5,
+                            }}
+                            rel="nofollow"
+                            className="button product_type_simple add_to_cart_button ajax_add_to_cart"
+                          >
+                            {this.props.labelButton}
+                          </p>
+                        </div>
+                      </>
+                    )}
                 </div>
               </div>
             </div>

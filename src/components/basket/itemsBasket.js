@@ -79,7 +79,7 @@ class ItemsBasket extends Component {
             }
           });
       });
-    } catch (e) {}
+    } catch (e) { }
 
     if (isEmptyObject(dataBasket)) {
       product.quantity = 1;
@@ -297,7 +297,7 @@ class ItemsBasket extends Component {
               }}
             />
             {dataBasket.details.map((item, key) => (
-              <div>
+              <div key={key}>
                 <div
                   style={{
                     display: "flex",

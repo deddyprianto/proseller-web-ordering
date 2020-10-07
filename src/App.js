@@ -212,9 +212,9 @@ const App = (props) => {
         });
       }
     } else {
-      console.log(
-        "Trying to refresh delivery providers, but current delivery providers is null :("
-      );
+      // console.log(
+      //   "Trying to refresh delivery providers, but current delivery providers is null :("
+      // );
     }
   };
   useEffect(() => {

@@ -206,6 +206,7 @@ class Ordering extends Component {
           );
           products[i].items = [...products[i].items, ...product.data];
           await this.setState({ products, productsBackup: products });
+          localStorage.setItem(`${config.prefix}_productsBackup`, JSON.stringify(encryptor.encrypt(products)));
           j += 5;
         }
       }
@@ -545,7 +546,7 @@ class Ordering extends Component {
               <ul className="products">
                 {!loadingSearching &&
                   products.map((cat, i) => (
-                    <>
+                    <div key={i}>
                       <h3
                         id={i}
                         ref={categoryRefs[i]}
@@ -607,7 +608,7 @@ class Ordering extends Component {
                           )
                         );
                       })}
-                    </>
+                    </div>
                   ))}
 
                 {!loadingSearching && !loading && products.length == 0 && (
@@ -649,6 +650,7 @@ const mapStateToProps = (state, ownProps) => {
     products: state.product.products,
     basket: state.order.basket,
     theme: state.theme,
+    productsSearch: state.order.productsSearch,
   };
 };
 

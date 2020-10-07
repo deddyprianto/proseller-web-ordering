@@ -18,7 +18,6 @@ class CardItemBasket extends Component {
 
   render() {
     let item = this.props.data;
-    const { currency } = this.props.companyInfo;
     return (
       <div
         style={{ width: "100%", display: "flex", cursor: "pointer" }}
@@ -67,10 +66,9 @@ class CardItemBasket extends Component {
               <span
                 className="customer-group-name"
                 style={{ fontSize: 14, fontWeight: "bold" }}
-              >{`${item.product.name} (${
-                this.props.getCurrency(item.product.retailPrice) ||
+              >{`${item.product.name} (${this.props.getCurrency(item.product.retailPrice) ||
                 item.product.retailPrice
-              })`}</span>
+                })`}</span>
             </Typography>
           </div>
           {item.modifiers && item.modifiers.length > 0 && (
@@ -111,10 +109,9 @@ class CardItemBasket extends Component {
                                     color: "gray",
                                     fontStyle: "italic",
                                   }}
-                                >{`${itemModifier.name} (${
-                                  this.props.getCurrency(itemModifier.price) ||
+                                >{`${itemModifier.name} (${this.props.getCurrency(itemModifier.price) ||
                                   item.product.retailPrice
-                                })`}</span>
+                                  })`}</span>
                               </Typography>
                             </dev>
                           )

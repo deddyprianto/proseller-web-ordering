@@ -61,9 +61,8 @@ let Portal = ({
       </div>
       <div className="modal-body">
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-          <label for="email">
-            {`Enter your ${method === "phone" ? "Mobile Number" : "Email Address"
-              } `}
+          <label htmlFor="email">
+            {`Enter your ${method === "phone" ? "Mobile Number" : "Email Address"} `}
             <span className="required">*</span>
           </label>
           <div className={styles.fieldGroup}>

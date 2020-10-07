@@ -459,18 +459,19 @@ class LoginRegister extends Component {
             [field.fieldName]: this.state[field.fieldName] || "",
           };
         });
-      delete customFields.displayName;
-      delete customFields.fieldName;
-      delete customFields.format;
-      delete customFields.mandatory;
-      delete customFields.sequence;
-      delete customFields.signUpField;
-      delete customFields.show;
-      delete customFields.type;
+
+      if (customFields) {
+        delete customFields.displayName;
+        delete customFields.fieldName;
+        delete customFields.format;
+        delete customFields.mandatory;
+        delete customFields.sequence;
+        delete customFields.signUpField;
+        delete customFields.show;
+        delete customFields.type;
+      }
       let errorEmail = "";
-      let cekEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-        email
-      );
+      let cekEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
       if (!cekEmail) errorEmail = "Email not valid";
 
       let errorPassword = "";
@@ -883,6 +884,8 @@ class LoginRegister extends Component {
                 errorPassword={this.state.errorPassword}
                 enablePassword={this.state.enableRegisterWithPassword}
                 enableOrdering={enableOrdering}
+                enableSMSOTP={enableSMSOTP}
+                enableWhatsappOTP={enableWhatsappOTP}
               ></SignUp>
             ) : (
                   <Portal

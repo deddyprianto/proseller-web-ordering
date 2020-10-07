@@ -26,6 +26,9 @@ const SignUp = ({
   enablePassword,
   signUpSuccess,
   fields,
+  enableSMSOTP,
+  enableWhatsappOTP,
+  enableOrdering
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
 
@@ -88,6 +91,9 @@ const SignUp = ({
           isSending={isSending}
           isSubmitting={isSubmitting}
           usePassword={enablePassword}
+          enableOrdering={enableOrdering}
+          enableSMSOTP={enableSMSOTP}
+          enableWhatsappOTP={enableWhatsappOTP}
         ></SignUpSuccess>
       ) : method === "phone" ? (
         <PhoneForm
@@ -105,21 +111,21 @@ const SignUp = ({
           ></CustomFields>
         </PhoneForm>
       ) : (
-        <EmailForm
-          email={initialUserData.email}
-          handleChange={handleChange}
-          handleSubmit={handleEmailSubmit}
-          error={errorPhone}
-          errorPassword={errorPassword}
-          enablePassword={enablePassword}
-        >
-          <CustomFields
-            fields={fields}
-            handleChange={handleChange}
-            showSignUpFields={true}
-          ></CustomFields>
-        </EmailForm>
-      )}
+            <EmailForm
+              email={initialUserData.email}
+              handleChange={handleChange}
+              handleSubmit={handleEmailSubmit}
+              error={errorPhone}
+              errorPassword={errorPassword}
+              enablePassword={enablePassword}
+            >
+              <CustomFields
+                fields={fields}
+                handleChange={handleChange}
+                showSignUpFields={true}
+              ></CustomFields>
+            </EmailForm>
+          )}
     </div>
   );
 };

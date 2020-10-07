@@ -15,6 +15,9 @@ const SignUpSuccess = ({
   counterMinutes,
   counter,
   usePassword,
+  enableSMSOTP,
+  enableWhatsappOTP,
+  enableOrdering
 }) => {
   const [showOtp, setShowOtp] = useState(false);
   return (
@@ -31,25 +34,27 @@ const SignUpSuccess = ({
             counterMinutes={counterMinutes}
             counter={counter}
             isSending={isSending}
+            enableSMSOTP={enableSMSOTP}
+            enableWhatsappOTP={enableWhatsappOTP}
           ></OtpField>
         </div>
       ) : (
-        <div>
-          <p className="text-muted" style={{ textAlign: "center" }}>
-            You will receive 4-digit verification code via{" "}
-            {method === "phone" ? "SMS" : "Email"} at
+          <div>
+            <p className="text-muted" style={{ textAlign: "center" }}>
+              You will receive 4-digit verification code via{" "}
+              {method === "phone" ? "SMS" : "Email"} at
           </p>
-          {method === "phone" ? (
-            <h2 style={{ textAlign: "center", marginTop: 10 }}>
-              {username || "-"}
-            </h2>
-          ) : (
-            <h4 style={{ textAlign: "center", marginTop: 10 }}>
-              {username || "-"}
-            </h4>
-          )}
-        </div>
-      )}
+            {method === "phone" ? (
+              <h2 style={{ textAlign: "center", marginTop: 10 }}>
+                {username || "-"}
+              </h2>
+            ) : (
+                <h4 style={{ textAlign: "center", marginTop: 10 }}>
+                  {username || "-"}
+                </h4>
+              )}
+          </div>
+        )}
 
       <Button
         className="button"
@@ -58,8 +63,8 @@ const SignUpSuccess = ({
           usePassword
             ? handleLogin(!usePassword)
             : !showOtp
-            ? setShowOtp(true)
-            : handleLogin(true);
+              ? setShowOtp(true)
+              : handleLogin(true);
         }}
       >
         Continue

@@ -9,11 +9,15 @@ import cx from "classnames";
 
 const Field = ({ field, handleValueChange, value, roundedBorder }) => {
   const [initialValue, setInitialValue] = useState(value[field.fieldName]);
+  let displayName = field.displayName
+  if (field.fieldName === "birthDate") displayName = "Birthdate"
+  if (field.fieldName === "gender") displayName = "Gender"
+  if (field.fieldName === "address") displayName = "Address"
   if (field.type === "radio") {
     return (
       <div style={{ marginTop: 10 }}>
         <label>
-          {field.displayName}{" "}
+          {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div style={{ display: "flex" }}>
@@ -68,7 +72,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
         style={{ marginTop: 10 }}
       >
         <label htmlFor={field.fieldName}>
-          {field.displayName}{" "}
+          {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <select
@@ -85,7 +89,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
               (value[field.fieldName] && value[field.fieldName] !== "")
             }
           >
-            Select {field.displayName}
+            Select {displayName}
           </option>
           {field.options.map((option) => {
             return (
@@ -112,7 +116,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
         style={{ marginTop: 10 }}
       >
         <label>
-          {field.displayName}{" "}
+          {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div className="customDatePickerWidth">
@@ -157,7 +161,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
         style={{ marginTop: 10 }}
       >
         <label htmlFor={field.fieldName}>
-          {field.displayName}{" "}
+          {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <textarea
@@ -165,7 +169,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
           className="woocommerce-Input woocommerce-Input--text input-text"
           id={field.fieldName}
           name={field.fieldName}
-          placeholder={`Enter your ${field.displayName}`}
+          placeholder={`Enter your ${displayName}`}
           rows="2"
           value={value[field.fieldName] || ""}
           onChange={handleValueChange}
@@ -178,7 +182,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
     return (
       <div style={{ marginTop: 10 }}>
         <label>
-          {field.displayName}{" "}
+          {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div style={{ display: "flex" }}>
@@ -234,7 +238,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
         style={{ marginTop: 10 }}
       >
         <label htmlFor={field.fieldName}>
-          {field.displayName}{" "}
+          {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <select
@@ -258,7 +262,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
       style={{ marginTop: 10 }}
     >
       <label htmlFor={field.fieldName}>
-        {field.displayName}{" "}
+        {displayName}{" "}
         <span className="required">{field.mandatory && "*"}</span>
       </label>
       <input
@@ -270,7 +274,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
         style={{ borderRadius: roundedBorder ? "50px" : "5px" }}
         id={field.fieldName}
         name={field.fieldName}
-        placeholder={`Enter your ${field.displayName}`}
+        placeholder={`Enter your ${displayName}`}
         rows="2"
         value={value[field.fieldName] || ""}
         onChange={handleValueChange}
