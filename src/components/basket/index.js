@@ -254,18 +254,7 @@ class Basket extends Component {
         orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || this.checkOrderingModeActive(storeDetail, isEmenu);
       }
 
-      let orderValidation = {
-        takeAway: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
-        delivery: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
-        dineIn: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 }
-      }
-      if (storeDetail && !storeDetail.orderValidation) {
-        storeDetail.orderValidation = orderValidation
-      } else if (storeDetail && storeDetail.orderValidation) {
-        if (!storeDetail.orderValidation.takeAway) storeDetail.orderValidation.takeAway = orderValidation.takeAway
-        if (!storeDetail.orderValidation.delivery) storeDetail.orderValidation.delivery = orderValidation.delivery
-        if (!storeDetail.orderValidation.dineIn) storeDetail.orderValidation.dineIn = orderValidation.dineIn
-      }
+      storeDetail = config.getValidation(storeDetail)
       console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
@@ -1149,7 +1138,7 @@ const mapStateToProps = (state, ownProps) => {
     account: state.auth.account && state.auth.account.idToken.payload,
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
     campaignPoint: state.campaign.data,
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,

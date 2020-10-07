@@ -96,10 +96,10 @@ class RedeemVoucher extends Component {
                       src={item.image ? item.image : voucherIcon} alt="voucher" />
 
                     <div style={{ width: '100%', marginLeft: 10, marginRight: 10, textAlign: "left", marginTop: 5 }}>
-                      <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold" }}>
+                      <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold", lineHeight: "17px" }}>
                         {item.name}
                       </div>
-                      <div style={{ fontSize: 12, marginTop: -10 }}>
+                      <div style={{ fontSize: 12, marginTop: -5 }}>
                         <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
                       </div>
                       <div className="customer-group-name" style={{ fontSize: 12, fontWeight: "bold", marginTop: -10 }}>

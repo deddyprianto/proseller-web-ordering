@@ -16,11 +16,11 @@ export default function reducer(state = defaultState, action) {
     case CONSTANT.DEFAULT_OUTLET:
       localStorage.setItem(
         `${config.prefix}_defaultOutlet`,
-        JSON.stringify(encryptor.encrypt(action.data))
+        JSON.stringify(encryptor.encrypt(config.getValidation(action.data)))
       );
       return {
         ...state,
-        defaultOutlet: action.data,
+        defaultOutlet: config.getValidation(action.data),
       };
     case CONSTANT.LIST_OUTLET:
       return {

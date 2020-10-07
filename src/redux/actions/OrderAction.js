@@ -110,14 +110,7 @@ function getSettingOrdering() {
     }
     let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
     let response = await OrderingService.api("GET", null, `orderingsetting/${appType}`);
-    if (!response.data) response.data = defaultSetting
-    if (response.data && !response.data.settings) response.data.settings = defaultSetting.settings
-    if (response.data && response.data.settings) {
-      defaultSetting.settings.forEach(settings => {
-        let check = response.data.settings.find(items => { return items.settingKey === settings.settingKey })
-        if (!check) response.data.settings.push(settings)
-      });
-    }
+    response.data = config.getSettingOrdering(response.data)
     console.log('orderingSetting', response.data)
     if (!response.data || response.data && !response.data.settings) return await dispatch(setData([], 'DATA_SETTING_ORDERING'));
     return await dispatch(setData(response.data.settings, 'DATA_SETTING_ORDERING'));

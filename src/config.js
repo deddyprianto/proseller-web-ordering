@@ -2,8 +2,8 @@ import logo from "./assets/images/logo_placeholder.png";
 import { MasterDataService } from "./Services/MasterDataService";
 
 let config = {};
-let stage = "dev";
-let companyHost = "qiji";
+let stage = "demo";
+let companyHost = "pantrymagic";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
@@ -39,6 +39,46 @@ if (process.env.REACT_APP_STAGE === "demo") {
 config.url_logo = logo;
 config.image_placeholder = "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
 config.prefix = window.location.pathname.includes("emenu") ? "emenu" : "webordering";
+config.getValidation = function getValidation(defaultOutlet) {
+  let orderValidation = {
+    takeAway: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+    delivery: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+    dineIn: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+    storepickup: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+    storecheckout: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
+  }
+  if (defaultOutlet && !defaultOutlet.orderValidation) {
+    defaultOutlet.orderValidation = orderValidation
+  } else if (defaultOutlet && defaultOutlet.orderValidation) {
+    for (const key in orderValidation) {
+      if (!defaultOutlet.orderValidation[key]) defaultOutlet.orderValidation[key] = orderValidation[key]
+    }
+  }
+  return defaultOutlet
+}
+
+config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
+  let defaultSetting = {
+    settings: [
+      { settingKey: "LoginByEmail", settingValue: true },
+      { settingKey: "LoginByMobile", settingValue: true },
+      { settingKey: "EnableSMSOTP", settingValue: true },
+      { settingKey: "EnableWhatsappOTP", settingValue: false },
+      { settingKey: "EnableRegisterWithPassword", settingValue: false },
+      { settingKey: "EnableOrdering", settingValue: true },
+    ]
+  }
+
+  if (!orderingSetting) orderingSetting = defaultSetting
+  if (orderingSetting && !orderingSetting.settings) orderingSetting.settings = defaultSetting.settings
+  if (orderingSetting && orderingSetting.settings) {
+    defaultSetting.settings.forEach(settings => {
+      let check = orderingSetting.settings.find(items => { return items.settingKey === settings.settingKey })
+      if (!check) orderingSetting.settings.push(settings)
+    });
+  }
+  return orderingSetting
+}
 
 export default config;
 

@@ -261,7 +261,7 @@ class SettleSuccess extends Component {
                             fontSize: 12
                           }}
                         >
-                          {settleSuccess.outlet.name}
+                          {settleSuccess.outletName || settleSuccess.outlet.name}
                         </div>
                       </div>
                     </div>
@@ -289,7 +289,7 @@ class SettleSuccess extends Component {
                         }}
                       >
                         <div>Date & Time</div>
-                        <div>{this.getDate(settleSuccess.createdOn)}</div>
+                        <div>{this.getDate(settleSuccess.createdAt || settleSuccess.createdOn)}</div>
                       </div>
                       {
                         settleSuccess.paymentType &&

@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Loading from "../loading";
 import { isEmptyObject, isEmptyArray } from '../../helpers/CheckEmpty';
-import { isEmptyData } from '../../helpers/CheckEmpty';
-import { OrderAction } from '../../redux/actions/OrderAction';
+import config from '../../config';
 
 class DetailOrder extends Component {
   constructor(props) {
@@ -23,34 +22,34 @@ class DetailOrder extends Component {
           <h3 className="color text-center">{defaultOutlet.name}</h3>
         </div>
         <div className="modal-body modal-body-product">
-        <div style={{marginLeft: 30, marginRight: 20}}>
+          <div style={{ marginLeft: 30, marginRight: 20 }}>
             <table className="table table-striped table-responsive">
               <tbody>
                 <tr>
                   <td><b>City</b></td>
-                  <td style={{textAlign: 'right'}}>{defaultOutlet.city}</td>
+                  <td style={{ textAlign: 'right' }}>{defaultOutlet.city}</td>
                 </tr>
                 <tr>
                   <td><b>Region</b></td>
-                  <td style={{textAlign: 'right'}}>{defaultOutlet.region}</td>
+                  <td style={{ textAlign: 'right' }}>{defaultOutlet.region}</td>
                 </tr>
                 <tr>
                   <td><b>Address</b></td>
-                  <td style={{textAlign: 'right'}}>{defaultOutlet.address}</td>
+                  <td style={{ textAlign: 'right' }}>{defaultOutlet.address}</td>
                 </tr>
               </tbody>
             </table>
             {
               !isEmptyArray(defaultOutlet.operationalHours) ?
                 <>
-                  <p className="text-muted text-center" style={{fontSize: 20}}>Operational Hours</p>
+                  <p className="text-muted text-center" style={{ fontSize: 20 }}>Operational Hours</p>
                   <table className="table table-striped table-responsive">
                     <tbody>
                       {
                         defaultOutlet.operationalHours.filter(item => item.active).map(data =>
                           <tr>
                             <td>{data.nameOfDay}</td>
-                            <td style={{textAlign: 'right'}}>{data.open} to {data.close}</td>
+                            <td style={{ textAlign: 'right' }}>{data.open} to {data.close}</td>
                           </tr>
                         )
                       }
@@ -91,7 +90,7 @@ class DetailOrder extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
   };
 };
 

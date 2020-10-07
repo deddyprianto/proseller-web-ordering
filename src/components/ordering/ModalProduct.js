@@ -903,7 +903,7 @@ class ModalProduct extends Component {
                       className="order-mode"
                       onClick={() => this.setOrderingMode("STOREPICKUP")}
                       style={{
-                        height: (defaultOutlet.orderValidation.stroepickup.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        height: (defaultOutlet.orderValidation.storepickup.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
                         padding: 5
                       }}
                     >
@@ -914,25 +914,25 @@ class ModalProduct extends Component {
                       </div>
                       </div>
                       {
-                        defaultOutlet.orderValidation.stroepickup &&
+                        defaultOutlet.orderValidation.storepickup &&
                         <div style={{ fontSize: 12, marginTop: -5 }}>
                           <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {defaultOutlet.orderValidation.stroepickup.minAmount ||
-                            defaultOutlet.orderValidation.stroepickup.maxAmount ? (
+                          {defaultOutlet.orderValidation.storepickup.minAmount ||
+                            defaultOutlet.orderValidation.storepickup.maxAmount ? (
                               <div style={{ display: "flex" }}>
                                 <strong style={{ marginRight: 5 }}>Amount range</strong>
                                 {
-                                  `${this.getCurrency(defaultOutlet.orderValidation.stroepickup.minAmount)} to 
-                                  ${this.getCurrency(defaultOutlet.orderValidation.stroepickup.maxAmount)}`
+                                  `${this.getCurrency(defaultOutlet.orderValidation.storepickup.minAmount)} to 
+                                  ${this.getCurrency(defaultOutlet.orderValidation.storepickup.maxAmount)}`
                                 }
                               </div>
                             ) : null}
-                          {defaultOutlet.orderValidation.stroepickup.minQty ||
-                            defaultOutlet.orderValidation.stroepickup.maxQty ? (
+                          {defaultOutlet.orderValidation.storepickup.minQty ||
+                            defaultOutlet.orderValidation.storepickup.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
                                 <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {defaultOutlet.orderValidation.stroepickup.minQty} to{" "}
-                                {defaultOutlet.orderValidation.stroepickup.maxQty} items
+                                {defaultOutlet.orderValidation.storepickup.minQty} to{" "}
+                                {defaultOutlet.orderValidation.storepickup.maxQty} items
                               </div>
                             ) : null}
                         </div>
@@ -1265,7 +1265,7 @@ class ModalProduct extends Component {
 const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
   };

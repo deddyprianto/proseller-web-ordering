@@ -67,11 +67,14 @@ class Ordering extends Component {
         defaultOutlet = this.props.defaultOutlet;
       }
     }
+
+    defaultOutlet = defaultOutlet || this.props.defaultOutlet
+    defaultOutlet = config.getValidation(defaultOutlet)
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({
-      defaultOutlet: defaultOutlet || this.props.defaultOutlet,
+      defaultOutlet: defaultOutlet,
     });
-    await this.fetchCategories(defaultOutlet || this.props.defaultOutlet);
+    await this.fetchCategories(defaultOutlet);
   };
 
   componentDidUpdate = async (prevProps) => {
@@ -407,6 +410,21 @@ class Ordering extends Component {
     await this.setState({ loadingSearching });
   };
 
+  getCurrency = (price) => {
+    if (this.props.companyInfo) {
+      const { currency } = this.props.companyInfo;
+
+      if (price === undefined || price === "-") {
+        price = 0;
+      }
+      let result = price.toLocaleString(currency.locale, {
+        style: "currency",
+        currency: currency.code,
+      });
+      return result;
+    }
+  };
+
   render() {
     let {
       categories,
@@ -495,6 +513,7 @@ class Ordering extends Component {
               onClose={() => this.setState({ showUpdateModal: false })}
               setAddNew={(addNew) => this.setState({ addNew })}
               setSelectedItem={(item) => this.setState({ selectedItem: item })}
+              getCurrency={(price) => this.getCurrency(price)}
             ></UpdateProductModal>
           )}
         <ModalProduct
@@ -646,11 +665,12 @@ class Ordering extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
     products: state.product.products,
     basket: state.order.basket,
     theme: state.theme,
     productsSearch: state.order.productsSearch,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 

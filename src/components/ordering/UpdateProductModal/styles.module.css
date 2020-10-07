@@ -55,12 +55,12 @@
   padding: 1rem;
   max-height: 30vh;
   overflow-y: scroll;
-  background-color: #eee;
+  /* background-color: #ebebeb; */
 }
 
 .product {
   position: relative;
-  background-color: #e9e9e9;
+  background-color: #ebebeb;
   padding: 1rem;
 }
 

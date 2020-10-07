@@ -14,6 +14,7 @@ const UpdateProductModal = ({
   setAddNew,
   setSelectedItem,
   companyInfo,
+  getCurrency
 }) => {
   const handleAdd = () => {
     setAddNew(true);
@@ -106,7 +107,7 @@ const UpdateProductModal = ({
                 };
               });
               return (
-                <div className={styles.product}>
+                <div className={styles.product} style={{ borderRadius: 5, marginBottom: 5 }}>
                   <div className={styles.productName}>
                     <span>
                       <strong>{item.quantity}x </strong>
@@ -126,7 +127,7 @@ const UpdateProductModal = ({
                           <div className={styles.items}>
                             {modifierGroup.modifiersList.map((modifierItem) => {
                               return (
-                                <div key={modifierItem.id}>
+                                <div key={modifierItem.id} style={{ marginTop: -10, }}>
                                   <span>{modifierItem.quantity}x </span>
                                   {modifierItem.name}
                                 </div>
@@ -136,12 +137,9 @@ const UpdateProductModal = ({
                         </div>
                       );
                     })}
-                  <div className={styles.price}>
+                  <div className={styles.price} style={{ marginTop: -5 }}>
                     <b class="price-product color">
-                      {companyInfo && companyInfo.currency.symbol}
-                      &nbsp;
-                      {Math.round((item.grossAmount + Number.EPSILON) * 100) /
-                        100}
+                      {getCurrency(item.grossAmount)}
                     </b>
                   </div>
                   <button

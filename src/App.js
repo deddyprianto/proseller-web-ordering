@@ -136,6 +136,8 @@ const App = (props) => {
         (await props.dispatch(
           MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
         ));
+
+      defaultOutlet = config.getValidation(defaultOutlet)
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
@@ -173,7 +175,7 @@ const App = (props) => {
     if (deliveryProviders && basket && basket.outlet) {
       let isEqual = true;
       console.log("Refreshing delivery providers...");
-      console.log(deliveryProviders);
+      // console.log(deliveryProviders);
       const newDeliveryProvider = await Promise.all(
         deliveryProviders.map(async (provider) => {
           const payload = {
@@ -253,7 +255,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     lang: state.language.lang,
     theme: state.theme,
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
     deliveryProviders: state.order.deliveryProviders,
     deliveryAddress: state.order.deliveryAddress,
     basket: state.order.basket,

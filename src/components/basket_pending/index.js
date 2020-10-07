@@ -1108,7 +1108,7 @@ const mapStateToProps = (state, ownProps) => {
     account: state.auth.account && state.auth.account.idToken.payload,
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
     companyInfo: state.masterdata.companyInfo.data,
   };
 };

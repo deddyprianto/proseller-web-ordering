@@ -157,11 +157,11 @@ class MyVoucher extends Component {
                   >
                     <div
                       className="customer-group-name"
-                      style={{ fontSize: 14, fontWeight: "bold" }}
+                      style={{ fontSize: 14, fontWeight: "bold", lineHeight: "17px" }}
                     >
                       {item.name}
                     </div>
-                    <div style={{ fontSize: 12, marginTop: -10 }}>
+                    <div style={{ fontSize: 12, marginTop: -5 }}>
                       <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
                     </div>
                     {

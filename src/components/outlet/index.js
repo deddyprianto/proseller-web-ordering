@@ -5,6 +5,7 @@ import Select from "react-select";
 import { OutletAction } from "../../redux/actions/OutletAction";
 import { isEmptyObject } from "jquery";
 import DetailOutlet from "./DetailOutlet";
+import config from "../../config";
 
 class Outlet extends Component {
   constructor(props) {
@@ -113,7 +114,7 @@ class Outlet extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    defaultOutlet: state.outlet.defaultOutlet,
+    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
   };
 };
 

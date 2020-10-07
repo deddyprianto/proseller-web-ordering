@@ -167,7 +167,7 @@ class ModalOrderingMode extends Component {
                       data-dismiss="modal"
                       onClick={() => this.props.setOrderingMode("STOREPICKUP")}
                       style={{
-                        height: (outlet.orderValidation.stroepickup.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        height: (outlet.orderValidation.storepickup.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
                         padding: 5
                       }}
                     >
@@ -179,25 +179,25 @@ class ModalOrderingMode extends Component {
                       </div>
 
                       {
-                        outlet.orderValidation.stroepickup &&
+                        outlet.orderValidation.storepickup &&
                         <div style={{ fontSize: 12, marginTop: -5 }}>
                           <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {outlet.orderValidation.stroepickup.minAmount ||
-                            outlet.orderValidation.stroepickup.maxAmount ? (
+                          {outlet.orderValidation.storepickup.minAmount ||
+                            outlet.orderValidation.storepickup.maxAmount ? (
                               <div style={{ display: "flex" }}>
                                 <strong style={{ marginRight: 5 }}>
-                                  {this.checkOrderValidation(outlet.orderValidation.stroepickup, "titleAmount")}
+                                  {this.checkOrderValidation(outlet.orderValidation.storepickup, "titleAmount")}
                                 </strong>
-                                {this.checkOrderValidation(outlet.orderValidation.stroepickup, "descAmount")}
+                                {this.checkOrderValidation(outlet.orderValidation.storepickup, "descAmount")}
                               </div>
                             ) : null}
-                          {outlet.orderValidation.stroepickup.minQty ||
-                            outlet.orderValidation.stroepickup.maxQty ? (
+                          {outlet.orderValidation.storepickup.minQty ||
+                            outlet.orderValidation.storepickup.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
                                 <strong style={{ marginRight: 5 }}>
-                                  {this.checkOrderValidation(outlet.orderValidation.stroepickup, "titleQty")}
+                                  {this.checkOrderValidation(outlet.orderValidation.storepickup, "titleQty")}
                                 </strong>
-                                {this.checkOrderValidation(outlet.orderValidation.stroepickup, "descQty")}
+                                {this.checkOrderValidation(outlet.orderValidation.storepickup, "descQty")}
                               </div>
                             ) : null}
                         </div>
