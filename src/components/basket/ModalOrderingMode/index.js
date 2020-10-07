@@ -11,6 +11,42 @@ class ModalOrderingMode extends Component {
     };
   }
 
+  checkOrderValidation(validation, type) {
+    if (type === "titleAmount") {
+      if (validation.minAmount === 0 && validation.maxAmount > 0) {
+        return "Amount maximum"
+      } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
+        return "Amount minimum"
+      } else {
+        return "Amount range"
+      }
+    } else if (type === "descAmount") {
+      if (validation.minAmount === 0 && validation.maxAmount > 0) {
+        return this.props.getCurrency(validation.maxAmount)
+      } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
+        return this.props.getCurrency(validation.minAmount)
+      } else {
+        return `${this.props.getCurrency(validation.minAmount)} to ${this.props.getCurrency(validation.maxAmount)}`
+      }
+    } else if (type === "titleQty") {
+      if (validation.minQty === 0 && validation.maxQty > 0) {
+        return "Item quantity maximum"
+      } else if (validation.minQty > 0 && validation.maxQty === 0) {
+        return "Item quantity minimum"
+      } else {
+        return "Item quantity range"
+      }
+    } else if (type === "descQty") {
+      if (validation.minQty === 0 && validation.maxQty > 0) {
+        return `${validation.maxQty} items`
+      } else if (validation.minQty > 0 && validation.maxQty === 0) {
+        return `${validation.minQty} items`
+      } else {
+        return `${validation.minQty} to ${validation.maxQty} items`
+      }
+    }
+  }
+
   render() {
     let props = this.props.data;
     const { outlet } = this.props;
@@ -63,19 +99,19 @@ class ModalOrderingMode extends Component {
                           {outlet.orderValidation.dineIn.minAmount ||
                             outlet.orderValidation.dineIn.maxAmount ? (
                               <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.props.getCurrency(outlet.orderValidation.dineIn.minAmount)} to 
-                                  ${this.props.getCurrency(outlet.orderValidation.dineIn.maxAmount)}`
-                                }
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.dineIn, "titleAmount")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.dineIn, "descAmount")}
                               </div>
                             ) : null}
                           {outlet.orderValidation.dineIn.minQty ||
                             outlet.orderValidation.dineIn.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {outlet.orderValidation.dineIn.minQty} to{" "}
-                                {outlet.orderValidation.dineIn.maxQty} items
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.dineIn, "titleQty")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.dineIn, "descQty")}
                               </div>
                             ) : null}
                         </div>
@@ -105,19 +141,19 @@ class ModalOrderingMode extends Component {
                           {outlet.orderValidation.takeAway.minAmount ||
                             outlet.orderValidation.takeAway.maxAmount ? (
                               <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.props.getCurrency(outlet.orderValidation.takeAway.minAmount)} to 
-                                  ${this.props.getCurrency(outlet.orderValidation.takeAway.maxAmount)}`
-                                }
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.takeAway, "titleAmount")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.takeAway, "descAmount")}
                               </div>
                             ) : null}
                           {outlet.orderValidation.takeAway.minQty ||
                             outlet.orderValidation.takeAway.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {outlet.orderValidation.takeAway.minQty} to{" "}
-                                {outlet.orderValidation.takeAway.maxQty} items
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.takeAway, "titleQty")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.takeAway, "descQty")}
                               </div>
                             ) : null}
                         </div>
@@ -149,19 +185,19 @@ class ModalOrderingMode extends Component {
                           {outlet.orderValidation.stroepickup.minAmount ||
                             outlet.orderValidation.stroepickup.maxAmount ? (
                               <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.props.getCurrency(outlet.orderValidation.stroepickup.minAmount)} to 
-                                  ${this.props.getCurrency(outlet.orderValidation.stroepickup.maxAmount)}`
-                                }
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.stroepickup, "titleAmount")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.stroepickup, "descAmount")}
                               </div>
                             ) : null}
                           {outlet.orderValidation.stroepickup.minQty ||
                             outlet.orderValidation.stroepickup.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {outlet.orderValidation.stroepickup.minQty} to{" "}
-                                {outlet.orderValidation.stroepickup.maxQty} items
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.stroepickup, "titleQty")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.stroepickup, "descQty")}
                               </div>
                             ) : null}
                         </div>
@@ -192,19 +228,19 @@ class ModalOrderingMode extends Component {
                           {outlet.orderValidation.storecheckout.minAmount ||
                             outlet.orderValidation.storecheckout.maxAmount ? (
                               <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.props.getCurrency(outlet.orderValidation.storecheckout.minAmount)} to 
-                                  ${this.props.getCurrency(outlet.orderValidation.storecheckout.maxAmount)}`
-                                }
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.storecheckout, "titleAmount")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.storecheckout, "descAmount")}
                               </div>
                             ) : null}
                           {outlet.orderValidation.storecheckout.minQty ||
                             outlet.orderValidation.storecheckout.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {outlet.orderValidation.storecheckout.minQty} to{" "}
-                                {outlet.orderValidation.storecheckout.maxQty} items
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.storecheckout, "titleQty")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.storecheckout, "descQty")}
                               </div>
                             ) : null}
                         </div>
@@ -235,19 +271,19 @@ class ModalOrderingMode extends Component {
                           {outlet.orderValidation.delivery.minAmount ||
                             outlet.orderValidation.delivery.maxAmount ? (
                               <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.props.getCurrency(outlet.orderValidation.delivery.minAmount)} to 
-                                  ${this.props.getCurrency(outlet.orderValidation.delivery.maxAmount)}`
-                                }
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.delivery, "titleAmount")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.delivery, "descAmount")}
                               </div>
                             ) : null}
                           {outlet.orderValidation.delivery.minQty ||
                             outlet.orderValidation.delivery.maxQty ? (
                               <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {outlet.orderValidation.delivery.minQty} to{" "}
-                                {outlet.orderValidation.delivery.maxQty} items
+                                <strong style={{ marginRight: 5 }}>
+                                  {this.checkOrderValidation(outlet.orderValidation.delivery, "titleQty")}
+                                </strong>
+                                {this.checkOrderValidation(outlet.orderValidation.delivery, "descQty")}
                               </div>
                             ) : null}
                         </div>

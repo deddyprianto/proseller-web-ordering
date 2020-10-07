@@ -271,22 +271,19 @@ class Basket extends Component {
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
       let deliveryProvaider = null
-      if (!isEmenu) {
+      if (orderingMode !== "DINEIN" || orderingMode !== "TAKEAWAY") {
         deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
       }
+      // console.log('deliveryProvaider', deliveryProvaider)
+
       let discount = (selectedPoint || 0) + this.state.discountVoucher;
       let totalPrice = (dataBasket.totalNettAmount - discount < 0) ? 0 : (dataBasket.totalNettAmount - discount);
 
       if (dataBasket.orderingMode) {
-        if (dataBasket.orderingMode === "DELIVERY" && isEmenu)
-          dataBasket.orderingMode = "DINEIN";
-        if (dataBasket.orderingMode === "DINEIN" && !isEmenu)
-          dataBasket.orderingMode = "DELIVERY";
-
-        orderingMode = (!isChangeMode && dataBasket.orderingMode && dataBasket.id) || orderingMode;
+        dataBasket.orderingMode = orderingMode;
         scanTable = {
           ...scanTable,
-          tableType: (!isChangeMode && dataBasket.orderingMode && dataBasket.id) || orderingMode,
+          tableType: orderingMode,
           tableNo: dataBasket.tableNo,
           outlet: dataBasket.outletID,
         };
@@ -307,7 +304,7 @@ class Basket extends Component {
 
       // console.log('dataBasket', dataBasket)
 
-      if (dataBasket.deliveryProviderId && !isEmenu) {
+      if (dataBasket.deliveryProviderId) {
         let provaiderDelivery = deliveryProvaider.find((items) => {
           return items.id === dataBasket.deliveryProviderId;
         });

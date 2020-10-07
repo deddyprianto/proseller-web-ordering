@@ -236,6 +236,9 @@ const ViewCartBasket = ({
           <MenuBasket
             color={color}
             data={data}
+            basket={basket}
+            productQuantity={productQuantity}
+            orderValidation={outlet.orderValidation[orderingModeField]}
             isLoggedIn={isLoggedIn}
             cancelSelectVoucher={() => cancelSelectVoucher()}
             cancelSelectPoint={() => cancelSelectPoint()}
@@ -355,36 +358,39 @@ const ViewCartBasket = ({
             basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
               productQuantity >= minQty ? (
                 productQuantity <= maxQty || maxQty === 0 ? null : (
-                  <div className="small text-left">
-                    <strong>
-                      Your order has exceeded maximum allowed item quantity for{" "}
-                      {basket.orderingMode}. Please remove some item from your
-                      cart.
-                    </strong>
+                  <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    {
+                      `Your order has exceeded maximum allowed item quantity for
+                      ${basket.orderingMode} (maximum quantity ${maxQty}). 
+                      Please remove some item from your cart.`
+                    }
                   </div>
                 )
               ) : (
-                  <div className="small text-left">
-                    <strong>
-                      Your order hasn't reached minimum allowed item quantity for{" "}
-                      {basket.orderingMode}. Please add some item to your cart.
-                  </strong>
+                  <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    {
+                      `Your order hasn't reached minimum allowed item quantity for
+                      ${basket.orderingMode} (minimum quantity ${minQty}). 
+                      Please add some item to your cart.`
+                    }
                   </div>
                 )
             ) : (
-                <div className="small text-left">
-                  <strong>
-                    Your order has exceeded maximum allowed order amount for{" "}
-                    {basket.orderingMode}. Please remove some item from your cart.
-                </strong>
+                <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
+                  {
+                    `Your order has exceeded maximum allowed order amount for
+                    ${basket.orderingMode} ( maximum amount ${getCurrency(maxAmount)}). 
+                    Please remove some item from your cart.`
+                  }
                 </div>
               )
           ) : (
-              <div className="small text-left">
-                <strong>
-                  Your order hasn't reached minimum allowed order amount for{" "}
-                  {basket.orderingMode}. Please add some item to your cart.
-              </strong>
+              <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
+                {
+                  `Your order hasn't reached minimum allowed order amount for
+                  ${basket.orderingMode} (minimum amount ${getCurrency(minAmount)}). 
+                  Please add some item to your cart.`
+                }
               </div>
             )}
           <div

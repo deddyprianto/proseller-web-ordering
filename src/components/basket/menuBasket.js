@@ -17,6 +17,9 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 class MenuBasket extends Component {
   render() {
     let props = this.props.data;
+    let basket = this.props.basket;
+    let productQuantity = this.props.productQuantity;
+    let { minQty, maxQty, minAmount, maxAmount } = this.props.orderValidation;
     return (
       <div style={{ marginTop: -8 }}>
         {/* {
@@ -167,6 +170,46 @@ class MenuBasket extends Component {
                 </div>
               </div>
             } */}
+
+            {basket.totalGrossAmount >= minAmount ? (
+              basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
+                productQuantity >= minQty ? (
+                  productQuantity <= maxQty || maxQty === 0 ? null : (
+                    <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                      {
+                        `Your order has exceeded maximum allowed item quantity for
+                      ${basket.orderingMode} (maximum quantity ${maxQty}). 
+                      Please remove some item from your cart.`
+                      }
+                    </div>
+                  )
+                ) : (
+                    <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                      {
+                        `Your order hasn't reached minimum allowed item quantity for
+                      ${basket.orderingMode} (minimum quantity ${minQty}). 
+                      Please add some item to your cart.`
+                      }
+                    </div>
+                  )
+              ) : (
+                  <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                    {
+                      `Your order has exceeded maximum allowed order amount for
+                    ${basket.orderingMode} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
+                    Please remove some item from your cart.`
+                    }
+                  </div>
+                )
+            ) : (
+                <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                  {
+                    `Your order hasn't reached minimum allowed order amount for
+                  ${basket.orderingMode} (minimum amount ${this.props.getCurrency(minAmount)}). 
+                  Please add some item to your cart.`
+                  }
+                </div>
+              )}
 
             <div
               style={{
