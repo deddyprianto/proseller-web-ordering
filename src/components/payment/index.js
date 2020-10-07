@@ -320,10 +320,7 @@ class Payment extends Component {
     else money = money.toFixed(2);
 
     let discount = parseFloat(money) + this.state.discountVoucher;
-    let totalPrice =
-      dataSettle.dataBasket.totalNettAmount - discount < 0
-        ? 0
-        : dataSettle.dataBasket.totalNettAmount - discount;
+    let totalPrice = dataSettle.dataBasket.totalNettAmount - discount < 0 ? 0 : dataSettle.dataBasket.totalNettAmount - discount;
     this.setState({
       ...dataSettle,
       selectedVoucher,

@@ -12,7 +12,7 @@ export const OutletAction = {
 function fetchDefaultOutlet(defaultOutlet = {}) {
   return async (dispatch) => {
     if (!isEmptyObject(defaultOutlet)) {
-      defaultOutlet = config.getValidation(defaultOutlet)
+      if (defaultOutlet && defaultOutlet.id) defaultOutlet = config.getValidation(defaultOutlet)
       dispatch(setData(defaultOutlet, CONSTANT.DEFAULT_OUTLET));
       return defaultOutlet;
     } else {
@@ -22,7 +22,7 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
         "outlets/defaultoutlet"
       );
       if (!isEmptyObject(data.data)) {
-        data.data = config.getValidation(data.data)
+        if (data.data && data.data.id) data.data = config.getValidation(data.data)
         dispatch(setData(data.data, CONSTANT.DEFAULT_OUTLET));
         return data.data;
       }
@@ -39,7 +39,7 @@ function fetchSingleOutlet(outlet) {
       `outlets/get/${OUTLET_ID}`
     );
     if (!isEmptyObject(data.data)) {
-      data.data = config.getValidation(data.data)
+      if (data.data && data.data.id) data.data = config.getValidation(data.data)
       dispatch(setData(data.data, CONSTANT.DEFAULT_OUTLET));
       return data.data;
     }
@@ -52,7 +52,7 @@ function fetchAllOutlet() {
     if (!isEmptyObject(data.data)) {
       let outletData = []
       data.data.forEach(element => {
-        element = config.getValidation(element)
+        if (element && element.id) element = config.getValidation(element)
         outletData.push(element)
       });
       dispatch(setData(outletData, CONSTANT.LIST_OUTLET));

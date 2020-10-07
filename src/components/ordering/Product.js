@@ -193,7 +193,7 @@ class Product extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     basket: state.order.basket,
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
   };
 };

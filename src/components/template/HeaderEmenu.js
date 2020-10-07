@@ -280,7 +280,7 @@ const mapStateToProps = (state, ownProps) => {
     account: state,
     lang: state.language.lang,
     basket: state.order.basket,
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
     broadcast: state.broadcast.broadcast,
   };
 };

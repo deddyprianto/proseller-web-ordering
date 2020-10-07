@@ -114,7 +114,7 @@ class Outlet extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 

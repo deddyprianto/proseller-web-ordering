@@ -69,7 +69,9 @@ class Ordering extends Component {
     }
 
     defaultOutlet = defaultOutlet || this.props.defaultOutlet
-    defaultOutlet = config.getValidation(defaultOutlet)
+    if (defaultOutlet && defaultOutlet.id) {
+      defaultOutlet = config.getValidation(defaultOutlet)
+    }
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({
       defaultOutlet: defaultOutlet,
@@ -665,7 +667,7 @@ class Ordering extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
     products: state.product.products,
     basket: state.order.basket,
     theme: state.theme,

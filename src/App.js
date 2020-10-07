@@ -137,7 +137,9 @@ const App = (props) => {
           MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
         ));
 
-      defaultOutlet = config.getValidation(defaultOutlet)
+      if (defaultOutlet && defaultOutlet.id) {
+        defaultOutlet = config.getValidation(defaultOutlet)
+      }
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
@@ -255,7 +257,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     lang: state.language.lang,
     theme: state.theme,
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
     deliveryProviders: state.order.deliveryProviders,
     deliveryAddress: state.order.deliveryAddress,
     basket: state.order.basket,

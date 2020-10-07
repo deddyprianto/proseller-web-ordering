@@ -161,9 +161,12 @@ class MyVoucher extends Component {
                     >
                       {item.name}
                     </div>
-                    <div style={{ fontSize: 12, marginTop: -5 }}>
-                      <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
-                    </div>
+                    {
+                      item.voucherDesc &&
+                      <div style={{ fontSize: 12, marginTop: -5 }}>
+                        <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
+                      </div>
+                    }
                     {
                       item.expiryDate &&
                       <div style={{ fontSize: 12, marginTop: -10 }}>

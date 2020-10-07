@@ -1265,7 +1265,7 @@ class ModalProduct extends Component {
 const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
   };

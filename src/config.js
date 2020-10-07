@@ -3,7 +3,7 @@ import { MasterDataService } from "./Services/MasterDataService";
 
 let config = {};
 let stage = "demo";
-let companyHost = "pantrymagic";
+let companyHost = "magmarvel";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {

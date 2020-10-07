@@ -244,7 +244,7 @@ class Basket extends Component {
       }
 
       let storeDetail = null;
-      if (!isEmptyObject(this.props.defaultOutlet)) {
+      if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.id) {
         storeDetail = this.props.defaultOutlet;
       } else {
         storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
@@ -254,7 +254,9 @@ class Basket extends Component {
         orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || this.checkOrderingModeActive(storeDetail, isEmenu);
       }
 
-      storeDetail = config.getValidation(storeDetail)
+      if (storeDetail && storeDetail.id) {
+        storeDetail = config.getValidation(storeDetail)
+      }
       console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
@@ -1138,7 +1140,7 @@ const mapStateToProps = (state, ownProps) => {
     account: state.auth.account && state.auth.account.idToken.payload,
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
-    defaultOutlet: config.getValidation(state.outlet.defaultOutlet),
+    defaultOutlet: state.outlet.defaultOutlet,
     campaignPoint: state.campaign.data,
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,
