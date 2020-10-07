@@ -198,8 +198,8 @@ class DetailRewords extends Component {
                 cursor: "pointer"
               }}>
                 <div style={{ textAlign: "center" }} >
-                  <div style={{ color: "gray", fontSize: 16, fontWeight: "bold" }}>
-                    My Rewards
+                  <div style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}>
+                    <i className="fa fa-gift" aria-hidden="true" /> My Rewards
                 </div>
                 </div>
               </div>

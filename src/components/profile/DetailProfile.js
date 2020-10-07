@@ -169,21 +169,21 @@ class DetailProfile extends Component {
                 <div
                   style={{
                     color: "gray",
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: "bold",
                     width: "50%",
                   }}
                   data-toggle="modal"
                   data-target="#edit-profile-modal"
                 >
-                  Edit Profile
+                  <i className="fa fa-user" aria-hidden="true" /> Edit Profile
                 </div>
                 |
                 <Link to="/setting" style={{ width: "50%" }}>
                   <div
-                    style={{ color: "gray", fontSize: 16, fontWeight: "bold" }}
+                    style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}
                   >
-                    Setting
+                    <i className="fa fa-cog" aria-hidden="true" /> Setting
                   </div>
                 </Link>
               </div>
@@ -229,7 +229,7 @@ class DetailProfile extends Component {
                     <div
                       style={{
                         color: "gray",
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: "bold",
                       }}
                     >
@@ -254,9 +254,9 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: "center" }}>
                   <div
-                    style={{ color: "gray", fontSize: 16, fontWeight: "bold" }}
+                    style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}
                   >
-                    Payment Method
+                    <i className="fa fa-credit-card-alt" aria-hidden="true" /> Payment Method
                   </div>
                 </div>
               </div>
@@ -276,9 +276,9 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: "center" }}>
                   <div
-                    style={{ color: "gray", fontSize: 16, fontWeight: "bold" }}
+                    style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}
                   >
-                    Delivery Address
+                    <i className="fa fa-home" aria-hidden="true" /> Delivery Address
                   </div>
                 </div>
               </div>
