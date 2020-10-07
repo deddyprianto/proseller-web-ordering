@@ -3,6 +3,7 @@ import { CRMService } from "../../Services/CRMService";
 import { MasterDataService } from "../../Services/MasterDataService";
 import { AuthActions } from "./AuthAction";
 import _ from "lodash";
+import moment from "moment";
 
 export const CustomerAction = {
   getCustomerProfile,
@@ -199,12 +200,24 @@ function getVoucher() {
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       await dispatch(AuthActions.refreshToken());
     else {
-      let myVoucher = [];
-      _.forEach(_.groupBy(response.Data, "id"), function (value, key) {
-        value[0].totalRedeem = value.length;
-        myVoucher.push(value[0]);
+      response.Data = _.forEach(response.Data, function (value) {
+        if (value.expiryDate) value.expiryDate = moment(value.expiryDate).format("YYYY-MM-DD")
+        return value
       });
-      response.Data = myVoucher;
+
+      let myVoucherGroup = [];
+      _.forEach(_.groupBy(response.Data, "id"), function (value) {
+        let group = _.groupBy(value, "expiryDate")
+        for (const key in group) {
+          if (group.hasOwnProperty(key)) {
+            group[key][0].totalRedeem = group[key].length;
+            myVoucherGroup.push(group[key][0]);
+          }
+        }
+      });
+      // console.log(myVoucherGroup)
+
+      response.Data = _.orderBy(myVoucherGroup, ['expiryDate'], ['asc']);
       dispatch(setData(response, CONSTANT.GET_VOUCHER));
     }
     return response;

@@ -8,6 +8,7 @@ import voucherIcon from "../../assets/images/voucher-icon.png";
 import Lottie from "lottie-react-web";
 import emptyGif from "../../assets/gif/empty-and-lost.json";
 import GiftVoucherModal from "./GiftVoucherModal";
+import moment from 'moment'
 
 class MyVoucher extends Component {
   constructor(props) {
@@ -89,6 +90,34 @@ class MyVoucher extends Component {
                     this.props.handleSelect && this.props.handleSelect(item)
                   }
                 >
+                  <div className="profile-dashboard" style={{
+                    position: "absolute", width: 70,
+                    color: "white", fontSize: 12, top: 0, left: 15,
+                    borderBottomRightRadius: 5, fontWeight: "bold",
+                    textAlign: "center"
+                  }}>
+                    <button
+                      className="button"
+                      style={{
+                        fontSize: "1.2rem",
+                        padding: "0.8rem",
+                        borderRadius: "1rem",
+                      }}
+                      onClick={() => {
+                        this.props.dispatch({ type: "INIT_VOUCHER_SEND" });
+                        this.setState({
+                          showGiftModal: true,
+                          voucherToGift: item,
+                        });
+                      }}
+                    >
+                      <span>
+                        <i className="fa fa-gift"></i>
+                      </span>{" "}
+                        Gift
+                      </button>
+                  </div>
+
                   <div
                     className="profile-dashboard"
                     style={{
@@ -128,48 +157,27 @@ class MyVoucher extends Component {
                   >
                     <div
                       className="customer-group-name"
-                      style={{ fontSize: 16, fontWeight: "bold" }}
+                      style={{ fontSize: 14, fontWeight: "bold" }}
                     >
                       {item.name}
                     </div>
-                    <div style={{ fontSize: 12 }}>{item.voucherDesc}</div>
+                    <div style={{ fontSize: 12, marginTop: -10 }}>
+                      <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
+                    </div>
+                    {
+                      item.expiryDate &&
+                      <div style={{ fontSize: 12, marginTop: -10 }}>
+                        <i className="fa fa-clock-o" aria-hidden="true"></i> {`Expire on ${moment(item.expiryDate).format("DD MMM YYYY")}`}
+                      </div>
+                    }
                     <div
                       className="customer-group-name"
-                      style={{ fontSize: 14, fontWeight: "bold" }}
+                      style={{ fontSize: 12, fontWeight: "bold", marginTop: -10 }}
                     >
-                      {`Discount ${
-                        item.voucherType === "discPercentage"
-                          ? item.voucherValue + "%"
-                          : "$" + item.voucherValue
-                      }`}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        marginBottom: "2rem",
-                      }}
-                    >
-                      <button
-                        className="button"
-                        style={{
-                          fontSize: "1.2rem",
-                          padding: "0.8rem",
-                          borderRadius: "1rem",
-                        }}
-                        onClick={() => {
-                          this.props.dispatch({ type: "INIT_VOUCHER_SEND" });
-                          this.setState({
-                            showGiftModal: true,
-                            voucherToGift: item,
-                          });
-                        }}
-                      >
-                        <span>
-                          <i className="fa fa-gift"></i>
-                        </span>{" "}
-                        Gift
-                      </button>
+                      {`Discount ${item.voucherType === "discPercentage"
+                        ? item.voucherValue + "%"
+                        : "$" + item.voucherValue
+                        }`}
                     </div>
                   </div>
                 </div>

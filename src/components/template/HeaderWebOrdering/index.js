@@ -161,28 +161,26 @@ class Header extends Component {
                   style={{ fontSize: 22, marginBottom: -5 }}
                 />
                 <span className="color" style={{ fontSize: 15 }}>
-                  <select
-                    className={styles.outletNameSelect}
-                    style={{
-                      width: `${defaultOutlet &&
-                        defaultOutlet.name &&
-                        defaultOutlet.name.length * 9 + 40
-                        }px`,
-                    }}
-                    onChange={(e) => this.handleOutletChange(e)}
-                    value={defaultOutlet.id}
-                  >
-                    {outlets &&
-                      outlets.map((outlet) => (
-                        <option
-                          ref={this.state.outletsRefs[outlet.id]}
-                          value={outlet.id}
-                          selected={outlet.id === defaultOutlet.id}
-                        >
-                          {outlet.name}
-                        </option>
-                      ))}
-                  </select>
+                  {
+                    outlets && outlets.length > 1 ?
+                      <select
+                        className={styles.outletNameSelect}
+                        onChange={(e) => this.handleOutletChange(e)}
+                        value={defaultOutlet.id}
+                      >
+                        {outlets &&
+                          outlets.map((outlet) => (
+                            <option
+                              ref={this.state.outletsRefs[outlet.id]}
+                              value={outlet.id}
+                              selected={outlet.id === defaultOutlet.id}
+                            >
+                              {outlet.name}
+                            </option>
+                          ))}
+                      </select> :
+                      outlets[0] && outlets[0].name
+                  }
                 </span>
               </div>
             </div>

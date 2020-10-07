@@ -787,7 +787,6 @@ class ModalProduct extends Component {
   };
 
   modalOrderingMode = () => {
-    const { isEmenu } = this.state;
     const { defaultOutlet } = this.props;
     return (
       <div
@@ -808,37 +807,52 @@ class ModalProduct extends Component {
               className="modal-header modal-header-product"
               style={{ display: "flex", justifyContent: "center", padding: 7 }}
             >
-              <h5 style={{ fontSize: 17, marginTop: 10 }} className="color">
+              <h5 style={{ fontSize: 16, marginTop: 10 }} className="color">
                 Select your dining preference
               </h5>
             </div>
             <div className="modal-body">
               <div className="col-md-12">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    overflowX: "auto",
-                    overflowY: "hidden",
-                    marginLeft: -30,
-                    marginRight: -30,
-                  }}
-                >
+                <div style={{ justifyContent: "center" }} >
                   {defaultOutlet.enableDineIn === true && (
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("DINEIN")}
+                      style={{
+                        height: (defaultOutlet.orderValidation.dineIn.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        padding: 5
+                      }}
                     >
-                      <h5 className="color" style={{ fontWeight: 1000 }}>
-                        DINE IN
-                      </h5>
-                      <i className="fa fa-cutlery color icon-order"></i>
-                      <button
-                        className="btn btn-block btn-footer"
-                        style={{ marginTop: 37 }}
-                      >
-                        <b>Select</b>
-                      </button>
+                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+                        <i className="fa fa-cutlery color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
+                          DINEIN
+                        </div>
+                      </div>
+                      {
+                        defaultOutlet.orderValidation.dineIn &&
+                        <div style={{ fontSize: 12, marginTop: -5 }}>
+                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+                          {defaultOutlet.orderValidation.dineIn.minAmount ||
+                            defaultOutlet.orderValidation.dineIn.maxAmount ? (
+                              <div style={{ display: "flex" }}>
+                                <strong style={{ marginRight: 5 }}>Amount range</strong>
+                                {
+                                  `${this.getCurrency(defaultOutlet.orderValidation.dineIn.minAmount)} to 
+                                  ${this.getCurrency(defaultOutlet.orderValidation.dineIn.maxAmount)}`
+                                }
+                              </div>
+                            ) : null}
+                          {defaultOutlet.orderValidation.dineIn.minQty ||
+                            defaultOutlet.orderValidation.dineIn.maxQty ? (
+                              <div style={{ display: "flex", marginTop: -10 }}>
+                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
+                                {defaultOutlet.orderValidation.dineIn.minQty} to{" "}
+                                {defaultOutlet.orderValidation.dineIn.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                     </div>
                   )}
 
@@ -846,17 +860,41 @@ class ModalProduct extends Component {
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("TAKEAWAY")}
+                      style={{
+                        height: (defaultOutlet.orderValidation.takeAway.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        padding: 5
+                      }}
                     >
-                      <h5 className="color" style={{ fontWeight: 1000 }}>
-                        TAKE AWAY
-                      </h5>
-                      <i className="fa fa-shopping-basket color icon-order"></i>
-                      <button
-                        className="btn btn-block btn-footer"
-                        style={{ marginTop: 37 }}
-                      >
-                        <b>Select</b>
-                      </button>
+                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+                        <i className="fa fa-shopping-basket color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
+                          TAKEAWAY
+                        </div>
+                      </div>
+                      {
+                        defaultOutlet.orderValidation.takeAway &&
+                        <div style={{ fontSize: 12, marginTop: -5 }}>
+                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+                          {defaultOutlet.orderValidation.takeAway.minAmount ||
+                            defaultOutlet.orderValidation.takeAway.maxAmount ? (
+                              <div style={{ display: "flex" }}>
+                                <strong style={{ marginRight: 5 }}>Amount range</strong>
+                                {
+                                  `${this.getCurrency(defaultOutlet.orderValidation.takeAway.minAmount)} to 
+                                  ${this.getCurrency(defaultOutlet.orderValidation.takeAway.maxAmount)}`
+                                }
+                              </div>
+                            ) : null}
+                          {defaultOutlet.orderValidation.takeAway.minQty ||
+                            defaultOutlet.orderValidation.takeAway.maxQty ? (
+                              <div style={{ display: "flex", marginTop: -10 }}>
+                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
+                                {defaultOutlet.orderValidation.takeAway.minQty} to{" "}
+                                {defaultOutlet.orderValidation.takeAway.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                     </div>
                   )}
 
@@ -864,17 +902,41 @@ class ModalProduct extends Component {
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("STOREPICKUP")}
+                      style={{
+                        height: (defaultOutlet.orderValidation.stroepickup.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        padding: 5
+                      }}
                     >
-                      <h5 className="color" style={{ fontWeight: 1000 }}>
-                        STOREPICKUP
-                      </h5>
-                      <i className="fa fa-shopping-basket color icon-order"></i>
-                      <button
-                        className="btn btn-block btn-footer"
-                        style={{ marginTop: 37 }}
-                      >
-                        <b>Select</b>
-                      </button>
+                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+                        <i className="fa fa-shopping-basket color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
+                          STOREPICKUP
+                      </div>
+                      </div>
+                      {
+                        defaultOutlet.orderValidation.stroepickup &&
+                        <div style={{ fontSize: 12, marginTop: -5 }}>
+                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+                          {defaultOutlet.orderValidation.stroepickup.minAmount ||
+                            defaultOutlet.orderValidation.stroepickup.maxAmount ? (
+                              <div style={{ display: "flex" }}>
+                                <strong style={{ marginRight: 5 }}>Amount range</strong>
+                                {
+                                  `${this.getCurrency(defaultOutlet.orderValidation.stroepickup.minAmount)} to 
+                                  ${this.getCurrency(defaultOutlet.orderValidation.stroepickup.maxAmount)}`
+                                }
+                              </div>
+                            ) : null}
+                          {defaultOutlet.orderValidation.stroepickup.minQty ||
+                            defaultOutlet.orderValidation.stroepickup.maxQty ? (
+                              <div style={{ display: "flex", marginTop: -10 }}>
+                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
+                                {defaultOutlet.orderValidation.stroepickup.minQty} to{" "}
+                                {defaultOutlet.orderValidation.stroepickup.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                     </div>
                   )}
 
@@ -882,17 +944,41 @@ class ModalProduct extends Component {
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("STORECHECKOUT")}
+                      style={{
+                        height: (defaultOutlet.orderValidation.storecheckout.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        padding: 5
+                      }}
                     >
-                      <h5 className="color" style={{ fontWeight: 1000 }}>
-                        STORECHECKOUT
-                      </h5>
-                      <i className="fa fa-shopping-basket color icon-order"></i>
-                      <button
-                        className="btn btn-block btn-footer"
-                        style={{ marginTop: 37 }}
-                      >
-                        <b>Select</b>
-                      </button>
+                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+                        <i className="fa fa-shopping-basket color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
+                          STORECHECKOUT
+                        </div>
+                      </div>
+                      {
+                        defaultOutlet.orderValidation.storecheckout &&
+                        <div style={{ fontSize: 12, marginTop: -5 }}>
+                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+                          {defaultOutlet.orderValidation.storecheckout.minAmount ||
+                            defaultOutlet.orderValidation.storecheckout.maxAmount ? (
+                              <div style={{ display: "flex" }}>
+                                <strong style={{ marginRight: 5 }}>Amount range</strong>
+                                {
+                                  `${this.getCurrency(defaultOutlet.orderValidation.storecheckout.minAmount)} to 
+                                  ${this.getCurrency(defaultOutlet.orderValidation.storecheckout.maxAmount)}`
+                                }
+                              </div>
+                            ) : null}
+                          {defaultOutlet.orderValidation.storecheckout.minQty ||
+                            defaultOutlet.orderValidation.storecheckout.maxQty ? (
+                              <div style={{ display: "flex", marginTop: -10 }}>
+                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
+                                {defaultOutlet.orderValidation.storecheckout.minQty} to{" "}
+                                {defaultOutlet.orderValidation.storecheckout.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                     </div>
                   )}
 
@@ -900,17 +986,41 @@ class ModalProduct extends Component {
                     <div
                       className="order-mode"
                       onClick={() => this.setOrderingMode("DELIVERY")}
+                      style={{
+                        height: (defaultOutlet.orderValidation.delivery.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+                        padding: 5
+                      }}
                     >
-                      <h5 className="color" style={{ fontWeight: 1000 }}>
-                        DELIVERY
-                      </h5>
-                      <i className="fa fa-car color icon-order"></i>
-                      <button
-                        className="btn btn-block btn-footer"
-                        style={{ marginTop: 37 }}
-                      >
-                        <b>Select</b>
-                      </button>
+                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+                        <i className="fa fa-car color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
+                          DELIVERY
+                      </div>
+                      </div>
+                      {
+                        defaultOutlet.orderValidation.delivery &&
+                        <div style={{ fontSize: 12, marginTop: -5 }}>
+                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+                          {defaultOutlet.orderValidation.delivery.minAmount ||
+                            defaultOutlet.orderValidation.delivery.maxAmount ? (
+                              <div style={{ display: "flex" }}>
+                                <strong style={{ marginRight: 5 }}>Amount range</strong>
+                                {
+                                  `${this.getCurrency(defaultOutlet.orderValidation.delivery.minAmount)} to 
+                                  ${this.getCurrency(defaultOutlet.orderValidation.delivery.maxAmount)}`
+                                }
+                              </div>
+                            ) : null}
+                          {defaultOutlet.orderValidation.delivery.minQty ||
+                            defaultOutlet.orderValidation.delivery.maxQty ? (
+                              <div style={{ display: "flex", marginTop: -10 }}>
+                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
+                                {defaultOutlet.orderValidation.delivery.minQty} to{" "}
+                                {defaultOutlet.orderValidation.delivery.maxQty} items
+                              </div>
+                            ) : null}
+                        </div>
+                      }
                     </div>
                   )}
                 </div>
@@ -920,7 +1030,6 @@ class ModalProduct extends Component {
                   className="color"
                   style={{
                     cursor: "pointer",
-                    textDecoration: "underline",
                     textAlign: "center",
                     marginTop: 30,
                     marginBottom: 20,

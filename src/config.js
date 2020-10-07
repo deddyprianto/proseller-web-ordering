@@ -2,8 +2,8 @@ import logo from "./assets/images/logo_placeholder.png";
 import { MasterDataService } from "./Services/MasterDataService";
 
 let config = {};
-let stage = "demo";
-let companyHost = "halia";
+let stage = "dev";
+let companyHost = "qiji";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {

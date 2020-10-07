@@ -74,10 +74,27 @@ function getCampaignPoints(payload = null, companyId = null) {
         roundingOptions = response_.points.roundingOptions
         netSpendToPoint = response_.points.netSpendToPoint0 === undefined ? "0:0" : `${response_.points.netSpendToPoint0}:${response_.points.netSpendToPoint1}`
       }
+      let history = _.groupBy(response.Data.history, "expiryDate")
+      let historyGroup = []
+      _.forEach(history, group => {
+        let pointBalance = 0
+        let pointDebit = 0
+        let pointKredit = 0
+        group.forEach(items => {
+          pointBalance += items.pointBalance
+          pointDebit += items.pointDebit
+          pointKredit += items.pointKredit
+        });
+        group[0].pointBalance = pointBalance
+        group[0].pointDebit = pointDebit
+        group[0].pointKredit = pointKredit
+        historyGroup.push(group[0])
+      })
+      // console.log(historyGroup)
 
       let detailPoint = {
         point: totalPoint,
-        detail: response.Data.history,
+        detail: historyGroup,
         netSpendToPoint,
         roundingOptions,
       }

@@ -197,7 +197,7 @@ const ViewCartBasket = ({
     if (deliveryAddress) {
       console.log("delivery address changed");
     }
-  }, [deliveryAddress]);
+  }, [deliveryAddress, data]);
 
   const btnSattleStatusDisable = (
     roleBtnSettle() ||

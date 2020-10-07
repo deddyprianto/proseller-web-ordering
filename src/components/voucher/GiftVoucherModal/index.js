@@ -91,12 +91,12 @@ const GiftVoucherModal = ({
               />
             </div>
             <div className={styles.name}>{voucher.name}</div>
-            <div className={styles.description}>{`Discount ${
-              voucher.voucherType === "discPercentage"
-                ? voucher.voucherValue + "%"
-                : "$" + voucher.voucherValue
-            }`}</div>
-            <div className={styles.receiverForm}>
+            <div className={styles.description}>{`Discount ${voucher.voucherType === "discPercentage"
+              ? voucher.voucherValue + "%"
+              : "$" + voucher.voucherValue
+              }`}</div>
+            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
+            <div className={styles.receiverForm} style={{ marginBottom: 10 }}>
               {failed && (
                 <div className={styles.errorMessage}>{errorMessage}</div>
               )}
@@ -104,18 +104,14 @@ const GiftVoucherModal = ({
                 <div className={styles.successMessage}>{successMessage}</div>
               )}
               <div>Gift to:</div>
-              <div>
-                <input
-                  type={method === "email" ? "email" : "number"}
-                  name="receiver"
-                  placeholder={`Enter ${
-                    method === "email" ? "email" : "phone number"
-                  }`}
-                  value={receiver}
-                  onChange={(e) => setReceiver(e.target.value)}
-                ></input>
-              </div>
-              <a
+              <input
+                type={method === "email" ? "email" : "number"}
+                name="receiver"
+                placeholder={`Enter ${method === "email" ? "email" : "phone number"}`}
+                value={receiver}
+                onChange={(e) => setReceiver(e.target.value)}
+              ></input>
+              <div
                 style={{ color: color }}
                 onClick={(e) =>
                   setMethod(method !== "email" ? "email" : "phone number")
@@ -124,10 +120,11 @@ const GiftVoucherModal = ({
                 <strong>
                   Use {method !== "email" ? "email" : "phone number"}
                 </strong>
-              </a>
+              </div>
             </div>
-            <div>How many? (Owned: {voucher.totalRedeem})</div>
-            <div className={styles.counter}>
+            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
+            <div style={{ marginTop: 10 }}>Voucher owned : {voucher.totalRedeem} items</div>
+            <div className={styles.counter} style={{ marginTop: -30, marginBottom: -30 }}>
               <button
                 className={styles.decrease}
                 onClick={() => count > 0 && setCount(count - 1)}
@@ -156,11 +153,12 @@ const GiftVoucherModal = ({
                 +
               </button>
             </div>
+            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
           </div>
 
-          <div className={styles.footer}>
-            <button onClick={handleSubmit} disabled={isSubmitting || count < 1}>
-              Gift
+          <div className={styles.footer} style={{ marginTop: 10 }}>
+            <button onClick={handleSubmit} disabled={isSubmitting || count < 1} style={{ width: "100%", borderRadius: 5 }}>
+              <i className="fa fa-paper-plane" aria-hidden="true"></i> Send Gifts
             </button>
           </div>
         </div>

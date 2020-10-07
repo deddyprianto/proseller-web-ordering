@@ -56,9 +56,7 @@ class Basket extends Component {
       pointsToRebateRatio: "0:0",
       roundingOptions: "INTEGER",
       xstep: 1,
-      orderingMode: window.location.pathname.includes("emenu")
-        ? "DINEIN"
-        : "DELIVERY",
+      orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`),
       btnBasketOrder: true,
       play: false,
       deliveryProvaider: [],
@@ -193,11 +191,6 @@ class Basket extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
 
-    if (!orderingMode)
-      orderingMode =
-        localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (isEmenu ? "DINEIN" : "DELIVERY");
-
     // console.log('scanTable', scanTable)
     if (!infoCompany) {
       let time = setInterval(async () => {
@@ -251,12 +244,15 @@ class Basket extends Component {
       }
 
       let storeDetail = null;
-      if (!isEmptyObject(this.props.defaultOutlet))
+      if (!isEmptyObject(this.props.defaultOutlet)) {
         storeDetail = this.props.defaultOutlet;
-      else
-        storeDetail = await this.props.dispatch(
-          MasterdataAction.getOutletByID(dataBasket.outlet.id)
-        );
+      } else {
+        storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
+      }
+
+      if (!orderingMode) {
+        orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`) || this.checkOrderingModeActive(storeDetail, isEmenu);
+      }
 
       let orderValidation = {
         takeAway: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
@@ -279,10 +275,7 @@ class Basket extends Component {
         deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
       }
       let discount = (selectedPoint || 0) + this.state.discountVoucher;
-      let totalPrice =
-        dataBasket.totalNettAmount - discount < 0
-          ? 0
-          : dataBasket.totalNettAmount - discount;
+      let totalPrice = (dataBasket.totalNettAmount - discount < 0) ? 0 : (dataBasket.totalNettAmount - discount);
 
       if (dataBasket.orderingMode) {
         if (dataBasket.orderingMode === "DELIVERY" && isEmenu)
@@ -290,11 +283,10 @@ class Basket extends Component {
         if (dataBasket.orderingMode === "DINEIN" && !isEmenu)
           dataBasket.orderingMode = "DELIVERY";
 
-        orderingMode =
-          (!isChangeMode && dataBasket.orderingMode) || orderingMode;
+        orderingMode = (!isChangeMode && dataBasket.orderingMode && dataBasket.id) || orderingMode;
         scanTable = {
           ...scanTable,
-          tableType: (!isChangeMode && dataBasket.orderingMode) || orderingMode,
+          tableType: (!isChangeMode && dataBasket.orderingMode && dataBasket.id) || orderingMode,
           tableNo: dataBasket.tableNo,
           outlet: dataBasket.outletID,
         };
@@ -386,6 +378,21 @@ class Basket extends Component {
     });
   };
 
+  checkOrderingModeActive(storeDetail, isEmenu) {
+    if (isEmenu) {
+      if (storeDetail.enableDineIn) return "DINEIN"
+      else if (storeDetail.enableTakeAway) return "TAKEAWAY"
+      else if (storeDetail.enableStorePickUp) return "STOREPICKUP"
+      else if (storeDetail.enableStoreCheckOut) return "STORECHECKOUT"
+      else if (storeDetail.enableDelivery) return "DELIVERY"
+    } else {
+      if (storeDetail.enableDelivery) return "DELIVERY"
+      else if (storeDetail.enableTakeAway) return "TAKEAWAY"
+      else if (storeDetail.enableStorePickUp) return "STOREPICKUP"
+      else if (storeDetail.enableStoreCheckOut) return "STORECHECKOUT"
+      else if (storeDetail.enableDineIn) return "DINEIN"
+    }
+  }
 
   checkPickUpDateTime = (checkOperationalHours, date, check) => {
     let from = parseInt(moment(checkOperationalHours.beforeTime).format("HH"))

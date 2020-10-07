@@ -27,6 +27,7 @@ class OrderingMode extends Component {
           <ModalOrderingMode
             data={props}
             setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
+            getCurrency={(price) => this.props.getCurrency(price)}
           />
         }
         <div

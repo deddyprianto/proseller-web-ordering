@@ -123,6 +123,16 @@ class Header extends Component {
     } catch (e) { }
   };
 
+  checkNameOutlet(outletName) {
+    let nameSplit = outletName.split(" ")
+    let nameMerge = ""
+    nameSplit.forEach(element => {
+      if (`${nameMerge} ${element}`.length > 15) return
+      nameMerge = `${nameMerge} ${element}`
+    });
+    return nameMerge
+  }
+
   render() {
     let { defaultOutlet, isLoggedIn } = this.props;
     // console.log(defaultOutlet)
@@ -171,7 +181,7 @@ class Header extends Component {
                     style={{ fontSize: 25, marginBottom: -5 }}
                   />
                   <span className="color" style={{ fontSize: 16 }}>
-                    {defaultOutlet.name && defaultOutlet.name.substring(0, 8)}
+                    {defaultOutlet.name && this.checkNameOutlet(defaultOutlet.name)}
                   </span>
                 </div>
               </div>

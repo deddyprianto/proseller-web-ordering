@@ -7,7 +7,7 @@ import {
 } from 'reactstrap';
 import Shimmer from "react-shimmer-effect";
 import { CustomerAction } from '../../redux/actions/CustomerAction';
-import Loading from "../loading";
+import config from "../../config";
 
 const Swal = require('sweetalert2')
 
@@ -71,7 +71,7 @@ class Setting extends Component {
   render() {
     let { loadingShow, dataCustomer, isLoading } = this.state
     return (
-      <div className="col-full" style={{ marginTop: 120 }}>
+      <div className="col-full" style={{ marginTop: config.prefix === "emenu" ? 120 : 140, }}>
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div style={{

@@ -53,25 +53,25 @@ export default class ModalPointsDetail extends Component {
                       {
                         detailPoint.detail.map((items, key) => (
                           <div key={key} style={{
-                            display: "flex", border: "1px solid #CDCDCD", borderRadius: 5, padding: 10, marginBottom: 5,
+                            display: "flex", border: "1px solid #CDCDCD", borderRadius: 5, padding: 5, paddingLeft: 10, marginBottom: 5,
                             alignItems: "center"
                           }}>
                             <ScheduleIcon style={{ fontSize: 30, color: "gray" }} />
                             <div style={{ marginLeft: 10 }}>
                               <div style={{ display: "flex" }}>
-                                <div style={{ color: "gray", fontWeight: "bold" }}>
+                                <div style={{ color: "gray", fontWeight: "bold", fontSize: 14 }}>
                                   Point :
                                 </div>
-                                <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5 }}>
+                                <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
                                   {items.pointBalance}
                                 </div>
                               </div>
 
-                              <div style={{ display: "flex" }}>
-                                <div style={{ color: "gray", fontWeight: "bold" }}>
+                              <div style={{ display: "flex", marginTop: -5 }}>
+                                <div style={{ color: "gray", fontWeight: "bold", fontSize: 14 }}>
                                   Expiry :
                                 </div>
-                                <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5 }}>
+                                <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
                                   {moment(items.expiryDate).format('DD-MM-YYYY')}
                                 </div>
                               </div>
