@@ -294,6 +294,68 @@ const ViewCartBasket = ({
               </div>
             </div> */}
 
+          {/* {
+              (props.discountVoucher + props.discountPoint) > 0 &&
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>Discount</div>
+                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${getCurrency(props.discountVoucher + props.discountPoint)}`}</div>
+                </div>
+              </div>
+            } */}
+
+          {basket.totalGrossAmount >= minAmount ? (
+            basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
+              productQuantity >= minQty ? (
+                productQuantity <= maxQty || maxQty === 0 ? null : (
+                  <div>
+                    <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                      {
+                        `Your order has exceeded maximum allowed item quantity for
+                      ${basket.orderingMode} (maximum quantity ${maxQty}). 
+                      Please remove some item from your cart.`
+                      }
+                    </div>
+                    <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
+                  </div>
+                )
+              ) : (
+                  <div>
+                    <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                      {
+                        `Your order hasn't reached minimum allowed item quantity for
+                      ${basket.orderingMode} (minimum quantity ${minQty}). 
+                      Please add some item to your cart.`
+                      }
+                    </div>
+                    <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
+                  </div>
+                )
+            ) : (
+                <div>
+                  <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    {
+                      `Your order has exceeded maximum allowed order amount for
+                    ${basket.orderingMode} ( maximum amount ${getCurrency(maxAmount)}). 
+                    Please remove some item from your cart.`
+                    }
+                  </div>
+                  <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
+                </div>
+              )
+          ) : (
+              <div>
+                <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                  {
+                    `Your order hasn't reached minimum allowed order amount for
+                  ${basket.orderingMode} (minimum amount ${getCurrency(minAmount)}). 
+                  Please add some item to your cart.`
+                  }
+                </div>
+                <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
+              </div>
+            )}
+
           {isLoggedIn &&
             deliveryProvider &&
             props.orderingMode &&
@@ -344,55 +406,6 @@ const ViewCartBasket = ({
               </div>
             )}
 
-          {/* {
-              (props.discountVoucher + props.discountPoint) > 0 &&
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>Discount</div>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${getCurrency(props.discountVoucher + props.discountPoint)}`}</div>
-                </div>
-              </div>
-            } */}
-
-          {basket.totalGrossAmount >= minAmount ? (
-            basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
-              productQuantity >= minQty ? (
-                productQuantity <= maxQty || maxQty === 0 ? null : (
-                  <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
-                    {
-                      `Your order has exceeded maximum allowed item quantity for
-                      ${basket.orderingMode} (maximum quantity ${maxQty}). 
-                      Please remove some item from your cart.`
-                    }
-                  </div>
-                )
-              ) : (
-                  <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
-                    {
-                      `Your order hasn't reached minimum allowed item quantity for
-                      ${basket.orderingMode} (minimum quantity ${minQty}). 
-                      Please add some item to your cart.`
-                    }
-                  </div>
-                )
-            ) : (
-                <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
-                  {
-                    `Your order has exceeded maximum allowed order amount for
-                    ${basket.orderingMode} ( maximum amount ${getCurrency(maxAmount)}). 
-                    Please remove some item from your cart.`
-                  }
-                </div>
-              )
-          ) : (
-              <div className="small text-left" style={{ lineHeight: "17px", textAlign: "center" }}>
-                {
-                  `Your order hasn't reached minimum allowed order amount for
-                  ${basket.orderingMode} (minimum amount ${getCurrency(minAmount)}). 
-                  Please add some item to your cart.`
-                }
-              </div>
-            )}
           <div
             style={{
               display: "flex",
