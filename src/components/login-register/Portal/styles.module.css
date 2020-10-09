@@ -37,10 +37,10 @@
 }
 
 .phoneCountryCode {
-  height: 45px;
-  width: 40px;
-  left: 70%;
-  top: -10%;
+  height: 50px;
+  width: 45px;
+  left: 67%;
+  top: -11%;
   position: absolute;
   background-color: #fff;
   display: flex;

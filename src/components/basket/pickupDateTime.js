@@ -7,6 +7,11 @@ import moment from "moment";
 class PickupDateTime extends Component {
   render() {
     let props = this.props.data;
+    var textTitle = props.orderingMode;
+    if (textTitle === "STOREPICKUP") textTitle = "Pickup"
+    if (textTitle === "STORECHECKOUT") textTitle = "Pickup"
+    if (textTitle === "DELIVERY") textTitle = "Delivery"
+    if (textTitle === "TAKEAWAY") textTitle = "Pickup"
     return (
       <div
         style={{
@@ -30,7 +35,7 @@ class PickupDateTime extends Component {
           }}
         >
           <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
-            Pickup Date & Time
+            {textTitle} Date & Time
           </div>
           <div>
             <Button

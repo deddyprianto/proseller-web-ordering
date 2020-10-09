@@ -1,9 +1,11 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+
 import SendIcon from "@material-ui/icons/Send";
 import { Button } from "reactstrap";
-import ModalOrderingMode from "./ModalOrderingMode";
+import ModalOrderingMode from "./ModalOrderingMode/index";
 
-export default class OrderingMode extends Component {
+class OrderingMode extends Component {
   componentDidMount = () => {
     let props = this.props.data;
     if (!props.orderingMode || props.orderingMode === "") {
@@ -25,6 +27,7 @@ export default class OrderingMode extends Component {
           <ModalOrderingMode
             data={props}
             setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
+            getCurrency={(price) => this.props.getCurrency(price)}
           />
         }
         <div
@@ -46,7 +49,7 @@ export default class OrderingMode extends Component {
               fontWeight: "bold",
               color: "#FFF",
               cursor: "pointer",
-              backgroundColor: "#20a8d8",
+              backgroundColor: this.props.color.secondary,
               width: 140,
               justifyContent: "space-between",
               display: "flex",
@@ -63,3 +66,15 @@ export default class OrderingMode extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    color: state.theme.color,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderingMode);

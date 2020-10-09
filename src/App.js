@@ -11,6 +11,7 @@ import { OutletAction } from "./redux/actions/OutletAction";
 import { MasterdataAction } from "./redux/actions/MaterdataAction";
 import { OrderAction } from "./redux/actions/OrderAction";
 import { CustomerAction } from "./redux/actions/CustomerAction";
+import { PaymentAction } from "./redux/actions/PaymentAction";
 
 import locale_en from "react-intl/locale-data/en";
 import locale_id from "react-intl/locale-data/id";
@@ -104,9 +105,9 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
-    if (!isLoggedIn || !account)
-      localStorage.removeItem(`${config.prefix}_account`);
+    if (!isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
     if (account) {
+      await props.dispatch(PaymentAction.getPaymentCard());
       setInterval(async () => {
         account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
         let timeExp = account.accessToken.payload.exp * 1000 - 60000;
@@ -121,25 +122,14 @@ const App = (props) => {
     let param = getUrlParameters();
     if (param && param["input"]) {
       param = getUrlParameters(base64.decode(decodeURI(param["input"])));
-      localStorage.setItem(
-        `${config.prefix}_scanTable`,
-        JSON.stringify(encryptor.encrypt(param))
-      );
-      if (param.orderingMode)
-        localStorage.setItem(
-          `${config.prefix}_ordering_mode`,
-          param.orderingMode
-        );
+      localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
+      console.log(param)
 
-      let defaultOutlet =
-        props.defaultOutlet ||
-        (await props.dispatch(
-          MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
-        ));
+      if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
 
-      if (defaultOutlet && defaultOutlet.id) {
-        defaultOutlet = config.getValidation(defaultOutlet)
-      }
+      let defaultOutlet = props.defaultOutlet || await props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
+
+      if (defaultOutlet && defaultOutlet.id) defaultOutlet = config.getValidation(defaultOutlet)
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);

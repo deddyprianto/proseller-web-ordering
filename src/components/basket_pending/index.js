@@ -289,6 +289,7 @@ class Basket extends Component {
         let provaiderDelivery = deliveryProvaider.find((items) => {
           return items.id === dataBasket.deliveryProviderId;
         });
+        console.log(provaiderDelivery)
         this.setState({ provaiderDelivery });
       }
 
@@ -333,10 +334,9 @@ class Basket extends Component {
 
       this.submitOtomatis(dataBasket);
 
-      this.timeGetBasket = setInterval(async () => {
-        if (dataBasket.id)
-          await this.getDataBasketPending(dataBasket.id, dataBasket.status);
-      }, 5000);
+      // this.timeGetBasket = setInterval(async () => {
+      if (dataBasket.id) await this.getDataBasketPending(dataBasket.id, dataBasket.status);
+      // }, 5000);
     } else {
       this.setState({
         dataBasket: null,
@@ -391,7 +391,7 @@ class Basket extends Component {
     localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    clearInterval(this.timeGetBasket);
+    // clearInterval(this.timeGetBasket);
   };
 
   getDataBasket_ = async () => {
@@ -435,7 +435,7 @@ class Basket extends Component {
           "Your order has been completed.",
           "success"
         );
-        clearInterval(this.timeGetBasket);
+        // clearInterval(this.timeGetBasket);
         setTimeout(() => {
           this.props.history.push("/history");
           window.location.reload();
@@ -452,7 +452,7 @@ class Basket extends Component {
           `Your order has been ${response.data.status}.`,
           "error"
         );
-        clearInterval(this.timeGetBasket);
+        // clearInterval(this.timeGetBasket);
         setTimeout(() => {
           this.props.history.push("/history");
           window.location.reload();
@@ -957,9 +957,34 @@ class Basket extends Component {
       if (result.value) {
         try {
           this.setState({ isLoading: true });
-          await this.props.dispatch(
-            OrderAction.cartUpdate({ id: this.state.dataBasket.cartID, status })
-          );
+          let response = await this.props.dispatch(OrderAction.cartUpdate({ id: this.state.dataBasket.cartID, status }));
+          if (response.resultCode === 200) {
+            // this.togglePlay()
+            this.setState({ isLoading: false });
+            Swal.fire(
+              "Congratulations!",
+              "Your order has been completed.",
+              "success"
+            );
+            // clearInterval(this.timeGetBasket);
+            setTimeout(() => {
+              this.props.history.push("/history");
+              window.location.reload();
+            }, 2000);
+          } else {
+            // this.togglePlay()
+            this.setState({ isLoading: false });
+            Swal.fire(
+              "Oppss!",
+              response.data.message || response.message || "Your order has been filed",
+              "error"
+            );
+            // clearInterval(this.timeGetBasket);
+            setTimeout(() => {
+              this.props.history.push("/history");
+              window.location.reload();
+            }, 2000);
+          }
         } catch (error) {
           console.log(error);
         }

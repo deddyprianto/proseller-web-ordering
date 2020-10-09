@@ -1,5 +1,4 @@
 import logo from "./assets/images/logo_placeholder.png";
-import { MasterDataService } from "./Services/MasterDataService";
 
 let config = {};
 let stage = "demo";
@@ -26,14 +25,24 @@ if (process.env.REACT_APP_STAGE === "local") {
     url_ordering: `https://${window.location.hostname}/ordering/api/`,
     url_product: `https://${window.location.hostname}/product/api/`,
   };
+} else {
+  config = {
+    url_masterdata: `${process.env.REACT_APP_ENDPOINT}/masterdata/api/`,
+    url_crm: `${process.env.REACT_APP_ENDPOINT}/crm/api/`,
+    url_appointment: `${process.env.REACT_APP_ENDPOINT}/appointment/api/`,
+    url_ordering: `${process.env.REACT_APP_ENDPOINT}/ordering/api/`,
+    url_product: `${process.env.REACT_APP_ENDPOINT}/product/api/`,
+  };
 }
 
 if (process.env.REACT_APP_STAGE === "demo") {
   config.url_payment = `https://payment-demo.proseller.io/api/`;
 } else if (process.env.REACT_APP_STAGE === "prod") {
   config.url_payment = `https://payment.proseller.io/api/`;
-} else {
+} else if (process.env.REACT_APP_STAGE === "local" || process.env.REACT_APP_STAGE === "dev") {
   config.url_payment = `https://payment${stage !== "" ? "-" + stage : ""}.proseller.io/api/`;
+} else {
+  config.url_payment = process.env.REACT_APP_URLPAYMENT
 }
 
 config.url_logo = logo;
@@ -81,26 +90,3 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
 }
 
 export default config;
-
-
-async function getDomainName(endPoint) {
-  let response = await MasterDataService.api("GET", null, endPoint, null, `https://edgeworks-dev.proseller.io/masterdata/api/urlmapping/`)
-  console.log(response)
-  for (const key in config) {
-    if (config.hasOwnProperty(key)) {
-      config[key] = config[key].replace(endPoint, response)
-    }
-  }
-  console.log(config)
-  return response
-}
-
-// if (process.env.REACT_APP_STAGE === "local") {
-//   getDomainName(`${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`)
-// } else if (
-//   process.env.REACT_APP_STAGE === "dev" ||
-//   process.env.REACT_APP_STAGE === "demo" ||
-//   process.env.REACT_APP_STAGE === "prod"
-// ) {
-//   getDomainName(window.location.host)
-// }

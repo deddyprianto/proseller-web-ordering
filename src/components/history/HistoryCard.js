@@ -64,7 +64,7 @@ class InboxCard extends Component {
             <div style={{ marginLeft: 10, textAlign: "left" }}>
               <div
                 className="modal-title"
-                style={{ fontWeight: "bold", fontSize: 16 }}
+                style={{ fontWeight: "bold", fontSize: 14, lineHeight: "17px" }}
               >
                 {items.outlet && items.outlet.name}
               </div>

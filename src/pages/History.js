@@ -35,7 +35,7 @@ class History extends Component {
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
     try {
       document.getElementsByClassName("modal-backdrop")[0].remove();
-    } catch (error) {}
+    } catch (error) { }
 
     if (!this.props.isLoggedIn) return;
 
@@ -44,9 +44,9 @@ class History extends Component {
     if (this.state.dataPending.length > 0)
       this.setState({ isTransaction: false });
 
-    this.timeGetBasket = setInterval(async () => {
-      await this.getDataBasketPending();
-    }, 5000);
+    // this.timeGetBasket = setInterval(async () => {
+    await this.getDataBasketPending();
+    // }, 5000);
     let infoCompany = await this.props.dispatch(
       MasterdataAction.getInfoCompany()
     );
@@ -59,7 +59,7 @@ class History extends Component {
   };
 
   componentWillUnmount = () => {
-    clearInterval(this.timeGetBasket);
+    // clearInterval(this.timeGetBasket);
   };
 
   render() {
@@ -129,9 +129,8 @@ class History extends Component {
                 className={!isTransaction ? "use-select" : "un-select"}
                 style={{ height: 50, color: "#FFF", fontWeight: "bold" }}
                 onClick={() => this.setState({ isTransaction: false })}
-              >{`Pending Orders ${
-                dataPendingLength > 0 ? `(${dataPendingLength})` : ""
-              }`}</Button>
+              >{`Pending Orders ${dataPendingLength > 0 ? `(${dataPendingLength})` : ""
+                }`}</Button>
             </div>
             <main
               id="main"

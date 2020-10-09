@@ -36,7 +36,7 @@ class CardItemBasket extends Component {
             left: 40,
             fontWeight: "bold",
           }}
-        >{`${item.product.retailPrice}`}</div>
+        >{`${item.grossAmount}`}</div>
         <img
           src={this.renderImageProduct(item)}
           style={{

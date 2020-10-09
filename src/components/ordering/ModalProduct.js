@@ -650,7 +650,7 @@ class ModalProduct extends Component {
                   </p>
                 </center>
               </div>
-              <div className="col-md-12">
+              <div className="col-md-12" style={{ textAlign: "left" }}>
                 {selectedItem.product.productModifiers &&
                   selectedItem.product.productModifiers.map((item, i) => {
                     if (
@@ -672,7 +672,7 @@ class ModalProduct extends Component {
                   })}
               </div>
               {defaultOutlet.enableItemSpecialInstructions ? (
-                <div className="col-md-12">
+                <div className="col-md-12" style={{ textAlign: "left" }}>
                   <label for="name">
                     Special Instruction{" "}
                     <span className="text-muted" style={{ fontSize: 10 }}>

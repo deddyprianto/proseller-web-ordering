@@ -18,6 +18,7 @@ export default class ScanTable extends Component {
             scan: true,
             outlet: param.outletId || param.outlet
           }
+          // console.log(scanTable)
           localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(scanTable)));
           this.props.history.goBack();
         } else {

@@ -13,6 +13,7 @@ import promotion from "./PromotionReducer";
 import masterdata from "./MasterdataReducer";
 import theme from "./ThemeReducer";
 import voucher from "./VoucherReducer";
+import payment from "./PaymentReducer";
 
 const rootReducer = combineReducers({
   auth,
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   broadcast,
   theme,
   voucher,
+  payment,
 });
 
 export default rootReducer;

@@ -38,11 +38,7 @@ class CardItemBasket extends Component {
             fontSize: 12,
             fontWeight: "bold",
           }}
-        >{`${
-          this.props
-            .getCurrency(item.unitPrice * item.quantity)
-            .split(currency.code)[1]
-        }`}</div>
+        >{item.grossAmount}</div>
         <img
           src={this.renderImageProduct(item)}
           style={{
@@ -72,11 +68,10 @@ class CardItemBasket extends Component {
               <span
                 className="customer-group-name"
                 style={{ fontSize: 14, fontWeight: "bold" }}
-              >{`${item.product.name} (${
-                this.props
+              >{`${item.product.name} (${this.props
                   .getCurrency(item.product.retailPrice)
                   .split(currency.code)[1]
-              })`}</span>
+                })`}</span>
             </Typography>
           </div>
           {item.modifiers && item.modifiers.length > 0 && (
@@ -117,11 +112,10 @@ class CardItemBasket extends Component {
                                     color: "gray",
                                     fontStyle: "italic",
                                   }}
-                                >{`${itemModifier.name} (${
-                                  this.props
+                                >{`${itemModifier.name} (${this.props
                                     .getCurrency(itemModifier.price)
                                     .split(currency.code)[1]
-                                })`}</span>
+                                  })`}</span>
                               </Typography>
                             </dev>
                           )

@@ -8,6 +8,7 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
+import config from "../../config";
 
 const ViewCartBasket = ({
   data,
@@ -33,6 +34,11 @@ const ViewCartBasket = ({
   basket,
   handleSetState
 }) => {
+  if (!outlet.orderValidation) {
+    outlet = data.storeDetail
+    if (!outlet.orderValidation) outlet = config.getValidation(outlet)
+  }
+
   const roleBtnClear = () => {
     let props = data;
     return (basket &&
@@ -58,21 +64,20 @@ const ViewCartBasket = ({
   };
 
   const roleDisableNotPending = () => {
-    let props = data;
     return basket && basket.status !== "PENDING" ? true : false;
   };
 
   const roleBtnSettle = () => {
     let props = data;
     return !props.btnBasketOrder ||
+      props.storeDetail &&
       props.storeDetail.orderingStatus === "UNAVAILABLE" ||
-      basket.status === "PROCESSING" ||
-      basket.status === "READY_FOR_COLLECTION" ||
+      basket && basket.status === "PROCESSING" ||
+      basket && basket.status === "READY_FOR_COLLECTION" ||
       (basket &&
         basket.status === "SUBMITTED" &&
         basket.orderingMode === "DINEIN" &&
         basket.outlet.outletType === "RESTO") ||
-      // (props.isLoggedIn && props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ||
       (((basket && basket.status === "SUBMITTED") ||
         basket.status === "CONFIRMED") &&
         props.orderingMode &&
@@ -120,27 +125,6 @@ const ViewCartBasket = ({
     );
   };
 
-  const roleBackgroundSettle = () => {
-    let props = data;
-    return (
-      props.settle ||
-      (props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        )
-      ) ||
-      (props.orderingMode &&
-        props.orderingMode === "DINEIN" &&
-        basket &&
-        basket.outlet.outletType === "QUICKSERVICE" &&
-        basket.outlet.enableTableScan === false) ||
-      (basket && basket.status !== "PENDING")
-    );
-  };
-
   const roleIconSettle = () => {
     let props = data;
     return (
@@ -166,7 +150,7 @@ const ViewCartBasket = ({
       ) ||
       (
         props.scanTable &&
-        props.scanTable.tableType
+        props.scanTable.table
       )
     );
   };
@@ -177,27 +161,20 @@ const ViewCartBasket = ({
 
   let props = data;
   // const basket = data.dataBasket;
-  const orderingModeField =
-    data.dataBasket.orderingMode === "DINEIN"
-      ? "dineIn"
-      : data.dataBasket.orderingMode === "DELIVERY"
-        ? "delivery"
-        : "takeAway";
+  const orderingModeField = data.dataBasket.orderingMode === "DINEIN" ? "dineIn" : data.dataBasket.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
+
   const productQuantity =
     basket &&
     basket.details &&
-    basket.details.reduce((acc, item) => ({
-      quantity: acc.quantity + item.quantity,
-    })).quantity;
-  const { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[
-    orderingModeField
-  ];
+    basket.details.reduce((acc, item) => ({ quantity: acc.quantity + item.quantity })).quantity;
+
+  const { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[orderingModeField];
 
   useEffect(() => {
     if (deliveryAddress) {
       console.log("delivery address changed");
     }
-  }, [deliveryAddress, data]);
+  }, [deliveryAddress, data, outlet]);
 
   const btnSattleStatusDisable = (
     roleBtnSettle() ||
@@ -312,7 +289,7 @@ const ViewCartBasket = ({
                     <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
                         `Your order has exceeded maximum allowed item quantity for
-                      ${basket.orderingMode} (maximum quantity ${maxQty}). 
+                      ${data.dataBasket.orderingMode} (maximum quantity ${maxQty}). 
                       Please remove some item from your cart.`
                       }
                     </div>
@@ -324,7 +301,7 @@ const ViewCartBasket = ({
                     <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
                         `Your order hasn't reached minimum allowed item quantity for
-                      ${basket.orderingMode} (minimum quantity ${minQty}). 
+                      ${data.dataBasket.orderingMode} (minimum quantity ${minQty}). 
                       Please add some item to your cart.`
                       }
                     </div>
@@ -336,7 +313,7 @@ const ViewCartBasket = ({
                   <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                     {
                       `Your order has exceeded maximum allowed order amount for
-                    ${basket.orderingMode} ( maximum amount ${getCurrency(maxAmount)}). 
+                    ${data.dataBasket.orderingMode} ( maximum amount ${getCurrency(maxAmount)}). 
                     Please remove some item from your cart.`
                     }
                   </div>
@@ -348,7 +325,7 @@ const ViewCartBasket = ({
                 <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                   {
                     `Your order hasn't reached minimum allowed order amount for
-                  ${basket.orderingMode} (minimum amount ${getCurrency(minAmount)}). 
+                  ${data.dataBasket.orderingMode} (minimum amount ${getCurrency(minAmount)}). 
                   Please add some item to your cart.`
                   }
                 </div>
@@ -431,7 +408,7 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              {getCurrency(basket && basket.totalNettAmount)}
+              {getCurrency(data.dataBasket.totalNettAmount + (deliveryProvider && deliveryProvider.deliveryFeeFloat))}
             </div>
           </div>
 

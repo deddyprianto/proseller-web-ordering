@@ -76,6 +76,7 @@ class Payment extends Component {
       failed: false,
       showPaymentPage: false,
       paymentUrl: "",
+      paymentCard: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -99,17 +100,6 @@ class Payment extends Component {
     this.setState({ loadingShow: false });
   };
 
-  componentDidUpdate() {
-    // let state = this.state
-    if (this.props.campaignPoint.detailPoint && !this.state.detailPoint) {
-      this.setState(this.props.campaignPoint);
-      // state = { ...state, ...this.props.campaignPoint }
-    } else if (this.props.myVoucher && !this.state.myVoucher) {
-      this.setState({ myVoucher: this.props.myVoucher });
-      // state = { ...state, myVoucher: this.props.myVoucher }
-    }
-  }
-
   viewShimmer = (isHeight = 100) => {
     return (
       <Shimmer>
@@ -126,70 +116,22 @@ class Payment extends Component {
     );
   };
 
-  componentWillUnmount = () => {
-    try {
-      clearInterval(this.loopCart);
-    } catch (e) { }
-  };
-
   getPendingOrder = async (cart) => {
     try {
-      clearInterval(this.loopCart);
+      // clearInterval(this.loopCart);
     } catch (e) { }
 
-    this.loopCart = setInterval(async () => {
-      await this.getCart(cart);
-    }, 2000);
+    // this.loopCart = setInterval(async () => {
+    await this.getCart(cart);
+    // }, 2000);
   };
 
-  openTab(url) {
-    // Create link in memory
-    var a = window.document.createElement("a");
-    a.target = "_blank";
-    a.href = url;
-
-    // Dispatch fake click
-    var e = window.document.createEvent("MouseEvents");
-    e.initMouseEvent(
-      "click",
-      true,
-      true,
-      window,
-      0,
-      0,
-      0,
-      0,
-      0,
-      false,
-      false,
-      false,
-      false,
-      0,
-      null
-    );
-    a.dispatchEvent(e);
-  }
-
   getPendingPayment = async (payment) => {
-    // this.openTab(payment.action.url);
     this.setState({
       isLoading: false,
       showPaymentPage: true,
       paymentUrl: payment.action.url,
     });
-
-    // let hostedPage = window.open(payment.action.url, "_blank");
-    // if (hostedPage == null || typeof hostedPage == "undefined") {
-    //   Swal.fire({
-    //     icon: "info",
-    //     timer: 1500,
-    //     showConfirmButton: false,
-    //     title: "Please disable your pop-up blocker and try again.",
-    //   });
-    //   return;
-    // } else {
-    //   hostedPage.focus();
-    // }
 
     for (let i = 0; i < 1000; i++) {
       const response = await this.props.dispatch(OrderAction.getCart());
@@ -277,6 +219,31 @@ class Payment extends Component {
     }
   };
 
+
+  componentDidUpdate() {
+    let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
+    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
+    if (this.props.campaignPoint.detailPoint && !this.state.detailPoint) {
+      this.setState(this.props.campaignPoint);
+    } else if (this.props.myVoucher && !this.state.myVoucher) {
+      this.setState({ myVoucher: this.props.myVoucher });
+    } else if (this.props.paymentCard.length > 0 && this.state.paymentCard.length === 0) {
+      if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
+      if (selectedCard) {
+        let check = false
+        this.props.paymentCard.forEach(element => {
+          if (element.id === selectedCard.id) check = true
+        });
+        if (!check) {
+          selectedCard = null
+          localStorage.removeItem(`${config.prefix}_selectedCard`)
+          localStorage.removeItem(`${config.prefix}_paymentCardAccountDefault`)
+        }
+        this.setState({ paymentCard: this.props.paymentCard, selectedCard });
+      }
+    }
+  }
+
   getDataBasket = async () => {
     let dataSettle = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataSettle`))
@@ -287,20 +254,14 @@ class Payment extends Component {
     let selectedPoint = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedPoint`))
     );
-    let selectedCard = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
-    );
-    let paymentCardAccountDefault = encryptor.decrypt(
-      JSON.parse(
-        localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)
-      )
-    );
+
+    let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
+    let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
+    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
 
     if (dataSettle === null || !dataSettle.dataBasket) return;
 
     this.setState({ dataSettle });
-
-    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
 
     await this.getStatusVoucher(
       selectedVoucher,
@@ -324,8 +285,8 @@ class Payment extends Component {
     this.setState({
       ...dataSettle,
       selectedVoucher,
-      selectedPoint,
       selectedCard,
+      selectedPoint,
       totalPrice,
       isLoading: false,
     });
@@ -717,7 +678,7 @@ class Payment extends Component {
 
     payload.partitionKey = this.props.basket.partitionKey;
     payload.sortKey = this.props.basket.sortKey;
-    payload.price = this.state.totalPrice + deliveryFee;
+    payload.price = this.state.totalPrice;
 
     let response;
     if (
@@ -733,12 +694,12 @@ class Payment extends Component {
     } else {
       response = await this.props.dispatch(OrderAction.submitSettle(payload));
     }
-    // console.log(response)
+    console.log(response)
 
     if (response && response.resultCode === 400) {
       Swal.fire(
         "Oppss!",
-        response.message || response.data.message || "Payment Failed!",
+        response.message || response.data && response.data.message || "Payment Failed!",
         "error"
       );
     } else {
@@ -999,7 +960,8 @@ class Payment extends Component {
                             color: "#20a8d8",
                             fontWeight: "bold",
                             textAlign: "left",
-                            fontSize: 17,
+                            fontSize: 14,
+                            lineHeight: "17px"
                           }}
                         >
                           {dataBasket.outlet.name}
@@ -1130,6 +1092,7 @@ const mapStateToProps = (state, ownProps) => {
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,
     deliveryProvider: state.order.selectedDeliveryProvider,
+    paymentCard: state.payment.paymentCard,
   };
 };
 

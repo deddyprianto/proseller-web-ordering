@@ -158,7 +158,7 @@ class MenuBasket extends Component {
                       <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                         {
                           `Your order has exceeded maximum allowed item quantity for
-                      ${basket.orderingMode} (maximum quantity ${maxQty}). 
+                      ${props.dataBasket.orderingMode} (maximum quantity ${maxQty}). 
                       Please remove some item from your cart.`
                         }
                       </div>
@@ -170,7 +170,7 @@ class MenuBasket extends Component {
                       <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                         {
                           `Your order hasn't reached minimum allowed item quantity for
-                      ${basket.orderingMode} (minimum quantity ${minQty}). 
+                      ${props.dataBasket.orderingMode} (minimum quantity ${minQty}). 
                       Please add some item to your cart.`
                         }
                       </div>
@@ -182,7 +182,7 @@ class MenuBasket extends Component {
                     <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                       {
                         `Your order has exceeded maximum allowed order amount for
-                    ${basket.orderingMode} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
+                    ${props.dataBasket.orderingMode} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
                     Please remove some item from your cart.`
                       }
                     </div>
@@ -194,7 +194,7 @@ class MenuBasket extends Component {
                   <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                     {
                       `Your order hasn't reached minimum allowed order amount for
-                  ${basket.orderingMode} (minimum amount ${this.props.getCurrency(minAmount)}). 
+                  ${props.dataBasket.orderingMode} (minimum amount ${this.props.getCurrency(minAmount)}). 
                   Please add some item to your cart.`
                     }
                   </div>

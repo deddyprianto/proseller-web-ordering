@@ -1,4 +1,7 @@
 import { CONSTANT } from "../../helpers";
+import config from "../../config";
+
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
   infoCompany: {
@@ -40,6 +43,15 @@ export default function reducer(state = defaultState, action) {
           isFetching: false,
           errors: true,
         },
+      };
+    case CONSTANT.DEFAULT_OUTLET:
+      localStorage.setItem(
+        `${config.prefix}_defaultOutlet`,
+        JSON.stringify(encryptor.encrypt(action.data))
+      );
+      return {
+        ...state,
+        defaultOutlet: action.data,
       };
     default:
       return state;

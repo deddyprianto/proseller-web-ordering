@@ -18,7 +18,7 @@ export default class ModalQRCode extends Component {
               </div>
               <div className="modal-body">
                 <QRCode
-                  value={JSON.stringify({ cartID: this.props.qrcode })}
+                  value={JSON.stringify({ token: this.props.qrcode })}
                   style={{ height: "100%", width: "100%", maxWidth: "290px", maxHeight: "290px" }}
                   size={200}
                 />

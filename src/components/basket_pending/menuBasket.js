@@ -49,6 +49,8 @@ export default class MenuBasket extends Component {
             data={props}
             roleDisableNotPending={this.props.roleDisableNotPending}
             setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
+            getCurrency={(price) => this.props.getCurrency(price)}
+            isLoggedIn={this.props.isLoggedIn}
           />
         </div>
 

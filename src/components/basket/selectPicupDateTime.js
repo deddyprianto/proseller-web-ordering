@@ -21,13 +21,31 @@ export default class SelectPicupDateTime extends Component {
       return date;
     }
     let date = new Date()
+    var textTitle = props.orderingMode;
+    var maxDay = null;
+    if (textTitle === "STOREPICKUP") {
+      textTitle = "Pickup"
+      maxDay = props.storeDetail.maxStorePickupDays
+    }
+    if (textTitle === "STORECHECKOUT") {
+      textTitle = "Pickup"
+      maxDay = props.storeDetail.maxStoreCheckoutDays
+    }
+    if (textTitle === "DELIVERY") {
+      textTitle = "Delivery"
+      maxDay = props.storeDetail.maxDeliveryDays
+    }
+    if (textTitle === "TAKEAWAY") {
+      textTitle = "Pickup"
+      maxDay = props.storeDetail.maxTakeAwayDays
+    }
     return (
       <div>
         <div className="modal fade" id="pickup-date-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content" style={{ width: "100%", marginTop: 100, marginBottom: 100 }}>
               <div className="modal-header" style={{ display: "flex", justifyContent: "center" }}>
-                <h5 className="modal-title" id="exampleModalLabel" style={{ fontSize: 16 }}>Select Pickup Date & Time</h5>
+                <h5 className="modal-title" id="exampleModalLabel" style={{ fontSize: 16 }}>{textTitle} Date & Time</h5>
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close"
                   onClick={() => {
                     this.props.handleSetState('orderActionDate', this.state.orderActionDate)
@@ -47,7 +65,7 @@ export default class SelectPicupDateTime extends Component {
                       selected={new Date(props.orderActionDate)}
                       onChange={orderActionDate => this.props.handleSetState('orderActionDate', moment(orderActionDate).format("YYYY-MM-DD"))}
                       minDate={date}
-                      maxDate={props.storeDetail.maxStorePickupDays && date.addDays(parseInt(props.storeDetail.maxStorePickupDays))}
+                      maxDate={maxDay && date.addDays(parseInt(maxDay))}
                     />
                     <div onClick={() => document.getElementById('orderingDateBtn').click()}
                       style={{ position: "absolute", padding: 5, backgroundColor: "#FFF", top: 46, left: 30 }}>

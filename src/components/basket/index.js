@@ -27,7 +27,7 @@ class Basket extends Component {
     super(props);
     this.state = {
       loadingShow: true,
-      isLoading: true,
+      isLoading: false,
       dataBasket: null,
       myVoucher: null,
       countryCode: "SG",
@@ -63,7 +63,7 @@ class Basket extends Component {
       dataCVV: "",
       isEmenu: window.location.pathname.includes("emenu"),
       orderActionDate: moment().format("YYYY-MM-DD"),
-      orderActionTime: moment().format("HH") + ":00",
+      orderActionTime: moment().add(1, 'h').format("HH") + ":00",
       checkOperationalHours: {},
       orderingTime: []
     };
@@ -89,9 +89,7 @@ class Basket extends Component {
   componentDidMount = async () => {
     await this.checkOfflineCart();
     this.audio.addEventListener("ended", () => this.setState({ play: false }));
-    let offlineCart = JSON.parse(
-      localStorage.getItem(`${config.prefix}_offlineCart`)
-    );
+    JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`));
 
     let param = this.getUrlParameters();
     if (param && param["input"]) {
@@ -100,8 +98,6 @@ class Basket extends Component {
         `${config.prefix}_scanTable`,
         JSON.stringify(encryptor.encrypt(param))
       );
-    } else {
-      localStorage.removeItem(`${config.prefix}_scanTable`);
     }
 
     setInterval(() => {
@@ -112,7 +108,7 @@ class Basket extends Component {
         }
       } catch (error) { }
     }, 0);
-    this.getDataBasket();
+    await this.getDataBasket();
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -169,6 +165,8 @@ class Basket extends Component {
   };
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
+    // Swal.fire({ onOpen: () => { Swal.showLoading(); } });
+
     let { isLoggedIn } = this.props;
     let { isEmenu } = this.state;
     let selectedVoucher = encryptor.decrypt(
@@ -190,7 +188,6 @@ class Basket extends Component {
     let dataBasket = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
-
     // console.log('scanTable', scanTable)
     if (!infoCompany) {
       let time = setInterval(async () => {
@@ -216,16 +213,14 @@ class Basket extends Component {
       // if (response.ResultCode === 200) this.setState(response.Data)
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode;
-      let response = await this.props.dispatch(
-        OrderAction.buildCart(dataBasket)
-      );
+      let response = await this.props.dispatch(OrderAction.buildCart(dataBasket));
       if (!response.message) dataBasket = response.data;
     }
 
     if (!dataBasket) dataBasket = await this.getDataBasket_();
 
     if (dataBasket) {
-      this.checkViewCart(dataBasket);
+      await this.checkViewCart(dataBasket);
 
       if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
         selectedVoucher = dataBasket.confirmationInfo.voucher;
@@ -244,7 +239,8 @@ class Basket extends Component {
       }
 
       let storeDetail = null;
-      if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.id) {
+      // storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
+      if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.product) {
         storeDetail = this.props.defaultOutlet;
       } else {
         storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
@@ -340,12 +336,11 @@ class Basket extends Component {
         this.setState({ deliveryProvaider });
       }
 
-      await this.submitOtomatis(dataBasket);
+      await this.submitOtomatis(dataBasket, scanTable);
 
-      this.timeGetBasket = setInterval(async () => {
-        if (dataBasket.id)
-          await this.getDataBasketPending(dataBasket.id, dataBasket.status);
-      }, 5000);
+      // this.timeGetBasket = setInterval(async () => {
+      if (dataBasket.id) await this.getDataBasketPending(dataBasket.id, dataBasket.status);
+      // }, 5000);
     } else {
       this.setState({
         dataBasket: null,
@@ -357,7 +352,7 @@ class Basket extends Component {
 
     this.setState({
       loadingShow: false,
-      isLoading: false,
+      // isLoading: false,
       selectedPoint,
       discountPoint: selectedPoint || 0,
       orderingMode,
@@ -426,7 +421,7 @@ class Basket extends Component {
   };
 
   componentWillUnmount = () => {
-    clearInterval(this.timeGetBasket);
+    // clearInterval(this.timeGetBasket);
   };
 
   getDataBasket_ = async () => {
@@ -438,10 +433,7 @@ class Basket extends Component {
       !response.data.message &&
       response.data.status !== "failed"
     ) {
-      localStorage.setItem(
-        `${config.prefix}_dataBasket`,
-        JSON.stringify(encryptor.encrypt(response.data))
-      );
+      localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
       this.setState({ dataBasket: response.data });
       return response.data;
     }
@@ -465,13 +457,13 @@ class Basket extends Component {
         response.data.status === "COMPLETED"
       ) {
         this.togglePlay();
-        this.setState({ isLoading: false });
+        // this.setState({ isLoading: false });
         Swal.fire(
           "Congratulations!",
           "Your order has been completed.",
           "success"
         );
-        clearInterval(this.timeGetBasket);
+        // clearInterval(this.timeGetBasket);
         setTimeout(() => {
           this.props.history.push("/history");
           localStorage.removeItem(`${config.prefix}_dataBasket`);
@@ -483,13 +475,13 @@ class Basket extends Component {
         response.data.status === "CANCELLED"
       ) {
         this.togglePlay();
-        this.setState({ isLoading: false });
+        // this.setState({ isLoading: false });
         Swal.fire(
           "Oppss!",
           `Your order has been ${response.data.status}.`,
           "error"
         );
-        clearInterval(this.timeGetBasket);
+        // clearInterval(this.timeGetBasket);
         setTimeout(() => {
           this.props.history.push("/history");
           localStorage.removeItem(`${config.prefix}_dataBasket`);
@@ -505,10 +497,7 @@ class Basket extends Component {
           response.data.status !== "failed" &&
           status !== response.data.status
         ) {
-          localStorage.setItem(
-            `${config.prefix}_dataBasket`,
-            JSON.stringify(encryptor.encrypt(response.data))
-          );
+          localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
           // console.log(response.data)
           this.setState({ dataBasket: response.data });
         }
@@ -915,16 +904,17 @@ class Basket extends Component {
       storeDetail &&
       storeDetail.outletType !== "QUICKSERVICE"
     ) {
-      this.setState({ isLoading: true });
-
+      // this.setState({ isLoading: true });
       let payload = {
         tableNo: scanTable.tableNo || scanTable.table,
         orderingMode: orderingMode,
       };
 
-      let response = await this.props.dispatch(
-        OrderAction.submitBasket(payload)
-      );
+      if (!payload.tableNo) return this.props.history.push("/scanTable");
+
+      let response = await this.props.dispatch(OrderAction.submitBasket(payload));
+
+      console.log('submit', response)
       if (response && response.resultCode === 200) {
         this.setState({ dataBasket: response.data });
         localStorage.removeItem(`${config.prefix}_dataBasket`);
@@ -932,10 +922,7 @@ class Basket extends Component {
           OrderAction.setData({}, "DATA_BASKET")
         );
         this.setState({ isLoading: false });
-        localStorage.setItem(
-          `${config.prefix}_dataSettle`,
-          JSON.stringify(encryptor.encrypt(this.state))
-        );
+        localStorage.setItem(`${config.prefix}_dataSettle`, JSON.stringify(encryptor.encrypt(this.state)));
         this.props.history.push("/payment");
       } else {
         Swal.fire(
@@ -943,6 +930,8 @@ class Basket extends Component {
           response.message || response.data.message || "Submit error!",
           "error"
         );
+        localStorage.removeItem(`${config.prefix}_scanTable`);
+        this.setState({ scanTable: null })
         this.props.history.push("/scanTable");
       }
 
@@ -1020,7 +1009,7 @@ class Basket extends Component {
   handleSetState = async (field, value) => {
     this.setState({ [field]: value });
     if (field === "dataBasket") {
-      // this.setState({ isLoading: true })
+      this.setState({ isLoading: true })
       localStorage.setItem(
         `${config.prefix}_dataBasket`,
         JSON.stringify(encryptor.encrypt(value))
@@ -1129,7 +1118,7 @@ class Basket extends Component {
           id="open-modal-product"
           style={{ color: "white" }}
         ></span>
-        {isLoading ? Swal.showLoading() : Swal.close()}
+        {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
       </div>
     );
   }

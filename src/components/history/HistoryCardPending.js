@@ -63,7 +63,7 @@ class InboxCard extends Component {
           <div style={{ marginLeft: 10, textAlign: "left" }}>
             <div
               className="modal-title"
-              style={{ fontWeight: "bold", fontSize: 16 }}
+              style={{ fontWeight: "bold", fontSize: 14, lineHeight: "17px" }}
             >
               {items.outlet.name}
             </div>
@@ -81,6 +81,7 @@ class InboxCard extends Component {
                   "red",
                 fontWeight: "bold",
                 fontSize: 12,
+                maxWidth: 170,
                 paddingLeft: 10,
                 paddingRight: 10,
                 borderRadius: 5,
@@ -94,7 +95,7 @@ class InboxCard extends Component {
         <div>
           <div
             className="modal-title"
-            style={{ fontWeight: "bold", fontSize: 14, textAlign: "right" }}
+            style={{ fontWeight: "bold", fontSize: 14, textAlign: "right", width: 65, marginTop: -20 }}
           >
             {items.details.length + " items"}
           </div>
@@ -104,6 +105,9 @@ class InboxCard extends Component {
               fontSize: 10,
               textAlign: "right",
               marginTop: 10,
+              width: "100%",
+              bottom: 10, right: 20,
+              position: "absolute"
             }}
           >
             {moment(items.createdOn).format("DD/MM/YY HH:mm")}
