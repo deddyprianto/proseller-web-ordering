@@ -27,16 +27,16 @@ class CardItemBasket extends Component {
           className="profile-dashboard"
           style={{
             position: "absolute",
-            width: 70,
+            minWidth: 70,
             paddingLeft: 10,
             paddingRight: 10,
             color: "white",
-            fontSize: 16,
+            fontSize: 12,
             borderBottomRightRadius: 10,
             left: 40,
             fontWeight: "bold",
           }}
-        >{`${item.grossAmount}`}</div>
+        >{`${item.grossAmount.toFixed(2)}`}</div>
         <img
           src={this.renderImageProduct(item)}
           style={{

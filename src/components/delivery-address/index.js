@@ -6,8 +6,8 @@ import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { connect } from "react-redux";
 import ModalDeliveryAddress from "./ModalDeliveryAddress";
-import { findKey } from "lodash";
-import GoogleMaps from "./GoogleMaps";
+// import { findKey } from "lodash";
+// import GoogleMaps from "./GoogleMaps";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
@@ -114,6 +114,7 @@ class DeliveryAddress extends Component {
   };
 
   handleEdit = async (indexEdit, item) => {
+    item.setAddress = false
     console.log(item);
     let countryCode = this.state.countryCode;
     let optionsProvince = this.state.optionsProvince;
@@ -195,10 +196,7 @@ class DeliveryAddress extends Component {
   };
 
   handleSelected = async (items) => {
-    localStorage.setItem(
-      `${config.prefix}_deliveryAddress`,
-      JSON.stringify(encryptor.encrypt(items))
-    );
+    localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
     this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
     this.props.history.goBack();
@@ -207,9 +205,15 @@ class DeliveryAddress extends Component {
   handleChange = (field, value) => {
     let { deliveryAddress } = this.state;
     deliveryAddress[field] = value;
-    deliveryAddress.address = `${deliveryAddress.street || ""}, ${
-      deliveryAddress.unitNo || ""
-    }, ${deliveryAddress.postalCode || ""}`;
+    if(field !== "address"){
+      deliveryAddress.address = `${deliveryAddress.street || ""}, ${deliveryAddress.unitNo || ""}, ${deliveryAddress.postalCode || ""}`;
+    } else {
+      deliveryAddress.setAddress = true;
+    } 
+    if(field === "street") {
+      deliveryAddress.setAddress = false;
+    }
+    // console.log(deliveryAddress)
     this.setState({ deliveryAddress });
   };
 
@@ -238,6 +242,8 @@ class DeliveryAddress extends Component {
         <ModalDeliveryAddress
           getDataDeliveryAddress={() => this.getDataDeliveryAddress()}
           handleChange={(field, value) => this.handleChange(field, value)}
+          handleSelected={(update) => this.handleSelected(update)}
+          getDeliveryAddress={getDeliveryAddress}
           addressDelivery={addressDelivery}
           deliveryAddress={deliveryAddress}
           optionsProvince={optionsProvince}

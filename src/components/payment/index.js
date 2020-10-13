@@ -418,9 +418,7 @@ class Payment extends Component {
     if (this.props.companyInfo) {
       const { currency } = this.props.companyInfo;
 
-      if (price === undefined || price === "-") {
-        price = 0;
-      }
+      if (!price || price === "-") price = 0;
       let result = price.toLocaleString(currency.locale, {
         style: "currency",
         currency: currency.code,

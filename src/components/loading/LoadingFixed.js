@@ -9,7 +9,11 @@ class LoadingFixed extends Component {
   }
 
   componentDidMount = () => {
-    document.getElementById("loading-load").showModal()
+    try {
+      document.getElementById("loading-load").showModal()
+    } catch (error) {
+      
+    }
   }
 
   render() {

@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Input, Button } from "reactstrap";
-import Loading from "../loading";
+import config from "../../config";
 import { connect } from "react-redux";
 import Select from "react-select";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import GoogleMaps from "./GoogleMaps";
 
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
 
 class ModalDeliveryAdderss extends Component {
@@ -50,6 +51,8 @@ class ModalDeliveryAdderss extends Component {
       indexEdit,
       getDataDeliveryAddress,
       countryCode,
+      handleSelected,
+      getDeliveryAddress
     } = this.props;
 
     if (!deliveryAddress.city) {
@@ -59,6 +62,11 @@ class ModalDeliveryAdderss extends Component {
       if (province.resultCode === 200)
         deliveryAddress.city = province.data[0].name;
     }
+
+    delete deliveryAddress.setAddress
+    delete deliveryAddress.selected
+
+    console.log(deliveryAddress)
 
     if (!addressDelivery) addressDelivery = [];
     if (isNew) addressDelivery.push(deliveryAddress);
@@ -77,6 +85,11 @@ class ModalDeliveryAdderss extends Component {
     console.log(response);
     if (response.ResultCode === 200) {
       await getDataDeliveryAddress();
+      if(getDeliveryAddress) await handleSelected(deliveryAddress);
+      else {
+        localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(deliveryAddress)));
+        this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: deliveryAddress });
+      }
       this.setState({ isLoading: false });
       document.getElementById("btn-close-address").click();
       Swal.fire({
@@ -104,8 +117,8 @@ class ModalDeliveryAdderss extends Component {
       optionsProvince,
       optionsCity,
     } = this.props;
-    if (this.state.optionsCity.length !== 0)
-      optionsCity = this.state.optionsCity;
+    if (this.state.optionsCity.length !== 0) optionsCity = this.state.optionsCity;
+
     return (
       <div>
         <div
@@ -260,12 +273,12 @@ class ModalDeliveryAdderss extends Component {
                       }
                     />
                   </div>
-                  {/* <div
+                  <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
                     <label>
-                      Select location <span className="required">*</span>
+                      Location <span className="required">*</span>
                     </label>
                     <div
                       style={{
@@ -274,9 +287,13 @@ class ModalDeliveryAdderss extends Component {
                         marginTop: "1rem",
                       }}
                     >
-                      <GoogleMaps></GoogleMaps>
+                      <GoogleMaps 
+                      deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
+                      setAddress={deliveryAddress.setAddress || false}
+                      handleChange={(field, value) => this.props.handleChange(field, value)}
+                      />
                     </div>
-                  </div> */}
+                  </div>
 
                   <Button
                     className="button"

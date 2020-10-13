@@ -32,7 +32,7 @@ class Header extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
     this.setState({ infoCompany: infoCompany || {} });
-    this.props.dispatch(OutletAction.fetchAllOutlet());
+    this.props.dispatch(OutletAction.fetchAllOutlet(true));
   };
 
   componentDidUpdate = (prevProps) => {

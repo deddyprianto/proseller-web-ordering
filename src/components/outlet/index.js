@@ -21,15 +21,15 @@ class Outlet extends Component {
 
   componentDidMount = async () => {
     let { optionsOutlet } = this.state;
-    const defaultOutlet =
-      this.props.defaultOutlet ||
-      (await this.props.dispatch(OutletAction.fetchDefaultOutlet()));
-    const outlets = await this.props.dispatch(OutletAction.fetchAllOutlet());
+
+    const defaultOutlet = this.props.defaultOutlet || await this.props.dispatch(OutletAction.fetchDefaultOutlet());
     if (!isEmptyObject(defaultOutlet)) {
       await this.setState({
         selectedOutlet: { value: defaultOutlet.id, label: defaultOutlet.name },
       });
     }
+
+    const outlets = await this.props.dispatch(OutletAction.fetchAllOutlet());
     if (!isEmptyArray(outlets)) {
       outlets.map((item) => {
         optionsOutlet.push({ value: item.id, label: item.name });

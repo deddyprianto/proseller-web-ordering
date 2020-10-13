@@ -188,7 +188,7 @@ class Basket extends Component {
     let dataBasket = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
-    // console.log('scanTable', scanTable)
+    // console.log('deliveryAddress', deliveryAddress)
     if (!infoCompany) {
       let time = setInterval(async () => {
         infoCompany = await encryptor.decrypt(

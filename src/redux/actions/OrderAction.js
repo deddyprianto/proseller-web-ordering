@@ -111,7 +111,7 @@ function getSettingOrdering() {
     let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
     let response = await OrderingService.api("GET", null, `orderingsetting/${appType}`);
     response.data = config.getSettingOrdering(response.data)
-    console.log('orderingSetting', response.data)
+    // console.log('orderingSetting', response.data)
     if (!response.data || response.data && !response.data.settings) return await dispatch(setData([], 'DATA_SETTING_ORDERING'));
     return await dispatch(setData(response.data.settings, 'DATA_SETTING_ORDERING'));
   };
@@ -358,9 +358,9 @@ function buildCart(payload = {}) {
 
     console.log(response);
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log("Status is " + response.ResultCode);
+      console.log("Status is " + response.ResultCode || response.resultCode);
       localStorage.removeItem(`${config.prefix}_offlineCart`);
-      await dispatch(AuthActions.refreshToken());
+      return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
     // else if(response)
     else {
@@ -389,8 +389,9 @@ function updateCart(payload) {
       `cart/updateitem`,
       "Bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+    try {
+      document.getElementById("close-modal").click();
+    } catch (e) { }
     return dispatch(getCart());
   };
 }

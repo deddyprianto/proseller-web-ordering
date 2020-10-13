@@ -17,24 +17,16 @@ const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const PageNotFound = loadable(() => import("../../pages/PageNotFound"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
-const DeliveryAddress = loadable(() =>
-  import("../../components/delivery-address")
-);
+const DeliveryAddress = loadable(() => import("../../components/delivery-address") );
 const Payment = loadable(() => import("../../components/payment/index"));
-const PaymentMethod = loadable(() =>
-  import("../../components/payment/paymentMethod")
-);
+const PaymentMethod = loadable(() => import("../../components/payment/paymentMethod") );
 const Setting = loadable(() => import("../../components/setting"));
 const Referral = loadable(() => import("../../components/referral"));
 const Basket = loadable(() => import("../../components/basket"));
 const PendingDetail = loadable(() => import("../../components/basket_pending"));
-const SettleSuccess = loadable(() =>
-  import("../../components/basket/settleSuccess")
-);
+const SettleSuccess = loadable(() => import("../../components/basket/settleSuccess") );
 const ScanTable = loadable(() => import("../../components/basket/scanTable"));
-const SelectVoucher = loadable(() =>
-  import("../../components/voucher/SelectVoucher")
-);
+const SelectVoucher = loadable(() => import("../../components/voucher/SelectVoucher") );
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
@@ -58,11 +50,9 @@ class Layout extends Component {
     );
 
     if (infoCompany) {
-      document.title = `${isEmenu ? "E-Menu" : "Web Ordering"} - ${infoCompany.companyName
-        }`;
+      document.title = `${isEmenu ? "E-Menu" : "Web Ordering"} - ${infoCompany.companyName}`;
       try {
-        document.getElementById("icon-theme").href =
-          infoCompany.imageURL || config.url_logo;
+        document.getElementById("icon-theme").href = infoCompany.imageURL || config.url_logo;
       } catch (error) { }
     }
 
@@ -101,50 +91,19 @@ class Layout extends Component {
         {isEmenu ? <HeaderEmenu /> : <HeaderWebOrdering />}
         <div id="content" className="site-content">
           <Switch>
-            {
-              enableOrdering &&
-              <Route exact path={"/"} component={Home} />
-            }
-            {
-              enableOrdering &&
-              <Route exact path={"/basket"} component={Basket} />
-            }
-            {
-              (isLoggedIn || !enableOrdering) &&
-              <Route exact path={"/profile"} component={Profile} />
-            }
+            {enableOrdering && <Route exact path={"/"} component={Home} /> }
+            { enableOrdering && <Route exact path={"/basket"} component={Basket} /> }
+            { (isLoggedIn || !enableOrdering) && <Route exact path={"/profile"} component={Profile} /> }
             {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
-            {isLoggedIn && (
-              <Route exact path={"/voucher"} component={Voucher} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/setting"} component={Setting} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/payment-method"} component={PaymentMethod} />
-            )}
-            {isLoggedIn && (
-              <Route
-                exact
-                path={"/delivery-address"}
-                component={DeliveryAddress}
-              />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/referral"} component={Referral} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/myVoucher"} component={SelectVoucher} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/scanTable"} component={ScanTable} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/settleSuccess"} component={SettleSuccess} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/history/detail"} component={PendingDetail} />
-            )}
+            {isLoggedIn &&  <Route exact path={"/voucher"} component={Voucher} /> }
+            {isLoggedIn &&  <Route exact path={"/setting"} component={Setting} /> }
+            {isLoggedIn && <Route exact path={"/payment-method"} component={PaymentMethod} /> }
+            {isLoggedIn && <Route exact path={"/delivery-address"} component={DeliveryAddress} /> }
+            {isLoggedIn && <Route exact path={"/referral"} component={Referral} /> }
+            {isLoggedIn &&  <Route exact path={"/myVoucher"} component={SelectVoucher} /> }
+            {isLoggedIn &&  <Route exact path={"/scanTable"} component={ScanTable} /> }
+            {isLoggedIn &&  <Route exact path={"/settleSuccess"} component={SettleSuccess} /> }
+            {isLoggedIn && <Route exact path={"/history/detail"} component={PendingDetail} /> }
             <Route exact path={"/history"} component={History} />
             <Route exact path={"/payment"} component={Payment} />
             <Route exact path={"/404"} component={PageNotFound} />

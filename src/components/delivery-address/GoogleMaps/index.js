@@ -11,30 +11,63 @@ Geocode.setApiKey(API_KEY);
 
 Geocode.setLanguage("en");
 
-const GoogleMaps = ({ defaultCenter }) => {
+const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }) => {
   const [center, setCenter] = useState(defaultCenter);
   const [addressInfo, setAddressInfo] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [drag, setDrag] = useState(false);
 
   useEffect(() => {
-    Geocode.fromLatLng(center.lat, center.lng).then(
-      (response) => {
-        const address = response.results[0].formatted_address;
-        console.log(address);
-        setAddressInfo(address);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }, [center]);
+    if(drag){
+      Geocode.fromLatLng(center.lat, center.lng).then(
+        (response) => handleChangeAddress(response, true),
+        (error) =>  console.error(error)
+      );
+    }
+
+    if(typeof deliveryAddress !== "object" && !setAddress) {
+      Geocode.fromAddress(deliveryAddress).then(
+        (response) => handleChangeAddress(response),
+        (error) =>  console.error(error)
+      );
+    }
+  }, [deliveryAddress, setAddress, center, drag]);
+
+  const handleChangeAddress = (response, maping) => {
+    let location = response.results[0].geometry.location
+    if(location){
+      handleChange('latitude', location.lat)
+      handleChange('longitude', location.lng)
+      if(!maping) setCenter(location)
+    }
+
+    let address = response.results[0].formatted_address;
+    handleChange('address', address)
+    setAddressInfo(address);
+
+    let address_components = response.results[0].address_components
+    // console.log(address_components);
+
+    let city = address_components.filter((params) => { 
+      return (params.types[0] === "administrative_area_level_2" || params.types[0] === "locality") 
+    })[0]
+    if(city) handleChange('city', city.long_name)
+
+    // let postalCode = address_components.filter((params) => { return params.types[0] === "postal_code" })[0]
+    // if(postalCode) handleChange('postalCode', postalCode.long_name)
+    setDrag(false)
+  }
+
   return (
     <GoogleMapReact
       bootstrapURLKeys={{ key: API_KEY }}
       defaultCenter={defaultCenter}
       center={center}
       defaultZoom={11}
-      onDragEnd={({ center }) => setCenter(center.toJSON())}
+      onDragEnd={({ center }) => {
+        setDrag(true)
+        setCenter(center.toJSON())
+      }}
       onChildClick={() => {
         console.log("You clicked me!");
       }}

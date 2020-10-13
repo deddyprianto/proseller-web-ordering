@@ -185,7 +185,9 @@ const ViewCartBasket = ({
     productQuantity < minQty ||
     (productQuantity > maxQty && maxQty > 0) ||
     data.dataBasket.orderingMode === "DELIVERY" &&
-    !deliveryProvider
+    !deliveryProvider ||
+    deliveryProvider &&
+    deliveryProvider.deliveryFeeFloat < 0
   )
 
   return (
@@ -408,7 +410,12 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              {getCurrency(data.dataBasket.totalNettAmount + (deliveryProvider && deliveryProvider.deliveryFeeFloat))}
+              {
+                getCurrency(
+                  data.dataBasket.totalNettAmount + 
+                  (data.dataBasket.orderingMode === "DELIVERY" && deliveryProvider && deliveryProvider.deliveryFeeFloat)
+                )
+              }
             </div>
           </div>
 

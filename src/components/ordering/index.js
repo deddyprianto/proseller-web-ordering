@@ -4,15 +4,15 @@ import { connect } from "react-redux";
 
 import _ from "lodash";
 
-import CategoriesEmenu from "./CategoriesEmenu";
-import CategoriesWebOrdering from "./CategoriesWebOrdering";
+// import CategoriesEmenu from "./CategoriesEmenu";
+// import CategoriesWebOrdering from "./CategoriesWebOrdering";
 import Product from "./Product";
 import { OutletAction } from "../../redux/actions/OutletAction";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
-import LoadingFixed from "../loading/LoadingFixed";
+// import LoadingFixed from "../loading/LoadingFixed";
 import LoaderCircle from "../loading/LoaderCircle";
 import Lottie from "lottie-react-web";
 import emptyGif from "../../assets/gif/empty-and-lost.json";
@@ -59,12 +59,9 @@ class Ordering extends Component {
 
     let defaultOutlet = null;
     if (!this.getUrlParameters()) {
-      if (_.isEmpty(this.props.defaultOutlet))
-        defaultOutlet = await this.props.dispatch(
-          OutletAction.fetchDefaultOutlet()
-        );
-      else {
-        defaultOutlet = this.props.defaultOutlet;
+      defaultOutlet = this.props.defaultOutlet;
+      if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
+        defaultOutlet = await this.props.dispatch(OutletAction.fetchDefaultOutlet());
       }
     }
 
@@ -72,19 +69,23 @@ class Ordering extends Component {
     if (defaultOutlet && defaultOutlet.id) {
       defaultOutlet = config.getValidation(defaultOutlet)
     }
+
     await this.props.dispatch(OrderAction.getCart());
-    await this.setState({
-      defaultOutlet: defaultOutlet,
-    });
+    await this.setState({ defaultOutlet });
     await this.fetchCategories(defaultOutlet);
   };
 
   componentDidUpdate = async (prevProps) => {
     if (prevProps.defaultOutlet.id !== this.props.defaultOutlet.id) {
-      console.log("defaultOutlet Changed...");
+      console.log("defaultOutlet Changed");
+      this.setState({processing: false})
       this.fetchCategories(this.props.defaultOutlet);
     }
   };
+
+  componentWillUnmount = () => {
+    this.setState({processing: false})
+  }
 
   getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
@@ -147,7 +148,7 @@ class Ordering extends Component {
 
   fetchCategories = async (outlet) => {
     try {
-      await this.setState({ loading: true });
+      await this.setState({ loading: true});
       const categories = await this.props.dispatch(
         ProductAction.fetchCategoryProduct(outlet)
       );
@@ -186,7 +187,7 @@ class Ordering extends Component {
 
     while (i < categories.length && this.state.processing) {
       let data = await this.props.dispatch(
-        ProductAction.fetchProduct(categories[i], outlet, 0, 5)
+        ProductAction.fetchProduct(categories[i], outlet, 0, 10)
       );
       products = products.map((category, index) => {
         if (index === i) {
@@ -204,10 +205,10 @@ class Ordering extends Component {
       });
 
       if (data.dataLength > 0) {
-        let j = 5;
+        let j = 10;
         while (j <= data.dataLength && this.state.processing) {
           let product = await this.props.dispatch(
-            ProductAction.fetchProduct(categories[i], outlet, j, 5)
+            ProductAction.fetchProduct(categories[i], outlet, j, 10)
           );
           products[i].items = [...products[i].items, ...product.data];
           await this.setState({ products, productsBackup: products });
@@ -228,8 +229,6 @@ class Ordering extends Component {
   };
 
   selectProduct = async (productSelected, mode) => {
-    const { basket } = this.props;
-
     let product = JSON.stringify(productSelected);
     product = JSON.parse(product);
 
@@ -273,53 +272,6 @@ class Ordering extends Component {
 
     product.quantity = 1;
     product.remark = "";
-    // else {
-    //   if (!isEmptyArray(basket.details)) {
-    //     const find = await basket.details.find((data) => data.id === product.id);
-    //     if (find !== undefined) {
-    //       if (mode === "Update") {
-    //         product.quantity = find.quantity;
-
-    //         // fill the modifier
-    //         if (!isEmptyArray(find.modifiers)) {
-    //           product.product.productModifiers.map((group, i) => {
-    //             group.modifier.details.map((detail, j) => {
-    //               find.modifiers.map((data) => {
-    //                 data.modifier.details.map((item) => {
-    //                   // make mark that item is in basket
-    //                   if (data.modifierID == group.modifierID) {
-    //                     product.product.productModifiers[i].postToServer = true;
-    //                     // set quantity basket to product that openend
-    //                     if (item.id == detail.id) {
-    //                       // check for radio button
-    //                       if (group.modifier.max == 1) {
-    //                         product.product.productModifiers[i].modifier.show =
-    //                           data.modifier.show;
-    //                       }
-    //                       product.product.productModifiers[i].modifier.details[
-    //                         j
-    //                       ].quantity = item.quantity;
-    //                       // for is selected
-    //                       product.product.productModifiers[i].modifier.details[
-    //                         j
-    //                       ].isSelected = item.isSelected;
-    //                     }
-    //                   }
-    //                 });
-    //               });
-    //             });
-    //           });
-    //         }
-    //       }
-    //     } else {
-    //       product.quantity = 1;
-    //       product.remark = "";
-    //     }
-    //   } else {
-    //     product.quantity = 1;
-    //     product.remark = "";
-    //   }
-    // }
     product.mode = mode;
     this.setState({ selectedItem: product });
   };
@@ -416,9 +368,7 @@ class Ordering extends Component {
     if (this.props.companyInfo) {
       const { currency } = this.props.companyInfo;
 
-      if (price === undefined || price === "-") {
-        price = 0;
-      }
+      if (!price || price === "-") price = 0;
       let result = price.toLocaleString(currency.locale, {
         style: "currency",
         currency: currency.code,
@@ -522,7 +472,7 @@ class Ordering extends Component {
           addNew={this.state.addNew}
           selectedItem={this.state.selectedItem}
         />
-        {this.state.processing == false ? <LoadingFixed /> : null}
+        {/* {this.state.processing == false ? <LoadingFixed /> : null} */}
         <br /> <br /> <br />
         <div id="offset-header" />
         {isEmenu ? (

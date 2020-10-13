@@ -45,10 +45,7 @@ export default function reducer(state = defaultState, action) {
         },
       };
     case CONSTANT.DEFAULT_OUTLET:
-      localStorage.setItem(
-        `${config.prefix}_defaultOutlet`,
-        JSON.stringify(encryptor.encrypt(action.data))
-      );
+      localStorage.setItem(`${config.prefix}_defaultOutlet`,JSON.stringify(encryptor.encrypt(action.data)));
       return {
         ...state,
         defaultOutlet: action.data,

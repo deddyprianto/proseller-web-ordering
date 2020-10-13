@@ -139,7 +139,7 @@ const UpdateProductModal = ({
                     })}
                   <div className={styles.price} style={{ marginTop: -5 }}>
                     <b class="price-product color">
-                      {getCurrency(item.grossAmount)}
+                      {getCurrency(item.grossAmount.toFixed(2))}
                     </b>
                   </div>
                   <button

@@ -26,44 +26,39 @@ class ModalProduct extends Component {
 
   ruleModifierNotPassed = () => {
     try {
-      let data = this.state.selectedItem.product.productModifiers;
+      let selectedItem = this.state.selectedItem
+      let productModifiers = selectedItem.product.productModifiers;
 
-      if (
-        this.state.selectedItem.quantity == 0 ||
-        this.state.selectedItem.quantity == undefined
-      )
-        return false;
+      if ( selectedItem.quantity == 0 || selectedItem.quantity == undefined ) return false;
 
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < productModifiers.length; i++) {
         let lengthDetail = 0;
-        for (let x = 0; x < data[i].modifier.details.length; x++) {
-          if (
-            data[i].modifier.details[x].quantity > 0 &&
-            data[i].modifier.details[x].quantity != undefined
-          ) {
-            lengthDetail += data[i].modifier.details[x].quantity;
+        let modifierDetail = productModifiers[i].modifier.details
+        for (let x = 0; x < modifierDetail.length; x++) {
+          if ( modifierDetail[x].quantity > 0 && modifierDetail[x].quantity != undefined ) {
+            lengthDetail += modifierDetail[x].quantity; 
           }
         }
         // check rule min max
-        if (data[i].modifier.min != 0 || data[i].modifier.max != 0) {
+        if (productModifiers[i].modifier.min != 0 || productModifiers[i].modifier.max != 0) {
           // check min modifier
           if (
-            lengthDetail < data[i].modifier.min &&
+            lengthDetail < productModifiers[i].modifier.min &&
             lengthDetail != undefined &&
-            data[i].modifier.min != 0 &&
-            data[i].modifier.isYesNo != true &&
-            data[i].modifier.min != undefined
+            productModifiers[i].modifier.min != 0 &&
+            productModifiers[i].modifier.isYesNo != true &&
+            productModifiers[i].modifier.min != undefined
           ) {
             return true;
           }
 
           // check max modifier
           if (
-            lengthDetail > data[i].modifier.max &&
+            lengthDetail > productModifiers[i].modifier.max &&
             lengthDetail != undefined &&
-            data[i].modifier.max != 0 &&
-            data[i].modifier.isYesNo != true &&
-            data[i].modifier.max != undefined
+            productModifiers[i].modifier.max != 0 &&
+            productModifiers[i].modifier.isYesNo != true &&
+            productModifiers[i].modifier.max != undefined
           ) {
             return true;
           }
@@ -75,32 +70,13 @@ class ModalProduct extends Component {
     }
   };
 
-  refreshRender = () => {
-    this.setState({ update: false });
-  };
-
   componentWillReceiveProps(nextProps) {
-    // console.log(nextProps);
     let { selectedItem } = nextProps;
     if (nextProps.addNew) {
       selectedItem = { ...selectedItem, quantity: 1 };
     }
-    this.setState({ selectedItem });
-    this.setState({ basket: nextProps.basket, disableButton: false });
+    this.setState({ selectedItem, basket: nextProps.basket, disableButton: false });
   }
-
-  // componentDidUpdate(prevProps) {
-  //   if (prevProps.selectedItem !== this.props.selectedItem) {
-  //     let { selectedItem } = this.props;
-  //     if (this.props.addNew) {
-  //       selectedItem = { ...selectedItem, quantity: 1 };
-  //     }
-  //     this.setState({ selectedItem });
-  //   }
-  //   if (prevProps.basket !== this.props.basket) {
-  //     this.setState({ basket: this.props.basket, disableButton: false });
-  //   }
-  // }
 
   renderImageProduct = (item) => {
     if (
@@ -118,9 +94,7 @@ class ModalProduct extends Component {
     if (this.props.companyInfo) {
       const { currency } = this.props.companyInfo;
 
-      if (price === undefined || price === "-") {
-        price = 0;
-      }
+      if (!price || price === "-") price = 0;
       let result = price.toLocaleString(currency.locale, {
         style: "currency",
         currency: currency.code,
@@ -134,7 +108,6 @@ class ModalProduct extends Component {
       const { selectedItem } = this.state;
       let subTotal = 0;
       let totalModifier = 0;
-      // const quantity = this.props.addNew ? this.state.
 
       if (!isEmptyData(selectedItem.product.retailPrice)) {
         subTotal = parseFloat(selectedItem.product.retailPrice);
@@ -197,22 +170,16 @@ class ModalProduct extends Component {
 
           // check name and quantity modifier that hasnt been success passed min & max
           try {
-            let productModifiers = this.state.selectedItem.product
-              .productModifiers;
+            let productModifiers = this.state.selectedItem.product.productModifiers;
             for (let i = 0; i < productModifiers.length; i++) {
               let lengthDetail = 0;
-
-              for (
-                let x = 0;
-                x < productModifiers[i].modifier.details.length;
-                x++
-              ) {
+              let modifierDetail = productModifiers[i].modifier.details
+              for ( let x = 0; x < modifierDetail.length; x++ ) {
                 if (
-                  productModifiers[i].modifier.details[x].quantity > 0 &&
-                  productModifiers[i].modifier.details[x].quantity != undefined
+                  modifierDetail[x].quantity > 0 &&
+                  modifierDetail[x].quantity != undefined
                 ) {
-                  lengthDetail +=
-                    productModifiers[i].modifier.details[x].quantity;
+                  lengthDetail += modifierDetail[x].quantity;
                 }
               }
 
@@ -252,8 +219,6 @@ class ModalProduct extends Component {
             OrderAction.processAddCart(defaultOutlet, selectedItem)
           );
         } else {
-          console.log("Updating item :");
-          console.log(selectedItem);
           let response = await this.props.dispatch(
             OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
           );
@@ -268,9 +233,7 @@ class ModalProduct extends Component {
     try {
       const { basket } = this.state;
       if (!isEmptyObject(basket)) {
-        const find = basket.details.find(
-          (data) => data.product.id == item.product.id
-        );
+        const find = basket.details.find((data) => data.product.id == item.product.id);
         if (find != undefined) return true;
         else return false;
       } else {
@@ -291,19 +254,11 @@ class ModalProduct extends Component {
 
     if (type != "checkbox") {
       for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-        if (selectedItem.product.productModifiers[i].modifier.max == 1) {
-          for (
-            let j = 0;
-            j <
-            selectedItem.product.productModifiers[i].modifier.details.length;
-            j++
-          ) {
-            selectedItem.product.productModifiers[i].modifier.details[
-              j
-            ].quantity = 0;
-            selectedItem.product.productModifiers[i].modifier.details[
-              j
-            ].isSelected = false;
+        let modifierData = selectedItem.product.productModifiers[i].modifier
+        if (modifierData.max == 1) {
+          for ( let j = 0; j < modifierData.details.length; j++ ) {
+            modifierData.details[j].quantity = 0;
+            modifierData.details[j].isSelected = false;
           }
         }
       }
@@ -312,40 +267,19 @@ class ModalProduct extends Component {
     await this.setState({ selectedItem });
 
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-      for (
-        let j = 0;
-        j < selectedItem.product.productModifiers[i].modifier.details.length;
-        j++
-      ) {
-        if (
-          selectedItem.product.productModifiers[i].modifier.details[j].id ==
-          item.id
-        ) {
-          if (
-            selectedItem.product.productModifiers[i].modifier.details[j]
-              .quantity == undefined ||
-            selectedItem.product.productModifiers[i].modifier.details[j]
-              .quantity == 0
-          ) {
-            selectedItem.product.productModifiers[i].modifier.details[
-              j
-            ].quantity = 1;
-            selectedItem.product.productModifiers[i].modifier.details[
-              j
-            ].isSelected = !selectedItem.product.productModifiers[i].modifier
-              .details[j].isSelected;
+      let modifierDetail = selectedItem.product.productModifiers[i].modifier.details
+      for (let j = 0;j < modifierDetail.length;j++) {
+        if (modifierDetail[j].id == item.id ) {
+          let isSelected = selectedItem.product.productModifiers[i].modifier.details[j].isSelected
+          if ( modifierDetail[j].quantity == undefined || modifierDetail[j].quantity == 0) {
+            modifierDetail[j].quantity = 1;
+            modifierDetail[j].isSelected = !isSelected;
             selectedItem.product.productModifiers[i].postToServer = true;
           } else {
-            selectedItem.product.productModifiers[i].modifier.details[
-              j
-            ].quantity = undefined;
-            selectedItem.product.productModifiers[i].modifier.details[
-              j
-            ].isSelected = !selectedItem.product.productModifiers[i].modifier
-              .details[j].isSelected;
+            modifierDetail[j].quantity = undefined;
+            modifierDetail[j].isSelected = !isSelected;
 
-            if (type == undefined)
-              selectedItem.product.productModifiers[i].postToServer = undefined;
+            if (type == undefined) selectedItem.product.productModifiers[i].postToServer = undefined;
           }
         }
       }
@@ -357,23 +291,14 @@ class ModalProduct extends Component {
     const { selectedItem } = this.state;
 
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-      for (
-        let j = 0;
-        j < selectedItem.product.productModifiers[i].modifier.details.length;
-        j++
-      ) {
-        if (
-          selectedItem.product.productModifiers[i].modifier.details[j].id ==
-          item.id
-        ) {
-          if (
-            selectedItem.product.productModifiers[i].modifier.details[j]
-              .quantity != undefined &&
-            selectedItem.product.productModifiers[i].modifier.details[j]
-              .quantity != 0
+      let modifierDetail = selectedItem.product.productModifiers[i].modifier.details
+      for (let j = 0; j < modifierDetail.length; j++ ) {
+        if ( modifierDetail[j].id == item.id ) {
+          if ( 
+            modifierDetail[j].quantity != undefined && 
+            modifierDetail[j].quantity != 0
           ) {
-            return selectedItem.product.productModifiers[i].modifier.details[j]
-              .quantity;
+            return modifierDetail[j].quantity;
           }
         }
       }
@@ -407,10 +332,6 @@ class ModalProduct extends Component {
     );
   };
 
-  selectModifier = (selectedModifier) => {
-    this.setState({ selectedModifier });
-  };
-
   renderItemCheckbox = (item, i) => {
     return (
       <div className="card card-modifier">
@@ -432,36 +353,29 @@ class ModalProduct extends Component {
             {item.modifier.details.map((data) => (
               <div
                 className={
-                  data.orderingStatus === "UNAVAILABLE"
-                    ? "item-modifier product-unavailable"
-                    : "item-modifier"
+                  data.orderingStatus === "UNAVAILABLE" ? "item-modifier product-unavailable" : "item-modifier"
                 }
               >
                 <a>
                   <input
                     type="checkbox"
                     checked={
-                      data.quantity != undefined &&
-                        data.quantity != 0 &&
-                        data.orderingStatus != "UNAVAILABLE"
-                        ? true
-                        : false
+                      data.quantity != undefined && data.quantity != 0 &&
+                      data.orderingStatus != "UNAVAILABLE" ? true : false
                     }
                     className="scaled-checkbox form-check-input checkbox-modifier"
                     onClick={() => this.addItemIsYesNo(data, "checkbox")}
                   />
                   <a className="subtitle-modifier">
                     <span className="color">
-                      {data.quantity != undefined && data.quantity != 0
-                        ? `${data.quantity}x `
-                        : null}
+                      {data.quantity != undefined && data.quantity != 0 ? `${data.quantity}x ` : null}
                     </span>
                     <a onClick={() => this.addItemIsYesNo(data, "checkbox")}>
                       {data.name}
                     </a>
                     {data.quantity != undefined && data.quantity != 0 ? (
                       <span
-                        onClick={() => this.selectModifier(data)}
+                        onClick={() => this.setState({ selectedModifier: data })}
                         data-toggle="modal"
                         data-target="#qty-modifier"
                         className="color"
@@ -472,11 +386,11 @@ class ModalProduct extends Component {
                     ) : null}
                   </a>
                 </a>
-                {data.orderingStatus === "UNAVAILABLE" ? (
-                  <p>UNAVAILABLE</p>
-                ) : (
-                    <p>{this.getCurrency(data.price)}</p>
-                  )}
+                {
+                  data.orderingStatus === "UNAVAILABLE" ?  
+                  <p>UNAVAILABLE</p> : 
+                  <p>{this.getCurrency(data.price)}</p>
+                }
               </div>
             ))}
           </div>
@@ -524,8 +438,8 @@ class ModalProduct extends Component {
 
   toggleModifier = async (i) => {
     let { selectedItem } = this.state;
-    selectedItem.product.productModifiers[i].modifier.show = !selectedItem
-      .product.productModifiers[i].modifier.show;
+    let modifier = selectedItem.product.productModifiers[i].modifier
+    selectedItem.product.productModifiers[i].modifier.show = !modifier.show;
     await this.setState({ selectedItem });
   };
 
@@ -592,7 +506,6 @@ class ModalProduct extends Component {
         className="modal-content"
         style={{ width: "100%", height: "90vh", bottom: 0, zIndex: 10 }}
       >
-        {/* <div className="modal-content modal-content-product modal-product" style={{ width: "100%" }}> */}
         <div
           className="modal-header modal-header-product"
           style={{
@@ -814,215 +727,26 @@ class ModalProduct extends Component {
             <div className="modal-body">
               <div className="col-md-12">
                 <div style={{ justifyContent: "center" }} >
-                  {defaultOutlet.enableDineIn === true && (
-                    <div
-                      className="order-mode"
-                      onClick={() => this.setOrderingMode("DINEIN")}
-                      style={{
-                        height: (defaultOutlet.orderValidation.dineIn.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
-                        padding: 5
-                      }}
-                    >
-                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                        <i className="fa fa-cutlery color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
-                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-                          DINEIN
-                        </div>
-                      </div>
-                      {
-                        defaultOutlet.orderValidation.dineIn &&
-                        <div style={{ fontSize: 12, marginTop: -5 }}>
-                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {defaultOutlet.orderValidation.dineIn.minAmount ||
-                            defaultOutlet.orderValidation.dineIn.maxAmount ? (
-                              <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.getCurrency(defaultOutlet.orderValidation.dineIn.minAmount)} to 
-                                  ${this.getCurrency(defaultOutlet.orderValidation.dineIn.maxAmount)}`
-                                }
-                              </div>
-                            ) : null}
-                          {defaultOutlet.orderValidation.dineIn.minQty ||
-                            defaultOutlet.orderValidation.dineIn.maxQty ? (
-                              <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {defaultOutlet.orderValidation.dineIn.minQty} to{" "}
-                                {defaultOutlet.orderValidation.dineIn.maxQty} items
-                              </div>
-                            ) : null}
-                        </div>
-                      }
-                    </div>
-                  )}
-
-                  {defaultOutlet.enableTakeAway === true && (
-                    <div
-                      className="order-mode"
-                      onClick={() => this.setOrderingMode("TAKEAWAY")}
-                      style={{
-                        height: (defaultOutlet.orderValidation.takeAway.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
-                        padding: 5
-                      }}
-                    >
-                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                        <i className="fa fa-shopping-basket color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
-                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-                          TAKEAWAY
-                        </div>
-                      </div>
-                      {
-                        defaultOutlet.orderValidation.takeAway &&
-                        <div style={{ fontSize: 12, marginTop: -5 }}>
-                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {defaultOutlet.orderValidation.takeAway.minAmount ||
-                            defaultOutlet.orderValidation.takeAway.maxAmount ? (
-                              <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.getCurrency(defaultOutlet.orderValidation.takeAway.minAmount)} to 
-                                  ${this.getCurrency(defaultOutlet.orderValidation.takeAway.maxAmount)}`
-                                }
-                              </div>
-                            ) : null}
-                          {defaultOutlet.orderValidation.takeAway.minQty ||
-                            defaultOutlet.orderValidation.takeAway.maxQty ? (
-                              <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {defaultOutlet.orderValidation.takeAway.minQty} to{" "}
-                                {defaultOutlet.orderValidation.takeAway.maxQty} items
-                              </div>
-                            ) : null}
-                        </div>
-                      }
-                    </div>
-                  )}
-
-                  {defaultOutlet.enableStorePickUp === true && (
-                    <div
-                      className="order-mode"
-                      onClick={() => this.setOrderingMode("STOREPICKUP")}
-                      style={{
-                        height: (defaultOutlet.orderValidation.storepickup.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
-                        padding: 5
-                      }}
-                    >
-                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                        <i className="fa fa-shopping-basket color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
-                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-                          STOREPICKUP
-                      </div>
-                      </div>
-                      {
-                        defaultOutlet.orderValidation.storepickup &&
-                        <div style={{ fontSize: 12, marginTop: -5 }}>
-                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {defaultOutlet.orderValidation.storepickup.minAmount ||
-                            defaultOutlet.orderValidation.storepickup.maxAmount ? (
-                              <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.getCurrency(defaultOutlet.orderValidation.storepickup.minAmount)} to 
-                                  ${this.getCurrency(defaultOutlet.orderValidation.storepickup.maxAmount)}`
-                                }
-                              </div>
-                            ) : null}
-                          {defaultOutlet.orderValidation.storepickup.minQty ||
-                            defaultOutlet.orderValidation.storepickup.maxQty ? (
-                              <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {defaultOutlet.orderValidation.storepickup.minQty} to{" "}
-                                {defaultOutlet.orderValidation.storepickup.maxQty} items
-                              </div>
-                            ) : null}
-                        </div>
-                      }
-                    </div>
-                  )}
-
-                  {defaultOutlet.enableStoreCheckOut === true && (
-                    <div
-                      className="order-mode"
-                      onClick={() => this.setOrderingMode("STORECHECKOUT")}
-                      style={{
-                        height: (defaultOutlet.orderValidation.storecheckout.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
-                        padding: 5
-                      }}
-                    >
-                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                        <i className="fa fa-shopping-basket color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
-                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-                          STORECHECKOUT
-                        </div>
-                      </div>
-                      {
-                        defaultOutlet.orderValidation.storecheckout &&
-                        <div style={{ fontSize: 12, marginTop: -5 }}>
-                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {defaultOutlet.orderValidation.storecheckout.minAmount ||
-                            defaultOutlet.orderValidation.storecheckout.maxAmount ? (
-                              <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.getCurrency(defaultOutlet.orderValidation.storecheckout.minAmount)} to 
-                                  ${this.getCurrency(defaultOutlet.orderValidation.storecheckout.maxAmount)}`
-                                }
-                              </div>
-                            ) : null}
-                          {defaultOutlet.orderValidation.storecheckout.minQty ||
-                            defaultOutlet.orderValidation.storecheckout.maxQty ? (
-                              <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {defaultOutlet.orderValidation.storecheckout.minQty} to{" "}
-                                {defaultOutlet.orderValidation.storecheckout.maxQty} items
-                              </div>
-                            ) : null}
-                        </div>
-                      }
-                    </div>
-                  )}
-
-                  {defaultOutlet.enableDelivery === true && (
-                    <div
-                      className="order-mode"
-                      onClick={() => this.setOrderingMode("DELIVERY")}
-                      style={{
-                        height: (defaultOutlet.orderValidation.delivery.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
-                        padding: 5
-                      }}
-                    >
-                      <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                        <i className="fa fa-car color icon-order" style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
-                        <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-                          DELIVERY
-                      </div>
-                      </div>
-                      {
-                        defaultOutlet.orderValidation.delivery &&
-                        <div style={{ fontSize: 12, marginTop: -5 }}>
-                          <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
-                          {defaultOutlet.orderValidation.delivery.minAmount ||
-                            defaultOutlet.orderValidation.delivery.maxAmount ? (
-                              <div style={{ display: "flex" }}>
-                                <strong style={{ marginRight: 5 }}>Amount range</strong>
-                                {
-                                  `${this.getCurrency(defaultOutlet.orderValidation.delivery.minAmount)} to 
-                                  ${this.getCurrency(defaultOutlet.orderValidation.delivery.maxAmount)}`
-                                }
-                              </div>
-                            ) : null}
-                          {defaultOutlet.orderValidation.delivery.minQty ||
-                            defaultOutlet.orderValidation.delivery.maxQty ? (
-                              <div style={{ display: "flex", marginTop: -10 }}>
-                                <strong style={{ marginRight: 5 }}>Item quantity range</strong>
-                                {defaultOutlet.orderValidation.delivery.minQty} to{" "}
-                                {defaultOutlet.orderValidation.delivery.maxQty} items
-                              </div>
-                            ) : null}
-                        </div>
-                      }
-                    </div>
-                  )}
+                  {
+                    defaultOutlet.enableDineIn === true && 
+                    this.viewCartOrderingMode("DINEIN", defaultOutlet.orderValidation.dineIn, "fa-cutlery")
+                  }
+                  {
+                    defaultOutlet.enableTakeAway === true && 
+                    this.viewCartOrderingMode("TAKEAWAY", defaultOutlet.orderValidation.takeAway, "fa-shopping-basket")
+                  }
+                  {
+                    defaultOutlet.enableStorePickUp === true && 
+                    this.viewCartOrderingMode("STOREPICKUP", defaultOutlet.orderValidation.storepickup, "fa-shopping-basket")
+                  }
+                  {
+                    defaultOutlet.enableStoreCheckOut === true && 
+                    this.viewCartOrderingMode("STORECHECKOUT", defaultOutlet.orderValidation.storecheckout, "fa-shopping-basket")
+                  }
+                  {
+                    defaultOutlet.enableDelivery === true && 
+                    this.viewCartOrderingMode("DELIVERY", defaultOutlet.orderValidation.delivery, "fa-car")
+                  }
                 </div>
                 <p
                   id="dismiss-ordering-mode"
@@ -1045,29 +769,85 @@ class ModalProduct extends Component {
     );
   };
 
-  // increaseModifier = () => {
-  //   this.setState((prevState) => ({
-  //     selectedModifier: {
-  //       ...prevState.selectedModifier,
-  //       quantity: prevState.selectedModifier.quantity + 1,
-  //     },
-  //   }));
-  // };
+  checkOrderValidation(validation, type) {
+    if (type === "titleAmount") {
+      if (validation.minAmount === 0 && validation.maxAmount > 0) {
+        return "Amount maximum"
+      } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
+        return "Amount minimum"
+      } else {
+        return "Amount range"
+      }
+    } else if (type === "descAmount") {
+      if (validation.minAmount === 0 && validation.maxAmount > 0) {
+        return this.getCurrency(validation.maxAmount)
+      } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
+        return this.getCurrency(validation.minAmount)
+      } else {
+        return `${this.getCurrency(validation.minAmount)} to ${this.getCurrency(validation.maxAmount)}`
+      }
+    } else if (type === "titleQty") {
+      if (validation.minQty === 0 && validation.maxQty > 0) {
+        return "Item quantity maximum"
+      } else if (validation.minQty > 0 && validation.maxQty === 0) {
+        return "Item quantity minimum"
+      } else {
+        return "Item quantity range"
+      }
+    } else if (type === "descQty") {
+      if (validation.minQty === 0 && validation.maxQty > 0) {
+        return `${validation.maxQty} items`
+      } else if (validation.minQty > 0 && validation.maxQty === 0) {
+        return `${validation.minQty} items`
+      } else {
+        return `${validation.minQty} to ${validation.maxQty} items`
+      }
+    }
+  }
 
-  // decreaseModifier = () => {
-  //   const { selectedModifier } = this.state;
-  //   if (
-  //     selectedModifier.quantity !== undefined &&
-  //     selectedModifier.quantity > 0
-  //   ) {
-  //     this.setState((prevState) => ({
-  //       selectedModifier: {
-  //         ...prevState.selectedModifier,
-  //         quantity: prevState.selectedModifier.quantity - 1,
-  //       },
-  //     }));
-  //   }
-  // };
+  viewCartOrderingMode(name, orderValidation, icon){
+    return (
+      <div
+        className="order-mode"
+        onClick={() => this.setOrderingMode(name)}
+        style={{
+          height: (orderValidation.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
+          padding: 5
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+          <i className={`fa ${icon} color icon-order`} style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+          <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
+            {name}
+          </div>
+        </div>
+        {
+          orderValidation &&
+          <div style={{ fontSize: 12, marginTop: -5 }}>
+            <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+            {orderValidation.minAmount ||
+              orderValidation.maxAmount ? (
+                <div style={{ display: "flex" }}>
+                  <strong style={{ marginRight: 5 }}>
+                    {this.checkOrderValidation(orderValidation, "titleAmount")}
+                  </strong>
+                  {this.checkOrderValidation(orderValidation, "descAmount")}
+                </div>
+              ) : null}
+            {orderValidation.minQty ||
+              orderValidation.maxQty ? (
+                <div style={{ display: "flex", marginTop: -10 }}>
+                  <strong style={{ marginRight: 5 }}>
+                    {this.checkOrderValidation(orderValidation, "titleQty")}
+                  </strong>
+                  {this.checkOrderValidation(orderValidation, "descQty")}
+                </div>
+              ) : null}
+          </div>
+        }
+      </div>
+    )
+  }
 
   increaseModifier = () => {
     let { selectedModifier } = this.state;

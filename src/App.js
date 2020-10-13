@@ -105,6 +105,14 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
+    try {
+      let position = await props.dispatch(OutletAction.getCoordinates())
+      let location = { latitude: position.coords.latitude, longitude: position.coords.longitude }
+      localStorage.setItem(`${config.prefix}_locationCustomer`, JSON.stringify(location));
+    } catch (error) {
+      console.log("Get location false")
+    }
+
     if (!isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
     if (account) {
       await props.dispatch(PaymentAction.getPaymentCard());
@@ -112,7 +120,6 @@ const App = (props) => {
         account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
         let timeExp = account.accessToken.payload.exp * 1000 - 60000;
         let timeNow = moment().format();
-        // console.log("token exp :", moment(timeExp).format());
         if (moment(timeNow).isSameOrAfter(timeExp)) {
           await props.dispatch(AuthActions.refreshToken());
         }
@@ -120,47 +127,44 @@ const App = (props) => {
     }
 
     let param = getUrlParameters();
+    let defaultOutlet = null
     if (param && param["input"]) {
       param = getUrlParameters(base64.decode(decodeURI(param["input"])));
       localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
-      console.log(param)
+      console.log("input url", param)
 
       if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
 
-      let defaultOutlet = props.defaultOutlet || await props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
-
+      defaultOutlet = props.defaultOutlet
+      if(_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
+        defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
+      }
+      
       if (defaultOutlet && defaultOutlet.id) defaultOutlet = config.getValidation(defaultOutlet)
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
+      
+      defaultOutlet = props.defaultOutlet;
+      if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
+        defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
+      }
     }
 
-    let url = window.location.hash.split("#")[1];
-    if (url !== "/") {
+    if (window.location.hash.split("#")[1] !== "/") {
       if (!param && props.defaultOutlet && enableOrdering) {
-        console.log("I'm not from home");
-
-        let defaultOutlet = !_.isEmpty(props.defaultOutlet)
-          ? props.defaultOutlet
-          : await props.dispatch(OutletAction.fetchDefaultOutlet());
-        defaultOutlet = await props.dispatch(
-          MasterdataAction.getOutletByID(
-            defaultOutlet.sortKey.split("::")[1],
-            true
-          )
-        );
-
-        await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+        defaultOutlet =  props.defaultOutlet
+        if(_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
+          defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
+        } else {
+          defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.id,true));
+        }
       }
 
       await props.dispatch(OrderAction.getCart());
     }
 
     props.dispatch(CustomerAction.mandatoryField());
-
-    // try {
-    //   document.getElementById("color-theme").href = color;
-    // } catch (error) {}
   };
 
   const refreshDeliveryProvider = async () => {

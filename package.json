@@ -11,6 +11,7 @@
     "base-64": "^0.1.0",
     "bootstrap": "^4.5.0",
     "env-cmd": "^10.1.0",
+    "geolib": "^3.3.1",
     "google-map-react": "^2.1.5",
     "history": "^4.9.0",
     "http-build-query": "^0.7.0",
@@ -30,6 +31,7 @@
     "react-datepicker": "^3.1.3",
     "react-dom": "^16.8.6",
     "react-geocode": "^0.2.1",
+    "react-google-maps": "^9.4.5",
     "react-horizontal-scrolling-menu": "^0.7.7",
     "react-iframe": "^1.8.0",
     "react-infinite-scroll-component": "^5.0.5",
@@ -61,7 +63,7 @@
     "webordering-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://prod-web-ordering-1-0 --acl public-read",
     "webordering-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync build/ s3://demo-web-ordering-1-0 --acl public-read",
     "webordering-dev": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e dev react-scripts build && aws s3 sync build/ s3://dev-web-ordering-1-0 --acl public-read",
-    "gilangh-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e gilang-demo react-scripts build && aws s3 sync build/ s3://order.gilangh.id --acl public-read"
+    "order-demo.auntieannesg.com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e order-demo.auntieannesg.com react-scripts build && aws s3 sync build/ s3://order-demo.auntieannesg.com --acl public-read"
   },
   "eslintConfig": {
     "extends": "react-app"

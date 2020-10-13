@@ -27,10 +27,6 @@ class Home extends Component {
     await this.setState({ loading: true });
     await this.checkOfflineCart();
     await this.setState({ loading: false });
-    // navigator.geolocation.getCurrentPosition(function(position) {
-    //   console.log("Latitude is :", position.coords.latitude);
-    //   console.log("Longitude is :", position.coords.longitude);
-    // });
   };
 
   checkOfflineCart = async () => {

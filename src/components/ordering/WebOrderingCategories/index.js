@@ -52,21 +52,17 @@ const WebOrderingCategories = ({
 
   useEffect(() => {
     try {
-      // const bannerHeight = document.getElementById("owl-main").childNodes[0]
-      //   .clientHeight;
-      // console.log(bannerHeight);
-      const headerHeight =
-        prevSelectedCategory === 0
-          ? document.getElementById("masthead").clientHeight +
-            document.getElementById("header-categories").clientHeight * 2
-          : document.getElementById("masthead").clientHeight +
-            document.getElementById("header-categories").clientHeight;
+      let clientHeightHead = document.getElementById("masthead").clientHeight
+      let clientHeightCategory= document.getElementById("header-categories").clientHeight
+      let headerHeight = clientHeightHead + clientHeightCategory;
+      if(prevSelectedCategory === 0) headerHeight = clientHeightHead + clientHeightCategory * 2
+
       window.scrollTo({
         top: document.getElementById(selectedCategory).offsetTop - headerHeight,
         behavior: "smooth",
       });
     } catch (error) {
-      console.log("fetching categories....");
+      console.log("fetching categories");
     }
     setPrevSelectedCategory(selectedCategory);
   }, [selectedCategory]);

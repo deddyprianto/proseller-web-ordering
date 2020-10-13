@@ -66,6 +66,11 @@ const styles = {
       height: "40",
       borderRadius: "0",
     },
+    ".border-ordering-mode": {
+      borderColor: (props) => props.theme.color.secondary,
+      borderStyle: "solid",
+      borderWidth: "thin"
+    },
     ".border-theme": {
       borderColor: (props) => props.theme.color.primary,
       borderWidth: "1",
