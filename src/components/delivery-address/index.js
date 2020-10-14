@@ -330,7 +330,6 @@ class DeliveryAddress extends Component {
                         <Col key={key} sm={6}>
                           <div
                             style={{
-                              borderRadius: 0,
                               backgroundColor: "#FFFFFF",
                               marginBottom: 10,
                               width: "100%",

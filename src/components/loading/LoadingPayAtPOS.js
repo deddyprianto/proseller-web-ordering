@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { LoopCircleLoading } from 'react-loadingg';
-import LoaderCircle from './LoaderCircle';
 
 class Loading extends Component {
   constructor(props) {

@@ -48,11 +48,10 @@ export default class ModalReferral extends Component {
                   {
                     modeInvitation === 'email' ?
                       <Input
-                        style={{ marginTop: -5 }}
                         type="text" id="outlet"
                         onChange={(e) => changeAddress(e)}
                         value={address}
-                        style={{ height: 40, borderRadius: 5 }}
+                        style={{ marginTop: -5, height: 40, borderRadius: 5 }}
                         placeholder={'Enter Email Address'}
                       />
                       :

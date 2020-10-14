@@ -32,7 +32,6 @@ class CardItemBasket extends Component {
             paddingLeft: 10,
             paddingRight: 10,
             color: "white",
-            fontSize: 12,
             borderBottomRightRadius: 10,
             left: 40,
             fontSize: 12,

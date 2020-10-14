@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { VoucherAction } from '../../redux/actions/VoucherAction';
 import { connect } from "react-redux";
-import _ from 'lodash';
 import Shimmer from "react-shimmer-effect";
 import {
   Col,
@@ -77,7 +76,7 @@ class RedeemVoucher extends Component {
               redeemVoucher.map((item, key) => (
                 <Col key={key} sm={6}>
                   <div style={{
-                    borderRadius: 0, backgroundColor: "#FFFFFF", marginBottom: 10,
+                    backgroundColor: "#FFFFFF", marginBottom: 10,
                     width: "100%", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer", display: "flex", borderRadius: 10
                   }} onClick={() => this.setState({ dataDetail: item })} data-toggle="modal" data-target="#voucher-detail-modal">

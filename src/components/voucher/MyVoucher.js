@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { connect } from "react-redux";
-import _ from "lodash";
 import Shimmer from "react-shimmer-effect";
 import { Col, Row } from "reactstrap";
 import voucherIcon from "../../assets/images/voucher-icon.png";
@@ -77,7 +76,6 @@ class MyVoucher extends Component {
               <Col key={key} sm={6}>
                 <div
                   style={{
-                    borderRadius: 0,
                     backgroundColor: "#FFFFFF",
                     marginBottom: 10,
                     width: "100%",

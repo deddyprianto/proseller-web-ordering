@@ -3,10 +3,8 @@ import { connect } from "react-redux";
 
 import ModalProduct from "../ordering/ModalProduct";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
-import Loading from "../loading";
 import CardItemBasket from "./cardItemBasket";
 import { Link } from "react-router-dom";
-import _ from "lodash";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 const Swal = require("sweetalert2");

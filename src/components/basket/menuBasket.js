@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import AddPromo from "./addPromo";
 import TableNo from "./tableNo";
 import StatusOrder from "./statusOrder";
 import OrderingMode from "./orderingMode";

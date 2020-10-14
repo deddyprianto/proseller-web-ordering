@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { Input, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { AuthActions } from "../../redux/actions/AuthAction";
 import { connect } from "react-redux";
-import moment from "moment";
-import Loading from "../loading";
 import config from "../../config";
 import { CONSTANT } from "../../helpers";
 

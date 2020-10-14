@@ -1,5 +1,3 @@
-import { CONSTANT } from '../../helpers';
-
 const defaultState = {
     paymentCard: [],
 };

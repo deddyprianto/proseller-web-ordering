@@ -1135,7 +1135,6 @@ const mapStateToProps = (state, ownProps) => {
     companyInfo: state.masterdata.companyInfo.data,
     basket: state.order.basket,
     deliveryAddress: state.order.deliveryAddress,
-    basket: state.order.basket,
   };
 };
 

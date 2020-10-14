@@ -5,7 +5,6 @@ import MenuBasket from './menuBasket';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 
 export default class ViewCartBasket extends Component {
   roleBtnClear = () => {

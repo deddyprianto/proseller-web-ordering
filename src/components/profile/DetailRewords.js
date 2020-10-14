@@ -7,7 +7,6 @@ import {
 } from 'reactstrap';
 import StarIcon from "@material-ui/icons/Star";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
-import _ from 'lodash';
 import Shimmer from "react-shimmer-effect";
 import { CampaignAction } from '../../redux/actions/CampaignAction';
 import ModalPointsDetail from './ModalPointsDetail';
@@ -113,7 +112,7 @@ class DetailRewords extends Component {
                                 </div>
                               ) : (
                                   <div key={key} style={{
-                                    backgroundColor: "green", height: 40, width: 40, borderRadius: 40,
+                                    height: 40, width: 40, borderRadius: 40,
                                     display: "flex", flexDirection: "column", justifyContent: "center",
                                     alignItems: "center", backgroundColor: "#FFF"
                                   }} >

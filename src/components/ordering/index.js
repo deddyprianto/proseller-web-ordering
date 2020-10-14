@@ -83,10 +83,6 @@ class Ordering extends Component {
     }
   };
 
-  componentWillUnmount = () => {
-    this.setState({processing: false})
-  }
-
   getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
     if (pageParamString) {
@@ -102,6 +98,8 @@ class Ordering extends Component {
   };
 
   componentWillUnmount() {
+    this.setState({processing: false})
+    clearInterval(this.timeWhith);
     const { isEmenu } = this.state;
     window.removeEventListener(
       "scroll",
@@ -158,10 +156,6 @@ class Ordering extends Component {
       await this.setState({ loading: false });
     } catch (error) { }
   };
-
-  componentWillUnmount() {
-    clearInterval(this.timeWhith);
-  }
 
   stopProcessing = async () => {
     await this.setState({ categories: [], products: [], processing: false });
@@ -316,7 +310,7 @@ class Ordering extends Component {
 
   searchProduct = async (query) => {
     try {
-      const { products, productsBackup, finished } = this.state;
+      const { productsBackup } = this.state;
 
       if (query == "") {
         await this.setState({ loading: false, loadingSearching: false });

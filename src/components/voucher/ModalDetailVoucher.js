@@ -3,7 +3,6 @@ import { VoucherAction } from '../../redux/actions/VoucherAction';
 import { connect } from "react-redux";
 import voucherIcon from '../../assets/images/voucher-icon.png'
 import { Button } from 'reactstrap';
-import Loading from "../loading";
 
 const Swal = require('sweetalert2')
 

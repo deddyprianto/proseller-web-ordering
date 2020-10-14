@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import moment from "moment";
-import _ from "lodash";
 
 class InboxCard extends Component {
   constructor(props) {

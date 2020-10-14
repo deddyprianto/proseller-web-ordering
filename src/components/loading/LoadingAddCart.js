@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { LoopCircleLoading } from 'react-loadingg';
 
 class LoadingAddCart extends Component {
   constructor(props) {

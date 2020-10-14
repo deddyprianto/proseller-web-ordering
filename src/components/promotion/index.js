@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { PromotionAction } from "../../redux/actions/PromotionAction";
 import { isEmptyArray } from "../../helpers/CheckEmpty";
 import Carousel from "nuka-carousel";
 

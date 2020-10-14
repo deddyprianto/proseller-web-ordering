@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import styles from "./styles.module.css";
-
 class ModalOrderingMode extends Component {
   constructor(props) {
     super(props);

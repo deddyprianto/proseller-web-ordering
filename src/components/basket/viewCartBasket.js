@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 import { Col, Row, Button } from "reactstrap";
@@ -7,7 +7,6 @@ import MenuBasket from "./menuBasket";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 import config from "../../config";
 
 const ViewCartBasket = ({

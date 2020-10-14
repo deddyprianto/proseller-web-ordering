@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import { isEmptyObject } from "jquery";
 import config from "../../config";
 
-const Swal = require("sweetalert2");
-
 class Product extends Component {
   renderImageProduct = (item) => {
     if (
@@ -101,11 +99,8 @@ class Product extends Component {
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
         <div
-          className="product-outer"
           className={
-            item.product.orderingStatus === "UNAVAILABLE"
-              ? "product-unavailable"
-              : null
+            item.product.orderingStatus === "UNAVAILABLE" ? "product-unavailable" : "product-outer"
           }
         >
           <div className="product-inner product-card" style={{ padding: 10 }}>

@@ -4,7 +4,6 @@ import {
   Row,
 } from 'reactstrap';
 import Shimmer from "react-shimmer-effect";
-import Loading from "..//loading";
 import { connect } from "react-redux";
 import { HistoryAction } from '../../redux/actions/HistoryAction';
 import InfiniteScroll from "react-infinite-scroll-component";

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-import LoginRegister from "../login-register";
 // import BottomSheet from "react-animated-bottomsheet";
 // import Sharing from '../sharing';
 import { isEmptyObject } from "../../helpers/CheckEmpty";
@@ -10,6 +9,9 @@ import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
 import { InboxAction } from "../../redux/actions/InboxAction";
 import { lsLoad } from "../../helpers/localStorage";
+import loadable from "@loadable/component";
+
+const LoginRegister = loadable(() => import("../login-register"));
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));

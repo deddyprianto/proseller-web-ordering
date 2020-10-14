@@ -41,7 +41,7 @@ export default class ModalStampsDetail extends Component {
                               </div>
                             ) : (
                                 <div key={key} style={{
-                                  backgroundColor: "green", height: 40, width: 40, borderRadius: 40,
+                                  height: 40, width: 40, borderRadius: 40,
                                   display: "flex", flexDirection: "column", justifyContent: "center",
                                   alignItems: "center", backgroundColor: "#FFF"
                                 }} >

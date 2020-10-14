@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Col, Row } from "reactstrap";
 import QRCodeLogo from "../../assets/images/icon-qrcode.png";
 import profile from "../../assets/images/default-profile.png";
-import _ from "lodash";
 import Shimmer from "react-shimmer-effect";
 import { ReferralAction } from "../../redux/actions/ReferralAction";
 import ModalQRCode from "./ModalQRCode";
