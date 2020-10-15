@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Button } from "reactstrap";
 import { Link } from "react-router-dom";
-import SelectPicupDateTime from './selectPicupDateTime';
 import moment from "moment";
 
 class PickupDateTime extends Component {
@@ -22,12 +21,6 @@ class PickupDateTime extends Component {
           padding: 10,
         }}
       >
-        <SelectPicupDateTime
-          data={props}
-          handleSetState={(field, value) =>
-            this.props.handleSetState(field, value)
-          }
-        />
         <div
           style={{
             display: "flex",
@@ -39,28 +32,26 @@ class PickupDateTime extends Component {
             {textTitle} Date & Time
           </div>
           <div>
-            <Link to={this.props.isLoggedIn && "/delivery-address"}>
-              <Button
-                disabled={this.props.roleBtnClear ? true : false}
-                data-toggle="modal" data-target="#pickup-date-modal"
-                style={{
-                  fontWeight: "bold",
-                  color: "#FFF",
-                  cursor: "pointer",
-                  backgroundColor: !props.deliveryAddress
-                    ? this.props.color.primary
-                    : "#777",
-                  width: 140,
-                  justifyContent: "space-between",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  fontSize: 12,
-                }}
-              >
-                {`${moment(props.orderActionDate).format('DD MMM YYYY')} at ${props.orderActionTime}`}
-              </Button>
-            </Link>
+            <Button
+              disabled={this.props.roleBtnClear ? true : false}
+              data-toggle="modal" data-target="#pickup-date-modal"
+              style={{
+                fontWeight: "bold",
+                color: "#FFF",
+                cursor: "pointer",
+                backgroundColor: !props.deliveryAddress
+                  ? this.props.color.primary
+                  : "#777",
+                width: 140,
+                justifyContent: "space-between",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                fontSize: 12,
+              }}
+            >
+              {`${moment(props.orderActionDate).format('DD MMM YYYY')} at ${props.orderActionTime}`}
+            </Button>
           </div>
         </div>
       </div>

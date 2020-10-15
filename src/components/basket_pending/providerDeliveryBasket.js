@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Button } from "reactstrap";
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
-import ModalProviderDelivery from "./ModalProviderDelivery";
 
 class ProviderDeliveryBasket extends Component {
   render() {
@@ -16,10 +15,6 @@ class ProviderDeliveryBasket extends Component {
           padding: 10,
         }}
       >
-        <ModalProviderDelivery
-          data={props}
-          handleSetProvaider={(item) => this.props.handleSetProvaider(item)}
-        />
         <div
           style={{
             display: "flex",

@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-
 import { OrderAction } from "../../redux/actions/OrderAction";
-
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 
 const ModalProviderDelivery = ({

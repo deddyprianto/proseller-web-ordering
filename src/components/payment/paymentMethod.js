@@ -11,8 +11,8 @@ import CreditCard from "@material-ui/icons/CreditCard";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import ModalPaymentMethod from "./ModalPaymentMethod";
 import _ from "lodash";
-import Lottie from "lottie-react-web";
-import emptyGif from "../../assets/gif/empty-and-lost.json";
+// import Lottie from "lottie-react-web";
+// import emptyGif from "../../assets/gif/empty-and-lost.json";
 import { uuid } from "uuidv4";
 
 import styles from "./styles.module.css";
@@ -532,10 +532,11 @@ class PaymentMethod extends Component {
                     ))}
                     {paymentTypes.length === 0 && (
                       <div>
-                        <Lottie
+                        {/* <Lottie
                           options={{ animationData: emptyGif }}
                           style={{ height: 250 }}
-                        />
+                        /> */}
+                        <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                         <div>Data is empty</div>
                       </div>
                     )}

@@ -5,7 +5,9 @@ import CardItemBasket from "./cardItemBasket";
 import { Link } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
+
 const Swal = require("sweetalert2");
+
 export default class ItemsBasket extends Component {
   constructor(props) {
     super(props);
@@ -200,23 +202,6 @@ export default class ItemsBasket extends Component {
                 {" "}
                 {data.storeDetail.name}{" "}
               </div>
-              <Link to="/">
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                    color: "#20a8d8",
-                    border: "1px solid #20a8d8",
-                    borderRadius: 5,
-                    width: 100,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <AddIcon /> Add Items
-                </div>
-              </Link>
             </div>
             <div
               style={{

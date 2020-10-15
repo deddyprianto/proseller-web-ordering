@@ -5,14 +5,10 @@ import Shimmer from "react-shimmer-effect";
 import config from "../../config";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import { CampaignAction } from "../../redux/actions/CampaignAction";
-import Lottie from "lottie-react-web";
-import emptyGif from "../../assets/gif/empty-and-lost.json";
 import ViewCartBasket from "./viewCartBasket";
 import ViewProsessBasket from "./viewProssessBasket";
 import moment from "moment";
-import _, { chain } from "lodash";
+import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 import ItemsBasket from "./itemsBasket";
@@ -1063,10 +1059,7 @@ class Basket extends Component {
               )}
               {!loadingShow && !dataBasket && (
                 <div>
-                  <Lottie
-                    options={{ animationData: emptyGif }}
-                    style={{ height: 250 }}
-                  />
+                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   <div>Data is empty</div>
                 </div>
               )}

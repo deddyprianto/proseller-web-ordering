@@ -11,7 +11,9 @@ import Lottie from 'lottie-react-web';
 import loadingGif from '../../assets/gif/loading.json';
 import HistoryCard from './HistoryCard';
 import ModalDetailHistory from './ModalDetailHistory';
-import emptyGif from '../../assets/gif/empty-and-lost.json';
+// import emptyGif from '../../assets/gif/empty-and-lost.json';
+import config from "../../config"
+
 const Swal = require('sweetalert2');
 class HistoryTransaction extends Component {
   constructor(props) {
@@ -84,10 +86,11 @@ class HistoryTransaction extends Component {
                 {
                   dataTransactionLength === 0 &&
                   <div>
-                    <Lottie
+                    {/* <Lottie
                       options={{ animationData: emptyGif }}
                       style={{ height: 250 }}
-                    />
+                    /> */}
+                    <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                     <div>Data is empty</div>
                   </div>
                 }

@@ -145,7 +145,8 @@ const ViewCartBasket = ({
       (basket && basket.status !== "PENDING") ||
       (props.storeDetail &&
         props.storeDetail.enableTableScan !== false &&
-        props.scanTable
+        props.scanTable &&
+        props.scanTable.table
       ) ||
       (
         props.scanTable &&
@@ -446,7 +447,7 @@ const ViewCartBasket = ({
                   onClick={() => setViewCart(false)}
                 >
                   <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
-                Waiting Order
+                  Waiting Order
               </Button>
               </div>
             ) : (

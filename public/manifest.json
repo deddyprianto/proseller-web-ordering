@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Web Ordering",
+  "name": "Web Ordering CRM",
   "icons": [
     {
       "src": "favicon.ico",

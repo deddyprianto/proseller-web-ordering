@@ -105,6 +105,12 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
+    if(window.location.hash.split("#")[1] === "/signin" && !isLoggedIn){
+      try {
+        document.getElementById("login-register-btn").click();
+      } catch (error) {}
+    }
+
     try {
       let position = await props.dispatch(OutletAction.getCoordinates())
       let location = { latitude: position.coords.latitude, longitude: position.coords.longitude }

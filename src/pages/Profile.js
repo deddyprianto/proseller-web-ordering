@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
-import Lottie from "lottie-react-web";
-import emptyGif from "../assets/gif/empty-and-lost.json";
+// import Lottie from "lottie-react-web";
+// import emptyGif from "../assets/gif/empty-and-lost.json";
 
 import config from "../config";
 
@@ -58,10 +58,11 @@ class Profile extends Component {
             >
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 <div>
-                  <Lottie
+                  {/* <Lottie
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
-                  />
+                  /> */}
+                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   <div style={{ textAlign: "center" }}>Please login first</div>
                 </div>
               </main>

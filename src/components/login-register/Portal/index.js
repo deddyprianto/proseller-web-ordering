@@ -15,22 +15,28 @@ let Portal = ({
   error,
   loginByEmail,
   loginByMobile,
-  enableOrdering
+  enableOrdering,
+  companyInfo
 }) => {
+  // console.log(companyInfo)
   // let [method, setMethod] = useState(initialMethod);
-  let initialCountry = "SG";
-  let [phoneCountryCode, setPhoneCountryCode] = useState("+65");
+  let initialCountry = companyInfo && companyInfo.countryCode || "SG";
+  let initialCodePhone = "+65";
+
+  let [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
   let [value, setValue] = useState("");
   let handleValueChange = (e) => {
     setValue(e.target.value);
   };
 
   useEffect(() => {
+    if(initialCountry === "ID") setPhoneCountryCode("+62")
+
     handleChange(
       method === "phone" ? "phoneNumber" : "email",
       method === "phone" ? phoneCountryCode + value : value
     );
-  }, [value, phoneCountryCode]);
+  }, [value, phoneCountryCode, companyInfo]);
 
   useEffect(() => {
     setValue("");

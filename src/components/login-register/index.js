@@ -3,7 +3,6 @@ import "react-phone-input-2/lib/style.css";
 import { connect } from "react-redux";
 import generate from "password-generation";
 import { AuthActions } from "../../redux/actions/AuthAction";
-import Loading from "../loading";
 
 import Login from "./Login";
 import Portal from "./Portal";
@@ -900,6 +899,7 @@ class LoginRegister extends Component {
                     loginByEmail={loginByEmail}
                     loginByMobile={loginByMobile}
                     enableOrdering={enableOrdering}
+                    companyInfo={this.props.companyInfo}
                   ></Portal>
                 )}
           </div>

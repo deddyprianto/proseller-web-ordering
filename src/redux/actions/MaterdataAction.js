@@ -75,7 +75,7 @@ function getOutletByID(id, isProduct = true) {
     if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken());
     else if (isProduct) product = dispatch(getProductByOutletID(id));
     dispatch(setData(response.data, CONSTANT.DEFAULT_OUTLET));
-    console.log(product)
+    // console.log(product)
     return response.data;
   };
 }

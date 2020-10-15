@@ -279,7 +279,7 @@ class MenuBasket extends Component {
                     onClick={() => this.props.setViewCart(false)}
                   >
                     <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
-                  Waiting Order
+                    Waiting Order
                 </Button>
                 </div>
               ) : (

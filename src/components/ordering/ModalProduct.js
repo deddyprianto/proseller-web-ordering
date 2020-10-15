@@ -139,6 +139,10 @@ class ModalProduct extends Component {
       let { selectedItem } = this.state;
       if (selectedItem.quantity != 0) {
         selectedItem.quantity -= 1;
+        if(!this.isItemExist(this.state.selectedItem) && selectedItem.quantity === 0) {
+          selectedItem.quantity = 1
+        }
+
         this.setState({ selectedItem });
       }
     } catch (e) { }

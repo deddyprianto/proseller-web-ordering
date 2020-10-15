@@ -7,8 +7,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Lottie from "lottie-react-web";
 import loadingGif from "../assets/gif/loading.json";
 import { CONSTANT } from "../helpers";
-import emptyGif from "../assets/gif/empty-and-lost.json";
+// import emptyGif from "../assets/gif/empty-and-lost.json";
 import loadable from "@loadable/component";
+import config from "../config";
 
 const InboxCard = loadable(() => import("../components/inbox/InboxCard"));
 const ModalDetailInbox = loadable(() =>
@@ -134,10 +135,11 @@ class Inbox extends Component {
                 )}
                 {!loadingShow && broadcast && broadcast.length === 0 && (
                   <div>
-                    <Lottie
+                    {/* <Lottie
                       options={{ animationData: emptyGif }}
                       style={{ height: 250 }}
-                    />
+                    /> */}
+                    <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                     <div>Data is empty</div>
                   </div>
                 )}

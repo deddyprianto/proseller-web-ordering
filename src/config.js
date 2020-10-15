@@ -1,8 +1,9 @@
 import logo from "./assets/images/logo_placeholder.png";
+import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "demo";
-let companyHost = "auntieanne";
+let companyHost = "magmarvel";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
@@ -46,6 +47,7 @@ if (process.env.REACT_APP_STAGE === "demo") {
 }
 
 config.url_logo = logo;
+config.url_emptyImage = emptyImage;
 config.image_placeholder = "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
 config.prefix = window.location.pathname.includes("emenu") ? "emenu" : "webordering";
 config.getValidation = function getValidation(defaultOutlet) {
@@ -75,7 +77,15 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       { settingKey: "EnableWhatsappOTP", settingValue: false },
       { settingKey: "EnableRegisterWithPassword", settingValue: false },
       { settingKey: "EnableOrdering", settingValue: true },
-    ]
+      { 
+        settingKey: "TimeAndDateOrder", 
+        settingValue: {
+          deliveryTime: {start: "00:00", end: "23:00"},
+          storePickupTime: {start: "00:00", end: "23:00"},
+        } 
+      },
+      { settingKey: "TimeAndDateOrderLength", settingValue: 60 },
+    ],
   }
 
   if (!orderingSetting) orderingSetting = defaultSetting
@@ -86,6 +96,8 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       if (!check) orderingSetting.settings.push(settings)
     });
   }
+  if (orderingSetting && !orderingSetting.deliveryTime) orderingSetting.deliveryTime = defaultSetting.deliveryTime
+  if (orderingSetting && !orderingSetting.storePickupTime) orderingSetting.storePickupTime = defaultSetting.storePickupTime
   return orderingSetting
 }
 

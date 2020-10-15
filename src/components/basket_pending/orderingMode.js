@@ -3,12 +3,11 @@ import { connect } from "react-redux";
 
 import SendIcon from "@material-ui/icons/Send";
 import { Button } from "reactstrap";
-import ModalOrderingMode from "./ModalOrderingMode/index";
 
 class OrderingMode extends Component {
   componentDidMount = () => {
     let props = this.props.data;
-    if (!props.orderingMode || props.orderingMode === "") {
+    if (!props.dataBasket.orderingMode || props.dataBasket.orderingMode === "") {
       document.getElementById("ordering-mode-basket-btn").click();
     }
   };
@@ -23,13 +22,6 @@ class OrderingMode extends Component {
           padding: 10,
         }}
       >
-        {
-          <ModalOrderingMode
-            data={props}
-            setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
-            getCurrency={(price) => this.props.getCurrency(price)}
-          />
-        }
         <div
           style={{
             display: "flex",
@@ -59,7 +51,7 @@ class OrderingMode extends Component {
             }}
           >
             <SendIcon style={{ fontSize: 16 }} />
-            {props.orderingMode}
+            {props.dataBasket.orderingMode}
           </Button>
         </div>
       </div>

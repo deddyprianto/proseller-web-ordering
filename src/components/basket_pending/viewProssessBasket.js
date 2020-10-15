@@ -7,7 +7,8 @@ import onTheWay from '../../assets/gif/delivery.json';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 // import CropFreeIcon from '@material-ui/icons/CropFree';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import ModalQRCode from '../profile/ModalQRCode';
+import loadable from "@loadable/component";
+const ModalQRCode = loadable(() => import("../profile/ModalQRCode"));
 
 export default class ViewProsessBasket extends Component {
   render() {
@@ -37,20 +38,20 @@ export default class ViewProsessBasket extends Component {
                     {
                       props.dataBasket.queueNo &&
                       (
-                        props.orderingMode === "TAKEAWAY" ||
-                        props.orderingMode === "STOREPICKUP" ||
-                        props.orderingMode === "STORECHECKOUT"
+                        props.dataBasket.orderingMode === "TAKEAWAY" ||
+                        props.dataBasket.orderingMode === "STOREPICKUP" ||
+                        props.dataBasket.orderingMode === "STORECHECKOUT"
                       ) &&
                       ("Queue No : " + props.dataBasket.queueNo)
                     }
                     {
                       props.storeDetail.enableTableScan === false &&
-                      props.orderingMode === "DINEIN" &&
+                      props.dataBasket.orderingMode === "DINEIN" &&
                       props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
                       ("Queue No : " + props.dataBasket.queueNo)
                     }
                     {
-                      props.orderingMode === "DINEIN" &&
+                      props.dataBasket.orderingMode === "DINEIN" &&
                       props.dataBasket.outlet.outletType === "RESTO" &&
                       ("Table No : " + props.scanTable.tableNo)
                     }
@@ -66,7 +67,7 @@ export default class ViewProsessBasket extends Component {
                     {
                       (
                         props.dataBasket.queueNo ||
-                        (props.storeDetail.enableTableScan === false && props.orderingMode === "DINEIN")
+                        (props.storeDetail.enableTableScan === false && props.dataBasket.orderingMode === "DINEIN")
                       ) ? ("Queue No : " + props.dataBasket.queueNo) : ("Table No : " + props.scanTable.tableNo)
                     }
                   </div>

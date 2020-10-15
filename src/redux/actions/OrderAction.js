@@ -68,7 +68,7 @@ function getTheme() {
       `orderingsetting/${appType}`
     );
     const data = await response.data;
-    data &&
+    data && data.theme && 
       dispatch({
         type: "SET_THEME",
         payload: data.theme.color.secondary
@@ -80,34 +80,6 @@ function getTheme() {
 
 function getSettingOrdering() {
   return async (dispatch) => {
-    let defaultSetting = {
-      settings: [
-        {
-          settingKey: "LoginByEmail",
-          settingValue: true
-        },
-        {
-          settingKey: "LoginByMobile",
-          settingValue: true
-        },
-        {
-          settingKey: "EnableSMSOTP",
-          settingValue: true
-        },
-        {
-          settingKey: "EnableWhatsappOTP",
-          settingValue: false
-        },
-        {
-          settingKey: "EnableRegisterWithPassword",
-          settingValue: false
-        },
-        {
-          settingKey: "EnableOrdering",
-          settingValue: true
-        }
-      ]
-    }
     let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
     let response = await OrderingService.api("GET", null, `orderingsetting/${appType}`);
     response.data = config.getSettingOrdering(response.data)

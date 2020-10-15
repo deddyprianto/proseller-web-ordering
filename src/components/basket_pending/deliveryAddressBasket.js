@@ -12,6 +12,7 @@ class DeliveryAddressBasket extends Component {
   }
   render() {
     let props = this.props.data;
+    console.log(props.dataBasket.deliveryAddress)
     return (
       <div
         style={{
@@ -40,7 +41,7 @@ class DeliveryAddressBasket extends Component {
                   fontWeight: "bold",
                   color: "#FFF",
                   cursor: "pointer",
-                  backgroundColor: !props.deliveryAddress
+                  backgroundColor: !props.dataBasket.deliveryAddress
                     ? this.props.color.primary
                     : "#777",
                   width: 140,
@@ -52,9 +53,9 @@ class DeliveryAddressBasket extends Component {
                 }}
               >
                 <ContactMailIcon style={{ fontSize: 16 }} />
-                {!props.deliveryAddress
+                {!props.dataBasket.deliveryAddress
                   ? "Select Address"
-                  : `${props.deliveryAddress.addressName.substring(0, 15)}`}
+                  : `${props.dataBasket.deliveryAddress.addressName.substring(0, 15)}`}
               </Button>
             </Link>
           </div>

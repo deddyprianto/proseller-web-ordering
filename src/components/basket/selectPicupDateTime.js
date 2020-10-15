@@ -57,9 +57,9 @@ export default class SelectPicupDateTime extends Component {
                 </button>
               </div>
               <div className="modal-body">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ textAlign: "left" }}>
-                    <div>Date</div>
+                <div>
+                  <div>
+                    <div style={{fontWeight: "bold", marginLeft: 5}}>Date</div>
                     <DatePicker
                       id="orderingDateBtn"
                       selected={new Date(props.orderActionDate)}
@@ -67,30 +67,46 @@ export default class SelectPicupDateTime extends Component {
                       minDate={date}
                       maxDate={maxDay && date.addDays(parseInt(maxDay))}
                     />
-                    <div onClick={() => document.getElementById('orderingDateBtn').click()}
-                      style={{ position: "absolute", padding: 5, backgroundColor: "#FFF", top: 46, left: 30 }}>
-                      {moment(props.orderActionDate).format('DD MMM YYYY')}
-                    </div>
                   </div>
 
-                  <div style={{ textAlign: "left" }}>
-                    <div>Time</div>
-                    <select
-                      className="woocommerce-Input woocommerce-Input--text input-text"
-                      value={props.orderActionTime}
-                      onChange={time => this.props.handleSetState('orderActionTime', time.target.value)}
-                    >
-                      {
-                        props.orderingTime.map((items, key) => (
-                          <option key={key} value={items}>{items}</option>
-                        ))
-                      }
-                    </select>
+                  <div style={{display: "flex", marginTop: 10, justifyContent: "center" }}>
+                    <div style={{marginRight: 10}}>
+                      <div style={{fontWeight: "bold"}}>Hour</div>
+                      <select
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        value={props.orderActionTimeHours}
+                        onChange={time => this.props.handleSetState('orderActionTimeHours', time.target.value)}
+                      >
+                        {
+                          props.orderingTimeHours.map((items, key) => (
+                            props.orderingTimeMinutes[items].length > 0 &&
+                            <option key={key} value={items}>{items}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div>
+                      <div style={{fontWeight: "bold"}}>Minute</div>
+                      <select
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        value={props.orderActionTimeMinutes}
+                        onChange={time => this.props.handleSetState('orderActionTimeMinutes', time.target.value)}
+                      >
+                        {
+                          props.orderingTimeMinutes[props.orderActionTimeHours].map((items, key) => (
+                            <option key={key} value={items}>{items}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <Button className="button"
                   data-toggle="modal" data-target="#redeem-point-modal"
                   data-dismiss="modal"
+                  onClick={() => {
+                    this.props.handleSetState('orderActionTime', `${props.orderActionTimeHours}:${props.orderActionTimeMinutes}`)
+                  }}
                   style={{
                     width: "100%", marginTop: 10, borderRadius: 5, height: 40
                   }}>Set</Button>

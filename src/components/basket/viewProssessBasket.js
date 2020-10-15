@@ -7,7 +7,8 @@ import onTheWay from '../../assets/gif/delivery.json';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 // import CropFreeIcon from '@material-ui/icons/CropFree';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import ModalQRCode from '../profile/ModalQRCode';
+import loadable from "@loadable/component";
+const ModalQRCode = loadable(() => import("../profile/ModalQRCode"));
 
 export default class ViewProsessBasket extends Component {
   render() {

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import AddPromo from './addPromo';
 import TableNo from './tableNo';
 import StatusOrder from './statusOrder';
 import OrderingMode from './orderingMode';
@@ -18,22 +17,6 @@ export default class MenuBasket extends Component {
     let props = this.props.data
     return (
       <div style={{ marginTop: -8 }}>
-        {/* {
-          ((props.myVoucher && props.myVoucher.length > 0) || props.totalPoint > 0) && this.props.isLoggedIn &&
-          <div style={{ textAlign: "left" }}>
-            <AddPromo
-              data={props}
-              roleBtnClear={this.props.roleBtnClear}
-              cancelSelectVoucher={() => this.props.cancelSelectVoucher()}
-              cancelSelectPoint={() => this.props.cancelSelectPoint()}
-              handleRedeemVoucher={() => this.props.handleRedeemVoucher()}
-              handleRedeemPoint={() => this.props.handleRedeemPoint()}
-              getCurrency={(price) => this.props.getCurrency(price)}
-              scrollPoint={(data) => this.props.scrollPoint(data)}
-              setPoint={(point) => this.props.setPoint(point)}
-            />
-          </div>
-        } */}
         {
           props.dataBasket && (props.dataBasket.tableNo || props.scanTable) && props.dataBasket.orderingMode !== "DELIVERY" && props.dataBasket.outlet &&
           <div style={{ textAlign: "left" }}> <TableNo data={props} /> </div>
@@ -64,10 +47,8 @@ export default class MenuBasket extends Component {
           <TaxAmount data={props} getCurrency={(price) => this.props.getCurrency(price)} />
         }
 
-        {/* {this.props.isLoggedIn && <PaymentMethodBasket data={props} roleBtnClear={this.props.roleBtnClear} />} */}
-
         {
-          props.orderingMode && props.orderingMode === "DELIVERY" &&
+          props.dataBasket.orderingMode && props.dataBasket.orderingMode === "DELIVERY" &&
           <div>
             {<DeliveryAddressBasket data={props} roleBtnClear={this.props.roleBtnClear} />}
             {
@@ -80,10 +61,10 @@ export default class MenuBasket extends Component {
           </div>
         }
 
-        {props.orderingMode && (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "DELIVERY"
+        {props.dataBasket.orderingMode && (
+          props.dataBasket.orderingMode === "TAKEAWAY" ||
+          props.dataBasket.orderingMode === "STOREPICKUP" ||
+          props.dataBasket.orderingMode === "DELIVERY"
         ) && (
             <div>
               {
@@ -113,7 +94,7 @@ export default class MenuBasket extends Component {
             </div>
 
             {
-              props.provaiderDelivery && props.orderingMode && props.orderingMode === "DELIVERY" &&
+              props.provaiderDelivery && props.dataBasket.orderingMode && props.dataBasket.orderingMode === "DELIVERY" &&
               <div style={{ marginLeft: 10, marginRight: 10 }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                   <div style={{ fontWeight: "bold", color: "gray" }}>Delivery Fee</div>
@@ -122,27 +103,11 @@ export default class MenuBasket extends Component {
               </div>
             }
 
-            {
-              (props.discountVoucher + props.discountPoint) > 0 &&
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>Discount</div>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${this.props.getCurrency(props.discountVoucher + props.discountPoint)}`}</div>
-                </div>
-              </div>
-            }
-
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginLeft: 10, marginRight: 10 }}>
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>TOTAL</div>
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>
                 {
-                  props.provaiderDelivery ?
-                    this.props.getCurrency(
-                      props.newTotalPrice === "0" ?
-                        (props.totalPrice + props.provaiderDelivery.deliveryFeeFloat) :
-                        (props.newTotalPrice + props.provaiderDelivery.deliveryFeeFloat)
-                    ) :
-                    this.props.getCurrency(props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice)
+                  this.props.getCurrency(props.dataBasket.totalNettAmount + (props.dataBasket.orderingMode === "DELIVERY" && props.provaiderDelivery && props.provaiderDelivery.deliveryFee || 0))
                 }
               </div>
             </div>

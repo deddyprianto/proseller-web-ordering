@@ -15,7 +15,6 @@ const Home = loadable(() => import("../../pages/Home"));
 const Profile = loadable(() => import("../../pages/Profile"));
 const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
-const PageNotFound = loadable(() => import("../../pages/PageNotFound"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
 const DeliveryAddress = loadable(() => import("../../components/delivery-address") );
 const Payment = loadable(() => import("../../components/payment/index"));
@@ -92,8 +91,9 @@ class Layout extends Component {
         <div id="content" className="site-content">
           <Switch>
             {enableOrdering && <Route exact path={"/"} component={Home} /> }
-            { enableOrdering && <Route exact path={"/basket"} component={Basket} /> }
-            { (isLoggedIn || !enableOrdering) && <Route exact path={"/profile"} component={Profile} /> }
+            {enableOrdering && <Route exact path={"/signIn"} component={Home} /> }
+            {enableOrdering && <Route exact path={"/basket"} component={Basket} /> }
+            {(isLoggedIn || !enableOrdering) && <Route exact path={"/profile"} component={Profile} /> }
             {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
             {isLoggedIn &&  <Route exact path={"/voucher"} component={Voucher} /> }
             {isLoggedIn &&  <Route exact path={"/setting"} component={Setting} /> }
@@ -106,7 +106,6 @@ class Layout extends Component {
             {isLoggedIn && <Route exact path={"/history/detail"} component={PendingDetail} /> }
             <Route exact path={"/history"} component={History} />
             <Route exact path={"/payment"} component={Payment} />
-            <Route exact path={"/404"} component={PageNotFound} />
             <Redirect from="*" to={!enableOrdering ? '/profile' : '/'} />
           </Switch>
           <div style={{ clear: "both" }}></div>

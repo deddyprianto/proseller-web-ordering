@@ -238,7 +238,7 @@ export default class ViewCartBasket extends Component {
               </div>
             }
 
-            {/* {
+            {
               (props.discountVoucher + props.discountPoint) > 0 &&
               <div style={{ marginLeft: 10, marginRight: 10 }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
@@ -246,12 +246,20 @@ export default class ViewCartBasket extends Component {
                   <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${this.props.getCurrency(props.discountVoucher + props.discountPoint)}`}</div>
                 </div>
               </div>
-            } */}
+            }
 
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginLeft: 10, marginRight: 10 }}>
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>{`${props.dataBasket.payAtPOS ? "Pay At Store" : "TOTAL"}`}</div>
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>
-                {this.props.getCurrency(props.dataBasket.totalNettAmount + (props.provaiderDelivery && props.provaiderDelivery.deliveryFeeFloat || props.dataBasket.deliveryFee))}
+                {this.props.getCurrency(
+                  props.dataBasket.totalNettAmount + 
+                  (
+                    props.dataBasket.orderingMode === "DELIVERY" && 
+                    props.provaiderDelivery && 
+                    props.provaiderDelivery.deliveryFeeFloat || 0
+                  ) -
+                  (props.discountVoucher + props.discountPoint)
+                )}
               </div>
             </div>
 

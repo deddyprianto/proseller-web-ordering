@@ -7,8 +7,8 @@ import Shimmer from "react-shimmer-effect";
 import config from "../../config";
 import { connect } from "react-redux";
 import HistoryCard from './HistoryCardPending';
-import Lottie from 'lottie-react-web';
-import emptyGif from '../../assets/gif/empty-and-lost.json';
+// import Lottie from 'lottie-react-web';
+// import emptyGif from '../../assets/gif/empty-and-lost.json';
 import { Link } from 'react-router-dom';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -64,10 +64,11 @@ class HistoryPending extends Component {
               {
                 dataPendingLength === 0 &&
                 <div>
-                  <Lottie
+                  {/* <Lottie
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
-                  />
+                  /> */}
+                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   <div>Data is empty</div>
                 </div>
               }

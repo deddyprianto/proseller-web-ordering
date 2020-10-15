@@ -5,10 +5,11 @@ import QRCodeLogo from "../../assets/images/icon-qrcode.png";
 import profile from "../../assets/images/default-profile.png";
 import Shimmer from "react-shimmer-effect";
 import { ReferralAction } from "../../redux/actions/ReferralAction";
-import ModalQRCode from "./ModalQRCode";
 import ModalEditProfile from "./ModalEditProfile";
 import { Link } from "react-router-dom";
 import config from "../../config";
+import loadable from "@loadable/component";
+const ModalQRCode = loadable(() => import("./ModalQRCode"));
 
 class DetailProfile extends Component {
   constructor(props) {

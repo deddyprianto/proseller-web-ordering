@@ -59,9 +59,9 @@ class Product extends Component {
     if (labelButton.toLowerCase() === "update") {
       this.props.showUpdateModal(item);
     } else {
-      // if (isEmptyObject(basket)) document.getElementById('open-modal-ordering-mode').click();
-      // else document.getElementById('open-modal-product').click();
-      document.getElementById("open-modal-product").click();
+      try {
+        document.getElementById("open-modal-product").click();
+      } catch (error) {}
     }
   };
 
@@ -71,22 +71,6 @@ class Product extends Component {
       this.openModal();
     } else {
       if (basket.outletID === defaultOutlet.sortKey) this.openModal();
-      // else {
-      //   Swal.fire({
-      //     title: "Change Outlet ?",
-      //     text: "You will delete order in previous outlet..",
-      //     icon: "warning",
-      //     showCancelButton: true,
-      //     confirmButtonColor: "#3085d6",
-      //     cancelButtonColor: "#d33",
-      //     confirmButtonText: "Yes",
-      //   }).then((result) => {
-      //     if (result.value) {
-      //       localStorage.removeItem(`${config.prefix}_offlineCart`);
-      //       this.openModal();
-      //     }
-      //   });
-      // }
       else this.openModal();
     }
   };

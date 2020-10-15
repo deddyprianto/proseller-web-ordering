@@ -43,7 +43,9 @@ function getCoordinates() {
 
 function getNearsesOutlet(position = null) {
   return async (dispatch) => {
-    const data = await MasterDataService.api( "POST", position, "outlets/nearestoutlet" );
+    let data = await MasterDataService.api( "POST", position, "outlets/nearestoutlet" );
+    if(data.ResultCode === 400) data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+
     if (!isEmptyObject(data.data)) {
       if (data.data && data.data.id) data.data = config.getValidation(data.data)
       dispatch(setData(data.data, CONSTANT.DEFAULT_OUTLET));

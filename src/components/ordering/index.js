@@ -1,21 +1,13 @@
-/* eslint-disable no-loop-func */
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
 import _ from "lodash";
-
-// import CategoriesEmenu from "./CategoriesEmenu";
-// import CategoriesWebOrdering from "./CategoriesWebOrdering";
 import Product from "./Product";
 import { OutletAction } from "../../redux/actions/OutletAction";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
-// import LoadingFixed from "../loading/LoadingFixed";
 import LoaderCircle from "../loading/LoaderCircle";
-import Lottie from "lottie-react-web";
-import emptyGif from "../../assets/gif/empty-and-lost.json";
 import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
 import WebOrderingCategories from "./WebOrderingCategories";
@@ -401,10 +393,11 @@ class Ordering extends Component {
             style={{ marginTop: 100 }}
           >
             <div className="tab-content">
-              <Lottie
+              {/* <Lottie
                 options={{ animationData: emptyGif }}
                 style={{ height: 250 }}
-              />
+              /> */}
+              <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
               <div
                 style={{
                   margin: 10,
@@ -578,10 +571,11 @@ class Ordering extends Component {
 
                 {!loadingSearching && !loading && products.length == 0 && (
                   <div>
-                    <Lottie
+                    {/* <Lottie
                       options={{ animationData: emptyGif }}
                       style={{ height: 250 }}
-                    />
+                    /> */}
+                    <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                     <h3 className="color text-center">
                       Oppss.. Item Not Found.
                     </h3>

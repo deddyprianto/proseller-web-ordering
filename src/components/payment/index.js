@@ -15,8 +15,8 @@ import PaymentMethodBasket from "../basket/paymentMethodBasket";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
-import Lottie from "lottie-react-web";
-import emptyGif from "../../assets/gif/empty-and-lost.json";
+// import Lottie from "lottie-react-web";
+// import emptyGif from "../../assets/gif/empty-and-lost.json";
 import config from "../../config";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { CampaignAction } from "../../redux/actions/CampaignAction";
@@ -809,10 +809,11 @@ class Payment extends Component {
             >
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 <div>
-                  <Lottie
+                  {/* <Lottie
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
-                  />
+                  /> */}
+                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   {basketLength > 0 ? (
                     <div
                       style={{

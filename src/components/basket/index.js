@@ -6,8 +6,6 @@ import { OrderAction } from "../../redux/actions/OrderAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { CampaignAction } from "../../redux/actions/CampaignAction";
-import Lottie from "lottie-react-web";
-import emptyGif from "../../assets/gif/empty-and-lost.json";
 import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
@@ -65,7 +63,11 @@ class Basket extends Component {
       orderActionDate: moment().format("YYYY-MM-DD"),
       orderActionTime: moment().add(1, 'h').format("HH") + ":00",
       checkOperationalHours: {},
-      orderingTime: []
+      orderingTime: [],
+
+      orderingSetting: [],
+      orderingTimeMinutes: {},
+      orderingTimeHours: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -165,8 +167,6 @@ class Basket extends Component {
   };
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
-    // Swal.fire({ onOpen: () => { Swal.showLoading(); } });
-
     let { isLoggedIn } = this.props;
     let { isEmenu } = this.state;
     let selectedVoucher = encryptor.decrypt(
@@ -253,7 +253,7 @@ class Basket extends Component {
       if (storeDetail && storeDetail.id) {
         storeDetail = config.getValidation(storeDetail)
       }
-      console.log('storeDetail', storeDetail)
+      // console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
@@ -378,31 +378,101 @@ class Basket extends Component {
   }
 
   checkPickUpDateTime = (checkOperationalHours, date, check) => {
+    let timeAndDateOrder = this.state.orderingSetting.find(items => { return items.settingKey === "TimeAndDateOrder" })
+    let timeAndDateOrderLength = this.state.orderingSetting.find(items => { return items.settingKey === "TimeAndDateOrderLength" })
+    let orderingMode = this.state.orderingMode
+
     let from = parseInt(moment(checkOperationalHours.beforeTime).format("HH"))
     let to = parseInt(moment(checkOperationalHours.afterTime).format("HH"))
 
-    if (check) from = parseInt(moment().add(1, 'hours').format("HH"))
+    let hoursStartDay = 0
+    let minuteStartDay = 0
+    let hoursEndDay = 0
+    let minuteEndDay = 0
+
+    if(timeAndDateOrder) {
+      let timeOrder = timeAndDateOrder.settingValue.storePickupTime
+      if(orderingMode === "DELIVERY") timeOrder = timeAndDateOrder.settingValue.deliveryTime
+      
+      hoursStartDay = parseInt(timeOrder.start.split(":")[0])
+      minuteStartDay = parseInt(timeOrder.start.split(":")[1])
+      hoursEndDay = parseInt(timeOrder.end.split(":")[0])
+      minuteEndDay = parseInt(timeOrder.end.split(":")[1])
+
+      from = hoursStartDay
+      to = hoursEndDay
+    }
 
     let orderingTime = []
+    let orderingTimeMinutes = {}
+    let orderingTimeHours = []
+    let startMinute = minuteStartDay
+
     for (let index = from; index <= to; index++) {
-      let time = index.toString().length === 1 ? `0${index}:00` : `${index}:00`
-      orderingTime.push(time)
+      let startHoursString = index.toString().length === 1 ? `0${index}` : index
+      orderingTimeMinutes[startHoursString] = []
+      if(timeAndDateOrderLength){
+        let countLooping = Math.ceil((60-startMinute)/timeAndDateOrderLength.settingValue)
+        for (let looping = 0; looping < countLooping; looping++) {
+          if(hoursEndDay === index && minuteEndDay < startMinute) break
+          let startMinuteString = startMinute.toString().length === 1 ? `0${startMinute}` : startMinute
+          let time = `${startHoursString}:${startMinuteString}`
+          if(startMinute === 60) time = (index + 1).toString().length === 1 ? `0${(index + 1)}:00` : `${(index + 1)}:00`
+          orderingTime.push(time)
+          orderingTimeMinutes[time.split(":")[0]].push(time.split(":")[1])
+          startMinute += timeAndDateOrderLength.settingValue
+        }
+        startMinute = Math.abs(60-startMinute)
+      } else {
+        let time = index.toString().length === 1 ? `0${index}:00` : `${index}:00`
+        orderingTime.push(time)
+      }
+      orderingTimeHours.push(startHoursString)
     }
-    this.setState({ orderingTime })
-    if (!checkOperationalHours.status) {
-      let orderActionTime = moment(checkOperationalHours.beforeTime).format('HH') + ":00";
+    
+    if (check){
+      let timeNow = moment().format("HH:mm")
+      from = parseInt(timeNow.split(":")[0])
+      orderingTimeHours = orderingTimeHours.filter(items => {return Number(items) >= from})
+      orderingTime = orderingTime.filter(items => {return Number(items.split(":")[0]) >= from})
+      let activeMinute = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from].filter(items => { 
+        return Number(items) > Number(timeNow.split(":")[1])
+      })
+      orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from] = activeMinute
+    }
+
+    this.setState({ orderingTime, orderingTimeMinutes, orderingTimeHours })
+
+    let minutesActive = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from];
+    if (!checkOperationalHours.status || !minutesActive[0]) {
+      minutesActive[0] = minuteStartDay.toString().length === 1 ? `0${minuteStartDay}` : minuteStartDay
+      orderingTimeHours[0] = hoursStartDay.toString().length === 1 ? `0${hoursStartDay}` : hoursStartDay
+      let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
+      let orderActionTimeHours = orderingTimeHours[0];
+      let orderActionTimeMinutes = minutesActive[0];
       let orderActionDate = moment(date).add(1, 'd').format("YYYY-MM-DD")
-      this.setState({ orderActionTime, orderActionDate })
+      this.setState({ orderActionTime, orderActionDate, orderActionTimeHours, orderActionTimeMinutes })
+    } else {
+      let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
+      let orderActionTimeHours = orderingTimeHours[0];
+      let orderActionTimeMinutes = minutesActive[0]
+      this.setState({ orderActionTime, orderActionTimeHours, orderActionTimeMinutes })
     }
   }
 
   componentDidUpdate() {
+    if(
+      this.props.orderingSetting &&
+      this.props.orderingSetting.length > 0 &&
+      this.state.orderingSetting.length === 0 
+    ) this.setState({ orderingSetting: this.props.orderingSetting });
+
     if (
       this.props.campaignPoint &&
       this.props.campaignPoint.detailPoint &&
       !this.state.detailPoint
-    )
-      this.setState(this.props.campaignPoint);
+    ) this.setState(this.props.campaignPoint);
+
     if (this.props.myVoucher && !this.state.myVoucher)
       this.setState({ myVoucher: this.props.myVoucher });
   }
@@ -1058,10 +1128,11 @@ class Basket extends Component {
               )}
               {!loadingShow && (!dataBasket || !this.props.basket.details) && (
                 <div>
-                  <Lottie
+                  {/* <Lottie
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
-                  />
+                  /> */}
+                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   <div>Data is empty</div>
                 </div>
               )}
@@ -1135,6 +1206,7 @@ const mapStateToProps = (state, ownProps) => {
     companyInfo: state.masterdata.companyInfo.data,
     basket: state.order.basket,
     deliveryAddress: state.order.deliveryAddress,
+    orderingSetting: state.order.setting,
   };
 };
 

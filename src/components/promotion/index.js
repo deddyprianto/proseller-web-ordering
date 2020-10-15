@@ -13,7 +13,7 @@ class Promotion extends Component {
     if (isEmptyArray(banners)) return null;
     return (
       <div className="home-v1-slider" >
-        <div id="owl-main" className="owl-carousel owl-inner-nav owl-ui-sm" style={{ marginTop: 70, marginBottom: -140 }}>
+        <div id="owl-main" className="owl-carousel owl-inner-nav owl-ui-sm" style={{ marginTop: 85, marginBottom: -140 }}>
           <Carousel
             autoplay
             wrapAround={false}
