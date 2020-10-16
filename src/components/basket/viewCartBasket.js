@@ -168,7 +168,11 @@ const ViewCartBasket = ({
     basket.details &&
     basket.details.reduce((acc, item) => ({ quantity: acc.quantity + item.quantity })).quantity;
 
-  const { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[orderingModeField];
+  let { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[orderingModeField];
+  minQty = minQty || 0
+  maxQty = maxQty || 0
+  minAmount = minAmount || 0
+  maxAmount = maxAmount || 0
 
   useEffect(() => {
     if (deliveryAddress) {
@@ -291,8 +295,8 @@ const ViewCartBasket = ({
                     <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
                         `Your order has exceeded maximum allowed item quantity for
-                      ${data.dataBasket.orderingMode} (maximum quantity ${maxQty}). 
-                      Please remove some item from your cart.`
+                        ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (maximum quantity ${maxQty}). 
+                        Please remove some item from your cart.`
                       }
                     </div>
                     <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
@@ -303,8 +307,8 @@ const ViewCartBasket = ({
                     <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
                         `Your order hasn't reached minimum allowed item quantity for
-                      ${data.dataBasket.orderingMode} (minimum quantity ${minQty}). 
-                      Please add some item to your cart.`
+                        ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum quantity ${minQty}). 
+                        Please add some item to your cart.`
                       }
                     </div>
                     <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
@@ -315,8 +319,8 @@ const ViewCartBasket = ({
                   <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                     {
                       `Your order has exceeded maximum allowed order amount for
-                    ${data.dataBasket.orderingMode} ( maximum amount ${getCurrency(maxAmount)}). 
-                    Please remove some item from your cart.`
+                      ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} ( maximum amount ${getCurrency(maxAmount)}). 
+                      Please remove some item from your cart.`
                     }
                   </div>
                   <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
@@ -327,8 +331,8 @@ const ViewCartBasket = ({
                 <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
                   {
                     `Your order hasn't reached minimum allowed order amount for
-                  ${data.dataBasket.orderingMode} (minimum amount ${getCurrency(minAmount)}). 
-                  Please add some item to your cart.`
+                    ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum amount ${getCurrency(minAmount)}). 
+                    Please add some item to your cart.`
                   }
                 </div>
                 <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />

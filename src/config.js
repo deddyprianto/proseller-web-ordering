@@ -3,7 +3,7 @@ import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "demo";
-let companyHost = "magmarvel";
+let companyHost = "auntieanne";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
@@ -50,6 +50,7 @@ config.url_logo = logo;
 config.url_emptyImage = emptyImage;
 config.image_placeholder = "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
 config.prefix = window.location.pathname.includes("emenu") ? "emenu" : "webordering";
+
 config.getValidation = function getValidation(defaultOutlet) {
   let orderValidation = {
     takeAway: { "minAmount": 0, "maxQty": 0, "maxAmount": 0, "minQty": 0 },
@@ -99,6 +100,18 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
   if (orderingSetting && !orderingSetting.deliveryTime) orderingSetting.deliveryTime = defaultSetting.deliveryTime
   if (orderingSetting && !orderingSetting.storePickupTime) orderingSetting.storePickupTime = defaultSetting.storePickupTime
   return orderingSetting
+}
+
+config.checkNickName = function checkNickName(mode, storeDetail) {
+  if(mode === "TAKEAWAY") return isNotFalse(storeDetail.takeAwayName) || mode
+  if(mode === "DINEIN") return isNotFalse(storeDetail.dineInName) || mode
+  if(mode === "DELIVERY") return isNotFalse(storeDetail.deliveryName) || mode
+  return mode
+}
+
+function isNotFalse(nickname) {
+  if(!nickname || nickname && nickname === "") nickname = false
+  return nickname
 }
 
 export default config;

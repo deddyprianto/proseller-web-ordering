@@ -26,7 +26,7 @@ function getAddressLocation(
     // console.log(url)
     let response = await MasterDataService.api("GET", null, url, "Bearer");
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -72,7 +72,7 @@ function getOutletByID(id, isProduct = true) {
       "Bearer"
     );
     let product = []
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken());
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     else if (isProduct) product = dispatch(getProductByOutletID(id));
     dispatch(setData(response.data, CONSTANT.DEFAULT_OUTLET));
     // console.log(product)
@@ -89,7 +89,7 @@ function getProductByOutletID(id) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     dispatch(setData(response.data, CONSTANT.DATA_PRODUCT));
     return response.data;
   };

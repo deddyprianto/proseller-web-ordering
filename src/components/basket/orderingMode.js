@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import SendIcon from "@material-ui/icons/Send";
 import { Button } from "reactstrap";
 import ModalOrderingMode from "./ModalOrderingMode";
+import config from "../../config";
 
 class OrderingMode extends Component {
   componentDidMount = () => {
@@ -12,6 +13,7 @@ class OrderingMode extends Component {
       document.getElementById("ordering-mode-basket-btn").click();
     }
   };
+
   render() {
     let props = this.props.data;
     return (
@@ -59,7 +61,7 @@ class OrderingMode extends Component {
             }}
           >
             <SendIcon style={{ fontSize: 16 }} />
-            {props.orderingMode}
+            {config.checkNickName(props.orderingMode, props.storeDetail)}
           </Button>
         </div>
       </div>

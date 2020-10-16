@@ -12,7 +12,7 @@ function getRedeemVoucher() {
   return async (dispatch) => {
     let response = await CRMService.api("GET", null, "voucher", "bearer");
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -31,7 +31,7 @@ function redeemVoucher(payload) {
       "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }

@@ -16,7 +16,7 @@ function getBroadcast(payload = {}) {
 
     let response = await CRMService.api('POST', payload, 'broadcast/customer', 'bearer')
     let responseUnread = await CRMService.api('POST', { messageOption: "unread" }, 'broadcast/customer', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       let broadcast = response.Data
       let broadcastLength = response.DataLength
@@ -31,7 +31,7 @@ function getBroadcast(payload = {}) {
 function getBroadcastByID(id) {
   return async (dispatch) => {
     let response = await CRMService.api('GET', null, `broadcast/customer/get/${id}`, 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };
 }

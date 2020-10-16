@@ -11,7 +11,7 @@ export const ReferralAction = {
 function getReferral(payload) {
   return async (dispatch) => {
     let response = await CRMService.api('POST', payload, 'referral', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };
 }
@@ -19,7 +19,7 @@ function getReferral(payload) {
 function createReferral(payload) {
   return async (dispatch) => {
     let response = await CRMService.api('POST', payload, 'referral/create', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };
 }
@@ -27,7 +27,7 @@ function createReferral(payload) {
 function resendReferral(id) {
   return async (dispatch) => {
     let response = await CRMService.api('GET', null, 'referral/resend/' + id, 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };
 }
@@ -35,7 +35,7 @@ function resendReferral(id) {
 function deleteReferral(id) {
   return async (dispatch) => {
     let response = await CRMService.api('DELETE', null, 'referral/delete/' + id, 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };
 }

@@ -24,7 +24,7 @@ function getCustomerProfile() {
       "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     dispatch(setData(response, CONSTANT.KEY_GET_CUSTOMER_PROFILE));
     return response;
   };
@@ -52,7 +52,7 @@ function getDeliferyAddress() {
       "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     else {
       let deliveryAddress = response.Data[0];
       if (
@@ -87,7 +87,7 @@ function updateCustomerProfile(payload = null) {
       "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     dispatch(setData(response, CONSTANT.KEY_UPDATE_CUSTOMER_PROFILE));
     return response;
   };
@@ -102,7 +102,7 @@ function updatePassword(payload = null) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -116,7 +116,7 @@ function mandatoryField(payload = null) {
     );
     const data = await response.data;
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     else {
       const customFieldsResponse = await MasterDataService.api(
         "GET",
@@ -198,7 +198,7 @@ function getVoucher() {
       "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     else {
       response.Data = _.forEach(response.Data, function (value) {
         if (value.expiryDate) value.expiryDate = moment(value.expiryDate).format("YYYY-MM-DD")

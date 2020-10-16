@@ -145,17 +145,7 @@ class Header extends Component {
                   src={infoCompany.imageURL || config.url_logo}
                 />
               </Link>
-              <div
-                style={{
-                  marginLeft: 5,
-                  fontWeight: "bold",
-                  position: "absolute",
-                  top: 20,
-                  left: -5,
-                  textAlign: "center",
-                  width: "100%",
-                }}
-              >
+              <div className={styles.outlet}>
                 <LocationOnIcon
                   className="color"
                   style={{ fontSize: 22, marginBottom: -5 }}

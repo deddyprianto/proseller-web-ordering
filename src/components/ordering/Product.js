@@ -87,8 +87,11 @@ class Product extends Component {
             item.product.orderingStatus === "UNAVAILABLE" ? "product-unavailable" : "product-outer"
           }
         >
-          <div className="product-inner product-card" style={{ padding: 10 }}>
-            <div className="product-image-wrapper">
+          <div className="product-inner product-card" style={{ padding: 10, display: "flex", alignItems: "center"}}>
+            <div className="product-image-wrapper" style={{
+              display: "flex", justifyContent: "center", maxWidth: 180, alignItems: "center",
+              padding: 0
+            }}>
               <span className="woocommerce-LoopProduct-link">
                 <img
                   src={this.renderImageProduct(item)}

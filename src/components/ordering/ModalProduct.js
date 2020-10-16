@@ -733,11 +733,11 @@ class ModalProduct extends Component {
                 <div style={{ justifyContent: "center" }} >
                   {
                     defaultOutlet.enableDineIn === true && 
-                    this.viewCartOrderingMode("DINEIN", defaultOutlet.orderValidation.dineIn, "fa-cutlery")
+                    this.viewCartOrderingMode("DINEIN", defaultOutlet.orderValidation.dineIn, "fa-cutlery", defaultOutlet.dineInName)
                   }
                   {
                     defaultOutlet.enableTakeAway === true && 
-                    this.viewCartOrderingMode("TAKEAWAY", defaultOutlet.orderValidation.takeAway, "fa-shopping-basket")
+                    this.viewCartOrderingMode("TAKEAWAY", defaultOutlet.orderValidation.takeAway, "fa-shopping-basket", defaultOutlet.takeAwayName)
                   }
                   {
                     defaultOutlet.enableStorePickUp === true && 
@@ -749,7 +749,7 @@ class ModalProduct extends Component {
                   }
                   {
                     defaultOutlet.enableDelivery === true && 
-                    this.viewCartOrderingMode("DELIVERY", defaultOutlet.orderValidation.delivery, "fa-car")
+                    this.viewCartOrderingMode("DELIVERY", defaultOutlet.orderValidation.delivery, "fa-car", defaultOutlet.deliveryName)
                   }
                 </div>
                 <p
@@ -809,7 +809,14 @@ class ModalProduct extends Component {
     }
   }
 
-  viewCartOrderingMode(name, orderValidation, icon){
+  viewCartOrderingMode(name, orderValidation, icon, nickname){
+    orderValidation.minQty = orderValidation.minQty || 0
+    orderValidation.maxQty = orderValidation.maxQty || 0
+    orderValidation.minAmount = orderValidation.minAmount || 0
+    orderValidation.maxAmount = orderValidation.maxAmount || 0
+
+    if(!nickname || nickname && nickname === "") nickname = false
+    
     return (
       <div
         className="order-mode"

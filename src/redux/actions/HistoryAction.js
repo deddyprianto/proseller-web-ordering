@@ -13,7 +13,7 @@ function getTransaction(payload = {}) {
     payload.page = 1
 
     let response = await CRMService.api('GET', payload, 'customer/sales', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       let dataTransaction = response.Data
       let dataTransactionLength = response.DataLength
@@ -26,7 +26,7 @@ function getTransaction(payload = {}) {
 function getBasket() {
   return async (dispatch) => {
     let response = await OrderingService.api('GET', null, 'cart/getcart', 'Bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };
 }
@@ -34,7 +34,7 @@ function getBasket() {
 function getBasketPending() {
   return async (dispatch) => {
     let response = await OrderingService.api('POST', null, 'cart/pending', 'Bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       let dataPending = response.data
       let dataPendingLength = dataPending && dataPending.length || 0

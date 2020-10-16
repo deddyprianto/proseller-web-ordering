@@ -11,9 +11,7 @@ import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
-import ItemsBasket from "./itemsBasket";
 
-const itemsBasket = new ItemsBasket();
 const Swal = require("sweetalert2");
 const base64 = require("base-64");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -311,20 +309,24 @@ class Basket extends Component {
         deliveryProvaider.length > 0 &&
         deliveryAddress
       ) {
+        let payload = {
+          outletId: dataBasket.outlet.id,
+          cartID: dataBasket.cartID,
+          deliveryAddress: deliveryAddress,
+        };
+        let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
+
+        deliveryProvaider = response.dataProfider
         deliveryProvaider.forEach(async (provider) => {
-          let payload = {
-            outletId: dataBasket.outlet.id,
-            cartID: dataBasket.cartID,
-            provider: provider.id,
-            service: provider.name,
-            deliveryAddress: deliveryAddress,
-          };
-          let response = await this.props.dispatch(
-            OrderAction.getCalculateFee(payload)
-          );
-          provider.deliveryFee = this.getCurrency(response.deliveryFee);
-          provider.deliveryFeeFloat = response.deliveryFee;
+          provider.deliveryFeeFloat = provider.deliveryFee;
+          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
         });
+
+        await this.props.dispatch({
+          type: "SET_DELIVERY_PROVIDERS",
+          payload: deliveryProvaider,
+        });
+        
         this.setState({ deliveryProvaider });
       }
 
@@ -419,6 +421,7 @@ class Basket extends Component {
       this.setState({ dataBasket: response.data });
     } else {
       response = await this.props.dispatch(OrderAction.getCartCompleted(id));
+      console.log(response)
       if (
         response.data &&
         response.data.status &&
@@ -455,6 +458,7 @@ class Basket extends Component {
         }, 2000);
       } else {
         response = await this.props.dispatch(OrderAction.getCart(false));
+        console.log(response)
         if (
           response &&
           response.data &&
@@ -467,8 +471,17 @@ class Basket extends Component {
             `${config.prefix}_dataBasket`,
             JSON.stringify(encryptor.encrypt(response.data))
           );
-          // console.log(response.data)
           this.setState({ dataBasket: response.data });
+        } else {
+          Swal.fire(
+            "Oppss!",
+            `Your order has been failed.`,
+            "error"
+          );
+          setTimeout(() => {
+            this.props.history.push("/history");
+            window.location.reload();
+          }, 2000);
         }
       }
     }
@@ -1115,7 +1128,6 @@ class Basket extends Component {
           id="open-modal-product"
           style={{ color: "white" }}
         ></span>
-        {isLoading ? Swal.showLoading() : Swal.close()}
       </div>
     );
   }

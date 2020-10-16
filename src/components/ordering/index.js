@@ -495,6 +495,46 @@ class Ordering extends Component {
               }
             ></WebOrderingCategories>
           )}
+          {/* <div className="full-width list-view columns-2 archive woocommerce-page html-change" style={{ marginTop: 45 }}>
+          <div className="tab-content">
+            <div className="tab-pane active" id="h1-tab-products-2">
+              <ul className="products">
+                {
+                  !loadingSearching && products.map((cat, i) =>
+                    <>
+                      <h3 id={i} className="title"
+                        style={{ fontSize: 14, marginLeft: 15, marginBottom: 10, paddingTop: 10, color: "gray", fontWeight: "bold" }} >
+                        {cat.category.name}
+                      </h3>
+                      {
+                        cat.items.map((item, j) =>
+                          <>
+                            {
+                              item.product &&
+                              <Product
+                                labelButton={this.getLabelButton(item)}
+                                quantity={this.getQuantityProduct(item)}
+                                selectProduct={this.selectProduct}
+                                key={j}
+                                item={item}
+                              />
+                            }
+                          </>
+                        )
+                      }
+                    </>
+                  )
+                }
+
+                {!loadingSearching && !loading && products.length == 0 &&
+                  <div>
+                    <h3 className="color text-center">Oppss.. Item Not Found.</h3>
+                  </div>
+                }
+              </ul>
+            </div>
+          </div>
+        </div> */}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
@@ -504,18 +544,13 @@ class Ordering extends Component {
               <ul className="products">
                 {!loadingSearching &&
                   products.map((cat, i) => (
-                    <div key={i}>
+                    <>
                       <h3
                         id={i}
                         ref={categoryRefs[i]}
                         className="title"
-                        style={{
-                          fontSize: 14,
-                          marginLeft: 15,
-                          marginBottom: 10,
-                          paddingTop: 10,
-                          color: "gray",
-                          fontWeight: "bold",
+                        style={{ fontSize: 14, marginLeft: 15, marginBottom: 10, paddingTop: 10,
+                          color: "gray", fontWeight: "bold",
                         }}
                       >
                         {cat.category.name}
@@ -529,19 +564,13 @@ class Ordering extends Component {
                             const startTime = timeArray[0];
                             const endTime = timeArray[1];
                             const startHour = parseInt(startTime.split(":")[0]);
-                            const startMinute = parseInt(
-                              startTime.split(":")[1]
-                            );
+                            const startMinute = parseInt(startTime.split(":")[1]);
                             const endHour = parseInt(endTime.split(":")[0]);
                             const endMinute = parseInt(endTime.split(":")[1]);
                             const start = startHour * 60 + startMinute;
-                            const end =
-                              startHour > endHour
-                                ? endHour * 60 + endMinute + 24 * 60
-                                : endHour * 60 + endMinute;
+                            const end = startHour > endHour ? endHour * 60 + endMinute + 24 * 60 : endHour * 60 + endMinute;
                             const date = new Date();
-                            const now =
-                              date.getHours() * 60 + date.getMinutes();
+                            const now = date.getHours() * 60 + date.getMinutes();
                             return now <= end && now >= start;
                           });
                           if (!isEnabled) {
@@ -554,29 +583,20 @@ class Ordering extends Component {
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
                               selectProduct={this.selectProduct}
-                              showUpdateModal={(item) =>
-                                this.setState({
-                                  showUpdateModal: true,
-                                  selectedProduct: item,
-                                })
-                              }
+                              showUpdateModal={(item) => this.setState({ showUpdateModal: true, selectedProduct: item })}
                               key={j}
                               item={item}
                             />
                           )
                         );
                       })}
-                    </div>
+                    </>
                   ))}
 
                 {!loadingSearching && !loading && products.length == 0 && (
                   <div>
-                    {/* <Lottie
-                      options={{ animationData: emptyGif }}
-                      style={{ height: 250 }}
-                    /> */}
                     <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
-                    <h3 className="color text-center">
+                    <h3 className="color text-center" style={{fontSize: 16}}>
                       Oppss.. Item Not Found.
                     </h3>
                   </div>

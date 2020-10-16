@@ -45,8 +45,15 @@ class ModalOrderingMode extends Component {
     }
   }
 
-  viewCartOrderingMode(name, orderValidation, icon){
+  viewCartOrderingMode(name, orderValidation, icon, nickname){
     let orderingMode = this.props.data.orderingMode
+    orderValidation.minQty = orderValidation.minQty || 0
+    orderValidation.maxQty = orderValidation.maxQty || 0
+    orderValidation.minAmount = orderValidation.minAmount || 0
+    orderValidation.maxAmount = orderValidation.maxAmount || 0
+
+    if(!nickname || nickname && nickname === "") nickname = false
+    
     return (
       <div
         className={`order-mode ${orderingMode === name && "border-ordering-mode"}`}
@@ -60,7 +67,7 @@ class ModalOrderingMode extends Component {
         <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
           <i className={`fa ${icon} color icon-order`} style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
           <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-            {name}
+            {nickname || name}
           </div>
         </div>
         {
@@ -122,11 +129,11 @@ class ModalOrderingMode extends Component {
                 <div style={{ justifyContent: "center" }}>
                 {
                     props.storeDetail.enableDineIn === true && 
-                    this.viewCartOrderingMode("DINEIN", outlet.orderValidation.dineIn, "fa-cutlery")
+                    this.viewCartOrderingMode("DINEIN", outlet.orderValidation.dineIn, "fa-cutlery", outlet.dineInName)
                   }
                   {
                     props.storeDetail.enableTakeAway === true && 
-                    this.viewCartOrderingMode("TAKEAWAY", outlet.orderValidation.takeAway, "fa-shopping-basket")
+                    this.viewCartOrderingMode("TAKEAWAY", outlet.orderValidation.takeAway, "fa-shopping-basket", outlet.takeAwayName)
                   }
                   {
                     props.storeDetail.enableStorePickUp === true && 
@@ -138,7 +145,7 @@ class ModalOrderingMode extends Component {
                   }
                   {
                     props.storeDetail.enableDelivery === true && 
-                    this.viewCartOrderingMode("DELIVERY", outlet.orderValidation.delivery, "fa-car")
+                    this.viewCartOrderingMode("DELIVERY", outlet.orderValidation.delivery, "fa-car", outlet.deliveryName)
                   }
                 </div>
                 <p

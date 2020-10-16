@@ -12,6 +12,7 @@ import { Button } from "reactstrap";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import config from "../../config";
 
 class MenuBasket extends Component {
   render() {
@@ -19,6 +20,11 @@ class MenuBasket extends Component {
     let basket = this.props.basket;
     let productQuantity = this.props.productQuantity;
     let { minQty, maxQty, minAmount, maxAmount } = this.props.orderValidation;
+    minQty = minQty || 0
+    maxQty = maxQty || 0
+    minAmount = minAmount || 0
+    maxAmount = maxAmount || 0
+
     return (
       <div style={{ marginTop: -8 }}>
         {/* {
@@ -89,8 +95,8 @@ class MenuBasket extends Component {
                 isLoggedIn={this.props.isLoggedIn}
               />
             }
-            {this.props.deliveryProviders &&
-              this.props.deliveryProviders.length > 1 && (
+            {props.deliveryProvaider &&
+              props.deliveryProvaider.length > 1 && (
                 <ProviderDeliveryBasket
                   data={props}
                   roleBtnClear={this.props.roleBtnClear}
@@ -157,8 +163,8 @@ class MenuBasket extends Component {
                       <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                         {
                           `Your order has exceeded maximum allowed item quantity for
-                      ${props.dataBasket.orderingMode} (maximum quantity ${maxQty}). 
-                      Please remove some item from your cart.`
+                          ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum quantity ${maxQty}). 
+                          Please remove some item from your cart.`
                         }
                       </div>
                       <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
@@ -169,8 +175,8 @@ class MenuBasket extends Component {
                       <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                         {
                           `Your order hasn't reached minimum allowed item quantity for
-                      ${props.dataBasket.orderingMode} (minimum quantity ${minQty}). 
-                      Please add some item to your cart.`
+                          ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum quantity ${minQty}). 
+                          Please add some item to your cart.`
                         }
                       </div>
                       <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
@@ -181,8 +187,8 @@ class MenuBasket extends Component {
                     <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                       {
                         `Your order has exceeded maximum allowed order amount for
-                    ${props.dataBasket.orderingMode} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
-                    Please remove some item from your cart.`
+                        ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
+                        Please remove some item from your cart.`
                       }
                     </div>
                     <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
@@ -193,8 +199,8 @@ class MenuBasket extends Component {
                   <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                     {
                       `Your order hasn't reached minimum allowed order amount for
-                  ${props.dataBasket.orderingMode} (minimum amount ${this.props.getCurrency(minAmount)}). 
-                  Please add some item to your cart.`
+                      ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum amount ${this.props.getCurrency(minAmount)}). 
+                      Please add some item to your cart.`
                     }
                   </div>
                   <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />

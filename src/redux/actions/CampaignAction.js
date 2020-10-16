@@ -1,6 +1,5 @@
 import { CONSTANT } from "../../helpers";
 import { CRMService } from "../../Services/CRMService";
-import { AuthActions } from "./AuthAction";
 import _ from 'lodash';
 
 export const CampaignAction = {
@@ -12,7 +11,7 @@ export const CampaignAction = {
 function getCampaignStamps(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api('GET', payload, 'customer/stamps', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       if (response.Data && response.Data.stamps && response.Data.stamps.stampsItem) {
         let dataStamps = [], isi = [], stampsTrueItem, stampsDetail;
@@ -59,7 +58,7 @@ function getCampaignStamps(payload = null) {
 function getCampaignPoints(payload = null, companyId = null) {
   return async (dispatch) => {
     let response = await CRMService.api('GET', null, 'customer/point', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       let totalPoint = response.Data.campaignActive ? response.Data.totalPoint : 0
       let campaignPointActive = response.Data.campaignActive
@@ -116,7 +115,7 @@ function getCampaignPoints(payload = null, companyId = null) {
 function getCampaignByPoints(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api('GET', payload, 'campaign/points', 'bearer')
-    if (response.ResultCode >= 400 || response.resultCode >= 400) await dispatch(AuthActions.refreshToken())
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_BY_POINTS))
     return response
   };

@@ -20,3 +20,27 @@
     left: calc(50vw - 15px);
   }
 }
+
+@media only screen and (min-width: 1201px) {
+  .outlet {
+    margin-left: 5px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    display: flex;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .outlet {
+    display: flex;
+    margin-left: 5px;
+    font-weight: bold;
+    position: absolute;
+    top: 20px;
+    left: -5px;
+    text-align: center;
+    width: 100%;
+    justify-content: center;
+  }
+}

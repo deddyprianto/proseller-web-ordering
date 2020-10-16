@@ -319,20 +319,26 @@ class Basket extends Component {
         deliveryProvaider.length > 0 &&
         deliveryAddress
       ) {
+        
+        let payload = {
+          outletId: dataBasket.outlet.id,
+          cartID: dataBasket.cartID,
+          deliveryAddress: deliveryAddress,
+        };
+
+        let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
+
+        deliveryProvaider = response.dataProfider
         deliveryProvaider.forEach(async (provider) => {
-          let payload = {
-            outletId: dataBasket.outlet.id,
-            cartID: dataBasket.cartID,
-            provider: provider.id,
-            service: provider.name,
-            deliveryAddress: deliveryAddress,
-          };
-          let response = await this.props.dispatch(
-            OrderAction.getCalculateFee(payload)
-          );
-          provider.deliveryFee = this.getCurrency(response.deliveryFee);
-          provider.deliveryFeeFloat = response.deliveryFee;
+          provider.deliveryFeeFloat = provider.deliveryFee;
+          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
         });
+
+        await this.props.dispatch({
+          type: "SET_DELIVERY_PROVIDERS",
+          payload: deliveryProvaider,
+        });
+
         this.setState({ deliveryProvaider });
       }
 
@@ -435,16 +441,21 @@ class Basket extends Component {
       from = parseInt(timeNow.split(":")[0])
       orderingTimeHours = orderingTimeHours.filter(items => {return Number(items) >= from})
       orderingTime = orderingTime.filter(items => {return Number(items.split(":")[0]) >= from})
-      let activeMinute = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from].filter(items => { 
-        return Number(items) > Number(timeNow.split(":")[1])
-      })
-      orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from] = activeMinute
+      let activeMinute = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from]
+
+      if(activeMinute){
+        activeMinute = activeMinute.filter(items => { 
+          return Number(items) > Number(timeNow.split(":")[1])
+        })
+        orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from] = activeMinute
+      }
     }
 
     this.setState({ orderingTime, orderingTimeMinutes, orderingTimeHours })
 
     let minutesActive = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from];
-    if (!checkOperationalHours.status || !minutesActive[0]) {
+
+    if (!checkOperationalHours.status || minutesActive && minutesActive.length === 0) {
       minutesActive[0] = minuteStartDay.toString().length === 1 ? `0${minuteStartDay}` : minuteStartDay
       orderingTimeHours[0] = hoursStartDay.toString().length === 1 ? `0${hoursStartDay}` : hoursStartDay
       let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
@@ -453,6 +464,7 @@ class Basket extends Component {
       let orderActionDate = moment(date).add(1, 'd').format("YYYY-MM-DD")
       this.setState({ orderActionTime, orderActionDate, orderActionTimeHours, orderActionTimeMinutes })
     } else {
+      if(!minutesActive) minutesActive = [orderingTimeMinutes[orderingTimeHours[0]]]
       let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
       let orderActionTimeHours = orderingTimeHours[0];
       let orderActionTimeMinutes = minutesActive[0]

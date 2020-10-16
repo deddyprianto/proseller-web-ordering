@@ -305,7 +305,7 @@ function addCart(payload) {
 
     // console.log(response)
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
   };
 }
@@ -392,7 +392,7 @@ function getCart(isSetData = true) {
     //   document.getElementById("close-modal").click();
     // } catch (error) {}
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     else if (response.data && response.data.message !== "No details data") {
       if (isSetData)
         return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
@@ -429,7 +429,7 @@ function deleteCart(isDeleteServer = false) {
         "Bearer"
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400)
-        await dispatch(AuthActions.refreshToken());
+        console.log(response);
       else return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
     dispatch(setData({}, CONSTANT.DATA_BASKET));
@@ -445,7 +445,7 @@ function submitBasket(payload) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -459,7 +459,7 @@ function submitOrdering(payload) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -482,7 +482,7 @@ function submitTakeAway(payload) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -505,7 +505,7 @@ function submitSettle(payload) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -551,8 +551,7 @@ function getCartPending(id) {
       `cart/pending/${id}`,
       "Bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }
@@ -566,7 +565,7 @@ function getCartCompleted(id) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -580,7 +579,7 @@ function cartUpdate(payload) {
       "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      await dispatch(AuthActions.refreshToken());
+      console.log(response);
     return response;
   };
 }
@@ -594,8 +593,7 @@ function changeOrderingMode(payload) {
         `cart/changeOrderingMode`,
         "Bearer"
       );
-      if (response.ResultCode >= 400 || response.resultCode >= 400)
-        await dispatch(AuthActions.refreshToken());
+      if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
       return response;
     } else {
       return { resultCode: 400 }

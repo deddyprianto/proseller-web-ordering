@@ -89,21 +89,6 @@ const App = (props) => {
     }
   };
 
-  const getCurrency = (price) => {
-    if (companyInfo && companyInfo.data) {
-      if (price !== undefined) {
-        const { currency } = companyInfo.data;
-        if (!price || price === "-") price = 0;
-        let result = price.toLocaleString(currency.locale, {
-          style: "currency",
-          currency: currency.code,
-        });
-        return result;
-      }
-    }
-    return price;
-  };
-
   const checkUser = async () => {
     if(window.location.hash.split("#")[1] === "/signin" && !isLoggedIn){
       try {
@@ -172,59 +157,8 @@ const App = (props) => {
 
     props.dispatch(CustomerAction.mandatoryField());
   };
-
-  const refreshDeliveryProvider = async () => {
-    if (deliveryProviders && basket && basket.outlet) {
-      let isEqual = true;
-      console.log("Refreshing delivery providers...");
-      // console.log(deliveryProviders);
-      const newDeliveryProvider = await Promise.all(
-        deliveryProviders.map(async (provider) => {
-          const payload = {
-            outletId: basket.outlet.id,
-            cartID: basket.cartID,
-            provider: provider.id,
-            service: provider.name,
-            deliveryAddress,
-          };
-          const response = await dispatch(OrderAction.getCalculateFee(payload));
-          const deliveryFee = await response.deliveryFee;
-          if (provider.deliveryFeeFloat !== deliveryFee) isEqual = false;
-          return {
-            ...provider,
-            deliveryFee: getCurrency(deliveryFee),
-            deliveryFeeFloat: deliveryFee,
-          };
-        })
-      );
-      if (!isEqual) {
-        dispatch({
-          type: "SET_SELECTED_PROVIDERS",
-          payload: newDeliveryProvider,
-        });
-      }
-      if (newDeliveryProvider.length === 1) {
-        const newSelectedDeliveryProvider = await newDeliveryProvider[0];
-        dispatch({
-          type: "SET_SELECTED_DELIVERY_PROVIDERS",
-          payload: newSelectedDeliveryProvider,
-        });
-      } else {
-        dispatch({
-          type: "SET_SELECTED_DELIVERY_PROVIDERS",
-          payload: null,
-        });
-      }
-    } else {
-      // console.log(
-      //   "Trying to refresh delivery providers, but current delivery providers is null :("
-      // );
-    }
-  };
+  
   useEffect(() => {
-    if (deliveryAddress) {
-      refreshDeliveryProvider();
-    }
     if (setting) {
       let enableOrdering = setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
@@ -236,7 +170,6 @@ const App = (props) => {
   useEffect(async () => {
     await props.dispatch(OrderAction.getTheme());
     await props.dispatch(OrderAction.getSettingOrdering());
-    refreshDeliveryProvider();
     checkUser();
   }, []);
 
