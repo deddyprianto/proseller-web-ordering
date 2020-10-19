@@ -26,6 +26,16 @@ class InboxCard extends Component {
     }
   };
 
+  checkNameOutlet(outletName) {
+    let nameSplit = outletName.split(" ")
+    let nameMerge = ""
+    nameSplit.forEach(element => {
+      if (`${nameMerge} ${element}`.length > 20) return
+      nameMerge = `${nameMerge} ${element}`
+    });
+    return nameMerge
+  }
+
   render() {
     const { items } = this.props;
     return (
@@ -65,7 +75,7 @@ class InboxCard extends Component {
                 className="modal-title"
                 style={{ fontWeight: "bold", fontSize: 14, lineHeight: "17px" }}
               >
-                {items.outlet && items.outlet.name}
+                {items.outlet && this.checkNameOutlet(items.outlet.name)}
               </div>
               <div style={{ fontWeight: "bold", fontSize: 14 }}>
                 {this.getCurrency(items.price)}

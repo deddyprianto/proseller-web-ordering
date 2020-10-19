@@ -51,7 +51,7 @@ export default function reducer(state = defaultState, action) {
     case "DATA_SETTING_ORDERING":
       return {
         ...state,
-        setting: action.data,
+        setting: action.payload,
       };
     default:
       return state;

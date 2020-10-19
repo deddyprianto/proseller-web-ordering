@@ -73,10 +73,10 @@ class ModalOrderingMode extends Component {
         {
           orderValidation &&
           <div style={{ fontSize: 12, marginTop: -5 }}>
-            <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5 }} />
+            <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5, marginBottom: 10 }} />
             {orderValidation.minAmount ||
               orderValidation.maxAmount ? (
-                <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", marginTop: -10 }}>
                   <strong style={{ marginRight: 5 }}>
                     {this.checkOrderValidation(orderValidation, "titleAmount")}
                   </strong>

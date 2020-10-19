@@ -174,12 +174,6 @@ const ViewCartBasket = ({
   minAmount = minAmount || 0
   maxAmount = maxAmount || 0
 
-  useEffect(() => {
-    if (deliveryAddress) {
-      console.log("delivery address changed");
-    }
-  }, [deliveryAddress, data, outlet]);
-
   const btnSattleStatusDisable = (
     roleBtnSettle() ||
     basket.totalGrossAmount < minAmount ||

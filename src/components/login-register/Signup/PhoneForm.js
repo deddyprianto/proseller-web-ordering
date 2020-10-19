@@ -23,7 +23,7 @@ const PhoneForm = ({
         <input
           type="text"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          onChange={(e) => handleChange("name", e.target.value)}
+          onChange={(e) => handleChange("name", e.target.value, true)}
         />
       </p>
 
@@ -34,10 +34,10 @@ const PhoneForm = ({
         <input
           type="email"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          onChange={(e) => handleChange("email", e.target.value)}
+          onChange={(e) => handleChange("email", e.target.value, true)}
         />
         {error !== "" && (
-          <div style={{ marginTop: -10, marginBottom: 10, color: "red" }}>
+          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
             {error}
           </div>
         )}

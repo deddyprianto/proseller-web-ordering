@@ -135,7 +135,7 @@ class Payment extends Component {
 
     for (let i = 0; i < 1000; i++) {
       const response = await this.props.dispatch(OrderAction.getCart());
-      console.log(response);
+      // console.log(response);
       if (
         (response && response.resultCode === 400) ||
         (response.data && response.data.isPaymentComplete)

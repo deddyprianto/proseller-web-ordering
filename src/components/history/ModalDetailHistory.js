@@ -95,8 +95,8 @@ class ModalDetailHistory extends Component {
                       justifyContent: "space-between",
                     }}
                   >
-                    <div style={{ fontSize: 14 }}>OUTLET NAME</div>
-                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                    <div style={{ fontSize: 14, textAlign: "left", lineHeight: "17px" }}>OUTLET NAME</div>
+                    <div style={{ fontSize: 14, fontWeight: "bold", textAlign: "right", lineHeight: "17px" }}>
                       {detail.outletName}
                     </div>
                   </div>

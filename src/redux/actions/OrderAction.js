@@ -34,7 +34,6 @@ export const OrderAction = {
   setData,
   changeOrderingMode,
   buildCart,
-  getTheme,
   getSettingOrdering,
 };
 
@@ -59,33 +58,23 @@ function shareURL(tableNo, outletID, orderMode) {
   };
 }
 
-function getTheme() {
-  return async (dispatch) => {
-    const appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
-    const response = await OrderingService.api(
-      "GET",
-      null,
-      `orderingsetting/${appType}`
-    );
-    const data = await response.data;
-    data && data.theme && 
-      dispatch({
-        type: "SET_THEME",
-        payload: data.theme.color.secondary
-          ? data.theme.color
-          : { primary: data.theme.color, secondary: data.theme.color },
-      });
-  };
-}
-
 function getSettingOrdering() {
   return async (dispatch) => {
     let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
     let response = await OrderingService.api("GET", null, `orderingsetting/${appType}`);
-    response.data = config.getSettingOrdering(response.data)
-    // console.log('orderingSetting', response.data)
-    if (!response.data || response.data && !response.data.settings) return await dispatch(setData([], 'DATA_SETTING_ORDERING'));
-    return await dispatch(setData(response.data.settings, 'DATA_SETTING_ORDERING'));
+    let data = await response.data;
+    if(data){
+      data = config.getSettingOrdering(data)
+  
+      let primaryColor = data && data.settings.find(items => { return items.settingKey === "PrimaryColor" })
+      let secondaryColor = data && data.settings.find(items => { return items.settingKey === "SecondaryColor" })
+      let payload = {
+        primary: primaryColor.settingValue,
+        secondary: secondaryColor.settingValue,
+      }
+      dispatch({ type: "SET_THEME", payload});
+      dispatch({ type: "DATA_SETTING_ORDERING", payload: data && data.settings});
+    }
   };
 }
 
@@ -551,7 +540,6 @@ function getCartPending(id) {
       `cart/pending/${id}`,
       "Bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }
@@ -564,8 +552,6 @@ function getCartCompleted(id) {
       `outlet/cart/getcompleted/${id}`,
       "Bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
     return response;
   };
 }

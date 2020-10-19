@@ -17,7 +17,7 @@ const PasswordField = ({ handleChange, error }) => {
           name="password"
           id="password"
           style={{ borderRadius: 5 }}
-          onChange={(e) => handleChange("password", e.target.value)}
+          onChange={(e) => handleChange("password", e.target.value, true)}
         />
         <div className={styles.showHideIcon}>
           <i

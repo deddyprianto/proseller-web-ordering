@@ -211,93 +211,16 @@ export default class ItemsBasket extends Component {
                 marginTop: 10,
               }}
             />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: 14,
-                marginTop: 5,
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  marginLeft: -8,
-                  alignItems: "center",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  style={{ marginTop: -1 }}
-                  checked={selected === dataBasket.details.length}
-                  onClick={() => this.handleSelect(null, null, true)}
-                  className="scaled-checkbox form-check-input checkbox-modifier"
-                />
-                <div style={{ marginLeft: 10 }}>Select All Items</div>
-              </div>
-
-              <div
-                onClick={() =>
-                  !this.props.roleBtnClear && this.props.handleClear(dataBasket)
-                }
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  color: "#20a8d8",
-                  border: "1px solid #20a8d8",
-                  borderRadius: 5,
-                  width: 100,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: this.props.roleBtnClear && "#CDCDCD",
-                }}
-              >
-                <DeleteIcon /> Delete
-              </div>
-            </div>
-            <div
-              style={{
-                backgroundColor: "#DCDCDC",
-                height: 3,
-                marginBottom: 10,
-                marginTop: 10,
-              }}
-            />
             {dataBasket.details.map((item, key) => (
               <div>
-                <div
-                  style={{
-                    display: "flex",
-                    marginLeft: -8,
-                    alignItems: "center",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    style={{ marginTop: -1, marginRight: 10 }}
-                    checked={item.selected !== false}
-                    onClick={() => this.handleSelect(key, item)}
-                    className="scaled-checkbox form-check-input checkbox-modifier"
-                  />
-                  <CardItemBasket
-                    key={key}
-                    data={item}
-                    roleBtnClear={this.props.roleBtnClear}
-                    dataBasket={dataBasket}
-                    getCurrency={(price) => this.props.getCurrency(price)}
-                    openModal={(item) => this.openModal(item)}
-                  />
-                </div>
-                {/* <div style={{ display: "flex", marginLeft: 20, justifyContent: "space-between" }}>
-                    <div style={{
-                      color: "#20a8d8", fontSize: 12, marginLeft: 5, fontWeight: "bold",
-                      cursor: "pointer"
-                    }} onClick={() => this.openModal(item)}>Edit Item</div>
-                    <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {`${this.props.getCurrency(item.unitPrice * item.quantity)}`}
-                    </div>
-                  </div> */}
+                <CardItemBasket
+                  key={key}
+                  data={item}
+                  roleBtnClear={this.props.roleBtnClear}
+                  dataBasket={dataBasket}
+                  getCurrency={(price) => this.props.getCurrency(price)}
+                  openModal={(item) => this.openModal(item)}
+                />
                 <div
                   style={{
                     backgroundColor: "#DCDCDC",

@@ -115,29 +115,34 @@ class LoginRegister extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.props !== prevProps) {
       let enableRegisterWithPassword = this.props.setting.find(items => { return items.settingKey === "EnableRegisterWithPassword" })
-      let loginByEmail = this.props.setting.find(items => { return items.settingKey === "LoginByEmail" })
-      let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
-      let enableSMSOTP = this.props.setting.find(items => { return items.settingKey === "EnableSMSOTP" })
-      let enableWhatsappOTP = this.props.setting.find(items => { return items.settingKey === "EnableWhatsappOTP" })
-      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableRegisterWithPassword) {
         this.setState({ enableRegisterWithPassword: enableRegisterWithPassword.settingValue });
       }
+
+      let loginByEmail = this.props.setting.find(items => { return items.settingKey === "LoginByEmail" })
       if (loginByEmail) {
         this.setState({ loginByEmail: loginByEmail.settingValue });
-      }
-      if (loginByMobile) {
-        this.setState({ loginByMobile: loginByMobile.settingValue });
       }
       if (loginByEmail && loginByEmail.settingValue && loginByMobile && !loginByMobile.settingValue) {
         this.setState({ method: 'email' });
       }
+
+      let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
+      if (loginByMobile) {
+        this.setState({ loginByMobile: loginByMobile.settingValue });
+      }
+      
+      let enableSMSOTP = this.props.setting.find(items => { return items.settingKey === "EnableSMSOTP" })
       if (enableSMSOTP) {
         this.setState({ enableSMSOTP: enableSMSOTP.settingValue });
       }
+      
+      let enableWhatsappOTP = this.props.setting.find(items => { return items.settingKey === "EnableWhatsappOTP" })
       if (enableWhatsappOTP) {
         this.setState({ enableWhatsappOTP: enableWhatsappOTP.settingValue });
       }
+      
+      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
@@ -438,26 +443,23 @@ class LoginRegister extends Component {
     let enableSMSOTP = this.state.enableSMSOTP
     let enableWhatsappOTP = this.state.enableWhatsappOTP
     let payloadResponse = this.state.payloadResponse;
-    this.setState({ isLoading: true });
 
     try {
       let password = this.state.password;
       let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
       let email = this.state.email.toLowerCase().trim();
       const fields = this.props.fields;
-      const customFields =
-        fields &&
-        fields.reduce((acc, field) => {
-          if (!field.signUpField) {
-            return {
-              ...acc,
-            };
-          }
-          return {
-            ...acc,
-            [field.fieldName]: this.state[field.fieldName] || "",
-          };
-        });
+      let mandatory = []
+      mandatory = fields.filter(items => {return items.signUpField === true && items.mandatory === true})
+      mandatory.push({fieldName: "name", displayName: "Name"})
+      mandatory.push({fieldName: "phoneNumber", displayName: "Phone Number"})
+      mandatory.push({fieldName: "email", displayName: "Email"})
+      mandatory.push({fieldName: "password", displayName: "Password"})
+
+      const customFields = fields && fields.reduce((acc, field) => {
+        if (!field.signUpField) return { ...acc };
+        return { ...acc, [field.fieldName]: this.state[field.fieldName] || "" };
+      });
 
       if (customFields) {
         delete customFields.displayName;
@@ -469,6 +471,7 @@ class LoginRegister extends Component {
         delete customFields.show;
         delete customFields.type;
       }
+      
       let errorEmail = "";
       let cekEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
       if (!cekEmail) errorEmail = "Email not valid";
@@ -484,25 +487,47 @@ class LoginRegister extends Component {
         (enableRegisterWithPassword && errorPassword !== "") ||
         errorEmail !== ""
       ) {
-        this.setState({ errorPassword, isLoading: false, errorEmail });
+        this.setState({ errorPassword, errorEmail });
         return;
       }
+
+      if(!enableRegisterWithPassword) password = generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 })
 
       let payload = {
         phoneNumber: payloadResponse.phoneNumber,
         email: email,
-        password: enableRegisterWithPassword
-          ? password
-          : generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 }),
+        password: password,
         username: payloadResponse.phoneNumber,
         name: this.state.name,
         ...customFields,
       };
 
-      if (this.state.password !== "") payload.password = this.state.password;
-      // console.log(payload)
-      // return
+      let listName = ""
+      mandatory.forEach(field => {
+        if(
+          !payload[field.fieldName] || 
+          payload[field.fieldName] && 
+          payload[field.fieldName] === ""
+        ) {
+          if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
+            payload[field.fieldName] = this.state[field.fieldName]
+          } else if(field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""){
+            payload[field.fieldName] = field.defaultValue
+          } else {
+            listName += field.displayName + ", "
+            field.check = false
+          }
+        }
+      });
 
+      mandatory = mandatory.filter(items => { return items.check === false})
+      if(mandatory.length > 0) {
+        listName = listName.substr(0, listName.length - 2);
+        Swal.fire("Oppss!", `${listName} is required`, "error");
+        return
+      }
+
+      this.setState({ isLoading: true });
       let response = await this.props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
       );
@@ -706,32 +731,33 @@ class LoginRegister extends Component {
     if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
 
     let payloadResponse = this.state.payloadResponse;
-    this.setState({ isLoading: true });
 
     try {
       let errorPhone = "";
       const fields = this.props.fields;
-      const customFields =
-        fields &&
-        fields.reduce((acc, field) => {
-          if (!field.signUpField) {
-            return {
-              ...acc,
-            };
-          }
-          return {
-            ...acc,
-            [field.fieldName]: this.state[field.fieldName] || "",
-          };
-        });
-      delete customFields.displayName;
-      delete customFields.fieldName;
-      delete customFields.format;
-      delete customFields.mandatory;
-      delete customFields.sequence;
-      delete customFields.signUpField;
-      delete customFields.show;
-      delete customFields.type;
+      let mandatory = []
+      mandatory = fields.filter(items => {return items.signUpField === true && items.mandatory === true})
+      mandatory.push({fieldName: "name", displayName: "Name"})
+      mandatory.push({fieldName: "phoneNumber", displayName: "Phone Number"})
+      mandatory.push({fieldName: "email", displayName: "Email"})
+      mandatory.push({fieldName: "password", displayName: "Password"})
+
+      const customFields = fields && fields.reduce((acc, field) => {
+        if (!field.signUpField) return { ...acc };
+        return { ...acc, [field.fieldName]: this.state[field.fieldName] || "" };
+      });
+
+      if(customFields){
+        delete customFields.displayName;
+        delete customFields.fieldName;
+        delete customFields.format;
+        delete customFields.mandatory;
+        delete customFields.sequence;
+        delete customFields.signUpField;
+        delete customFields.show;
+        delete customFields.type;
+      }
+
       if (phoneNumber === "") errorPhone = "Phone number is empty";
       if (phoneNumber.length < 6) errorPhone = "Phone number is not valid";
 
@@ -746,23 +772,47 @@ class LoginRegister extends Component {
         (enableRegisterWithPassword && errorPassword !== "") ||
         errorPhone !== ""
       ) {
-        this.setState({ errorPassword, isLoading: false, errorPhone });
+        this.setState({ errorPassword, errorPhone });
         return;
       }
+
+      if(!enableRegisterWithPassword) password = generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 })
 
       let payload = {
         phoneNumber: phoneNumber,
         email: payloadResponse.email,
-        password: enableRegisterWithPassword
-          ? password
-          : generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 }),
+        password: password,
         username: payloadResponse.email,
         name: this.state.name,
         ...customFields,
       };
-      if (this.state.password !== "") payload.password = password;
-      // console.log(payload)
-      // return
+
+      let listName = ""
+      mandatory.forEach(field => {
+        if(
+          !payload[field.fieldName] || 
+          payload[field.fieldName] && 
+          payload[field.fieldName] === ""
+        ) {
+          if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
+            payload[field.fieldName] = this.state[field.fieldName]
+          } else if(field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""){
+            payload[field.fieldName] = field.defaultValue
+          } else {
+            listName += field.displayName + ", "
+            field.check = false
+          }
+        }
+      });
+
+      mandatory = mandatory.filter(items => { return items.check === false})
+      if(mandatory.length > 0) {
+        listName = listName.substr(0, listName.length - 2);
+        Swal.fire("Oppss!", `${listName} is required`, "error");
+        return
+      }
+      
+      this.setState({ isLoading: true });
       let response = await this.props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
       );

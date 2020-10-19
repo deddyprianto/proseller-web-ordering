@@ -158,9 +158,7 @@ class Basket extends Component {
     } catch (e) { }
   };
 
-  getDataBasket = async (isChangeMode = false, orderingMode = null) => {
-    let { isLoggedIn } = this.props;
-    let { isEmenu } = this.state;
+  getDataBasket = async () => {
     let selectedVoucher = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
     );
@@ -183,170 +181,105 @@ class Basket extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
 
-    if (!orderingMode)
-      orderingMode =
-        localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (isEmenu ? "DINEIN" : "DELIVERY");
+    await this.checkViewCart(dataBasket);
 
-    console.log("scanTable", scanTable);
     if (!infoCompany) {
       let time = setInterval(() => {
-        infoCompany = encryptor.decrypt(
-          JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
-        );
+        infoCompany = encryptor.decrypt( JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
         if (infoCompany) clearInterval(time);
       }, 0);
     } else {
       this.setState({ countryCode: infoCompany.countryCode });
     }
 
-    if (!isLoggedIn && dataBasket) {
-      dataBasket.orderingMode = orderingMode;
-      let response = await this.props.dispatch(
-        OrderAction.buildCart(dataBasket)
+    if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
+      selectedVoucher = dataBasket.confirmationInfo.voucher;
+      localStorage.setItem(`${config.prefix}_selectedVoucher`, JSON.stringify(encryptor.encrypt(selectedVoucher)));
+    } else if (
+      dataBasket.confirmationInfo &&
+      dataBasket.confirmationInfo.redeemPoint > 0
+    ) {
+      selectedPoint = this.setPoint(
+        dataBasket.confirmationInfo.redeemPoint,
+        dataBasket
       );
-      if (!response.message) dataBasket = response.data;
     }
 
-    if (!dataBasket) dataBasket = await this.getDataBasket_();
-
-    if (dataBasket) {
-      this.checkViewCart(dataBasket);
-
-      if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
-        selectedVoucher = dataBasket.confirmationInfo.voucher;
-        localStorage.setItem(
-          `${config.prefix}_selectedVoucher`,
-          JSON.stringify(encryptor.encrypt(selectedVoucher))
-        );
-      } else if (
-        dataBasket.confirmationInfo &&
-        dataBasket.confirmationInfo.redeemPoint > 0
-      ) {
-        selectedPoint = this.setPoint(
-          dataBasket.confirmationInfo.redeemPoint,
-          dataBasket
-        );
-      }
-
-      let storeDetail = null;
-      if (!isEmptyObject(this.props.defaultOutlet))
-        storeDetail = this.props.defaultOutlet;
-      else
-        storeDetail = await this.props.dispatch(
-          MasterdataAction.getOutletByID(dataBasket.outlet.id)
-        );
-      console.log("storeDetail", storeDetail);
-
-      await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
-      let discount = (selectedPoint || 0) + this.state.discountVoucher;
-      let totalPrice =
-        dataBasket.totalNettAmount - discount < 0
-          ? 0
-          : dataBasket.totalNettAmount - discount;
-
-      if (dataBasket.orderingMode) {
-        if (dataBasket.orderingMode === "DELIVERY" && isEmenu)
-          dataBasket.orderingMode = "DINEIN";
-        if (dataBasket.orderingMode === "DINEIN" && !isEmenu)
-          dataBasket.orderingMode = "DELIVERY";
-
-        orderingMode =
-          (!isChangeMode && dataBasket.orderingMode) || orderingMode;
-        scanTable = {
-          ...scanTable,
-          tableType: (!isChangeMode && dataBasket.orderingMode) || orderingMode,
-          tableNo: dataBasket.tableNo,
-          outlet: dataBasket.outletID,
-        };
-      }
-
-      if (isChangeMode || dataBasket.totalSurchargeAmount === 0) {
-        let surcharge = await this.props.dispatch(
-          OrderAction.changeOrderingMode({ orderingMode })
-        );
-        if (surcharge.resultCode === 200) {
-          dataBasket = surcharge.data;
-          localStorage.setItem(
-            `${config.prefix}_dataBasket`,
-            JSON.stringify(encryptor.encrypt(dataBasket))
-          );
-        }
-      }
-
-      console.log("dataBasket", dataBasket);
-
-      let deliveryProvaider = await this.props.dispatch(
-        OrderAction.getProvider()
-      );
-      if (dataBasket.deliveryProviderId) {
-        let provaiderDelivery = deliveryProvaider.find((items) => {
-          return items.id === dataBasket.deliveryProviderId;
-        });
-        console.log(provaiderDelivery)
-        this.setState({ provaiderDelivery });
-      }
-
-      if (dataBasket.orderActionDate) this.setState({ orderActionDate: dataBasket.orderActionDate })
-      if (dataBasket.orderActionTime) this.setState({ orderActionTime: dataBasket.orderActionTime })
-
-      let checkOperationalHours = this.checkOperationalHours(storeDetail)
-      this.setState({
-        dataBasket,
-        storeDetail,
-        scanTable,
-        totalPrice,
-        checkOperationalHours,
-        btnBasketOrder: checkOperationalHours.status,
-        countryCode: infoCompany.countryCode,
-      });
-
-      // check validate pick date time
-      // await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate)
-
-      if (
-        deliveryProvaider &&
-        deliveryProvaider.length > 0 &&
-        deliveryAddress
-      ) {
-        let payload = {
-          outletId: dataBasket.outlet.id,
-          cartID: dataBasket.cartID,
-          deliveryAddress: deliveryAddress,
-        };
-        let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
-
-        deliveryProvaider = response.dataProfider
-        deliveryProvaider.forEach(async (provider) => {
-          provider.deliveryFeeFloat = provider.deliveryFee;
-          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
-        });
-
-        await this.props.dispatch({
-          type: "SET_DELIVERY_PROVIDERS",
-          payload: deliveryProvaider,
-        });
-        
-        this.setState({ deliveryProvaider });
-      }
-
-      this.submitOtomatis(dataBasket);
-
-      // this.timeGetBasket = setInterval(async () => {
-      if (dataBasket.id) await this.getDataBasketPending(dataBasket.id, dataBasket.status);
-      // }, 5000);
+    let storeDetail = null;
+    if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.product) {
+      storeDetail = this.props.defaultOutlet;
     } else {
-      this.setState({
-        dataBasket: null,
-        storeDetail: null,
-        scanTable: null,
-        totalPrice: 0,
+      storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
+    }
+
+    await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
+    let discount = (selectedPoint || 0) + this.state.discountVoucher;
+    let totalPrice = (dataBasket.totalNettAmount - discount < 0) ? 0 : (dataBasket.totalNettAmount - discount);
+    
+    let orderingMode = dataBasket.orderingMode;
+    scanTable = {
+      ...scanTable,
+      tableType: dataBasket.orderingMode,
+      tableNo: dataBasket.tableNo,
+      outlet: dataBasket.outletID,
+    };
+
+    let deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
+    let provaiderDelivery = {}
+    if (dataBasket.deliveryProviderId) {
+      provaiderDelivery = deliveryProvaider.find((items) => {
+        return items.id === dataBasket.deliveryProviderId;
       });
+      this.setState({ provaiderDelivery });
+    }
+
+    if (dataBasket.orderActionDate) this.setState({ orderActionDate: dataBasket.orderActionDate })
+    if (dataBasket.orderActionTime) this.setState({ orderActionTime: dataBasket.orderActionTime })
+
+    let checkOperationalHours = this.checkOperationalHours(storeDetail)
+    this.setState({
+      dataBasket,
+      storeDetail,
+      scanTable,
+      totalPrice,
+      checkOperationalHours,
+      btnBasketOrder: checkOperationalHours.status,
+      countryCode: infoCompany.countryCode,
+    });
+
+    if (dataBasket.id) dataBasket = await this.getDataBasketPending(dataBasket.id, dataBasket.status);
+    if (
+      deliveryProvaider &&
+      deliveryProvaider.length > 0 &&
+      deliveryAddress
+    ) {
+      let payload = {
+        outletId: dataBasket.outlet.id,
+        cartID: dataBasket.cartID,
+        deliveryAddress: deliveryAddress,
+      };
+
+      console.log(dataBasket)
+      let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
+      if(!response.dataProfider) return
+
+      deliveryProvaider = response.dataProfider
+      deliveryProvaider.forEach(async (provider) => {
+        provider.deliveryFeeFloat = provider.deliveryFee;
+        provider.deliveryFee = this.getCurrency(provider.deliveryFee);
+      });
+
+      await this.props.dispatch({
+        type: "SET_DELIVERY_PROVIDERS",
+        payload: deliveryProvaider,
+      });
+
+      provaiderDelivery = deliveryProvaider.find(items => {return items.id === provaiderDelivery.id})
+      this.setState({ deliveryProvaider, provaiderDelivery });
     }
 
     this.setState({
       loadingShow: false,
-      isLoading: false,
       selectedPoint,
       discountPoint: selectedPoint || 0,
       orderingMode,
@@ -354,22 +287,6 @@ class Basket extends Component {
       deliveryAddress,
     });
   };
-
-  checkPickUpDateTime = (checkOperationalHours, date) => {
-    let from = parseInt(moment(checkOperationalHours.beforeTime).format("HH"))
-    let to = parseInt(moment(checkOperationalHours.afterTime).format("HH"))
-    let orderingTime = []
-    for (let index = from; index <= to; index++) {
-      let time = index.toString().length === 1 ? `0${index}:00` : `${index}:00`
-      orderingTime.push(time)
-    }
-    this.setState({ orderingTime })
-    if (!checkOperationalHours.status) {
-      let orderActionTime = moment(checkOperationalHours.beforeTime).format('HH') + ":00";
-      let orderActionDate = moment(date).add(1, 'd').format("YYYY-MM-DD")
-      this.setState({ orderActionTime, orderActionDate })
-    }
-  }
 
   checkViewCart = (dataBasket) => {
     let { viewCartStatus } = this.state;
@@ -384,106 +301,30 @@ class Basket extends Component {
     }
   };
 
-  componentWillUnmount = () => {
-    localStorage.removeItem(`${config.prefix}_dataBasket`);
-    localStorage.removeItem(`${config.prefix}_scanTable`);
-    localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-    localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    // clearInterval(this.timeGetBasket);
-  };
-
-  getDataBasket_ = async () => {
-    let response = await this.props.dispatch(OrderAction.getCart());
-    if (
-      response &&
-      response.data &&
-      Object.keys(response.data).length > 0 &&
-      !response.data.message &&
-      response.data.status !== "failed"
-    ) {
-      localStorage.setItem(
-        `${config.prefix}_dataBasket`,
-        JSON.stringify(encryptor.encrypt(response.data))
-      );
-      this.setState({ dataBasket: response.data });
-      return response.data;
-    }
-  };
-
   getDataBasketPending = async (id, status) => {
     let response = await this.props.dispatch(OrderAction.getCartPending(id));
     if (response.resultCode === 200) {
-      localStorage.setItem(
-        `${config.prefix}_dataBasket`,
+      localStorage.setItem(`${config.prefix}_dataBasket`,
         JSON.stringify(encryptor.encrypt(response.data))
       );
       this.checkViewCart(response.data);
       this.setState({ dataBasket: response.data });
+      return response.data
     } else {
       response = await this.props.dispatch(OrderAction.getCartCompleted(id));
-      console.log(response)
-      if (
-        response.data &&
-        response.data.status &&
-        response.data.status === "COMPLETED"
-      ) {
-        // this.togglePlay()
-        this.setState({ isLoading: false });
-        Swal.fire(
-          "Congratulations!",
-          "Your order has been completed.",
-          "success"
-        );
-        // clearInterval(this.timeGetBasket);
-        setTimeout(() => {
-          this.props.history.push("/history");
-          window.location.reload();
-        }, 2000);
-      } else if (
-        response.data &&
-        response.data.status &&
-        response.data.status === "CANCELLED"
-      ) {
-        // this.togglePlay()
-        this.setState({ isLoading: false });
-        Swal.fire(
-          "Oppss!",
-          `Your order has been ${response.data.status}.`,
-          "error"
-        );
-        // clearInterval(this.timeGetBasket);
-        setTimeout(() => {
-          this.props.history.push("/history");
-          window.location.reload();
-        }, 2000);
+      if ( response.data && response.data.status && response.data.status === "COMPLETED" ) {
+        Swal.fire( "Congratulations!", "Your order has been completed.", "success" );
+      } else if ( response.data && response.data.status && response.data.status === "CANCELLED" ) {
+        Swal.fire("Oppss!",`Your order has been ${response.data.status}.`,"error");
       } else {
-        response = await this.props.dispatch(OrderAction.getCart(false));
-        console.log(response)
-        if (
-          response &&
-          response.data &&
-          Object.keys(response.data).length > 0 &&
-          !response.data.message &&
-          response.data.status !== "failed" &&
-          status !== response.data.status
-        ) {
-          localStorage.setItem(
-            `${config.prefix}_dataBasket`,
-            JSON.stringify(encryptor.encrypt(response.data))
-          );
-          this.setState({ dataBasket: response.data });
-        } else {
-          Swal.fire(
-            "Oppss!",
-            `Your order has been failed.`,
-            "error"
-          );
-          setTimeout(() => {
-            this.props.history.push("/history");
-            window.location.reload();
-          }, 2000);
-        }
+        Swal.fire("Oppss!",`Your order has been ${response.data.status || "REFUND"}.`,"error");
       }
+      setTimeout(() => {
+        this.props.history.push("/history");
+        localStorage.removeItem(`${config.prefix}_dataBasket`);
+        window.location.reload();
+      }, 2000);
+      return response.data
     }
   };
 
@@ -596,6 +437,17 @@ class Basket extends Component {
     }
   };
 
+  setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
+    if (!dataBasket) dataBasket = this.state.dataBasket;
+    if (!pointsToRebateRatio) pointsToRebateRatio = this.state.pointsToRebateRatio;
+    let totalPrice = (point / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
+    totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
+    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)) );
+
+    this.setState({ selectedPoint: point, discountPoint: point, totalPrice, newTotalPrice: totalPrice });
+    return point;
+  };
+
   setRemoveVoucher = (message) => {
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     this.setState({ statusSelectedVoucher: false, selectedVoucher: null });
@@ -616,330 +468,23 @@ class Basket extends Component {
     }
   };
 
-  cancelSelectVoucher = async () => {
-    this.setState({
-      discountVoucher: 0,
-      newTotalPrice: "0",
-      isLoading: true,
-      selectedVoucher: false,
-    });
-    localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-    await this.getDataBasket();
-  };
+  cancelSelectVoucher = async () => { };
 
-  cancelSelectPoint = async () => {
-    this.setState({
-      discountPoint: 0,
-      selectedPoint: 0,
-      newTotalPrice: "0",
-      isLoading: true,
-    });
-    localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    await this.getDataBasket();
-  };
+  cancelSelectPoint = async () => { };
 
-  handleRedeemVoucher = async () => {
-    this.setState({ discountPoint: 0 });
-    localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    this.props.history.push("/myVoucher");
-  };
+  handleRedeemVoucher = async () => { };
 
-  handleRedeemPoint = async () => {
-    localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-    let selectedPoint = this.state.selectedPoint;
-    let totalPoint = this.state.totalPoint;
-    let pointsToRebateRatio = this.state.pointsToRebateRatio;
-    let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
+  handleRedeemPoint = async () => {};
 
-    if (selectedPoint <= 0) {
-      selectedPoint = this.calculateSelectedPoint(
-        selectedPoint,
-        "selectedPoint"
-      );
-    } else if (selectedPoint > totalPoint) {
-      selectedPoint = this.calculateSelectedPoint(totalPoint, "allIn");
-    } else if (
-      pointsToRebateRatio.split(":")[0] &&
-      pointsToRebateRatio.split(":")[1] === "0"
-    ) {
-      selectedPoint = 0;
-    }
+  scrollPoint = (data) => { };
 
-    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
-      } point to ${this.getCurrency(
-        parseInt(pointsToRebateRatio.split(":")[1])
-      )}`;
-    this.setState({
-      discountVoucher: 0,
-      textRasio,
-      selectedPoint,
-      needPoint,
-      selectedVoucher: null,
-      statusSelectedVoucher: false,
-    });
-  };
+  setOrderingMode = async (orderingMode) => {};
 
-  scrollPoint = (data) => {
-    data = this.calculateSelectedPoint(data);
-    this.setState({ selectedPoint: data });
-  };
+  handleClear = async (dataBasket = null) => {};
 
-  calculateSelectedPoint = (selectedPoint, type = null) => {
-    let { dataBasket, pointsToRebateRatio, detailPoint } = this.state;
+  handleSettle = async () => { };
 
-    if (type === "selectedPoint") {
-      selectedPoint =
-        (dataBasket.totalNettAmount / pointsToRebateRatio.split(":")[1]) *
-        pointsToRebateRatio.split(":")[0];
-    }
-
-    if (detailPoint.roundingOptions === "DECIMAL") {
-      return parseFloat(selectedPoint.toFixed(2));
-    } else {
-      if (type === "allin") return Math.floor(selectedPoint);
-      else return Math.ceil(selectedPoint);
-    }
-  };
-
-  setOrderingMode = async (orderingMode) => {
-    localStorage.setItem(`${config.prefix}_ordering_mode`, orderingMode);
-    this.setState({ orderingMode, isLoading: true });
-    await this.getDataBasket(true, orderingMode);
-    this.setState({ isLoading: false });
-  };
-
-  setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
-    if (!dataBasket) {
-      dataBasket = this.state.dataBasket;
-    }
-    if (!pointsToRebateRatio) {
-      pointsToRebateRatio = this.state.pointsToRebateRatio;
-    }
-    let totalPrice =
-      (point / pointsToRebateRatio.split(":")[0]) *
-      pointsToRebateRatio.split(":")[1];
-    totalPrice =
-      dataBasket.totalNettAmount - totalPrice < 0
-        ? 0
-        : dataBasket.totalNettAmount - totalPrice;
-    localStorage.setItem(
-      `${config.prefix}_selectedPoint`,
-      JSON.stringify(encryptor.encrypt(point))
-    );
-    this.setState({
-      selectedPoint: point,
-      discountPoint: point,
-      totalPrice,
-      newTotalPrice: totalPrice,
-    });
-    return point;
-  };
-
-  handleClear = async (dataBasket = null) => {
-    Swal.fire({
-      title: "Want to clear data?",
-      text: "You will clear data!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then(async (result) => {
-      if (result.value) {
-        this.setState({ isLoading: true });
-        if (dataBasket) {
-          let selected = _.filter(dataBasket.details, (items) => {
-            return items.selected !== false;
-          });
-          if (dataBasket.details.length === selected.length)
-            await this.props.dispatch(OrderAction.deleteCart());
-          else {
-            let payload = [];
-            for (let index = 0; index < selected.length; index++) {
-              let items = selected[index];
-              if (items.selected !== false) {
-                items.quantity = 0;
-              }
-              payload.push(items);
-            }
-            await this.props.dispatch(
-              OrderAction.processUpdateCart(dataBasket, payload)
-            );
-            localStorage.removeItem(`${config.prefix}_dataBasket`);
-            window.location.reload();
-          }
-        } else {
-          await this.props.dispatch(OrderAction.deleteCart());
-        }
-        await this.getDataBasket();
-      }
-    });
-  };
-
-  handleSettle = async () => {
-    let { selectedCard } = this.state;
-    let { isLoggedIn } = this.props;
-    if (!isLoggedIn) {
-      document.getElementById("login-register-btn").click();
-      return;
-    }
-
-    if (selectedCard) {
-      let userInput = selectedCard.details.userInput;
-      if (userInput.length > 0) {
-        let needCVV = userInput.find((items) => {
-          return items.name === "cardCVV" && items.required;
-        });
-
-        if (Object.keys(needCVV).length !== 0) {
-          console.log("need cvv");
-          return;
-        }
-      }
-    }
-
-    this.submitSettle();
-  };
-
-  submitSettle = async (need = null) => {
-    await localStorage.setItem(
-      `${config.prefix}_dataSettle`,
-      JSON.stringify(encryptor.encrypt(this.state))
-    );
-    this.props.history.push("/payment");
-  };
-
-  handleSubmit = async () => {
-    let { orderingMode, storeDetail, scanTable, dataBasket } = this.state;
-    let { isLoggedIn } = this.props;
-    if (!isLoggedIn) {
-      document.getElementById("login-register-btn").click();
-      return;
-    }
-
-    if (this.checkScan()) this.props.history.push("/scanTable");
-    else if (orderingMode === "TAKEAWAY") {
-      this.setState({ isLoading: true });
-
-      let payload = {
-        tableNo: scanTable.tableNo || scanTable.table,
-        orderingMode: orderingMode,
-        partitionKey: this.props.basket.partitionKey,
-        sortKey: this.props.basket.sortKey,
-      };
-
-      let response;
-      if (storeDetail.outletType === "QUICKSERVICE") {
-        response = await this.props.dispatch(
-          OrderAction.submitTakeAway(payload)
-        );
-      } else {
-        response = await this.props.dispatch(
-          OrderAction.submitOrdering(payload)
-        );
-      }
-
-      if (response && response.resultCode === 400) {
-        Swal.fire(
-          "Oppss!",
-          response.message || response.data.message || "Submit error!",
-          "error"
-        );
-        this.setState({ isLoading: false });
-      }
-
-      this.waitingConfirm = setInterval(() => {
-        if (dataBasket.status === "CONFIRMED") {
-          setTimeout(async () => {
-            this.togglePlay();
-            this.setState({ isLoading: false });
-          }, 3000);
-          clearInterval(this.waitingConfirm);
-        }
-      }, 1000);
-    } else if (orderingMode === "DINEIN") {
-      scanTable.scan = true;
-      this.submitOtomatis(dataBasket, scanTable);
-    }
-  };
-
-  submitOtomatis = async (dataBasket, scanTable = null) => {
-    let { orderingMode, storeDetail } = this.state;
-    if (!scanTable) scanTable = this.state.scanTable;
-    if (
-      dataBasket &&
-      dataBasket.status === "PENDING" &&
-      scanTable &&
-      scanTable.scan &&
-      storeDetail &&
-      storeDetail.outletType !== "QUICKSERVICE"
-    ) {
-      this.setState({ isLoading: true });
-
-      let payload = {
-        tableNo: scanTable.tableNo || scanTable.table,
-        orderingMode: orderingMode,
-      };
-
-      let response = await this.props.dispatch(
-        OrderAction.submitBasket(payload)
-      );
-      if (response && response.resultCode === 200) {
-        this.setState({ dataBasket: response.data });
-        localStorage.removeItem(`${config.prefix}_dataBasket`);
-        response = await this.props.dispatch(
-          OrderAction.setData({}, "DATA_BASKET")
-        );
-        this.setState({ isLoading: false });
-        localStorage.setItem(
-          `${config.prefix}_dataSettle`,
-          JSON.stringify(encryptor.encrypt(this.state))
-        );
-        this.props.history.push("/payment");
-      } else {
-        Swal.fire(
-          "Oppss!",
-          response.message || response.data.message || "Submit error!",
-          "error"
-        );
-        this.props.history.push("/scanTable");
-      }
-
-      this.setState({ isLoading: false });
-    } else if (
-      scanTable &&
-      scanTable.scan &&
-      storeDetail.outletType === "QUICKSERVICE"
-    ) {
-      this.setState({ settle: true });
-    }
-  };
-
-  checkScan = () => {
-    let { orderingMode, storeDetail, scanTable, dataBasket } = this.state;
-    if (
-      orderingMode === "DINEIN" &&
-      storeDetail.outletType === "RESTO" &&
-      !scanTable
-    ) {
-      return true;
-    } else if (
-      orderingMode === "DINEIN" &&
-      storeDetail.outletType === "QUICKSERVICE" &&
-      storeDetail.enableTableScan !== false &&
-      storeDetail.enableDineIn !== false &&
-      !scanTable
-    ) {
-      return true;
-    }
-    return false;
-  };
-
-  togglePlay = () => {
-    this.setState({ play: !this.state.play }, () => {
-      this.state.play ? this.audio.play() : this.audio.pause();
-    });
-  };
+  handleSubmit = async () => { };
 
   handleSetProvaider = async (data) => {
     this.setState({ provaiderDelivery: data });
@@ -968,32 +513,14 @@ class Basket extends Component {
           this.setState({ isLoading: true });
           let response = await this.props.dispatch(OrderAction.cartUpdate({ id: this.state.dataBasket.cartID, status }));
           if (response.resultCode === 200) {
-            // this.togglePlay()
-            this.setState({ isLoading: false });
-            Swal.fire(
-              "Congratulations!",
-              "Your order has been completed.",
-              "success"
-            );
-            // clearInterval(this.timeGetBasket);
-            setTimeout(() => {
-              this.props.history.push("/history");
-              window.location.reload();
-            }, 2000);
+            Swal.fire( "Congratulations!", "Your order has been completed.", "success" );
           } else {
-            // this.togglePlay()
-            this.setState({ isLoading: false });
-            Swal.fire(
-              "Oppss!",
-              response.data.message || response.message || "Your order has been filed",
-              "error"
-            );
-            // clearInterval(this.timeGetBasket);
-            setTimeout(() => {
-              this.props.history.push("/history");
-              window.location.reload();
-            }, 2000);
+            Swal.fire( "Oppss!", response.data.message || response.message || "Your order has been filed", "error" );
           }
+          setTimeout(() => {
+            this.props.history.push("/history");
+            window.location.reload();
+          }, 2000);
         } catch (error) {
           console.log(error);
         }
@@ -1004,25 +531,13 @@ class Basket extends Component {
   handleSetState = async (field, value) => {
     this.setState({ [field]: value });
     if (field === "dataBasket") {
-      // this.setState({ isLoading: true })
-      localStorage.setItem(
-        `${config.prefix}_dataBasket`,
-        JSON.stringify(encryptor.encrypt(value))
-      );
-      // await this.getDataBasket();
+      localStorage.setItem( `${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(value)));
       window.location.reload();
     }
   };
 
   render() {
-    let {
-      loadingShow,
-      dataBasket,
-      countryCode,
-      isLoading,
-      viewCart,
-      storeDetail,
-    } = this.state;
+    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } = this.state;
     let { isLoggedIn, product } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;

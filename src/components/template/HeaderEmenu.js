@@ -29,6 +29,7 @@ class Header extends Component {
       broadcast: [],
       broadcastLength: 0,
       broadcastUnreadLength: 0,
+      logoCompany: config.url_logo
     };
   }
 
@@ -43,6 +44,15 @@ class Header extends Component {
         InboxAction.getBroadcast({ take: 14, skip: 0 })
       );
       if (response.ResultCode === 200) this.setState(response.Data);
+    }
+  };
+
+  componentDidUpdate = (prevProps) => {
+    if (this.props !== prevProps) {
+      let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
+      if (logoCompany) {
+        this.setState({ logoCompany: logoCompany.settingValue });
+      }
     }
   };
 
@@ -138,7 +148,7 @@ class Header extends Component {
   render() {
     let { defaultOutlet, isLoggedIn } = this.props;
     // console.log(defaultOutlet)
-    let { infoCompany, openSearch, shareURL } = this.state;
+    let { infoCompany, openSearch, logoCompany } = this.state;
     let broadcastUnreadLength =
       (this.props.broadcast && this.props.broadcast.broadcastUnreadLength) || 0;
     let showSearch = window.location.hash.split("#")[1] === "/";
@@ -173,7 +183,7 @@ class Header extends Component {
               <div style={{ display: "flex" }}>
                 <Link to="/">
                   <img
-                    src={infoCompany.imageURL || config.url_logo}
+                    src={infoCompany.imageURL || logoCompany}
                     style={{ height: 30, objectFit: "contain" }}
                   />
                 </Link>
@@ -284,6 +294,7 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
     broadcast: state.broadcast.broadcast,
+    setting: state.order.setting,
   };
 };
 const mapDispatchToProps = (dispatch) => {

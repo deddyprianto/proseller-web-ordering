@@ -84,15 +84,15 @@ export default class MenuBasket extends Component {
         {
           props.widthSelected >= 1200 &&
           <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10 }}>
-            <div style={{ marginLeft: 10, marginRight: 10 }}>
+            {/* <div style={{ marginLeft: 10, marginRight: 10 }}>
               <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                 <div style={{ fontWeight: "bold", color: "gray" }}>Sub Total</div>
                 <div style={{ fontWeight: "bold", color: "gray" }}>
                   {this.props.getCurrency(props.dataBasket.totalNettAmount)}
                 </div>
               </div>
-            </div>
-
+            </div> */}
+            
             {
               props.provaiderDelivery && props.dataBasket.orderingMode && props.dataBasket.orderingMode === "DELIVERY" &&
               <div style={{ marginLeft: 10, marginRight: 10 }}>
@@ -107,7 +107,14 @@ export default class MenuBasket extends Component {
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>TOTAL</div>
               <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>
                 {
-                  this.props.getCurrency(props.dataBasket.totalNettAmount + (props.dataBasket.orderingMode === "DELIVERY" && props.provaiderDelivery && props.provaiderDelivery.deliveryFee || 0))
+                  this.props.getCurrency(
+                    props.dataBasket.totalNettAmount + 
+                    (
+                      props.dataBasket.orderingMode === "DELIVERY" && 
+                      props.provaiderDelivery && 
+                      props.provaiderDelivery.deliveryFeeFloat || 0
+                    )
+                  )
                 }
               </div>
             </div>
@@ -116,7 +123,7 @@ export default class MenuBasket extends Component {
               (props.dataBasket.status === "PROCESSING" ||
                 props.dataBasket.status === "READY_FOR_COLLECTION" ||
                 props.dataBasket.status === "READY_FOR_DELIVERY" ||
-                props.dataBasket.status === "ON_THE_WAY") ?
+                props.dataBasket.status === "ON_THE_WAY") &&
                 <div style={{
                   padding: 10, backgroundColor: "#FFF",
                   display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
@@ -128,26 +135,7 @@ export default class MenuBasket extends Component {
                   }} onClick={() => this.props.setViewCart(false)}>
                     <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} /> Waiting Order
                   </Button>
-                </div> :
-                <div style={{
-                  padding: 10, backgroundColor: "#FFF",
-                  display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
-                }}>
-                  <Button className="profile-dashboard" disabled={this.props.roleBtnSettle}
-                    onClick={() => {
-                      this.props.roleTitleSettle ? this.props.handleSettle() : this.props.handleSubmit()
-                    }} style={{
-                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "100%", display: "flex",
-                      color: "#FFF", fontWeight: "bold", alignItems: "center", justifyContent: "center", height: 40
-                    }}
-                  > {
-                      this.props.roleIconSettle ?
-                        <MonetizationOnIcon style={{ fontSize: 20, marginRight: 5 }} /> :
-                        <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    }
-                    {this.props.roleTitleSettle ? 'Confirm & Pay' : 'Submit'}
-                  </Button>
-                </div>
+                </div> 
             }
 
           </div>

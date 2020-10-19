@@ -46,16 +46,15 @@ class MenuBasket extends Component {
         {props.dataBasket &&
           (props.dataBasket.tableNo || props.scanTable) &&
           props.dataBasket.orderingMode !== "DELIVERY" &&
+          props.dataBasket.orderingMode !== "TAKEAWAY" &&
           props.dataBasket.outlet && (
             <div style={{ textAlign: "left" }}>
-              {" "}
-              <TableNo data={props} />{" "}
+              <TableNo data={props} />
             </div>
           )}
         {props.dataBasket && (
           <div style={{ textAlign: "left" }}>
-            {" "}
-            <StatusOrder data={props} />{" "}
+            <StatusOrder data={props} />
           </div>
         )}
 
@@ -237,23 +236,18 @@ class MenuBasket extends Component {
                 marginRight: 10,
               }}
             >
-              <div
-                style={{
-                  fontWeight: "bold",
-                  color: this.props.color.primary,
-                  fontSize: 16,
-                }}
-              >
-                TOTAL
-              </div>
-              <div
-                style={{
-                  fontWeight: "bold",
-                  color: this.props.color.primary,
-                  fontSize: 16,
-                }}
-              >
-                {this.props.getCurrency(props.dataBasket.totalNettAmount)}
+              <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} > TOTAL </div>
+              <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} >
+                {
+                  this.props.getCurrency(
+                    props.dataBasket.totalNettAmount + 
+                    (
+                      props.dataBasket.orderingMode === "DELIVERY" && 
+                      props.provaiderDelivery && 
+                      props.provaiderDelivery.deliveryFeeFloat || 0
+                    )
+                  )
+                }
               </div>
             </div>
 
@@ -284,9 +278,9 @@ class MenuBasket extends Component {
                     }}
                     onClick={() => this.props.setViewCart(false)}
                   >
-                    <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
+                    <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />
                     Waiting Order
-                </Button>
+                  </Button>
                 </div>
               ) : (
                 <div
@@ -300,7 +294,6 @@ class MenuBasket extends Component {
                   }}
                 >
                   <Button
-                    className="profile-dashboard"
                     disabled={this.props.btnSattleStatusDisable}
                     onClick={() => {
                       this.props.roleTitleSettle
@@ -318,7 +311,6 @@ class MenuBasket extends Component {
                       height: 40,
                     }}
                   >
-                    {" "}
                     {this.props.roleIconSettle ? (
                       <MonetizationOnIcon
                         style={{ fontSize: 20, marginRight: 5 }}

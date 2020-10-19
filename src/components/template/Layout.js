@@ -34,7 +34,9 @@ class Layout extends Component {
     super(props);
     this.state = {
       isEmenu: window.location.pathname.includes("emenu"),
-      enableOrdering: true
+      enableOrdering: true,
+      logoCompany: config.url_logo,
+      infoCompany: {},
     };
   }
 
@@ -51,32 +53,26 @@ class Layout extends Component {
     if (infoCompany) {
       document.title = `${isEmenu ? "E-Menu" : "Web Ordering"} - ${infoCompany.companyName}`;
       try {
-        document.getElementById("icon-theme").href = infoCompany.imageURL || config.url_logo;
+        document.getElementById("icon-theme").href = infoCompany.imageURL || this.state.logoCompany;
       } catch (error) { }
-    }
-
-    // Refresh Token
-    // await this.props.dispatch(AuthActions.refreshToken());
-
-    let response = await this.props.dispatch(OrderAction.getCart());
-    if (
-      response &&
-      response.data &&
-      Object.keys(response.data).length > 0 &&
-      response.data.status !== "failed"
-    ) {
-      localStorage.setItem(
-        `${config.prefix}_dataBasket`,
-        JSON.stringify(encryptor.encrypt(response.data))
-      );
+      this.setState({infoCompany})
     }
   };
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props !== prevProps) {
+      let infoCompany = this.state.infoCompany
       let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
+      }
+
+      let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
+      if (logoCompany) {
+        try {
+          document.getElementById("icon-theme").href = infoCompany.imageURL || logoCompany.settingValue;
+        } catch (error) { }
+        this.setState({ logoCompany: infoCompany.imageURL || logoCompany.settingValue });
       }
     }
   }

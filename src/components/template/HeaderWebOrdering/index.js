@@ -23,7 +23,8 @@ class Header extends Component {
       showLoginRegister: false,
       infoCompany: {},
       outletsRefs: {},
-      enableOrdering: true
+      enableOrdering: true,
+      logoCompany: config.url_logo
     };
   }
 
@@ -40,6 +41,11 @@ class Header extends Component {
       let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
+      }
+
+      let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
+      if (logoCompany) {
+        this.setState({ logoCompany: logoCompany.settingValue });
       }
     }
 
@@ -103,7 +109,7 @@ class Header extends Component {
 
   render() {
     let { isLoggedIn, basket, defaultOutlet, outlets } = this.props;
-    let { infoCompany, enableOrdering } = this.state;
+    let { infoCompany, enableOrdering, logoCompany } = this.state;
 
     let basketLength = 0;
     if (basket && basket.details) {
@@ -142,7 +148,7 @@ class Header extends Component {
                 <img
                   alt="logo"
                   className={styles.logo}
-                  src={infoCompany.imageURL || config.url_logo}
+                  src={infoCompany.imageURL || logoCompany}
                 />
               </Link>
               <div className={styles.outlet}>

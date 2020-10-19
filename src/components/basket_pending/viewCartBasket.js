@@ -284,31 +284,6 @@ export default class ViewCartBasket extends Component {
                   padding: 10, backgroundColor: "#FFF",
                   display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
                 }}>
-                  {/* <Button
-                    disabled={this.roleBtnClear()}
-                    onClick={() => this.props.handleClear()} style={{
-                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "45%", backgroundColor: "#c00a27",
-                      color: "#FFF", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center",
-                    }} >
-                    <DeleteIcon style={{ fontSize: 20, marginRight: 5 }} /> Clear
-                  </Button> */}
-                  <Button
-                    disabled={this.roleBtnSettle()}
-                    onClick={() => {
-                      this.roleTitleSettle() ? this.props.handleSettle() : this.props.handleSubmit()
-                    }}
-                    style={{
-                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "100%", display: "flex",
-                      color: "#FFF", fontWeight: "bold", alignItems: "center", justifyContent: "center", height: 40
-                    }}
-                  > {
-                      this.roleIconSettle() ?
-                        <MonetizationOnIcon style={{ fontSize: 20, marginRight: 5 }} /> :
-                        <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    }
-                    {
-                      this.roleTitleSettle() ? 'Confirm & Pay' : 'Submit'}
-                  </Button>
                 </div>
             }
 

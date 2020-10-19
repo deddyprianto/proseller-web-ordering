@@ -107,13 +107,9 @@ const App = (props) => {
     if (!isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
     if (account) {
       await props.dispatch(PaymentAction.getPaymentCard());
+      await handleRelogin(account)
       setInterval(async () => {
-        account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
-        let timeExp = account.accessToken.payload.exp * 1000 - 60000;
-        let timeNow = moment().format();
-        if (moment(timeNow).isSameOrAfter(timeExp)) {
-          await props.dispatch(AuthActions.refreshToken());
-        }
+        await handleRelogin(account)
       }, 1000);
     }
 
@@ -157,6 +153,15 @@ const App = (props) => {
 
     props.dispatch(CustomerAction.mandatoryField());
   };
+
+  const handleRelogin = async (account) => {
+    account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+    let timeExp = account.accessToken.payload.exp * 1000 - 60000;
+    let timeNow = moment().format();
+    if (moment(timeNow).isSameOrAfter(timeExp)) {
+      await props.dispatch(AuthActions.refreshToken());
+    }
+  }
   
   useEffect(() => {
     if (setting) {
@@ -168,7 +173,6 @@ const App = (props) => {
   }, [deliveryAddress, deliveryProviders, setting]);
 
   useEffect(async () => {
-    await props.dispatch(OrderAction.getTheme());
     await props.dispatch(OrderAction.getSettingOrdering());
     checkUser();
   }, []);

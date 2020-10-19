@@ -2,8 +2,8 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "demo";
-let companyHost = "auntieanne";
+let stage = "dev";
+let companyHost = "qiji";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
@@ -70,7 +70,10 @@ config.getValidation = function getValidation(defaultOutlet) {
 }
 
 config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
+  let primary = orderingSetting.theme && orderingSetting.theme.color && orderingSetting.theme.color.primary
+  let secondary = orderingSetting.theme && orderingSetting.theme.color && orderingSetting.theme.color.secondary
   let defaultSetting = {
+    theme: { color: { secondary: "#C00A27", primary: "#C00A27"}},
     settings: [
       { settingKey: "LoginByEmail", settingValue: true },
       { settingKey: "LoginByMobile", settingValue: true },
@@ -78,6 +81,9 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       { settingKey: "EnableWhatsappOTP", settingValue: false },
       { settingKey: "EnableRegisterWithPassword", settingValue: false },
       { settingKey: "EnableOrdering", settingValue: true },
+      { settingKey: "Logo", settingValue: logo },
+      { settingKey: "PrimaryColor", settingValue: primary || "#C00A27" },
+      { settingKey: "SecondaryColor", settingValue: secondary || "#C00A27" },
       { 
         settingKey: "TimeAndDateOrder", 
         settingValue: {
@@ -97,8 +103,7 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       if (!check) orderingSetting.settings.push(settings)
     });
   }
-  if (orderingSetting && !orderingSetting.deliveryTime) orderingSetting.deliveryTime = defaultSetting.deliveryTime
-  if (orderingSetting && !orderingSetting.storePickupTime) orderingSetting.storePickupTime = defaultSetting.storePickupTime
+  if (orderingSetting && !orderingSetting.theme) orderingSetting.theme = defaultSetting.theme
   return orderingSetting
 }
 

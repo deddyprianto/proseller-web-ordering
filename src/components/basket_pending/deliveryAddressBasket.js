@@ -12,7 +12,6 @@ class DeliveryAddressBasket extends Component {
   }
   render() {
     let props = this.props.data;
-    console.log(props.dataBasket.deliveryAddress)
     return (
       <div
         style={{
