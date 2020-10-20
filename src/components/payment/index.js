@@ -978,6 +978,13 @@ class Payment extends Component {
                       }}
                     />
 
+                    {this.props.isLoggedIn && (
+                      <PaymentMethodBasket
+                        data={this.state}
+                        roleBtnClear={!this.props.isLoggedIn}
+                      />
+                    )}
+
                     <AddPromo
                       data={this.state}
                       roleBtnClear={!this.props.isLoggedIn}
@@ -989,12 +996,7 @@ class Payment extends Component {
                       scrollPoint={(data) => this.scrollPoint(data)}
                       setPoint={(point) => this.setPoint(point)}
                     />
-                    {this.props.isLoggedIn && (
-                      <PaymentMethodBasket
-                        data={this.state}
-                        roleBtnClear={!this.props.isLoggedIn}
-                      />
-                    )}
+
                     <div
                       style={{
                         display: "flex",

@@ -1,7 +1,7 @@
 import { MasterDataService } from "../../Services/MasterDataService";
 import { ProductService } from "../../Services/ProductService";
-import { AuthActions } from "./AuthAction";
 import { CONSTANT } from "../../helpers";
+import config from "../../config";
 
 export const MasterdataAction = {
   getAddressLocation,
@@ -65,33 +65,27 @@ function getInfoCompany() {
 
 function getOutletByID(id, isProduct = true) {
   return async (dispatch) => {
-    let response = await MasterDataService.api(
-      "GET",
-      null,
-      `outlets/get/${id}`,
-      "Bearer"
-    );
-    let product = []
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
-    else if (isProduct) product = dispatch(getProductByOutletID(id));
-    dispatch(setData(response.data, CONSTANT.DEFAULT_OUTLET));
-    // console.log(product)
-    return response.data;
+    if(id !== undefined){
+      let response = await MasterDataService.api( "GET", null, `outlets/get/${id}`, "Bearer" );
+      let product = []
+      if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+      else if (isProduct) product = dispatch(getProductByOutletID(id));
+  
+      if (response.data && response.data.id) response.data = config.getValidation(response.data)
+      dispatch(setData(response.data, CONSTANT.DEFAULT_OUTLET));
+      return response.data;
+    }
   };
 }
 
 function getProductByOutletID(id) {
   return async (dispatch) => {
-    let response = await ProductService.api(
-      "POST",
-      null,
-      `productpreset/load/CRM/${id}`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
-    dispatch(setData(response.data, CONSTANT.DATA_PRODUCT));
-    return response.data;
+    if(id !== undefined) {
+      let response = await ProductService.api( "POST", null, `productpreset/load/CRM/${id}`, "Bearer" );
+      if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+      dispatch(setData(response.data, CONSTANT.DATA_PRODUCT));
+      return response.data;
+    }
   };
 }
 

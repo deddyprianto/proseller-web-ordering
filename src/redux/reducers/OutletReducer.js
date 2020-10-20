@@ -10,11 +10,13 @@ const defaultState = {
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
     case CONSTANT.DEFAULT_OUTLET:
-      localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(action.data)));
-      return {
-        ...state,
-        defaultOutlet: action.data,
-      };
+      if(!(action.data.status && action.data.status === "failed")){
+        localStorage.setItem(`${config.prefix}_defaultOutlet`, JSON.stringify(encryptor.encrypt(action.data)));
+        return {
+          ...state,
+          defaultOutlet: action.data,
+        };
+      }
     case CONSTANT.LIST_OUTLET:
       return {
         ...state,

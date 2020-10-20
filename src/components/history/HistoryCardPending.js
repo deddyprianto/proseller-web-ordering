@@ -94,6 +94,7 @@ class InboxCard extends Component {
                 paddingLeft: 10,
                 paddingRight: 10,
                 borderRadius: 5,
+                marginTop: 5,
                 textAlign: "center",
               }}
             >

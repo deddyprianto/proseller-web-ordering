@@ -710,23 +710,11 @@ class Basket extends Component {
   };
 
   setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
-    if (!dataBasket) {
-      dataBasket = this.state.dataBasket;
-    }
-    if (!pointsToRebateRatio) {
-      pointsToRebateRatio = this.state.pointsToRebateRatio;
-    }
-    let totalPrice =
-      (point / pointsToRebateRatio.split(":")[0]) *
-      pointsToRebateRatio.split(":")[1];
-    totalPrice =
-      dataBasket.totalNettAmount - totalPrice < 0
-        ? 0
-        : dataBasket.totalNettAmount - totalPrice;
-    localStorage.setItem(
-      `${config.prefix}_selectedPoint`,
-      JSON.stringify(encryptor.encrypt(point))
-    );
+    if (!dataBasket) dataBasket = this.state.dataBasket;
+    if (!pointsToRebateRatio)  pointsToRebateRatio = this.state.pointsToRebateRatio; 
+    let totalPrice = (point / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
+    totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
+    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)) );
     this.setState({
       selectedPoint: point,
       discountPoint: point,

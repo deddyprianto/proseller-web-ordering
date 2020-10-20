@@ -46,7 +46,7 @@ const sheet = jss.createStyleSheet(styles, { link: true }).attach();
 addLocaleData([...locale_id, ...locale_en]);
 
 const App = (props) => {
-  const {
+  let {
     lang,
     isLoggedIn,
     deliveryProviders,
@@ -54,7 +54,8 @@ const App = (props) => {
     deliveryAddress,
     dispatch,
     companyInfo,
-    setting
+    setting,
+    defaultOutlet
   } = props;
 
   const [enableOrdering, setEnableOrdering] = useState(false)
@@ -68,10 +69,7 @@ const App = (props) => {
     return newColor.toString(16);
   };
 
-  const hoverColor = `#${lightenDarkenColor(
-    props.theme.color.primary.substring(1),
-    -10
-  )}`;
+  const hoverColor = `#${lightenDarkenColor( props.theme.color.primary.substring(1), -10 )}`;
 
   sheet.update({ theme: { ...props.theme, hoverColor } });
 
@@ -108,47 +106,32 @@ const App = (props) => {
     if (account) {
       await props.dispatch(PaymentAction.getPaymentCard());
       await handleRelogin(account)
-      setInterval(async () => {
-        await handleRelogin(account)
-      }, 1000);
+      setInterval(async () => { await handleRelogin(account) }, 1000);
     }
 
     let param = getUrlParameters();
-    let defaultOutlet = null
     if (param && param["input"]) {
       param = getUrlParameters(base64.decode(decodeURI(param["input"])));
       localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
       console.log("input url", param)
 
       if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
-
-      defaultOutlet = props.defaultOutlet
-      if(_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
-        defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
-      }
+      defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
       
       if (defaultOutlet && defaultOutlet.id) defaultOutlet = config.getValidation(defaultOutlet)
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
-      
-      defaultOutlet = props.defaultOutlet;
       if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
         defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
       }
     }
 
     if (window.location.hash.split("#")[1] !== "/") {
-      if (!param && props.defaultOutlet && enableOrdering) {
-        defaultOutlet =  props.defaultOutlet
-        if(_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
-          defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
-        } else {
-          defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.id,true));
-        }
+      if (!param && defaultOutlet && defaultOutlet.id && enableOrdering) {
+        defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.id,true));
       }
-
-      await props.dispatch(OrderAction.getCart());
+      props.dispatch(OrderAction.getCart());
     }
 
     props.dispatch(CustomerAction.mandatoryField());

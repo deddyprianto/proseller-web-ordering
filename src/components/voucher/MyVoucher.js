@@ -96,11 +96,11 @@ class MyVoucher extends Component {
                     textAlign: "center"
                   }}>
                     <button
-                      className="button"
                       style={{
                         fontSize: "1.2rem",
                         padding: "0.8rem",
                         borderRadius: "1rem",
+                        backgroundColor: "rgba(0,0,0,0)"
                       }}
                       onClick={() => {
                         this.props.dispatch({ type: "INIT_VOUCHER_SEND" });
@@ -110,11 +110,8 @@ class MyVoucher extends Component {
                         });
                       }}
                     >
-                      <span>
-                        <i className="fa fa-gift"></i>
-                      </span>{" "}
-                        Gift
-                      </button>
+                      <i className="fa fa-gift"></i> Gift
+                    </button>
                   </div>
 
                   <div

@@ -201,7 +201,8 @@ class Basket extends Component {
     ) {
       selectedPoint = this.setPoint(
         dataBasket.confirmationInfo.redeemPoint,
-        dataBasket
+        dataBasket,
+        dataBasket.confirmationInfo.pointsToRebateRatio,
       );
     }
 
@@ -322,8 +323,7 @@ class Basket extends Component {
       setTimeout(() => {
         this.props.history.push("/history");
         localStorage.removeItem(`${config.prefix}_dataBasket`);
-        window.location.reload();
-      }, 2000);
+      }, 3000);
       return response.data
     }
   };
@@ -444,6 +444,8 @@ class Basket extends Component {
     totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
     localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)) );
 
+    point = (point * pointsToRebateRatio.split(":")[1]) / pointsToRebateRatio.split(":")[0]
+
     this.setState({ selectedPoint: point, discountPoint: point, totalPrice, newTotalPrice: totalPrice });
     return point;
   };
@@ -517,10 +519,7 @@ class Basket extends Component {
           } else {
             Swal.fire( "Oppss!", response.data.message || response.message || "Your order has been filed", "error" );
           }
-          setTimeout(() => {
-            this.props.history.push("/history");
-            window.location.reload();
-          }, 2000);
+          setTimeout(() => { this.props.history.push("/history"); }, 2000);
         } catch (error) {
           console.log(error);
         }

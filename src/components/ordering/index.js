@@ -49,19 +49,11 @@ class Ordering extends Component {
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
 
-    let defaultOutlet = null;
-    if (!this.getUrlParameters()) {
-      defaultOutlet = this.props.defaultOutlet;
-      if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
-        defaultOutlet = await this.props.dispatch(OutletAction.fetchDefaultOutlet());
-      }
-    }
-
-    defaultOutlet = defaultOutlet || this.props.defaultOutlet
+    let defaultOutlet = this.props.defaultOutlet;
     if (defaultOutlet && defaultOutlet.id) {
       defaultOutlet = config.getValidation(defaultOutlet)
     }
-
+    
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
     await this.fetchCategories(defaultOutlet);

@@ -444,7 +444,7 @@ const ViewCartBasket = ({
                   }}
                   onClick={() => setViewCart(false)}
                 >
-                  <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />{" "}
+                  <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />
                   Waiting Order
               </Button>
               </div>
@@ -483,14 +483,11 @@ const ViewCartBasket = ({
                     height: 40,
                   }}
                 >
-                  {" "}
-                  {roleIconSettle() ? (
-                    <MonetizationOnIcon
-                      style={{ fontSize: 20, marginRight: 5 }}
-                    />
-                  ) : (
-                      <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    )}
+                  {
+                    roleIconSettle() ? 
+                    <MonetizationOnIcon style={{ fontSize: 20, marginRight: 5 }} /> :
+                    <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
+                  }
                   {roleTitleSettle() ? "Confirm & Pay" : "Submit"}
                 </Button>
               </div>

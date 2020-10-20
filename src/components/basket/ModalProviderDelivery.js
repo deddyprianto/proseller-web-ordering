@@ -9,7 +9,6 @@ const ModalProviderDelivery = ({
   companyInfo,
   data
 }) => {
-  console.log(deliveryProviders)
   const getCurrency = (price) => {
     if (companyInfo) {
       if (price !== undefined) {
@@ -112,13 +111,13 @@ const ModalProviderDelivery = ({
                     </div>
                     {
                       item.minPurchaseForFreeDelivery !== "" &&
-                      <div style={{ fontSize: 10, color: "#03AC0E", textAlign: "left", marginTop: -8 }}>
+                      <div style={{ fontSize: 10, color: "gray", textAlign: "left", marginTop: -8 }}>
                         {`Min purchase for free delivery ${getCurrency(Number(item.minPurchaseForFreeDelivery))}`}
                       </div>
                     }
                     {
                       item.maxFreeDeliveryAmount !== "" &&
-                      <div style={{ fontSize: 10, color: "#03AC0E", textAlign: "left", marginTop: -12 }}>
+                      <div style={{ fontSize: 10, color: "gray", textAlign: "left", marginTop: -12 }}>
                         {`Max free delivery amount ${getCurrency(Number(item.maxFreeDeliveryAmount))}`}
                       </div>
                     }

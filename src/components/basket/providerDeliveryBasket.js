@@ -41,9 +41,9 @@ class ProviderDeliveryBasket extends Component {
                 fontWeight: "bold",
                 color: "#FFF",
                 cursor: "pointer",
-                backgroundColor: !props.provaiderDelivery
-                  ? this.props.color.primary
-                  : "#777",
+                backgroundColor: this.props.deliveryProvider && this.props.deliveryProvider.name
+                  ? "#777"
+                  : this.props.color.primary,
                 width: 140,
                 justifyContent: "space-between",
                 display: "flex",
@@ -53,9 +53,9 @@ class ProviderDeliveryBasket extends Component {
               }}
             >
               <AssignmentIndIcon style={{ fontSize: 16 }} />
-              {!props.provaiderDelivery
-                ? "Select Provider"
-                : `${props.provaiderDelivery.name.substring(0, 15)}`}
+              {this.props.deliveryProvider && this.props.deliveryProvider.name
+                ? `${this.props.deliveryProvider.name.substring(0, 15)}` : "Select Provider"
+              }
             </Button>
           </div>
         </div>
@@ -67,6 +67,7 @@ class ProviderDeliveryBasket extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     color: state.theme.color,
+    deliveryProvider: state.order.selectedDeliveryProvider,
   };
 };
 
