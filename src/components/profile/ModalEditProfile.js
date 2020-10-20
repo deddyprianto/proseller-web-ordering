@@ -61,6 +61,7 @@ class ModalEditProfile extends Component {
       showNewPassword: false,
       showRePassword: false,
       isDisableBirthDate: false,
+      errorName: ""
     };
   }
 
@@ -102,9 +103,12 @@ class ModalEditProfile extends Component {
 
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
+    if(field === "name") {
+      if((/^[A-Za-z]+$/.test(value))) this.setState({ errorName: "" });
+      else this.setState({ errorName: "Name is alphabets only" });
+    }
     if (field === "email") {
-      if (this.state.emailCheckTimeout)
-        clearTimeout(this.state.emailCheckTimeout);
+      if (this.state.emailCheckTimeout) clearTimeout(this.state.emailCheckTimeout);
       const isMyEmail = this.props.account.email === value;
       if (!isMyEmail) {
         this.setState({ checkingEmail: true });
@@ -129,8 +133,7 @@ class ModalEditProfile extends Component {
       }
     }
     if (field === "phoneNumber") {
-      if (this.state.phoneCheckTimeout)
-        clearTimeout(this.state.phoneCheckTimeout);
+      if (this.state.phoneCheckTimeout) clearTimeout(this.state.phoneCheckTimeout);
       const isMyPhone = this.props.account.phoneNumber === value;
       if (!isMyPhone) {
         this.setState({ checkingPhone: true });
@@ -155,8 +158,7 @@ class ModalEditProfile extends Component {
       }
     }
     dataCustomer[field] = value;
-    dataCustomer.address = `${dataCustomer.street || ""}, ${dataCustomer.unitNo || ""
-      }, ${dataCustomer.postalCode || ""}`;
+    dataCustomer.address = `${dataCustomer.street || ""}, ${dataCustomer.unitNo || "" }, ${dataCustomer.postalCode || ""}`;
     this.setState({ dataCustomer, isLoading: false });
   };
 
@@ -305,7 +307,7 @@ class ModalEditProfile extends Component {
       showOldPassword,
       showNewPassword,
       showRePassword,
-      isDisableBirthDate,
+      errorName,
     } = this.state;
 
     let birthMonthOption = this.state.birthMonthOption;
@@ -394,6 +396,12 @@ class ModalEditProfile extends Component {
                         this.handleChange("name", e.target.value)
                       }
                     />
+                    {
+                      errorName !== "" && 
+                      <div className="text text-danger small">
+                        <em>{errorName}</em>
+                      </div>
+                    }
                   </div>
 
                   <div
@@ -419,10 +427,7 @@ class ModalEditProfile extends Component {
                         </div>
                       ) : (
                           <div className="text text-success small">
-                            <em>Phone no. is available</em>
-                            <span>
-                              <i className="fa fa-check"></i>
-                            </span>
+                            <em>Phone no. is available</em> <i className="fa fa-check"></i>
                           </div>
                         )
                     ) : null}
@@ -456,10 +461,7 @@ class ModalEditProfile extends Component {
                         </div>
                       ) : (
                           <div className="text text-success small">
-                            <em>Email is available</em>
-                            <span>
-                              <i className="fa fa-check"></i>
-                            </span>
+                            <em>Email is available</em> <i className="fa fa-check"></i>
                           </div>
                         )
                     ) : null}
@@ -476,206 +478,7 @@ class ModalEditProfile extends Component {
                     handleChange={this.handleChange}
                     roundedBorder={false}
                   ></CustomFields>
-
-                  {/* {fieldBirthDate && (
-                    <div
-                      className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
-                      style={{ marginTop: 10 }}
-                    >
-                      <label>
-                        Birthday{" "}
-                        <span className="required">
-                          {fieldBirthDate && fieldBirthDate.mandatory && "*"}
-                        </span>
-                      </label>
-                      {fieldBirthDate.format === "MMM" ? (
-                        <Input
-                          type="select"
-                          disabled={isDisableBirthDate}
-                          className="woocommerce-Input woocommerce-Input--text input-text"
-                          value={dataCustomer.birthDate}
-                          style={{ height: 40, borderRadius: 5 }}
-                          onChange={(e) =>
-                            this.handleChange("birthDate", e.target.value)
-                          }
-                        >
-                          <option value="">Select Birth Month</option>
-                          {birthMonthOption.map((items, key) => (
-                            <option key={key} value={items.value}>
-                              {moment(items.value).format("MMM")}
-                            </option>
-                          ))}
-                        </Input>
-                      ) : (
-                        <div className="customDatePickerWidth">
-                          <div
-                            htmlFor="birthDate"
-                            style={{
-                              position: "absolute",
-                              backgroundColor: isDisableBirthDate
-                                ? "#FAFAFA"
-                                : "#FFF",
-                              top: 321,
-                              left: 28,
-                              paddingLeft: 10,
-                              paddingRight: 50,
-                            }}
-                          >
-                          </div>
-                          <input
-                            type="date"
-                            id="birthDate"
-                            disabled={isDisableBirthDate}
-                            style={{ borderRadius: 5 }}
-                            className="woocommerce-Input woocommerce-Input--text input-text"
-                            value={birthDate}
-                            onChange={(e) =>
-                              this.handleChange(
-                                "birthDate",
-                                moment(e.target.value).format("YYYY-MM-DD")
-                              )
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )} */}
-
-                  {/* {fieldGender && (
-                    <div style={{ marginTop: 10 }}>
-                      <label>
-                        Gender{" "}
-                        <span className="required">
-                          {fieldGender && fieldGender.mandatory && "*"}
-                        </span>
-                      </label>
-                      <div style={{ display: "flex" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => this.handleChange("gender", "male")}
-                        >
-                          <div
-                            className={
-                              dataCustomer.gender === "male"
-                                ? "select-gender"
-                                : "un-select-gender"
-                            }
-                            style={{
-                              height: 20,
-                              width: 20,
-                              borderRadius: 20,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <i
-                              className={
-                                dataCustomer.gender === "male"
-                                  ? "fa fa-check-circle"
-                                  : "fa fa-circle"
-                              }
-                              style={{ fontSize: 16, color: "#FFF" }}
-                            ></i>
-                          </div>
-                          <div style={{ marginLeft: 5 }}>Male</div>
-                        </div>
-
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            cursor: "pointer",
-                            marginLeft: 20,
-                          }}
-                          onClick={() => this.handleChange("gender", "female")}
-                        >
-                          <div
-                            className={
-                              dataCustomer.gender === "female"
-                                ? "select-gender"
-                                : "un-select-gender"
-                            }
-                            style={{
-                              height: 20,
-                              width: 20,
-                              borderRadius: 20,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <i
-                              className={
-                                dataCustomer.gender === "female"
-                                  ? "fa fa-check-circle"
-                                  : "fa fa-circle"
-                              }
-                              style={{ fontSize: 16, color: "#FFF" }}
-                            ></i>
-                          </div>
-                          <div style={{ marginLeft: 5 }}>Female</div>
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
-
-                  {/* {fieldAddress && (
-                    <div
-                      className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
-                      style={{ marginTop: 10 }}
-                    >
-                      <label htmlFor="street">
-                        Street Name{" "}
-                        <span className="required">
-                          {fieldAddress && fieldAddress.mandatory && "*"}
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        className="woocommerce-Input woocommerce-Input--text input-text"
-                        style={{ borderRadius: 5 }}
-                        id="street"
-                        placeholder="Enter your address street name"
-                        rows="2"
-                        value={dataCustomer.street || ""}
-                        onChange={(e) =>
-                          this.handleChange("street", e.target.value)
-                        }
-                      ></input>
-                    </div>
-                  )} */}
-
-                  {/* {fieldAddress && (
-                    <div
-                      className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
-                      style={{ marginTop: 10 }}
-                    >
-                      <label htmlFor="unitNo">
-                        Unit No.{" "}
-                        <span className="required">
-                          {fieldAddress && fieldAddress.mandatory && "*"}
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        id="unitNo"
-                        className="woocommerce-Input woocommerce-Input--text input-text"
-                        style={{ borderRadius: 5 }}
-                        placeholder="Enter your address unit no."
-                        rows="2"
-                        value={dataCustomer.unitNo || ""}
-                        onChange={(e) =>
-                          this.handleChange("unitNo", e.target.value)
-                        }
-                      ></input>
-                    </div>
-                  )} */}
-
+                  
                   <br />
                   <p className="color" onClick={this.toggleEditPassword}>
                     {editPassword ? (

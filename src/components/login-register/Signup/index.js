@@ -24,11 +24,12 @@ const SignUp = ({
   errorEmail,
   errorPassword,
   enablePassword,
+  errorName,
   signUpSuccess,
   fields,
   enableSMSOTP,
   enableWhatsappOTP,
-  enableOrdering
+  enableOrdering,
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
 
@@ -103,6 +104,7 @@ const SignUp = ({
           error={errorEmail}
           errorPassword={errorPassword}
           enablePassword={enablePassword}
+          errorName={errorName}
         >
           <CustomFields
             fields={fields}
@@ -118,6 +120,7 @@ const SignUp = ({
               error={errorPhone}
               errorPassword={errorPassword}
               enablePassword={enablePassword}
+              errorName={errorName}
             >
               <CustomFields
                 fields={fields}

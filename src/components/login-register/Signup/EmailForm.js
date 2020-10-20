@@ -13,6 +13,7 @@ const EmailForm = ({
   isSubmitting,
   errorPassword,
   enablePassword,
+  errorName,
   error,
   children,
 }) => {
@@ -36,6 +37,11 @@ const EmailForm = ({
           className="woocommerce-Input woocommerce-Input--text input-text"
           onChange={(e) => handleChange("name", e.target.value)}
         />
+        {errorName !== "" && (
+          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
+            {errorName}
+          </div>
+        )}
       </p>
 
       <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">

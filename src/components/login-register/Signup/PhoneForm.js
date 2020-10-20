@@ -10,6 +10,7 @@ const PhoneForm = ({
   isSubmitting,
   errorPassword,
   enablePassword,
+  errorName,
   error,
   children,
 }) => {
@@ -25,6 +26,11 @@ const PhoneForm = ({
           className="woocommerce-Input woocommerce-Input--text input-text"
           onChange={(e) => handleChange("name", e.target.value, true)}
         />
+        {errorName !== "" && (
+          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
+            {errorName}
+          </div>
+        )}
       </p>
 
       <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">

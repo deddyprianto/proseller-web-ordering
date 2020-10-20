@@ -11,6 +11,7 @@ import SignUp from "./Signup";
 import { lsLoad, lsStore } from "../../helpers/localStorage";
 
 import config from "../../config";
+import Iframe from "react-iframe";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
@@ -51,6 +52,7 @@ class LoginRegister extends Component {
       password: "",
 
       name: "",
+      errorName: "",
       email: "",
       errorEmail: "",
 
@@ -231,8 +233,12 @@ class LoginRegister extends Component {
 
   handleInputRegister = (jenis, data) => {
     let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
+
     this.setState({ [jenis]: data });
-    if (jenis === "phoneNumber") {
+    if (jenis === "name") {
+      if((/^[A-Za-z]+$/.test(data))) this.setState({ errorName: "" });
+      else this.setState({ errorName: "Name is alphabets only" });
+    } else if (jenis === "phoneNumber") {
       this.setState({ errorPhone: "" });
       if (
         this.state.name !== "" &&
@@ -504,19 +510,19 @@ class LoginRegister extends Component {
 
       let listName = ""
       mandatory.forEach(field => {
-        if(
-          !payload[field.fieldName] || 
-          payload[field.fieldName] && 
-          payload[field.fieldName] === ""
-        ) {
+        if( !payload[field.fieldName] || payload[field.fieldName] &&  payload[field.fieldName] === "" ) {
           if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
             payload[field.fieldName] = this.state[field.fieldName]
+            field.check = true
           } else if(field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""){
             payload[field.fieldName] = field.defaultValue
+            field.check = true
           } else {
             listName += field.displayName + ", "
             field.check = false
           }
+        } else {
+          field.check = true
         }
       });
 
@@ -789,19 +795,19 @@ class LoginRegister extends Component {
 
       let listName = ""
       mandatory.forEach(field => {
-        if(
-          !payload[field.fieldName] || 
-          payload[field.fieldName] && 
-          payload[field.fieldName] === ""
-        ) {
+        if( !payload[field.fieldName] || payload[field.fieldName] &&  payload[field.fieldName] === "" ) {
           if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
             payload[field.fieldName] = this.state[field.fieldName]
+            field.check = true
           } else if(field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""){
             payload[field.fieldName] = field.defaultValue
+            field.check = true
           } else {
             listName += field.displayName + ", "
             field.check = false
           }
+        } else {
+          field.check = true
         }
       });
 
@@ -931,6 +937,7 @@ class LoginRegister extends Component {
                 errorPhone={this.state.errorPhone}
                 errorEmail={this.state.errorEmail}
                 errorPassword={this.state.errorPassword}
+                errorName={this.state.errorName}
                 enablePassword={this.state.enableRegisterWithPassword}
                 enableOrdering={enableOrdering}
                 enableSMSOTP={enableSMSOTP}

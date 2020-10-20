@@ -815,8 +815,8 @@ class Basket extends Component {
       document.getElementById("login-register-btn").click();
       return;
     }
-
-    if (this.checkScan()) this.props.history.push("/scanTable");
+    
+    if (this.checkScan()) return this.props.history.push("/scanTable");
     else if (orderingMode === "TAKEAWAY") {
       this.setState({ isLoading: true });
 
@@ -919,7 +919,7 @@ class Basket extends Component {
     if (
       orderingMode === "DINEIN" &&
       storeDetail.outletType === "RESTO" &&
-      !scanTable
+      (!scanTable || scanTable && !scanTable.tableNo)
     ) {
       return true;
     } else if (
@@ -927,7 +927,7 @@ class Basket extends Component {
       storeDetail.outletType === "QUICKSERVICE" &&
       storeDetail.enableTableScan !== false &&
       storeDetail.enableDineIn !== false &&
-      !scanTable
+      (!scanTable || scanTable && !scanTable.tableNo)
     ) {
       return true;
     }

@@ -13,6 +13,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder }) => {
   if (field.fieldName === "birthDate") displayName = "Birthdate"
   if (field.fieldName === "gender") displayName = "Gender"
   if (field.fieldName === "address") displayName = "Address"
+  
   if (field.type === "radio") {
     return (
       <div style={{ marginTop: 10 }}>
