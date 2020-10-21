@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-
+import { Col, Row } from "reactstrap";
 import Field from "./Field";
 
 const CustomFields = ({
@@ -8,7 +8,9 @@ const CustomFields = ({
   handleChange,
   showSignUpFields,
   defaultValue,
+  defaultError,
   roundedBorder,
+  titleEditAccount,
 }) => {
   const fieldsToRender = fields && fields.filter((field) => {
     return showSignUpFields ? field.signUpField === true : true;
@@ -26,28 +28,43 @@ const CustomFields = ({
   }, [value]);
 
   return (
-    <div>
+    <Row>
       {fieldsToRender && fieldsToRender.map((field) => {
         if (field.type === "multipleField") {
-          return field.children.map((child) => (
+          return( 
+            <Col sm={6}>
+            <Row>
+              {
+                field.children.map((child) => (
+                  <Col sm={6}>
+                  <Field
+                    handleValueChange={handleValueChange}
+                    value={value}
+                    field={{...child, mandatory: field.mandatory}}
+                    roundedBorder={roundedBorder}
+                    error={defaultError}
+                  ></Field>
+                  </Col>
+                ))
+              }
+            </Row>
+            </Col>
+          )
+        }
+        return (
+          <Col sm={6}>
             <Field
               handleValueChange={handleValueChange}
               value={value}
-              field={child}
+              field={field}
               roundedBorder={roundedBorder}
+              error={defaultError}
+              titleEditAccount={titleEditAccount}
             ></Field>
-          ));
-        }
-        return (
-          <Field
-            handleValueChange={handleValueChange}
-            value={value}
-            field={field}
-            roundedBorder={roundedBorder}
-          ></Field>
+          </Col>
         );
       })}
-    </div>
+    </Row>
   );
 };
 

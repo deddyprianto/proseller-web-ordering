@@ -13,18 +13,13 @@ export const CustomerAction = {
   getVoucher,
   checkStatusPayment,
   updatePassword,
+  updateCustomerAccount,
 };
 
 function getCustomerProfile() {
   return async (dispatch) => {
-    let response = await CRMService.api(
-      "GET",
-      null,
-      "customer/getProfile",
-      "bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    let response = await CRMService.api( "GET", null, "customer/getProfile", "bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     dispatch(setData(response, CONSTANT.KEY_GET_CUSTOMER_PROFILE));
     return response;
   };
@@ -80,15 +75,18 @@ function getDeliferyAddress() {
 
 function updateCustomerProfile(payload = null) {
   return async (dispatch) => {
-    let response = await CRMService.api(
-      "PUT",
-      payload,
-      "customer/updateProfile",
-      "bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    console.log(payload)
+    let response = await CRMService.api( "PUT", payload, "customer/updateProfile", "bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     dispatch(setData(response, CONSTANT.KEY_UPDATE_CUSTOMER_PROFILE));
+    return response;
+  };
+}
+
+function updateCustomerAccount(payload = null) {
+  return async (dispatch) => {
+    let response = await CRMService.api( "PUT", payload, "customer/updateProfile?requestOtp=true", "bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }
@@ -180,9 +178,26 @@ function mandatoryField(payload = null) {
             };
         }
       });
+      
+      
+      let mandatory = [
+        {
+          dataType: "text", defaultValue: "-", displayName: "Name", fieldName: "name",
+          mandatory: true, show: true, type: "text", signUpField: false
+        },
+        {
+          dataType: "text", defaultValue: "-", displayName: "Email", fieldName: "email",
+          mandatory: true, show: true, type: "text", signUpField: false, change: true
+        },
+        {
+          dataType: "text", defaultValue: "-", displayName: "Phone Number", fieldName: "phoneNumber",
+          mandatory: true, show: true, type: "text", signUpField: false, change: true
+        }
+      ]
+      
       dispatch({
         type: CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER,
-        data: fields,
+        data: mandatory.concat(fields),
       });
     }
     return response;

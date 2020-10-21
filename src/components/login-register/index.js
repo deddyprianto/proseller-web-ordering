@@ -236,7 +236,7 @@ class LoginRegister extends Component {
 
     this.setState({ [jenis]: data });
     if (jenis === "name") {
-      if((/^[A-Za-z]+$/.test(data))) this.setState({ errorName: "" });
+      if((/^[A-Za-z\s]+$/.test(data))) this.setState({ errorName: "" });
       else this.setState({ errorName: "Name is alphabets only" });
     } else if (jenis === "phoneNumber") {
       this.setState({ errorPhone: "" });
@@ -504,17 +504,19 @@ class LoginRegister extends Component {
         email: email,
         password: password,
         username: payloadResponse.phoneNumber,
-        name: this.state.name,
         ...customFields,
       };
 
       let listName = ""
       mandatory.forEach(field => {
-        if( !payload[field.fieldName] || payload[field.fieldName] &&  payload[field.fieldName] === "" ) {
+        if( !payload[field.fieldName] || payload[field.fieldName] && payload[field.fieldName] === "" ) {
           if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
             payload[field.fieldName] = this.state[field.fieldName]
             field.check = true
-          } else if(field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""){
+          } else if(
+            this.state[field.fieldName] && this.state[field.fieldName] !== "" &&
+            field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""
+          ){
             payload[field.fieldName] = field.defaultValue
             field.check = true
           } else {
@@ -789,7 +791,6 @@ class LoginRegister extends Component {
         email: payloadResponse.email,
         password: password,
         username: payloadResponse.email,
-        name: this.state.name,
         ...customFields,
       };
 
@@ -799,7 +800,10 @@ class LoginRegister extends Component {
           if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
             payload[field.fieldName] = this.state[field.fieldName]
             field.check = true
-          } else if(field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""){
+          } else if(
+            this.state[field.fieldName] && this.state[field.fieldName] !== "" &&
+            field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""
+          ){
             payload[field.fieldName] = field.defaultValue
             field.check = true
           } else {

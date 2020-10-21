@@ -166,18 +166,17 @@ class DetailProfile extends Component {
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <Link to="/edit-profile" style={{ width: "50%" }}>
                 <div
                   style={{
                     color: "gray",
                     fontSize: 14,
                     fontWeight: "bold",
-                    width: "50%",
                   }}
-                  data-toggle="modal"
-                  data-target="#edit-profile-modal"
                 >
                   <i className="fa fa-user" aria-hidden="true" /> Edit Profile
                 </div>
+                </Link>
                 |
                 <Link to="/setting" style={{ width: "50%" }}>
                   <div

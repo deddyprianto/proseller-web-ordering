@@ -8,6 +8,7 @@ import { CONSTANT } from "../../helpers";
 
 import { lsLoad, lsStore } from "../../helpers/localStorage";
 import CustomFields from "./CustomFields";
+import ModalEditAccount from "./ModalEditAccount";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -85,27 +86,22 @@ class ModalEditProfile extends Component {
   };
 
   getData = async () => {
-    let dataCustomer = await this.props.dispatch(
-      CustomerAction.getCustomerProfile()
-    );
+    let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
     if (dataCustomer.ResultCode === 200) {
-      if (dataCustomer.Data[0].birthDate)
-        this.setState({ isDisableBirthDate: true });
+      if (dataCustomer.Data[0].birthDate) this.setState({ isDisableBirthDate: true });
       this.setState({ dataCustomer: dataCustomer.Data[0] });
     }
-    let mandatoryField = await this.props.dispatch(
-      CustomerAction.mandatoryField()
-    );
-    if (mandatoryField.resultCode === 200)
-      this.setState({ mandatoryField: mandatoryField.data.fields });
+    let mandatoryField = await this.props.dispatch( CustomerAction.mandatoryField() );
+    if (mandatoryField.resultCode === 200) this.setState({ mandatoryField: mandatoryField.data.fields });
     this.setState({ loadingShow: false });
   };
 
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
     if(field === "name") {
-      if((/^[A-Za-z]+$/.test(value))) this.setState({ errorName: "" });
+      if((/^[A-Za-z\s]+$/.test(value))) this.setState({ errorName: "" });
       else this.setState({ errorName: "Name is alphabets only" });
+      this.setState({editName: true})
     }
     if (field === "email") {
       if (this.state.emailCheckTimeout) clearTimeout(this.state.emailCheckTimeout);
@@ -219,9 +215,9 @@ class ModalEditProfile extends Component {
 
     let payload = {
       username: this.state.dataCustomer.username,
-      birthDate: this.state.dataCustomer.birthDate,
-      gender: this.state.dataCustomer.gender,
-      address: this.state.dataCustomer.address,
+      birthDate: this.state.dataCustomer.birthDate || "",
+      gender: this.state.dataCustomer.gender || "",
+      address: this.state.dataCustomer.address || "",
     };
 
     this.props.fields && this.props.fields.forEach((field) => {
@@ -238,43 +234,24 @@ class ModalEditProfile extends Component {
     });
 
     if (this.state.editName) payload.newName = this.state.dataCustomer.name;
-    if (this.state.editPhoneNumber)
-      payload.newPhoneNumber = this.state.dataCustomer.phoneNumber;
+    if (this.state.editPhoneNumber) payload.newPhoneNumber = this.state.dataCustomer.phoneNumber;
     if (this.state.editEmail) payload.newEmail = this.state.dataCustomer.email;
 
     account.idToken.payload = this.state.dataCustomer;
     // console.log(payload)
     // return
-    let response = await this.props.dispatch(
-      CustomerAction.updateCustomerProfile(payload)
-    );
-    // console.log(response)
+    let response = await this.props.dispatch( CustomerAction.updateCustomerProfile(payload) );
+    console.log(response)
     if (response.ResultCode === 200) {
-      await this.props.dispatch(
-        AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN)
-      );
+      await this.props.dispatch( AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN) );
       lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
       let message = "Profile Updated";
-      if (this.state.editPassword) {
-        message = "Profile & Password Updated";
-      }
+      if (this.state.editPassword) message = "Profile & Password Updated";
 
-      Swal.fire({
-        icon: "success",
-        timer: 2000,
-        title: message,
-        showConfirmButton: false,
-      });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      Swal.fire({ icon: "success", timer: 2000, title: message, showConfirmButton: false, });
+      // setTimeout(() => { window.location.reload(); }, 2000);
     } else {
-      Swal.fire({
-        icon: "error",
-        timer: 1500,
-        title: response.message,
-        showConfirmButton: false,
-      });
+      Swal.fire({ icon: "error", timer: 1500, title: response.message, showConfirmButton: false, });
     }
     this.setState({ isLoading: false });
   };
@@ -339,6 +316,7 @@ class ModalEditProfile extends Component {
 
     return (
       <div>
+        <ModalEditAccount />
         <div
           className="modal fade"
           id="edit-profile-modal"
@@ -403,8 +381,23 @@ class ModalEditProfile extends Component {
                       </div>
                     }
                   </div>
+                  
+                  <div style={{border: "1px solid #CDCDCD", borderRadius: 5, padding: 5, paddingLeft: 10, marginTop: 10}}>
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                      <div>{dataCustomer.phoneNumber}</div>
+                      <div data-toggle="modal" data-target="#edit-account-modal" >
+                        <i className="fa fa-pencil-square-o" aria-hidden="true" />
+                      </div>
+                    </div>
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                      <div>{dataCustomer.email}</div>
+                      <div data-toggle="modal" data-target="#edit-account-modal">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
 
-                  <div
+                  {/* <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
@@ -470,7 +463,7 @@ class ModalEditProfile extends Component {
                         <em>Checking email availability...</em>
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
                   <CustomFields
                     defaultValue={this.state.dataCustomer}

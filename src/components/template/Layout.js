@@ -26,6 +26,7 @@ const PendingDetail = loadable(() => import("../../components/basket_pending"));
 const SettleSuccess = loadable(() => import("../../components/basket/settleSuccess") );
 const ScanTable = loadable(() => import("../../components/basket/scanTable"));
 const SelectVoucher = loadable(() => import("../../components/voucher/SelectVoucher") );
+const EditProfile = loadable(() => import("../../components/profile/EditProfile") );
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
@@ -96,6 +97,7 @@ class Layout extends Component {
             {isLoggedIn && <Route exact path={"/payment-method"} component={PaymentMethod} /> }
             {isLoggedIn && <Route exact path={"/delivery-address"} component={DeliveryAddress} /> }
             {isLoggedIn && <Route exact path={"/referral"} component={Referral} /> }
+            {isLoggedIn && <Route exact path={"/edit-profile"} component={EditProfile} /> }
             {isLoggedIn &&  <Route exact path={"/myVoucher"} component={SelectVoucher} /> }
             {isLoggedIn &&  <Route exact path={"/scanTable"} component={ScanTable} /> }
             {isLoggedIn &&  <Route exact path={"/settleSuccess"} component={SettleSuccess} /> }
