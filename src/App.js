@@ -68,8 +68,8 @@ const App = (props) => {
     const newColor = g | (b << 8) | (r << 16);
     return newColor.toString(16);
   };
-
-  const hoverColor = `#${lightenDarkenColor( props.theme.color.primary.substring(1), -10 )}`;
+  
+  const hoverColor = `#${lightenDarkenColor( (props.theme.color.primary || "#c00a27").substring(1), -10 )}`;
 
   sheet.update({ theme: { ...props.theme, hoverColor } });
 
