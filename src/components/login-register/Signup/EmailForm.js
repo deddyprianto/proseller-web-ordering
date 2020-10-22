@@ -35,6 +35,7 @@ const EmailForm = ({
         <input
           type="text"
           className="woocommerce-Input woocommerce-Input--text input-text"
+          style={{borderRadius: 5}}
           onChange={(e) => handleChange("name", e.target.value)}
         />
         {errorName !== "" && (

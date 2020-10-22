@@ -66,24 +66,16 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
           onChange={handleValueChange}
           className={cx(styles.select, { [styles.rounded]: roundedBorder})}
         >
-          <option
-            value=""
-            style={{
-              backgroundColor: 
-              ((field.defaultValue || (value[field.fieldName] && value[field.fieldName] !== "")) && "#DCDCDC")
-            }}
-            disabled={ field.defaultValue || (value[field.fieldName] && value[field.fieldName] !== "")}
-          >
-            Select {displayName}
-          </option>
+          <option value="" > </option>
           {field.options.map((option) => {
             return (
               <option
                 value={option.value}
                 selected={
-                  value[field.fieldName] ? value[field.fieldName] === option.value : field.defaultValue === option.value
-                }
-              >
+                  value[field.fieldName] ? 
+                  value[field.fieldName] === option.value : 
+                  field.defaultValue === option.value
+              }>
                 {option.text}
               </option>
             );

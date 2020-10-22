@@ -110,6 +110,7 @@ const SignUp = ({
             fields={fields}
             handleChange={handleChange}
             showSignUpFields={true}
+            roundedBorder={false}
           ></CustomFields>
         </PhoneForm>
       ) : (
@@ -126,6 +127,7 @@ const SignUp = ({
                 fields={fields}
                 handleChange={handleChange}
                 showSignUpFields={true}
+                roundedBorder={false}
               ></CustomFields>
             </EmailForm>
           )}

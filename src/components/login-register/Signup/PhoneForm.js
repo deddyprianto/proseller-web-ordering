@@ -24,6 +24,7 @@ const PhoneForm = ({
         <input
           type="text"
           className="woocommerce-Input woocommerce-Input--text input-text"
+          style={{borderRadius: 5}}
           onChange={(e) => handleChange("name", e.target.value, true)}
         />
         {errorName !== "" && (
@@ -40,6 +41,7 @@ const PhoneForm = ({
         <input
           type="email"
           className="woocommerce-Input woocommerce-Input--text input-text"
+          style={{borderRadius: 5}}
           onChange={(e) => handleChange("email", e.target.value, true)}
         />
         {error !== "" && (
