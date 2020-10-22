@@ -85,6 +85,10 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       { settingKey: "PrimaryColor", settingValue: primary || "#C00A27" },
       { settingKey: "SecondaryColor", settingValue: secondary || "#C00A27" },
       { 
+        settingKey: "PointIcon", 
+        settingValue: "" 
+      },
+      { 
         settingKey: "TimeAndDateOrder", 
         settingValue: {
           deliveryTime: {start: "00:00", end: "23:00"},

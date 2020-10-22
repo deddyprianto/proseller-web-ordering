@@ -149,6 +149,7 @@ class MyVoucher extends Component {
                       marginRight: 10,
                       textAlign: "left",
                       marginTop: 5,
+                      display: "flex", flexDirection: "column", justifyContent: "center" 
                     }}
                   >
                     <div
@@ -165,13 +166,13 @@ class MyVoucher extends Component {
                     }
                     {
                       item.expiryDate &&
-                      <div style={{ fontSize: 12, marginTop: -10 }}>
+                      <div style={{ fontSize: 12, marginTop: -5 }}>
                         <i className="fa fa-clock-o" aria-hidden="true"></i> {`Expire on ${moment(item.expiryDate).format("DD MMM YYYY")}`}
                       </div>
                     }
                     <div
                       className="customer-group-name"
-                      style={{ fontSize: 12, fontWeight: "bold", marginTop: -10 }}
+                      style={{ fontSize: 12, fontWeight: "bold", marginTop: -5 }}
                     >
                       {`Discount ${item.voucherType === "discPercentage"
                         ? item.voucherValue + "%"

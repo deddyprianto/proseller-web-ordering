@@ -57,7 +57,7 @@ function getCampaignStamps(payload = null) {
 
 function getCampaignPoints(payload = null, companyId = null) {
   return async (dispatch) => {
-    let response = await CRMService.api('GET', null, 'customer/point', 'bearer')
+    let response = await CRMService.api('GET', payload, 'customer/point', 'bearer')
     if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       let totalPoint = response.Data.campaignActive ? response.Data.totalPoint : 0
@@ -103,6 +103,7 @@ function getCampaignPoints(payload = null, companyId = null) {
       }
 
       response.Data = {
+        pendingPoints: response.Data.pendingPoints, 
         totalPoint, campaignPointActive, campaignPointAnnouncement, detailPoint, pointsToRebateRatio,
         xstep: roundingOptions === "DECIMAL" ? 0.01 : 1
       }

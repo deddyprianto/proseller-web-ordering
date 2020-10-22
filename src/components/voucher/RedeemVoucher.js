@@ -95,14 +95,20 @@ class RedeemVoucher extends Component {
                     <img style={{ width: '50%', height: 100, objectFit: "contain", overflow: 'hidden' }}
                       src={item.image ? item.image : voucherIcon} alt="voucher" />
 
-                    <div style={{ width: '100%', marginLeft: 10, marginRight: 10, textAlign: "left", marginTop: 5 }}>
+                    <div style={{ 
+                      width: '100%', marginLeft: 10, marginRight: 10, textAlign: "left", 
+                      display: "flex", flexDirection: "column", justifyContent: "center" 
+                    }}>
                       <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold", lineHeight: "17px" }}>
                         {item.name}
                       </div>
-                      <div style={{ fontSize: 12, marginTop: -5 }}>
-                        <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
-                      </div>
-                      <div className="customer-group-name" style={{ fontSize: 12, fontWeight: "bold", marginTop: -10 }}>
+                      {
+                        item.voucherDesc &&
+                        <div style={{ fontSize: 12, marginTop: -5 }}>
+                          <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
+                        </div>
+                      }
+                      <div className="customer-group-name" style={{ fontSize: 12, fontWeight: "bold", marginTop: -5 }}>
                         {`Discount ${item.voucherType === "discPercentage" ? item.voucherValue + "%" : this.getCurrency(item.voucherValue)}`}
                       </div>
                     </div>

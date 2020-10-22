@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { VoucherAction } from '../../redux/actions/VoucherAction';
+import { CampaignAction } from '../../redux/actions/CampaignAction';
 import { connect } from "react-redux";
 import voucherIcon from '../../assets/images/voucher-icon.png'
 import { Button } from 'reactstrap';
@@ -36,7 +37,7 @@ class ModalDetailVoucher extends Component {
           }
         })
         let response = await this.props.dispatch(VoucherAction.redeemVoucher(dataDetail));
-        console.log(response)
+        await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "true" }, this.props.account.companyId))
         if (response.ResultCode === 200) {
           document.getElementById('btn-close-detail-voucher').click()
           Swal.fire({
@@ -54,8 +55,7 @@ class ModalDetailVoucher extends Component {
   }
 
   render() {
-    const { dataDetail, getCurrency } = this.props
-    let { isLoading } = this.state
+    let { dataDetail, getCurrency, pointData } = this.props
     return (
       <div>
         <div className="modal fade" id="voucher-detail-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -85,6 +85,16 @@ class ModalDetailVoucher extends Component {
                     </div>
                   </div>
 
+                  {
+                    pointData.pendingPoints && pointData.pendingPoints > 0 ?
+                    <div className="text text-danger" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10
+                    }}>
+                      {`Your ${pointData.pendingPoints} points is blocked, because your order has not been completed.`}
+                    </div> : null
+                  }
+
                   <Button className="button" style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }} onClick={() => this.handleRedeemVoucher()}>Redeem Voucher</Button>
                 </div>
               </div>
@@ -100,6 +110,7 @@ class ModalDetailVoucher extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
+    pointData: state.campaign.data,
   };
 };
 

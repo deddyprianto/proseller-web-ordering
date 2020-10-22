@@ -26,15 +26,20 @@ class DetailRewords extends Component {
       totalPoint: 0,
       campaignPointActive: {},
       campaignPointAnnouncement: false,
-      detailPoint: null
+      detailPoint: null,
+      pointIcon: ""
     }
   }
 
   componentDidMount = async () => {
     let response = await this.props.dispatch(CampaignAction.getCampaignStamps());
     if (response.ResultCode === 200) this.setState(response.Data)
+
     response = await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "true" }, this.props.account.companyId));
     if (response.ResultCode === 200) this.setState(response.Data)
+
+    let pointIcon = this.props.setting.find(items => { return items.settingKey === "PointIcon" })
+    if (pointIcon) this.setState({ pointIcon: pointIcon.settingValue });
 
     // this.state.loadingShow = false
     this.setState({ loadingShow: false })
@@ -124,7 +129,7 @@ class DetailRewords extends Component {
                       ))
                     }
                     <Button size="sm" color="ghost-warning"
-                      style={{ marginTop: -4, fontWeight: "bold" }}
+                      style={{ marginTop: -4, fontWeight: "bold", width: 150 }}
                       data-toggle="modal" data-target="#stamps-detail-modal"
                     >
                       More Detail
@@ -143,6 +148,7 @@ class DetailRewords extends Component {
       campaignPointActive,
       totalPoint,
       campaignPointAnnouncement,
+      pointIcon
     } = this.state
 
     return (
@@ -170,13 +176,20 @@ class DetailRewords extends Component {
                     Complete Now
                   </Button>
                 </div> :
-                <div style={{ width: '100%', textAlign: "center" }}>
+                <div style={{ 
+                  width: '100%', textAlign: "center", display: "flex", 
+                  flexDirection: "column", justifyContent: "center", alignItems: "center" 
+                }}>
+                  {
+                    pointIcon && pointIcon !== "" &&
+                    <img src={pointIcon} alt="my point" style={{height: 50, objectFit: "contain", marginTop: 10}}/>
+                  }
                   <div style={{ textAlign: "center", fontWeight: "bold", paddingTop: 10 }}>My Points</div>
                   <div className="text-value" style={{ fontSize: 35, textAlign: "center", marginBottom: 13, marginTop: 5 }}>
                     {this.state.totalPoint.toFixed(2)}
                   </div>
                   <Button size="sm" color="ghost-warning"
-                    style={{ marginTop: -4, fontWeight: "bold" }}
+                    style={{ marginTop: -4, fontWeight: "bold", width: 150 }}
                     data-toggle="modal" data-target="#points-detail-modal"
                   >
                     More Detail
@@ -231,7 +244,8 @@ class DetailRewords extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    account: state.auth.account.idToken.payload
+    account: state.auth.account.idToken.payload,
+    setting: state.order.setting,
   };
 };
 

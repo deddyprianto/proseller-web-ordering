@@ -36,7 +36,7 @@ class ModalEditAccount extends Component {
   }
 
   componentDidUpdate(prevProps){
-    if(prevProps.title.field !== this.props.title.field){
+    if(prevProps.title && this.props.title && prevProps.title.field !== this.props.title.field){
       this.setState({
         waitTime: this.props.title.field === "email" ? 300 : 60,
         isUsed: false,
