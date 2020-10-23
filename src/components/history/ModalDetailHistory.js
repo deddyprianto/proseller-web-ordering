@@ -63,6 +63,34 @@ class ModalDetailHistory extends Component {
               </div>
               {Object.keys(detail).length > 0 && (
                 <div className="modal-body">
+                  {
+                    (detail.transactionRefNo || detail.referenceNo) &&
+                    <dev>
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div style={{ fontSize: 14, textAlign: "left", lineHeight: "17px" }}>REF NO.</div>
+                        <div style={{ fontSize: 14, fontWeight: "bold", textAlign: "right", lineHeight: "17px" }}>
+                          {(detail.transactionRefNo || detail.referenceNo)}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          backgroundColor: "#CDCDCD",
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                    </dev>
+                  }
+
                   <div
                     style={{
                       marginLeft: 5,

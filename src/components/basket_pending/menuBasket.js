@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import TransactionRefNo from './transactionRefNo';
 import TableNo from './tableNo';
 import StatusOrder from './statusOrder';
 import OrderingMode from './orderingMode';
@@ -9,14 +10,16 @@ import PickupDateTime from "./pickupDateTime";
 import ProviderDeliveryBasket from './providerDeliveryBasket';
 import { Button } from 'reactstrap';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 export default class MenuBasket extends Component {
   render() {
     let props = this.props.data
     return (
       <div style={{ marginTop: -8 }}>
+        {
+          props.dataBasket && props.dataBasket.transactionRefNo &&
+          <div style={{ textAlign: "left" }}> <TransactionRefNo data={props} /> </div>
+        }
         {
           props.dataBasket && (props.dataBasket.tableNo || props.scanTable) && props.dataBasket.orderingMode !== "DELIVERY" && props.dataBasket.outlet &&
           <div style={{ textAlign: "left" }}> <TableNo data={props} /> </div>
