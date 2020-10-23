@@ -56,6 +56,7 @@ class RedeemVoucher extends Component {
 
   render() {
     let { loadingShow, redeemVoucher, dataDetail } = this.state
+    let {pointData} = this.props
     return (
       <div>
         <ModalDetailVoucher dataDetail={dataDetail} getCurrency={(price) => this.getCurrency(price)} />
@@ -77,10 +78,10 @@ class RedeemVoucher extends Component {
               redeemVoucher.map((item, key) => (
                 <Col key={key} sm={6}>
                   <div style={{
-                    backgroundColor: "#FFFFFF", marginBottom: 10,
+                    backgroundColor: (pointData.totalPoint >= item.redeemValue ? "#FFFFFF" : "#DCDCDC"), marginBottom: 10,
                     width: "100%", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer", display: "flex", borderRadius: 10
-                  }} onClick={() => this.setState({ dataDetail: item })} data-toggle="modal" data-target="#voucher-detail-modal">
+                  }} onClick={() => this.setState({ dataDetail: item })} data-toggle="modal" data-target={pointData.totalPoint >= item.redeemValue && "#voucher-detail-modal"}>
                     {
                       item.redeemValue &&
                       <div className="profile-dashboard" style={{
@@ -139,6 +140,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
     companyInfo: state.masterdata.companyInfo.data,
+    pointData: state.campaign.data,
   };
 };
 

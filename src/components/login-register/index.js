@@ -133,17 +133,13 @@ class LoginRegister extends Component {
       if (loginByMobile) {
         this.setState({ loginByMobile: loginByMobile.settingValue });
       }
-      
-      let enableSMSOTP = this.props.setting.find(items => { return items.settingKey === "EnableSMSOTP" })
-      if (enableSMSOTP) {
-        this.setState({ enableSMSOTP: enableSMSOTP.settingValue });
+
+      let mobileOTP = this.props.setting.find(items => { return items.settingKey === "MobileOTP" })
+      if (mobileOTP) {
+        let check = mobileOTP.settingValue === "SMS"
+        this.setState({ enableSMSOTP: check, enableWhatsappOTP: !check });
       }
-      
-      let enableWhatsappOTP = this.props.setting.find(items => { return items.settingKey === "EnableWhatsappOTP" })
-      if (enableWhatsappOTP) {
-        this.setState({ enableWhatsappOTP: enableWhatsappOTP.settingValue });
-      }
-      
+
       let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });

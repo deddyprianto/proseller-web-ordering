@@ -3,7 +3,7 @@ import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "demo";
-let companyHost = "auntieanne";
+let companyHost = "magmarvel";
 let endPoint = `https://${companyHost}${stage !== "" ? "-" + stage : ""}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
@@ -77,17 +77,13 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
     settings: [
       { settingKey: "LoginByEmail", settingValue: true },
       { settingKey: "LoginByMobile", settingValue: true },
-      { settingKey: "EnableSMSOTP", settingValue: true },
-      { settingKey: "EnableWhatsappOTP", settingValue: false },
+      { settingKey: "MobileOTP", settingValue: "SMS" },
       { settingKey: "EnableRegisterWithPassword", settingValue: false },
       { settingKey: "EnableOrdering", settingValue: true },
       { settingKey: "Logo", settingValue: logo },
       { settingKey: "PrimaryColor", settingValue: primary || "#C00A27" },
       { settingKey: "SecondaryColor", settingValue: secondary || "#C00A27" },
-      { 
-        settingKey: "PointIcon", 
-        settingValue: "" 
-      },
+      { settingKey: "PointIcon", settingValue: "" },
       { 
         settingKey: "TimeAndDateOrder", 
         settingValue: {

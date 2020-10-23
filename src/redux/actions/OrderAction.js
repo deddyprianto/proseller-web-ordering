@@ -1,6 +1,5 @@
 import { CONSTANT } from "../../helpers";
 import { OrderingService } from "../../Services/OrderingService";
-import { AuthActions } from "../actions/AuthAction";
 import {
   isEmptyData,
   isEmptyArray,
