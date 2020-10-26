@@ -143,9 +143,7 @@ class Payment extends Component {
         // hostedPage.close();
         console.log("payment success");
         let data = {
-          message:
-            response.data.confirmationInfo.message ||
-            "Congratulations, payment success",
+          message: response.data.confirmationInfo.message || "Congratulations, payment success",
           paymentType: payment.paymentType || "CASH",
           price: this.state.totalPrice,
           outletName: this.state.dataBasket.outlet.name,
