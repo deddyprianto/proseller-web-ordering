@@ -65,10 +65,12 @@ export default class ViewProsessBasket extends Component {
                   <div style={{ color: "gray", fontSize: 18, textAlign: "center" }}>Please come to the cashier and tap the QR Code botton below.</div>
                   <div style={{ marginTop: 10, marginBottom: 10, color: "green", fontWeight: "bold", textAlign: "center" }}>
                     {
+                      !props.dataBasket.transactionRefNo ?
                       (
                         props.dataBasket.queueNo ||
                         (props.storeDetail.enableTableScan === false && props.dataBasket.orderingMode === "DINEIN")
-                      ) ? ("Queue No : " + props.dataBasket.queueNo) : ("Table No : " + props.scanTable.tableNo)
+                      ) ? ("Queue No : " + props.dataBasket.queueNo) : ("Table No : " + props.scanTable.tableNo) :
+                      ("Ref No : " + props.dataBasket.transactionRefNo)
                     }
                   </div>
                 </div>
@@ -88,7 +90,11 @@ export default class ViewProsessBasket extends Component {
                     {`Go to ${props.deliveryAddress.address}, ${props.deliveryAddress.city}, ${props.deliveryAddress.postalCode}`}
                   </div>
                   <div style={{ marginTop: 10, marginBottom: 10, color: "green", fontWeight: "bold", textAlign: "center" }}>
-                    {"Queue No : " + props.dataBasket.queueNo}
+                    {
+                      `${props.dataBasket.transactionRefNo ? 
+                      `Ref No : ${props.dataBasket.transactionRefNo}` : 
+                      `Queue No : ${props.dataBasket.queueNo}`}`
+                    }
                   </div>
                   {
                     props.dataBasket.trackingNo &&
