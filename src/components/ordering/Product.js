@@ -75,6 +75,14 @@ class Product extends Component {
     }
   };
 
+  maskDescription = (description) => {
+    const length = description.length;
+    if (length < 47) {
+      return description;
+    }
+    return description.substring(0, 47) + "...";
+  };
+
   render() {
     const { item } = this.props;
     return (
@@ -84,14 +92,25 @@ class Product extends Component {
       >
         <div
           className={
-            item.product.orderingStatus === "UNAVAILABLE" ? "product-unavailable" : "product-outer"
+            item.product.orderingStatus === "UNAVAILABLE"
+              ? "product-unavailable"
+              : "product-outer"
           }
         >
-          <div className="product-inner product-card" style={{ padding: 10, display: "flex", alignItems: "center"}}>
-            <div className="product-image-wrapper" style={{
-              display: "flex", justifyContent: "center", maxWidth: 180, alignItems: "center",
-              padding: 0
-            }}>
+          <div
+            className="product-inner product-card"
+            style={{ padding: 10, display: "flex", alignItems: "center" }}
+          >
+            <div
+              className="product-image-wrapper"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                maxWidth: 180,
+                alignItems: "center",
+                padding: 0,
+              }}
+            >
               <span className="woocommerce-LoopProduct-link">
                 <img
                   src={this.renderImageProduct(item)}
@@ -118,7 +137,7 @@ class Product extends Component {
                     className="color"
                     style={{ maxHeight: "none", whiteSpace: "pre-line" }}
                   >
-                    {item.product.description}
+                    {this.maskDescription(item.product.description)}
                   </div>
                 </div>
               </div>
@@ -131,35 +150,35 @@ class Product extends Component {
                       </h3>
                     </div>
                   ) : (
-                      <>
-                        <div className="col-lg-12 col-md-12 col-xs-7">
-                          <b
-                            style={{ float: "left" }}
-                            className="price-product color"
-                          >
-                            {this.getCurrency(item.product.retailPrice)}
-                          </b>
-                        </div>
-                        <div
-                          onClick={() => this.validateOutlet()}
-                          className="col-lg-12 col-md-12 col-xs-4"
+                    <>
+                      <div className="col-lg-12 col-md-12 col-xs-7">
+                        <b
+                          style={{ float: "left" }}
+                          className="price-product color"
                         >
-                          <p
-                            style={{
-                              float: "left",
-                              borderRadius: 5,
-                              width: 90,
-                              paddingLeft: 5,
-                              paddingRight: 5,
-                            }}
-                            rel="nofollow"
-                            className="button product_type_simple add_to_cart_button ajax_add_to_cart"
-                          >
-                            {this.props.labelButton}
-                          </p>
-                        </div>
-                      </>
-                    )}
+                          {this.getCurrency(item.product.retailPrice)}
+                        </b>
+                      </div>
+                      <div
+                        onClick={() => this.validateOutlet()}
+                        className="col-lg-12 col-md-12 col-xs-4"
+                      >
+                        <p
+                          style={{
+                            float: "left",
+                            borderRadius: 5,
+                            width: 90,
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                          }}
+                          rel="nofollow"
+                          className="button product_type_simple add_to_cart_button ajax_add_to_cart"
+                        >
+                          {this.props.labelButton}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
