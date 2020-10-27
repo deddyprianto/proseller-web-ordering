@@ -9,50 +9,16 @@ class ProviderDeliveryBasket extends Component {
     return (
       <div
         style={{
-          border: "1px solid #DCDCDC",
-          borderRadius: 5,
-          marginTop: 10,
-          padding: 10,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
-            Provider *
-          </div>
-          <div>
-            <Button
-              disabled={
-                this.props.roleBtnClear || !props.deliveryAddress ? true : false
-              }
-              data-toggle="modal"
-              data-target="#provider-delivery-modal"
-              style={{
-                fontWeight: "bold",
-                color: "#FFF",
-                cursor: "pointer",
-                backgroundColor: !props.provaiderDelivery
-                  ? this.props.color.primary
-                  : "#777",
-                width: 140,
-                justifyContent: "space-between",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                fontSize: 12,
-              }}
-            >
-              <AssignmentIndIcon style={{ fontSize: 16 }} />
-              {!props.provaiderDelivery
-                ? "Select Provider"
-                : `${props.provaiderDelivery.name.substring(0, 15)}`}
-            </Button>
-          </div>
+        <div style={{ color: "gray", fontSize: 14 }}>
+          Provider
+        </div>
+        <div style={{fontWeight: "bold", fontSize: 14}}>
+          {props.provaiderDelivery.name.substring(0, 15)}
         </div>
       </div>
     );

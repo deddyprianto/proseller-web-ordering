@@ -209,7 +209,7 @@ class ItemsBasket extends Component {
                 fontSize: 14,
               }}
             >
-              <div style={{ fontWeight: "bold", color: this.props.color.primary, textAlign: "left", lineHeight: "17px" }}>
+              <div style={{ fontWeight: "bold", color: this.props.color.primary || "#c00a27", textAlign: "left", lineHeight: "17px" }}>
                 {data.dataBasket.outlet.name}
               </div>
               <Link to="/">

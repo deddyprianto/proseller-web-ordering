@@ -19,6 +19,15 @@ class ModalDetailHistory extends Component {
 
   render() {
     const { detail } = this.props;
+    let discount = 0
+    if(detail.payments){
+      detail.payments.forEach(items => {
+        if(items.paymentType === "voucher" || items.paymentType === "point"){
+          discount += items.paymentAmount
+        }
+      });
+    }
+
     return (
       <div>
         <div
@@ -200,52 +209,54 @@ class ModalDetailHistory extends Component {
                       justifyContent: "space-between",
                     }}
                   >
-                    <div style={{ fontSize: 14 }}>TOTAL</div>
+                    <div style={{ fontSize: 14 }}>SUBTOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency(detail.beforePrice)}
+                      {this.getCurrency(detail.price)}
                     </div>
                   </div>
 
-                  {/* <div style={{ backgroundColor: "#CDCDCD", height: 1, marginTop: 10, marginBottom: 10 }} />
-                  <div style={{ marginLeft: 5, marginRight: 5, display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: 14 }}>SUBTOTAL</div>
-                    <div style={{ fontSize: 14, fontWeight: "bold" }}>{this.getCurrency(detail.price)}</div>
-                  </div> */}
-
-                  {detail.statusAdd && detail.statusAdd === "addVoucher" && (
-                    <div>
-                      <div
-                        style={{
-                          backgroundColor: "#CDCDCD",
-                          height: 1,
-                          marginTop: 10,
-                          marginBottom: 10,
-                        }}
-                      />
-                      <div style={{ fontSize: 14, textAlign: "left" }}>
-                        DISCOUNT
-                      </div>
-                      <div
-                        style={{
-                          marginLeft: 10,
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
+                  {
+                    detail.payments &&
+                    detail.payments.map((items, key) => (
+                      (items.paymentType === "voucher" || items.paymentType === "point") &&
+                      <div key={key}
+                        style={{ 
+                          marginLeft: 5, marginRight: 5, 
+                          display: "flex", justifyContent: "flex-end", color: "#03AC0E"
                         }}
                       >
+                        <div style={{ fontSize: 14, marginRight: 10 }}>{items.paymentName}</div>
                         <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                          Voucher
-                        </div>
-                        <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                          {this.getCurrency(detail.discount)}
+                          {this.getCurrency(items.paymentAmount)}
                         </div>
                       </div>
-                    </div>
-                  )}
+                    ))
+                  }
 
-                  {((detail.statusAdd && detail.statusAdd === "addPoint") ||
-                    detail.paymentType) && (
+                  <div
+                    style={{
+                      backgroundColor: "#CDCDCD",
+                      height: 1,
+                      marginTop: 10,
+                      marginBottom: 10,
+                    }}
+                  />
+                  <div
+                    style={{
+                      marginLeft: 5,
+                      marginRight: 5,
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div style={{ fontSize: 14 }}>TOTAL</div>
+                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                      {this.getCurrency(detail.price - discount)}
+                    </div>
+                  </div>
+
+                  {
+                    detail.paymentType &&
                     <div>
                       <div
                         style={{
@@ -269,34 +280,15 @@ class ModalDetailHistory extends Component {
                           }}
                         >
                           <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            {" "}
-                            {detail.paymentType}{" "}
+                            {detail.paymentCard.paymentName}
                           </div>
                           <div style={{ fontSize: 14, fontWeight: "bold" }}>
                             {this.getCurrency(detail.afterPrice)}
                           </div>
                         </div>
                       )}
-                      {detail.statusAdd && detail.statusAdd === "addPoint" && (
-                        <div
-                          style={{
-                            marginLeft: 10,
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            Points
-                          </div>
-                          <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            {this.getCurrency(detail.redeemedPointAmount)}
-                          </div>
-                        </div>
-                      )}
                     </div>
-                  )}
+                  }
 
                   <div
                     style={{

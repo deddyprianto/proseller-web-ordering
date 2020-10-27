@@ -1,5 +1,6 @@
 const defaultState = {
     paymentCard: [],
+    selectedVoucher: []
 };
 
 export default function reducer(state = defaultState, action) {
@@ -8,6 +9,11 @@ export default function reducer(state = defaultState, action) {
             return {
                 ...state,
                 paymentCard: action.data,
+            };
+        case "SELECT_VOUCHER":
+            return {
+                ...state,
+                selectedVoucher: action.data,
             };
         default:
             return state;

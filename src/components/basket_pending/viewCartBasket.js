@@ -212,80 +212,30 @@ export default class ViewCartBasket extends Component {
         </Row>
 
         {
-          props.widthSelected < 1200 &&
+          (props.dataBasket.status === "PROCESSING" ||
+          props.dataBasket.status === "READY_FOR_COLLECTION" ||
+          props.dataBasket.status === "READY_FOR_DELIVERY" ||
+          props.dataBasket.status === "ON_THE_WAY") &&
           <div style={{
             backgroundColor: "#FFF", padding: 10, width: "101%", marginLeft: (props.widthSelected >= 750 ? -65 : -15),
             marginBottom: (props.widthSelected >= 1200 ? 0 : 45),
             display: "flex", flexDirection: "column", alignItems: "left", position: "fixed", bottom: 0,
             boxShadow: "1px -2px 2px rgba(128, 128, 128, 0.5)", justifyContent: "center",
+            paddingBottom: 20 
           }}>
-            {/* <div style={{ marginLeft: 10, marginRight: 10 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                <div style={{ fontWeight: "bold", color: "gray" }}>Sub Total</div>
-                <div style={{ fontWeight: "bold", color: "gray" }}>
-                  {this.props.getCurrency(props.dataBasket.totalNettAmount)}
-                </div>
-              </div>
-            </div> */}
 
-            {
-              props.provaiderDelivery && props.orderingMode && props.orderingMode === "DELIVERY" &&
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                  <div style={{ fontWeight: "bold", color: "gray" }}>Delivery Fee</div>
-                  <div style={{ fontWeight: "bold", color: "gray" }}>{`${props.provaiderDelivery.deliveryFee || this.props.getCurrency(props.dataBasket.deliveryFee)}`}</div>
-                </div>
-              </div>
-            }
-
-            {
-              (props.dataBasket.totalNettAmount - props.dataBasket.confirmationInfo.price) > 0 &&
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>Discount</div>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${this.props.getCurrency(props.dataBasket.totalNettAmount - props.dataBasket.confirmationInfo.price)}`}</div>
-                </div>
-              </div>
-            }
-
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginLeft: 10, marginRight: 10 }}>
-              <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>{`${props.dataBasket.payAtPOS ? "Pay At Store" : "TOTAL"}`}</div>
-              <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>
-                {this.props.getCurrency(
-                  props.dataBasket.totalNettAmount + 
-                  (
-                    props.dataBasket.orderingMode === "DELIVERY" && 
-                    props.provaiderDelivery && 
-                    props.provaiderDelivery.deliveryFeeFloat || 0
-                  ) -
-                  (props.dataBasket.totalNettAmount - props.dataBasket.confirmationInfo.price)
-                )}
-              </div>
+            <div style={{
+              padding: 10, backgroundColor: "#FFF",
+              display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
+            }}>
+              <Button style={{
+                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "100%",
+                backgroundColor: "green", color: "#FFF", fontWeight: "bold",
+                display: 'flex', justifyContent: "center", alignItems: "center"
+              }} onClick={() => this.props.setViewCart(false)}>
+                <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} /> Waiting Order
+              </Button>
             </div>
-
-            {
-              (props.dataBasket.status === "PROCESSING" ||
-                props.dataBasket.status === "READY_FOR_COLLECTION" ||
-                props.dataBasket.status === "READY_FOR_DELIVERY" ||
-                props.dataBasket.status === "ON_THE_WAY") ?
-                <div style={{
-                  padding: 10, backgroundColor: "#FFF",
-                  display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
-                }}>
-                  <Button style={{
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "100%",
-                    backgroundColor: "green", color: "#FFF", fontWeight: "bold",
-                    display: 'flex', justifyContent: "center", alignItems: "center"
-                  }} onClick={() => this.props.setViewCart(false)}>
-                    <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} /> Waiting Order
-                  </Button>
-                </div> :
-                <div style={{
-                  padding: 10, backgroundColor: "#FFF",
-                  display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
-                }}>
-                </div>
-            }
 
           </div>
         }

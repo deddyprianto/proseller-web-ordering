@@ -453,47 +453,17 @@ function submitOrdering(payload) {
 }
 
 function submitTakeAway(payload) {
-  let newPayload = {
-    ...payload,
-    cartDetails: {
-      partitionKey: payload.partitionKey,
-      sortKey: payload.sortKey,
-    },
-  };
-  delete newPayload.partitionKey;
-  delete newPayload.sortKey;
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      newPayload,
-      `cart/submitTakeAway`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    let response = await OrderingService.api( "POST", payload, `cart/submitAndPay`, "Bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }
 
 function submitSettle(payload) {
-  const newPayload = {
-    ...payload,
-    cartDetails: {
-      partitionKey: payload.partitionKey,
-      sortKey: payload.sortKey,
-    },
-  };
-  delete newPayload.partitionKey;
-  delete newPayload.sortKey;
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      newPayload,
-      `cart/settle`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    let response = await OrderingService.api( "POST", payload, `cart/customer/settle`, "Bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }

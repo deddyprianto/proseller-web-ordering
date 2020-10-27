@@ -1,9 +1,11 @@
 import { CONSTANT } from "../../helpers";
 import { CRMService } from "../../Services/CRMService";
 import { MasterDataService } from "../../Services/MasterDataService";
-import { AuthActions } from "./AuthAction";
 import _ from "lodash";
 import moment from "moment";
+import config from "../../config";
+
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 export const CustomerAction = {
   getCustomerProfile,
@@ -215,6 +217,18 @@ function getVoucher() {
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else {
+      let selectedVoucher = encryptor.decrypt(
+        JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
+      );
+
+      if(selectedVoucher){
+        selectedVoucher.forEach(element => {
+          response.Data = response.Data.filter(items => {
+            return items.serialNumber !== element.serialNumber
+          })
+        });
+      }
+
       response.Data = _.forEach(response.Data, function (value) {
         if (value.expiryDate) value.expiryDate = moment(value.expiryDate).format("YYYY-MM-DD")
         return value

@@ -15,44 +15,16 @@ class PickupDateTime extends Component {
     return (
       <div
         style={{
-          border: "1px solid #DCDCDC",
-          borderRadius: 5,
-          marginTop: 10,
-          padding: 10,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
-            {textTitle} Date & Time
-          </div>
-          <div>
-            <Button
-              disabled={this.props.roleBtnClear ? true : false}
-              data-toggle="modal" data-target="#pickup-date-modal"
-              style={{
-                fontWeight: "bold",
-                color: "#FFF",
-                cursor: "pointer",
-                backgroundColor: !props.deliveryAddress
-                  ? this.props.color.primary
-                  : "#777",
-                width: 140,
-                justifyContent: "space-between",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                fontSize: 12,
-              }}
-            >
-              {`${moment(props.orderActionDate).format('DD MMM YYYY')} at ${props.orderActionTime}`}
-            </Button>
-          </div>
+        <div style={{ color: "gray", fontSize: 14 }}>
+          {textTitle} Date & Time
+        </div>
+        <div style={{fontWeight: "bold", fontSize: 14}}>
+          {moment(props.orderActionDate).format('DD MMM YYYY')} at {props.orderActionTime}
         </div>
       </div>
     );

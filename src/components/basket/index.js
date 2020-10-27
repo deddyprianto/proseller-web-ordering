@@ -996,7 +996,6 @@ class Basket extends Component {
       loadingShow,
       dataBasket,
       countryCode,
-      isLoading,
       viewCart,
       storeDetail,
     } = this.state;

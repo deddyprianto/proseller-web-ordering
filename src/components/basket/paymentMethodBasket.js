@@ -3,34 +3,53 @@ import { Button } from 'reactstrap';
 import CreditCard from "@material-ui/icons/CreditCard";
 import config from "../../config";
 import { Link } from 'react-router-dom';
+import { connect } from "react-redux";
 
-export default class PaymentMethodBasket extends Component {
+class PaymentMethodBasket extends Component {
   render() {
     let props = this.props.data
+    let colorText = this.props.disabledBtn ? "#777" : (this.props.color.primary || "#c00a27") 
     return (
-      <div style={{ padding: 10 }}>
-        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>Payment Method *</div>
-          <div>
-            <Link to="/payment-method">
-              <Button
-                disabled={(props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0 ? (this.props.roleBtnClear ? true : false) : true}
-                onClick={() => localStorage.setItem(`${config.prefix}_getPaymentMethod`, true)}
-                style={{
-                  fontWeight: "bold", color: "#FFF", cursor: "pointer",
-                  backgroundColor: (props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ? "#c00a27" : "#20a8d8",
-                  width: 140, justifyContent: "space-between", display: "flex", flexDirection: "row",
-                  alignItems: "center", fontSize: (props.selectedCard === null) ? 12 : 10,
-                }}>
-                <CreditCard style={{ fontSize: 16 }} />
-                {
-                  (props.selectedCard === null) ? "Select Methods" : (props.selectedCard.details.cardIssuer.toUpperCase() + " " + props.selectedCard.details.maskedAccountNumber.substr(props.selectedCard.details.maskedAccountNumber.toString().length - 4))
-                }
-              </Button>
-            </Link>
-          </div>
-        </div>
+      <div style={{ 
+        display: "flex", flexDirection: "row", justifyContent: "space-between", 
+        border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
+        marginTop: 10, alignItems: "center"
+      }}>
+        <Link to="/payment-method" style={{width: "100%"}}>
+          <Button
+            disabled={this.props.disabledBtn}
+            onClick={() => localStorage.setItem(`${config.prefix}_getPaymentMethod`, true)}
+            style={{
+              fontWeight: "bold", cursor: "pointer", backgroundColor: "#FFF",
+              color: colorText,
+              width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
+              alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
+            }}>
+            <div style={{display: "flex", alignItems: "center"}}>
+              <CreditCard style={{ fontSize: 16, marginRight: 10 }} />
+              {
+                (props.selectedCard === null) ? "Select Credit Card" : (props.selectedCard.details.cardIssuer.toUpperCase() + " " + props.selectedCard.details.maskedAccountNumber.substr(props.selectedCard.details.maskedAccountNumber.toString().length - 4))
+              }
+            </div>
+            <i className="fa fa-chevron-right" aria-hidden="true" />
+          </Button>
+        </Link>
+        {
+          props.selectedCard !== null && 
+          <i className="fa fa-times" aria-hidden="true" 
+            style={{color: this.props.color.primary || "#c00a27", paddingLeft: 10, cursor: "pointer"}}
+            onClick={() => this.props.handleCancelCreditCard()}
+          />
+        }
       </div>
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    color: state.theme.color,
+  };
+};
+
+export default connect(mapStateToProps, {})(PaymentMethodBasket);

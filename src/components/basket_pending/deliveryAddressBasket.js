@@ -15,49 +15,16 @@ class DeliveryAddressBasket extends Component {
     return (
       <div
         style={{
-          border: "1px solid #DCDCDC",
-          borderRadius: 5,
-          marginTop: 10,
-          padding: 10,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
-            Delivery Address *
-          </div>
-          <div>
-            <Link to={this.props.isLoggedIn && "/delivery-address"}>
-              <Button
-                disabled={this.props.roleBtnClear ? true : false}
-                onClick={() => this.handleGet()}
-                style={{
-                  fontWeight: "bold",
-                  color: "#FFF",
-                  cursor: "pointer",
-                  backgroundColor: !props.dataBasket.deliveryAddress
-                    ? this.props.color.primary
-                    : "#777",
-                  width: 140,
-                  justifyContent: "space-between",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  fontSize: 12,
-                }}
-              >
-                <ContactMailIcon style={{ fontSize: 16 }} />
-                {!props.dataBasket.deliveryAddress
-                  ? "Select Address"
-                  : `${props.dataBasket.deliveryAddress.addressName.substring(0, 15)}`}
-              </Button>
-            </Link>
-          </div>
+        <div style={{ color: "gray", fontSize: 14 }}>
+          Delivery Address
+        </div>
+        <div style={{fontWeight: "bold", fontSize: 14}}>
+          {props.dataBasket.deliveryAddress.addressName.substring(0, 15)}
         </div>
       </div>
     );

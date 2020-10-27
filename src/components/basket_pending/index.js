@@ -260,7 +260,6 @@ class Basket extends Component {
         deliveryAddress: deliveryAddress,
       };
 
-      console.log(dataBasket)
       let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
       if(!response.dataProfider) return
 

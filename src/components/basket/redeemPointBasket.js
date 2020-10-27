@@ -5,10 +5,10 @@ import { Button } from 'reactstrap';
 export default class RedeemPointBasket extends Component {
   render() {
     let props = this.props.data
-    let money = props.selectedPoint / props.pointsToRebateRatio.split(":")[0]
-    money = money.toFixed(2);
-    // if (props.detailPoint.roundingOptions !== "DECIMAL") money = Math.floor(money);
-    // else money = money.toFixed(2);
+    let discountPoint = props.selectedPoint / props.pointsToRebateRatio.split(":")[0]
+    discountPoint = discountPoint.toFixed(2);
+    // if (props.detailPoint.roundingOptions !== "DECIMAL") discountPoint = Math.floor(discountPoint);
+    // else discountPoint = discountPoint.toFixed(2);
 
     return (
       <div>
@@ -47,7 +47,7 @@ export default class RedeemPointBasket extends Component {
                   }}>
                     <div style={{ color: "#ffa41b", fontWeight: "bold" }}>{props.selectedPoint}</div>
                     <div style={{ color: "gray", fontWeight: "bold", marginLeft: 5, marginRight: 5 }}>{"points to"}</div>
-                    <div style={{ color: "#ffa41b", fontWeight: "bold" }}>{this.props.getCurrency(money)}</div>
+                    <div style={{ color: "#ffa41b", fontWeight: "bold" }}>{this.props.getCurrency(discountPoint)}</div>
                   </div>
 
                   <div style={{ marginTop: 10, marginBottom: 15, textAlign: 'center' }}>
@@ -70,7 +70,7 @@ export default class RedeemPointBasket extends Component {
                     onClick={() => this.props.setPoint(props.selectedPoint)}
                     style={{
                       width: "100%", marginTop: 10, borderRadius: 5, height: 50
-                    }}>{`Set Point - ${this.props.getCurrency(money)}`}</Button>
+                    }}>{`Set Point - ${this.props.getCurrency(discountPoint)}`}</Button>
                 </div>
               </div>
             </div>

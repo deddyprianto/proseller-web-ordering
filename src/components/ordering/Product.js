@@ -76,11 +76,13 @@ class Product extends Component {
   };
 
   maskDescription = (description) => {
-    const length = description.length;
-    if (length < 47) {
-      return description;
+    if(description){
+      const length = description.length;
+      if (length < 47) {
+        return description;
+      }
+      return description.substring(0, 47) + "...";
     }
-    return description.substring(0, 47) + "...";
   };
 
   render() {

@@ -2,13 +2,11 @@ import React, { Component } from "react";
 import ModalProduct from "../ordering/ModalProduct";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import CardItemBasket from "./cardItemBasket";
-import { Link } from "react-router-dom";
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddIcon from "@material-ui/icons/Add";
+import { connect } from "react-redux";
 
 const Swal = require("sweetalert2");
 
-export default class ItemsBasket extends Component {
+class ItemsBasket extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -174,12 +172,7 @@ export default class ItemsBasket extends Component {
   render() {
     let { data } = this.props;
     let { dataBasket } = this.state;
-    let selected = 0;
-    if (dataBasket && dataBasket.details && dataBasket.details.length > 0) {
-      dataBasket.details.forEach((items) => {
-        if (items.selected !== false) selected += 1;
-      });
-    }
+    
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>
         <ModalProduct
@@ -198,9 +191,8 @@ export default class ItemsBasket extends Component {
                 fontSize: 14,
               }}
             >
-              <div style={{ fontWeight: "bold", color: "#20a8d8" }}>
-                {" "}
-                {data.storeDetail.name}{" "}
+              <div style={{ fontWeight: "bold", color: this.props.color.primary || "#c00a27"}}>
+                {data.storeDetail.name}
               </div>
             </div>
             <div
@@ -243,3 +235,16 @@ export default class ItemsBasket extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    color: state.theme.color,
+    basket: state.order.basket,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ItemsBasket);

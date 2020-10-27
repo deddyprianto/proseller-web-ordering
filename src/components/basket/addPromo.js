@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
-import Voucher from '../../assets/images/icon-voucher.png';
 import Point from '../../assets/images/icon-point.png';
 import RedeemPointBasket from './redeemPointBasket';
+import { connect } from "react-redux";
+import RedeemIcon from '@material-ui/icons/Redeem';
 
-export default class AddPromo extends Component {
+class AddPromo extends Component {
   render() {
     let props = this.props.data
+    let selectedVoucher = this.props.selectedVoucher
+    let colorText = this.props.disabledBtn ? "#777" : (this.props.color.primary || "#c00a27") 
     return (
-      <div style={{ padding: 10, marginTop: -10 }}>
+      <div>
         <RedeemPointBasket
           data={props}
           handleRedeemPoint={() => this.props.handleRedeemPoint()}
@@ -17,69 +20,74 @@ export default class AddPromo extends Component {
           scrollPoint={(data) => this.props.scrollPoint(data)}
           setPoint={(point) => this.props.setPoint(point)}
         />
-        {
-          (props.myVoucher && props.myVoucher.length > 0 ||
-            props.totalPoint > 0 && props.storeDetail.enableRedeemPoint === true) &&
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>Add Promo</div>
-        }
-        <div style={{ marginLeft: 5 }}>
+        <div style={{ width: "100%", }}>
           {
             props.myVoucher && props.myVoucher.length > 0 &&
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
-              <div style={{ color: "gray", fontSize: 13, marginTop: 2 }}>Redeem Voucher</div>
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <div style={{ 
+              border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
+              marginTop: 10
+            }}>
+              <Button disabled={this.props.roleBtnClear || this.props.disabledBtn}
+                onClick={() => this.props.handleRedeemVoucher()}
+                style={{
+                  fontWeight: "bold", color: colorText, cursor: "pointer", backgroundColor: "#FFF",
+                  width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
+                  alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
+                }}>
+                <dev style={{display: "flex", alignItems: "center"}}>
+                  <RedeemIcon style={{ fontSize: 16, marginRight: 10 }} />
+                  Use Voucher
+                </dev>
+                <i className="fa fa-chevron-right" aria-hidden="true" />
+              </Button>
+              {
+                selectedVoucher && selectedVoucher.length > 0 &&
+                <div style={{marginTop: 10}}>
                 {
-                  props.selectedVoucher &&
-                  <Button disabled={this.props.roleBtnClear}
-                    onClick={() => this.props.cancelSelectVoucher()} style={{
-                      height: 25, width: 25, backgroundColor: "#FFF", borderRadius: 25,
-                      border: "1px solid #c00a27", marginRight: 5, display: "flex",
-                      justifyContent: "center", alignItems: "center"
-                    }}>
-                    <i className="fa fa-times" style={{ color: "#c00a27" }} />
-                  </Button>
+                  selectedVoucher.map((items, key) => (
+                    <div>
+                      <div key={key} style={{
+                        display: "flex", flexDirection: "row", justifyContent: "space-between",
+                        alignItems: "center", marginTop: 5, marginBottom: 5, color: this.props.color.primary || "#c00a27",
+                      }}>
+                        <div style={{fontWeight: "bold", fontSize: 13}}>{items.name}</div>
+                        <i className="fa fa-times" aria-hidden="true" style={{cursor: "pointer"}} onClick={() => this.props.handleCancelVoucher(items)} />
+                      </div>
+                      <div style={{height: 1, backgroundColor: "#DCDCDC"}}/>
+                    </div>
+                  ))
                 }
-                <Button disabled={this.props.roleBtnClear}
-                  onClick={() => this.props.handleRedeemVoucher()}
-                  style={{
-                    fontWeight: "bold", color: "#FFF", cursor: "pointer", backgroundColor: "#20a8d8",
-                    width: 140, justifyContent: "space-between", display: "flex", flexDirection: "row",
-                    alignItems: "center", fontSize: 12,
-                  }}>
-                  <img src={Voucher} height="12px" width="18px" alt="voucher" />
-                  {`${props.selectedVoucher ? props.selectedVoucher.name.substr(0, 16) : 'Select Voucher'}`}
-                </Button>
-              </div>
+                </div>
+              }
             </div>
           }
           {
             props.totalPoint > 0 && props.storeDetail.enableRedeemPoint === true &&
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-              <div style={{ color: "gray", fontSize: 13, marginTop: 2 }}>Redeem Point</div>
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                {
-                  props.selectedPoint > 0 &&
-                  <Button disabled={this.props.roleBtnClear}
-                    onClick={() => this.props.cancelSelectPoint()} style={{
-                      height: 25, width: 25, backgroundColor: "#FFF", borderRadius: 25,
-                      border: "1px solid #c00a27", marginRight: 5, display: "flex",
-                      justifyContent: "center", alignItems: "center"
-                    }}>
-                    <i className="fa fa-times" style={{ color: "#c00a27" }} />
-                  </Button>
-                }
-                <Button disabled={this.props.roleBtnClear}
-                  data-toggle="modal" data-target="#redeem-point-modal"
-                  onClick={() => this.props.handleRedeemPoint()}
-                  style={{
-                    fontWeight: "bold", color: "#FFF", cursor: "pointer", backgroundColor: "#20a8d8",
-                    width: 140, justifyContent: "space-between", display: "flex", flexDirection: "row",
-                    alignItems: "center", fontSize: 12,
-                  }}>
-                  <img src={Point} height="15px" width="15px" alt="point" />
-                  {`${props.selectedPoint > 0 ? `- ${props.selectedPoint} point` : 'Pick Point'}`}
-                </Button>
-              </div>
+            <div style={{ 
+              border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
+              marginTop: 10, display: "flex", alignItems: "center"
+            }}>
+              <Button disabled={this.props.roleBtnClear || this.props.disabledBtn}
+                data-toggle="modal" data-target="#redeem-point-modal"
+                onClick={() => this.props.handleRedeemPoint()}
+                style={{
+                  fontWeight: "bold", color: colorText, cursor: "pointer", backgroundColor: "#FFF",
+                  width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
+                  alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
+                }}>
+                <dev style={{display: "flex", alignItems: "center"}}>
+                  <i className="fa fa-tags" aria-hidden="true" style={{ fontSize: 16, marginRight: 10 }}/>
+                  {`${props.selectedPoint > 0 ? `${props.selectedPoint} point` : 'Use Point'}`}
+                </dev>
+                <i className="fa fa-chevron-right" aria-hidden="true" />
+              </Button>
+              {
+                props.selectedPoint > 0 && 
+                <i className="fa fa-times" aria-hidden="true" 
+                  style={{color: this.props.color.primary || "#c00a27", paddingLeft: 10, cursor: "pointer"}}
+                  onClick={() => this.props.handleCancelPoint()}
+                />
+              }
             </div>
           }
         </div>
@@ -87,3 +95,12 @@ export default class AddPromo extends Component {
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    color: state.theme.color,
+    selectedVoucher: state.payment.selectedVoucher
+  };
+};
+
+export default connect(mapStateToProps, {})(AddPromo);
