@@ -136,7 +136,7 @@ class LoginRegister extends Component {
 
       let mobileOTP = this.props.setting.find(items => { return items.settingKey === "MobileOTP" })
       if (mobileOTP) {
-        let check = mobileOTP.settingValue === "SMS"
+        let check = mobileOTP.settingValue !== "WHATSAPP"
         this.setState({ enableSMSOTP: check, enableWhatsappOTP: !check });
       }
 
