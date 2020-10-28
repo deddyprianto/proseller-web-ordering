@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+import cx from "classnames";
 import moment from "moment";
+import styles from "../profile/CustomFields/styles.module.css";
 
 export default class SelectPicupDateTime extends Component {
   constructor(props) {
@@ -15,12 +17,7 @@ export default class SelectPicupDateTime extends Component {
 
   render() {
     let props = this.props.data
-    Date.prototype.addDays = function (days) {
-      var date = new Date(this.valueOf());
-      date.setDate(date.getDate() + days);
-      return date;
-    }
-    let date = new Date()
+    let date = moment().format("YYYY-MM-DD")
     var textTitle = props.orderingMode;
     var maxDay = null;
     if (textTitle === "STOREPICKUP") {
@@ -59,13 +56,18 @@ export default class SelectPicupDateTime extends Component {
               <div className="modal-body">
                 <div>
                   <div>
-                    <div style={{fontWeight: "bold", marginLeft: 5}}>Date</div>
-                    <DatePicker
-                      id="orderingDateBtn"
-                      selected={new Date(props.orderActionDate)}
-                      onChange={orderActionDate => this.props.handleSetState('orderActionDate', moment(orderActionDate).format("YYYY-MM-DD"))}
-                      minDate={date}
-                      maxDate={maxDay && date.addDays(parseInt(maxDay))}
+                    <div style={{fontWeight: "bold", marginLeft: 5}}>Delivery Date</div>
+                    <input
+                      type="date"
+                      min={date}
+                      max={maxDay && moment().add(maxDay, "d").format("YYYY-MM-DD") || date}
+                      value={props.orderActionDate}
+                      className={cx(styles.input, {
+                        [styles.rounded]: false,
+                      })}
+                      onChange={(e) =>
+                        this.props.handleSetState('orderActionDate', moment(e.target.value).format("YYYY-MM-DD"))
+                      }
                     />
                   </div>
 
@@ -75,6 +77,7 @@ export default class SelectPicupDateTime extends Component {
                       <select
                         className="woocommerce-Input woocommerce-Input--text input-text"
                         value={props.orderActionTimeHours}
+                        style={{borderRadius: 5}}
                         onChange={time => this.props.handleSetState('orderActionTimeHours', time.target.value)}
                       >
                         {
@@ -89,6 +92,7 @@ export default class SelectPicupDateTime extends Component {
                       <div style={{fontWeight: "bold"}}>Minute</div>
                       <select
                         className="woocommerce-Input woocommerce-Input--text input-text"
+                        style={{borderRadius: 5}}
                         value={props.orderActionTimeMinutes}
                         onChange={time => this.props.handleSetState('orderActionTimeMinutes', time.target.value)}
                       >
