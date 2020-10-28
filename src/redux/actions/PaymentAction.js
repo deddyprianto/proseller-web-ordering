@@ -1,5 +1,4 @@
 import { PaymentService } from "../../Services/PaymentService";
-import { AuthActions } from "./AuthAction";
 
 export const PaymentAction = {
   getPaymentCard,

@@ -21,7 +21,7 @@ class Loading extends Component {
           <div className="double-bounce2" style={{ backgroundColor: '#c0392b' }}></div>
         </div>
         {
-          cart.tableNo != undefined ?
+          cart.tableNo !== undefined ?
             <div className="color" style={{ textAlign: 'center' }}>Table No : {cart.tableNo}</div> :
             <div className="color" style={{ textAlign: 'center' }}>Queue No : {cart.queueNo}</div>
         }

@@ -49,14 +49,6 @@ function getInfoCompany() {
         response.data.currency = { symbol: "$", code: "SGD", locale: "en-US" };
       }
       dispatch({ type: "GET_COMPANY_INFO_SUCCESS", payload: response.data });
-      // if (
-      //   response.data &&
-      //   response.data.companyId ===
-      //     "company::e902cee7-6650-447e-989a-9209944192fc"
-      // ) {
-      //   console.log("this is auntieanne");
-      //   dispatch({ type: "SET_THEME", data: "#003da5" });
-      // }
     }
     response = response.data;
     return response;
@@ -67,9 +59,8 @@ function getOutletByID(id, isProduct = true) {
   return async (dispatch) => {
     if(id !== undefined){
       let response = await MasterDataService.api( "GET", null, `outlets/get/${id}`, "Bearer" );
-      let product = []
       if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
-      else if (isProduct) product = dispatch(getProductByOutletID(id));
+      else if (isProduct) dispatch(getProductByOutletID(id));
   
       if (response.data && response.data.id) response.data = config.getValidation(response.data)
       dispatch(setData(response.data, CONSTANT.DEFAULT_OUTLET));

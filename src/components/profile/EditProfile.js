@@ -180,12 +180,12 @@ class EditProfile extends Component {
     if (this.state.defaultEdit.password) {
       const { oldPassword, newPassword, retypeNewPassword } = this.state;
 
-      if (oldPassword == "" || newPassword == "") {
+      if (oldPassword === "" || newPassword === "") {
         Swal.fire({ icon: "info", title: "Oppss..",  text: "Please fill the password form", });
         this.setState({ isLoading: false });
         return;
       }
-      if (newPassword != retypeNewPassword) {
+      if (newPassword !== retypeNewPassword) {
         Swal.fire({ icon: "info", title: "Oppss..", text: "Retype password is different from new password", });
         this.setState({ isLoading: false });
         return;
@@ -196,7 +196,7 @@ class EditProfile extends Component {
       let resChangePassword = await this.props.dispatch(
         CustomerAction.updatePassword(payloadEditProfile)
       );
-      if (resChangePassword.ResultCode != 200) {
+      if (resChangePassword.ResultCode !== 200) {
         Swal.fire({ icon: "error", title: "Oppss...", text: resChangePassword.message || "Failed to change password", });
         this.setState({ isLoading: false });
         return;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
 const EMenuCategories = ({
@@ -63,7 +63,7 @@ const EMenuCategories = ({
         >
           <div
             className={
-              i == selectedCategory ? "color-active" : "color-nonactive"
+              i === selectedCategory ? "color-active" : "color-nonactive"
             }
             style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
           >

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import _ from "lodash";
 import Product from "./Product";
 import { OutletAction } from "../../redux/actions/OutletAction";
 import { OrderAction } from "../../redux/actions/OrderAction";
@@ -96,7 +95,7 @@ class Ordering extends Component {
     var headerCWO = document.getElementById("masthead");
     var headerOffset = document.getElementById("offset-header");
     try {
-      if (headerOffset != undefined && headerOffset.offsetTop != null) {
+      if (headerOffset !== undefined && headerOffset.offsetTop !== null) {
         var sticky = headerOffset.offsetTop;
         if (window.pageYOffset > sticky) {
           header.classList.remove("relative-position");
@@ -115,7 +114,7 @@ class Ordering extends Component {
     var searchButton = document.getElementById("search-button-category");
     var headerOffset = document.getElementById("offset-header");
     try {
-      if (headerOffset != undefined && headerOffset.offsetTop != null) {
+      if (headerOffset !== undefined && headerOffset.offsetTop !== null) {
         var sticky = headerOffset.offsetTop;
         if (window.pageYOffset > sticky) {
           searchButton.classList.remove("search-button-absolute");
@@ -261,7 +260,7 @@ class Ordering extends Component {
         const find = basket.details.find(
           (data) => data.product.id === item.product.id
         );
-        if (find != undefined) return "Update";
+        if (find !== undefined) return "Update";
         else return "Add";
       } else {
         return "Add";
@@ -276,9 +275,9 @@ class Ordering extends Component {
     try {
       if (!isEmptyObject(basket)) {
         const find = basket.details.find(
-          (data) => data.product.id == item.product.id
+          (data) => data.product.id === item.product.id
         );
-        if (find != undefined) return `${find.quantity}x`;
+        if (find !== undefined) return `${find.quantity}x`;
         else return false;
       } else {
         return false;
@@ -296,7 +295,7 @@ class Ordering extends Component {
     try {
       const { productsBackup } = this.state;
 
-      if (query == "") {
+      if (query === "") {
         await this.setState({ loading: false, loadingSearching: false });
         await this.setState({ products: productsBackup });
         return;
@@ -319,8 +318,8 @@ class Ordering extends Component {
           }
         } catch (e) { }
 
-        if (items.length != 0) {
-          if (productsSearch == undefined) {
+        if (items.length !== 0) {
+          if (productsSearch === undefined) {
             productsSearch = [];
           }
 
@@ -331,7 +330,7 @@ class Ordering extends Component {
         }
       }
 
-      if (productsSearch == undefined) productsSearch = [];
+      if (productsSearch === undefined) productsSearch = [];
 
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
@@ -373,7 +372,7 @@ class Ordering extends Component {
     if (this.props.productsSearch) products = this.props.productsSearch;
     else products = this.state.products;
 
-    if (offlineMessage != "") {
+    if (offlineMessage !== "") {
       return (
         <div
           className="section-tabs container-product"
@@ -384,11 +383,7 @@ class Ordering extends Component {
             className="full-width list-view columns-2 archive woocommerce-page html-change"
             style={{ marginTop: 100 }}
           >
-            <div className="tab-content">
-              {/* <Lottie
-                options={{ animationData: emptyGif }}
-                style={{ height: 250 }}
-              /> */}
+            <div className="tab-content">=
               <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
               <div
                 style={{
@@ -451,7 +446,6 @@ class Ordering extends Component {
           addNew={this.state.addNew}
           selectedItem={this.state.selectedItem}
         />
-        {/* {this.state.processing == false ? <LoadingFixed /> : null} */}
         <br /> <br /> <br />
         <div id="offset-header" />
         {isEmenu ? (
@@ -463,17 +457,6 @@ class Ordering extends Component {
             }
           ></EMenuCategories>
         ) : (
-            // <CategoriesWebOrdering
-            //   loadingSearching={this.loadingSearching}
-            //   finished={finished}
-            //   setLoading={this.setLoading}
-            //   searchProduct={this.searchProduct}
-            //   categories={categories}
-            //   selectedCategory={this.state.selectedCategory}
-            //   setSelectedCategory={(category) =>
-            //     this.setState({ selectedCategory: category })
-            //   }
-            // />
             <WebOrderingCategories
               categoryRefs={categoryRefs}
               loadingSearching={this.loadingSearching}
@@ -487,46 +470,6 @@ class Ordering extends Component {
               }
             ></WebOrderingCategories>
           )}
-          {/* <div className="full-width list-view columns-2 archive woocommerce-page html-change" style={{ marginTop: 45 }}>
-          <div className="tab-content">
-            <div className="tab-pane active" id="h1-tab-products-2">
-              <ul className="products">
-                {
-                  !loadingSearching && products.map((cat, i) =>
-                    <>
-                      <h3 id={i} className="title"
-                        style={{ fontSize: 14, marginLeft: 15, marginBottom: 10, paddingTop: 10, color: "gray", fontWeight: "bold" }} >
-                        {cat.category.name}
-                      </h3>
-                      {
-                        cat.items.map((item, j) =>
-                          <>
-                            {
-                              item.product &&
-                              <Product
-                                labelButton={this.getLabelButton(item)}
-                                quantity={this.getQuantityProduct(item)}
-                                selectProduct={this.selectProduct}
-                                key={j}
-                                item={item}
-                              />
-                            }
-                          </>
-                        )
-                      }
-                    </>
-                  )
-                }
-
-                {!loadingSearching && !loading && products.length == 0 &&
-                  <div>
-                    <h3 className="color text-center">Oppss.. Item Not Found.</h3>
-                  </div>
-                }
-              </ul>
-            </div>
-          </div>
-        </div> */}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
@@ -585,7 +528,7 @@ class Ordering extends Component {
                     </>
                   ))}
 
-                {!loadingSearching && !loading && products.length == 0 && (
+                {!loadingSearching && !loading && products.length === 0 && (
                   <div>
                     <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                     <h3 className="color text-center" style={{fontSize: 16}}>

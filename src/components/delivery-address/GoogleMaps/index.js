@@ -13,8 +13,6 @@ Geocode.setLanguage("en");
 
 const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }) => {
   const [center, setCenter] = useState(defaultCenter);
-  const [addressInfo, setAddressInfo] = useState(null);
-  const [showInfo, setShowInfo] = useState(false);
   const [drag, setDrag] = useState(false);
 
   useEffect(() => {
@@ -43,7 +41,6 @@ const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }
 
     let address = response.results[0].formatted_address;
     handleChange('address', address)
-    setAddressInfo(address);
 
     let address_components = response.results[0].address_components
     // console.log(address_components);

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
-import CheckIcon from "../../assets/images/icon-check.png";
 import ModalStatus from "./ModalSatatus";
 import config from "../../config";
 
@@ -58,7 +57,7 @@ class SettleSuccess extends Component {
 
   getCurrency = (price) => {
     if (this.props.companyInfo) {
-      if (price != undefined) {
+      if (price !== undefined) {
         const { currency } = this.props.companyInfo;
         if (!price || price === "-") price = 0;
         let result = price.toLocaleString(currency.locale, {

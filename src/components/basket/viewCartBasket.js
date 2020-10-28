@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import { Col, Row, Button } from "reactstrap";
 import ItemsBasket from "./itemsBasket";
 import MenuBasket from "./menuBasket";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import config from "../../config";
@@ -12,7 +11,6 @@ import config from "../../config";
 const ViewCartBasket = ({
   data,
   deliveryProvider,
-  deliveryAddress,
   outlet,
   color,
   getCurrency,
@@ -38,8 +36,8 @@ const ViewCartBasket = ({
     if (!outlet.orderValidation) outlet = config.getValidation(outlet)
   }
 
+  let props = data;
   const roleBtnClear = () => {
-    let props = data;
     return (basket &&
       basket.status === "SUBMITTED" &&
       props.orderingMode &&
@@ -67,7 +65,6 @@ const ViewCartBasket = ({
   };
 
   const roleBtnSettle = () => {
-    let props = data;
     return !props.btnBasketOrder ||
       props.storeDetail &&
       props.storeDetail.orderingStatus === "UNAVAILABLE" ||
@@ -104,7 +101,6 @@ const ViewCartBasket = ({
   };
 
   const roleOnClickSettle = () => {
-    let props = data;
     return (
       props.settle ||
       (props.orderingMode &&
@@ -125,7 +121,6 @@ const ViewCartBasket = ({
   };
 
   const roleIconSettle = () => {
-    let props = data;
     return (
       props.settle ||
       (props.orderingMode &&
@@ -159,8 +154,6 @@ const ViewCartBasket = ({
     return roleIconSettle();
   };
 
-  let props = data;
-  // const basket = data.dataBasket;
   const orderingModeField = data.dataBasket.orderingMode === "DINEIN" ? "dineIn" : data.dataBasket.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
 
   const productQuantity =
@@ -444,7 +437,7 @@ const ViewCartBasket = ({
                   }}
                   onClick={() => setViewCart(false)}
                 >
-                  <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />
+                  <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
                   Waiting Order
               </Button>
               </div>

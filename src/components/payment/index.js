@@ -187,7 +187,7 @@ class Payment extends Component {
     const deliveryFee = this.props.deliveryProvider
       ? this.props.deliveryProvider.deliveryFeeFloat
       : 0;
-    if (response.resultCode == 400 || response.data.isPaymentComplete == true) {
+    if (response.resultCode === 400 || response.data.isPaymentComplete === true) {
       clearInterval(this.loopCart);
 
       let data = {
@@ -350,7 +350,7 @@ class Payment extends Component {
                   discount = voucherValue;
                 }
 
-                if (selectedVoucher.capAmount != undefined) {
+                if (selectedVoucher.capAmount !== undefined) {
                   if (
                     discount > selectedVoucher.capAmount &&
                     selectedVoucher.capAmount > 0
@@ -394,7 +394,7 @@ class Payment extends Component {
             discount = voucherValue;
           }
 
-          if (selectedVoucher.capAmount != undefined) {
+          if (selectedVoucher.capAmount !== undefined) {
             if (
               discount > selectedVoucher.capAmount &&
               selectedVoucher.capAmount > 0
@@ -677,7 +677,7 @@ class Payment extends Component {
       );
     } else {
       // if need further actions
-      if (response.data.action != undefined) {
+      if (response.data.action !== undefined) {
         if (response.data.action.type === "url") {
           this.getPendingPayment(response.data);
         }
@@ -998,7 +998,7 @@ class Payment extends Component {
                       </Button>
                     </div>
 
-                    {storeDetail.enablePayAtPOS == true && (
+                    {storeDetail.enablePayAtPOS === true && (
                       <div>
                         <p style={{ textAlign: "center" }}>OR</p>
                         <div

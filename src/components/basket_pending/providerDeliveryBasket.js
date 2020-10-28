@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button } from "reactstrap";
-import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 
 class ProviderDeliveryBasket extends Component {
   render() {

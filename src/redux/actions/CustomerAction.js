@@ -35,7 +35,7 @@ function checkStatusPayment(referenceNo) {
       `sales/status?referenceNo=${referenceNo}`,
       "bearer"
     );
-    if (response.ResultCode == 200) return response;
+    if (response.ResultCode === 200) return response;
     else return {};
   };
 }

@@ -55,11 +55,11 @@ export default class Categories extends Component {
   };
 
   componentWillReceiveProps = (nextProps) => {
-    if (_.isEqual(nextProps.categories, this.props.categories) == false) {
+    if (_.isEqual(nextProps.categories, this.props.categories) === false) {
       this.setState({ selectedCategory: 0 });
     }
 
-    if (nextProps.selectedCategory != this.state.selectedCategory) {
+    if (nextProps.selectedCategory !== this.state.selectedCategory) {
       this.setState({ selectedCategory: nextProps.selectedCategory });
     }
   };
@@ -84,7 +84,6 @@ export default class Categories extends Component {
 
   render() {
     const { selectedCategory, openSearch } = this.state;
-    const { finished } = this.props;
 
     return (
       <ul
@@ -100,20 +99,20 @@ export default class Categories extends Component {
               key={i}
               onClick={() => this.goToCategory(item, i)}
               className={
-                i == selectedCategory
+                i === selectedCategory
                   ? "nav-item category-item active color"
                   : "nav-item category-item"
               }
             >
               <div
                 className={
-                  i == selectedCategory ? "color-active" : "color-nonactive"
+                  i === selectedCategory ? "color-active" : "color-nonactive"
                 }
                 style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
               >
                 {item.name}
               </div>
-              {i == selectedCategory && (
+              {i === selectedCategory && (
                 <div
                   className="profile-dashboard"
                   style={{

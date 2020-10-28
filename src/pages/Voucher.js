@@ -71,7 +71,7 @@ class Voucher extends Component {
               >
                 <i className="fa fa-chevron-left"></i> Back
               </button>
-              <div style={{ marginRight: 10, fontSize: 16, fontWeight: "bold", marginRight: 10 }}>
+              <div style={{ marginRight: 10, fontSize: 16, fontWeight: "bold" }}>
                 <i className="fa fa-tags" aria-hidden="true" /> {totalPoint.toFixed(2)}
               </div>
             </div>

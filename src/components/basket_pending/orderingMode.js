@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
-import SendIcon from "@material-ui/icons/Send";
-import { Button } from "reactstrap";
 import config from "../../config";
 
 class OrderingMode extends Component {

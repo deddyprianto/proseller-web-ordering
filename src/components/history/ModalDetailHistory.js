@@ -5,7 +5,7 @@ import moment from "moment";
 class ModalDetailHistory extends Component {
   getCurrency = (price) => {
     if (this.props.companyInfo) {
-      if (price != undefined) {
+      if (price !== undefined) {
         const { currency } = this.props.companyInfo;
         if (!price || price === "-") price = 0;
         let result = price.toLocaleString(currency.locale, {

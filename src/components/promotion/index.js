@@ -4,10 +4,6 @@ import { isEmptyArray } from "../../helpers/CheckEmpty";
 import Carousel from "nuka-carousel";
 
 class Promotion extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { banners } = this.props;
     if (isEmptyArray(banners)) return null;
@@ -25,7 +21,7 @@ class Promotion extends Component {
             )}
           >
             {banners.map((item, i) => (
-              <img src={item.defaultImageURL} style={{ borderRadius: 5 }} />
+              <img key={i} src={item.defaultImageURL} style={{ borderRadius: 5 }} alt="promo banner" />
             ))}
           </Carousel>
         </div>

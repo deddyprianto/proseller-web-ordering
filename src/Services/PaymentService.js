@@ -12,8 +12,8 @@ export const PaymentService = {
 function api(method, params, path, token = null) {
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
-  const header = new Header(params);
-  const url = `${config.url_payment}${path}`;
+  let header = new Header(params);
+  let url = `${config.url_payment}${path}`;
   let configuration = {
     headers: header,
     method: method,

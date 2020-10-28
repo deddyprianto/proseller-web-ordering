@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { Col, Row, Button } from 'reactstrap';
 import ItemsBasket from './itemsBasket';
 import MenuBasket from './menuBasket';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 export default class ViewCartBasket extends Component {
   roleBtnClear = () => {
@@ -233,7 +230,8 @@ export default class ViewCartBasket extends Component {
                 backgroundColor: "green", color: "#FFF", fontWeight: "bold",
                 display: 'flex', justifyContent: "center", alignItems: "center"
               }} onClick={() => this.props.setViewCart(false)}>
-                <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} /> Waiting Order
+                <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
+                Waiting Order
               </Button>
             </div>
 

@@ -4,8 +4,6 @@ import Lottie from 'lottie-react-web';
 import processingCollection from '../../assets/gif/cooking.json'
 import readyCollection from '../../assets/gif/food-ready.json';
 import onTheWay from '../../assets/gif/delivery.json';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-// import CropFreeIcon from '@material-ui/icons/CropFree';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import loadable from "@loadable/component";
 const ModalQRCode = loadable(() => import("../profile/ModalQRCode"));
@@ -136,7 +134,8 @@ export default class ViewProsessBasket extends Component {
               width: "45%", backgroundColor: "green", color: "#FFF", fontWeight: "bold",
               display: 'flex', justifyContent: "center", alignItems: "center"
             }}>
-              <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} /> Detail Order
+              <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
+              Detail Order
             </Button>
             {
               props.dataBasket.orderingMode !== "DELIVERY" &&

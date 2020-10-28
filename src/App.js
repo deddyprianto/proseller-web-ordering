@@ -50,10 +50,7 @@ const App = (props) => {
     lang,
     isLoggedIn,
     deliveryProviders,
-    basket,
     deliveryAddress,
-    dispatch,
-    companyInfo,
     setting,
     defaultOutlet
   } = props;
@@ -152,6 +149,9 @@ const App = (props) => {
       if (enableOrdering) {
         setEnableOrdering(enableOrdering.settingValue)
       }
+      
+      // let outletSelection = setting.find(items => { return items.settingKey === "OutletSelection" })
+      // console.log(outletSelection)
     }
   }, [deliveryAddress, deliveryProviders, setting]);
 

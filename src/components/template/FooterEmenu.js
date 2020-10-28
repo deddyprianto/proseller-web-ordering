@@ -213,7 +213,7 @@ class Footer extends Component {
                   path: "/profile",
                   name: "Profile",
                 })}`}
-                aria-hidden=" true"
+                aria-hidden="true"
                 style={{ fontSize: 22, margin: 15 }}
               ></i>
               <div

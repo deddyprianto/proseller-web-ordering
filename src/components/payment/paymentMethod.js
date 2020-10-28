@@ -256,7 +256,6 @@ class PaymentMethod extends Component {
           marginBottom: 50,
         }}
       >
-        <a id="newTabLink" target="_blank" href="https://www.google.com/" />
         <ModalPaymentMethod
           detailCard={detailCard}
           handleSetDefault={() => this.handleSetDefault()}

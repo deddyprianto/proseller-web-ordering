@@ -26,35 +26,6 @@ function fetchCategoryProduct(outlet) {
   } catch (error) { }
 }
 
-async function getProductPreset(categories, outlet, dispatch) {
-  let products = [];
-  for (let i = 0; i < categories.length; i++) {
-    let data = await fetchProduct(categories[i], outlet, 0, 5)
-    let items = {
-      category: categories[i],
-      items: data.data
-    };
-
-    products.push(items);
-    returnData(products);
-
-    dispatch(setData(products, CONSTANT.LIST_PRODUCT));
-    if (data.dataLength > 0) {
-      for (let j = 5; j <= data.dataLength; j += 5) {
-        let product = await fetchProduct(categories[i], outlet, j, 5)
-        products[i].items = [...products[i].items, ...product.data];
-
-        returnData(products);
-        dispatch(setData(products, CONSTANT.LIST_PRODUCT));
-      }
-    }
-  }
-}
-
-function returnData(data) {
-  return data;
-}
-
 
 function fetchProduct(category, outlet, skip, take) {
   const PRESET_TYPE = 'CRM';

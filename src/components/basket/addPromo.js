@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
-import Point from '../../assets/images/icon-point.png';
 import RedeemPointBasket from './redeemPointBasket';
 import { connect } from "react-redux";
 import RedeemIcon from '@material-ui/icons/Redeem';

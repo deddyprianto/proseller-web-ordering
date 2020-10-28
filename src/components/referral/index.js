@@ -6,7 +6,6 @@ import {
   Table
 } from 'reactstrap';
 import Shimmer from "react-shimmer-effect";
-import Loading from "../loading";
 import { ReferralAction } from '../../redux/actions/ReferralAction';
 import { connect } from "react-redux";
 import SendIcon from '@material-ui/icons/Send';

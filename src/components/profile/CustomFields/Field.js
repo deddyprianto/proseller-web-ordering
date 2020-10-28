@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import styles from "./styles.module.css";
 import cx from "classnames";
 
 const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEditAccount }) => {
-  const [initialValue, setInitialValue] = useState(value[field.fieldName]);
+  const initialValue = value[field.fieldName];
   let displayName = field.displayName
   if (field.fieldName === "birthDate") displayName = "Birthdate"
   if (field.fieldName === "gender") displayName = "Gender"

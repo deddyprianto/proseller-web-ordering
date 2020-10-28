@@ -75,7 +75,7 @@ class Footer extends Component {
           {
             (isLoggedIn || !enableOrdering) &&
             <Link onClick={() => this.removeDataPayment()} to="/profile" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-              <i className={`fa fa-user ${this.activeRoute({ path: "/profile", name: "Profile" })}`} aria-hidden=" true" style={{ fontSize: 22, margin: 15 }}></i>
+              <i className={`fa fa-user ${this.activeRoute({ path: "/profile", name: "Profile" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
               <div className={`${this.activeRoute({ path: "/profile", name: "Profile" })}`} style={{ marginTop: -22, fontSize: 12 }}>Profile</div>
             </Link>
           }

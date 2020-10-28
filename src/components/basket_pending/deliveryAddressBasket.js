@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button } from "reactstrap";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import { Link } from "react-router-dom";
 import config from "../../config";
 
 class DeliveryAddressBasket extends Component {

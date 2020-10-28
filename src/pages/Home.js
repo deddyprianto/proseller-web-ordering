@@ -36,7 +36,7 @@ class Home extends Component {
 
       if (isEmptyObject(offlineCart)) return;
 
-      if (account != undefined) {
+      if (account !== undefined) {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,

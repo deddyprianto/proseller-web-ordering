@@ -127,7 +127,7 @@ class Basket extends Component {
 
       if (isEmptyObject(offlineCart)) return;
       await this.props.dispatch(OrderAction.deleteCart(true));
-      if (account != undefined && account != null) {
+      if (account !== undefined && account !== null) {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,
@@ -136,8 +136,8 @@ class Basket extends Component {
           };
 
           if (
-            offlineCart.details[i].remark != undefined &&
-            offlineCart.details[i].remark != "-"
+            offlineCart.details[i].remark !== undefined &&
+            offlineCart.details[i].remark !== "-"
           ) {
             product.remark = offlineCart.details[i].remark;
           }
@@ -457,7 +457,7 @@ class Basket extends Component {
 
   getCurrency = (price) => {
     if (this.props.companyInfo) {
-      if (price != undefined) {
+      if (price !== undefined) {
         const { currency } = this.props.companyInfo;
         if (!price || price === "-") price = 0;
         let result = price.toLocaleString(currency.locale, {

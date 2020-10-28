@@ -70,7 +70,7 @@ function register(payload, enableRegisterWithPassword = false) {
 
 function refreshToken() {
   return async (dispatch) => {
-    if (account != undefined && account != null) {
+    if (account !== undefined && account !== null) {
       let response = await CRMService.api(
         "POST",
         { refreshToken: account.refreshToken.token },

@@ -135,7 +135,7 @@ class Basket extends Component {
 
       if (isEmptyObject(offlineCart)) return;
       await this.props.dispatch(OrderAction.deleteCart(true));
-      if (account != undefined && account != null) {
+      if (account !== undefined && account !== null) {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,
@@ -144,8 +144,8 @@ class Basket extends Component {
           };
 
           if (
-            offlineCart.details[i].remark != undefined &&
-            offlineCart.details[i].remark != "-"
+            offlineCart.details[i].remark !== undefined &&
+            offlineCart.details[i].remark !== "-"
           ) {
             product.remark = offlineCart.details[i].remark;
           }
@@ -169,6 +169,8 @@ class Basket extends Component {
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props;
     let { isEmenu } = this.state;
+
+    let locationCustomer = JSON.parse(localStorage.getItem(`${config.prefix}_locationCustomer`))
     let selectedVoucher = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
     );
@@ -199,12 +201,9 @@ class Basket extends Component {
     }
 
     if (isLoggedIn) {
-      let response = this.props.dispatch(CustomerAction.getVoucher());
-      response = this.props.dispatch(
-        CampaignAction.getCampaignPoints(
-          { history: "false" },
-          infoCompany && infoCompany.companyId
-        )
+      this.props.dispatch(CustomerAction.getVoucher());
+      this.props.dispatch(
+        CampaignAction.getCampaignPoints({ history: "false" }, infoCompany && infoCompany.companyId)
       );
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode;
@@ -212,27 +211,62 @@ class Basket extends Component {
       if (!response.message) dataBasket = response.data;
     }
 
+    // if databasket is empty
     if (!dataBasket) dataBasket = await this.getDataBasket_();
 
     if (dataBasket) {
-      if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
-        selectedVoucher = dataBasket.confirmationInfo.voucher;
-        localStorage.setItem(
-          `${config.prefix}_selectedVoucher`,
-          JSON.stringify(encryptor.encrypt(selectedVoucher))
-        );
-      } else if (
-        dataBasket.confirmationInfo &&
-        dataBasket.confirmationInfo.redeemPoint > 0
-      ) {
-        selectedPoint = this.setPoint(
-          dataBasket.confirmationInfo.redeemPoint,
-          dataBasket
-        );
+      // set delivery provider
+      let provaiderDelivery = {}
+      if ( deliveryAddress && orderingMode !== "DINEIN" && orderingMode !== "TAKEAWAY") {
+        let payload = {
+          outletId: dataBasket.outlet.id,
+          cartID: dataBasket.cartID,
+          deliveryAddress: deliveryAddress,
+        };
+
+        let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
+
+        let deliveryProvaider = response.dataProfider
+        deliveryProvaider.forEach(async (provider) => {
+          provider.deliveryFeeFloat = provider.deliveryFee;
+          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
+        });
+
+        await this.props.dispatch({
+          type: "SET_DELIVERY_PROVIDERS",
+          payload: deliveryProvaider,
+        });
+
+        if(deliveryProvaider.length > 0){
+          provaiderDelivery = deliveryProvaider[0]
+          this.props.dispatch({
+            type: "SET_SELECTED_DELIVERY_PROVIDERS",
+            payload: provaiderDelivery,
+          });
+        }
+
+        if (dataBasket.deliveryProviderId) {
+          provaiderDelivery = deliveryProvaider.find(items => {return items.id === dataBasket.deliveryProviderId})
+        }  
+
+        this.setState({ deliveryProvaider, provaiderDelivery });
       }
 
+      // move cart based on delivery address
+      if(deliveryAddress && provaiderDelivery && dataBasket.orderingMode === "DELIVERY"){
+        let payloadMoveCart = {
+          orderBy: "provider",
+          provider: provaiderDelivery && provaiderDelivery.id || "",
+          location: locationCustomer && locationCustomer || {},
+          cart: dataBasket,
+          deliveryAddress
+        }
+        dataBasket = await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
+        console.log(dataBasket)
+      }
+
+      // set default outlet
       let storeDetail = null;
-      // storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
       if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.product) {
         storeDetail = this.props.defaultOutlet;
       } else {
@@ -246,7 +280,6 @@ class Basket extends Component {
       if (storeDetail && storeDetail.id) {
         storeDetail = config.getValidation(storeDetail)
       }
-      // console.log('storeDetail', storeDetail)
 
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
@@ -290,45 +323,7 @@ class Basket extends Component {
       // check validate pick date time
       let check = this.state.orderActionDate === moment().format("YYYY-MM-DD")
       await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
-
-      if ( deliveryAddress && orderingMode !== "DINEIN" && orderingMode !== "TAKEAWAY") {
-        let payload = {
-          outletId: dataBasket.outlet.id,
-          cartID: dataBasket.cartID,
-          deliveryAddress: deliveryAddress,
-        };
-
-        let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
-
-        let deliveryProvaider = response.dataProfider
-        deliveryProvaider.forEach(async (provider) => {
-          provider.deliveryFeeFloat = provider.deliveryFee;
-          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
-        });
-
-        await this.props.dispatch({
-          type: "SET_DELIVERY_PROVIDERS",
-          payload: deliveryProvaider,
-        });
-
-        let provaiderDelivery = {}
-        if(deliveryProvaider.length === 1){
-          provaiderDelivery = deliveryProvaider[0]
-          this.props.dispatch({
-            type: "SET_SELECTED_DELIVERY_PROVIDERS",
-            payload: provaiderDelivery,
-          });
-        }
-
-        if (dataBasket.deliveryProviderId) {
-          provaiderDelivery = deliveryProvaider.find(items => {return items.id === dataBasket.deliveryProviderId})
-        }  
-
-        this.setState({ deliveryProvaider, provaiderDelivery });
-      }
-
       await this.submitOtomatis(dataBasket, scanTable);
-
     } else {
       this.setState({
         dataBasket: null,
@@ -604,7 +599,7 @@ class Basket extends Component {
 
   getCurrency = (price) => {
     if (this.props.companyInfo) {
-      if (price != undefined) {
+      if (price !== undefined) {
         const { currency } = this.props.companyInfo;
         if (!price || price === "-") price = 0;
         let result = price.toLocaleString(currency.locale, {
@@ -915,7 +910,7 @@ class Basket extends Component {
   };
 
   checkScan = () => {
-    let { orderingMode, storeDetail, scanTable, dataBasket } = this.state;
+    let { orderingMode, storeDetail, scanTable } = this.state;
     if (
       orderingMode === "DINEIN" &&
       storeDetail.outletType === "RESTO" &&

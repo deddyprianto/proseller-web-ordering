@@ -34,6 +34,7 @@ export const OrderAction = {
   changeOrderingMode,
   buildCart,
   getSettingOrdering,
+  moveCart,
 };
 
 function shareURL(tableNo, outletID, orderMode) {
@@ -52,7 +53,7 @@ function shareURL(tableNo, outletID, orderMode) {
       "Bearer"
     );
 
-    if (response.data != undefined) return response;
+    if (response.data !== undefined) return response;
     else return false;
   };
 }
@@ -90,7 +91,7 @@ function processAddCart(defaultOutlet, selectedItem) {
       quantity: selectedItem.quantity,
     };
 
-    if (selectedItem.remark != "" || selectedItem.remark != undefined)
+    if (selectedItem.remark !== "" || selectedItem.remark !== undefined)
       product.remark = selectedItem.remark;
 
     // IF MODIFIER EXIST
@@ -101,7 +102,7 @@ function processAddCart(defaultOutlet, selectedItem) {
       let productModifiers = JSON.parse(productModifierClone);
 
       productModifiers = productModifiers.filter(
-        (item) => item.postToServer == true
+        (item) => item.postToServer === true
       );
       product.modifiers = productModifiers;
 
@@ -111,11 +112,11 @@ function processAddCart(defaultOutlet, selectedItem) {
         let data = product.modifiers[i];
         for (let j = 0; j < data.modifier.details.length; j++) {
           if (
-            data.modifier.details[j].quantity != undefined &&
+            data.modifier.details[j].quantity !== undefined &&
             data.modifier.details[j].quantity > 0
           ) {
             // check if price is undefined
-            if (data.modifier.details[j].price == undefined) {
+            if (data.modifier.details[j].price === undefined) {
               data.modifier.details[j].price = 0;
             }
 
@@ -134,9 +135,9 @@ function processAddCart(defaultOutlet, selectedItem) {
       //  calculate total modifier
       let totalModifier = 0;
       await product.modifiers.map((group) => {
-        if (group.postToServer == true) {
+        if (group.postToServer === true) {
           group.modifier.details.map((detail) => {
-            if (detail.quantity != undefined && detail.quantity > 0) {
+            if (detail.quantity !== undefined && detail.quantity > 0) {
               totalModifier += parseFloat(detail.quantity * detail.price);
             }
           });
@@ -152,13 +153,10 @@ function processAddCart(defaultOutlet, selectedItem) {
       details: [],
     };
 
-    // if (selectedItem.remark != "" || selectedItem.remark != undefined) payload.remark = selectedItem.remark;
-
     payload.details.push(product);
 
-    if (account != undefined && account != null) dispatch(addCart(payload));
+    if (account !== undefined && account !== null) dispatch(addCart(payload));
     else dispatch(processOfflineCart(payload, "Add"));
-    // document.getElementById("close-modal").click();
   };
 }
 
@@ -175,16 +173,12 @@ function processUpdateCart(basket, products) {
         quantity: product.quantity,
       };
 
-      if (product.remark != "" && product.remark != undefined)
+      if (product.remark !== "" && product.remark !== undefined)
         dataproduct.remark = product.remark;
 
       if (!isEmptyArray(product.product.productModifiers)) {
         let totalModifier = 0;
         let productModifiers = [...product.product.productModifiers];
-        // productModifiers = productModifiers.filter(
-        //   (item) => item.postToServer === true
-        // );
-        // add moodifier to data product
         dataproduct.modifiers = productModifiers;
 
         let tempDetails = [];
@@ -194,11 +188,11 @@ function processUpdateCart(basket, products) {
 
           for (let j = 0; j < data.modifier.details.length; j++) {
             if (
-              data.modifier.details[j].quantity != undefined &&
+              data.modifier.details[j].quantity !== undefined &&
               data.modifier.details[j].quantity > 0
             ) {
               // check if price is undefined
-              if (data.modifier.details[j].price == undefined) {
+              if (data.modifier.details[j].price === undefined) {
                 data.modifier.details[j].price = 0;
               }
               tempDetails.push(data.modifier.details[j]);
@@ -211,9 +205,9 @@ function processUpdateCart(basket, products) {
 
         //  calculate total modifier
         await dataproduct.modifiers.map((group, i) => {
-          if (group.postToServer == true) {
+          if (group.postToServer === true) {
             group.modifier.details.map((detail) => {
-              if (detail.quantity != undefined && detail.quantity > 0) {
+              if (detail.quantity !== undefined && detail.quantity > 0) {
                 totalModifier += parseFloat(detail.quantity * detail.price);
               }
             });
@@ -237,7 +231,7 @@ function processUpdateCart(basket, products) {
 
     console.log(payload);
     let basketUpdate = {};
-    if (account != undefined)
+    if (account !== undefined)
       basketUpdate = await dispatch(updateCart(payload));
     else basketUpdate = await dispatch(processOfflineCart(payload, "Update"));
     return basketUpdate;
@@ -253,7 +247,7 @@ function processOfflineCart(payload, mode) {
         return await dispatch(buildCart(payload));
       } else {
         if (mode === "Add") {
-          if (offlineCart.outletID == payload.outletID) {
+          if (offlineCart.outletID === payload.outletID) {
             offlineCart.details.push(payload.details[0]);
             return await dispatch(buildCart(offlineCart));
           } else {
@@ -278,22 +272,26 @@ function processOfflineCart(payload, mode) {
   } catch (e) { }
 }
 
+function moveCart(payload) {
+  return async (dispatch) => {
+    const response = await OrderingService.api( "POST", payload, `cart/moveItem`, "Bearer" );
+
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    // else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    return response.data
+  };
+}
+
 function addCart(payload) {
   return async (dispatch) => {
-    const response = await OrderingService.api(
-      "POST",
-      payload,
-      `cart/additem`,
-      "Bearer"
-    );
+    const response = await OrderingService.api( "POST", payload, `cart/additem`, "Bearer" );
 
     try {
       document.getElementById("close-modal").click();
     } catch (e) { }
 
     // console.log(response)
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
   };
 }
@@ -359,31 +357,21 @@ function updateCart(payload) {
 function getCart(isSetData = true) {
   return async (dispatch) => {
     // IF CUSTOMER NOT LOGIN
-    if (account == undefined) {
+    if (account === undefined) {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {
-        if (isSetData)
-          return dispatch(setData(offlineCart, CONSTANT.DATA_BASKET));
+        if (isSetData) return dispatch(setData(offlineCart, CONSTANT.DATA_BASKET));
         return offlineCart;
       }
       return
     }
 
-    const response = await OrderingService.api(
-      "GET",
-      null,
-      `cart/getcart`,
-      "Bearer"
-    );
-    // try {
-    //   document.getElementById("close-modal").click();
-    // } catch (error) {}
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    const response = await OrderingService.api( "GET", null, `cart/getcart`, "Bearer");
+    
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     else if (response.data && response.data.message !== "No details data") {
-      if (isSetData)
-        return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+      if (isSetData) return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
       return response.data;
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
@@ -402,7 +390,7 @@ function deleteCart(isDeleteServer = false) {
     localStorage.removeItem(`${config.prefix}_dataBasket`);
 
     // IF CUSTOMER NOT LOGIN
-    if (account == undefined && !isDeleteServer) {
+    if (account === undefined && !isDeleteServer) {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {
@@ -410,14 +398,8 @@ function deleteCart(isDeleteServer = false) {
         return dispatch(setData({}, CONSTANT.DATA_BASKET));
       }
     } else if (account) {
-      const response = await OrderingService.api(
-        "DELETE",
-        null,
-        `cart/delete`,
-        "Bearer"
-      );
-      if (response.ResultCode >= 400 || response.resultCode >= 400)
-        console.log(response);
+      const response = await OrderingService.api( "DELETE", null, `cart/delete`, "Bearer" );
+      if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
       else return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
     dispatch(setData({}, CONSTANT.DATA_BASKET));
@@ -426,28 +408,16 @@ function deleteCart(isDeleteServer = false) {
 
 function submitBasket(payload) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      payload,
-      `cart/submit`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    let response = await OrderingService.api( "POST", payload, `cart/submit`, "Bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }
 
 function submitOrdering(payload) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      payload,
-      `cart/settle`,
-      "Bearer"
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    let response = await OrderingService.api( "POST", payload, `cart/settle`, "Bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };
 }
@@ -477,38 +447,22 @@ function getProvider(
   }
 ) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      payload,
-      `delivery/providers`,
-      "Bearer"
-    );
-    const data = await response.data;
-    dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: data });
+    let response = await OrderingService.api( "POST", payload, `delivery/providers`, "Bearer" );
+    dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: response.data });
     return response.data;
   };
 }
 
 function getCalculateFee(payload) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      payload,
-      `delivery/calculateFee`,
-      "Bearer"
-    );
+    let response = await OrderingService.api( "POST", payload, `delivery/calculateFee`, "Bearer" );
     return response.data;
   };
 }
 
 function getCartPending(id) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "GET",
-      null,
-      `cart/pending/${id}`,
-      "Bearer"
-    );
+    let response = await OrderingService.api( "GET", null, `cart/pending/${id}`, "Bearer" );
     return response;
   };
 }

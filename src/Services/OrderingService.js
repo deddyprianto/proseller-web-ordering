@@ -23,7 +23,7 @@ function api(method, params, path, token = null) {
     url += "?" + jsonToQueryString(params);
   if (method.toLowerCase() !== "get" && params)
     configuration.body = JSON.stringify(params);
-  if (token && account != undefined)
+  if (token && account)
     configuration.headers.Authorization = `${token} ${account.accessToken.jwtToken}`;
 
   return fetch(url, configuration)

@@ -9,7 +9,6 @@ import PickupDateTime from "./pickupDateTime";
 import DeliveryAddressBasket from "./deliveryAddressBasket";
 import ProviderDeliveryBasket from "./providerDeliveryBasket";
 import { Button } from "reactstrap";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import config from "../../config";
@@ -278,7 +277,7 @@ class MenuBasket extends Component {
                     }}
                     onClick={() => this.props.setViewCart(false)}
                   >
-                    <ShoppingCartIcon style={{ fontSize: 20, marginRight: 10 }} />
+                    <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
                     Waiting Order
                   </Button>
                 </div>

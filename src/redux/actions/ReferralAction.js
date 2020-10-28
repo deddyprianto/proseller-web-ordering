@@ -1,5 +1,4 @@
 import { CRMService } from "../../Services/CRMService";
-import { AuthActions } from "./AuthAction";
 
 export const ReferralAction = {
   getReferral,

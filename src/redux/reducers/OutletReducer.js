@@ -17,6 +17,7 @@ export default function reducer(state = defaultState, action) {
           defaultOutlet: action.data,
         };
       }
+      return
     case CONSTANT.LIST_OUTLET:
       return {
         ...state,

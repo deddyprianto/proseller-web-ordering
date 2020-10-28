@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import Shimmer from "react-shimmer-effect";
 import { Col, Row } from "reactstrap";
 import voucherIcon from "../../assets/images/voucher-icon.png";
-// import Lottie from "lottie-react-web";
-// import emptyGif from "../../assets/gif/empty-and-lost.json";
 import GiftVoucherModal from "./GiftVoucherModal";
 import moment from 'moment'
 import config from '../../config'
@@ -53,7 +51,7 @@ class MyVoucher extends Component {
   };
 
   render() {
-    let { loadingShow, showGiftModal, voucherToGift } = this.state;
+    let { showGiftModal, voucherToGift } = this.state;
     const { myVoucher } = this.props;
     return (
       <div>

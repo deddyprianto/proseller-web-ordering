@@ -43,19 +43,19 @@ class ItemsBasket extends Component {
           group.modifier.details.map((detail, j) => {
             delete detail.quantity;
 
-            if (group.modifier.min != 0 && group.modifier.min != undefined) {
+            if (group.modifier.min !== 0 && group.modifier.min !== undefined) {
               product.product.productModifiers[i].modifier.show = true;
             } else {
               product.product.productModifiers[i].modifier.show = false;
             }
 
             if (
-              group.modifier.isYesNo == true &&
-              detail.orderingStatus == "AVAILABLE"
+              group.modifier.isYesNo === true &&
+              detail.orderingStatus === "AVAILABLE"
             ) {
               if (
-                group.modifier.yesNoDefaultValue == true &&
-                detail.yesNoValue == "no"
+                group.modifier.yesNoDefaultValue === true &&
+                detail.yesNoValue === "no"
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
@@ -63,8 +63,8 @@ class ItemsBasket extends Component {
               }
 
               if (
-                group.modifier.yesNoDefaultValue == false &&
-                detail.yesNoValue == "yes"
+                group.modifier.yesNoDefaultValue === false &&
+                detail.yesNoValue === "yes"
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
@@ -81,9 +81,9 @@ class ItemsBasket extends Component {
     } else {
       if (!isEmptyArray(dataBasket.details)) {
         const find = await dataBasket.details.find(
-          (data) => data.product.id == product.product.id
+          (data) => data.product.id === product.product.id
         );
-        if (find != undefined) {
+        if (find !== undefined) {
           await this.setState({ selectedItem: {} });
           if (mode === "Update") {
             product.quantity = find.quantity;
@@ -96,14 +96,14 @@ class ItemsBasket extends Component {
                     find.modifiers.map((data) => {
                       data.modifier.details.map((item) => {
                         // make mark that item is in basket
-                        if (data.modifierID == group.modifierID) {
+                        if (data.modifierID === group.modifierID) {
                           product.product.productModifiers[
                             i
                           ].postToServer = true;
                           // set quantity basket to product that openend
-                          if (item.id == detail.id) {
+                          if (item.id === detail.id) {
                             // check for radio button
-                            if (group.modifier.max == 1) {
+                            if (group.modifier.max === 1) {
                               product.product.productModifiers[
                                 i
                               ].modifier.show = data.modifier.show;

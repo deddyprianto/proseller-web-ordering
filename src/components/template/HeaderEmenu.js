@@ -59,7 +59,7 @@ class Header extends Component {
   getShareURL = async () => {
     const { basket } = this.props;
 
-    if (account == undefined) {
+    if (account === undefined) {
       alert("Please log in first to continue");
       return;
     }
@@ -71,7 +71,7 @@ class Header extends Component {
       const response = await this.props.dispatch(
         OrderAction.shareURL(1, basket.outletID, "DINEIN")
       );
-      if (response != false) {
+      if (response !== false) {
         let URL = config.url_crm.replace("crm/api/", "emenu?order=");
         URL += response.data.accessToken;
         URL = encodeURI(URL);
@@ -92,7 +92,7 @@ class Header extends Component {
         JSON.parse(localStorage.getItem(`${config.prefix}_productsBackup`))
       );
 
-      if (query == "") {
+      if (query === "") {
         await this.setState({ loading: false, loadingSearching: false });
         await this.setState({ products: productsBackup });
         await this.props.dispatch(OrderAction.setData(undefined, "SEARCH"));
@@ -116,8 +116,8 @@ class Header extends Component {
           }
         } catch (e) { }
 
-        if (items.length != 0) {
-          if (productsSearch == undefined) {
+        if (items.length !== 0) {
+          if (productsSearch === undefined) {
             productsSearch = [];
           }
 
@@ -128,7 +128,7 @@ class Header extends Component {
         }
       }
 
-      if (productsSearch == undefined) productsSearch = [];
+      if (productsSearch === undefined) productsSearch = [];
       await this.props.dispatch(OrderAction.setData(productsSearch, "SEARCH"));
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
@@ -183,7 +183,7 @@ class Header extends Component {
               <div style={{ display: "flex" }}>
                 <Link to="/">
                   <img
-                    src={infoCompany.imageURL || logoCompany}
+                    src={infoCompany.imageURL || logoCompany} alt="logo company"
                     style={{ height: 30, objectFit: "contain" }}
                   />
                 </Link>
@@ -210,7 +210,6 @@ class Header extends Component {
             <div>
               {openSearch && (
                 <i
-                  className="search_icon"
                   onClick={() => {
                     this.setState({ openSearch: false });
                     this.searchProduct("");

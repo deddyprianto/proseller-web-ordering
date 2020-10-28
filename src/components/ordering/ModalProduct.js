@@ -29,25 +29,25 @@ class ModalProduct extends Component {
       let selectedItem = this.state.selectedItem
       let productModifiers = selectedItem.product.productModifiers;
 
-      if ( selectedItem.quantity == 0 || selectedItem.quantity == undefined ) return false;
+      if ( selectedItem.quantity === 0 || selectedItem.quantity === undefined ) return false;
 
       for (let i = 0; i < productModifiers.length; i++) {
         let lengthDetail = 0;
         let modifierDetail = productModifiers[i].modifier.details
         for (let x = 0; x < modifierDetail.length; x++) {
-          if ( modifierDetail[x].quantity > 0 && modifierDetail[x].quantity != undefined ) {
+          if ( modifierDetail[x].quantity > 0 && modifierDetail[x].quantity !== undefined ) {
             lengthDetail += modifierDetail[x].quantity; 
           }
         }
         // check rule min max
-        if (productModifiers[i].modifier.min != 0 || productModifiers[i].modifier.max != 0) {
+        if (productModifiers[i].modifier.min !== 0 || productModifiers[i].modifier.max !== 0) {
           // check min modifier
           if (
             lengthDetail < productModifiers[i].modifier.min &&
-            lengthDetail != undefined &&
-            productModifiers[i].modifier.min != 0 &&
-            productModifiers[i].modifier.isYesNo != true &&
-            productModifiers[i].modifier.min != undefined
+            lengthDetail !== undefined &&
+            productModifiers[i].modifier.min !== 0 &&
+            productModifiers[i].modifier.isYesNo !== true &&
+            productModifiers[i].modifier.min !== undefined
           ) {
             return true;
           }
@@ -55,10 +55,10 @@ class ModalProduct extends Component {
           // check max modifier
           if (
             lengthDetail > productModifiers[i].modifier.max &&
-            lengthDetail != undefined &&
-            productModifiers[i].modifier.max != 0 &&
-            productModifiers[i].modifier.isYesNo != true &&
-            productModifiers[i].modifier.max != undefined
+            lengthDetail !== undefined &&
+            productModifiers[i].modifier.max !== 0 &&
+            productModifiers[i].modifier.isYesNo !== true &&
+            productModifiers[i].modifier.max !== undefined
           ) {
             return true;
           }
@@ -137,7 +137,7 @@ class ModalProduct extends Component {
   decrease = () => {
     try {
       let { selectedItem } = this.state;
-      if (selectedItem.quantity != 0) {
+      if (selectedItem.quantity !== 0) {
         selectedItem.quantity -= 1;
         if(!this.isItemExist(this.state.selectedItem) && selectedItem.quantity === 0) {
           selectedItem.quantity = 1
@@ -181,7 +181,7 @@ class ModalProduct extends Component {
               for ( let x = 0; x < modifierDetail.length; x++ ) {
                 if (
                   modifierDetail[x].quantity > 0 &&
-                  modifierDetail[x].quantity != undefined
+                  modifierDetail[x].quantity !== undefined
                 ) {
                   lengthDetail += modifierDetail[x].quantity;
                 }
@@ -203,7 +203,7 @@ class ModalProduct extends Component {
             }
           } catch (e) { }
 
-          if (name != "Item") {
+          if (name !== "Item") {
             let message = { title: "Warning", message: "" };
             document.getElementById("btn-mesage-modifier").click();
             if (status === "lack") {
@@ -218,7 +218,7 @@ class ModalProduct extends Component {
         }
 
         await this.setState({ disableButton: true });
-        if (selectedItem.mode == "Add" || this.props.addNew) {
+        if (selectedItem.mode === "Add" || this.props.addNew) {
           this.props.dispatch(
             OrderAction.processAddCart(defaultOutlet, selectedItem)
           );
@@ -237,8 +237,8 @@ class ModalProduct extends Component {
     try {
       const { basket } = this.state;
       if (!isEmptyObject(basket)) {
-        const find = basket.details.find((data) => data.product.id == item.product.id);
-        if (find != undefined) return true;
+        const find = basket.details.find((data) => data.product.id === item.product.id);
+        if (find !== undefined) return true;
         else return false;
       } else {
         return false;
@@ -256,10 +256,10 @@ class ModalProduct extends Component {
     selectedItem = JSON.stringify(selectedItem);
     selectedItem = JSON.parse(selectedItem);
 
-    if (type != "checkbox") {
+    if (type !== "checkbox") {
       for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
         let modifierData = selectedItem.product.productModifiers[i].modifier
-        if (modifierData.max == 1) {
+        if (modifierData.max === 1) {
           for ( let j = 0; j < modifierData.details.length; j++ ) {
             modifierData.details[j].quantity = 0;
             modifierData.details[j].isSelected = false;
@@ -273,9 +273,9 @@ class ModalProduct extends Component {
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
       let modifierDetail = selectedItem.product.productModifiers[i].modifier.details
       for (let j = 0;j < modifierDetail.length;j++) {
-        if (modifierDetail[j].id == item.id ) {
+        if (modifierDetail[j].id === item.id ) {
           let isSelected = selectedItem.product.productModifiers[i].modifier.details[j].isSelected
-          if ( modifierDetail[j].quantity == undefined || modifierDetail[j].quantity == 0) {
+          if ( modifierDetail[j].quantity === undefined || modifierDetail[j].quantity === 0) {
             modifierDetail[j].quantity = 1;
             modifierDetail[j].isSelected = !isSelected;
             selectedItem.product.productModifiers[i].postToServer = true;
@@ -283,7 +283,7 @@ class ModalProduct extends Component {
             modifierDetail[j].quantity = undefined;
             modifierDetail[j].isSelected = !isSelected;
 
-            if (type == undefined) selectedItem.product.productModifiers[i].postToServer = undefined;
+            if (type === undefined) selectedItem.product.productModifiers[i].postToServer = undefined;
           }
         }
       }
@@ -297,10 +297,10 @@ class ModalProduct extends Component {
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
       let modifierDetail = selectedItem.product.productModifiers[i].modifier.details
       for (let j = 0; j < modifierDetail.length; j++ ) {
-        if ( modifierDetail[j].id == item.id ) {
+        if ( modifierDetail[j].id === item.id ) {
           if ( 
-            modifierDetail[j].quantity != undefined && 
-            modifierDetail[j].quantity != 0
+            modifierDetail[j].quantity !== undefined && 
+            modifierDetail[j].quantity !== 0
           ) {
             return modifierDetail[j].quantity;
           }
@@ -364,20 +364,20 @@ class ModalProduct extends Component {
                   <input
                     type="checkbox"
                     checked={
-                      data.quantity != undefined && data.quantity != 0 &&
-                      data.orderingStatus != "UNAVAILABLE" ? true : false
+                      data.quantity !== undefined && data.quantity !== 0 &&
+                      data.orderingStatus !== "UNAVAILABLE" ? true : false
                     }
                     className="scaled-checkbox form-check-input checkbox-modifier"
                     onClick={() => this.addItemIsYesNo(data, "checkbox")}
                   />
                   <a className="subtitle-modifier">
                     <span className="color">
-                      {data.quantity != undefined && data.quantity != 0 ? `${data.quantity}x ` : null}
+                      {data.quantity !== undefined && data.quantity !== 0 ? `${data.quantity}x ` : null}
                     </span>
                     <a onClick={() => this.addItemIsYesNo(data, "checkbox")}>
                       {data.name}
                     </a>
-                    {data.quantity != undefined && data.quantity != 0 ? (
+                    {data.quantity !== undefined && data.quantity !== 0 ? (
                       <span
                         onClick={() => this.setState({ selectedModifier: data })}
                         data-toggle="modal"
@@ -406,24 +406,24 @@ class ModalProduct extends Component {
   ruleModifier = (item) => {
     try {
       if (
-        (item.modifier.min == 0 ||
-          item.modifier.min == undefined ||
-          item.modifier.min == "-") &&
+        (item.modifier.min === 0 ||
+          item.modifier.min === undefined ||
+          item.modifier.min === "-") &&
         item.modifier.max > 0
       ) {
         return `Optional, Max ${item.modifier.max}`;
       } else if (
-        (item.modifier.min == 0 ||
-          item.modifier.min == undefined ||
-          item.modifier.min == "-") &&
+        (item.modifier.min === 0 ||
+          item.modifier.min === undefined ||
+          item.modifier.min === "-") &&
         item.modifier.max <= 0
       ) {
         return `Optional`;
       } else if (
-        item.modifier.min == 1 &&
-        (item.modifier.max == 1 ||
+        item.modifier.min === 1 &&
+        (item.modifier.max === 1 ||
           item.modifier.max <= 0 ||
-          item.modifier.max == undefined)
+          item.modifier.max === undefined)
       ) {
         return `Pick 1`;
       } else if (item.modifier.min > 0 && item.modifier.max > 0) {
@@ -486,11 +486,11 @@ class ModalProduct extends Component {
 
                   <span className="subtitle-modifier">{data.name}</span>
                 </a>
-                {data.orderingStatus === "UNAVAILABLE" ? (
-                  <p>UNAVAILABLE</p>
-                ) : (
-                    <p>{this.getCurrency(data.price)}</p>
-                  )}
+                {
+                  data.orderingStatus === "UNAVAILABLE" ? 
+                  <p>UNAVAILABLE</p> :
+                  <p>{this.getCurrency(data.price)}</p>
+                }
               </div>
             ))}
           </div>
@@ -502,9 +502,7 @@ class ModalProduct extends Component {
   detailProduct = () => {
     let { disableButton, selectedItem } = this.state;
     let { defaultOutlet, data } = this.props;
-    if (data) {
-      defaultOutlet = data.storeDetail;
-    }
+    if (data) defaultOutlet = data.storeDetail;
     return (
       <div
         className="modal-content"
@@ -572,15 +570,15 @@ class ModalProduct extends Component {
                   selectedItem.product.productModifiers.map((item, i) => {
                     if (
                       item.modifier.isYesNo !== true &&
-                      (item.modifier.max == 0 ||
+                      (item.modifier.max === 0 ||
                         item.modifier.max === undefined ||
                         item.modifier.max > 1 ||
-                        item.modifier.max == "-")
+                        item.modifier.max === "-")
                     ) {
                       return this.renderItemCheckbox(item, i);
                     } else if (
                       item.modifier.isYesNo !== true &&
-                      item.modifier.max == 1
+                      item.modifier.max === 1
                     ) {
                       return this.renderItemRadio(item, i);
                     } else {
@@ -609,7 +607,6 @@ class ModalProduct extends Component {
                   />
                 </div>
               ) : null}
-              {/* <div style={{ marginBottom: 100 }} /> */}
             </>
           ) : null}
         </div>
@@ -699,7 +696,6 @@ class ModalProduct extends Component {
     localStorage.setItem(`${config.prefix}_ordering_mode`, mode);
     try {
       document.getElementById("dismiss-ordering-mode").click();
-      // document.getElementById('open-modal-product').click();
     } catch (error) { }
   };
 
@@ -869,7 +865,7 @@ class ModalProduct extends Component {
   decreaseModifier = () => {
     let { selectedModifier } = this.state;
     if (
-      selectedModifier.quantity != undefined &&
+      selectedModifier.quantity !== undefined &&
       selectedModifier.quantity > 0
     ) {
       selectedModifier.quantity -= 1;
@@ -933,7 +929,7 @@ class ModalProduct extends Component {
                     <b style={{ fontSize: 20 }}>+</b>
                   </button>
                 </div>
-                {selectedModifier.quantity == 0 ? (
+                {selectedModifier.quantity === 0 ? (
                   <button
                     id="dismiss-ordering-mode"
                     data-dismiss="modal"
@@ -1021,7 +1017,7 @@ class ModalProduct extends Component {
   };
 
   render() {
-    let { showPage, isLoading, message } = this.state;
+    let { isLoading } = this.state;
     return (
       <div>
         <span

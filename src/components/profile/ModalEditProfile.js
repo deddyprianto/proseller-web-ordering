@@ -169,7 +169,7 @@ class ModalEditProfile extends Component {
         validatePass,
       } = this.state;
 
-      if (oldPassword == "" || newPassword == "") {
+      if (oldPassword === "" || newPassword === "") {
         Swal.fire({
           icon: "info",
           title: "Oppss..",
@@ -178,7 +178,7 @@ class ModalEditProfile extends Component {
         this.setState({ isLoading: false });
         return;
       }
-      if (newPassword != retypeNewPassword) {
+      if (newPassword !== retypeNewPassword) {
         Swal.fire({
           icon: "info",
           title: "Oppss..",
@@ -196,13 +196,13 @@ class ModalEditProfile extends Component {
       const payloadEditProfile = {
         oldPassword: oldPassword,
         newPassword,
-        newPassword,
+        retypeNewPassword,
       };
 
       let resChangePassword = await this.props.dispatch(
         CustomerAction.updatePassword(payloadEditProfile)
       );
-      if (resChangePassword.ResultCode != 200) {
+      if (resChangePassword.ResultCode !== 200) {
         Swal.fire({
           icon: "error",
           title: "Oppss...",
@@ -279,40 +279,9 @@ class ModalEditProfile extends Component {
   };
 
   render() {
-    let {
-      editPassword,
-      showOldPassword,
-      showNewPassword,
-      showRePassword,
-      errorName,
+    let { editPassword, showOldPassword, showNewPassword, showRePassword,
+      errorName, loadingShow, dataCustomer,
     } = this.state;
-
-    let birthMonthOption = this.state.birthMonthOption;
-    let mandatoryField = this.state.mandatoryField;
-    let dataCustomer = this.state.dataCustomer;
-    let loadingShow = this.state.loadingShow;
-    let birthDate = dataCustomer && dataCustomer.birthDate;
-    if (birthDate === "Invalid date") birthDate = new Date();
-
-    let fieldBirthDate = null;
-    let fieldGender = null;
-    let fieldAddress = null;
-
-    if (!loadingShow && dataCustomer && mandatoryField) {
-      fieldBirthDate = mandatoryField.find((items) => {
-        return items.fieldName === "birthDate" && items.show === true;
-      });
-      fieldGender = mandatoryField.find((items) => {
-        return items.fieldName === "gender" && items.show === true;
-      });
-      fieldAddress = mandatoryField.find((items) => {
-        return items.fieldName === "address" && items.show === true;
-      });
-    } else if (!loadingShow && !mandatoryField) {
-      fieldBirthDate = { mandatory: true, format: "dd-MM-yyyy" };
-      fieldGender = { mandatory: true };
-      fieldAddress = { mandatory: true };
-    }
 
     return (
       <div>
@@ -396,74 +365,6 @@ class ModalEditProfile extends Component {
                       </div>
                     </div>
                   </div>
-
-                  {/* <div
-                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
-                    style={{ marginTop: 10 }}
-                  >
-                    <label>
-                      Phone Number <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="woocommerce-Input woocommerce-Input--text input-text"
-                      style={{ borderRadius: 5 }}
-                      value={dataCustomer.phoneNumber}
-                      onChange={(e) =>
-                        this.handleChange("phoneNumber", e.target.value)
-                      }
-                    />
-                    {this.state.editPhoneNumber && !this.state.checkingPhone ? (
-                      this.state.phoneUsed ? (
-                        <div className="text text-danger small">
-                          <em>Phone no. already used</em>
-                        </div>
-                      ) : (
-                          <div className="text text-success small">
-                            <em>Phone no. is available</em> <i className="fa fa-check"></i>
-                          </div>
-                        )
-                    ) : null}
-                    {this.state.checkingPhone && (
-                      <div className="text small">
-                        <em>Checking phone no. availability...</em>
-                      </div>
-                    )}
-                  </div>
-
-                  <div
-                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
-                    style={{ marginTop: 10 }}
-                  >
-                    <label>
-                      Email <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="woocommerce-Input woocommerce-Input--text input-text"
-                      style={{ borderRadius: 5 }}
-                      value={dataCustomer.email}
-                      onChange={(e) =>
-                        this.handleChange("email", e.target.value)
-                      }
-                    />
-                    {this.state.editEmail && !this.state.checkingEmail ? (
-                      this.state.emailUsed ? (
-                        <div className="text text-danger small">
-                          <em>Email already used</em>
-                        </div>
-                      ) : (
-                          <div className="text text-success small">
-                            <em>Email is available</em> <i className="fa fa-check"></i>
-                          </div>
-                        )
-                    ) : null}
-                    {this.state.checkingEmail && (
-                      <div className="text small">
-                        <em>Checking email availability...</em>
-                      </div>
-                    )}
-                  </div> */}
 
                   <CustomFields
                     defaultValue={this.state.dataCustomer}

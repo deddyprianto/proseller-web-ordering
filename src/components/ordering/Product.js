@@ -67,7 +67,7 @@ class Product extends Component {
 
   validateOutlet = () => {
     const { basket, defaultOutlet } = this.props;
-    if (basket == undefined || basket.details == undefined) {
+    if (basket === undefined || basket.details === undefined) {
       this.openModal();
     } else {
       if (basket.outletID === defaultOutlet.sortKey) this.openModal();

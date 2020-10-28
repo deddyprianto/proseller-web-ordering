@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import loadable from "@loadable/component";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import { OrderAction } from "../../redux/actions/OrderAction";
 import { AuthActions } from "../../redux/actions/AuthAction";
 import { Switch, Route, Redirect } from "react-router-dom";
 import config from "../../config";
