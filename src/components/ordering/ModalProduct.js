@@ -829,7 +829,7 @@ class ModalProduct extends Component {
         <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
           <i className={`fa ${icon} color icon-order`} style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
           <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
-            {name}
+            {nickname || name}
           </div>
         </div>
         {
