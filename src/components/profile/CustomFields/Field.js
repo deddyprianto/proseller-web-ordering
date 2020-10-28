@@ -14,7 +14,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
   if (field.type === "radio") {
     return (
       <div style={{ marginTop: 10 }}>
-        <label>
+        <label style={{fontSize: 14}}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -57,7 +57,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
         style={{ marginTop: 10 }}
       >
-        <label htmlFor={field.fieldName}>
+        <label style={{fontSize: 14}} htmlFor={field.fieldName}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -94,7 +94,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
         style={{ marginTop: 10 }}
       >
-        <label>
+        <label style={{fontSize: 14}}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -144,7 +144,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
         style={{ marginTop: 10 }}
       >
-        <label htmlFor={field.fieldName}>
+        <label style={{fontSize: 14}} htmlFor={field.fieldName}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -169,7 +169,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
   if (field.type === "checkbox") {
     return (
       <div style={{ marginTop: 10 }}>
-        <label>
+        <label style={{fontSize: 14}}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -212,7 +212,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
         style={{ marginTop: 10 }}
       >
-        <label htmlFor={field.fieldName}>
+        <label style={{fontSize: 14}} htmlFor={field.fieldName}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -242,7 +242,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
         style={{ marginTop: 10 }}
       >
-        <label htmlFor={field.fieldName}>
+        <label style={{fontSize: 14}} htmlFor={field.fieldName}>
           {displayName}{" "}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
@@ -264,7 +264,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
       style={{ marginTop: 10 }}
     >
-      <label htmlFor={field.fieldName}>
+      <label style={{fontSize: 14}} htmlFor={field.fieldName}>
         {displayName}{" "}
         <span className="required">{field.mandatory && "*"}</span>
       </label>

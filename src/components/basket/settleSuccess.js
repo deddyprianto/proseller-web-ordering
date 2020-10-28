@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
 import CheckIcon from "../../assets/images/icon-check.png";
-import KeranjangIcon from "../../assets/images/keranjang.png";
 import ModalStatus from "./ModalSatatus";
 import config from "../../config";
 
@@ -66,7 +65,6 @@ class SettleSuccess extends Component {
           style: "currency",
           currency: currency.code,
         });
-        console.log(result)
         return result.split(currency.code)[1];
       }
     }
@@ -74,18 +72,8 @@ class SettleSuccess extends Component {
 
   getMonth(value) {
     var mount = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     return mount[value];
   }
@@ -114,19 +102,14 @@ class SettleSuccess extends Component {
   };
 
   render() {
-    let { settleSuccess, orderingMode, paymentSuccess, infoCompany } = this.state;
-    const deliveryFee = this.props.deliveryProvider
-      ? this.props.deliveryProvider.deliveryFeeFloat
-      : 0;
+    let { settleSuccess, paymentSuccess, infoCompany } = this.state;
+    let deliveryFee = this.props.deliveryProvider ? this.props.deliveryProvider.deliveryFeeFloat : 0;
+    let colorText = this.props.color.primary || "#c00a27"
+    let paymentStatus = settleSuccess && settleSuccess.message === "payment failed!" ? false : true
+
     return (
       <div>
-        <ModalStatus
-          paymentStatus={
-            settleSuccess && settleSuccess.message === "payment failed!"
-              ? false
-              : true
-          }
-        />
+        <ModalStatus paymentStatus={paymentStatus} />
         <div className="col-full" style={{ marginTop: 130, marginBottom: 50 }}>
           <div id="primary" className="content-area">
             <div
@@ -144,20 +127,18 @@ class SettleSuccess extends Component {
                       backgroundColor: "#FFF",
                       width: "100%",
                       borderRadius: 5,
-                      border: "1px solid #20a8d8",
+                      border: `1px solid ${colorText}`,
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                      <img
-                        src={CheckIcon}
-                        alt="check"
-                        style={{ marginTop: -25 }}
-                      />
+                      <i className={`fa ${paymentStatus ? "fa-check-circle" : "fa-times-circle"}`} aria-hidden="true" style={{ 
+                        marginTop: -30, fontSize: 60, color: colorText, backgroundColor: "#FFF"
+                      }}/>
                     </div>
                     <div>
                       <div
                         style={{
-                          color: "#20a8d8",
+                          color: colorText,
                           fontSize: 16,
                           fontWeight: "bold",
                           textAlign: "center",
@@ -171,6 +152,7 @@ class SettleSuccess extends Component {
                           flexDirection: "row",
                           justifyContent: "center",
                           marginLeft: -10,
+                          marginTop: 10
                         }}
                       >
                         <div
@@ -178,7 +160,7 @@ class SettleSuccess extends Component {
                             color: "gray",
                             fontSize: 10,
                             fontWeight: "bold",
-                            marginRight: 5,
+                            marginTop: -15,
                           }}
                         >
                           {this.props.companyInfo &&
@@ -186,7 +168,7 @@ class SettleSuccess extends Component {
                         </div>
                         <div
                           style={{
-                            color: "gray",
+                            color: "black",
                             fontSize: 35,
                             fontWeight: "bold",
                           }}
@@ -201,11 +183,10 @@ class SettleSuccess extends Component {
 
                       <div
                         style={{
-                          color: "#20a8d8",
+                          color: colorText,
                           fontSize: 12,
                           fontWeight: "bold",
                           textAlign: "center",
-                          marginTop: -5,
                           marginBottom: 5,
                         }}
                       >
@@ -229,23 +210,14 @@ class SettleSuccess extends Component {
                         paddingLeft: 10,
                       }}
                     >
-                      <img
-                        src={KeranjangIcon}
-                        alt="check"
-                        height="40px"
-                        width="40px"
-                        style={{
-                          border: "1px solid #20a8d8",
-                          borderRadius: 45,
-                          height: 45,
-                          width: 45,
-                          padding: 5,
-                        }}
-                      />
+                      <i className="fa fa-shopping-cart" aria-hidden="true" style={{
+                        color: colorText, fontSize: 22, padding: 7,
+                        borderRadius: 45, border: `1px solid ${colorText}`
+                      }}/>
                       <div style={{ marginLeft: 10 }}>
                         <div
                           style={{
-                            color: "#20a8d8",
+                            color: colorText,
                             fontWeight: "bold",
                             textAlign: "left",
                             fontSize: 14
@@ -255,7 +227,7 @@ class SettleSuccess extends Component {
                         </div>
                         <div
                           style={{
-                            color: "#20a8d8",
+                            color: colorText,
                             textAlign: "left",
                             marginTop: -8,
                             fontSize: 12
@@ -326,7 +298,7 @@ class SettleSuccess extends Component {
                         style={{
                           marginBottom: 10,
                           width: 100,
-                          backgroundColor: "#20a8d8",
+                          backgroundColor: colorText,
                           border: "1px solid #FFF",
                           color: "#FFF",
                           fontWeight: "bold",
@@ -355,6 +327,7 @@ const mapStateToProps = (state) => {
   return {
     companyInfo: state.masterdata.companyInfo.data,
     deliveryProvider: state.order.selectedDeliveryProvider,
+    color: state.theme.color,
   };
 };
 

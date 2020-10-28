@@ -287,13 +287,13 @@ class EditProfile extends Component {
     
     return(
       <Row>
+        <div style={{height: 1, backgroundColor: "#DCDCDC", margin: 5, marginTop: 10, marginBottom: 5}}/>
         <Col sm={6}>
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-          <label>Old Password</label>
+          <label style={{fontSize: 14}}>Old Password</label>
           <div style={{ display: "flex" }}>
             <input
               type={showOldPassword ? "text" : "password"}
-              placeholder="Provide your old password"
               value={this.state.oldPassword}
               className="woocommerce-Input woocommerce-Input--text input-text"
               onChange={(e) =>{
@@ -335,11 +335,10 @@ class EditProfile extends Component {
 
         <Col sm={6}>
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" >
-          <label>New Password</label>
+          <label style={{fontSize: 14}}>New Password</label>
           <div style={{ display: "flex" }}>
             <input
               type={showNewPassword ? "text" : "password"}
-              placeholder="Your new password"
               value={this.state.newPassword}
               className="woocommerce-Input woocommerce-Input--text input-text"
               style={{
@@ -374,11 +373,10 @@ class EditProfile extends Component {
 
         <Col sm={6}>
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide" >
-          <label>Retype New Password</label>
+          <label style={{fontSize: 14}}>Retype New Password</label>
           <div style={{ display: "flex" }}>
             <input
               type={showRePassword ? "text" : "password"}
-              placeholder="Retype your new password"
               value={this.state.retypeNewPassword}
               className="woocommerce-Input woocommerce-Input--text input-text"
               onChange={(e) => {
@@ -424,7 +422,7 @@ class EditProfile extends Component {
   viewPage(fields){
     let { defaultEdit } = this.state;
     let dataCustomer = this.state.dataCustomer;
-
+    
     if(dataCustomer){
       return(
         <div>
@@ -439,17 +437,14 @@ class EditProfile extends Component {
 
           <div style={{border: "1px solid #CCC", borderRadius: 5, padding: 10, marginTop: 20}}>
             <div className="color" onClick={this.toggleEditPassword} style={{textAlign: "right", cursor: "pointer"}}>
-              {
-                defaultEdit.password ?
-                <div style={{fontSize: 14}}>
-                  <b>Cancel Change Password </b>{" "}
-                  <i className="fa fa-chevron-up" />
-                </div> :
-                <div style={{fontSize: 14}}>
-                  <b>Change Password </b>{" "}
-                  <i className="fa fa-chevron-down" />
-                </div>
-              }
+              <div style={{fontSize: 14, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <b>Change Password </b>
+                {
+                  defaultEdit.password ?
+                  <i className="fa fa-arrow-circle-o-up" /> :
+                  <i className="fa fa-arrow-circle-o-down" />
+                }
+              </div>
             </div>
             {defaultEdit.password && this.viewPassword()}
           </div>

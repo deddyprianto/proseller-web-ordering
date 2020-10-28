@@ -140,7 +140,7 @@ class Payment extends Component {
         console.log("payment success");
         let data = {
           message: response.data.confirmationInfo.message || "Congratulations, payment success",
-          paymentType: payment.paymentType || "CASH",
+          paymentType: response.data.paymentType || payment.paymentType || "CREDIT CARD",
           price: this.state.totalPrice,
           outletName: this.state.dataBasket.outlet.name,
           orderingMode: this.state.dataBasket.orderingMode,
