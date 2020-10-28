@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
 import cx from "classnames";
 import moment from "moment";
 import styles from "../profile/CustomFields/styles.module.css";
