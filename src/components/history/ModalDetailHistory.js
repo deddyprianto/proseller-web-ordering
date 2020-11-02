@@ -193,6 +193,33 @@ class ModalDetailHistory extends Component {
                     </div>
                   ))}
 
+                  {
+                    detail.deliveryFee && 
+                    <div>
+                      <div
+                        style={{
+                          backgroundColor: "#CDCDCD",
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div style={{ fontSize: 14 }}>DELIVERY FEE</div>
+                        <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                          {this.getCurrency(detail.deliveryFee)}
+                        </div>
+                      </div>
+                    </div>
+                  }
+
                   <div
                     style={{
                       backgroundColor: "#CDCDCD",
@@ -211,7 +238,7 @@ class ModalDetailHistory extends Component {
                   >
                     <div style={{ fontSize: 14 }}>SUBTOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency(detail.price)}
+                      {this.getCurrency(detail.price + (detail.deliveryFee || 0))}
                     </div>
                   </div>
 
@@ -251,7 +278,7 @@ class ModalDetailHistory extends Component {
                   >
                     <div style={{ fontSize: 14 }}>TOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency(detail.price - discount)}
+                      {this.getCurrency((detail.price + (detail.deliveryFee || 0)) - discount)}
                     </div>
                   </div>
 
@@ -283,7 +310,7 @@ class ModalDetailHistory extends Component {
                             {detail.paymentCard.paymentName}
                           </div>
                           <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            {this.getCurrency(detail.afterPrice)}
+                            {this.getCurrency((detail.price + (detail.deliveryFee || 0) - discount))}
                           </div>
                         </div>
                       )}

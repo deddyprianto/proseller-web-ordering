@@ -38,6 +38,15 @@ class InboxCard extends Component {
 
   render() {
     const { items } = this.props;
+    let discount = 0
+    if(items.payments){
+      items.payments.forEach(items => {
+        if(items.paymentType === "voucher" || items.paymentType === "point"){
+          discount += items.paymentAmount
+        }
+      });
+    }
+
     return (
       <div
         style={{
@@ -78,7 +87,7 @@ class InboxCard extends Component {
                 {items.outlet && this.checkNameOutlet(items.outlet.name)}
               </div>
               <div style={{ fontWeight: "bold", fontSize: 14 }}>
-                {this.getCurrency(items.price)}
+                {this.getCurrency(items.price + (items.deliveryFee || 0) - discount)}
               </div>
             </div>
           </div>
