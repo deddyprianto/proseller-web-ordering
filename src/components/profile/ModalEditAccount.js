@@ -17,8 +17,8 @@ class ModalEditAccount extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      countryCode: this.props.companyInfo && this.props.companyInfo.countryCode || "SG",
-      phoneCountryCode: this.props.companyInfo && this.props.companyInfo.countryCode === "SG" ? "+65" : "+62",
+      countryCode: (this.props.companyInfo && this.props.companyInfo.countryCode) || "SG",
+      phoneCountryCode: (this.props.companyInfo && this.props.companyInfo.countryCode) === "SG" ? "+65" : "+62",
       newPhoneNumber: "",
       isUsed: false,
       isSame: false,
@@ -49,8 +49,8 @@ class ModalEditAccount extends Component {
 
     if(prevProps.companyInfo !== this.props.companyInfo){
       this.setState({
-        countryCode: this.props.companyInfo && this.props.companyInfo.countryCode || "SG",
-        phoneCountryCode: this.props.companyInfo && this.props.companyInfo.countryCode === "SG" ? "+65" : "+62",
+        countryCode: (this.props.companyInfo && this.props.companyInfo.countryCode) || "SG",
+        phoneCountryCode: (this.props.companyInfo && this.props.companyInfo.countryCode) === "SG" ? "+65" : "+62",
       })
     }
   }
@@ -243,8 +243,8 @@ class ModalEditAccount extends Component {
         Swal.fire( "Success!", response.message || response.Data.message || "Confirmation success!", "success" );
 
         if(
-          account.idToken.payload.username.includes("+") && field === "newPhoneNumber" ||
-          account.idToken.payload.username.includes("@") && field === "newEmail"
+          (account.idToken.payload.username.includes("+") && field === "newPhoneNumber") ||
+          (account.idToken.payload.username.includes("@") && field === "newEmail")
         ) account.idToken.payload.username = value
 
         if(field === "newPhoneNumber") account.idToken.payload.phoneNumber = value
@@ -260,7 +260,7 @@ class ModalEditAccount extends Component {
   }
 
   validationField(field, value) {
-      const regEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      const regEmail = /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if(field === "email") return regEmail.test(String(value).toLowerCase());
       if(field === "phoneNumber") return value.length >= 10;
   }

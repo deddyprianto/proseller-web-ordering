@@ -241,9 +241,9 @@ class MenuBasket extends Component {
                   this.props.getCurrency(
                     props.dataBasket.totalNettAmount + 
                     (
-                      props.dataBasket.orderingMode === "DELIVERY" && 
+                      (props.dataBasket.orderingMode === "DELIVERY" && 
                       props.provaiderDelivery && 
-                      props.provaiderDelivery.deliveryFeeFloat || 0
+                      props.provaiderDelivery.deliveryFeeFloat) || 0
                     )
                   )
                 }

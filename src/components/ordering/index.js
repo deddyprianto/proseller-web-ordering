@@ -166,15 +166,11 @@ class Ordering extends Component {
       let data = await this.props.dispatch(
         ProductAction.fetchProduct(categories[i], outlet, 0, 10)
       );
-      products = products.map((category, index) => {
-        if (index === i) {
-          return {
-            category: category.category,
-            items: data.data,
-          };
-        }
-        return category;
-      });
+
+      products[i] = {
+        category: products[i].category,
+        items: data.data,
+      }
 
       await this.setState({
         products,
@@ -210,9 +206,9 @@ class Ordering extends Component {
     product = JSON.parse(product);
 
     try {
-      await product.product.productModifiers.map((group, i) => {
+      await product.product.productModifiers.forEach((group, i) => {
         if (!isEmptyArray(group.modifier.details))
-          group.modifier.details.map((detail, j) => {
+          group.modifier.details.forEach((detail, j) => {
             delete detail.quantity;
 
             if (group.modifier.min !== 0 && group.modifier.min !== undefined) {
@@ -229,18 +225,14 @@ class Ordering extends Component {
                 group.modifier.yesNoDefaultValue === true &&
                 detail.yesNoValue === "no"
               ) {
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].isSelected = false;
+                product.product.productModifiers[i].modifier.details[j].isSelected = false;
               }
 
               if (
                 group.modifier.yesNoDefaultValue === false &&
                 detail.yesNoValue === "yes"
               ) {
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].isSelected = true;
+                product.product.productModifiers[i].modifier.details[j].isSelected = true;
               }
             }
           });

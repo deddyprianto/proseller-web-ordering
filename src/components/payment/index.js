@@ -11,12 +11,11 @@ import { connect } from "react-redux";
 import PaymentMethodBasket from "../basket/paymentMethodBasket";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
+import { isEmptyObject } from "../../helpers/CheckEmpty";
 import config from "../../config";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
-import { lsLoad } from "../../helpers/localStorage";
 import styles from "./styles.module.css";
 
 const Swal = require("sweetalert2");
@@ -24,7 +23,6 @@ const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const companyInfo = encryptor.decrypt(
   JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
 );
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 class Payment extends Component {
   constructor(props) {
@@ -336,10 +334,9 @@ class Payment extends Component {
             let validHourFrom = validHour.from;
             let validHourTo = validHour.to;
             if (activeWeekDays[date.getDay()].active) {
-              let statusValidHour = moment(moment().format()).isBetween(
-                tanggal + "T" + validHourFrom + ":00" + "+" + region,
-                tanggal + "T" + validHourTo + ":00" + "+" + region
-              );
+              let from = `${tanggal}T${validHourFrom}:00+${region}`
+              let to = `${tanggal}T${validHourTo}:00+${region}`
+              let statusValidHour = moment(moment().format()).isBetween(from,to);
               if (statusValidHour) {
                 if (voucherType === "discPercentage") {
                   discount =
@@ -547,9 +544,6 @@ class Payment extends Component {
     if (!dataBasket) dataBasket = this.state.dataBasket;
     if (!pointsToRebateRatio) pointsToRebateRatio = this.state.pointsToRebateRatio;
 
-    let totalPrice = (selectedPoint / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
-    totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
-
     localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) );
     this.setState({ selectedPoint, discountPoint: selectedPoint});
 
@@ -672,7 +666,7 @@ class Payment extends Component {
     if (response && response.resultCode === 400) {
       Swal.fire(
         "Oppss!",
-        response.message || response.data && response.data.message || "Payment Failed!",
+        response.message || (response.data && response.data.message) || "Payment Failed!",
         "error"
       );
     } else {
@@ -733,8 +727,8 @@ class Payment extends Component {
     let { basket } = this.props;
     let deliveryFee = this.props.deliveryProvider ? this.props.deliveryProvider.deliveryFeeFloat : 0;
     let currency = this.props.companyInfo && this.props.companyInfo.currency;
-    let formattedPrice = (this.getCurrency(totalPrice + deliveryFee) || "").split(currency && currency.code || " ")[1];
-    let totalAmount = (this.getCurrency(dataBasket && dataBasket.totalNettAmount + deliveryFee) || "").split(currency && currency.code || " ")[1]
+    let formattedPrice = (this.getCurrency(totalPrice + deliveryFee) || "").split((currency && currency.code) || " ")[1];
+    let totalAmount = (this.getCurrency(dataBasket && dataBasket.totalNettAmount + deliveryFee) || "").split((currency && currency.code) || " ")[1]
     let basketLength = 0;
     if (basket && basket.details) {
       basket.details.forEach((cart) => {
@@ -828,7 +822,6 @@ class Payment extends Component {
     return (
       <div>
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}
-        <a id="newTabLink" target="_blank" href="https://www.google.com/" />
         <div
           className="col-full"
           style={{

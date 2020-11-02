@@ -36,7 +36,7 @@ function getBasketPending() {
     if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       let dataPending = response.data
-      let dataPendingLength = dataPending && dataPending.length || 0
+      let dataPendingLength = (dataPending && dataPending.length) || 0
       response.data = { dataPending, dataPendingLength }
     }
     return response

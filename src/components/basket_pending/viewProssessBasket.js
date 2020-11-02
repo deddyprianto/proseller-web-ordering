@@ -20,10 +20,10 @@ export default class ViewProsessBasket extends Component {
               <Lottie
                 options={{
                   animationData: (
-                    props.dataBasket.status === "PROCESSING" && processingCollection ||
-                    props.dataBasket.status === "READY_FOR_COLLECTION" && readyCollection ||
-                    props.dataBasket.status === "READY_FOR_DELIVERY" && readyCollection ||
-                    props.dataBasket.status === "ON_THE_WAY" && onTheWay
+                    (props.dataBasket.status === "PROCESSING" && processingCollection) ||
+                    (props.dataBasket.status === "READY_FOR_COLLECTION" && readyCollection) ||
+                    (props.dataBasket.status === "READY_FOR_DELIVERY" && readyCollection) ||
+                    (props.dataBasket.status === "ON_THE_WAY" && onTheWay)
                   )
                 }}
               />

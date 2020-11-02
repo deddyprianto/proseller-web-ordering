@@ -11,8 +11,8 @@ import SignUp from "./Signup";
 import { lsLoad, lsStore } from "../../helpers/localStorage";
 
 import config from "../../config";
-import Iframe from "react-iframe";
 
+const regEmail = /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
 
@@ -121,17 +121,17 @@ class LoginRegister extends Component {
         this.setState({ enableRegisterWithPassword: enableRegisterWithPassword.settingValue });
       }
 
+      let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
+      if (loginByMobile) {
+        this.setState({ loginByMobile: loginByMobile.settingValue });
+      }
+
       let loginByEmail = this.props.setting.find(items => { return items.settingKey === "LoginByEmail" })
       if (loginByEmail) {
         this.setState({ loginByEmail: loginByEmail.settingValue });
       }
       if (loginByEmail && loginByEmail.settingValue && loginByMobile && !loginByMobile.settingValue) {
         this.setState({ method: 'email' });
-      }
-
-      let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
-      if (loginByMobile) {
-        this.setState({ loginByMobile: loginByMobile.settingValue });
       }
 
       let mobileOTP = this.props.setting.find(items => { return items.settingKey === "MobileOTP" })
@@ -288,13 +288,13 @@ class LoginRegister extends Component {
       );
       response = response.Data;
       // console.log(response)
-      if (response.status === false) {
+      if (response && response.status === false) {
         this.setState({
           userStatus: "NOT_REGISTERED",
           payloadResponse: { phoneNumber },
           btnSubmit: false,
         });
-      } else {
+      } else if(response) {
         if (response.data.status === "SUSPENDED") {
           Swal.fire(
             "Suspended!",
@@ -475,7 +475,7 @@ class LoginRegister extends Component {
       }
       
       let errorEmail = "";
-      let cekEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+      let cekEmail = regEmail.test(String(email).toLowerCase());
       if (!cekEmail) errorEmail = "Email not valid";
 
       let errorPassword = "";
@@ -505,7 +505,7 @@ class LoginRegister extends Component {
 
       let listName = ""
       mandatory.forEach(field => {
-        if( !payload[field.fieldName] || payload[field.fieldName] && payload[field.fieldName] === "" ) {
+        if( !payload[field.fieldName] || (payload[field.fieldName] && payload[field.fieldName] === "") ) {
           if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
             payload[field.fieldName] = this.state[field.fieldName]
             field.check = true
@@ -594,9 +594,7 @@ class LoginRegister extends Component {
     if (email === "") {
       this.setState({ errorEmail: "Email is empty", isLoading: false });
     } else {
-      let cekEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-        email
-      );
+      let cekEmail = regEmail.test(String(email).toLowerCase());
       if (cekEmail) {
         let response = await this.props.dispatch(AuthActions.check({ email }));
         response = response.Data;
@@ -792,7 +790,7 @@ class LoginRegister extends Component {
 
       let listName = ""
       mandatory.forEach(field => {
-        if( !payload[field.fieldName] || payload[field.fieldName] &&  payload[field.fieldName] === "" ) {
+        if( !payload[field.fieldName] || (payload[field.fieldName] &&  payload[field.fieldName] === "") ) {
           if(this.state[field.fieldName] && this.state[field.fieldName] !== ""){
             payload[field.fieldName] = this.state[field.fieldName]
             field.check = true

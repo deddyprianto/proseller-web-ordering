@@ -315,8 +315,13 @@ class ModalProduct extends Component {
       <div className="card card-modifier">
         <div style={{ marginLeft: 5, marginRight: 10 }}>
           {item.modifier.details.map((data) => (
-            <div className="item-modifier">
-              <a
+            <div 
+              className="item-modifier"
+              style={{
+                display: "flex", paddingBottom: 15, alignItems: "center"
+            }}>
+              <div 
+                style={{display: "flex", alignItems: "center"}}
                 className="title-modifier"
                 onClick={() => this.addItemIsYesNo(data)}
               >
@@ -326,9 +331,9 @@ class ModalProduct extends Component {
                   className="scaled-checkbox form-check-input checkbox-modifier"
                   onClick={() => this.addItemIsYesNo(data)}
                 />
-                <span className="subtitle-modifier">{item.modifierName}</span>
-              </a>
-              <p>{this.getCurrency(data.price)}</p>
+                <div className="subtitle-modifier" style={{lineHeight: "20px", marginRight: 10}}>{item.modifierName}</div>
+              </div>
+              <div>{this.getCurrency(data.price)}</div>
             </div>
           ))}
         </div>
@@ -359,8 +364,9 @@ class ModalProduct extends Component {
                 className={
                   data.orderingStatus === "UNAVAILABLE" ? "item-modifier product-unavailable" : "item-modifier"
                 }
+                style={{display: "flex", alignItems: "center", paddingBottom: 15}}
               >
-                <a>
+                <div style={{display: "flex", alignItems: "center"}}>
                   <input
                     type="checkbox"
                     checked={
@@ -370,13 +376,13 @@ class ModalProduct extends Component {
                     className="scaled-checkbox form-check-input checkbox-modifier"
                     onClick={() => this.addItemIsYesNo(data, "checkbox")}
                   />
-                  <a className="subtitle-modifier">
+                  <div className="subtitle-modifier" style={{lineHeight: "20px", marginRight: 10}}>
                     <span className="color">
                       {data.quantity !== undefined && data.quantity !== 0 ? `${data.quantity}x ` : null}
                     </span>
-                    <a onClick={() => this.addItemIsYesNo(data, "checkbox")}>
+                    <span onClick={() => this.addItemIsYesNo(data, "checkbox")}>
                       {data.name}
-                    </a>
+                    </span>
                     {data.quantity !== undefined && data.quantity !== 0 ? (
                       <span
                         onClick={() => this.setState({ selectedModifier: data })}
@@ -388,12 +394,12 @@ class ModalProduct extends Component {
                         more
                       </span>
                     ) : null}
-                  </a>
-                </a>
+                  </div>
+                </div>
                 {
                   data.orderingStatus === "UNAVAILABLE" ?  
-                  <p>UNAVAILABLE</p> : 
-                  <p>{this.getCurrency(data.price)}</p>
+                  <div>UNAVAILABLE</div> : 
+                  <div>{this.getCurrency(data.price)}</div>
                 }
               </div>
             ))}
@@ -468,12 +474,12 @@ class ModalProduct extends Component {
             {item.modifier.details.map((data) => (
               <div
                 className={
-                  data.orderingStatus === "UNAVAILABLE"
-                    ? "item-modifier product-unavailable"
-                    : "item-modifier"
+                  data.orderingStatus === "UNAVAILABLE" ? "item-modifier product-unavailable" : "item-modifier"
                 }
+                style={{display: "flex", alignItems: "center", paddingBottom: 15}}
               >
-                <a
+                <div
+                  style={{display: "flex", alignItems: "center"}}
                   className="title-modifier"
                   onClick={() => this.addItemIsYesNo(data)}
                 >
@@ -484,12 +490,12 @@ class ModalProduct extends Component {
                     onClick={() => this.addItemIsYesNo(data)}
                   />
 
-                  <span className="subtitle-modifier">{data.name}</span>
-                </a>
+                  <div className="subtitle-modifier" style={{lineHeight: "20px", marginRight: 10}}>{data.name}</div>
+                </div>
                 {
                   data.orderingStatus === "UNAVAILABLE" ? 
-                  <p>UNAVAILABLE</p> :
-                  <p>{this.getCurrency(data.price)}</p>
+                  <div>UNAVAILABLE</div> :
+                  <div>{this.getCurrency(data.price)}</div>
                 }
               </div>
             ))}
@@ -541,7 +547,7 @@ class ModalProduct extends Component {
                 <center>
                   <img
                     className="detail-image attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1"
-                    src={this.renderImageProduct(selectedItem)}
+                    src={this.renderImageProduct(selectedItem)} alt="product"
                   />
                 </center>
               </div>
@@ -811,7 +817,7 @@ class ModalProduct extends Component {
     orderValidation.minAmount = orderValidation.minAmount || 0
     orderValidation.maxAmount = orderValidation.maxAmount || 0
 
-    if(!nickname || nickname && nickname === "") nickname = false
+    if(!nickname || (nickname && nickname === "")) nickname = false
     
     return (
       <div

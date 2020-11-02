@@ -61,7 +61,7 @@ const OtpField = ({
 
       {
         enableWhatsappOTP && (
-          enableSMSOTP && sendCounter <= 2 ||
+          (enableSMSOTP && sendCounter <= 2) ||
           !enableSMSOTP
         ) && method === "phone" &&
         <Button

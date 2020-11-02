@@ -42,9 +42,9 @@ class ItemsBasket extends Component {
     product = JSON.parse(product);
 
     try {
-      await product.product.productModifiers.map((group, i) => {
+      await product.product.productModifiers.forEach((group, i) => {
         if (!isEmptyArray(group.modifier.details))
-          group.modifier.details.map((detail, j) => {
+          group.modifier.details.forEach((detail, j) => {
             delete detail.quantity;
 
             if (group.modifier.min !== 0 && group.modifier.min !== undefined) {
@@ -95,36 +95,36 @@ class ItemsBasket extends Component {
             // fill the modifier
             if (!isEmptyArray(find.modifiers)) {
               product.product.productModifiers &&
-                product.product.productModifiers.map((group, i) => {
-                  group.modifier.details.map((detail, j) => {
-                    find.modifiers.map((data) => {
-                      data.modifier.details.map((item) => {
-                        // make mark that item is in basket
-                        if (data.modifierID === group.modifierID) {
+              product.product.productModifiers.forEach((group, i) => {
+                group.modifier.details.forEach((detail, j) => {
+                  find.modifiers.forEach(data => {
+                    data.modifier.details.forEach(item => {
+                      // make mark that item is in basket
+                      if (data.modifierID === group.modifierID) {
+                        product.product.productModifiers[
+                          i
+                        ].postToServer = true;
+                        // set quantity basket to product that openend
+                        if (item.id === detail.id) {
+                          // check for radio button
+                          if (group.modifier.max === 1) {
+                            product.product.productModifiers[
+                              i
+                            ].modifier.show = data.modifier.show;
+                          }
                           product.product.productModifiers[
                             i
-                          ].postToServer = true;
-                          // set quantity basket to product that openend
-                          if (item.id === detail.id) {
-                            // check for radio button
-                            if (group.modifier.max === 1) {
-                              product.product.productModifiers[
-                                i
-                              ].modifier.show = data.modifier.show;
-                            }
-                            product.product.productModifiers[
-                              i
-                            ].modifier.details[j].quantity = item.quantity;
-                            // for is selected
-                            product.product.productModifiers[
-                              i
-                            ].modifier.details[j].isSelected = item.isSelected;
-                          }
+                          ].modifier.details[j].quantity = item.quantity;
+                          // for is selected
+                          product.product.productModifiers[
+                            i
+                          ].modifier.details[j].isSelected = item.isSelected;
                         }
-                      });
+                      }
                     });
                   });
                 });
+              });
             }
           }
         } else {

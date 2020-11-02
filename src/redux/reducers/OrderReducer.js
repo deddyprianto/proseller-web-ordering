@@ -5,7 +5,7 @@ import config from "../../config";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
-  basket: {},
+  basket: JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`)) || {},
   productsSearch: undefined,
   deliveryProviders: null,
   setting: [],

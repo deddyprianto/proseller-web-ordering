@@ -27,7 +27,7 @@ const UpdateProductModal = ({
     return () => {
       document.body.style.overflowY = "scroll";
     };
-  });
+  }, []);
 
   const handleEdit = (item) => {
     const { quantity, id, modifiers } = item;

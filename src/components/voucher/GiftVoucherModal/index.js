@@ -51,7 +51,7 @@ const GiftVoucherModal = ({
     return () => {
       document.body.style.overflowY = "scroll";
     };
-  });
+  }, []);
 
   useEffect(() => {
     if (count > voucher.totalRedeem) {

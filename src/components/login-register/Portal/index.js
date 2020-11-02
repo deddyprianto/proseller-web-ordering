@@ -20,7 +20,7 @@ let Portal = ({
 }) => {
   // console.log(companyInfo)
   // let [method, setMethod] = useState(initialMethod);
-  let initialCountry = companyInfo && companyInfo.countryCode || "SG";
+  let initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
   let initialCodePhone = "+65";
 
   let [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
@@ -119,7 +119,7 @@ let Portal = ({
           Next
         </Button>
         {
-          (method === 'email' && loginByMobile || method === 'phone' && loginByEmail) &&
+          ((method === 'email' && loginByMobile) || (method === 'phone' && loginByEmail)) &&
           <div
             className={cx("modal-title", styles.switchMethodButton)}
             onClick={() => handleMethodChange(method === "phone" ? "email" : "phone")}

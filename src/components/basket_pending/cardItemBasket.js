@@ -20,10 +20,7 @@ class CardItemBasket extends Component {
     let item = this.props.data;
     const { currency } = this.props.companyInfo;
     return (
-      <div
-        style={{ width: "100%", display: "flex", cursor: "pointer" }}
-        onClick={() => !this.props.roleBtnClear && this.props.openModal(item)}
-      >
+      <div style={{ width: "100%", display: "flex", cursor: "pointer" }} >
         <div
           className="profile-dashboard"
           style={{

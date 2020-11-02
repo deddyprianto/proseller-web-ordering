@@ -165,11 +165,12 @@ class Header extends Component {
                         value={defaultOutlet.id}
                       >
                         {outlets &&
-                          outlets.map((outlet) => (
+                          outlets.map((outlet, key) => (
                             <option
+                              key={key}
                               ref={this.state.outletsRefs[outlet.id]}
                               value={outlet.id}
-                              selected={outlet.id === defaultOutlet.id}
+                              // selected={outlet.id === defaultOutlet.id}
                             >
                               {outlet.name}
                             </option>

@@ -91,7 +91,6 @@ class Basket extends Component {
   componentDidMount = async () => {
     await this.checkOfflineCart();
     this.audio.addEventListener("ended", () => this.setState({ play: false }));
-    JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`));
 
     let param = this.getUrlParameters();
     if (param && param["input"]) {
@@ -135,7 +134,7 @@ class Basket extends Component {
 
       if (isEmptyObject(offlineCart)) return;
       await this.props.dispatch(OrderAction.deleteCart(true));
-      if (account !== undefined && account !== null) {
+      if (account) {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,
@@ -215,6 +214,7 @@ class Basket extends Component {
     if (!dataBasket) dataBasket = await this.getDataBasket_();
 
     if (dataBasket) {
+      console.log(dataBasket)
       // set delivery provider
       let provaiderDelivery = {}
       if ( deliveryAddress && orderingMode !== "DINEIN" && orderingMode !== "TAKEAWAY") {
@@ -256,8 +256,8 @@ class Basket extends Component {
       if(deliveryAddress && provaiderDelivery && dataBasket.orderingMode === "DELIVERY"){
         let payloadMoveCart = {
           orderBy: "provider",
-          provider: provaiderDelivery && provaiderDelivery.id || "",
-          location: locationCustomer && locationCustomer || {},
+          provider: (provaiderDelivery && provaiderDelivery.id) || "",
+          location: (locationCustomer && locationCustomer) || {},
           cart: dataBasket,
           deliveryAddress
         }
@@ -432,7 +432,7 @@ class Basket extends Component {
 
     let minutesActive = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from];
 
-    if (!checkOperationalHours.status || minutesActive && minutesActive.length === 0) {
+    if (!checkOperationalHours.status || (minutesActive && minutesActive.length === 0)) {
       minutesActive[0] = minuteStartDay.toString().length === 1 ? `0${minuteStartDay}` : minuteStartDay
       orderingTimeHours[0] = hoursStartDay.toString().length === 1 ? `0${hoursStartDay}` : hoursStartDay
       let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
@@ -545,10 +545,9 @@ class Basket extends Component {
             let validHourFrom = validHour.from;
             let validHourTo = validHour.to;
             if (activeWeekDays[date.getDay()].active) {
-              let statusValidHour = moment(moment().format()).isBetween(
-                tanggal + "T" + validHourFrom + ":00" + "+" + region,
-                tanggal + "T" + validHourTo + ":00" + "+" + region
-              );
+              let from = `${tanggal}T${validHourFrom}:00+${region}`
+              let to = `${tanggal}T${validHourTo}:00+${region}`
+              let statusValidHour = moment(moment().format()).isBetween(from,to);
               if (statusValidHour) {
                 if (voucherType === "discPercentage") {
                   discount =
@@ -914,7 +913,7 @@ class Basket extends Component {
     if (
       orderingMode === "DINEIN" &&
       storeDetail.outletType === "RESTO" &&
-      (!scanTable || scanTable && !scanTable.tableNo)
+      (!scanTable || (scanTable && !scanTable.tableNo))
     ) {
       return true;
     } else if (
@@ -922,7 +921,7 @@ class Basket extends Component {
       storeDetail.outletType === "QUICKSERVICE" &&
       storeDetail.enableTableScan !== false &&
       storeDetail.enableDineIn !== false &&
-      (!scanTable || scanTable && !scanTable.tableNo)
+      (!scanTable || (scanTable && !scanTable.tableNo))
     ) {
       return true;
     }

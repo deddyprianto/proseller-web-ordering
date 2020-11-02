@@ -66,10 +66,10 @@ const ViewCartBasket = ({
 
   const roleBtnSettle = () => {
     return !props.btnBasketOrder ||
-      props.storeDetail &&
-      props.storeDetail.orderingStatus === "UNAVAILABLE" ||
-      basket && basket.status === "PROCESSING" ||
-      basket && basket.status === "READY_FOR_COLLECTION" ||
+      (props.storeDetail &&
+      props.storeDetail.orderingStatus === "UNAVAILABLE") ||
+      (basket && basket.status === "PROCESSING") ||
+      (basket && basket.status === "READY_FOR_COLLECTION") ||
       (basket &&
         basket.status === "SUBMITTED" &&
         basket.orderingMode === "DINEIN" &&
@@ -175,10 +175,10 @@ const ViewCartBasket = ({
       maxAmount > 0) ||
     productQuantity < minQty ||
     (productQuantity > maxQty && maxQty > 0) ||
-    data.dataBasket.orderingMode === "DELIVERY" &&
-    !deliveryProvider ||
-    deliveryProvider &&
-    deliveryProvider.deliveryFeeFloat < 0
+    (data.dataBasket.orderingMode === "DELIVERY" &&
+    !deliveryProvider) ||
+    (deliveryProvider &&
+    deliveryProvider.deliveryFeeFloat < 0)
   )
 
   return (

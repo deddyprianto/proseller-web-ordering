@@ -85,6 +85,7 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
+    await props.dispatch(OrderAction.getSettingOrdering());
     if(window.location.hash.split("#")[1] === "/signin" && !isLoggedIn){
       try {
         document.getElementById("login-register-btn").click();
@@ -155,8 +156,7 @@ const App = (props) => {
     }
   }, [deliveryAddress, deliveryProviders, setting]);
 
-  useEffect(async () => {
-    await props.dispatch(OrderAction.getSettingOrdering());
+  useEffect(() => {
     checkUser();
   }, []);
 

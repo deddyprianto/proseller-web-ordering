@@ -58,7 +58,7 @@ export default class SelectPicupDateTime extends Component {
                     <input
                       type="date"
                       min={date}
-                      max={maxDay && moment().add(maxDay, "d").format("YYYY-MM-DD") || date}
+                      max={(maxDay && moment().add(maxDay, "d").format("YYYY-MM-DD")) || date}
                       value={props.orderActionDate}
                       className={cx(styles.input, {
                         [styles.rounded]: false,
@@ -80,6 +80,7 @@ export default class SelectPicupDateTime extends Component {
                       >
                         {
                           props.orderingTimeHours.map((items, key) => (
+                            props.orderingTimeMinutes[items] && 
                             props.orderingTimeMinutes[items].length > 0 &&
                             <option key={key} value={items}>{items}</option>
                           ))

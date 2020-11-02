@@ -52,7 +52,7 @@ class ModalOrderingMode extends Component {
     orderValidation.minAmount = orderValidation.minAmount || 0
     orderValidation.maxAmount = orderValidation.maxAmount || 0
 
-    if(!nickname || nickname && nickname === "") nickname = false
+    if(!nickname || (nickname && nickname === "")) nickname = false
     
     return (
       <div

@@ -134,9 +134,9 @@ function processAddCart(defaultOutlet, selectedItem) {
 
       //  calculate total modifier
       let totalModifier = 0;
-      await product.modifiers.map((group) => {
+      await product.modifiers.forEach(group => {
         if (group.postToServer === true) {
-          group.modifier.details.map((detail) => {
+          group.modifier.details.forEach(detail => {
             if (detail.quantity !== undefined && detail.quantity > 0) {
               totalModifier += parseFloat(detail.quantity * detail.price);
             }
@@ -204,9 +204,9 @@ function processUpdateCart(basket, products) {
         }
 
         //  calculate total modifier
-        await dataproduct.modifiers.map((group, i) => {
+        await dataproduct.modifiers.forEach(group => {
           if (group.postToServer === true) {
-            group.modifier.details.map((detail) => {
+            group.modifier.details.forEach(detail => {
               if (detail.quantity !== undefined && detail.quantity > 0) {
                 totalModifier += parseFloat(detail.quantity * detail.price);
               }
@@ -239,8 +239,8 @@ function processUpdateCart(basket, products) {
 }
 
 function processOfflineCart(payload, mode) {
-  try {
-    return async (dispatch) => {
+  return async (dispatch) => {
+    try {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (isEmptyObject(offlineCart) || isEmptyArray(offlineCart.details)) {
@@ -268,8 +268,8 @@ function processOfflineCart(payload, mode) {
           return await dispatch(buildCart(offlineCart));
         }
       }
-    };
-  } catch (e) { }
+    } catch (e) {}
+  };
 }
 
 function moveCart(payload) {
@@ -291,8 +291,9 @@ function addCart(payload) {
     } catch (e) { }
 
     // console.log(response)
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
-    else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    if (!(response.ResultCode >= 400 || response.resultCode >= 400)){
+      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    }
   };
 }
 
@@ -341,12 +342,7 @@ function buildCart(payload = {}) {
 
 function updateCart(payload) {
   return async (dispatch) => {
-    const response = await OrderingService.api(
-      "POST",
-      payload,
-      `cart/updateitem`,
-      "Bearer"
-    );
+    await OrderingService.api( "POST", payload, `cart/updateitem`, "Bearer" );
     try {
       document.getElementById("close-modal").click();
     } catch (e) { }
@@ -357,7 +353,7 @@ function updateCart(payload) {
 function getCart(isSetData = true) {
   return async (dispatch) => {
     // IF CUSTOMER NOT LOGIN
-    if (account === undefined) {
+    if (!account) {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {
@@ -368,7 +364,6 @@ function getCart(isSetData = true) {
     }
 
     const response = await OrderingService.api( "GET", null, `cart/getcart`, "Bearer");
-    
     if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     else if (response.data && response.data.message !== "No details data") {
       if (isSetData) return dispatch(setData(response.data, CONSTANT.DATA_BASKET));

@@ -390,10 +390,9 @@ class Basket extends Component {
             let validHourFrom = validHour.from;
             let validHourTo = validHour.to;
             if (activeWeekDays[date.getDay()].active) {
-              let statusValidHour = moment(moment().format()).isBetween(
-                tanggal + "T" + validHourFrom + ":00" + "+" + region,
-                tanggal + "T" + validHourTo + ":00" + "+" + region
-              );
+              let from = `${tanggal}T${validHourFrom}:00+${region}`
+              let to = `${tanggal}T${validHourTo}:00+${region}`
+              let statusValidHour = moment(moment().format()).isBetween(from,to);
               if (statusValidHour) {
                 if (voucherType === "discPercentage") {
                   discount =

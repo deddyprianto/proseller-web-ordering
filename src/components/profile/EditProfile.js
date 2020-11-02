@@ -114,6 +114,8 @@ class EditProfile extends Component {
     if(field === "newPhoneNumber") field = "phoneNumber"
     if(field === "newEmail") field = "email"
 
+    let defaultError = this.state.defaultError
+    let defaultEdit = this.state.defaultEdit 
     let result = true
     let mandatoryData = {}
     this.props.fields && this.props.fields.find(items => { 
@@ -123,6 +125,7 @@ class EditProfile extends Component {
       } else {
         if(items.fieldName.toLowerCase() === field.toLowerCase()) mandatoryData = items
       }
+      return items
     })
 
     if(/^\s/.test(value)) value = value.trim()
@@ -132,36 +135,36 @@ class EditProfile extends Component {
       value === ", undefined" || 
       value === ", ") && 
       (
-        mandatoryData && mandatoryData.mandatory ||
-        !mandatoryData
+        (mandatoryData && mandatoryData.mandatory) || !mandatoryData
       )
     ) {
-      this.state.defaultError[field] = `${mandatoryData && mandatoryData.displayName || field} is required`
+      defaultError[field] = `${(mandatoryData && mandatoryData.displayName) || field} is required`
       result = false
-    } else this.state.defaultError[field] = "" 
+    } else defaultError[field] = "" 
 
     if(field === "name" && result) {
       if(!(/^[A-Za-z\s]+$/.test(value))){
-        this.state.defaultError[field] = `${mandatoryData.displayName} is alphabets only`
+        defaultError[field] = `${mandatoryData.displayName} is alphabets only`
         result = false
-      } else this.state.defaultError[field] = ""
+      } else defaultError[field] = ""
     }
 
     if(field === "newPassword" || field === "oldPassword") {
       if(!(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(value) && value.length >= 8)){
-        this.state.defaultError[field] = `Minimum password is 8 characters consisting of an uppercase, lowercase and number`
+        defaultError[field] = `Minimum password is 8 characters consisting of an uppercase, lowercase and number`
         result = false
-      } else this.state.defaultError[field] = ""
+      } else defaultError[field] = ""
     }
 
     if(field === "retypeNewPassword") {
       if(this.state.newPassword === this.state.retypeNewPassword){
-        this.state.defaultError[field] = `Retype password is different from new password`
+        defaultError[field] = `Retype password is different from new password`
         result = false
-      } else this.state.defaultError[field] = ""
+      } else defaultError[field] = ""
     }
 
-    this.state.defaultEdit[field] = true
+    defaultEdit[field] = true
+    this.setState({defaultError, defaultEdit }) 
     return {status: result, displayName: mandatoryData.displayName}
   }
 
@@ -191,7 +194,7 @@ class EditProfile extends Component {
         return;
       }
 
-      const payloadEditProfile = { oldPassword, newPassword, newPassword, };
+      const payloadEditProfile = { oldPassword, newPassword, retypeNewPassword, };
 
       let resChangePassword = await this.props.dispatch(
         CustomerAction.updatePassword(payloadEditProfile)
@@ -248,8 +251,11 @@ class EditProfile extends Component {
   };
 
   clearData = () => {
-    this.state.defaultEdit.password = false
+    let defaultEdit= this.state.defaultEdit
+    defaultEdit['password'] = false
+
     this.setState({
+      defaultEdit,
       newPassword: "",
       retypeNewPassword: "",
       oldPassword: "",
@@ -259,8 +265,11 @@ class EditProfile extends Component {
   };
 
   toggleEditPassword = () => {
-    this.state.defaultEdit.password = !this.state.defaultEdit.password
+    let defaultEdit= this.state.defaultEdit
+    defaultEdit['password'] = false
+    
     this.setState({
+      defaultEdit,
       newPassword: "",
       retypeNewPassword: "",
       oldPassword: "",

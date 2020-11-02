@@ -16,7 +16,7 @@ export default class TableNo extends Component {
             (props.orderingMode === "TAKEAWAY") ||
             (props.orderingMode === "STOREPICKUP") ||
             (props.orderingMode === "STORECHECKOUT")
-          ) ? props.dataBasket.queueNo : (props.scanTable && (props.scanTable.table || props.scanTable.tableNo) || props.dataBasket.tableNo)}</div>
+          ) ? props.dataBasket.queueNo : ((props.scanTable && (props.scanTable.table || props.scanTable.tableNo)) || props.dataBasket.tableNo)}</div>
       </div>
     );
   }
