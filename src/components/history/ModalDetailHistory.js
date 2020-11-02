@@ -27,6 +27,7 @@ class ModalDetailHistory extends Component {
         }
       });
     }
+    console.log(detail)
 
     return (
       <div>

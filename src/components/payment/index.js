@@ -666,6 +666,9 @@ class Payment extends Component {
     }
 
     if(selectedCard) {
+      if(this.props.deliveryProvider && this.props.deliveryProvider.deliveryFeeFloat){
+        totalPrice = totalPrice + this.props.deliveryProvider.deliveryFeeFloat
+      }
       payload.payments.push({
         paymentType: selectedCard.paymentID,
         paymentID: selectedCard.paymentID,
