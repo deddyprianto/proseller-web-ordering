@@ -214,8 +214,7 @@ function getVoucher() {
       "customer/vouchers",
       "bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     else {
       let selectedVoucher = encryptor.decrypt(
         JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))

@@ -228,7 +228,7 @@ class ModalDeliveryAdderss extends Component {
                     style={{ marginTop: 10 }}
                   >
                     <label>
-                      Street Name<span className="required">*</span>
+                      Street Name <span className="required">*</span>
                     </label>
                     <Input
                       type="text"

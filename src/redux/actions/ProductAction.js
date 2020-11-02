@@ -5,6 +5,7 @@ import { isEmptyArray } from '../../helpers/CheckEmpty';
 export const ProductAction = {
   fetchCategoryProduct,
   fetchProduct,
+  getCollection
 };
 
 function fetchCategoryProduct(outlet) {
@@ -39,6 +40,17 @@ function fetchProduct(category, outlet, skip, take) {
   return async dispatch => {
     const data = await ProductService.api('POST', payload, `productpreset/loaditems/${PRESET_TYPE}/${OUTLET_ID}/${categoryID}`);
     return data;
+  }
+
+}
+
+function getCollection(id) {
+  return async (dispatch) => {
+    try {
+      let response = await ProductService.api('GET', null, `collection/get/${id}`, 'Bearer');
+      if(response.resultCode !== 200) return {}
+      return response.data;
+    } catch (error) {}
   }
 
 }

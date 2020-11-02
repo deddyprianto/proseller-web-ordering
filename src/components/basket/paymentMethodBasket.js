@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 class PaymentMethodBasket extends Component {
   render() {
     let props = this.props.data
-    let colorText = this.props.disabledBtn ? "#777" : (this.props.color.primary || "#c00a27") 
+    let colorText = (this.props.disabledBtn || props.selectedCard )? "#777" : (this.props.color.primary || "#c00a27") 
     return (
       <div style={{ 
         display: "flex", flexDirection: "row", justifyContent: "space-between", 

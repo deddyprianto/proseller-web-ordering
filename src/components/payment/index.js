@@ -16,6 +16,7 @@ import config from "../../config";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
+import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
 
 const Swal = require("sweetalert2");
@@ -153,6 +154,7 @@ class Payment extends Component {
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
         this.togglePlay();
+        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"))
         await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
         this.props.history.push("/settleSuccess");
         this.setState({ isLoading: false, showPaymentPage: false });
@@ -205,6 +207,7 @@ class Payment extends Component {
       localStorage.removeItem(`${config.prefix}_selectedVoucher`);
       localStorage.removeItem(`${config.prefix}_dataSettle`);
       this.togglePlay();
+      await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"))
       await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
       this.props.history.push("/settleSuccess");
       this.setState({ isLoading: false, isLoadingPOS: false });
@@ -258,13 +261,14 @@ class Payment extends Component {
     if(selectedVoucher){
       await this.props.dispatch(PaymentAction.setData(selectedVoucher, "SELECT_VOUCHER"))
       this.setState({voucherDiscountList: [], discountVoucher: 0})
-      selectedVoucher.forEach(async element => {
+      for (let index = 0; index < selectedVoucher.length; index++) {
+        let element = selectedVoucher[index];
         await this.getStatusVoucher(
           element,
           dataSettle.storeDetail,
           dataSettle.dataBasket
-        );    
-      });
+        ); 
+      }
     }
 
     const point = selectedPoint || 0;
@@ -277,7 +281,9 @@ class Payment extends Component {
     if (dataSettle.detailPoint.roundingOptions !== "DECIMAL") discountPoint = Math.floor(discountPoint);
     else discountPoint = discountPoint.toFixed(2);
 
-    let discount = Number(discountPoint) + this.state.discountVoucher;
+    let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
+    let discount = Number(discountPoint) + voucherDiscount;
+
     let totalPrice = dataSettle.dataBasket.totalNettAmount - discount < 0 ? 0 : dataSettle.dataBasket.totalNettAmount - discount;
     this.setState({
       ...dataSettle,
@@ -289,7 +295,7 @@ class Payment extends Component {
     });
   };
 
-  getStatusVoucher = (selectedVoucher, storeDetail, dataBasket) => {
+  getStatusVoucher = async (selectedVoucher, storeDetail, dataBasket) => {
     if (selectedVoucher !== null) {
       let checkOutlet = false;
       if (
@@ -307,12 +313,34 @@ class Payment extends Component {
       let discountVoucher = this.state.discountVoucher
       let checkProduct = undefined;
 
-      if (dataBasket.details && dataBasket.details.length > 0 && selectedVoucher.appliedTo === "PRODUCT") {
-        dataBasket.details.forEach(details => {
-          let check = selectedVoucher.appliedItems.find(items => { return items.value === details.product.id})
-          if(check) checkProduct = check
-        });
-      }
+      if (dataBasket.details && dataBasket.details.length > 0) {
+        if(selectedVoucher.appliedTo === "PRODUCT"){
+          for (let i = 0; i < dataBasket.details.length; i++) {
+            let details = dataBasket.details[i];
+            let check = selectedVoucher.appliedItems.find(items => { return items.value === details.product.id})
+            if(check) checkProduct = details
+          }
+        } else if(selectedVoucher.appliedTo === "COLLECTION"){
+          for (let index = 0; index < selectedVoucher.appliedItems.length; index++) {
+            let appliedItems = selectedVoucher.appliedItems[index];
+            let collection = await this.props.dispatch(ProductAction.getCollection(appliedItems.value.split("::")[1]))
+            
+            if(collection.products){
+              for (let i = 0; i < dataBasket.details.length; i++) {
+                let details = dataBasket.details[i];
+                let check = collection.products.find(items => { return items.id === details.product.id })
+                if(check) checkProduct = details
+              }
+            }
+          }
+        } else if(selectedVoucher.appliedTo === "CATEGORY"){
+          for (let i = 0; i < dataBasket.details.length; i++) {
+            let details = dataBasket.details[i];
+            let check = selectedVoucher.appliedItems.find(items => { return items.value === details.categoryID.split("::")[1]})
+            if(check) checkProduct = details
+          }
+        }
+      } 
 
       let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
       let voucherDiscountList = {
@@ -324,7 +352,7 @@ class Payment extends Component {
       }
 
       if (checkOutlet) {
-        if (selectedVoucher.appliedTo === "PRODUCT" && selectedVoucher.appliedItems) {
+        if (selectedVoucher.appliedItems) {
           if (checkProduct) {
             let date = new Date();
             let tanggal = moment().format().split("T")[0];
@@ -338,13 +366,12 @@ class Payment extends Component {
               let to = `${tanggal}T${validHourTo}:00+${region}`
               let statusValidHour = moment(moment().format()).isBetween(from,to);
               if (statusValidHour) {
+                discount = voucherValue;
                 if (voucherType === "discPercentage") {
                   discount =
                     Number(checkProduct.unitPrice) *
                     Number(checkProduct.quantity) *
                     (Number(voucherValue) / 100);
-                } else {
-                  discount = voucherValue;
                 }
 
                 if (selectedVoucher.capAmount !== undefined) {
@@ -360,10 +387,10 @@ class Payment extends Component {
                   return items.paymentType === "voucher" && items.voucherId === selectedVoucher.id && items.paymentAmount
                 });
 
-                if(checkProduct.unitPrice - voucherDiscount > 0){
+                if(checkProduct.nettAmount - voucherDiscount > 0){
                   voucherDiscountList.paymentAmount = discount 
-                  if(discount > (checkProduct.unitPrice - (voucherDiscount || 0)) ){
-                    voucherDiscountList.paymentAmount = (checkProduct.unitPrice - (voucherDiscount || 0))
+                  if(discount > (checkProduct.nettAmount - (voucherDiscount || 0)) ){
+                    voucherDiscountList.paymentAmount = Number((checkProduct.nettAmount - (voucherDiscount || 0)).toFixed(2))
                   }
                   
                   this.state.voucherDiscountList.push(voucherDiscountList)
@@ -373,16 +400,17 @@ class Payment extends Component {
                     selectedVoucher,
                   });
                 } else {
-                  this.handleCancelVoucher(selectedVoucher)
+                  // this.handleCancelVoucher(selectedVoucher)
+                  this.setRemoveVoucher("Sorry, the discount has exceeded the total price for a specific product!", selectedVoucher);
                 }
               } else {
-                this.setRemoveVoucher("Voucher not available this time!", selectedVoucher);
+                this.setRemoveVoucher("Sorry, this voucher not available this time!", selectedVoucher);
               }
             } else {
-              this.setRemoveVoucher("Voucher not available today!", selectedVoucher);
+              this.setRemoveVoucher("Sorry, this voucher not available today!", selectedVoucher);
             }
           } else {
-            this.setRemoveVoucher("Voucher only available this product!", selectedVoucher);
+            this.setRemoveVoucher(`Sorry, voucher ${selectedVoucher.name} is only available on specific product!`, selectedVoucher);
           }
         } else {
           if (voucherType === "discPercentage") {
@@ -875,7 +903,7 @@ class Payment extends Component {
                           {
                             totalAmount !== formattedPrice &&
                             <div style={{textAlign: "right", marginRight: -10, textDecorationLine: "line-through"}}>
-                              {(this.getCurrency(dataBasket.totalNettAmount) || "").split(this.props.companyInfo && this.props.companyInfo.currency.code)[1]}
+                              {(this.getCurrency(totalAmount) || "").split(this.props.companyInfo && this.props.companyInfo.currency.code)[1]}
                             </div>
                           }
                         </div>

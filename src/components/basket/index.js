@@ -214,7 +214,9 @@ class Basket extends Component {
     if (!dataBasket) dataBasket = await this.getDataBasket_();
 
     if (dataBasket) {
-      console.log(dataBasket)
+      if(!dataBasket.orderingMode) dataBasket.orderingMode = this.state.orderingMode
+      if(!orderingMode) orderingMode = dataBasket.orderingMode
+
       // set delivery provider
       let provaiderDelivery = {}
       if ( deliveryAddress && orderingMode !== "DINEIN" && orderingMode !== "TAKEAWAY") {
@@ -253,7 +255,7 @@ class Basket extends Component {
       }
 
       // move cart based on delivery address
-      if(deliveryAddress && provaiderDelivery && dataBasket.orderingMode === "DELIVERY"){
+      if(deliveryAddress && provaiderDelivery && orderingMode === "DELIVERY"){
         let payloadMoveCart = {
           orderBy: "provider",
           provider: (provaiderDelivery && provaiderDelivery.id) || "",
@@ -262,7 +264,6 @@ class Basket extends Component {
           deliveryAddress
         }
         dataBasket = await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
-        console.log(dataBasket)
       }
 
       // set default outlet
