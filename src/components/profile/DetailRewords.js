@@ -182,7 +182,7 @@ class DetailRewords extends Component {
                 }}>
                   {
                     pointIcon && pointIcon !== "" &&
-                    <img src={pointIcon} alt="my point" style={{height: 50, objectFit: "contain", marginTop: 10}}/>
+                    <img src={pointIcon} alt="my point" style={{height: 100, objectFit: "contain", marginTop: 10}}/>
                   }
                   <div style={{ textAlign: "center", fontWeight: "bold", paddingTop: 10 }}>My Points</div>
                   <div className="text-value" style={{ fontSize: 35, textAlign: "center", marginBottom: 13, marginTop: 5 }}>

@@ -9,7 +9,8 @@ export const OutletAction = {
   fetchDefaultOutlet,
   fetchAllOutlet,
   fetchSingleOutlet,
-  getCoordinates
+  getCoordinates,
+  setData
 };
 
 function fetchDefaultOutlet(defaultOutlet = {}) {

@@ -67,6 +67,7 @@ class PaymentMethod extends Component {
           paymentID: elements.paymentID,
         });
         elements.data.forEach((element) => {
+          element.minimumPayment = elements.minimumPayment
           if (
             paymentCardAccountDefault &&
             paymentCardAccountDefault.accountID === element.accountID
@@ -85,7 +86,7 @@ class PaymentMethod extends Component {
           }
         });
       });
-      // console.log(paymentTypes)
+      console.log(paymentTypes)
       this.setState({ paymentTypes });
     }
 

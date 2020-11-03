@@ -614,7 +614,8 @@ class Payment extends Component {
     let { orderingMode, dataBasket, deliveryAddress,
       selectedVoucher, selectedPoint, totalPrice, selectedCard,
       scanTable, voucherDiscountList, detailPoint, pointsToRebateRatio,
-      orderActionDate, orderActionTime, storeDetail
+      orderActionDate, orderActionTime, storeDetail,
+      orderActionTimeSlot
     } = this.state;
 
     let payload = {
@@ -634,6 +635,7 @@ class Payment extends Component {
     };
 
     if(scanTable) payload.tableNo = scanTable.table || scanTable.tableNo || "-"
+    if(orderActionTimeSlot) payload.orderActionTimeSlot = orderActionTimeSlot
 
     if (orderingMode === "DELIVERY") {
       payload.deliveryAddress = deliveryAddress;
@@ -753,10 +755,13 @@ class Payment extends Component {
 
   render() {
     let { dataBasket, totalPrice, selectedCard, isLoadingPOS, 
-      cartDetails, storeDetail, dataSettle,
+      cartDetails, storeDetail, dataSettle, orderingMode
     } = this.state;
     let { basket } = this.props;
+    
     let deliveryFee = this.props.deliveryProvider ? this.props.deliveryProvider.deliveryFeeFloat : 0;
+    if(orderingMode === "DINEIN" && orderingMode === "TAKEAWAY") deliveryFee = 0
+
     let currency = this.props.companyInfo && this.props.companyInfo.currency;
     let formattedPrice = (this.getCurrency(totalPrice + deliveryFee) || "").split((currency && currency.code) || " ")[1];
     let totalAmount = (this.getCurrency(dataBasket && dataBasket.totalNettAmount + deliveryFee) || "").split((currency && currency.code) || " ")[1]
@@ -765,6 +770,14 @@ class Payment extends Component {
       basket.details.forEach((cart) => {
         basketLength += cart.quantity;
       });
+    }
+
+    let nameCreditCard = `Pay ${this.getCurrency(totalPrice + deliveryFee)}`
+    if(selectedCard){
+      let lengthNumber = selectedCard.details.maskedAccountNumber.toString().length
+      nameCreditCard = "Pay " + this.getCurrency(totalPrice + deliveryFee) + " with " 
+      nameCreditCard += selectedCard.details.cardIssuer.toUpperCase() + " " 
+      nameCreditCard += selectedCard.details.maskedAccountNumber.substr(lengthNumber - 4) + " "
     }
 
     if (this.state.loadingShow) {
@@ -986,6 +999,7 @@ class Payment extends Component {
                         roleBtnClear={!this.props.isLoggedIn}
                         disabledBtn={(totalPrice + deliveryFee) === 0}
                         handleCancelCreditCard={() => this.handleCancelCreditCard()}
+                        getCurrency={(price) => this.getCurrency(price)}
                       />
                     )}
 
@@ -998,7 +1012,10 @@ class Payment extends Component {
                       }}
                     >
                       <Button
-                        disabled={!selectedCard && totalPrice > 0}
+                        disabled={
+                          (!selectedCard && totalPrice > 0) ||
+                          (selectedCard && selectedCard.minimumPayment && totalPrice < selectedCard.minimumPayment)
+                        }
                         onClick={() => this.handleSettle()}
                         className="customer-group"
                         style={{
@@ -1011,14 +1028,7 @@ class Payment extends Component {
                           height: 40,
                         }}
                       >
-                        {isEmptyObject(selectedCard)
-                          ? `Pay ${this.getCurrency(totalPrice + deliveryFee)}`
-                          : `Pay ${this.getCurrency(
-                            totalPrice + deliveryFee
-                          )} with ${selectedCard.details.cardIssuer.toUpperCase()}  ${selectedCard.details.maskedAccountNumber.substr(
-                            selectedCard.details.maskedAccountNumber.toString()
-                              .length - 4
-                          )}`}
+                        {nameCreditCard}
                       </Button>
                     </div>
 

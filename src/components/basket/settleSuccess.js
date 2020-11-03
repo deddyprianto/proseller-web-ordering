@@ -36,9 +36,10 @@ class SettleSuccess extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
     let orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
+    
     console.log(paymentSuccess)
     console.log(settleSuccess)
-    console.log(infoCompany)
+
     this.setState({
       countryCode: infoCompany.countryCode,
       currency: infoCompany.currency,
@@ -105,6 +106,15 @@ class SettleSuccess extends Component {
     let deliveryFee = this.props.deliveryProvider ? this.props.deliveryProvider.deliveryFeeFloat : 0;
     let colorText = this.props.color.primary || "#c00a27"
     let paymentStatus = settleSuccess && settleSuccess.message === "payment failed!" ? false : true
+    let discount = 0
+    if(settleSuccess && settleSuccess.payments){
+      settleSuccess.payments.forEach(items => {
+        if(items.paymentType === "voucher" || items.paymentType === "point"){
+          discount += items.paymentAmount
+        }
+      });
+    }
+    let totalAmount = ((settleSuccess && settleSuccess.price) || paymentSuccess.totalPrice) + (deliveryFee || 0)
 
     return (
       <div>
@@ -150,7 +160,7 @@ class SettleSuccess extends Component {
                           display: "flex",
                           flexDirection: "row",
                           justifyContent: "center",
-                          marginLeft: -10,
+                          marginLeft: -20,
                           marginTop: 10
                         }}
                       >
@@ -159,23 +169,22 @@ class SettleSuccess extends Component {
                             color: "gray",
                             fontSize: 10,
                             fontWeight: "bold",
-                            marginTop: -15,
+                            marginTop: -20,
                           }}
                         >
-                          {this.props.companyInfo &&
-                            this.props.companyInfo.currency.code}
+                          {this.props.companyInfo && this.props.companyInfo.currency.code}
                         </div>
-                        <div
-                          style={{
-                            color: "black",
-                            fontSize: 35,
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <div>
+                          <div style={{color: "black",fontSize: 40,fontWeight: "bold"}}>
+                            {this.getCurrency(totalAmount - discount)}
+                          </div>
                           {
-                            this.getCurrency(
-                              (settleSuccess.price || paymentSuccess.totalPrice) + (deliveryFee || 0)
-                            )
+                            discount > 0 &&
+                            <div style={{
+                              textAlign: "right", marginRight: -10, textDecorationLine: "line-through"
+                            }}>
+                              {this.getCurrency(totalAmount)}
+                            </div>
                           }
                         </div>
                       </div>

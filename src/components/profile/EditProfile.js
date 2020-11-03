@@ -68,7 +68,7 @@ class EditProfile extends Component {
 
       defaultError: {},
       defaultEdit: {},
-      titleEditAccount: {display: "Account", field: "phoneNumber"}
+      titleEditAccount: {display: "Account", field: "phoneNumber"},
     };
   }
 
@@ -85,9 +85,16 @@ class EditProfile extends Component {
 
   componentDidUpdate = async (prevProps) => {
     if (prevProps.fields !== this.props.fields) {
+      let minimumAge = this.props.setting.find(items => { return items.settingKey === "MinimumAge" })
+      if (minimumAge) {
+        minimumAge = minimumAge.settingValue
+      }
+
       let defaultError = {}
       let defaultEdit = {}
       this.props.fields && this.props.fields.forEach((field) => {
+        if(minimumAge && field.fieldName === "birthDate") field.minimumAge = minimumAge
+
         defaultError[field.fieldName] = ""
         defaultEdit[field.fieldName] = false
         if (!this.state.dataCustomer[field.fieldName] && field.defaultValue) {
@@ -105,6 +112,7 @@ class EditProfile extends Component {
           });
         }
       });
+
       this.setState({defaultError})
     }
   };
@@ -520,6 +528,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
     fields: state.customer.fields,
+    setting: state.order.setting,
   };
 };
 

@@ -30,8 +30,15 @@ const SignUp = ({
   enableSMSOTP,
   enableWhatsappOTP,
   enableOrdering,
+  minimumAge
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
+
+  if(minimumAge && fields){
+    fields.forEach(mandatory => {
+      if(mandatory.fieldName === "birthDate") mandatory.minimumAge = minimumAge
+    });
+  }
 
   return (
     <div className="modal-content" style={{ width: "100%" }}>

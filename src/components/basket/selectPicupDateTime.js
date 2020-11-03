@@ -34,6 +34,7 @@ export default class SelectPicupDateTime extends Component {
       textTitle = "Pickup"
       maxDay = props.storeDetail.maxTakeAwayDays
     }
+    
     return (
       <div>
         <div className="modal fade" id="pickup-date-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

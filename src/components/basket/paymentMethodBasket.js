@@ -9,6 +9,17 @@ class PaymentMethodBasket extends Component {
   render() {
     let props = this.props.data
     let colorText = (this.props.disabledBtn || props.selectedCard )? "#777" : (this.props.color.primary || "#c00a27") 
+    let nameCreditCard = "Select Credit Card"
+    if(props.selectedCard){
+      let lengthNumber = props.selectedCard.details.maskedAccountNumber.toString().length
+      nameCreditCard = props.selectedCard.details.cardIssuer.toUpperCase() + " " 
+      nameCreditCard += props.selectedCard.details.maskedAccountNumber.substr(lengthNumber - 4) + " "
+
+      if(props.selectedCard.minimumPayment){
+        nameCreditCard += `(min ${this.props.getCurrency(props.selectedCard.minimumPayment)})`
+      }
+    }
+
     return (
       <div style={{ 
         display: "flex", flexDirection: "row", justifyContent: "space-between", 
@@ -27,9 +38,7 @@ class PaymentMethodBasket extends Component {
             }}>
             <div style={{display: "flex", alignItems: "center"}}>
               <CreditCard style={{ fontSize: 16, marginRight: 10 }} />
-              {
-                (props.selectedCard === null) ? "Select Credit Card" : (props.selectedCard.details.cardIssuer.toUpperCase() + " " + props.selectedCard.details.maskedAccountNumber.substr(props.selectedCard.details.maskedAccountNumber.toString().length - 4))
-              }
+              {nameCreditCard}
             </div>
             <i className="fa fa-chevron-right" aria-hidden="true" />
           </Button>

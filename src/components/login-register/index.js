@@ -64,7 +64,8 @@ class LoginRegister extends Component {
       loginByEmail: false,
       enableSMSOTP: false,
       enableWhatsappOTP: false,
-      enableOrdering: false
+      enableOrdering: false,
+      minimumAge: null
     };
   }
 
@@ -143,6 +144,11 @@ class LoginRegister extends Component {
       let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
+      }
+
+      let minimumAge = this.props.setting.find(items => { return items.settingKey === "MinimumAge" })
+      if (minimumAge) {
+        this.setState({ minimumAge: minimumAge.settingValue });
       }
     }
 
@@ -870,7 +876,11 @@ class LoginRegister extends Component {
   };
 
   render() {
-    let { isLoading, userStatus, method, email, phoneNumber, loginByEmail, loginByMobile, enableSMSOTP, enableWhatsappOTP, enableOrdering } = this.state;
+    let { 
+      isLoading, userStatus, method, email, phoneNumber, 
+      loginByEmail, loginByMobile, enableSMSOTP, enableWhatsappOTP, 
+      enableOrdering, minimumAge
+    } = this.state;
     return (
       <div>
         {isLoading ? Swal.showLoading() : Swal.close()}
@@ -940,6 +950,7 @@ class LoginRegister extends Component {
                 enableOrdering={enableOrdering}
                 enableSMSOTP={enableSMSOTP}
                 enableWhatsappOTP={enableWhatsappOTP}
+                minimumAge={minimumAge}
               ></SignUp>
             ) : (
                   <Portal
