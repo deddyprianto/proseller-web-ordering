@@ -635,7 +635,6 @@ class Payment extends Component {
     };
 
     if(scanTable) payload.tableNo = scanTable.table || scanTable.tableNo || "-"
-    if(orderActionTimeSlot) payload.orderActionTimeSlot = orderActionTimeSlot
 
     if (orderingMode === "DELIVERY") {
       payload.deliveryAddress = deliveryAddress;
@@ -690,6 +689,7 @@ class Payment extends Component {
     ) {
       payload.orderActionDate = orderActionDate
       payload.orderActionTime = orderActionTime
+      payload.orderActionTimeSlot = orderActionTimeSlot
       response = await this.props.dispatch(OrderAction.submitTakeAway(payload));
     } else {
       response = await this.props.dispatch(OrderAction.submitSettle(payload));
