@@ -56,21 +56,19 @@ class Voucher extends Component {
                 zIndex: 10,
                 width: "100%",
                 marginTop: -100,
-                backgroundColor: "#FFF",
                 display: "flex",
                 height: 40,
                 justifyContent: "space-between",
                 alignItems: "center"
               }}
+              className="background-theme"
             >
-              <button
-                type="button"
-                className="close"
+              <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
                 <i className="fa fa-chevron-left"></i> Back
-              </button>
+              </div>
               <div style={{ marginRight: 10, fontSize: 16, fontWeight: "bold" }}>
                 <i className="fa fa-tags" aria-hidden="true" /> {totalPoint.toFixed(2)}
               </div>
@@ -86,14 +84,14 @@ class Voucher extends Component {
             >
               <Button
                 className={isMyVoucher ? "use-select" : "un-select"}
-                style={{ height: 50, color: "#FFF", fontWeight: "bold" }}
+                style={{ height: 50, fontWeight: "bold" }}
                 onClick={() => this.setState({ isMyVoucher: true })}
               >
                 My Vouchers
               </Button>
               <Button
                 className={!isMyVoucher ? "use-select" : "un-select"}
-                style={{ height: 50, color: "#FFF", fontWeight: "bold" }}
+                style={{ height: 50, fontWeight: "bold" }}
                 onClick={() => this.setState({ isMyVoucher: false })}
               >
                 Redeem Vouchers

@@ -60,7 +60,7 @@ class Footer extends Component {
     let { enableOrdering } = this.state
     return (
       <div>
-        <div className="pizzaro-handheld-footer-bar" style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#FFF" }}>
+        <div className="pizzaro-handheld-footer-bar" style={{ display: "flex", justifyContent: "space-between" }}>
           {
             enableOrdering &&
             <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>

@@ -331,21 +331,21 @@ class ModalEditAccount extends Component {
   
                   {
                     this.state.isSame &&
-                    <div className="text text-danger small">
+                    <div className="text text-warning-theme small">
                       <em>{`${this.props.title.display} same as the previous`}</em>
                     </div>
                   }
   
                   {
                     this.state.isUsed &&
-                    <div className="text text-danger small">
+                    <div className="text text-warning-theme small">
                       <em>{`${this.props.title.display} already used`}</em>
                     </div>
                   }
 
                   {
                     this.state.isWrong &&
-                    <div className="text text-danger small">
+                    <div className="text text-warning-theme small">
                       <em>{`${this.props.title.display} is wrong format`}</em>
                     </div>
                   }

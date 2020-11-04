@@ -56,6 +56,8 @@ class ModalDetailVoucher extends Component {
 
   render() {
     let { dataDetail, getCurrency, pointData } = this.props
+    let disableBtn = dataDetail && dataDetail.redeemValue > pointData.totalPoint - (pointData.pendingPoints || 0)
+
     return (
       <div>
         <div className="modal fade" id="voucher-detail-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -84,10 +86,10 @@ class ModalDetailVoucher extends Component {
                       {`Discount ${dataDetail.voucherType === "discPercentage" ? dataDetail.voucherValue + "%" : getCurrency(dataDetail.voucherValue)}`}
                     </div>
                   </div>
-
+                  
                   {
                     pointData.pendingPoints && pointData.pendingPoints > 0 ?
-                    <div className="text text-danger" style={{
+                    <div className="text text-warning-theme" style={{
                       fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
                       marginTop: 10, marginBottom: 10
                     }}>
@@ -95,7 +97,14 @@ class ModalDetailVoucher extends Component {
                     </div> : null
                   }
 
-                  <Button className="button" style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }} onClick={() => this.handleRedeemVoucher()}>Redeem Voucher</Button>
+                  <Button 
+                  disabled={disableBtn}
+                    className="button" 
+                    style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }} 
+                    onClick={() => this.handleRedeemVoucher()}
+                  >
+                    Redeem Voucher
+                  </Button>
                 </div>
               </div>
             }

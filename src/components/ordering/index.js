@@ -475,9 +475,10 @@ class Ordering extends Component {
                       <h3
                         id={i}
                         ref={categoryRefs[i]}
-                        className="title"
-                        style={{ fontSize: 14, marginLeft: 15, marginBottom: 10, paddingTop: 10,
-                          color: "gray", fontWeight: "bold",
+                        className="title font-color-theme"
+                        style={{ 
+                          fontSize: 14, marginLeft: 15, marginBottom: 10, 
+                          paddingTop: 10, fontWeight: "bold",
                         }}
                       >
                         {cat.category.name}

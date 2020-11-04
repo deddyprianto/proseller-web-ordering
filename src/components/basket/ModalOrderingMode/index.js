@@ -6,6 +6,13 @@ class ModalOrderingMode extends Component {
     super(props);
     this.state = {
       isEmenu: window.location.pathname.includes("emenu"),
+      orderingModeStatus: {
+        DINEIN: "enableDineIn",
+        TAKEAWAY: "enableTakeAway",
+        STOREPICKUP: "enableStorePickUp",
+        STORECHECKOUT: "enableStoreCheckOut",
+        DELIVERY: "enableDelivery",
+      }
     };
   }
 
@@ -100,7 +107,17 @@ class ModalOrderingMode extends Component {
 
   render() {
     let props = this.props.data;
-    const { outlet } = this.props;
+    let { outlet, setting } = this.props;
+    let { orderingModeStatus } = this.state
+    let allowedOrderingMode = setting.find(items => { return items.settingKey === "AllowedOrderingMode" })
+    if (allowedOrderingMode) {
+      allowedOrderingMode = allowedOrderingMode.settingValue
+      for (let key in orderingModeStatus) {
+        let check = allowedOrderingMode.find(mode => {return mode === key})
+        if (!check) props.storeDetail[orderingModeStatus[key]] = false
+      }
+    }
+
     return (
       <div
         className="modal fade"
@@ -174,6 +191,7 @@ const mapStateToProps = (state) => {
   return {
     outlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo,
+    setting: state.order.setting,
   };
 };
 

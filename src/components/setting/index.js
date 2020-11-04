@@ -76,13 +76,13 @@ class Setting extends Component {
           <div className="stretch-full-width">
             <div style={{
               flexDirection: "row", position: "fixed", zIndex: 10, width: "100%", marginTop: -60,
-              backgroundColor: "#FFF", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
+              boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
               height: 40
-            }}>
-              <button type="button" className="close" style={{ marginLeft: 10, fontSize: 16 }}
+            }} className="background-theme">
+              <div style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}>
                 <i className="fa fa-chevron-left"></i> Back
-              </button>
+              </div>
             </div>
             <main id="main" className="site-main" style={{ textAlign: "center" }}>
               {
@@ -96,7 +96,7 @@ class Setting extends Component {
                       <div style={{
                         boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                         padding: 10, alignItems: "center", borderRadius: 5,
-                        marginBottom: 10, cursor: "pointer", backgroundColor: "#FFF"
+                        marginBottom: 10, cursor: "pointer",
                       }}>
                         <strong>Notification</strong>
 

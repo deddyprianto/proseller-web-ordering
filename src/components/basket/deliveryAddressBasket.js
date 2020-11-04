@@ -28,7 +28,7 @@ class DeliveryAddressBasket extends Component {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
+          <div style={{ fontWeight: "bold", fontSize: 14 }}>
             Delivery Address *
           </div>
           <div>
@@ -38,11 +38,10 @@ class DeliveryAddressBasket extends Component {
                 onClick={() => this.handleGet()}
                 style={{
                   fontWeight: "bold",
-                  color: "#FFF",
                   cursor: "pointer",
                   backgroundColor: !props.deliveryAddress
                     ? this.props.color.primary
-                    : "#777",
+                    : "#DCDCDC",
                   width: 140,
                   justifyContent: "space-between",
                   display: "flex",

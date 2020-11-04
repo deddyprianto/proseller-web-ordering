@@ -16,7 +16,7 @@ export default class ViewProsessBasket extends Component {
         <ModalQRCode qrcode={props.dataBasket.cartID} title="Order QRCode" />
         <Row style={{ display: "flex", justifyContent: 'center' }}>
           <Col xs="12" sm="6">
-            <div style={{ backgroundColor: "#FFF" }}>
+            <div>
               <Lottie
                 options={{
                   animationData: (
@@ -58,9 +58,9 @@ export default class ViewProsessBasket extends Component {
               }
               {
                 props.dataBasket.status === "READY_FOR_COLLECTION" &&
-                <div style={{ marginBottom: 20, marginTop: -40, position: "absolute" }}>
+                <div style={{ marginBottom: 20}}>
                   <div style={{ color: "#20a8d8", fontSize: 18, textAlign: "center" }}>Yeay, your order is ready.</div>
-                  <div style={{ color: "gray", fontSize: 18, textAlign: "center" }}>Please come to the cashier and tap the QR Code botton below.</div>
+                  <div style={{ fontSize: 18, textAlign: "center" }}>Please come to the cashier and tap the QR Code botton below.</div>
                   <div style={{ marginTop: 10, marginBottom: 10, color: "green", fontWeight: "bold", textAlign: "center" }}>
                     {
                       !props.dataBasket.transactionRefNo ?
@@ -77,16 +77,19 @@ export default class ViewProsessBasket extends Component {
                 props.dataBasket.status === "READY_FOR_DELIVERY" &&
                 <div style={{ marginBottom: 20 }}>
                   <div style={{ color: "#20a8d8", fontSize: 18, textAlign: "center" }}>Yeay, your order is ready.</div>
-                  <div style={{ color: "gray", fontSize: 18, textAlign: "center" }}>Your order will be sent to your destination address.</div>
+                  <div style={{ fontSize: 18, textAlign: "center" }}>Your order will be sent to your destination address.</div>
                 </div>
               }
               {
                 props.dataBasket.status === "ON_THE_WAY" &&
                 <div>
                   <div style={{ color: "#20a8d8", fontSize: 18, textAlign: "center" }}>Your order is on the way.</div>
-                  <div style={{ color: "gray", fontSize: 18, textAlign: "center" }}>
-                    {`Go to ${props.deliveryAddress.address}, ${props.deliveryAddress.city}, ${props.deliveryAddress.postalCode}`}
-                  </div>
+                  {
+                    props.deliveryAddress &&
+                    <div style={{ fontSize: 18, textAlign: "center" }}>
+                      {`Go to ${props.deliveryAddress.address}, ${props.deliveryAddress.city}, ${props.deliveryAddress.postalCode}`}
+                    </div>
+                  }
                   <div style={{ marginTop: 10, marginBottom: 10, color: "green", fontWeight: "bold", textAlign: "center" }}>
                     {
                       `${props.dataBasket.transactionRefNo ? 
@@ -107,7 +110,7 @@ export default class ViewProsessBasket extends Component {
                     props.dataBasket.deliveryProvider &&
                     <div style={{
                       marginBottom: 10, color: "green", fontWeight: "bold", textAlign: "center",
-                      backgroundColor: "#FFF", padding: 10, border: "2px solid green"
+                      padding: 10, border: "2px solid green"
                     }}>
                       {"Provider : " + props.dataBasket.deliveryProvider}
                     </div>
@@ -118,19 +121,18 @@ export default class ViewProsessBasket extends Component {
           </Col>
         </Row>
 
-        <div style={{
-          backgroundColor: "#FFF", padding: 10, width: "101%", marginLeft: (props.widthSelected >= 750 ? -55 : -15),
+        <div className="background-theme" style={{
+          padding: 10, width: "101%", marginLeft: (props.widthSelected >= 750 ? -55 : -15),
           marginBottom: 55,
           display: "flex", flexDirection: "column", alignItems: "left", position: "fixed", bottom: 0,
           boxShadow: "1px -2px 2px rgba(128, 128, 128, 0.5)", justifyContent: "center",
         }}>
 
           <div style={{
-            padding: 10, backgroundColor: "#FFF",
-            display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
+            padding: 10, display: "flex", flexDirection: "row", 
+            alignItems: 'center', justifyContent: "space-between",
           }}>
             <Button onClick={() => this.props.setViewCart(true)} style={{
-              boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
               width: "45%", backgroundColor: "green", color: "#FFF", fontWeight: "bold",
               display: 'flex', justifyContent: "center", alignItems: "center"
             }}>
@@ -142,7 +144,6 @@ export default class ViewProsessBasket extends Component {
               <Button
                 disabled={(props.dataBasket.status === "CONFIRMED" || props.dataBasket.status === "PROCESSING") ? true : false}
                 data-toggle="modal" data-target="#qrcode-modal" style={{
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                   width: "45%", backgroundColor: "#20a8d8", color: "#FFF", fontWeight: "bold",
                   display: 'flex', justifyContent: "center", alignItems: "center"
                 }} >
@@ -156,7 +157,6 @@ export default class ViewProsessBasket extends Component {
                 disabled={props.dataBasket.status === "ON_THE_WAY" ? false : true}
                 onClick={() => this.props.handleCompletedOrdering("COMPLETED")}
                 style={{
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                   width: "45%", backgroundColor: "#20a8d8", color: "#FFF", fontWeight: "bold",
                   display: 'flex', justifyContent: "center", alignItems: "center"
                 }} >

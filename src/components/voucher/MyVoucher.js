@@ -75,10 +75,9 @@ class MyVoucher extends Component {
               <Col key={key} sm={6}>
                 <div
                   style={{
-                    backgroundColor: "#FFFFFF",
                     marginBottom: 10,
                     width: "100%",
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer",
                     display: "flex",
                     borderRadius: 10,
@@ -89,7 +88,7 @@ class MyVoucher extends Component {
                 >
                   <div className="profile-dashboard" style={{
                     position: "absolute", width: 70,
-                    color: "white", fontSize: 12, top: 0, left: 15,
+                    fontSize: 12, top: 0, left: 15,
                     borderBottomRightRadius: 5, fontWeight: "bold",
                     textAlign: "center"
                   }}>
@@ -113,13 +112,12 @@ class MyVoucher extends Component {
                   </div>
 
                   <div
-                    className="profile-dashboard"
+                    className="profile-dashboard text-btn-theme"
                     style={{
                       position: "absolute",
                       width: 50,
                       paddingLeft: 10,
                       paddingRight: 10,
-                      color: "white",
                       fontSize: 12,
                       borderBottomLeftRadius: 10,
                       right: 15,

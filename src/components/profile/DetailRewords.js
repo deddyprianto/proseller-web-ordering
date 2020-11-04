@@ -203,14 +203,16 @@ class DetailRewords extends Component {
           !loadingShow &&
           <div>
             <Link to="/voucher">
-              <div style={{
-                backgroundColor: "#FFF", padding: 10, marginTop: 10,
-                borderRadius: 10, border: "1px solid #CDCDCD",
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                cursor: "pointer"
+              <div 
+                className="background-theme"
+                style={{
+                  padding: 10, marginTop: 10,
+                  borderRadius: 10, border: "1px solid #CDCDCD",
+                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                  cursor: "pointer"
               }}>
                 <div style={{ textAlign: "center" }} >
-                  <div style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}>
+                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
                     <i className="fa fa-gift" aria-hidden="true" /> My Rewards
                 </div>
                 </div>

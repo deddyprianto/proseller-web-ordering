@@ -11,8 +11,6 @@ import config from "../config";
 import { lsLoad } from "../helpers/localStorage";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
-
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -31,12 +29,12 @@ class Home extends Component {
 
   checkOfflineCart = async () => {
     try {
+      let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
 
       if (isEmptyObject(offlineCart)) return;
-
-      if (account !== undefined) {
+      if (account) {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,

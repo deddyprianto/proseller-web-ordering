@@ -34,7 +34,7 @@ class PickupDateTime extends Component {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
+          <div style={{ fontWeight: "bold", fontSize: 14 }}>
             {textTitle} Date & Time
           </div>
           <div>
@@ -43,11 +43,10 @@ class PickupDateTime extends Component {
               data-toggle="modal" data-target="#pickup-date-modal"
               style={{
                 fontWeight: "bold",
-                color: "#FFF",
                 cursor: "pointer",
                 backgroundColor: !props.deliveryAddress
                   ? this.props.color.primary
-                  : "#777",
+                  : "#DCDCDC",
                 width: 140,
                 justifyContent: "space-between",
                 display: "flex",

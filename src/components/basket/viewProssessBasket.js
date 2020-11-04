@@ -124,7 +124,7 @@ export default class ViewProsessBasket extends Component {
             padding: 10, backgroundColor: "#FFF",
             display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
           }}>
-            <Button onClick={() => this.props.setViewCart(true)} style={{
+            <Button className="button" onClick={() => this.props.setViewCart(true)} style={{
               boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
               width: "45%", backgroundColor: "green", color: "#FFF", fontWeight: "bold",
               display: 'flex', justifyContent: "center", alignItems: "center"
@@ -135,6 +135,7 @@ export default class ViewProsessBasket extends Component {
             {
               props.dataBasket.orderingMode !== "DELIVERY" &&
               <Button
+                className="button"
                 disabled={(props.dataBasket.status === "CONFIRMED" || props.dataBasket.status === "PROCESSING") ? true : false}
                 data-toggle="modal" data-target="#qrcode-modal" style={{
                   boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
@@ -147,6 +148,7 @@ export default class ViewProsessBasket extends Component {
             {
               props.dataBasket.orderingMode === "DELIVERY" &&
               <Button
+                className="button"
                 disabled={props.dataBasket.status === "ON_THE_WAY" ? false : true}
                 onClick={() => this.props.handleCompletedOrdering("COMPLETED")}
                 style={{

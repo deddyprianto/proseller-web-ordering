@@ -10,7 +10,7 @@ export default class PaymentMethodBasket extends Component {
     return (
       <div style={{ padding: 10 }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>Payment Method *</div>
+          <div style={{ fontWeight: "bold", fontSize: 14 }}>Payment Method *</div>
           <div>
             <Link to="/payment-method">
               <Button

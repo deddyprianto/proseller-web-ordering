@@ -345,7 +345,7 @@ class ModalEditProfile extends Component {
                     />
                     {
                       errorName !== "" && 
-                      <div className="text text-danger small">
+                      <div className="text text-warning-theme small">
                         <em>{errorName}</em>
                       </div>
                     }

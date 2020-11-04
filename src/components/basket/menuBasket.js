@@ -158,7 +158,7 @@ class MenuBasket extends Component {
                 productQuantity >= minQty ? (
                   productQuantity <= maxQty || maxQty === 0 ? null : (
                     <div>
-                      <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                      <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                         {
                           `Your order has exceeded maximum allowed item quantity for
                           ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum quantity ${maxQty}). 
@@ -170,7 +170,7 @@ class MenuBasket extends Component {
                   )
                 ) : (
                     <div>
-                      <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                      <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                         {
                           `Your order hasn't reached minimum allowed item quantity for
                           ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum quantity ${minQty}). 
@@ -182,7 +182,7 @@ class MenuBasket extends Component {
                   )
               ) : (
                   <div>
-                    <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                       {
                         `Your order has exceeded maximum allowed order amount for
                         ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
@@ -194,7 +194,7 @@ class MenuBasket extends Component {
                 )
             ) : (
                 <div>
-                  <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
                     {
                       `Your order hasn't reached minimum allowed order amount for
                       ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum amount ${this.props.getCurrency(minAmount)}). 
@@ -216,11 +216,11 @@ class MenuBasket extends Component {
                       justifyContent: "space-between",
                     }}
                   >
-                    <div style={{ fontWeight: "bold", color: "gray" }}>
+                    <div style={{ fontWeight: "bold" }}>
                       Delivery Fee
                     </div>
                     <div
-                      style={{ fontWeight: "bold", color: "gray" }}
+                      style={{ fontWeight: "bold" }}
                     >{`${props.provaiderDelivery.deliveryFee}`}</div>
                   </div>
                 </div>
@@ -257,7 +257,6 @@ class MenuBasket extends Component {
                 <div
                   style={{
                     padding: 10,
-                    backgroundColor: "#FFF",
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
@@ -285,7 +284,6 @@ class MenuBasket extends Component {
                 <div
                   style={{
                     padding: 10,
-                    backgroundColor: "#FFF",
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",

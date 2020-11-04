@@ -77,9 +77,11 @@ class RedeemVoucher extends Component {
             {
               redeemVoucher.map((item, key) => (
                 <Col key={key} sm={6}>
-                  <div style={{
-                    backgroundColor: (pointData.totalPoint >= item.redeemValue ? "#FFFFFF" : "#DCDCDC"), marginBottom: 10,
-                    width: "100%", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                  <div 
+                  className={pointData.totalPoint < item.redeemValue && "product-unavailable"}
+                  style={{
+                    marginBottom: 10,
+                    width: "100%", boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer", display: "flex", borderRadius: 10
                   }} onClick={() => this.setState({ dataDetail: item })} data-toggle="modal" data-target={pointData.totalPoint >= item.redeemValue && "#voucher-detail-modal"}>
                     {
@@ -87,7 +89,7 @@ class RedeemVoucher extends Component {
                       <div className="profile-dashboard" style={{
                         position: "absolute", width: '29%',
                         paddingLeft: 5, paddingRight: 5,
-                        color: "white", fontSize: 12, bottom: 0, left: 15,
+                        fontSize: 12, bottom: 0, left: 15,
                         borderBottomLeftRadius: 5, fontWeight: "bold",
                         textAlign: "center"
                       }}>{item.redeemValue + " Points"}</div>

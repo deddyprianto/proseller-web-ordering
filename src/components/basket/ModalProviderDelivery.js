@@ -122,7 +122,7 @@ const ModalProviderDelivery = ({
                       </div>
                     }
                     {item.deliveryFeeFloat && item.deliveryFeeFloat < 0 ? (
-                      <div className="text-left text-danger text-small" style={{ fontSize: 10, lineHeight: "15px" }} >
+                      <div className="text-left text-warning-theme text-small" style={{ fontSize: 10, lineHeight: "15px" }} >
                         This delivery provider is not available for your area.
                       </div>
                     ) : null}

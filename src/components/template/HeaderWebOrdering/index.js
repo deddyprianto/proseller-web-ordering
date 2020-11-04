@@ -122,11 +122,11 @@ class Header extends Component {
         <LoginRegister />
         <header
           id="masthead"
-          className="site-header header-v4 lite-bg"
+          className="site-header header-v4 background-theme"
           style={{
             position: "fixed",
             width: "100%",
-            borderBottom: "1px solid #DADADA",
+            // borderBottom: "1px solid #DADADA",
             height: "8rem",
           }}
         >
@@ -199,7 +199,7 @@ class Header extends Component {
                 <span className="menu-icon">
                   <i className="po po-menu-icon" />
                 </span>
-                <span className=" screen-reader-text">Menu</span>
+                <span className="screen-reader-text">Menu</span>
               </button>
 
               {
@@ -224,6 +224,7 @@ class Header extends Component {
                   >
                     {basketLength > 0 && (
                       <div
+                        className="text-btn-theme"
                         style={{
                           position: "absolute",
                           backgroundColor: this.props.color.primary,
@@ -232,19 +233,18 @@ class Header extends Component {
                           borderRadius: 15,
                           height: 15,
                           display: "flex",
-                          color: "#FFF",
                           alignItems: "center",
                           justifyContent: "center",
                           top: 0,
                           right: 0,
+                          fontWeight: "bold"
                         }}
                       >
                         {basketLength}
                       </div>
                     )}
                     <i
-                      className="fa fa-shopping-basket"
-                      style={{ color: "gray" }}
+                      className="fa fa-shopping-basket font-color-theme"
                     />
                   </div>
                 </Link>
@@ -316,7 +316,7 @@ class Header extends Component {
                         className="woocommerce-Button button"
                         name="login"
                         value="Log Out"
-                        style={{ width: 160, paddingLeft: 5, paddingRight: 5 }}
+                        style={{ width: 160, padding: 0, paddingLeft: 5, paddingRight: 5, height: 40, borderRadius: 10, }}
                       />
                     </li>
                   )}
@@ -331,13 +331,13 @@ class Header extends Component {
                         className="woocommerce-Button button"
                         name="login"
                         value="Log In / Sign Up"
-                        style={{ width: 160, paddingLeft: 5, paddingRight: 5 }}
+                        style={{ width: 160, padding: 0, paddingLeft: 5, paddingRight: 5, height: 40, borderRadius: 10, marginTop: 15  }}
                       />
                     </li>
                   )}
                 </ul>
               </div>
-              <div className="handheld-navigation profile-dashboard">
+              <div className="handheld-navigation navigation-theme">
                 <span className="phm-close">Close</span>
                 <ul className="menu">
                   {
@@ -433,6 +433,7 @@ class Header extends Component {
                     >
                       {basketLength > 0 && (
                         <div
+                          className="text-btn-theme"
                           style={{
                             position: "absolute",
                             backgroundColor: this.props.color.primary,
@@ -441,19 +442,18 @@ class Header extends Component {
                             borderRadius: 15,
                             height: 15,
                             display: "flex",
-                            color: "#FFF",
                             alignItems: "center",
                             justifyContent: "center",
                             top: 0,
                             left: 25,
+                            fontWeight: "bold"
                           }}
                         >
                           {basketLength}
                         </div>
                       )}
                       <i
-                        className="fa fa-shopping-basket"
-                        style={{ color: "gray" }}
+                        className="fa fa-shopping-basket font-color-theme"
                       />
                     </div>
                   </li>

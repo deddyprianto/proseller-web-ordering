@@ -96,7 +96,7 @@ export default class MenuBasket extends Component {
 
           <div style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-              <div style={{ color: "gray" }}>Sub Total</div>
+              <div>Sub Total</div>
               <div style={{ fontWeight: "bold" }}>
                 {this.props.getCurrency(props.dataBasket.totalNettAmount)}
               </div>
@@ -121,20 +121,21 @@ export default class MenuBasket extends Component {
           }
           
           {
-            props.provaiderDelivery && props.dataBasket.orderingMode && props.dataBasket.orderingMode === "DELIVERY" &&
+            props.dataBasket.deliveryFee && props.dataBasket.orderingMode && 
+            props.dataBasket.orderingMode === "DELIVERY" &&
             <div style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
               <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                <div style={{ color: "gray" }}>Delivery Fee</div>
-                <div style={{ fontWeight: "bold" }}>{`+ ${props.provaiderDelivery.deliveryFee}`}</div>
+                <div>Delivery Fee</div>
+                <div style={{ fontWeight: "bold" }}>{`+ ${this.props.getCurrency(props.dataBasket.deliveryFee)}`}</div>
               </div>
             </div>
           }
         </div>
 
         <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingTop: 10, paddingBottom: 10 }}>
-          <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginLeft: 10, marginRight: 10 }}>
-            <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>TOTAL</div>
-            <div style={{ fontWeight: "bold", color: "#c00a27", fontSize: 16 }}>
+          <div className="customer-group-name" style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginLeft: 10, marginRight: 10 }}>
+            <div style={{ fontWeight: "bold", fontSize: 16 }}>TOTAL</div>
+            <div style={{ fontWeight: "bold", fontSize: 16 }}>
               {
                 this.props.getCurrency(
                   props.dataBasket.totalNettAmount + 

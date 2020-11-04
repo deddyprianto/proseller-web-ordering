@@ -49,7 +49,7 @@ class Footer extends Component {
     let { isLoggedIn } = this.props
     return (
       <div>
-        <div className="pizzaro-handheld-footer-bar" style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#FFF" }}>
+        <div className="pizzaro-handheld-footer-bar background-theme" style={{ display: "flex", justifyContent: "space-between" }}>
           <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             <i className={`fa fa-th ${this.activeRoute({ path: "/", name: "Home" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
             <div className={`${this.activeRoute({ path: "/", name: "Home" })}`} style={{ marginTop: -22, fontSize: 12 }}>Menu</div>

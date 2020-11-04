@@ -317,15 +317,6 @@ class ItemsBasket extends Component {
                     openModal={(item) => this.openModal(item)}
                   />
                 </div>
-                {/* <div style={{ display: "flex", marginLeft: 20, justifyContent: "space-between" }}>
-                    <div style={{
-                      color: "#20a8d8", fontSize: 12, marginLeft: 5, fontWeight: "bold",
-                      cursor: "pointer"
-                    }} onClick={() => this.openModal(item)}>Edit Item</div>
-                    <div className="customer-group-name" style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {`${this.props.getCurrency(item.unitPrice * item.quantity)}`}
-                    </div>
-                  </div> */}
                 <div
                   style={{
                     backgroundColor: "#DCDCDC",

@@ -23,31 +23,31 @@ export default class ModalPointsDetail extends Component {
                 <div className="modal-body">
 
                   <div className="profile-dashboard" style={{ margin: -16, marginTop: -17, paddingTop: 20, paddingBottom: 20 }}>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 16, color: "#fff", marginBottom: 10 }}>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 16, marginBottom: 10 }}>
                       My Points
                     </div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, color: "#fff", marginBottom: 20 }}>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, marginBottom: 20 }}>
                       {detailPoint.point.toFixed(2)}
                     </div>
                   </div>
-                  <div style={{
-                    backgroundColor: "#FFF", borderTopLeftRadius: 20,
+                  <div className="background-theme" style={{
+                    borderTopLeftRadius: 20,
                     borderTopRightRadius: 20, padding: 10, margin: -16
                   }}>
                     <div style={{ textAlign: "center" }} >
-                      <div style={{ color: "gray", fontSize: 16, fontWeight: "bold" }}>
+                      <div style={{ fontSize: 16, fontWeight: "bold" }}>
                         Campaign Rules
                         </div>
-                      <div style={{ color: "#ffa41b", fontSize: 18, fontWeight: "bold" }}>
+                      <div className="color-active" style={{ fontSize: 18, fontWeight: "bold" }}>
                         {`${detailPoint.netSpendToPoint.split(":")[0]} : ${detailPoint.netSpendToPoint.split(":")[1]}`}
                       </div>
-                      <div style={{ color: "#ffa41b", fontSize: 14, fontWeight: "bold" }}>
+                      <div className="color-active" style={{ fontSize: 14, fontWeight: "bold" }}>
                         {`Get ${detailPoint.netSpendToPoint.split(":")[1]} points for every $${detailPoint.netSpendToPoint.split(":")[0]} Purchases`}
                       </div>
                     </div>
                     <div style={{ backgroundColor: "#CDCDCD", height: 1, marginTop: 10, marginBottom: 10 }} />
                     <div style={{ textAlign: "center" }} >
-                      <div style={{ color: "gray", fontSize: 16, fontWeight: "bold", marginBottom: 10 }}>
+                      <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 10 }}>
                         Expiry
                         </div>
                       {
@@ -56,22 +56,22 @@ export default class ModalPointsDetail extends Component {
                             display: "flex", border: "1px solid #CDCDCD", borderRadius: 5, padding: 5, paddingLeft: 10, marginBottom: 5,
                             alignItems: "center"
                           }}>
-                            <ScheduleIcon style={{ fontSize: 30, color: "gray" }} />
+                            <ScheduleIcon style={{ fontSize: 30  }} />
                             <div style={{ marginLeft: 10 }}>
                               <div style={{ display: "flex" }}>
-                                <div style={{ color: "gray", fontWeight: "bold", fontSize: 14 }}>
+                                <div style={{ fontWeight: "bold", fontSize: 14 }}>
                                   Point :
                                 </div>
-                                <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
+                                <div  className="color-active" style={{fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
                                   {items.pointBalance.toFixed(2)}
                                 </div>
                               </div>
 
                               <div style={{ display: "flex", marginTop: -5 }}>
-                                <div style={{ color: "gray", fontWeight: "bold", fontSize: 14 }}>
+                                <div style={{ fontWeight: "bold", fontSize: 14 }}>
                                   Expiry :
                                 </div>
-                                <div style={{ color: "#ffa41b", fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
+                                <div  className="color-active" style={{fontWeight: "bold", marginLeft: 5, fontSize: 14 }}>
                                   {moment(items.expiryDate).format('DD-MM-YYYY')}
                                 </div>
                               </div>

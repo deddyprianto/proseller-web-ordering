@@ -21,6 +21,13 @@ class ModalProduct extends Component {
         message: "",
       },
       isEmenu: window.location.pathname.includes("emenu"),
+      orderingModeStatus: {
+        DINEIN: "enableDineIn",
+        TAKEAWAY: "enableTakeAway",
+        STOREPICKUP: "enableStorePickUp",
+        STORECHECKOUT: "enableStoreCheckOut",
+        DELIVERY: "enableDelivery",
+      }
     };
   }
 
@@ -524,7 +531,7 @@ class ModalProduct extends Component {
         >
           <button
             id="close-modal"
-            className="close close-modal btn-close-modal-product"
+            className="close close-modal btn-close-modal-product "
             data-dismiss="modal"
             aria-label="Close"
             style={{
@@ -537,7 +544,7 @@ class ModalProduct extends Component {
               height: 35,
             }}
           >
-            <i className="fa fa-times" style={{ color: "#FFF" }}></i>
+            <i className="fa fa-times text-btn-theme"></i>
           </button>
         </div>
         <div className="modal-body modal-body-product">
@@ -546,6 +553,7 @@ class ModalProduct extends Component {
               <div className="col-md-5 col-sm-12" style={{ marginBottom: 15 }}>
                 <center>
                   <img
+                    style={{borderRadius: 5}}
                     className="detail-image attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1"
                     src={this.renderImageProduct(selectedItem)} alt="product"
                   />
@@ -621,7 +629,6 @@ class ModalProduct extends Component {
           style={{
             display: "flex",
             justifyContent: "center",
-            backgroundColor: "#FFF",
             padding: 5,
             paddingBottom: 20,
             paddingTop: 20,
@@ -634,7 +641,7 @@ class ModalProduct extends Component {
               className="btn btn-increase"
               onClick={this.decrease}
             >
-              <b style={{ fontSize: 20, color: "#FFF" }}>-</b>
+              <b  className="text-btn-theme" style={{ fontSize: 20 }}>-</b>
             </button>
             <b
               className="color"
@@ -653,7 +660,7 @@ class ModalProduct extends Component {
               className="btn btn-increase"
               onClick={this.increase}
             >
-              <b style={{ fontSize: 20, color: "#FFF" }}>+</b>
+              <b  className="text-btn-theme" style={{ fontSize: 20 }}>+</b>
             </button>
           </div>
           <div style={{ width: "100%", marginLeft: 10 }}>
@@ -664,7 +671,7 @@ class ModalProduct extends Component {
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b style={{ color: "#FFF" }}>{`${selectedItem.quantity === 0 ? "Remove" : "Update"
+                  <b className="text-btn-theme">{`${selectedItem.quantity === 0 ? "Remove" : "Update"
                     } ${this.props.companyInfo &&
                     this.props.companyInfo.currency.code
                     } ${this.calculateTotal()}`}</b>
@@ -675,7 +682,7 @@ class ModalProduct extends Component {
                     className="btn btn-block btn-footer"
                     onClick={this.processCart}
                   >
-                    <b style={{ color: "#FFF" }}>
+                    <b className="text-btn-theme">
                       Add{" "}
                       {`${this.props.companyInfo &&
                         this.props.companyInfo.currency.code
@@ -689,7 +696,7 @@ class ModalProduct extends Component {
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b style={{ color: "#FFF" }}>Loading...</b>
+                  <b className="text-btn-theme">Loading...</b>
                 </button>
               )}
           </div>
@@ -706,7 +713,17 @@ class ModalProduct extends Component {
   };
 
   modalOrderingMode = () => {
-    const { defaultOutlet } = this.props;
+    let { defaultOutlet, setting } = this.props;
+    let { orderingModeStatus } = this.state
+    let allowedOrderingMode = setting.find(items => { return items.settingKey === "AllowedOrderingMode" })
+    if (allowedOrderingMode) {
+      allowedOrderingMode = allowedOrderingMode.settingValue
+      for (let key in orderingModeStatus) {
+        let check = allowedOrderingMode.find(mode => {return mode === key})
+        if (!check) defaultOutlet[orderingModeStatus[key]] = false
+      }
+    }
+
     return (
       <div
         className="modal fade"
@@ -922,7 +939,7 @@ class ModalProduct extends Component {
                     style={{ marginLeft: -10, minWidth: 40 }}
                     onClick={this.decreaseModifier}
                   >
-                    <b style={{ fontSize: 20 }}>-</b>
+                    <b  className="text-btn-theme" style={{ fontSize: 20 }}>-</b>
                   </button>
                   <div>
                     <b style={{ fontSize: 20 }}>{selectedModifier.quantity}</b>
@@ -932,14 +949,14 @@ class ModalProduct extends Component {
                     style={{ marginRight: -10, minWidth: 40 }}
                     onClick={this.increaseModifier}
                   >
-                    <b style={{ fontSize: 20 }}>+</b>
+                    <b className="text-btn-theme" style={{ fontSize: 20 }}>+</b>
                   </button>
                 </div>
                 {selectedModifier.quantity === 0 ? (
                   <button
                     id="dismiss-ordering-mode"
                     data-dismiss="modal"
-                    className="btn btn-block btn-danger"
+                    className="btn btn-block btn-danger text-btn-theme"
                     style={{
                       marginTop: 30,
                       marginBottom: 20,
@@ -953,7 +970,7 @@ class ModalProduct extends Component {
                     <button
                       id="dismiss-ordering-mode"
                       data-dismiss="modal"
-                      className="btn btn-block btn-footer"
+                      className="btn btn-block btn-footer text-btn-theme"
                       style={{
                         marginTop: 30,
                         marginBottom: 20,
@@ -1061,6 +1078,7 @@ const mapStateToProps = (state) => {
     defaultOutlet: state.outlet.defaultOutlet,
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
+    setting: state.order.setting,
   };
 };
 

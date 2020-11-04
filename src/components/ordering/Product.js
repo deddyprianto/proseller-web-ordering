@@ -89,7 +89,7 @@ class Product extends Component {
     const { item } = this.props;
     return (
       <li
-        style={{ marginBottom: 5 }}
+        style={{ marginBottom: 5, boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)"}}
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
         <div
@@ -100,8 +100,8 @@ class Product extends Component {
           }
         >
           <div
-            className="product-inner product-card"
-            style={{ padding: 10, display: "flex", alignItems: "center" }}
+            // className="product-inner product-card"
+            style={{ padding: 10, display: "flex", alignItems: "center", cursor: "pointer" }}
           >
             <div
               className="product-image-wrapper"
@@ -111,14 +111,16 @@ class Product extends Component {
                 maxWidth: 180,
                 alignItems: "center",
                 padding: 0,
+                marginRight: 10
               }}
             >
               <span className="woocommerce-LoopProduct-link">
                 <img
                   src={this.renderImageProduct(item)}
+                  style={{borderRadius: 5}}
                   className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
-                  alt={84}
-                  title={84}
+                  alt={item.product.name}
+                  title={item.product.name}
                 />
               </span>
             </div>
@@ -126,10 +128,9 @@ class Product extends Component {
               <div>
                 <h3
                   className="color"
-                  onClick={() => this.validateOutlet()}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", marginTop: 10 }}
                 >
-                  <span className="text-muted">
+                  <span className="text-muted font-color-theme">
                     {this.getQuantityProduct()}{" "}
                   </span>
                   <b>{item.product.name}</b>
@@ -165,7 +166,7 @@ class Product extends Component {
                         onClick={() => this.validateOutlet()}
                         className="col-lg-12 col-md-12 col-xs-4"
                       >
-                        <p
+                        <div
                           style={{
                             float: "left",
                             borderRadius: 5,
@@ -174,10 +175,10 @@ class Product extends Component {
                             paddingRight: 5,
                           }}
                           rel="nofollow"
-                          className="button product_type_simple add_to_cart_button ajax_add_to_cart"
+                          className="button product_type_simple add_to_cart_button ajax_add_to_cart text-btn-theme"
                         >
                           {this.props.labelButton}
-                        </p>
+                        </div>
                       </div>
                     </>
                   )}

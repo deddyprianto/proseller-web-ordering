@@ -62,7 +62,6 @@ class Footer extends Component {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            backgroundColor: "#FFF",
           }}
         >
           <Link

@@ -11,7 +11,7 @@
   z-index: 100;
 }
 
-@media only screen and (min-width: 768px) {
+/* @media only screen and (min-width: 768px) {
   .logo {
     height: 30px;
     object-fit: "contain";
@@ -19,7 +19,7 @@
     top: 0;
     left: calc(50vw - 15px);
   }
-}
+} */
 
 @media only screen and (min-width: 1201px) {
   .outlet {

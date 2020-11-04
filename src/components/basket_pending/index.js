@@ -127,7 +127,7 @@ class Basket extends Component {
 
       if (isEmptyObject(offlineCart)) return;
       await this.props.dispatch(OrderAction.deleteCart(true));
-      if (account !== undefined && account !== null) {
+      if (account) {
         for (let i = 0; i < offlineCart.details.length; i++) {
           let product = {
             productID: offlineCart.details[i].productID,
@@ -556,20 +556,18 @@ class Basket extends Component {
                 zIndex: 10,
                 width: "100%",
                 marginTop: -60,
-                backgroundColor: "#FFF",
                 boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                 display: "flex",
                 height: 40,
               }}
+              className="background-theme"
             >
-              <button
-                type="button"
-                className="close"
+              <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
                 <i className="fa fa-chevron-left"></i> Back
-              </button>
+              </div>
             </div>
             <main
               id="main"

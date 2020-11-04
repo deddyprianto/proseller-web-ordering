@@ -71,8 +71,8 @@ class CardItemBasket extends Component {
             </Typography>
           </div>
           {item.modifiers && item.modifiers.length > 0 && (
-            <div style={{ textAlign: "left", marginTop: -10 }}>
-              <div style={{ fontSize: 10, color: "gray", fontStyle: "italic" }}>
+            <div className="font-color-theme" style={{ textAlign: "left", marginTop: -10 }}>
+              <div style={{ fontSize: 10, fontStyle: "italic" }}>
                 Add On:
               </div>
               <div style={{ marginLeft: -23, marginTop: -5 }}>
@@ -85,7 +85,7 @@ class CardItemBasket extends Component {
                         (itemModifier, keyItem) =>
                           itemModifier.quantity &&
                           itemModifier.quantity > 0 && (
-                            <dev style={{ color: "gray" }} key={keyItem}>
+                            <dev key={keyItem}>
                               <Typography
                                 style={{
                                   lineHeight: "15px",
@@ -95,9 +95,9 @@ class CardItemBasket extends Component {
                                 }}
                               >
                                 <span
+                                  className="color-active"
                                   style={{
                                     marginRight: 3,
-                                    color: "#20a8d8",
                                     fontStyle: "italic",
                                     fontSize: 10,
                                   }}
@@ -105,7 +105,6 @@ class CardItemBasket extends Component {
                                 <span
                                   style={{
                                     fontSize: 10,
-                                    color: "gray",
                                     fontStyle: "italic",
                                   }}
                                 >{`${itemModifier.name} (${this.props
@@ -122,11 +121,10 @@ class CardItemBasket extends Component {
             </div>
           )}
           {item.remark && item.remark !== "-" && (
-            <div style={{ display: "flex", marginLeft: -5, marginTop: -5 }}>
+            <div className="font-color-theme" style={{ display: "flex", marginLeft: -5, marginTop: -5 }}>
               <div
                 style={{
                   fontStyle: "italic",
-                  color: "gray",
                   fontSize: 10,
                   textAlign: "justify",
                   marginLeft: 5,
@@ -135,7 +133,6 @@ class CardItemBasket extends Component {
               <div
                 style={{
                   fontStyle: "italic",
-                  color: "gray",
                   fontSize: 10,
                   textAlign: "justify",
                   marginLeft: 5,

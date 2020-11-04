@@ -64,6 +64,7 @@ export default class SelectPicupDateTime extends Component {
                       className={cx(styles.input, {
                         [styles.rounded]: false,
                       })}
+                      style={{backgroundColor: '#FFF'}}
                       onChange={(e) =>
                         this.props.handleSetState('orderActionDate', moment(e.target.value).format("YYYY-MM-DD"))
                       }

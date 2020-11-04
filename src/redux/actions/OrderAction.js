@@ -68,9 +68,19 @@ function getSettingOrdering() {
   
       let primaryColor = data && data.settings.find(items => { return items.settingKey === "PrimaryColor" })
       let secondaryColor = data && data.settings.find(items => { return items.settingKey === "SecondaryColor" })
+      let font = data && data.settings.find(items => { return items.settingKey === "FontColor" })
+      let background = data && data.settings.find(items => { return items.settingKey === "BackgroundColor" })
+      let navigation = data && data.settings.find(items => { return items.settingKey === "NavigationColor" })
+      let textButtonColor = data && data.settings.find(items => { return items.settingKey === "TextButtonColor" })
+      let textWarningColor = data && data.settings.find(items => { return items.settingKey === "TextWarningColor" })
       let payload = {
         primary: primaryColor.settingValue,
         secondary: secondaryColor.settingValue,
+        font: font.settingValue,
+        background: background.settingValue,
+        navigation: navigation.settingValue,
+        textButtonColor: textButtonColor.settingValue,
+        textWarningColor: textWarningColor.settingValue,
       }
       dispatch({ type: "SET_THEME", payload});
       dispatch({ type: "DATA_SETTING_ORDERING", payload: data && data.settings});
@@ -155,7 +165,7 @@ function processAddCart(defaultOutlet, selectedItem) {
 
     payload.details.push(product);
 
-    if (account !== undefined && account !== null) dispatch(addCart(payload));
+    if (account) dispatch(addCart(payload));
     else dispatch(processOfflineCart(payload, "Add"));
   };
 }
@@ -231,8 +241,7 @@ function processUpdateCart(basket, products) {
 
     console.log(payload);
     let basketUpdate = {};
-    if (account !== undefined)
-      basketUpdate = await dispatch(updateCart(payload));
+    if (account) basketUpdate = await dispatch(updateCart(payload));
     else basketUpdate = await dispatch(processOfflineCart(payload, "Update"));
     return basketUpdate;
   };
@@ -385,7 +394,7 @@ function deleteCart(isDeleteServer = false) {
     localStorage.removeItem(`${config.prefix}_dataBasket`);
 
     // IF CUSTOMER NOT LOGIN
-    if (account === undefined && !isDeleteServer) {
+    if (!account && !isDeleteServer) {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
       if (!isEmptyObject(offlineCart)) {

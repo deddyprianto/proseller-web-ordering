@@ -71,7 +71,7 @@ const Login = ({
         <Button
           disabled={isSubmitting}
           className="button"
-          style={{ width: "100%", marginTop: 10, borderRadius: 5 }}
+          style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
           onClick={() => handleSubmit(!enablePassword)}
         >
           Submit

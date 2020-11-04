@@ -62,6 +62,9 @@ const EmailForm = ({
                 border: "1px solid #FFF",
                 height: 40,
               }}
+              dropdownStyle={{
+                color: "#808080"
+              }}
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
           </div>
@@ -96,7 +99,7 @@ const EmailForm = ({
       <Button
         disabled={isSubmitting}
         className="button"
-        style={{ width: "100%", marginTop: 10, borderRadius: 5 }}
+        style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}
       >
         Create Account

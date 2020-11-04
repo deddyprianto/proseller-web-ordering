@@ -17,7 +17,7 @@ class DeliveryAddressBasket extends Component {
           justifyContent: "space-between",
         }}
       >
-        <div style={{ color: "gray", fontSize: 14 }}>
+        <div style={{ fontSize: 14 }}>
           Delivery Address
         </div>
         <div style={{fontWeight: "bold", fontSize: 14}}>

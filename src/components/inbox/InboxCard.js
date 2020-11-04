@@ -8,19 +8,19 @@ export default class InboxCard extends Component {
     const { items } = this.props
     return (
       <div style={{
-        boxShadow: "1px 1px 1px rgba(128, 128, 128, 0.5)", border: "1px solid #CDCDCD",
-        backgroundColor: "#FFF", padding: 10, cursor: "pointer", display: "flex",
+        boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)", border: "1px solid #CDCDCD",
+        padding: 10, cursor: "pointer", display: "flex",
         flexDirection: "row", margin: 5, borderRadius: 5
       }}>
         {
           !items.isRead ?
             <EmailIcon className="customer-group-name" style={{
               height: 50, width: 50,
-              marginRight: 10, backgroundColor: "#FFF",
+              marginRight: 10,
             }} /> :
             <DraftsIcon style={{
               height: 50, width: 50,
-              marginRight: 10, backgroundColor: "#FFF", color: 'gray'
+              marginRight: 10, color: 'gray'
             }} />
         }
 

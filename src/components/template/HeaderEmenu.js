@@ -59,7 +59,7 @@ class Header extends Component {
   getShareURL = async () => {
     const { basket } = this.props;
 
-    if (account === undefined) {
+    if (!account) {
       alert("Please log in first to continue");
       return;
     }
@@ -162,7 +162,7 @@ class Header extends Component {
         />
         <header
           id="masthead"
-          className="site-header header-v4 lite-bg"
+          className="site-header header-v4 background-theme"
           style={{
             position: "fixed",
             width: "100%",

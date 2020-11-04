@@ -274,7 +274,7 @@ class EditProfile extends Component {
 
   toggleEditPassword = () => {
     let defaultEdit= this.state.defaultEdit
-    defaultEdit['password'] = false
+    defaultEdit['password'] = !defaultEdit['password']
     
     this.setState({
       defaultEdit,
@@ -345,7 +345,7 @@ class EditProfile extends Component {
           </div>
           {
             defaultError && defaultError["oldPassword"] !== "" && 
-            <div className="text text-danger small" style={{lineHeight: "15px", marginTop:5}}> <em>{defaultError["oldPassword"]}</em> </div>
+            <div className="text text-warning-theme small" style={{lineHeight: "15px", marginTop:5}}> <em>{defaultError["oldPassword"]}</em> </div>
           }
         </div>
         </Col>
@@ -383,7 +383,7 @@ class EditProfile extends Component {
           </div>
           {
             defaultError && defaultError["newPassword"] !== "" && 
-            <div className="text text-danger small" style={{lineHeight: "15px", marginTop:5}}> <em>{defaultError["newPassword"]}</em> </div>
+            <div className="text text-warning-theme small" style={{lineHeight: "15px", marginTop:5}}> <em>{defaultError["newPassword"]}</em> </div>
           }
         </div>
         </Col>
@@ -428,7 +428,7 @@ class EditProfile extends Component {
           </div>
           {
             defaultError && defaultError["retypeNewPassword"] !== "" && 
-            <div className="text text-danger small" style={{lineHeight: "15px", marginTop:5}}> <em>{defaultError["retypeNewPassword"]}</em> </div>
+            <div className="text text-warning-theme small" style={{lineHeight: "15px", marginTop:5}}> <em>{defaultError["retypeNewPassword"]}</em> </div>
           }
         </div>
         </Col>
@@ -453,7 +453,7 @@ class EditProfile extends Component {
           />
 
           <div style={{border: "1px solid #CCC", borderRadius: 5, padding: 10, marginTop: 20}}>
-            <div className="color" onClick={this.toggleEditPassword} style={{textAlign: "right", cursor: "pointer"}}>
+            <div className="color" onClick={() => this.toggleEditPassword()} style={{textAlign: "right", cursor: "pointer"}}>
               <div style={{fontSize: 14, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                 <b>Change Password </b>
                 {
@@ -487,13 +487,13 @@ class EditProfile extends Component {
           >
             <div style={{
               flexDirection: "row", position: "fixed", zIndex: 10, width: "100%", marginTop: -60,
-              backgroundColor: "#FFF", boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
+              boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
               height: 40
-            }}>
-              <button type="button" className="close" style={{ marginLeft: 10, fontSize: 16 }}
+            }} className="background-theme">
+              <div style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}>
                 <i className="fa fa-chevron-left"></i> Back
-              </button>
+              </div>
             </div>
             <main id="main" className="site-main" style={{ width: "100%"}}>
               {

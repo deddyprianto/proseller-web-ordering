@@ -8,7 +8,7 @@ class AddPromo extends Component {
   render() {
     let props = this.props.data
     let selectedVoucher = this.props.selectedVoucher
-    let colorText = this.props.disabledBtn ? "#777" : (this.props.color.primary || "#c00a27") 
+    let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
     return (
       <div>
         <RedeemPointBasket
@@ -26,10 +26,10 @@ class AddPromo extends Component {
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10
             }}>
-              <Button disabled={this.props.roleBtnClear || this.props.disabledBtn}
+              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn}
                 onClick={() => this.props.handleRedeemVoucher()}
                 style={{
-                  fontWeight: "bold", color: colorText, cursor: "pointer", backgroundColor: "#FFF",
+                  fontWeight: "bold", color: colorText, cursor: "pointer", 
                   width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
                   alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
                 }}>
@@ -66,11 +66,11 @@ class AddPromo extends Component {
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10, display: "flex", alignItems: "center"
             }}>
-              <Button disabled={this.props.roleBtnClear || this.props.disabledBtn}
+              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn}
                 data-toggle="modal" data-target="#redeem-point-modal"
                 onClick={() => this.props.handleRedeemPoint()}
                 style={{
-                  fontWeight: "bold", color: colorText, cursor: "pointer", backgroundColor: "#FFF",
+                  fontWeight: "bold", color: colorText, cursor: "pointer", 
                   width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
                   alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
                 }}>
@@ -95,7 +95,7 @@ class AddPromo extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
     selectedVoucher: state.payment.selectedVoucher

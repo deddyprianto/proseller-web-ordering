@@ -14,10 +14,10 @@ class Promotion extends Component {
             autoplay
             wrapAround={false}
             renderCenterLeftControls={({ previousSlide }) => (
-              <p onClick={previousSlide}><i className="fa fa-chevron-left control-promotion profile-dashboard" style={{ borderTopRightRadius: 5, borderBottomRightRadius: 5 }}></i></p>
+              <p onClick={previousSlide}><i className="fa fa-chevron-left control-promotion background-theme" style={{ borderTopRightRadius: 5, borderBottomRightRadius: 5 }}></i></p>
             )}
             renderCenterRightControls={({ nextSlide }) => (
-              <p onClick={nextSlide}><i className="fa fa-chevron-right control-promotion profile-dashboard" style={{ borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}></i></p>
+              <p onClick={nextSlide}><i className="fa fa-chevron-right control-promotion background-theme" style={{ borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}></i></p>
             )}
           >
             {banners.map((item, i) => (

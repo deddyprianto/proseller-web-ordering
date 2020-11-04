@@ -112,7 +112,6 @@ class DetailProfile extends Component {
               </div>
               <div
                 style={{
-                  color: "#FFF",
                   fontWeight: "bold",
                   fontSize: 16,
                   marginTop: 10,
@@ -120,13 +119,13 @@ class DetailProfile extends Component {
               >
                 {account.name}
               </div>
-              <div style={{ color: "#FFF" }}>{account.phoneNumber}</div>
-              <div style={{ color: "#FFF" }}>{account.email}</div>
+              <div>{account.phoneNumber}</div>
+              <div>{account.email}</div>
             </div>
 
             <div
+              className="background-theme"
               style={{
-                backgroundColor: "#FFF",
                 padding: 10,
                 marginTop: -15,
                 borderTopLeftRadius: 20,
@@ -136,9 +135,7 @@ class DetailProfile extends Component {
               }}
             >
               <div style={{ textAlign: "center" }}>
-                <div
-                  style={{ color: "gray", fontSize: 16, fontWeight: "bold" }}
-                >
+                <div style={{ fontSize: 16, fontWeight: "bold" }} >
                   Customer Group
                 </div>
                 <div
@@ -155,8 +152,8 @@ class DetailProfile extends Component {
             </div>
 
             <div
+              className="background-theme"
               style={{
-                backgroundColor: "#FFF",
                 padding: 10,
                 marginTop: 10,
                 borderRadius: 10,
@@ -165,22 +162,23 @@ class DetailProfile extends Component {
                 cursor: "pointer",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
-              <Link to="/edit-profile" style={{ width: "50%" }}>
-                <div
-                  style={{
-                    color: "gray",
-                    fontSize: 14,
-                    fontWeight: "bold",
-                  }}
-                >
-                  <i className="fa fa-user" aria-hidden="true" /> Edit Profile
-                </div>
+              <div style={{ display: "flex", justifyContent: "space-around" }} >
+                <Link to="/edit-profile" style={{ width: "50%" }}>
+                  <div
+                    className="font-color-theme"
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <i className="fa fa-user" aria-hidden="true" /> Edit Profile
+                  </div>
                 </Link>
                 |
                 <Link to="/setting" style={{ width: "50%" }}>
                   <div
-                    style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}
+                    className="font-color-theme"
+                    style={{ fontSize: 14, fontWeight: "bold" }}
                   >
                     <i className="fa fa-cog" aria-hidden="true" /> Setting
                   </div>
@@ -215,8 +213,8 @@ class DetailProfile extends Component {
             {referall.split("/")[1] !== "0" && (
               <Link to="/referral">
                 <div
+                  className="background-theme"
                   style={{
-                    backgroundColor: "#FFF",
                     padding: 10,
                     borderRadius: 10,
                     border: "1px solid #CDCDCD",
@@ -227,7 +225,6 @@ class DetailProfile extends Component {
                   <div style={{ textAlign: "center" }}>
                     <div
                       style={{
-                        color: "gray",
                         fontSize: 14,
                         fontWeight: "bold",
                       }}
@@ -241,8 +238,8 @@ class DetailProfile extends Component {
 
             <Link to="/payment-method">
               <div
+                className="background-theme"
                 style={{
-                  backgroundColor: "#FFF",
                   padding: 10,
                   marginTop: 10,
                   borderRadius: 10,
@@ -253,7 +250,7 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: "center" }}>
                   <div
-                    style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}
+                    style={{ fontSize: 14, fontWeight: "bold" }}
                   >
                     <i className="fa fa-credit-card-alt" aria-hidden="true" /> Payment Method
                   </div>
@@ -263,8 +260,8 @@ class DetailProfile extends Component {
 
             <Link to="/delivery-address">
               <div
+                className="background-theme"
                 style={{
-                  backgroundColor: "#FFF",
                   padding: 10,
                   marginTop: 10,
                   borderRadius: 10,
@@ -275,7 +272,7 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: "center" }}>
                   <div
-                    style={{ color: "gray", fontSize: 14, fontWeight: "bold" }}
+                    style={{ fontSize: 14, fontWeight: "bold" }}
                   >
                     <i className="fa fa-home" aria-hidden="true" /> Delivery Address
                   </div>
@@ -297,9 +294,9 @@ class DetailProfile extends Component {
             >
               <div style={{ textAlign: "center" }}>
                 <div
-                  style={{ color: "#FFF", fontSize: 16, fontWeight: "bold" }}
+                  style={{ fontSize: 16, fontWeight: "bold" }}
                 >
-                  Logout
+                  <i className="fa fa-sign-out" aria-hidden="true" /> Logout
                 </div>
               </div>
             </div>

@@ -51,7 +51,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         </div>
         {
           error && error[field.fieldName] !== "" && 
-          <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+          <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
         }
       </div>
     );
@@ -88,7 +88,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         </select>
         {
           error && error[field.fieldName] !== "" && 
-          <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+          <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
         }
       </div>
     );
@@ -121,7 +121,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
             name={field.fieldName}
             max={date}
             value={value[field.fieldName]}
-            style={{backgroundColor: (field.fieldName === "birthDate" && initialValue && "#DCDCDC")}}
+            style={{backgroundColor: (field.fieldName === "birthDate" && initialValue ? "#DCDCDC" : "#FFF")}}
             disabled={field.fieldName === "birthDate" && initialValue}
             className={cx(styles.input, {
               [styles.rounded]: roundedBorder,
@@ -138,7 +138,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         </div>
         {
           error && error[field.fieldName] !== "" && 
-          <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+          <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
         }
       </div>
     );
@@ -166,7 +166,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         ></textarea>
         {
           error && error[field.fieldName] !== "" && 
-          <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+          <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
         }
       </div>
     );
@@ -206,7 +206,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         </div>
         {
           error && error[field.fieldName] !== "" && 
-          <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+          <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
         }
       </div>
     );
@@ -236,7 +236,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         </select>
         {
           error && error[field.fieldName] !== "" && 
-          <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+          <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
         }
       </div>
     );
@@ -253,7 +253,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div style={{
-          display: "flex", justifyContent: "space-between", border: "1px solid #ccc", 
+          display: "flex", justifyContent: "space-between", border: "1px solid #ccc",  color: "#808080",
           padding: 8, paddingLeft: 20, paddingRight: 5, borderRadius: 5, backgroundColor: "#DCDCDC"
         }}>
           <div>{value[field.fieldName] || ""}</div>
@@ -280,7 +280,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         className={cx(styles.input, {
           [styles.rounded]: roundedBorder,
         })}
-        style={{ borderRadius: roundedBorder ? "50px" : "5px" }}
+        style={{ borderRadius: roundedBorder ? "50px" : "5px", backgroundColor: "#FFF" }}
         id={field.fieldName}
         name={field.fieldName}
         rows="2"
@@ -289,7 +289,7 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
       ></input>
       {
         error && error[field.fieldName] !== "" && 
-        <div className="text text-danger small"> <em>{error[field.fieldName]}</em> </div>
+        <div className="text text-warning-theme small"> <em>{error[field.fieldName]}</em> </div>
       }
     </div>
   );

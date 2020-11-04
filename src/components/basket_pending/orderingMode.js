@@ -20,7 +20,7 @@ class OrderingMode extends Component {
           justifyContent: "space-between",
         }}
       >
-        <div style={{ color: "gray", fontSize: 14 }}>
+        <div style={{ fontSize: 14 }}>
           Ordering Mode
         </div>
         <div style={{fontWeight: "bold", fontSize: 14}}>

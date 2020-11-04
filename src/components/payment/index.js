@@ -881,7 +881,7 @@ class Payment extends Component {
             >
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 {dataBasket && (
-                  <div style={{ backgroundColor: "#FFF", width: "100%" }}>
+                  <div style={{ width: "100%" }}>
                     <div>
                       <div
                         style={{
@@ -913,7 +913,7 @@ class Payment extends Component {
                           {currency && currency.code}
                         </div>
                         <div>
-                          <div style={{ fontSize: 40, fontWeight: "bold", color: "black" }} >
+                          <div style={{ fontSize: 40, fontWeight: "bold" }} >
                             {formattedPrice}
                           </div>
                           {
@@ -1017,11 +1017,10 @@ class Payment extends Component {
                           (selectedCard && selectedCard.minimumPayment && totalPrice < selectedCard.minimumPayment)
                         }
                         onClick={() => this.handleSettle()}
-                        className="customer-group"
+                        className="customer-group button"
                         style={{
                           marginBottom: 10,
                           width: "100%",
-                          color: "#FFF",
                           fontWeight: "bold",
                           marginLeft: 10,
                           marginRight: 10,
@@ -1045,12 +1044,11 @@ class Payment extends Component {
                         >
                           <Button
                             onClick={() => this.handleSettle(true)}
-                            className="customer-group"
+                            className="customer-group button"
                             style={{
                               marginBottom: 10,
                               width: "100%",
                               backgroundColor: "#34495e",
-                              color: "#FFF",
                               fontWeight: "bold",
                               marginLeft: 10,
                               marginRight: 10,

@@ -70,9 +70,10 @@ const WebOrderingCategories = ({
   return (
     <ul
       id="header-categories"
-      className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position"
+      className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position background-theme"
       style={{
         marginBottom: 0,
+        borderBottom: "0px solid #DCDCDC",
       }}
     >
       {!openSearch ? (
@@ -124,7 +125,7 @@ const WebOrderingCategories = ({
         />
       )}
       <div
-        className="search-button-absolute"
+        className="search-button-absolute background-theme"
         id="search-button-category"
         style={{ height: 40, marginTop: -11, width: 40 }}
       >

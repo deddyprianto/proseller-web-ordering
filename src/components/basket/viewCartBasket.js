@@ -240,8 +240,8 @@ const ViewCartBasket = ({
 
       {props.widthSelected < 1200 && (
         <div
+          className="background-theme"
           style={{
-            backgroundColor: "#FFF",
             padding: 10,
             width: "101%",
             marginLeft: props.widthSelected >= 750 ? -65 : -15,
@@ -279,7 +279,7 @@ const ViewCartBasket = ({
               productQuantity >= minQty ? (
                 productQuantity <= maxQty || maxQty === 0 ? null : (
                   <div>
-                    <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
                         `Your order has exceeded maximum allowed item quantity for
                         ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (maximum quantity ${maxQty}). 
@@ -291,7 +291,7 @@ const ViewCartBasket = ({
                 )
               ) : (
                   <div>
-                    <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
                         `Your order hasn't reached minimum allowed item quantity for
                         ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum quantity ${minQty}). 
@@ -303,7 +303,7 @@ const ViewCartBasket = ({
                 )
             ) : (
                 <div>
-                  <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                     {
                       `Your order has exceeded maximum allowed order amount for
                       ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} ( maximum amount ${getCurrency(maxAmount)}). 
@@ -315,7 +315,7 @@ const ViewCartBasket = ({
               )
           ) : (
               <div>
-                <div className="small text-left text-danger" style={{ lineHeight: "17px", textAlign: "center" }}>
+                <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                   {
                     `Your order hasn't reached minimum allowed order amount for
                     ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum amount ${getCurrency(minAmount)}). 
@@ -340,7 +340,7 @@ const ViewCartBasket = ({
                         justifyContent: "space-between",
                       }}
                     >
-                      <div style={{ fontWeight: "bold", color: "gray" }}>
+                      <div style={{ fontWeight: "bold" }}>
                         Delivery is not available in your area.
                       </div>
                     </div>
@@ -352,11 +352,11 @@ const ViewCartBasket = ({
                         justifyContent: "space-between",
                       }}
                     >
-                      <div style={{ fontWeight: "bold", color: "gray" }}>
+                      <div style={{ fontWeight: "bold" }}>
                         Delivery Fee
                       </div>
                       <div
-                        style={{ fontWeight: "bold", color: "gray" }}
+                        style={{ fontWeight: "bold" }}
                       >{`${deliveryProvider.deliveryFee}`}</div>
                     </div>
                   ) : (
@@ -367,7 +367,7 @@ const ViewCartBasket = ({
                             justifyContent: "space-between",
                           }}
                         >
-                          <div style={{ fontWeight: "bold", color: "gray" }}>
+                          <div style={{ fontWeight: "bold" }}>
                             Checking delivery availability...
                       </div>
                         </div>
@@ -417,7 +417,6 @@ const ViewCartBasket = ({
               <div
                 style={{
                   padding: 10,
-                  backgroundColor: "#FFF",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -425,11 +424,11 @@ const ViewCartBasket = ({
                 }}
               >
                 <Button
+                  className="button"
                   style={{
                     boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     width: "100%",
                     backgroundColor: "green",
-                    color: "#FFF",
                     fontWeight: "bold",
                     display: "flex",
                     justifyContent: "center",
@@ -445,7 +444,6 @@ const ViewCartBasket = ({
               <div
                 style={{
                   padding: 10,
-                  backgroundColor: "#FFF",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
@@ -465,11 +463,11 @@ const ViewCartBasket = ({
                   onClick={() => {
                     roleTitleSettle() ? handleSettle() : handleSubmit();
                   }}
+                  className="button"
                   style={{
                     boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     width: "100%",
                     display: "flex",
-                    color: "#FFF",
                     fontWeight: "bold",
                     alignItems: "center",
                     justifyContent: "center",

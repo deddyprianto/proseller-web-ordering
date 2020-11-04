@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 class PaymentMethodBasket extends Component {
   render() {
     let props = this.props.data
-    let colorText = (this.props.disabledBtn || props.selectedCard )? "#777" : (this.props.color.primary || "#c00a27") 
+    let colorText = (this.props.disabledBtn || props.selectedCard )? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
     let nameCreditCard = "Select Credit Card"
     if(props.selectedCard){
       let lengthNumber = props.selectedCard.details.maskedAccountNumber.toString().length
@@ -28,11 +28,11 @@ class PaymentMethodBasket extends Component {
       }}>
         <Link to="/payment-method" style={{width: "100%"}}>
           <Button
+            className="background-theme"
             disabled={this.props.disabledBtn}
             onClick={() => localStorage.setItem(`${config.prefix}_getPaymentMethod`, true)}
             style={{
-              fontWeight: "bold", cursor: "pointer", backgroundColor: "#FFF",
-              color: colorText,
+              fontWeight: "bold", cursor: "pointer", color: colorText,
               width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
               alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
             }}>

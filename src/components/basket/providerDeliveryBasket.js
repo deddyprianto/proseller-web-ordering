@@ -42,7 +42,7 @@ class ProviderDeliveryBasket extends Component {
                 color: "#FFF",
                 cursor: "pointer",
                 backgroundColor: this.props.deliveryProvider && this.props.deliveryProvider.name
-                  ? "#777"
+                  ? "#DCDCDC"
                   : this.props.color.primary,
                 width: 140,
                 justifyContent: "space-between",

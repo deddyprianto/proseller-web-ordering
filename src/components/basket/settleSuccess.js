@@ -133,15 +133,14 @@ class SettleSuccess extends Component {
                 {settleSuccess && (
                   <div
                     style={{
-                      backgroundColor: "#FFF",
                       width: "100%",
                       borderRadius: 5,
                       border: `1px solid ${colorText}`,
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                      <i className={`fa ${paymentStatus ? "fa-check-circle" : "fa-times-circle"}`} aria-hidden="true" style={{ 
-                        marginTop: -30, fontSize: 60, color: colorText, backgroundColor: "#FFF"
+                      <i className={`fa ${paymentStatus ? "fa-check-circle" : "fa-times-circle"} background-theme`} aria-hidden="true" style={{ 
+                        marginTop: -30, fontSize: 60, color: colorText,
                       }}/>
                     </div>
                     <div>
@@ -175,7 +174,7 @@ class SettleSuccess extends Component {
                           {this.props.companyInfo && this.props.companyInfo.currency.code}
                         </div>
                         <div>
-                          <div style={{color: "black",fontSize: 40,fontWeight: "bold"}}>
+                          <div style={{fontSize: 40,fontWeight: "bold"}}>
                             {this.getCurrency(totalAmount - discount)}
                           </div>
                           {
@@ -308,7 +307,6 @@ class SettleSuccess extends Component {
                           width: 100,
                           backgroundColor: colorText,
                           border: "1px solid #FFF",
-                          color: "#FFF",
                           fontWeight: "bold",
                         }}
                       >

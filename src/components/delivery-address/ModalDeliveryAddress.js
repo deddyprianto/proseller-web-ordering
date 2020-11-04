@@ -174,6 +174,12 @@ class ModalDeliveryAdderss extends Component {
                           return items.value === deliveryAddress.addressName;
                         }) || ""
                       }
+                      styles={{
+                        option: (provided, state) => ({
+                          ...provided,
+                          color: state.isSelected ? '#000' : '#808080'
+                        })
+                      }}
                       options={optionsAddressName}
                       onChange={(e) =>
                         this.props.handleChange("addressName", e.value)

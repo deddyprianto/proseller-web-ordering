@@ -90,7 +90,13 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
     orderingSetting.theme.color &&
     orderingSetting.theme.color.secondary;
   let defaultSetting = {
-    theme: { color: { secondary: "#C00A27", primary: "#C00A27" } },
+    theme: { 
+      color: { 
+        secondary: "#C00A27", primary: "#C00A27",
+        font: "#808080", background: "#FFFFFF", 
+        navigation: "#C00A27"
+      } 
+    },
     settings: [
       { settingKey: "LoginByEmail", settingValue: true },
       { settingKey: "LoginByMobile", settingValue: true },
@@ -109,6 +115,11 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
         },
       },
       { settingKey: "TimeAndDateOrderLength", settingValue: 60 },
+      { settingKey: "FontColor", settingValue: "#808080" },
+      { settingKey: "BackgroundColor", settingValue: "#FFFFFF" },
+      { settingKey: "NavigationColor", settingValue: primary || "#C00A27" },
+      { settingKey: "TextButtonColor", settingValue: "#FFF" },
+      { settingKey: "TextWarningColor", settingValue: "red" },
     ],
   };
 

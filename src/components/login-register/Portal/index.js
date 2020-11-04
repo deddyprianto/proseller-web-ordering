@@ -85,6 +85,9 @@ let Portal = ({
                     border: "1px solid #FFF",
                     height: 40,
                   }}
+                  dropdownStyle={{
+                    color: "#808080"
+                  }}
                 ></PhoneInput>
                 <div className={styles.phoneCountryCode}>
                   {phoneCountryCode}

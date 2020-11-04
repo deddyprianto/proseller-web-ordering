@@ -52,14 +52,13 @@ class InboxCard extends Component {
         style={{
           display: "flex",
           flexDirection: "row",
-          boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+          boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
           padding: 10,
           justifyContent: "space-between",
           alignItems: "center",
           borderRadius: 5,
           marginBottom: 10,
           cursor: "pointer",
-          backgroundColor: "#FFF",
           height: 80,
         }}
       >

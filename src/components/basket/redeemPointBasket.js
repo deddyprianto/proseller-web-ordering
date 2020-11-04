@@ -24,30 +24,30 @@ export default class RedeemPointBasket extends Component {
                 </button>
               </div>
               <div className="modal-body">
-                <div className="profile-dashboard" style={{ margin: -16, marginTop: -17, paddingTop: 20, paddingBottom: 20 }}>
-                  <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 16, color: "#fff", marginBottom: 10 }}>
+                <div className="profile-dashboard text-btn-theme" style={{ margin: -16, marginTop: -17, paddingTop: 20, paddingBottom: 20 }}>
+                  <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 16, marginBottom: 10 }}>
                     My Points
-                    </div>
-                  <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, color: "#fff", marginBottom: 10 }}>
+                  </div>
+                  <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, marginBottom: 10 }}>
                     {props.detailPoint.point}
                   </div>
                   <div style={{ textAlign: "center", marginBottom: 20 }} >
-                    <div style={{ color: "#FFF", fontSize: 14, fontWeight: "bold" }}>
+                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
                       {props.textRasio}
                     </div>
                   </div>
                 </div>
 
-                <div style={{
-                  backgroundColor: "#FFF", borderTopLeftRadius: 20,
+                <div className="background-theme" style={{
+                  borderTopLeftRadius: 20,
                   borderTopRightRadius: 20, padding: 10, margin: -16
                 }}>
                   <div style={{
                     display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center",
                   }}>
-                    <div style={{ color: "#ffa41b", fontWeight: "bold" }}>{props.selectedPoint}</div>
-                    <div style={{ color: "gray", fontWeight: "bold", marginLeft: 5, marginRight: 5 }}>{"points to"}</div>
-                    <div style={{ color: "#ffa41b", fontWeight: "bold" }}>{this.props.getCurrency(discountPoint)}</div>
+                    <div className="color-active" style={{ fontWeight: "bold" }}>{props.selectedPoint}</div>
+                    <div style={{ fontWeight: "bold", marginLeft: 5, marginRight: 5 }}>{"points to"}</div>
+                    <div className="color-active" style={{ fontWeight: "bold" }}>{this.props.getCurrency(discountPoint)}</div>
                   </div>
 
                   <div style={{ marginTop: 10, marginBottom: 15, textAlign: 'center' }}>

@@ -213,21 +213,20 @@ export default class ViewCartBasket extends Component {
           props.dataBasket.status === "READY_FOR_COLLECTION" ||
           props.dataBasket.status === "READY_FOR_DELIVERY" ||
           props.dataBasket.status === "ON_THE_WAY") &&
-          <div style={{
-            backgroundColor: "#FFF", padding: 10, width: "101%", marginLeft: (props.widthSelected >= 750 ? -65 : -15),
+          <div className="background-theme" style={{
+            padding: 10, width: "101%", marginLeft: (props.widthSelected >= 750 ? -65 : -15),
             marginBottom: (props.widthSelected >= 1200 ? 0 : 45),
             display: "flex", flexDirection: "column", alignItems: "left", position: "fixed", bottom: 0,
             boxShadow: "1px -2px 2px rgba(128, 128, 128, 0.5)", justifyContent: "center",
             paddingBottom: 20 
           }}>
 
-            <div style={{
-              padding: 10, backgroundColor: "#FFF",
-              display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
+            <div className="background-theme" style={{
+              padding: 10, display: "flex", flexDirection: "row", 
+              alignItems: 'center', justifyContent: "space-between",
             }}>
               <Button style={{
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "100%",
-                backgroundColor: "green", color: "#FFF", fontWeight: "bold",
+                width: "100%", backgroundColor: "green", color: "#FFF", fontWeight: "bold",
                 display: 'flex', justifyContent: "center", alignItems: "center"
               }} onClick={() => this.props.setViewCart(false)}>
                 <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>

@@ -39,7 +39,7 @@ class OrderingMode extends Component {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
+          <div style={{ fontWeight: "bold", fontSize: 14 }}>
             Ordering Mode
           </div>
           <Button
@@ -49,9 +49,8 @@ class OrderingMode extends Component {
             data-target="#ordering-mode-basket-modal"
             style={{
               fontWeight: "bold",
-              color: "#FFF",
               cursor: "pointer",
-              backgroundColor: this.props.color.secondary,
+              backgroundColor: this.props.color.primary,
               width: 140,
               justifyContent: "space-between",
               display: "flex",
