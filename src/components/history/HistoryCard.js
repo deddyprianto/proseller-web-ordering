@@ -46,13 +46,14 @@ class InboxCard extends Component {
         }
       });
     }
-
+    
     return (
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+          border: "1px solid #CDCDCD",
           padding: 10,
           justifyContent: "space-between",
           alignItems: "center",
@@ -86,7 +87,7 @@ class InboxCard extends Component {
                 {items.outlet && this.checkNameOutlet(items.outlet.name)}
               </div>
               <div style={{ fontWeight: "bold", fontSize: 14 }}>
-                {this.getCurrency(items.price + (items.deliveryFee || 0) - discount)}
+                {this.getCurrency(items.totalNettAmount + (items.deliveryFee || 0) - discount)}
               </div>
             </div>
           </div>
@@ -99,7 +100,6 @@ class InboxCard extends Component {
             </div>
             <div
               style={{
-                color: "gray",
                 fontSize: 10,
                 textAlign: "right",
                 marginTop: 10,

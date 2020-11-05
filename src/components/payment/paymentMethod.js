@@ -8,11 +8,8 @@ import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { connect } from "react-redux";
 import CreditCard from "@material-ui/icons/CreditCard";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import ModalPaymentMethod from "./ModalPaymentMethod";
 import _ from "lodash";
-// import Lottie from "lottie-react-web";
-// import emptyGif from "../../assets/gif/empty-and-lost.json";
 import { uuid } from "uuidv4";
 
 import styles from "./styles.module.css";
@@ -336,31 +333,19 @@ class PaymentMethod extends Component {
                           {(item.allowMultipleAccount ||
                             item.data.length === 0) && (
                             <Button
-                              className="profile-dashboard"
+                              className="button"
+                              data-toggle="modal"
+                              data-target="#delivery-address-modal"
                               style={{
-                                paddingLeft: 10,
-                                paddingRight: 10,
+                                width: 100,
+                                paddingLeft: 5,
+                                paddingRight: 5,
                                 borderRadius: 5,
-                                cursor: "pointer",
-                                fontSize: 14,
-                                fontWeight: "bold",
-                                boxShadow:
-                                  "-1px -1px 5px rgba(128, 128, 128, 0.3)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
                                 height: 40,
                               }}
                               onClick={() => this.handleAddMethod(item)}
                             >
-                              <AddCircleIcon
-                                style={{
-                                  fontSize: 15,
-                                  fontWeight: "bold",
-                                  marginRight: 5,
-                                }}
-                              />
-                              Add Card
+                              <i className="fa fa-plus" aria-hidden="true" /> Add Card
                             </Button>
                           )}
                         </div>
@@ -369,14 +354,13 @@ class PaymentMethod extends Component {
                             <Col key={keyCard} sm={6}>
                               <div
                                 style={{
-                                  boxShadow:
-                                    "1px 2px 5px rgba(128, 128, 128, 0.3)",
                                   padding: 10,
                                   borderRadius: 5,
                                   marginBottom: 5,
                                   color: "#FFF",
                                   cursor: "pointer",
                                   backgroundColor: "#1d282e",
+                                  border: "1 solid #FFF"
                                 }}
                                 data-toggle="modal"
                                 data-target={

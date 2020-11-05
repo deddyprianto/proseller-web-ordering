@@ -8,6 +8,7 @@ import {
 import Shimmer from "react-shimmer-effect";
 import { CustomerAction } from '../../redux/actions/CustomerAction';
 import config from "../../config";
+import CheckBox from './checkBoxCostume';
 
 const Swal = require('sweetalert2')
 
@@ -103,20 +104,29 @@ class Setting extends Component {
                         <div style={{ marginLeft: 10, marginRight: 10 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
                             <div style={{ fontSize: 14 }}>Use Email Notification</div>
-                            <input type="checkbox" checked={dataCustomer.emailNotification ? true : false}
-                              onClick={() => this.handleChange('emailNotification', dataCustomer.emailNotification ? false : true)} />
+                            <CheckBox 
+                              handleChange={(status) => this.handleChange('emailNotification', status)}
+                              selected={dataCustomer.emailNotification ? true : false} 
+                              setRadius={5} setHeight={20}
+                            />
                           </div>
 
                           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
                             <div style={{ fontSize: 14 }}>Use SMS Notification</div>
-                            <input type="checkbox" checked={dataCustomer.smsNotification ? true : false}
-                              onClick={() => this.handleChange('smsNotification', dataCustomer.smsNotification ? false : true)} />
+                            <CheckBox 
+                              handleChange={(status) => this.handleChange('smsNotification', status)}
+                              selected={dataCustomer.smsNotification ? true : false} 
+                              setRadius={5} setHeight={20}
+                            />
                           </div>
                         </div>
 
                         <Button className="profile-dashboard" style={{
-                          width: "100%", paddingLeft: 5, paddingRight: 5, borderRadius: 5, height: 40, marginTop: 10
-                        }} onClick={() => this.handleSave()}>Save</Button>
+                          width: "100%", paddingLeft: 5, paddingRight: 5, borderRadius: 5, 
+                          height: 40, marginTop: 10, fontWeight: "bold"
+                        }} onClick={() => this.handleSave()}>
+                          <i className="fa fa-floppy-o" aria-hidden="true" /> Save Setting
+                        </Button>
                       </div>
                     </Col>
                   </Row>

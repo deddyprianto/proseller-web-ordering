@@ -111,7 +111,7 @@ class Product extends Component {
                 maxWidth: 180,
                 alignItems: "center",
                 padding: 0,
-                marginRight: 10
+                marginRight: 5
               }}
             >
               <span className="woocommerce-LoopProduct-link">

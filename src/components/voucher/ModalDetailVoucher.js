@@ -4,6 +4,7 @@ import { CampaignAction } from '../../redux/actions/CampaignAction';
 import { connect } from "react-redux";
 import voucherIcon from '../../assets/images/voucher-icon.png'
 import { Button } from 'reactstrap';
+import styles from "./GiftVoucherModal/styles.module.css";
 
 const Swal = require('sweetalert2')
 
@@ -12,13 +13,15 @@ class ModalDetailVoucher extends Component {
     super(props);
     this.state = {
       isLoading: false,
+      count: 0
     }
   }
 
   handleRedeemVoucher = async () => {
-    const { dataDetail } = this.props
+    let { dataDetail } = this.props
+    let { count } = this.state
     Swal.fire({
-      title: "Redeem it?",
+      title: `Redeem ${count} vouchers?`,
       text: "You cannot return this!",
       icon: 'warning',
       showCancelButton: true,
@@ -29,14 +32,12 @@ class ModalDetailVoucher extends Component {
     }).then(async (result) => {
       if (result.value) {
         Swal.fire({
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          allowEnterKey: false,
           onOpen: () => {
             Swal.showLoading()
           }
         })
-        let response = await this.props.dispatch(VoucherAction.redeemVoucher(dataDetail));
+
+        let response = await this.props.dispatch(VoucherAction.redeemVoucher(dataDetail, count));
         await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "true" }, this.props.account.companyId))
         if (response.ResultCode === 200) {
           document.getElementById('btn-close-detail-voucher').click()
@@ -56,8 +57,14 @@ class ModalDetailVoucher extends Component {
 
   render() {
     let { dataDetail, getCurrency, pointData } = this.props
+    let { count } = this.state
     let disableBtn = dataDetail && dataDetail.redeemValue > pointData.totalPoint - (pointData.pendingPoints || 0)
+    let maxRedeem = 0
+    if(dataDetail){
+      maxRedeem = Math.floor(pointData.totalPoint / dataDetail.redeemValue)
+    }
 
+    if(count > maxRedeem) count = maxRedeem
     return (
       <div>
         <div className="modal fade" id="voucher-detail-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -78,7 +85,7 @@ class ModalDetailVoucher extends Component {
                   <img style={{ width: '100%', height: 150, objectFit: "contain", overflow: 'hidden' }}
                     src={dataDetail.image ? dataDetail.image : voucherIcon} alt="voucher" />
 
-                  <div style={{ width: '100%', marginLeft: 10, marginRight: 10, textAlign: "center", marginTop: 5 }}>
+                  <div style={{ width: '100%', textAlign: "center", marginTop: 5 }}>
                     <div style={{ fontSize: 12 }}>
                       {dataDetail.voucherDesc}
                     </div>
@@ -97,20 +104,52 @@ class ModalDetailVoucher extends Component {
                     </div> : null
                   }
 
+                  <div className={styles.counter} style={{ marginTop: -30, marginBottom: -20 }}>
+                    <button
+                      className="font-color-theme"
+                      onClick={() => count > 0 && this.setState({count: count - 1})}
+                      disabled={count === 0}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      name="count"
+                      min={0}
+                      max={maxRedeem}
+                      value={parseInt(count)}
+                      style={{height: 40, fontSize: 20}}
+                      onChange={(e) => {
+                        let value = parseInt(e.target.value) || 0
+                        value <= maxRedeem ? 
+                        this.setState({count: value}) : 
+                        this.setState({count: maxRedeem})
+                      }}
+                    />
+                    <button
+                      className="font-color-theme"
+                      onClick={() =>
+                        count <= maxRedeem && this.setState({count: count + 1})
+                      }
+                      disabled={count === maxRedeem}
+                    >
+                      +
+                    </button>
+                  </div>
+
                   <Button 
-                  disabled={disableBtn}
+                    disabled={disableBtn || count < 1}
                     className="button" 
                     style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }} 
                     onClick={() => this.handleRedeemVoucher()}
                   >
-                    Redeem Voucher
+                    <i className="fa fa-paper-plane" aria-hidden="true" /> Redeem Voucher
                   </Button>
                 </div>
               </div>
             }
           </div>
         </div>
-        {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
       </div>
     );
   }

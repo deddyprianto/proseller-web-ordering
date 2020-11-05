@@ -72,7 +72,7 @@ const GiftVoucherModal = ({
   return (
     <div className={styles.modalContainer}>
       {isSubmitting ? Swal.showLoading() : Swal.close()}
-      <div className={styles.modal}>
+      <div className={cx(styles.modal, "background-theme")}>
         <div className={styles.header}>
           <div>Gift Voucher</div>
           <button
@@ -124,9 +124,9 @@ const GiftVoucherModal = ({
             </div>
             <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
             <div style={{ marginTop: 10 }}>Voucher owned : {voucher.totalRedeem} items</div>
-            <div className={styles.counter} style={{ marginTop: -30, marginBottom: -30 }}>
+            <div className={styles.counter} style={{ marginTop: -30, marginBottom: -20 }}>
               <button
-                className={styles.decrease}
+                className="font-color-theme"
                 onClick={() => count > 0 && setCount(count - 1)}
                 disabled={count === 0}
               >
@@ -137,6 +137,7 @@ const GiftVoucherModal = ({
                 name="count"
                 min={0}
                 value={count}
+                style={{height: 40, fontSize: 20}}
                 onChange={(e) =>
                   e.target.value !== ""
                     ? setCount(parseInt(e.target.value))
@@ -144,7 +145,7 @@ const GiftVoucherModal = ({
                 }
               ></input>
               <button
-                className={styles.increase}
+                className="font-color-theme"
                 onClick={() =>
                   count <= voucher.totalRedeem && setCount(count + 1)
                 }
@@ -157,7 +158,11 @@ const GiftVoucherModal = ({
           </div>
 
           <div className={styles.footer} style={{ marginTop: 10 }}>
-            <button onClick={handleSubmit} disabled={isSubmitting || count < 1} style={{ width: "100%", borderRadius: 5 }}>
+            <button 
+              onClick={handleSubmit} 
+              disabled={isSubmitting || count < 1} 
+              style={{ width: "100%", borderRadius: 5, height: 50 }}
+            >
               <i className="fa fa-paper-plane" aria-hidden="true"></i> Send Gifts
             </button>
           </div>

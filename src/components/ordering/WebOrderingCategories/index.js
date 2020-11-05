@@ -2,40 +2,35 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const WebOrderingCategories = ({
-  categoryRefs,
   categories,
   finished,
   loadingSearching,
-  setLoading,
   searchProduct,
   selectedCategory,
   setSelectedCategory,
 }) => {
-  const [openSearch, setOpenSearch] = useState(false);
-  const [searchTimeout, setSearchTimeout] = useState(null);
-  const [prevSelectedCategory, setPrevSelectedCategory] = useState(
-    selectedCategory
-  );
+  let [querySearch, setQuerySearch] = useState("");
+  let [openSearch, setOpenSearch] = useState(false);
+  let [prevSelectedCategory, setPrevSelectedCategory] = useState( selectedCategory );
 
   const isItemsFinishedToLoad = (query) => {
     try {
+      setQuerySearch(query)
       loadingSearching(true);
-
-      if (!finished) {
-        setLoading(true);
-        clearTimeout(searchTimeout);
-        const timeout = setTimeout(() => {
-          return isItemsFinishedToLoad(query);
-        }, 2000);
-        setSearchTimeout(timeout);
-      } else {
+      if (finished) {
         searchProduct(query);
+        setQuerySearch("")
       }
     } catch (e) {}
   };
+
+  if(finished && openSearch && querySearch !== ""){
+    isItemsFinishedToLoad(querySearch)
+  }
+  
   useEffect(() => {
     const scrollEventListener = document.addEventListener("scroll", () => {
-      categories.forEach((element, i) => {
+      categories.forEach((i) => {
         try {
           const target = document.getElementById(i);
           if (
@@ -90,9 +85,7 @@ const WebOrderingCategories = ({
             }
           >
             <div
-              className={
-                i === selectedCategory ? "color-active" : "color-nonactive"
-              }
+              className={ i === selectedCategory ? "color-active" : "color-nonactive" }
               style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
             >
               {item.name}
@@ -114,9 +107,7 @@ const WebOrderingCategories = ({
         ))
       ) : (
         <input
-          onKeyUp={(e) => {
-            isItemsFinishedToLoad(e.target.value);
-          }}
+          onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
           style={{ height: 35, fontSize: 14 }}
           id="input-txt"
           type="text"

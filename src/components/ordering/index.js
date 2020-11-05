@@ -193,12 +193,10 @@ class Ordering extends Component {
     }
 
     if (!this.state.processing) {
-      await this.setState({ products: [], productsBackup: [] });
+      this.setState({ products: [], productsBackup: [] });
     }
 
-    await this.setState({ finished: true });
-
-    return;
+    this.setState({ finished: true });
   };
 
   selectProduct = async (productSelected, mode) => {
@@ -279,18 +277,15 @@ class Ordering extends Component {
     }
   };
 
-  setLoading = (loading) => {
-    this.setState({ loading });
-  };
-
   searchProduct = async (query) => {
     try {
       const { productsBackup } = this.state;
-
+      this.setState({finished: true})
       if (query === "") {
-        await this.setState({ loading: false, loadingSearching: false });
-        await this.setState({ products: productsBackup });
+        this.setState({ loading: false, loadingSearching: false, products: productsBackup });
         return;
+      } else {
+        this.setState({loadingSearching: true})
       }
 
       let productsSearch = undefined;
@@ -329,10 +324,6 @@ class Ordering extends Component {
     } catch (e) { }
   };
 
-  loadingSearching = async (loadingSearching) => {
-    await this.setState({ loadingSearching });
-  };
-
   getCurrency = (price) => {
     if (this.props.companyInfo) {
       const { currency } = this.props.companyInfo;
@@ -356,7 +347,7 @@ class Ordering extends Component {
       isEmenu,
     } = this.state;
     let products = [];
-    const categoryRefs = categories.map((category, i) => {
+    const categoryRefs = categories.map(() => {
       const ref = React.createRef();
       return ref;
     });
@@ -451,10 +442,10 @@ class Ordering extends Component {
         ) : (
             <WebOrderingCategories
               categoryRefs={categoryRefs}
-              loadingSearching={this.loadingSearching}
+              loadingSearching={(status) => this.setState({ loadingSearching: status })}
               finished={finished}
-              setLoading={this.setLoading}
-              searchProduct={this.searchProduct}
+              setLoading={(status) => this.setState({ loading: status })}
+              searchProduct={(query) => this.searchProduct(query)}
               categories={categories}
               selectedCategory={this.state.selectedCategory}
               setSelectedCategory={(category) =>

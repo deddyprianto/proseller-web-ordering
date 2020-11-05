@@ -71,7 +71,7 @@ class DetailProfile extends Component {
                 paddingTop: 20,
                 paddingBottom: 30,
                 textAlign: "center",
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -105,7 +105,7 @@ class DetailProfile extends Component {
                     height: 100,
                     width: 100,
                     borderRadius: 5,
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     objectFit: "cover",
                   }}
                 />
@@ -131,7 +131,7 @@ class DetailProfile extends Component {
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
                 border: "1px solid #CDCDCD",
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
               }}
             >
               <div style={{ textAlign: "center" }}>
@@ -158,7 +158,7 @@ class DetailProfile extends Component {
                 marginTop: 10,
                 borderRadius: 10,
                 border: "1px solid #CDCDCD",
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                 cursor: "pointer",
               }}
             >
@@ -218,7 +218,7 @@ class DetailProfile extends Component {
                     padding: 10,
                     borderRadius: 10,
                     border: "1px solid #CDCDCD",
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer",
                   }}
                 >
@@ -244,7 +244,7 @@ class DetailProfile extends Component {
                   marginTop: 10,
                   borderRadius: 10,
                   border: "1px solid #CDCDCD",
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                   cursor: "pointer",
                 }}
               >
@@ -266,7 +266,7 @@ class DetailProfile extends Component {
                   marginTop: 10,
                   borderRadius: 10,
                   border: "1px solid #CDCDCD",
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                   cursor: "pointer",
                 }}
               >
@@ -288,7 +288,7 @@ class DetailProfile extends Component {
                 marginTop: 10,
                 borderRadius: 10,
                 border: "1px solid #CDCDCD",
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                 cursor: "pointer",
               }}
             >

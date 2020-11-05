@@ -114,6 +114,7 @@ class SettleSuccess extends Component {
         }
       });
     }
+    
     let totalAmount = ((settleSuccess && settleSuccess.price) || paymentSuccess.totalPrice) + (deliveryFee || 0)
 
     return (

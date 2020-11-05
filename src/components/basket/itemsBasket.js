@@ -7,6 +7,8 @@ import CardItemBasket from "./cardItemBasket";
 import { Link } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
+import CheckBox from "../setting/checkBoxCostume";
+
 const Swal = require("sweetalert2");
 
 class ItemsBasket extends Component {
@@ -165,14 +167,13 @@ class ItemsBasket extends Component {
 
   handleSelect = (key, items, isAll = null) => {
     let { dataBasket } = this.state;
-    if (!isAll) {
+    if (isAll === null) {
       if (items.selected === false) items.selected = true;
       else items.selected = false;
       dataBasket.details[key] = items;
     } else {
       dataBasket.details.forEach((items) => {
-        if (items.selected === false) items.selected = true;
-        else items.selected = false;
+        items.selected = isAll;
       });
     }
     this.setState({ dataBasket });
@@ -250,24 +251,23 @@ class ItemsBasket extends Component {
               <div
                 style={{
                   display: "flex",
-                  marginLeft: -8,
                   alignItems: "center",
                 }}
               >
-                <input
-                  type="checkbox"
-                  style={{ marginTop: -1 }}
-                  checked={selected === dataBasket.details.length}
-                  onClick={() => this.handleSelect(null, null, true)}
-                  className="scaled-checkbox form-check-input checkbox-modifier"
+                <CheckBox 
+                  handleChange={(status) => this.handleSelect(null, null, status)}
+                  selected={selected === dataBasket.details.length} 
+                  setRadius={5} setHeight={20}
                 />
                 <div style={{ marginLeft: 10 }}>Select All Items</div>
               </div>
 
-              <div
+              <button
+                className="border-theme background-theme"
                 onClick={() =>
                   !this.props.roleBtnClear && this.props.handleClear(dataBasket)
                 }
+                disabled={selected !== dataBasket.details.length}
                 style={{
                   fontWeight: "bold",
                   cursor: "pointer",
@@ -282,7 +282,7 @@ class ItemsBasket extends Component {
                 }}
               >
                 <DeleteIcon /> Delete
-              </div>
+              </button>
             </div>
             <div
               style={{
@@ -297,17 +297,16 @@ class ItemsBasket extends Component {
                 <div
                   style={{
                     display: "flex",
-                    marginLeft: -8,
                     alignItems: "center",
                   }}
                 >
-                  <input
-                    type="checkbox"
-                    style={{ marginTop: -1, marginRight: 10 }}
-                    checked={item.selected !== false}
-                    onClick={() => this.handleSelect(key, item)}
-                    className="scaled-checkbox form-check-input checkbox-modifier"
-                  />
+                  <div style={{ marginRight: 8 }}>
+                    <CheckBox 
+                      handleChange={(status) => this.handleSelect(key, item)}
+                      selected={item.selected !== false} 
+                      setRadius={5} setHeight={20}
+                    />
+                  </div>
                   <CardItemBasket
                     key={key}
                     data={item}

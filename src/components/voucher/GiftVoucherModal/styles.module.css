@@ -15,7 +15,6 @@
   position: relative;
   height: 90vh;
   width: 95vw;
-  background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -86,7 +85,6 @@
 .counter button {
   padding: 2rem;
   background-color: transparent;
-  color: black;
   font-size: 4rem;
   font-weight: 700;
 }

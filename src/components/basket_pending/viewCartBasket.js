@@ -223,13 +223,13 @@ export default class ViewCartBasket extends Component {
 
             <div className="background-theme" style={{
               padding: 10, display: "flex", flexDirection: "row", 
-              alignItems: 'center', justifyContent: "space-between",
+              alignItems: 'center', justifyContent: "space-between"
             }}>
               <Button style={{
-                width: "100%", backgroundColor: "green", color: "#FFF", fontWeight: "bold",
-                display: 'flex', justifyContent: "center", alignItems: "center"
+                width: "100%", fontWeight: "bold", display: 'flex', 
+                justifyContent: "center", alignItems: "center", height: 50
               }} onClick={() => this.props.setViewCart(false)}>
-                <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
+                <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
                 Waiting Order
               </Button>
             </div>

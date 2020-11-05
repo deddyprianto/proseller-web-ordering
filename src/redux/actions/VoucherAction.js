@@ -17,12 +17,13 @@ function getRedeemVoucher() {
   };
 }
 
-function redeemVoucher(payload) {
+function redeemVoucher(payload, qty = 1) {
   return async (dispatch) => {
     let date = new Date();
     let paramps = {
       voucher: payload,
       timeZoneOffset: date.getTimezoneOffset(),
+      qty
     };
     let response = await CRMService.api(
       "POST",

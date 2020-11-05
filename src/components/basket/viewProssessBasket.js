@@ -92,8 +92,7 @@ export default class ViewProsessBasket extends Component {
                   {
                     props.dataBasket.trackingNo &&
                     <div style={{
-                      marginTop: 10, color: "#FFF", fontWeight: "bold", textAlign: "center",
-                      backgroundColor: "green", padding: 10
+                      marginTop: 10, fontWeight: "bold", textAlign: "center", padding: 10
                     }}>
                       {"Tracking No : " + props.dataBasket.trackingNo}
                     </div>
@@ -125,11 +124,10 @@ export default class ViewProsessBasket extends Component {
             display: "flex", flexDirection: "row", alignItems: 'center', justifyContent: "space-between",
           }}>
             <Button className="button" onClick={() => this.props.setViewCart(true)} style={{
-              boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-              width: "45%", backgroundColor: "green", color: "#FFF", fontWeight: "bold",
-              display: 'flex', justifyContent: "center", alignItems: "center"
+              width: "45%", fontWeight: "bold", display: 'flex', 
+              justifyContent: "center", alignItems: "center", height: 50
             }}>
-              <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
+              <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
               Detail Order
             </Button>
             {
@@ -138,9 +136,8 @@ export default class ViewProsessBasket extends Component {
                 className="button"
                 disabled={(props.dataBasket.status === "CONFIRMED" || props.dataBasket.status === "PROCESSING") ? true : false}
                 data-toggle="modal" data-target="#qrcode-modal" style={{
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                  width: "45%", backgroundColor: "#20a8d8", color: "#FFF", fontWeight: "bold",
-                  display: 'flex', justifyContent: "center", alignItems: "center"
+                  width: "45%", backgroundColor: "#20a8d8", fontWeight: "bold", 
+                  display: 'flex', justifyContent: "center", alignItems: "center", height: 50
                 }} >
                 <i className="fa fa-qrcode" style={{ fontSize: 20, marginRight: 10 }}></i> Order Code
               </Button>
@@ -152,9 +149,8 @@ export default class ViewProsessBasket extends Component {
                 disabled={props.dataBasket.status === "ON_THE_WAY" ? false : true}
                 onClick={() => this.props.handleCompletedOrdering("COMPLETED")}
                 style={{
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                  width: "45%", backgroundColor: "#20a8d8", color: "#FFF", fontWeight: "bold",
-                  display: 'flex', justifyContent: "center", alignItems: "center"
+                  width: "45%", backgroundColor: "#20a8d8", fontWeight: "bold", 
+                  display: 'flex', justifyContent: "center", alignItems: "center", height: 50
                 }} >
                 <CheckCircleOutlineIcon style={{ fontSize: 20, marginRight: 10 }} /> Received
               </Button>

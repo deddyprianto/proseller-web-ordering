@@ -265,18 +265,15 @@ class MenuBasket extends Component {
                 >
                   <Button
                     style={{
-                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                       width: "100%",
-                      backgroundColor: "green",
-                      color: "#FFF",
                       fontWeight: "bold",
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center",
+                      alignItems: "center", height: 50
                     }}
                     onClick={() => this.props.setViewCart(false)}
                   >
-                    <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
+                    <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
                     Waiting Order
                   </Button>
                 </div>
@@ -305,7 +302,7 @@ class MenuBasket extends Component {
                       fontWeight: "bold",
                       alignItems: "center",
                       justifyContent: "center",
-                      height: 40,
+                      height: 50,
                     }}
                   >
                     {this.props.roleIconSettle ? (

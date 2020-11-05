@@ -20,7 +20,7 @@ export default class InboxCard extends Component {
             }} /> :
             <DraftsIcon style={{
               height: 50, width: 50,
-              marginRight: 10, color: 'gray'
+              marginRight: 10, 
             }} />
         }
 
@@ -30,12 +30,12 @@ export default class InboxCard extends Component {
             justifyContent: "space-between"
           }}>
             <div className={!items.isRead ? "customer-group-name" : ""}
-              style={{ fontWeight: "bold", fontSize: 14, color: (!items.isRead ? "" : "gray") }}>
+              style={{ fontWeight: "bold", fontSize: 14, }}>
               {items.name.length > 20 ? items.name.substring(0, 20).concat("...") : items.name}
             </div>
-            <div style={{ color: "gray", fontSize: 10, fontStyle: 'italic', }}>{moment(items.createdOn).format('DD/MM/YY HH:mm')}</div>
+            <div style={{ fontSize: 10, fontStyle: 'italic', }}>{moment(items.createdOn).format('DD/MM/YY HH:mm')}</div>
           </div>
-          <div style={{ fontSize: 12, color: "gray" }}>{items.message.substring(0, 35).concat("...")}</div>
+          <div style={{ fontSize: 12 }}>{items.message.substring(0, 35).concat("...")}</div>
         </div>
       </div>
     );

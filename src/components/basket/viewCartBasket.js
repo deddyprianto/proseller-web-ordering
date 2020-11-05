@@ -426,17 +426,16 @@ const ViewCartBasket = ({
                 <Button
                   className="button"
                   style={{
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     width: "100%",
-                    backgroundColor: "green",
                     fontWeight: "bold",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    height: 50
                   }}
                   onClick={() => setViewCart(false)}
                 >
-                  <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 18, marginRight: 10}}/>
+                  <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
                   Waiting Order
               </Button>
               </div>
@@ -471,7 +470,7 @@ const ViewCartBasket = ({
                     fontWeight: "bold",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: 40,
+                    height: 50,
                   }}
                 >
                   {

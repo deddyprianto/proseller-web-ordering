@@ -34,7 +34,7 @@ export default class SelectPicupDateTime extends Component {
       textTitle = "Pickup"
       maxDay = props.storeDetail.maxTakeAwayDays
     }
-    
+
     return (
       <div>
         <div className="modal fade" id="pickup-date-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -53,9 +53,9 @@ export default class SelectPicupDateTime extends Component {
                 </button>
               </div>
               <div className="modal-body">
-                <div>
+                <div style={{textAlign: "left"}}>
                   <div>
-                    <div style={{fontWeight: "bold", marginLeft: 5}}>Delivery Date</div>
+                    <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Date</div>
                     <input
                       type="date"
                       min={date}
@@ -64,57 +64,38 @@ export default class SelectPicupDateTime extends Component {
                       className={cx(styles.input, {
                         [styles.rounded]: false,
                       })}
-                      style={{backgroundColor: '#FFF'}}
+                      style={{backgroundColor: '#FFF', width: "100%"}}
                       onChange={(e) =>
                         this.props.handleSetState('orderActionDate', moment(e.target.value).format("YYYY-MM-DD"))
                       }
                     />
                   </div>
 
-                  <div style={{display: "flex", marginTop: 10, justifyContent: "center" }}>
-                    <div style={{marginRight: 10}}>
-                      <div style={{fontWeight: "bold"}}>Hour</div>
-                      <select
-                        className="woocommerce-Input woocommerce-Input--text input-text"
-                        value={props.orderActionTimeHours}
-                        style={{borderRadius: 5}}
-                        onChange={time => this.props.handleSetState('orderActionTimeHours', time.target.value)}
-                      >
-                        {
-                          props.orderingTimeHours.map((items, key) => (
-                            props.orderingTimeMinutes[items] && 
-                            props.orderingTimeMinutes[items].length > 0 &&
-                            <option key={key} value={items}>{items}</option>
-                          ))
-                        }
-                      </select>
-                    </div>
-                    <div>
-                      <div style={{fontWeight: "bold"}}>Minute</div>
-                      <select
-                        className="woocommerce-Input woocommerce-Input--text input-text"
-                        style={{borderRadius: 5}}
-                        value={props.orderActionTimeMinutes}
-                        onChange={time => this.props.handleSetState('orderActionTimeMinutes', time.target.value)}
-                      >
-                        {
-                          props.orderingTimeMinutes[props.orderActionTimeHours].map((items, key) => (
-                            <option key={key} value={items}>{items}</option>
-                          ))
-                        }
-                      </select>
-                    </div>
+                  <div style={{marginTop: 10, marginBottom: 10}}>
+                    <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Time</div>
+                    <select
+                      className="woocommerce-Input woocommerce-Input--text input-text"
+                      value={props.orderActionTimeSlot}
+                      style={{borderRadius: 5, width: "100%", backgroundColor: "#FFF"}}
+                      onChange={time => this.props.handleSetState('orderActionTimeSlot', time.target.value)}
+                    >
+                      {
+                        props.orderingTimeSlot.map((items, key) => (
+                          <option key={key} value={items}>{items}</option>
+                        ))
+                      }
+                    </select>
                   </div>
                 </div>
                 <Button className="button"
                   data-toggle="modal" data-target="#redeem-point-modal"
                   data-dismiss="modal"
                   onClick={() => {
-                    this.props.handleSetState('orderActionTime', `${props.orderActionTimeHours}:${props.orderActionTimeMinutes}`)
+                    this.props.handleSetState('orderActionTime', `${props.orderActionTimeSlot.split(" - ")[0]}`)
                   }}
                   style={{
                     width: "100%", marginTop: 10, borderRadius: 5, height: 40
-                  }}>Set</Button>
+                  }}>Set Date & Time</Button>
               </div>
             </div>
           </div>

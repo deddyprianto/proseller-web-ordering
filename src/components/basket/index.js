@@ -68,7 +68,8 @@ class Basket extends Component {
 
       orderingSetting: [],
       orderingTimeMinutes: {},
-      orderingTimeHours: []
+      orderingTimeHours: [],
+      orderingTimeSlot: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -319,6 +320,7 @@ class Basket extends Component {
   setDeliveryProvider = async (deliveryAddress, orderingMode, dataBasket) => {
     let provaiderDelivery = null
     let deliveryProvaider = []
+
     if ( deliveryAddress && orderingMode !== "DINEIN" && orderingMode !== "TAKEAWAY") {
       let payload = {
         outletId: dataBasket.outlet.id,
@@ -329,7 +331,7 @@ class Basket extends Component {
       let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
 
       deliveryProvaider = response.dataProfider
-      deliveryProvaider.forEach(async (provider) => {
+      deliveryProvaider && deliveryProvaider.forEach(async (provider) => {
         provider.deliveryFeeFloat = provider.deliveryFee;
         provider.deliveryFee = this.getCurrency(provider.deliveryFee);
       });
@@ -421,35 +423,30 @@ class Basket extends Component {
           return Number(items) > Number(timeNow.split(":")[1])
         })
         orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from] = activeMinute
-        if(activeMinute.length !== 0){
-          orderingTimeHours = orderingTimeHours.filter(items => {return Number(items) >= from})
-        }
       }
+      
+      orderingTimeHours = orderingTimeHours.filter(items => {return Number(items) > from})
     }
 
     this.setState({ orderingTime, orderingTimeMinutes, orderingTimeHours })
 
-    let minutesActive = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from];
+    let orderingTimeSlot = []
+    orderingTimeHours.forEach((time, index) => {
+      if(orderingTimeHours[index+1]) orderingTimeSlot.push(`${time}:00 - ${time+1}:00`)
+    });
+    
 
-    if (!checkOperationalHours.status || (minutesActive && minutesActive.length === 0)) {
-      minutesActive = [
-        minuteStartDay.toString().length === 1 ? `0${minuteStartDay}` : minuteStartDay,
-        minuteStartDay.toString().length === 1 ? `0${minuteStartDay}` : minuteStartDay
-      ]
-      let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
-      let orderActionTimeSlot = `${orderingTimeHours[0]}:${minutesActive[0]} - ${orderingTimeHours[1]}:${minutesActive[1]}`
-      let orderActionTimeHours = orderingTimeHours[0];
-      let orderActionTimeMinutes = minutesActive[0];
+    if (!checkOperationalHours.status) {
       let orderActionDate = moment(date).add(1, 'd').format("YYYY-MM-DD")
-      this.setState({ orderActionTime, orderActionDate, orderActionTimeHours, orderActionTimeMinutes, orderActionTimeSlot })
-    } else {
-      if(!minutesActive) minutesActive = [orderingTimeMinutes[orderingTimeHours[0]]]
-      let orderActionTime = `${orderingTimeHours[0]}:${minutesActive[0]}`;
-      let orderActionTimeSlot = `${orderingTimeHours[0]}:${minutesActive[0]} - ${orderingTimeHours[1]}:${minutesActive[1]}`
-      let orderActionTimeHours = orderingTimeHours[0];
-      let orderActionTimeMinutes = minutesActive[0]
-      this.setState({ orderActionTime, orderActionTimeHours, orderActionTimeMinutes, orderActionTimeSlot })
+      this.setState({ orderActionDate })
     }
+    
+    let orderActionTime = `${orderingTimeHours[0]}:00`;
+    let orderActionTimeSlot = orderingTimeSlot[0]
+    let orderActionTimeHours = orderingTimeHours[0];
+    let orderActionTimeMinutes = '00'
+
+    this.setState({ orderActionTime, orderActionTimeHours, orderActionTimeMinutes, orderActionTimeSlot, orderingTimeSlot })
   }
 
   componentDidUpdate() {

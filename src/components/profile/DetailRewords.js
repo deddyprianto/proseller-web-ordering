@@ -74,7 +74,7 @@ class DetailRewords extends Component {
         {
           !loadingShow && dataStamps && dataStamps.length > 0 &&
           <div className="profile-dashboard" style={{
-            boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", borderBottomRightRadius: 20, borderBottomLeftRadius: 20,
+            boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)", borderBottomRightRadius: 20, borderBottomLeftRadius: 20,
             border: "0px solid rgba(128, 128, 128, 0.5)"
           }}>
             {
@@ -162,10 +162,10 @@ class DetailRewords extends Component {
         }
         {
           !loadingShow && campaignPointActive && totalPoint !== 0 &&
-          <div style={{ boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", }}>
+          <div style={{ boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)", border: "1px solid #CDCDCD", }}>
             {
               campaignPointAnnouncement ?
-                <div style={{ width: '100%', textAlign: "center", marginTop: 20, paddingBottom: 10 }}>
+                <div style={{ width: '100%', textAlign: "center", marginTop: 20, paddingBottom: 10, }}>
                   <div style={{ marginBottom: 10, color: "#c00a27", paddingTop: 10, paddingLeft: 10, paddingRight: 10 }}>
                     Please complete your profile information to start to earn points
                   </div>
@@ -208,7 +208,7 @@ class DetailRewords extends Component {
                 style={{
                   padding: 10, marginTop: 10,
                   borderRadius: 10, border: "1px solid #CDCDCD",
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                   cursor: "pointer"
               }}>
                 <div style={{ textAlign: "center" }} >

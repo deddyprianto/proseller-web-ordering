@@ -33,7 +33,7 @@ class CardItemBasket extends Component {
             color: "white",
             fontSize: 12,
             borderBottomRightRadius: 10,
-            left: 40,
+            left: 43,
             fontWeight: "bold",
           }}
         >{`${item.grossAmount.toFixed(2)}`}</div>

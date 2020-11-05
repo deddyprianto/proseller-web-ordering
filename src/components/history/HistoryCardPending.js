@@ -44,6 +44,7 @@ class InboxCard extends Component {
           display: "flex",
           flexDirection: "row",
           boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+          border: "1px solid #CDCDCD",
           padding: 10,
           justifyContent: "space-between",
           alignItems: "center",
@@ -76,25 +77,12 @@ class InboxCard extends Component {
               {this.checkNameOutlet(items.outlet.name)}
             </div>
             <div
+              className="modal-title"
               style={{
-                color: "#FFF",
-                backgroundColor:
-                  (items.status === "PENDING" && "red") ||
-                  (items.status === "SUBMITTED" && "orange") ||
-                  (items.status === "CONFIRMED" && "green") ||
-                  (items.status === "PROCESSING" && "green") ||
-                  (items.status === "READY_FOR_COLLECTION" && "green") ||
-                  (items.status === "READY_FOR_DELIVERY" && "green") ||
-                  (items.status === "ON_THE_WAY" && "green") ||
-                  "red",
                 fontWeight: "bold",
                 fontSize: 12,
                 maxWidth: 170,
-                paddingLeft: 10,
-                paddingRight: 10,
-                borderRadius: 5,
                 marginTop: 5,
-                textAlign: "center",
               }}
             >
               {items.status.replace(/_/g, " ")}
@@ -109,14 +97,15 @@ class InboxCard extends Component {
             {items.details.length + " items"}
           </div>
           <div
+            className="font-color-theme"
             style={{
-              color: "gray",
               fontSize: 10,
               textAlign: "right",
               marginTop: 10,
               width: "100%",
-              bottom: 10, right: 20,
-              position: "absolute"
+              bottom: 10, right: 25,
+              position: "absolute",
+              fontStyle: "italic",
             }}
           >
             {moment(items.createdOn).format("DD/MM/YY HH:mm")}

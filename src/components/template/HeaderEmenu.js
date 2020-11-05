@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-// import BottomSheet from "react-animated-bottomsheet";
-// import Sharing from '../sharing';
 import { isEmptyObject } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
@@ -149,8 +147,7 @@ class Header extends Component {
     let { defaultOutlet, isLoggedIn } = this.props;
     // console.log(defaultOutlet)
     let { infoCompany, openSearch, logoCompany } = this.state;
-    let broadcastUnreadLength =
-      (this.props.broadcast && this.props.broadcast.broadcastUnreadLength) || 0;
+    let broadcastUnreadLength = (this.props.broadcast && this.props.broadcast.broadcastUnreadLength) || 0;
     let showSearch = window.location.hash.split("#")[1] === "/";
     return (
       <div id="header-cwo">
@@ -183,7 +180,7 @@ class Header extends Component {
               <div style={{ display: "flex" }}>
                 <Link to="/">
                   <img
-                    src={infoCompany.imageURL || logoCompany} alt="logo company"
+                    src={infoCompany.imageURL || logoCompany} alt="logo"
                     style={{ height: 30, objectFit: "contain" }}
                   />
                 </Link>

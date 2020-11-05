@@ -165,7 +165,7 @@ class ModalDeliveryAdderss extends Component {
               {deliveryAddress && (
                 <div className="modal-body" style={{ textAlign: "left" }}>
                   <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-                    <label>
+                    <label style={{fontSize: 12}}>
                       Address Name <span className="required">*</span>
                     </label>
                     <Select
@@ -192,7 +192,7 @@ class ModalDeliveryAdderss extends Component {
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
                     >
-                      <label>
+                      <label style={{fontSize: 12}}>
                         Province <span className="required">*</span>
                       </label>
                       <Select
@@ -212,7 +212,7 @@ class ModalDeliveryAdderss extends Component {
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
                     >
-                      <label>
+                      <label style={{fontSize: 12}}>
                         City <span className="required">*</span>
                       </label>
                       <Select
@@ -233,7 +233,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label>
+                    <label style={{fontSize: 12}}>
                       Street Name <span className="required">*</span>
                     </label>
                     <Input
@@ -250,7 +250,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label>
+                    <label style={{fontSize: 12}}>
                       Unit No. <span className="required">*</span>
                     </label>
                     <Input
@@ -267,7 +267,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label>
+                    <label style={{fontSize: 12}}>
                       Postal Code <span className="required">*</span>
                     </label>
                     <Input
@@ -283,7 +283,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label>
+                    <label style={{fontSize: 12}}>
                       Location <span className="required">*</span>
                     </label>
                     <div
@@ -311,7 +311,7 @@ class ModalDeliveryAdderss extends Component {
                     }}
                     onClick={() => this.handleSaveAddress()}
                   >
-                    Save Address
+                    <i className="fa fa-floppy-o" aria-hidden="true" /> Save Address
                   </Button>
                 </div>
               )}

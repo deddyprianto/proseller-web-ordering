@@ -302,15 +302,15 @@ class DeliveryAddress extends Component {
                     data-toggle="modal"
                     data-target="#delivery-address-modal"
                     style={{
-                      width: 150,
+                      width: 155,
                       paddingLeft: 5,
                       paddingRight: 5,
                       borderRadius: 5,
-                      height: 50,
+                      height: 40,
                     }}
                     onClick={() => this.handleAdd()}
                   >
-                    Add New Address
+                    <i className="fa fa-plus" aria-hidden="true" /> Add New Address
                   </Button>
                 </div>
 
@@ -364,7 +364,6 @@ class DeliveryAddress extends Component {
                                       marginRight: -10,
                                       fontSize: 12,
                                       fontWeight: "bold",
-                                      color: "#FFF",
                                       marginTop: -20,
                                     }}
                                   >
@@ -399,6 +398,7 @@ class DeliveryAddress extends Component {
                                   paddingRight: 5,
                                   borderRadius: 5,
                                   height: 40,
+                                  fontWeight: "bold"
                                 }}
                                 onClick={() => this.handleEdit(key, items)}
                               >
@@ -406,7 +406,7 @@ class DeliveryAddress extends Component {
                               </Button>
                               {getDeliveryAddress ? (
                                 <Button
-                                  className="profile-dashboard"
+                                  className="border-theme background-theme"
                                   disabled={
                                     (this.props.deliveryAddress &&
                                       items.addressName ===
@@ -416,30 +416,22 @@ class DeliveryAddress extends Component {
                                   }
                                   style={{
                                     width: 150,
-                                    paddingLeft: 5,
-                                    paddingRight: 5,
-                                    borderRadius: 5,
-                                    height: 40,
+                                    fontWeight: "bold"
                                   }}
                                   onClick={() => this.handleSelected(items)}
                                 >
-                                  Select
+                                  <div className="color-active">Select</div>
                                 </Button>
                               ) : (
                                 <Button
+                                  className="border-theme background-theme"
                                   style={{
                                     width: 150,
-                                    paddingLeft: 5,
-                                    paddingRight: 5,
-                                    borderRadius: 5,
-                                    height: 40,
-                                    backgroundColor: "#FFF",
-                                    color: "#c00a27",
-                                    border: "1px solid #CDCDCD",
+                                    fontWeight: "bold"
                                   }}
                                   onClick={() => this.handleDelete(items)}
                                 >
-                                  Delete
+                                  <div className="color-active">Delete</div>
                                 </Button>
                               )}
                             </div>

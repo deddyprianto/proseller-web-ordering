@@ -90,9 +90,9 @@ class RedeemVoucher extends Component {
                         position: "absolute", width: '29%',
                         paddingLeft: 5, paddingRight: 5,
                         fontSize: 12, bottom: 0, left: 15,
-                        borderBottomLeftRadius: 5, fontWeight: "bold",
+                        borderTopRightRadius: 10, fontWeight: "bold",
                         textAlign: "center"
-                      }}>{item.redeemValue + " Points"}</div>
+                      }}><i className="fa fa-tags" aria-hidden="true" /> {item.redeemValue + " Points"}</div>
                     }
 
                     <img style={{ width: '50%', height: 100, objectFit: "contain", overflow: 'hidden' }}
@@ -123,10 +123,6 @@ class RedeemVoucher extends Component {
             {
               redeemVoucher.length === 0 &&
               <div>
-                {/* <Lottie
-                  options={{ animationData: emptyGif }}
-                  style={{ height: 250 }}
-                /> */}
                 <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                 <div>Data is empty</div>
               </div>

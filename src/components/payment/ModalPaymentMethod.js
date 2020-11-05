@@ -25,10 +25,15 @@ export default class ModalPaymentMethod extends Component {
                 <Button className="button" data-toggle="modal" data-target="#payment-method-modal" style={{
                   width: "100%", marginTop: 10, borderRadius: 5, height: 50
                 }} onClick={() => handleSetDefault()}>{`${detailCard.default ? 'Remove' : 'Set'} as Default`}</Button>
-                <Button data-toggle="modal" data-target="#payment-method-modal" style={{
-                  color: "#c00a27", border: "1px solid #CDCDCD", backgroundColor: "#FFF",
-                  width: "100%", marginTop: 10, borderRadius: 5, height: 50, fontWeight: "bold"
-                }} onClick={() => handleRemoveCard()}>Remove Credit Card</Button>
+                <Button 
+                  data-toggle="modal" data-target="#payment-method-modal" 
+                  className="border-theme background-theme" 
+                  style={{
+                    width: "100%", marginTop: 10, fontWeight: "bold", height: 50
+                  }} onClick={() => handleRemoveCard()}
+                >
+                  <div className="color-active">Remove Credit Card</div>
+                </Button>
               </div>
             </div>
           }

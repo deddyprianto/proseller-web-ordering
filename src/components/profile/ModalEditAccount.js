@@ -354,7 +354,7 @@ class ModalEditAccount extends Component {
                     className={cx("button", styles.submitButton)} style={{marginTop: 20}}
                     onClick={() => this.props.title.field === "phoneNumber" ? this.submitPhoneNumber(isWaitingOTP) : this.submitEmail(isWaitingOTP)}
                   >
-                    {isWaitingOTP ? "Confirm" : "Submit"}
+                    <i className="fa fa-paper-plane" aria-hidden="true" /> {isWaitingOTP ? "Confirm" : "Submit"}
                   </Button>
                 </div>
               </div>

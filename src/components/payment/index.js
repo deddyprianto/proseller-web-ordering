@@ -140,10 +140,11 @@ class Payment extends Component {
         let data = {
           message: response.data.confirmationInfo.message || "Congratulations, payment success",
           paymentType: response.data.paymentType || payment.paymentType || "CREDIT CARD",
-          price: this.state.totalPrice,
+          price: response.data.totalNettAmount,
           outletName: this.state.dataBasket.outlet.name,
           orderingMode: this.state.dataBasket.orderingMode,
           createdAt: new Date(),
+          payments: response.data.payments
         };
 
         localStorage.setItem(
@@ -643,6 +644,9 @@ class Payment extends Component {
       payload.deliveryService = "-";
       payload.deliveryProviderId = this.props.deliveryProvider.id;
       payload.deliveryFee = this.props.deliveryProvider.deliveryFeeFloat;
+
+      payload.amount = payload.amount + this.props.deliveryProvider.deliveryFeeFloat
+      payload.totalNettAmount = payload.totalNettAmount + this.props.deliveryProvider.deliveryFeeFloat
     }
 
     if (selectedVoucher !== null) {
