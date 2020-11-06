@@ -140,7 +140,7 @@ class Payment extends Component {
         let data = {
           message: response.data.confirmationInfo.message || "Congratulations, payment success",
           paymentType: response.data.paymentType || payment.paymentType || "CREDIT CARD",
-          price: response.data.totalNettAmount,
+          totalNettAmount: response.data.totalNettAmount,
           outletName: this.state.dataBasket.outlet.name,
           orderingMode: this.state.dataBasket.orderingMode,
           createdAt: new Date(),
@@ -192,12 +192,13 @@ class Payment extends Component {
       clearInterval(this.loopCart);
 
       let data = {
-        message: "Congratulations, payment success",
-        paymentType: "CASH",
-        price: this.state.totalPrice + deliveryFee,
+        message: response.data.confirmationInfo.message || "Congratulations, payment success",
+        paymentType: response.data.paymentType || "CREDIT CARD",
+        totalNettAmount: response.data.totalNettAmount,
         outletName: this.state.dataBasket.outlet.name,
         orderingMode: this.state.dataBasket.orderingMode,
         createdAt: new Date(),
+        payments: response.data.payments
       };
 
       localStorage.setItem(
@@ -683,6 +684,8 @@ class Payment extends Component {
       })
     }
 
+    // console.log(payload)
+    // return
     let response;
     if (
       orderingMode === "TAKEAWAY" ||
