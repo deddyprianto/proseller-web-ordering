@@ -111,16 +111,6 @@ class Payment extends Component {
     );
   };
 
-  getPendingOrder = async (cart) => {
-    try {
-      // clearInterval(this.loopCart);
-    } catch (e) { }
-
-    // this.loopCart = setInterval(async () => {
-    await this.getCart(cart);
-    // }, 2000);
-  };
-
   getPendingPayment = async (payment) => {
     this.setState({
       isLoading: false,
@@ -179,43 +169,6 @@ class Payment extends Component {
       }
     }
   };
-
-  getCart = async (cart) => {
-    const response = await this.props.dispatch(
-      OrderAction.getCartPending(cart.id)
-    );
-
-    const deliveryFee = this.props.deliveryProvider
-      ? this.props.deliveryProvider.deliveryFeeFloat
-      : 0;
-    if (response.resultCode === 400 || response.data.isPaymentComplete === true) {
-      clearInterval(this.loopCart);
-
-      let data = {
-        message: response.data.confirmationInfo.message || "Congratulations, payment success",
-        paymentType: response.data.paymentType || "CREDIT CARD",
-        totalNettAmount: response.data.totalNettAmount,
-        outletName: this.state.dataBasket.outlet.name,
-        orderingMode: this.state.dataBasket.orderingMode,
-        createdAt: new Date(),
-        payments: response.data.payments
-      };
-
-      localStorage.setItem(
-        `${config.prefix}_settleSuccess`,
-        JSON.stringify(encryptor.encrypt(data))
-      );
-      localStorage.removeItem(`${config.prefix}_selectedPoint`);
-      localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-      localStorage.removeItem(`${config.prefix}_dataSettle`);
-      this.togglePlay();
-      await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"))
-      await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
-      this.props.history.push("/settleSuccess");
-      this.setState({ isLoading: false, isLoadingPOS: false });
-    }
-  };
-
 
   componentDidUpdate() {
     let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
