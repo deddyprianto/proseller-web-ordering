@@ -26,9 +26,13 @@ function api(method, params, path, token = null) {
   if (token && account)
     configuration.headers.Authorization = `${token} ${account.accessToken.jwtToken}`;
 
-  return fetch(url, configuration)
+  try {
+    return fetch(url, configuration)
     .then((response) => response.json())
     .catch(function () {
       return { ResultCode: 400, message: "fetch api error" };
     });
+  } catch (error) {
+    return { ResultCode: 400, message: error };
+  }
 }

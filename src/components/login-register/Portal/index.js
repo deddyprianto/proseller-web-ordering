@@ -18,16 +18,11 @@ let Portal = ({
   enableOrdering,
   companyInfo
 }) => {
-  // console.log(companyInfo)
-  // let [method, setMethod] = useState(initialMethod);
   let initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
   let initialCodePhone = "+65";
 
   let [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
   let [value, setValue] = useState("");
-  let handleValueChange = (e) => {
-    setValue(e.target.value);
-  };
 
   useEffect(() => {
     if(initialCountry === "ID") setPhoneCountryCode("+62")
@@ -79,9 +74,13 @@ let Portal = ({
                   value={phoneCountryCode}
                   enableSearch={true}
                   autoFormat={false}
-                  onChange={(e) => setPhoneCountryCode(`+${e}`)}
+                  onChange={(e) => {
+                    setPhoneCountryCode(`+${e}`)
+                  }}
+                  onKeyDown={() => document.getElementById("phoneInput").focus()}
+                  disableSearchIcon
                   inputStyle={{
-                    width: "0",
+                    width: 0,
                     border: "1px solid #FFF",
                     height: 40,
                   }}
@@ -97,9 +96,10 @@ let Portal = ({
             {method === "phone" ? (
               <Input
                 type="number"
+                id="phoneInput"
                 value={value}
                 className={styles.phoneField}
-                onChange={handleValueChange}
+                onChange={(e) => setValue(e.target.value)}
               ></Input>
             ) : (
                 <input
@@ -109,7 +109,7 @@ let Portal = ({
                     "woocommerce-Input woocommerce-Input--text input-text",
                     styles.emailField
                   )}
-                  onChange={handleValueChange}
+                  onChange={(e) => setValue(e.target.value)}
                 ></input>
               )}
           </div>

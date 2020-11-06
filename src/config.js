@@ -3,10 +3,8 @@ import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "demo";
-let companyHost = "tomahawkking";
-let endPoint = `https://${companyHost}${
-  stage !== "" ? "-" + stage : ""
-}.proseller.io`;
+let companyHost = "auntieanne";
+let endPoint = `https://${companyHost}${ stage !== "" ? "-" + stage : "" }.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {

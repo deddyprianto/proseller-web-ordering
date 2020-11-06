@@ -216,7 +216,7 @@ class ModalDetailHistory extends Component {
                   </div>
 
                   {
-                    detail.deliveryFee && 
+                    detail.deliveryFee ?
                     <div>
                       <div
                         style={{
@@ -239,7 +239,7 @@ class ModalDetailHistory extends Component {
                           {this.getCurrency(detail.deliveryFee)}
                         </div>
                       </div>
-                    </div>
+                    </div> : null
                   }
 
                   {

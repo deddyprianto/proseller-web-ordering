@@ -57,9 +57,9 @@ export default class ModalStampsDetail extends Component {
                     {detail.stampsTitle}
                   </div>
                 </div>
-                <div style={{
-                  backgroundColor: "#FFF", borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20, padding: 10, margin: -16
+                <div className="background-theme" style={{
+                  borderTopLeftRadius: 20, borderTopRightRadius: 20, 
+                  padding: 10, margin: -16
                 }}>
                   <div style={{
                     display: "flex", flexDirection: "column", justifyContent: "center",

@@ -267,7 +267,6 @@ class ItemsBasket extends Component {
                 onClick={() =>
                   !this.props.roleBtnClear && this.props.handleClear(dataBasket)
                 }
-                disabled={selected !== dataBasket.details.length}
                 style={{
                   fontWeight: "bold",
                   cursor: "pointer",

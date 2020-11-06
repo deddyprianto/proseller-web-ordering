@@ -56,9 +56,13 @@ const EmailForm = ({
               value={phoneCountryCode}
               enableSearch={true}
               autoFormat={false}
-              onChange={(e) => setPhoneCountryCode(`+${e}`)}
+              onChange={(e) => {
+                setPhoneCountryCode(`+${e}`)
+              }}
+              onKeyDown={() => document.getElementById("phoneInput").focus()}
+              disableSearchIcon
               inputStyle={{
-                width: "0",
+                width: 0,
                 border: "1px solid #FFF",
                 height: 40,
               }}
@@ -70,6 +74,7 @@ const EmailForm = ({
           </div>
           <Input
             type="number"
+            id="phoneInput"
             className={styles.phoneField}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}

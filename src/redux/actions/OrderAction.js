@@ -74,13 +74,13 @@ function getSettingOrdering() {
       let textButtonColor = data && data.settings.find(items => { return items.settingKey === "TextButtonColor" })
       let textWarningColor = data && data.settings.find(items => { return items.settingKey === "TextWarningColor" })
       let payload = {
-        primary: primaryColor.settingValue,
-        secondary: secondaryColor.settingValue,
-        font: font.settingValue,
-        background: background.settingValue,
-        navigation: navigation.settingValue,
-        textButtonColor: textButtonColor.settingValue,
-        textWarningColor: textWarningColor.settingValue,
+        primary: primaryColor.settingValue || "#C00A27",
+        secondary: secondaryColor.settingValue || "#C00A27",
+        font: font.settingValue || "#808080",
+        background: background.settingValue || "#FFFFFF",
+        navigation: navigation.settingValue || "#C00A27",
+        textButtonColor: textButtonColor.settingValue || "#FFFFFF",
+        textWarningColor: textWarningColor.settingValue || "red",
       }
       dispatch({ type: "SET_THEME", payload});
       dispatch({ type: "DATA_SETTING_ORDERING", payload: data && data.settings});
@@ -283,14 +283,19 @@ function processOfflineCart(payload, mode) {
 
 function moveCart(payload) {
   return async (dispatch) => {
-    const response = await OrderingService.api( "POST", payload, `cart/moveItem`, "Bearer" );
+    try {
+      const response = await OrderingService.api( "POST", payload, `cart/moveItem`, "Bearer" );
 
-    if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log(response);
+      if (response.ResultCode >= 400 || response.resultCode >= 400) {
+        console.log(response);
+        return payload.cart
+      } else {
+        // else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+        return response.data
+      }
+    } catch (error) {
       return payload.cart
     }
-    // else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
-    return response.data
   };
 }
 

@@ -155,7 +155,9 @@ const UpdateProductModal = ({
           </div>
         </div>
         <div className={styles.footer}>
-          <button onClick={handleAdd}>Make Another</button>
+          <button onClick={handleAdd} style={{height: 50, width: "100%"}}>
+            <i className="fa fa-plus" aria-hidden="true" /> Make Another
+          </button>
         </div>
       </div>
     </div>

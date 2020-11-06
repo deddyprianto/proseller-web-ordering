@@ -124,14 +124,14 @@ class LoginRegister extends Component {
 
       let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
       if (loginByMobile) {
-        this.setState({ loginByMobile: loginByMobile.settingValue });
+        this.setState({ loginByMobile: loginByMobile.settingValue || true });
       }
 
       let loginByEmail = this.props.setting.find(items => { return items.settingKey === "LoginByEmail" })
       if (loginByEmail) {
-        this.setState({ loginByEmail: loginByEmail.settingValue });
+        this.setState({ loginByEmail: loginByEmail.settingValue || true });
       }
-      if (loginByEmail && loginByEmail.settingValue && loginByMobile && !loginByMobile.settingValue) {
+      if (loginByEmail && (loginByEmail.settingValue || true) && loginByMobile && !loginByMobile.settingValue) {
         this.setState({ method: 'email' });
       }
 
@@ -148,7 +148,7 @@ class LoginRegister extends Component {
 
       let minimumAge = this.props.setting.find(items => { return items.settingKey === "MinimumAge" })
       if (minimumAge) {
-        this.setState({ minimumAge: minimumAge.settingValue });
+        this.setState({ minimumAge: Number(minimumAge.settingValue) });
       }
     }
 

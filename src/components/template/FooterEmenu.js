@@ -55,6 +55,7 @@ class Footer extends Component {
         basketLength += cart.quantity;
       });
     }
+    
     return (
       <div>
         <div
@@ -118,6 +119,7 @@ class Footer extends Component {
             </div>
             {basketLength > 0 && (
               <div
+                className="text-btn-theme"
                 style={{
                   backgroundColor: this.props.color.primary,
                   fontSize: 10,
