@@ -85,6 +85,28 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
+    window.onhashchange = function() {
+      try {
+        // get modals
+        const modals = document.getElementsByClassName('modal');
+
+        // get modal backdrops
+        for(let i=0; i<modals.length; i++) {
+          modals[i].classList.remove('show');
+          modals[i].setAttribute('aria-hidden', 'true');
+          modals[i].setAttribute('style', 'display: none');
+        }
+
+        // get modal backdrops
+        const modalsBackdrops = document.getElementsByClassName('modal-backdrop');
+
+        // remove every modal backdrop
+        for(let i=0; i<modalsBackdrops.length; i++) {
+          document.body.removeChild(modalsBackdrops[i]);
+        }
+      } catch (error) { }
+    }
+
     await props.dispatch(OrderAction.getSettingOrdering());
     if(window.location.hash.split("#")[1] === "/signin" && !isLoggedIn){
       try {

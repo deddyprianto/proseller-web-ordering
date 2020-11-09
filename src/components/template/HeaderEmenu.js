@@ -47,9 +47,14 @@ class Header extends Component {
 
   componentDidUpdate = (prevProps) => {
     if (this.props !== prevProps) {
+      let infoCompany = encryptor.decrypt(
+        JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+      );
       let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
       if (logoCompany) {
         this.setState({ logoCompany: logoCompany.settingValue });
+      } else if (infoCompany && infoCompany.imageURL){
+        this.setState({ logoCompany: infoCompany.imageURL });
       }
     }
   };

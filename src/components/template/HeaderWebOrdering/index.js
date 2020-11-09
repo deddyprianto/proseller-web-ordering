@@ -43,9 +43,14 @@ class Header extends Component {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
 
+      let infoCompany = encryptor.decrypt(
+        JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+      );
       let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
-      if (logoCompany) {
+      if (logoCompany && logoCompany.settingValue) {
         this.setState({ logoCompany: logoCompany.settingValue });
+      } else if (infoCompany && infoCompany.imageURL){
+        this.setState({ logoCompany: infoCompany.imageURL });
       }
     }
 

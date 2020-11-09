@@ -275,7 +275,7 @@ class ModalDeliveryAdderss extends Component {
                       style={{ height: 40 }}
                       value={deliveryAddress.postalCode || ""}
                       onChange={(e) =>
-                        this.props.handleChange("postalCode", e.target.value)
+                        this.props.handleChange("postalCode", Number(e.target.value))
                       }
                     />
                   </div>
