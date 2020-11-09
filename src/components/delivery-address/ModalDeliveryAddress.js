@@ -116,6 +116,7 @@ class ModalDeliveryAdderss extends Component {
       optionsAddressName,
       optionsProvince,
       optionsCity,
+      postalCodeIsValid
     } = this.props;
     if (this.state.optionsCity.length !== 0) optionsCity = this.state.optionsCity;
 
@@ -275,9 +276,16 @@ class ModalDeliveryAdderss extends Component {
                       style={{ height: 40 }}
                       value={deliveryAddress.postalCode || ""}
                       onChange={(e) =>
-                        this.props.handleChange("postalCode", Number(e.target.value))
+                        this.props.handleChange("postalCode", e.target.value)
                       }
                     />
+                    {
+                      !postalCodeIsValid && 
+                      <div className="text text-warning-theme small" 
+                        style={{lineHeight: "15px", marginTop:5}}> 
+                        <em>Postal code is not valid</em> 
+                      </div>
+                    }
                   </div>
                   <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
@@ -294,14 +302,15 @@ class ModalDeliveryAdderss extends Component {
                       }}
                     >
                       <GoogleMaps 
-                      deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
-                      setAddress={deliveryAddress.setAddress || false}
-                      handleChange={(field, value) => this.props.handleChange(field, value)}
+                        deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
+                        setAddress={deliveryAddress.setAddress || false}
+                        handleChange={(field, value) => this.props.handleChange(field, value)}
                       />
                     </div>
                   </div>
 
                   <Button
+                    disabled={!postalCodeIsValid}
                     className="button"
                     style={{
                       width: "100%",

@@ -33,6 +33,7 @@ class DeliveryAddress extends Component {
       indexEdit: 0,
       isNew: false,
       getDeliveryAddress: false,
+      postalCodeIsValid: true
     };
   }
 
@@ -212,10 +213,24 @@ class DeliveryAddress extends Component {
     } 
     if(field === "street") {
       deliveryAddress.setAddress = false;
+      if(deliveryAddress.postalCode){
+        this.validationPostalCode(deliveryAddress.postalCode, deliveryAddress.codePostal)
+      }
     }
-    // console.log(deliveryAddress)
+    if(field === "postalCode" && deliveryAddress.codePostal){
+      this.validationPostalCode(value, deliveryAddress.codePostal)
+    }
     this.setState({ deliveryAddress });
   };
+
+  validationPostalCode(postalCode, codePostal){
+    console.log("postalcode valid", codePostal)
+    let check = true
+    if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
+    if(postalCode.toString().length !== codePostal.toString().length) check = false
+    this.setState({postalCodeIsValid: check})
+    return check
+  }
 
   render() {
     let {
@@ -229,6 +244,7 @@ class DeliveryAddress extends Component {
       isNew,
       indexEdit,
       getDeliveryAddress,
+      postalCodeIsValid,
     } = this.state;
 
     return (
@@ -253,6 +269,7 @@ class DeliveryAddress extends Component {
           isNew={isNew}
           indexEdit={indexEdit}
           hidden={countryCode === undefined || countryCode === "SG"}
+          postalCodeIsValid={postalCodeIsValid}
         />
 
         <div id="primary" className="content-area">

@@ -13,7 +13,7 @@ export default class ViewProsessBasket extends Component {
     let props = this.props.data
     return (
       <div>
-        <ModalQRCode qrcode={props.dataBasket.cartID} title="Order QRCode" />
+        <ModalQRCode qrcode={props.dataBasket.cartID} field={"cartID"} title="Order QRCode" />
         <Row style={{ display: "flex", justifyContent: 'center' }}>
           <Col xs="12" sm="6">
             <div>

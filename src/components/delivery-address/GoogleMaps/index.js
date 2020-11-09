@@ -50,8 +50,8 @@ const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }
     })[0]
     if(city) handleChange('city', city.long_name)
 
-    // let postalCode = address_components.filter((params) => { return params.types[0] === "postal_code" })[0]
-    // if(postalCode) handleChange('postalCode', postalCode.long_name)
+    let postalCode = address_components.filter((params) => { return params.types[0] === "postal_code" })[0]
+    if(postalCode) handleChange('codePostal', postalCode.long_name)
     setDrag(false)
   }
 

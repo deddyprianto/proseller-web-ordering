@@ -578,13 +578,13 @@ class Payment extends Component {
       totalNettAmount: dataBasket.totalNettAmount,
       amount: dataBasket.totalNettAmount,
       payments: [],
-      validateOutletSetting: {
-        enableDelivery: storeDetail.enableDelivery,
-        enableDineIn: storeDetail.enableDineIn,
-        enableStoreCheckOut: storeDetail.enableStoreCheckOut,
-        enableStorePickUp: storeDetail.enableStorePickUp,
-        enableTakeAway: storeDetail.enableTakeAway,
-      },
+      // validateOutletSetting: {
+      //   enableDelivery: storeDetail.enableDelivery,
+      //   enableDineIn: storeDetail.enableDineIn,
+      //   enableStoreCheckOut: storeDetail.enableStoreCheckOut,
+      //   enableStorePickUp: storeDetail.enableStorePickUp,
+      //   enableTakeAway: storeDetail.enableTakeAway,
+      // },
       payAtPOS,
       orderingMode
     };
