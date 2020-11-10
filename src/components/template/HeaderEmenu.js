@@ -51,7 +51,7 @@ class Header extends Component {
         JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
       );
       let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
-      if (logoCompany) {
+      if (logoCompany && logoCompany.settingValue) {
         this.setState({ logoCompany: logoCompany.settingValue });
       } else if (infoCompany && infoCompany.imageURL){
         this.setState({ logoCompany: infoCompany.imageURL });
@@ -154,6 +154,7 @@ class Header extends Component {
     let { infoCompany, openSearch, logoCompany } = this.state;
     let broadcastUnreadLength = (this.props.broadcast && this.props.broadcast.broadcastUnreadLength) || 0;
     let showSearch = window.location.hash.split("#")[1] === "/";
+    
     return (
       <div id="header-cwo">
         <LoginRegister />

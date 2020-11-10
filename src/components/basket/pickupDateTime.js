@@ -39,25 +39,44 @@ class PickupDateTime extends Component {
             {textTitle} Date & Time
           </div>
           <div>
-            <Button
-              disabled={this.props.roleBtnClear ? true : false}
-              data-toggle="modal" data-target="#pickup-date-modal"
-              style={{
-                fontWeight: "bold",
-                cursor: "pointer",
-                backgroundColor: !props.deliveryAddress ? this.props.color.primary : "#DCDCDC",
-                width: 140,
-                alignItems: "center",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <i className="fa fa-clock-o" style={{ fontSize: 20 }} aria-hidden="true" />
-              <div style={{ fontSize: 12 }}>
-                <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
-                <div>{`${props.orderActionTimeSlot}`}</div>
-              </div>
-            </Button>
+            {
+              props.orderActionTimeSlot ?
+              <Button
+                disabled={this.props.roleBtnClear ? true : false}
+                data-toggle="modal" data-target="#pickup-date-modal"
+                style={{
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  backgroundColor: this.props.color.primary,
+                  width: 140,
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <i className="fa fa-clock-o" style={{ fontSize: 20 }} aria-hidden="true" />
+                <div style={{ fontSize: 12 }}>
+                  <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
+                  <div>{`${props.orderActionTimeSlot}`}</div>
+                </div>
+              </Button> :
+              <Button
+                disabled={this.props.roleBtnClear ? true : false}
+                style={{
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  backgroundColor: this.props.color.primary,
+                  width: 140,
+                  justifyContent: "space-between",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  fontSize: 12,
+                }}
+              >
+                {`${moment(props.orderActionDate).format('DD MMM YYYY')} at ${props.orderActionTime}`}
+              </Button>
+            }
           </div>
         </div>
       </div>

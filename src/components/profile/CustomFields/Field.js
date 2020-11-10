@@ -24,8 +24,8 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div style={{ display: "flex" }}>
-          {field.options.map((option) => (
-            <div
+          {field.options.map((option, key) => (
+            <div key={key}
               style={{ display: "flex", alignItems: "center", cursor: "pointer", marginRight: 10 }}
               onClick={
                 () => handleValueChange({ target: { value: option.value, name: field.fieldName }})
@@ -275,7 +275,6 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
         <span className="required">{field.mandatory && "*"}</span>
       </label>
       <input
-        autoComplete={false}
         type={field.type}
         className={cx(styles.input, {
           [styles.rounded]: roundedBorder,

@@ -41,9 +41,7 @@ class ProviderDeliveryBasket extends Component {
                 fontWeight: "bold",
                 color: "#FFF",
                 cursor: "pointer",
-                backgroundColor: this.props.deliveryProvider && this.props.deliveryProvider.name
-                  ? "#DCDCDC"
-                  : this.props.color.primary,
+                backgroundColor: this.props.color.primary,
                 width: 140,
                 justifyContent: "space-between",
                 display: "flex",

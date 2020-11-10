@@ -16,19 +16,21 @@ const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }
   const [drag, setDrag] = useState(false);
 
   useEffect(() => {
-    if(drag){
-      Geocode.fromLatLng(center.lat, center.lng).then(
-        (response) => handleChangeAddress(response, true),
-        (error) =>  console.error(error)
-      );
-    }
-
-    if(typeof deliveryAddress !== "object" && !setAddress) {
-      Geocode.fromAddress(deliveryAddress).then(
-        (response) => handleChangeAddress(response),
-        (error) =>  console.error(error)
-      );
-    }
+    try {
+      if(drag){
+        Geocode.fromLatLng(center.lat, center.lng).then(
+          (response) => handleChangeAddress(response, true),
+          (error) =>  console.error(error)
+        );
+      }
+  
+      if(typeof deliveryAddress !== "object" && !setAddress) {
+        Geocode.fromAddress(deliveryAddress).then(
+          (response) => handleChangeAddress(response),
+          (error) =>  console.error(error)
+        );
+      }
+    } catch (error) {}
   }, [deliveryAddress, setAddress, center, drag]);
 
   const handleChangeAddress = (response, maping) => {
@@ -54,7 +56,7 @@ const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }
     if(postalCode) handleChange('codePostal', postalCode.long_name)
     setDrag(false)
   }
-
+  
   return (
     <GoogleMapReact
       bootstrapURLKeys={{ key: API_KEY }}

@@ -286,7 +286,6 @@ function moveCart(payload) {
   return async (dispatch) => {
     try {
       const response = await OrderingService.api( "POST", payload, `cart/moveItem`, "Bearer" );
-
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
         console.log(response);
         return payload.cart

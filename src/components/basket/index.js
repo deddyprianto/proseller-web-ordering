@@ -62,7 +62,7 @@ class Basket extends Component {
       isEmenu: window.location.pathname.includes("emenu"),
       orderActionDate: moment().format("YYYY-MM-DD"),
       orderActionTime: moment().add(1, 'h').format("HH") + ":00",
-      orderActionTimeSlot: "00:00 - 23:00",
+      orderActionTimeSlot: null,
       checkOperationalHours: {},
       orderingTime: [],
 
@@ -369,7 +369,7 @@ class Basket extends Component {
 
     let timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
     
-    if(timeSlot.resultCode !== 200){
+    if(timeSlot.resultCode === 200){
       timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
       if(timeSlot.length > 0){
         this.setState({ 
@@ -377,15 +377,11 @@ class Basket extends Component {
           orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
           orderActionTimeSlot: timeSlot[0].time
         })
-      } else if (!checkOperationalHours.status) {
+      } else {
         date = moment(date).add(1, 'd').format("YYYY-MM-DD")
         this.setState({ orderActionDate: date })
         await this.checkPickUpDateTime(this.state.checkOperationalHours, date, check)
       }
-    } else {
-      let from = moment(checkOperationalHours.beforeTime).format("HH:mm")
-      let to = moment(checkOperationalHours.afterTime).format("HH:mm")
-      this.setState({orderActionTimeSlot: `${from} - ${to}`})
     }
   }
 
@@ -743,7 +739,7 @@ class Basket extends Component {
   };
 
   handleSubmit = async () => {
-    let { orderingMode, storeDetail, scanTable, dataBasket } = this.state;
+    let { orderingMode, storeDetail, scanTable, dataBasket, orderingSetting } = this.state;
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
       document.getElementById("login-register-btn").click();
@@ -753,12 +749,18 @@ class Basket extends Component {
     if (this.checkScan()) return this.props.history.push("/scanTable");
     else if (orderingMode === "TAKEAWAY") {
       this.setState({ isLoading: true });
+      let isNeedConfirmation = false
+      let enableAutoConfirmation = orderingSetting.find(items => { return items.settingKey === "EnableAutoConfirmation" })
+      if (enableAutoConfirmation) {
+        isNeedConfirmation = enableAutoConfirmation.settingValue || false
+      }
 
       let payload = {
         tableNo: scanTable.tableNo || scanTable.table,
         orderingMode: orderingMode,
         partitionKey: this.props.basket.partitionKey,
         sortKey: this.props.basket.sortKey,
+        isNeedConfirmation
       };
 
       let response;

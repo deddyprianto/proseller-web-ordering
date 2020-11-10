@@ -217,17 +217,21 @@ class DeliveryAddress extends Component {
         this.validationPostalCode(deliveryAddress.postalCode, deliveryAddress.codePostal)
       }
     }
-    if(field === "postalCode" && deliveryAddress.codePostal){
+    if(field === "postalCode"){
       this.validationPostalCode(value, deliveryAddress.codePostal)
     }
     this.setState({ deliveryAddress });
   };
 
   validationPostalCode(postalCode, codePostal){
-    console.log("postalcode valid", codePostal)
+    console.log(codePostal)
     let check = true
-    if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
-    if(postalCode.toString().length !== codePostal.toString().length) check = false
+    if(codePostal && Number(codePostal)){
+      if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
+      if(postalCode.toString().length !== codePostal.toString().length) check = false
+    } else {
+      if(postalCode.toString().length !== 6) check = false
+    }
     this.setState({postalCodeIsValid: check})
     return check
   }

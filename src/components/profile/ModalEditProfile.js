@@ -361,7 +361,7 @@ class ModalEditProfile extends Component {
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                       <div>{dataCustomer.email}</div>
                       <div data-toggle="modal" data-target="#edit-account-modal">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                        <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                       </div>
                     </div>
                   </div>

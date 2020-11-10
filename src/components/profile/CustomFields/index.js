@@ -29,14 +29,14 @@ const CustomFields = ({
 
   return (
     <Row>
-      {fieldsToRender && fieldsToRender.map((field) => {
+      {fieldsToRender && fieldsToRender.map((field, keys) => {
         if (field.type === "multipleField") {
           return( 
-            <Col sm={6}>
+            <Col key={keys} sm={6}>
             <Row>
               {
-                field.children.map((child) => (
-                  <Col sm={6}>
+                field.children.map((child, key) => (
+                  <Col key={key} sm={6}>
                   <Field
                     handleValueChange={handleValueChange}
                     value={value}
@@ -52,7 +52,7 @@ const CustomFields = ({
           )
         }
         return (
-          <Col sm={6}>
+          <Col key={keys} sm={6}>
             <Field
               handleValueChange={handleValueChange}
               value={value}

@@ -566,6 +566,12 @@ class Payment extends Component {
       },
     });
 
+    let isNeedConfirmation = false
+    let enableAutoConfirmation = this.props.setting.find(items => { return items.settingKey === "EnableAutoConfirmation" })
+    if (enableAutoConfirmation) {
+      isNeedConfirmation = enableAutoConfirmation.settingValue || false
+    }
+
     let { orderingMode, dataBasket, deliveryAddress,
       selectedVoucher, selectedPoint, totalPrice, selectedCard,
       scanTable, voucherDiscountList, detailPoint, pointsToRebateRatio,
@@ -578,6 +584,9 @@ class Payment extends Component {
       totalNettAmount: dataBasket.totalNettAmount,
       amount: dataBasket.totalNettAmount,
       payments: [],
+      isNeedConfirmation, 
+      payAtPOS,
+      orderingMode,
       // validateOutletSetting: {
       //   enableDelivery: storeDetail.enableDelivery,
       //   enableDineIn: storeDetail.enableDineIn,
@@ -585,8 +594,6 @@ class Payment extends Component {
       //   enableStorePickUp: storeDetail.enableStorePickUp,
       //   enableTakeAway: storeDetail.enableTakeAway,
       // },
-      payAtPOS,
-      orderingMode
     };
 
     if(scanTable) payload.tableNo = scanTable.table || scanTable.tableNo || "-"
@@ -639,6 +646,7 @@ class Payment extends Component {
 
     // console.log(payload)
     // return
+
     let response;
     if (
       orderingMode === "TAKEAWAY" ||
@@ -1055,6 +1063,7 @@ const mapStateToProps = (state, ownProps) => {
     deliveryProvider: state.order.selectedDeliveryProvider,
     paymentCard: state.payment.paymentCard,
     color: state.theme.color,
+    setting: state.order.setting,
   };
 };
 

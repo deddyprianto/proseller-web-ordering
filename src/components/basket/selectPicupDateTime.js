@@ -67,7 +67,7 @@ export default class SelectPicupDateTime extends Component {
                       >
                         {
                           props.orderingTimeSlot.map((items, key) => (
-                            <option key={key} value={items.time}>{items.time}</option>
+                            <option key={key} value={items.time || items}>{items.time || items}</option>
                           ))
                         }
                       </select> :
@@ -79,6 +79,7 @@ export default class SelectPicupDateTime extends Component {
                   data-toggle="modal" data-target="#redeem-point-modal"
                   data-dismiss="modal"
                   onClick={() => {
+                    props.orderActionTimeSlot &&
                     this.props.handleSetState('orderActionTime', `${props.orderActionTimeSlot.split(" - ")[0]}`)
                   }}
                   style={{

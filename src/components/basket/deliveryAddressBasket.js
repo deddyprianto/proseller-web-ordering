@@ -39,9 +39,7 @@ class DeliveryAddressBasket extends Component {
                 style={{
                   fontWeight: "bold",
                   cursor: "pointer",
-                  backgroundColor: !props.deliveryAddress
-                    ? this.props.color.primary
-                    : "#DCDCDC",
+                  backgroundColor: this.props.color.primary,
                   width: 140,
                   justifyContent: "space-between",
                   display: "flex",

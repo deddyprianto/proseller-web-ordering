@@ -5,15 +5,16 @@ import Carousel from "nuka-carousel";
 
 class Promotion extends Component {
   render() {
-    const { banners, colorTheme } = this.props;
+    let { banners, colorTheme } = this.props;
     if (isEmptyArray(banners)) return null;
-
+    
     return (
       <div className="home-v1-slider">
         <div id="owl-main" className="owl-carousel owl-inner-nav owl-ui-sm" style={{ marginTop: 85, marginBottom: -140 }}>
           <Carousel
             autoplay
-            wrapAround={true}
+            wrapAround={banners && banners.length > 1}
+            withoutControls={banners && banners.length === 1}
             renderCenterLeftControls={({ previousSlide }) => (
               <p onClick={previousSlide}>
                 <i className="fa fa-chevron-left control-promotion background-theme" 
