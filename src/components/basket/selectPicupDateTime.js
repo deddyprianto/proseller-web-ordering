@@ -5,35 +5,19 @@ import moment from "moment";
 import styles from "../profile/CustomFields/styles.module.css";
 
 export default class SelectPicupDateTime extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      orderActionDate: this.props.data.orderActionDate,
-      orderActionTime: this.props.data.orderActionTime,
-    };
+  state = {
+    orderActionDate: this.props.data.orderActionDate,
+    orderActionTime: this.props.data.orderActionTime,
   }
 
   render() {
     let props = this.props.data
+    let orderingModeField = props.orderingMode === "DINEIN" ? "dineIn" : props.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
+    let { maxDays } = props.storeDetail.orderValidation[orderingModeField];
+
     let date = moment().format("YYYY-MM-DD")
-    var textTitle = props.orderingMode;
-    var maxDay = null;
-    if (textTitle === "STOREPICKUP") {
-      textTitle = "Pickup"
-      maxDay = props.storeDetail.maxStorePickupDays
-    }
-    if (textTitle === "STORECHECKOUT") {
-      textTitle = "Pickup"
-      maxDay = props.storeDetail.maxStoreCheckoutDays
-    }
-    if (textTitle === "DELIVERY") {
-      textTitle = "Delivery"
-      maxDay = props.storeDetail.maxDeliveryDays
-    }
-    if (textTitle === "TAKEAWAY") {
-      textTitle = "Pickup"
-      maxDay = props.storeDetail.maxTakeAwayDays
-    }
+    let textTitle = "Pickup";
+    if (textTitle === "DELIVERY") textTitle = "Delivery"
 
     return (
       <div>
@@ -59,7 +43,7 @@ export default class SelectPicupDateTime extends Component {
                     <input
                       type="date"
                       min={date}
-                      max={(maxDay && moment().add(maxDay, "d").format("YYYY-MM-DD")) || date}
+                      max={(maxDays && moment().add(maxDays, "d").format("YYYY-MM-DD"))}
                       value={props.orderActionDate}
                       className={cx(styles.input, {
                         [styles.rounded]: false,
@@ -73,18 +57,22 @@ export default class SelectPicupDateTime extends Component {
 
                   <div style={{marginTop: 10, marginBottom: 10}}>
                     <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Time</div>
-                    <select
-                      className="woocommerce-Input woocommerce-Input--text input-text"
-                      value={props.orderActionTimeSlot}
-                      style={{borderRadius: 5, width: "100%", backgroundColor: "#FFF"}}
-                      onChange={time => this.props.handleSetState('orderActionTimeSlot', time.target.value)}
-                    >
-                      {
-                        props.orderingTimeSlot.map((items, key) => (
-                          <option key={key} value={items}>{items}</option>
-                        ))
-                      }
-                    </select>
+                    {
+                      props.orderingTimeSlot && props.orderingTimeSlot.length > 0 ? 
+                      <select
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        value={props.orderActionTimeSlot}
+                        style={{borderRadius: 5, width: "100%", backgroundColor: "#FFF"}}
+                        onChange={time => this.props.handleSetState('orderActionTimeSlot', time.target.value)}
+                      >
+                        {
+                          props.orderingTimeSlot.map((items, key) => (
+                            <option key={key} value={items.time}>{items.time}</option>
+                          ))
+                        }
+                      </select> :
+                      <div className="text text-warning-theme small"> <em>Time slot not available</em> </div>
+                    }
                   </div>
                 </div>
                 <Button className="button"

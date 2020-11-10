@@ -35,6 +35,7 @@ export const OrderAction = {
   buildCart,
   getSettingOrdering,
   moveCart,
+  getTimeSlot,
 };
 
 function shareURL(tableNo, outletID, orderMode) {
@@ -332,7 +333,7 @@ function buildCart(payload = {}) {
       document.getElementById("close-modal").click();
     } catch (e) { }
 
-    console.log(response);
+    // console.log(response);
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
       console.log("Status is " + response.ResultCode || response.resultCode);
       localStorage.removeItem(`${config.prefix}_offlineCart`);
@@ -507,7 +508,7 @@ function cartUpdate(payload) {
 
 function changeOrderingMode(payload) {
   return async (dispatch) => {
-    if (account) {
+    if (account && payload.orderingMode) {
       let response = await OrderingService.api(
         "POST",
         payload,
@@ -519,6 +520,14 @@ function changeOrderingMode(payload) {
     } else {
       return { resultCode: 400 }
     }
+  };
+}
+
+function getTimeSlot(payload) {
+  return async (dispatch) => {
+    let response = await OrderingService.api( "POST", payload, `timeslot` );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    return response;
   };
 }
 

@@ -32,6 +32,7 @@ class PickupDateTime extends Component {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center"
           }}
         >
           <div style={{ fontWeight: "bold", fontSize: 14 }}>
@@ -44,18 +45,18 @@ class PickupDateTime extends Component {
               style={{
                 fontWeight: "bold",
                 cursor: "pointer",
-                backgroundColor: !props.deliveryAddress
-                  ? this.props.color.primary
-                  : "#DCDCDC",
+                backgroundColor: !props.deliveryAddress ? this.props.color.primary : "#DCDCDC",
                 width: 140,
-                justifyContent: "space-between",
-                display: "flex",
-                flexDirection: "row",
                 alignItems: "center",
-                fontSize: 12,
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
-              {`${moment(props.orderActionDate).format('DD MMM YYYY')} at ${props.orderActionTime}`}
+              <i className="fa fa-clock-o" style={{ fontSize: 20 }} aria-hidden="true" />
+              <div style={{ fontSize: 12 }}>
+                <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
+                <div>{`${props.orderActionTimeSlot}`}</div>
+              </div>
             </Button>
           </div>
         </div>

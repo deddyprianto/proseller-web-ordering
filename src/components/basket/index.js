@@ -359,94 +359,34 @@ class Basket extends Component {
     return {deliveryProvaider, provaiderDelivery}
   }
 
-  checkPickUpDateTime = (checkOperationalHours, date, check) => {
-    let timeAndDateOrder = this.state.orderingSetting.find(items => { return items.settingKey === "TimeAndDateOrder" })
-    let timeAndDateOrderLength = this.state.orderingSetting.find(items => { return items.settingKey === "TimeAndDateOrderLength" })
-    let orderingMode = this.state.orderingMode
-
-    let from = parseInt(moment(checkOperationalHours.beforeTime).format("HH"))
-    let to = parseInt(moment(checkOperationalHours.afterTime).format("HH"))
-
-    let hoursStartDay = 0
-    let minuteStartDay = 0
-    let hoursEndDay = 0
-    let minuteEndDay = 0
-
-    if(timeAndDateOrder) {
-      let timeOrder = timeAndDateOrder.settingValue.storePickupTime
-      if(orderingMode === "DELIVERY") timeOrder = timeAndDateOrder.settingValue.deliveryTime
-      
-      hoursStartDay = parseInt(timeOrder.start.split(":")[0])
-      minuteStartDay = parseInt(timeOrder.start.split(":")[1])
-      hoursEndDay = parseInt(timeOrder.end.split(":")[0])
-      minuteEndDay = parseInt(timeOrder.end.split(":")[1])
-
-      from = hoursStartDay
-      to = hoursEndDay
+  checkPickUpDateTime = async (checkOperationalHours, date, check) => {
+    let dateTime = new Date();
+    let payload = {
+      outletID: this.state.storeDetail.sortKey,
+      date: date,
+      clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
     }
 
-    let orderingTime = []
-    let orderingTimeMinutes = {}
-    let orderingTimeHours = []
-    let startMinute = minuteStartDay
-
-    for (let index = from; index <= to; index++) {
-      let startHoursString = index.toString().length === 1 ? `0${index}` : index
-      orderingTimeMinutes[startHoursString] = []
-      if(timeAndDateOrderLength){
-        let countLooping = Math.ceil((60-startMinute)/timeAndDateOrderLength.settingValue)
-        for (let looping = 0; looping < countLooping; looping++) {
-          if(hoursEndDay === index && minuteEndDay < startMinute) break
-          let startMinuteString = startMinute.toString().length === 1 ? `0${startMinute}` : startMinute
-          let time = `${startHoursString}:${startMinuteString}`
-          if(startMinute === 60) time = (index + 1).toString().length === 1 ? `0${(index + 1)}:00` : `${(index + 1)}:00`
-          orderingTime.push(time)
-          orderingTimeMinutes[time.split(":")[0]].push(time.split(":")[1] || "00")
-          startMinute += timeAndDateOrderLength.settingValue
-        }
-        startMinute = Math.abs(60-startMinute)
-      } else {
-        let time = index.toString().length === 1 ? `0${index}:00` : `${index}:00`
-        orderingTime.push(time)
-      }
-      orderingTimeHours.push(startHoursString)
-    }
+    let timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
     
-    if (check){
-      let timeNow = moment().format("HH:mm")
-      from = parseInt(timeNow.split(":")[0])
-      orderingTime = orderingTime.filter(items => {return Number(items.split(":")[0]) >= from})
-      let activeMinute = orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from]
-
-      if(activeMinute){
-        activeMinute = activeMinute.filter(items => { 
-          return Number(items) > Number(timeNow.split(":")[1])
+    if(timeSlot.resultCode !== 200){
+      timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
+      if(timeSlot.length > 0){
+        this.setState({ 
+          orderingTimeSlot: timeSlot, 
+          orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
+          orderActionTimeSlot: timeSlot[0].time
         })
-        orderingTimeMinutes[from.toString().length === 1 ? `0${from}` : from] = activeMinute
+      } else if (!checkOperationalHours.status) {
+        date = moment(date).add(1, 'd').format("YYYY-MM-DD")
+        this.setState({ orderActionDate: date })
+        await this.checkPickUpDateTime(this.state.checkOperationalHours, date, check)
       }
-      
-      orderingTimeHours = orderingTimeHours.filter(items => {return Number(items) > from})
+    } else {
+      let from = moment(checkOperationalHours.beforeTime).format("HH:mm")
+      let to = moment(checkOperationalHours.afterTime).format("HH:mm")
+      this.setState({orderActionTimeSlot: `${from} - ${to}`})
     }
-
-    this.setState({ orderingTime, orderingTimeMinutes, orderingTimeHours })
-
-    let orderingTimeSlot = []
-    orderingTimeHours.forEach((time, index) => {
-      if(orderingTimeHours[index+1]) orderingTimeSlot.push(`${time}:00 - ${time+1}:00`)
-    });
-    
-
-    if (!checkOperationalHours.status) {
-      let orderActionDate = moment(date).add(1, 'd').format("YYYY-MM-DD")
-      this.setState({ orderActionDate })
-    }
-    
-    let orderActionTime = `${orderingTimeHours[0]}:00`;
-    let orderActionTimeSlot = orderingTimeSlot[0]
-    let orderActionTimeHours = orderingTimeHours[0];
-    let orderActionTimeMinutes = '00'
-
-    this.setState({ orderActionTime, orderActionTimeHours, orderActionTimeMinutes, orderActionTimeSlot, orderingTimeSlot })
   }
 
   componentDidUpdate() {

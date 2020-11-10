@@ -5,7 +5,7 @@ import moment from "moment";
 class PickupDateTime extends Component {
   render() {
     let props = this.props.data;
-    var textTitle = props.orderingMode;
+    let textTitle = props.orderingMode;
     if (textTitle === "STOREPICKUP") textTitle = "Pickup"
     if (textTitle === "STORECHECKOUT") textTitle = "Pickup"
     if (textTitle === "DELIVERY") textTitle = "Delivery"
@@ -16,13 +16,15 @@ class PickupDateTime extends Component {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          alignItems: "center"
         }}
       >
         <div style={{ fontSize: 14 }}>
           {textTitle} Date & Time
         </div>
-        <div style={{fontWeight: "bold", fontSize: 14}}>
-          {moment(props.orderActionDate).format('DD MMM YYYY')} at {props.orderActionTime}
+        <div style={{fontWeight: "bold", fontSize: 14, lineHeight: "20px"}}>
+          <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
+          <div>{`${props.dataBasket.orderActionTimeSlot}`}</div>
         </div>
       </div>
     );

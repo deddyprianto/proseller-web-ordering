@@ -66,7 +66,9 @@ export default class MenuBasket extends Component {
               }
             </div>
           }
-
+        </div>
+        
+        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, padding: 5, paddingLeft: 10, paddingRight: 10 }}>
           {props.dataBasket.orderingMode && (
             props.dataBasket.orderingMode === "TAKEAWAY" ||
             props.dataBasket.orderingMode === "STOREPICKUP" ||
