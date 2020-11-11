@@ -515,7 +515,9 @@ class ModalProduct extends Component {
   detailProduct = () => {
     let { disableButton, selectedItem } = this.state;
     let { defaultOutlet, data } = this.props;
+    
     if (data) defaultOutlet = data.storeDetail;
+    
     return (
       <div
         className="modal-content"

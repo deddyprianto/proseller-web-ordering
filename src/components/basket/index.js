@@ -799,7 +799,7 @@ class Basket extends Component {
   };
 
   submitOtomatis = async (dataBasket, scanTable = null) => {
-    let { orderingMode, storeDetail } = this.state;
+    let { orderingMode, storeDetail, orderingSetting } = this.state;
     if (!scanTable) scanTable = this.state.scanTable;
     if (
       dataBasket &&
@@ -809,10 +809,16 @@ class Basket extends Component {
       storeDetail &&
       storeDetail.outletType !== "QUICKSERVICE"
     ) {
-      // this.setState({ isLoading: true });
+      let isNeedConfirmation = false
+      let enableAutoConfirmation = orderingSetting.find(items => { return items.settingKey === "EnableAutoConfirmation" })
+      if (enableAutoConfirmation) {
+        isNeedConfirmation = enableAutoConfirmation.settingValue || false
+      }
+
       let payload = {
         tableNo: scanTable.tableNo || scanTable.table,
         orderingMode: orderingMode,
+        isNeedConfirmation
       };
 
       if (!payload.tableNo) return this.props.history.push("/scanTable");

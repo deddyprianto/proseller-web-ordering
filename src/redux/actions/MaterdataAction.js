@@ -3,6 +3,8 @@ import { ProductService } from "../../Services/ProductService";
 import { CONSTANT } from "../../helpers";
 import config from "../../config";
 
+const PRESET_TYPE = config.prefix === "emenu" ? "eMenu" : "webOrdering";
+
 export const MasterdataAction = {
   getAddressLocation,
   getInfoCompany,
@@ -72,7 +74,7 @@ function getOutletByID(id, isProduct = true) {
 function getProductByOutletID(id) {
   return async (dispatch) => {
     if(id !== undefined) {
-      let response = await ProductService.api( "POST", null, `productpreset/load/CRM/${id}`, "Bearer" );
+      let response = await ProductService.api( "POST", null, `productpreset/load/${PRESET_TYPE}/${id}`, "Bearer" );
       if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
       dispatch(setData(response.data, CONSTANT.DATA_PRODUCT));
       return response.data;

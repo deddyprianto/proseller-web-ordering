@@ -63,18 +63,14 @@ class ItemsBasket extends Component {
                 group.modifier.yesNoDefaultValue === true &&
                 detail.yesNoValue === "no"
               ) {
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].isSelected = false;
+                product.product.productModifiers[i].modifier.details[j].isSelected = false;
               }
 
               if (
                 group.modifier.yesNoDefaultValue === false &&
                 detail.yesNoValue === "yes"
               ) {
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].isSelected = true;
+                product.product.productModifiers[i].modifier.details[j].isSelected = true;
               }
             }
           });
@@ -103,24 +99,16 @@ class ItemsBasket extends Component {
                     data.modifier.details.forEach(item => {
                       // make mark that item is in basket
                       if (data.modifierID === group.modifierID) {
-                        product.product.productModifiers[
-                          i
-                        ].postToServer = true;
+                        product.product.productModifiers[i].postToServer = true;
                         // set quantity basket to product that openend
                         if (item.id === detail.id) {
                           // check for radio button
                           if (group.modifier.max === 1) {
-                            product.product.productModifiers[
-                              i
-                            ].modifier.show = data.modifier.show;
+                            product.product.productModifiers[i].modifier.show = data.modifier.show;
                           }
-                          product.product.productModifiers[
-                            i
-                          ].modifier.details[j].quantity = item.quantity;
+                          product.product.productModifiers[i].modifier.details[j].quantity = item.quantity;
                           // for is selected
-                          product.product.productModifiers[
-                            i
-                          ].modifier.details[j].isSelected = item.isSelected;
+                          product.product.productModifiers[i].modifier.details[j].isSelected = item.isSelected;
                         }
                       }
                     });
