@@ -333,16 +333,8 @@ const ViewCartBasket = ({
               <div style={{ marginLeft: 10, marginRight: 10 }}>
                 {deliveryProvider ? (
                   deliveryProvider.deliveryFeeFloat < 0 ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <div style={{ fontWeight: "bold" }}>
-                        Delivery is not available in your area.
-                      </div>
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                      Delivery is not available in your area.
                     </div>
                   ) : deliveryProvider.deliveryFee ? (
                     <div
@@ -360,18 +352,10 @@ const ViewCartBasket = ({
                       >{`${deliveryProvider.deliveryFee}`}</div>
                     </div>
                   ) : (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <div style={{ fontWeight: "bold" }}>
-                            Checking delivery availability...
-                      </div>
-                        </div>
-                      )
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                      Checking delivery availability...
+                    </div>
+                  )
                 ) : null}
               </div>
             )}

@@ -227,7 +227,7 @@ class DeliveryAddress extends Component {
     console.log(codePostal)
     let check = true
     if(codePostal && Number(codePostal)){
-      if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
+      // if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
       if(postalCode.toString().length !== codePostal.toString().length) check = false
     } else {
       if(postalCode.toString().length !== 6) check = false

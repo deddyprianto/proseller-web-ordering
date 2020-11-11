@@ -23,27 +23,11 @@ class CardItemBasket extends Component {
         style={{ width: "100%", display: "flex", cursor: "pointer" }}
         onClick={() => !this.props.roleBtnClear && this.props.openModal(item)}
       >
-        <div
-          className="profile-dashboard"
-          style={{
-            position: "absolute",
-            minWidth: 70,
-            paddingLeft: 10,
-            paddingRight: 10,
-            color: "white",
-            fontSize: 12,
-            borderBottomRightRadius: 10,
-            left: 43,
-            fontWeight: "bold",
-          }}
-        >{`${item.grossAmount.toFixed(2)}`}</div>
         <img
           src={this.renderImageProduct(item)}
           style={{
-            marginRight: 5,
+            marginRight: 10,
             borderRadius: 5,
-            width: "35%",
-            border: "1px solid #CDCDCD",
           }}
           className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
           alt={item.product.name}
@@ -61,14 +45,13 @@ class CardItemBasket extends Component {
             <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
               <span
                 className="customer-group-name"
-                style={{ marginRight: 5, fontSize: 14, fontWeight: "bold" }}
-              >{`${item.quantity}x`}</span>
-              <span
-                className="customer-group-name"
-                style={{ fontSize: 14, fontWeight: "bold" }}
-              >{`${item.product.name} (${this.props.getCurrency(item.product.retailPrice) ||
-                item.product.retailPrice
-                })`}</span>
+                style={{ marginRight: 5, fontSize: 12, fontWeight: "bold" }}
+              >
+                {`${item.quantity}x`}
+              </span>
+              <span style={{ fontSize: 12, fontWeight: "bold" }} >
+                {`${item.product.name} (${this.props.getCurrency(Number(item.product.retailPrice))})`}
+              </span>
             </Typography>
           </div>
           {item.modifiers && item.modifiers.length > 0 && (
@@ -89,28 +72,19 @@ class CardItemBasket extends Component {
                             <dev key={keyItem}>
                               <Typography
                                 style={{
-                                  lineHeight: "15px",
-                                  textAlign: "left",
-                                  marginLeft: -5,
+                                  lineHeight: "15px", textAlign: "left", marginLeft: -5,
                                   paddingTop: -50,
                                 }}
                               >
                                 <span
                                   className="color-active"
-                                  style={{
-                                    marginRight: 3,
-                                    fontStyle: "italic",
-                                    fontSize: 10,
-                                  }}
-                                >{`${itemModifier.quantity}x`}</span>
-                                <span
-                                  style={{
-                                    fontSize: 10,
-                                    fontStyle: "italic",
-                                  }}
-                                >{`${itemModifier.name} (${this.props.getCurrency(itemModifier.price) ||
-                                  item.product.retailPrice
-                                  })`}</span>
+                                  style={{ marginRight: 3, fontStyle: "italic", fontSize: 10, }}
+                                >
+                                  {`${itemModifier.quantity}x`}
+                                </span>
+                                <span style={{ fontSize: 10, fontStyle: "italic", }} >
+                                  {`${itemModifier.name} (${this.props.getCurrency(Number(itemModifier.price))})`}
+                                </span>
                               </Typography>
                             </dev>
                           )
@@ -121,20 +95,18 @@ class CardItemBasket extends Component {
             </div>
           )}
           {item.remark && item.remark !== "-" && (
-            <div className="font-color-theme" style={{ display: "flex", marginLeft: -5, marginTop: -5 }}>
+            <div className="font-color-theme" style={{ 
+              display: "flex", marginLeft: -5, marginTop: -5, marginBottom: -10 
+            }}>
               <div
                 style={{
-                  fontStyle: "italic",
-                  fontSize: 10,
-                  textAlign: "justify",
+                  fontStyle: "italic", fontSize: 10, textAlign: "justify",
                   marginLeft: 5,
                 }}
               >{`Note:`}</div>
               <div
                 style={{
-                  fontStyle: "italic",
-                  fontSize: 10,
-                  textAlign: "justify",
+                  fontStyle: "italic", fontSize: 10, textAlign: "justify",
                   marginLeft: 5,
                 }}
               >
@@ -142,6 +114,28 @@ class CardItemBasket extends Component {
               </div>
             </div>
           )}
+
+          <div style={{
+            display: "flex", justifyContent: "space-between",
+          }}>
+            <div 
+              className="customer-group-name" 
+              style={{
+                textAlign: "left", fontSize: 12, fontWeight: "bold"
+              }}
+            >
+              {this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}
+            </div>
+
+            <button
+              className="customer-group-name" 
+              style={{ 
+                fontSize: 12, padding: 0, margin: 0, backgroundColor: "transparent"
+              }}
+            >
+              <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
+            </button>
+          </div>
         </div>
       </div>
     );

@@ -920,12 +920,7 @@ class Basket extends Component {
   handleSetState = async (field, value) => {
     this.setState({ [field]: value });
     if (field === "dataBasket") {
-      this.setState({ isLoading: true })
-      localStorage.setItem(
-        `${config.prefix}_dataBasket`,
-        JSON.stringify(encryptor.encrypt(value))
-      );
-      // await this.getDataBasket();
+      localStorage.setItem( `${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(value)) );
       window.location.reload();
     } else if (field === "orderActionDate") {
       let check = value === moment().format("YYYY-MM-DD")

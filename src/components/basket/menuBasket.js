@@ -209,20 +209,36 @@ class MenuBasket extends Component {
               props.orderingMode &&
               props.orderingMode === "DELIVERY" && (
                 <div style={{ marginLeft: 10, marginRight: 10 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ fontWeight: "bold" }}>
-                      Delivery Fee
-                    </div>
-                    <div
-                      style={{ fontWeight: "bold" }}
-                    >{`${props.provaiderDelivery.deliveryFee}`}</div>
-                  </div>
+                  {
+                    props.provaiderDelivery ? (
+                      props.provaiderDelivery.deliveryFeeFloat < 0 ? (
+                      <div className="small text-left text-warning-theme" style={{ 
+                        lineHeight: "17px", textAlign: "center", marginTop: 10 
+                      }}>
+                        Delivery is not available in your area.
+                      </div>
+                      ) : props.provaiderDelivery.deliveryFee ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold" }}>
+                            Delivery Fee
+                          </div>
+                          <div
+                            style={{ fontWeight: "bold" }}
+                          >{`${props.provaiderDelivery.deliveryFee}`}</div>
+                        </div>
+                      ) : (
+                        <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                          Checking delivery availability...
+                        </div>
+                      )
+                    ) : null
+                  }
                 </div>
               )}
 

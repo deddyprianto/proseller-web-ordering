@@ -290,7 +290,6 @@ function moveCart(payload) {
         console.log(response);
         return payload.cart
       } else {
-        // else return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
         return response.data
       }
     } catch (error) {
