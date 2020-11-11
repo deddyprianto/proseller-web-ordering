@@ -18,6 +18,7 @@ import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
+import { CheckBoxSharp } from "@material-ui/icons";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -396,7 +397,7 @@ class Payment extends Component {
               selectedVoucher,
             });
           } else {
-            this.handleCancelVoucher(selectedVoucher)
+            this.setRemoveVoucher("The voucher has met the net amount!", selectedVoucher);
           }
         }
       } else {
@@ -469,10 +470,7 @@ class Payment extends Component {
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
 
     if (selectedPoint <= 0) {
-      selectedPoint = this.calculateSelectedPoint(
-        selectedPoint,
-        "selectedPoint"
-      );
+      selectedPoint = this.calculateSelectedPoint( selectedPoint, "selectedPoint" );
       if (selectedPoint > totalPoint) {
         selectedPoint = this.calculateSelectedPoint(totalPoint, "allIn");
         needPoint = selectedPoint;
@@ -492,6 +490,8 @@ class Payment extends Component {
     let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]} point to ${this.getCurrency(
       parseInt(pointsToRebateRatio.split(":")[1])
     )}`;
+
+    console.log(selectedPoint)
     
     this.setState({
       textRasio,
@@ -513,13 +513,16 @@ class Payment extends Component {
       if (type === "selectedPoint") {
         selectedPoint = (totalAmount / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
       }
-      return parseFloat(selectedPoint.toFixed(2));
+      selectedPoint = parseFloat(selectedPoint.toFixed(2));
+      return selectedPoint
     } else {
       if (type === "selectedPoint") {
         selectedPoint = (Math.floor(totalAmount) / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
       }
-      if (type === "allin") return Math.floor(selectedPoint);
-      else return Math.ceil(selectedPoint);
+      if (type === "allin") selectedPoint = Math.floor(selectedPoint);
+      else selectedPoint = Math.ceil(selectedPoint);
+
+      return selectedPoint < 0 ? 0 : selectedPoint
     }
   };
 
@@ -981,8 +984,8 @@ class Payment extends Component {
                     >
                       <Button
                         disabled={
-                          (!selectedCard && totalPrice > 0) ||
-                          (selectedCard && selectedCard.minimumPayment && totalPrice < selectedCard.minimumPayment)
+                          (!selectedCard && (totalPrice + deliveryFee) > 0) ||
+                          (selectedCard && selectedCard.minimumPayment && (totalPrice + deliveryFee) < selectedCard.minimumPayment)
                         }
                         onClick={() => this.handleSettle()}
                         className="customer-group button"

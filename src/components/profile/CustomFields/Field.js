@@ -11,9 +11,13 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
   if (field.fieldName === "gender") displayName = "Gender"
   if (field.fieldName === "address") displayName = "Address"
 
-  let date = ""
+  let maxDate = ""
+  let minDate = ""
   if(field.minimumAge){
-    date = moment().subtract(field.minimumAge, 'years').format("YYYY-MM-DD")
+    maxDate = moment().subtract(field.minimumAge, 'years').format("YYYY-MM-DD")
+  }
+  if(field.maximumAge){
+    minDate = moment().subtract(field.maximumAge, 'years').format("YYYY-MM-DD")
   }
   
   if (field.type === "radio") {
@@ -119,7 +123,8 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
             type="date"
             id={field.fieldName}
             name={field.fieldName}
-            max={date}
+            max={maxDate}
+            min={minDate}
             value={value[field.fieldName]}
             style={{backgroundColor: (field.fieldName === "birthDate" && initialValue ? "#DCDCDC" : "#FFF")}}
             disabled={field.fieldName === "birthDate" && initialValue}

@@ -93,7 +93,7 @@ class EditProfile extends Component {
       let defaultError = {}
       let defaultEdit = {}
       this.props.fields && this.props.fields.forEach((field) => {
-        if(minimumAge && field.fieldName === "birthDate") field.minimumAge = minimumAge
+        if(field.fieldName === "birthDate") field.minimumAge = minimumAge || 1
 
         defaultError[field.fieldName] = ""
         defaultEdit[field.fieldName] = false

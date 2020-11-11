@@ -9,6 +9,7 @@ class AddPromo extends Component {
     let props = this.props.data
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
+
     return (
       <div>
         <RedeemPointBasket
@@ -66,7 +67,7 @@ class AddPromo extends Component {
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10, display: "flex", alignItems: "center"
             }}>
-              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn}
+              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn || props.totalPrice === 0}
                 data-toggle="modal" data-target="#redeem-point-modal"
                 onClick={() => this.props.handleRedeemPoint()}
                 style={{
