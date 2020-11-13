@@ -320,7 +320,6 @@ class ItemsBasket extends Component {
             />
           </div>
         )}
-        {this.state.isLoading ? Swal.showLoading() : Swal.close()}
       </div>
     );
   }

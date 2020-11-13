@@ -127,18 +127,17 @@ class Product extends Component {
             <div className="product-content-wrapper">
               <div>
                 <h3
-                  className="color"
-                  style={{ cursor: "pointer", marginTop: 10 }}
+                  style={{ cursor: "pointer", marginTop: 10, fontSize: 14, lineHeight: "17px" }}
                 >
-                  <span className="text-muted font-color-theme">
+                  <b className="text-muted color">
                     {this.getQuantityProduct()}{" "}
-                  </span>
-                  <b>{item.product.name}</b>
+                  </b>
+                  <b className="font-color-theme">{item.product.name}</b>
                 </h3>
-                <div itemProp="description">
+                <div itemProp="description" style={{marginTop: -5}}>
                   <div
-                    className="color"
-                    style={{ maxHeight: "none", whiteSpace: "pre-line" }}
+                    className="font-color-theme"
+                    style={{ maxHeight: 'none', whiteSpace: "pre-line", fontSize: 10 }}
                   >
                     {this.maskDescription(item.product.description)}
                   </div>
@@ -157,7 +156,7 @@ class Product extends Component {
                       <div className="col-lg-12 col-md-12 col-xs-7">
                         <b
                           style={{ float: "left" }}
-                          className="price-product color"
+                          className="price-product"
                         >
                           {this.getCurrency(item.product.retailPrice)}
                         </b>

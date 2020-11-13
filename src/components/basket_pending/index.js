@@ -206,6 +206,8 @@ class Basket extends Component {
       );
     }
 
+    console.log(dataBasket)
+
     let storeDetail = null;
     if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.product) {
       storeDetail = this.props.defaultOutlet;

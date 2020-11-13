@@ -40,16 +40,16 @@ const SignUpSuccess = ({
         </div>
       ) : (
           <div>
-            <p className="text-muted" style={{ textAlign: "center" }}>
+            <p className="font-color-theme" style={{ textAlign: "center" }}>
               You will receive 4-digit verification code via{" "}
               {method === "phone" ? "SMS" : "Email"} at
           </p>
             {method === "phone" ? (
-              <h2 style={{ textAlign: "center", marginTop: 10 }}>
+              <h2 className="font-color-theme" style={{ textAlign: "center", marginTop: 10 }}>
                 {username || "-"}
               </h2>
             ) : (
-                <h4 style={{ textAlign: "center", marginTop: 10 }}>
+                <h4 className="font-color-theme" style={{ textAlign: "center", marginTop: 10 }}>
                   {username || "-"}
                 </h4>
               )}
@@ -58,7 +58,7 @@ const SignUpSuccess = ({
 
       <Button
         className="button"
-        style={{ width: "100%", marginTop: 10, borderRadius: 5 }}
+        style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => {
           usePassword
             ? handleLogin(!usePassword)

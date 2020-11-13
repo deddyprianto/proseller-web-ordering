@@ -178,7 +178,11 @@ const ViewCartBasket = ({
     (data.dataBasket.orderingMode === "DELIVERY" &&
     !deliveryProvider) ||
     (deliveryProvider &&
-    deliveryProvider.deliveryFeeFloat < 0)
+    deliveryProvider.deliveryFeeFloat < 0) ||
+    (outlet.timeSlots &&
+    outlet.timeSlots.length > 0 &&
+    !props.orderActionTimeSlot &&
+    data.dataBasket.orderingMode !== "DINEIN")
   )
 
   return (
@@ -274,16 +278,16 @@ const ViewCartBasket = ({
               </div>
             } */}
 
-          {basket.totalGrossAmount >= minAmount ? (
+          {/* {basket.totalGrossAmount >= minAmount ? (
             basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
               productQuantity >= minQty ? (
                 productQuantity <= maxQty || maxQty === 0 ? null : (
                   <div>
                     <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
-                        `Your order has exceeded maximum allowed item quantity for
+                        `Your order has exceeded maximum quantity for
                         ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (maximum quantity ${maxQty}). 
-                        Please remove some item from your cart.`
+                        Please remove some item from your order.`
                       }
                     </div>
                     <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
@@ -293,9 +297,9 @@ const ViewCartBasket = ({
                   <div>
                     <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                       {
-                        `Your order hasn't reached minimum allowed item quantity for
+                        `Your order hasn't reached minimum quantity for
                         ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum quantity ${minQty}). 
-                        Please add some item to your cart.`
+                        Please add more item to your order.`
                       }
                     </div>
                     <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
@@ -305,9 +309,9 @@ const ViewCartBasket = ({
                 <div>
                   <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                     {
-                      `Your order has exceeded maximum allowed order amount for
-                      ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} ( maximum amount ${getCurrency(maxAmount)}). 
-                      Please remove some item from your cart.`
+                      `Your order has exceeded maximum amount for
+                      ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (maximum amount ${getCurrency(maxAmount)}). 
+                      Please remove some item from your order.`
                     }
                   </div>
                   <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
@@ -317,14 +321,26 @@ const ViewCartBasket = ({
               <div>
                 <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
                   {
-                    `Your order hasn't reached minimum allowed order amount for
+                    `Your order hasn't reached minimum amount for
                     ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum amount ${getCurrency(minAmount)}). 
-                    Please add some item to your cart.`
+                    Please add more item to your order.`
                   }
                 </div>
                 <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
               </div>
-            )}
+            )} */}
+          {
+            deliveryProvider &&
+            deliveryProvider.minPurchaseForFreeDelivery &&
+            deliveryProvider.deliveryFeeFloat !== 0 &&
+            props.orderingMode === "DELIVERY" &&
+            <div>
+              <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center" }}>
+                {`Enjoy free delivery when your order amount is more than ${getCurrency(Number(deliveryProvider.minPurchaseForFreeDelivery))}`}
+              </div>
+              <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
+            </div>
+          }
 
           {isLoggedIn &&
             deliveryProvider &&
@@ -349,7 +365,7 @@ const ViewCartBasket = ({
                       </div>
                       <div
                         style={{ fontWeight: "bold" }}
-                      >{`${deliveryProvider.deliveryFee}`}</div>
+                      >{`${deliveryProvider.deliveryFeeFloat > 0 ? deliveryProvider.deliveryFee : 'Free'}`}</div>
                     </div>
                   ) : (
                     <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>

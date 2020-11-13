@@ -7,7 +7,7 @@ import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
-import _ from "lodash";
+import _, { add } from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 import loadable from "@loadable/component";
@@ -69,7 +69,10 @@ class Basket extends Component {
       orderingSetting: [],
       orderingTimeMinutes: {},
       orderingTimeHours: [],
-      orderingTimeSlot: []
+      orderingTimeSlot: [],
+      maxLoopingGetTimeSlot: 5,
+      maxLoopingSetTimeSlot: 5,
+      nextDayIsAvailable: moment().add(1, 'd').format("YYYY-MM-DD")
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -245,7 +248,7 @@ class Basket extends Component {
       
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket)
-
+      
       // set voucher
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
@@ -289,6 +292,10 @@ class Basket extends Component {
       let check = this.state.orderActionDate === moment().format("YYYY-MM-DD")
       await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
       await this.submitOtomatis(dataBasket, scanTable);
+      if(!checkOperationalHours.status){
+        let message = "Sorry, we're closed today!"
+        Swal.fire("Oppss!", message, "error");
+      }
     } else {
       this.setState({
         dataBasket: null,
@@ -360,13 +367,16 @@ class Basket extends Component {
   }
 
   checkPickUpDateTime = async (checkOperationalHours, date, check) => {
+    let {storeDetail, dataBasket, maxLoopingGetTimeSlot} = this.state
     let dateTime = new Date();
     let payload = {
-      outletID: this.state.storeDetail.sortKey,
+      outletID: storeDetail.sortKey,
       date: date,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
     }
 
+    let orderingModeField = dataBasket.orderingMode === "DINEIN" ? "dineIn" : dataBasket.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
+    let {maxDays} = storeDetail.orderValidation[orderingModeField]
     let timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
     
     if(timeSlot.resultCode === 200){
@@ -375,12 +385,25 @@ class Basket extends Component {
         this.setState({ 
           orderingTimeSlot: timeSlot, 
           orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
-          orderActionTimeSlot: timeSlot[0].time
+          orderActionTimeSlot: timeSlot[0].time,
         })
       } else {
-        date = moment(date).add(1, 'd').format("YYYY-MM-DD")
-        this.setState({ orderActionDate: date })
-        await this.checkPickUpDateTime(this.state.checkOperationalHours, date, check)
+        for (let index = 0; index < maxDays || maxLoopingGetTimeSlot; index++) {
+          payload.date = moment(payload.date).add(1, 'd').format("YYYY-MM-DD")
+          timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
+          if(timeSlot.resultCode === 200) {
+            timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
+            if(timeSlot.length > 0){
+              this.setState({nextDayIsAvailable: payload.date})
+              break
+            }
+          }
+        }
+        this.setState({ 
+          orderActionTimeSlot: null, 
+          orderingTimeSlot: [],
+          orderActionTime: moment().add(1, 'h').format("HH") + ":00"
+        })
       }
     }
   }
@@ -422,6 +445,7 @@ class Basket extends Component {
     let operationalHours = storeDetail.operationalHours.filter(function (a) {
       return a.nameOfDay === moment().format("dddd");
     })[0];
+    if (!operationalHours) return { status: false };
 
     let status = moment(moment().format("HH:mm"), "HH:mm");
     let beforeTime = moment(operationalHours.open, "HH:mm");

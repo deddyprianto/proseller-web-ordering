@@ -45,18 +45,15 @@ class PaymentMethod extends Component {
     let infoCompany = await this.props.dispatch(
       MasterdataAction.getInfoCompany()
     );
+
     let paymentCardAccount = await this.props.dispatch(
       PaymentAction.getPaymentCard()
     );
-    let paymentCardAccountDefault = encryptor.decrypt(
-      JSON.parse(
-        localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)
-      )
-    );
+    
     let selectedCard = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
-
+    
     if (infoCompany.paymentTypes && paymentCardAccount.resultCode === 200) {
       let paymentTypes = infoCompany.paymentTypes;
       paymentTypes.forEach((elements) => {
@@ -65,25 +62,23 @@ class PaymentMethod extends Component {
         });
         elements.data.forEach((element) => {
           element.minimumPayment = elements.minimumPayment
-          if (
-            paymentCardAccountDefault &&
-            paymentCardAccountDefault.accountID === element.accountID
-          ) {
+          if(element.isDefault){
             element.default = true;
-            delete element.selected;
-          } else if (
+            localStorage.setItem(
+              `${config.prefix}_paymentCardAccountDefault`,
+              JSON.stringify(encryptor.encrypt(element))
+            );
+          }
+          if (
             selectedCard &&
             selectedCard.accountID === element.accountID
           ) {
             element.selected = true;
-            delete element.default;
           } else {
-            delete element.default;
             delete element.selected;
           }
         });
       });
-      console.log(paymentTypes)
       this.setState({ paymentTypes });
     }
 
@@ -143,6 +138,9 @@ class PaymentMethod extends Component {
     if (detailCard.default) {
       localStorage.removeItem(`${config.prefix}_paymentCardAccountDefault`);
     } else {
+      await this.props.dispatch(
+        PaymentAction.setDefaultPaymentCard(detailCard.accountID)
+      );
       detailCard.default = true;
       localStorage.setItem(
         `${config.prefix}_paymentCardAccountDefault`,

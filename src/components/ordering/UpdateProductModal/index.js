@@ -12,7 +12,7 @@ const UpdateProductModal = ({
   onClose,
   setAddNew,
   setSelectedItem,
-  companyInfo,
+  colorTheme,
   getCurrency
 }) => {
   const handleAdd = () => {
@@ -85,7 +85,7 @@ const UpdateProductModal = ({
             onClick={onClose}
             className={cx(styles.closeButton, "close close-modal")}
           >
-            <i class="fa fa-times"></i>
+            <i className="fa fa-times"></i>
           </button>
         </div>
 
@@ -200,6 +200,16 @@ const UpdateProductModal = ({
           <button onClick={handleAdd} style={{height: 50, width: "100%"}}>
             <i className="fa fa-plus" aria-hidden="true" /> Make Another
           </button>
+          <button 
+            className="border-theme background-theme"
+            onClick={onClose} 
+            style={{
+              height: 50, width: 80, color: colorTheme.primary,
+              border: `1px solid ${colorTheme.primary}`, marginLeft: 5
+            }}
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -219,6 +229,7 @@ UpdateProductModal.propTypes = {
 const mapStateToProps = (state) => {
   return {
     companyInfo: state.masterdata.companyInfo.data,
+    colorTheme: state.theme.color,
   };
 };
 

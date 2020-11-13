@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import GoogleMapReact from "google-map-react";
 import Geocode from "react-geocode";
-
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+// import GoogleMapReact from "google-map-react";
+// import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 const API_KEY = "AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4";
-
 Geocode.setApiKey(API_KEY);
-
 Geocode.setLanguage("en");
 
 const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }) => {
@@ -58,31 +55,32 @@ const GoogleMaps = ({ defaultCenter, deliveryAddress, handleChange, setAddress }
   }
   
   return (
-    <GoogleMapReact
-      bootstrapURLKeys={{ key: API_KEY }}
-      defaultCenter={defaultCenter}
-      center={center}
-      defaultZoom={11}
-      onDragEnd={({ center }) => {
-        setDrag(true)
-        setCenter(center.toJSON())
-      }}
-      onChildClick={() => {
-        console.log("You clicked me!");
-      }}
-    >
-      <div style={{ position: "relative" }} lat={center.lat} lng={center.lng}>
-        <LocationOnIcon
-          className="color"
-          style={{
-            fontSize: 40,
-            position: "absolute",
-            top: -20,
-            left: -20,
-          }}
-        />
-      </div>
-    </GoogleMapReact>
+    <div></div>
+    // <GoogleMapReact
+    //   bootstrapURLKeys={{ key: API_KEY }}
+    //   defaultCenter={defaultCenter}
+    //   center={center}
+    //   defaultZoom={11}
+    //   onDragEnd={({ center }) => {
+    //     setDrag(true)
+    //     setCenter(center.toJSON())
+    //   }}
+    //   onChildClick={() => {
+    //     console.log("You clicked me!");
+    //   }}
+    // >
+    //   <div style={{ position: "relative" }} lat={center.lat} lng={center.lng}>
+    //     <LocationOnIcon
+    //       className="color"
+    //       style={{
+    //         fontSize: 40,
+    //         position: "absolute",
+    //         top: -20,
+    //         left: -20,
+    //       }}
+    //     />
+    //   </div>
+    // </GoogleMapReact>
   );
 };
 

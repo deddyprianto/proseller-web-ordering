@@ -39,46 +39,39 @@ class PickupDateTime extends Component {
             {textTitle} Date & Time
           </div>
           <div>
-            {
-              props.orderActionTimeSlot ?
-              <Button
-                disabled={this.props.roleBtnClear ? true : false}
-                data-toggle="modal" data-target="#pickup-date-modal"
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  backgroundColor: this.props.color.primary,
-                  width: 140,
-                  alignItems: "center",
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <i className="fa fa-clock-o" style={{ fontSize: 20 }} aria-hidden="true" />
-                <div style={{ fontSize: 12 }}>
-                  <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
+            <Button
+              disabled={this.props.roleBtnClear || !props.btnBasketOrder ? true : false}
+              data-toggle="modal" data-target="#pickup-date-modal"
+              style={{
+                fontWeight: "bold",
+                cursor: "pointer",
+                backgroundColor: this.props.color.primary,
+                width: 140,
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <i className="fa fa-clock-o" style={{ fontSize: 20 }} aria-hidden="true" />
+              <div style={{ fontSize: 12 }}>
+                <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
+                {
+                  props.orderActionTimeSlot && 
                   <div>{`${props.orderActionTimeSlot}`}</div>
-                </div>
-              </Button> :
-              <Button
-                disabled={this.props.roleBtnClear ? true : false}
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  backgroundColor: this.props.color.primary,
-                  width: 140,
-                  justifyContent: "space-between",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  fontSize: 12,
-                }}
-              >
-                {`${moment(props.orderActionDate).format('DD MMM YYYY')} at ${props.orderActionTime}`}
-              </Button>
-            }
+                }
+              </div>
+            </Button>
           </div>
         </div>
+        {
+          !props.orderActionTimeSlot &&
+          <div className="text text-warning-theme small" style={{lineHeight: "17px", textAlign: "justify", marginTop: 5}}> 
+            Time slot not available Your selected delivery date:{" "}
+            {moment(props.orderActionDate).format("DD MMM YYYY")}, 
+            does not have any available timeslot. Setting the delivery date to{" "}
+            {moment(props.nextDayIsAvailable).format("DD MMM YYYY")} instead 
+          </div>
+        }
       </div>
     );
   }

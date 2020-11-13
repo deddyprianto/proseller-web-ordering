@@ -23,25 +23,65 @@ class MenuBasket extends Component {
     maxQty = maxQty || 0
     minAmount = minAmount || 0
     maxAmount = maxAmount || 0
-
+    
     return (
       <div style={{ marginTop: -8 }}>
-        {/* {
-          ((props.myVoucher && props.myVoucher.length > 0) || props.totalPoint > 0) && this.props.isLoggedIn &&
-          <div style={{ textAlign: "left" }}>
-            <AddPromo
-              data={props}
-              roleBtnClear={this.props.roleBtnClear}
-              cancelSelectVoucher={() => this.props.cancelSelectVoucher()}
-              cancelSelectPoint={() => this.props.cancelSelectPoint()}
-              handleRedeemVoucher={() => this.props.handleRedeemVoucher()}
-              handleRedeemPoint={() => this.props.handleRedeemPoint()}
-              getCurrency={(price) => this.props.getCurrency(price)}
-              scrollPoint={(data) => this.props.scrollPoint(data)}
-              setPoint={(point) => this.props.setPoint(point)}
-            />
-          </div>
-        } */}
+        <div
+          style={{
+            border: "1px solid #DCDCDC",
+            borderRadius: 5,
+            marginTop: 10,
+          }}
+        >
+          {basket.totalGrossAmount >= minAmount ? (
+            basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
+              productQuantity >= minQty ? (
+                productQuantity <= maxQty || maxQty === 0 ? null : (
+                  <div>
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                      {
+                        `Your order has exceeded maximum quantity for
+                        ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum quantity ${maxQty}). 
+                        Please remove some item from your order.`
+                      }
+                    </div>
+                  </div>
+                )
+              ) : (
+                  <div>
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                      {
+                        `Your order hasn't reached minimum quantity for
+                        ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum quantity ${minQty}). 
+                        Please add more item to your order.`
+                      }
+                    </div>
+                  </div>
+                )
+            ) : (
+                <div>
+                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                    {
+                      `Your order has exceeded maximum amount for
+                      ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum amount ${this.props.getCurrency(maxAmount)}). 
+                      Please remove some item from your order.`
+                    }
+                  </div>
+                </div>
+              )
+          ) : (
+              <div>
+                <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                  {
+                    `Your order hasn't reached minimum amount for
+                    ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum amount ${this.props.getCurrency(minAmount)}). 
+                    Please add more item to your order.`
+                  }
+                </div>
+              </div>
+            )}
+        </div>
+
         {props.dataBasket &&
           (props.dataBasket.tableNo || props.scanTable) &&
           props.dataBasket.orderingMode !== "DELIVERY" &&
@@ -81,8 +121,6 @@ class MenuBasket extends Component {
           />
         )}
 
-        {/* {this.props.isLoggedIn && <PaymentMethodBasket data={props} roleBtnClear={this.props.roleBtnClear} />} */}
-
         {props.orderingMode && props.orderingMode === "DELIVERY" && (
           <div>
             {
@@ -106,7 +144,9 @@ class MenuBasket extends Component {
           </div>
         )}
 
-        {props.orderingMode && (
+        {props.orderingMode && 
+        props.storeDetail.timeSlots && 
+        props.storeDetail.timeSlots.length > 0 && (
           props.orderingMode === "TAKEAWAY" ||
           props.orderingMode === "STOREPICKUP" ||
           props.orderingMode === "STORECHECKOUT" ||
@@ -124,9 +164,10 @@ class MenuBasket extends Component {
                 />
               }
             </div>
-          )}
+        )}
 
-        {props.widthSelected >= 1200 && (
+        {
+          props.widthSelected >= 1200 && 
           <div
             style={{
               border: "1px solid #DCDCDC",
@@ -134,77 +175,18 @@ class MenuBasket extends Component {
               marginTop: 10,
             }}
           >
-            {/* <div style={{ marginLeft: 10, marginRight: 10 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                <div style={{ fontWeight: "bold", color: "gray" }}>Sub Total</div>
-                <div style={{ fontWeight: "bold", color: "gray" }}>
-                  {this.props.getCurrency(props.dataBasket.totalNettAmount)}
+            {
+              props.provaiderDelivery &&
+              props.provaiderDelivery.minPurchaseForFreeDelivery &&
+              props.orderingMode === "DELIVERY" &&
+              <div>
+                <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                  {`Enjoy free delivery when your order amount is more than ${this.props.getCurrency(Number(props.provaiderDelivery.minPurchaseForFreeDelivery))}`}
                 </div>
+                <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
               </div>
-            </div> */}
-
-            {/* {
-              (props.discountVoucher + props.discountPoint) > 0 &&
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>Discount</div>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${this.props.getCurrency(props.discountVoucher + props.discountPoint)}`}</div>
-                </div>
-              </div>
-            } */}
-
-            {basket.totalGrossAmount >= minAmount ? (
-              basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
-                productQuantity >= minQty ? (
-                  productQuantity <= maxQty || maxQty === 0 ? null : (
-                    <div>
-                      <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                        {
-                          `Your order has exceeded maximum allowed item quantity for
-                          ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum quantity ${maxQty}). 
-                          Please remove some item from your cart.`
-                        }
-                      </div>
-                      <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
-                    </div>
-                  )
-                ) : (
-                    <div>
-                      <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                        {
-                          `Your order hasn't reached minimum allowed item quantity for
-                          ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum quantity ${minQty}). 
-                          Please add some item to your cart.`
-                        }
-                      </div>
-                      <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
-                    </div>
-                  )
-              ) : (
-                  <div>
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                      {
-                        `Your order has exceeded maximum allowed order amount for
-                        ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} ( maximum amount ${this.props.getCurrency(maxAmount)}). 
-                        Please remove some item from your cart.`
-                      }
-                    </div>
-                    <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
-                  </div>
-                )
-            ) : (
-                <div>
-                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                    {
-                      `Your order hasn't reached minimum allowed order amount for
-                      ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum amount ${this.props.getCurrency(minAmount)}). 
-                      Please add some item to your cart.`
-                    }
-                  </div>
-                  <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginBottom: 10 }} />
-                </div>
-              )}
-
+            }
+  
             {props.provaiderDelivery &&
               props.orderingMode &&
               props.orderingMode === "DELIVERY" && (
@@ -241,32 +223,31 @@ class MenuBasket extends Component {
                   }
                 </div>
               )}
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginLeft: 10,
-                marginRight: 10,
-              }}
-            >
-              <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} > TOTAL </div>
-              <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} >
-                {
-                  this.props.getCurrency(
-                    props.dataBasket.totalNettAmount + 
-                    (
-                      (props.dataBasket.orderingMode === "DELIVERY" && 
-                      props.provaiderDelivery && 
-                      props.provaiderDelivery.deliveryFeeFloat) || 0
+  
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+              >
+                <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} > TOTAL </div>
+                <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} >
+                  {
+                    this.props.getCurrency(
+                      props.dataBasket.totalNettAmount + 
+                      (
+                        (props.dataBasket.orderingMode === "DELIVERY" && 
+                        props.provaiderDelivery && 
+                        props.provaiderDelivery.deliveryFeeFloat) || 0
+                      )
                     )
-                  )
-                }
+                  }
+                </div>
               </div>
-            </div>
-
-            {props.dataBasket.status === "PROCESSING" ||
+              {props.dataBasket.status === "PROCESSING" ||
               props.dataBasket.status === "READY_FOR_COLLECTION" ||
               props.dataBasket.status === "READY_FOR_DELIVERY" ||
               props.dataBasket.status === "ON_THE_WAY" ? (
@@ -314,7 +295,6 @@ class MenuBasket extends Component {
                       boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                       width: "100%",
                       display: "flex",
-                      color: "#FFF",
                       fontWeight: "bold",
                       alignItems: "center",
                       justifyContent: "center",
@@ -333,7 +313,7 @@ class MenuBasket extends Component {
                 </div>
               )}
           </div>
-        )}
+        }
       </div>
     );
   }

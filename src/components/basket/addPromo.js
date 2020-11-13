@@ -18,7 +18,7 @@ class AddPromo extends Component {
           cancelSelectPoint={() => this.props.cancelSelectPoint()}
           getCurrency={(price) => this.props.getCurrency(price)}
           scrollPoint={(data) => this.props.scrollPoint(data)}
-          setPoint={(point) => this.props.setPoint(point)}
+          setPoint={(point, discountPoint) => this.props.setPoint(point, discountPoint)}
         />
         <div style={{ width: "100%", }}>
           {
@@ -27,7 +27,7 @@ class AddPromo extends Component {
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10
             }}>
-              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn}
+              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn || props.totalPrice === 0}
                 onClick={() => this.props.handleRedeemVoucher()}
                 style={{
                   fontWeight: "bold", color: colorText, cursor: "pointer", 

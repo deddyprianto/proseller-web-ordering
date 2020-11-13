@@ -71,13 +71,19 @@ export default class SelectPicupDateTime extends Component {
                           ))
                         }
                       </select> :
-                      <div className="text text-warning-theme small"> <em>Time slot not available</em> </div>
+                      <div className="text text-warning-theme small" style={{lineHeight: "17px", textAlign: "justify", marginLeft: 5}}> 
+                        Time slot not available Your selected delivery date: {" "}
+                        {moment(props.orderActionDate).format("DD MMM YYYY")}, 
+                        does not have any available timeslot. Setting the delivery date to{" "}
+                        {moment(props.nextDayIsAvailable).format("DD MMM YYYY")} instead 
+                      </div>
                     }
                   </div>
                 </div>
                 <Button className="button"
                   data-toggle="modal" data-target="#redeem-point-modal"
                   data-dismiss="modal"
+                  disabled={props.orderingTimeSlot && props.orderingTimeSlot.length === 0}
                   onClick={() => {
                     props.orderActionTimeSlot &&
                     this.props.handleSetState('orderActionTime', `${props.orderActionTimeSlot.split(" - ")[0]}`)

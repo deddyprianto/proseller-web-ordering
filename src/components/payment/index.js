@@ -18,7 +18,6 @@ import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
-import { CheckBoxSharp } from "@material-ui/icons";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -172,13 +171,14 @@ class Payment extends Component {
   };
 
   componentDidUpdate() {
+    let {totalPrice} = this.state
     let paymentCardAccountDefault = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_paymentCardAccountDefault`)));
     let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
     if (this.props.campaignPoint.detailPoint && !this.state.detailPoint) {
       this.setState(this.props.campaignPoint);
     } else if (this.props.myVoucher && !this.state.myVoucher) {
       this.setState({ myVoucher: this.props.myVoucher });
-    } else if (this.props.paymentCard.length > 0 && this.state.paymentCard.length === 0) {
+    } else if (this.props.paymentCard.length > 0 && this.state.paymentCard.length === 0 && totalPrice > 0) {
       if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
       if (selectedCard) {
         let check = false
@@ -210,6 +210,32 @@ class Payment extends Component {
     let selectedCard = encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`)));
     if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
 
+    if(!selectedCard){
+      let paymentCardAccount = await this.props.dispatch(
+        PaymentAction.getPaymentCard()
+      );
+
+      let paymentTypes = this.props.companyInfo.paymentTypes
+      if(paymentTypes && paymentCardAccount.resultCode === 200){
+        paymentTypes.forEach((elements) => {
+          elements.data = _.filter(paymentCardAccount.data, {
+            paymentID: elements.paymentID,
+          });
+          elements.data.forEach((element) => {
+            element.minimumPayment = elements.minimumPayment
+            if(element.isDefault){
+              element.default = true;
+              localStorage.setItem(
+                `${config.prefix}_paymentCardAccountDefault`,
+                JSON.stringify(encryptor.encrypt(element))
+              );
+              selectedCard = element
+            }
+          })
+        })
+      }
+    }
+
     if (dataSettle === null || !dataSettle.dataBasket) return;
 
     this.setState({ dataSettle });
@@ -233,20 +259,32 @@ class Payment extends Component {
         ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
         : 1;
 
-    let discountPoint = point / pointToRebate;
-    if (dataSettle.detailPoint.roundingOptions !== "DECIMAL") discountPoint = Math.floor(discountPoint);
-    else discountPoint = discountPoint.toFixed(2);
-
+    let totalPrice = dataSettle.dataBasket.totalNettAmount
+    if(dataSettle.orderingMode === "DELIVERY" && dataSettle.provaiderDelivery){
+      totalPrice = totalPrice + dataSettle.provaiderDelivery.deliveryFeeFloat
+    }
     let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
-    let discount = Number(discountPoint) + voucherDiscount;
+    let discountPoint = Number(this.state.discountPoint)
+    if(discountPoint === 0) {
+      discountPoint = point / pointToRebate;
+      if(discountPoint > 0 && discountPoint + (voucherDiscount || 0) > totalPrice){
+        discountPoint = totalPrice - (voucherDiscount || 0)
+      }
+      discountPoint = Number(discountPoint.toFixed(2));
+    }
 
-    let totalPrice = dataSettle.dataBasket.totalNettAmount - discount < 0 ? 0 : dataSettle.dataBasket.totalNettAmount - discount;
+    let discount = discountPoint + voucherDiscount;
+    
+    totalPrice = totalPrice - discount < 0 ? 0 : totalPrice - discount;
+    if(totalPrice === 0) selectedCard = null
+
     this.setState({
       ...dataSettle,
       selectedVoucher,
       selectedCard,
       selectedPoint,
       totalPrice,
+      discountPoint,
       isLoading: false,
     });
   };
@@ -306,9 +344,13 @@ class Payment extends Component {
         paymentAmount: 5,
         isVoucher: true
       }
-
+      
       if (checkOutlet) {
-        if (selectedVoucher.appliedItems) {
+        if (
+          selectedVoucher.appliedTo !== "ALL" &&
+          selectedVoucher.appliedItems && 
+          selectedVoucher.appliedItems.length > 0
+        ) {
           if (checkProduct) {
             let date = new Date();
             let tanggal = moment().format().split("T")[0];
@@ -369,8 +411,13 @@ class Payment extends Component {
             this.setRemoveVoucher(`Sorry, voucher ${selectedVoucher.name} is only available on specific product!`, selectedVoucher);
           }
         } else {
+          let totalAmount = dataBasket.totalNettAmount
+          if(dataBasket.orderingMode === "DELIVERY" && this.state.dataSettle.provaiderDelivery){
+            totalAmount = totalAmount + this.state.dataSettle.provaiderDelivery.deliveryFeeFloat
+          }
+
           if (voucherType === "discPercentage") {
-            discount = Number(dataBasket.totalNettAmount) * (Number(voucherValue) / 100);
+            discount = Number(totalAmount - voucherDiscount) * (Number(voucherValue) / 100);
           } else {
             discount = voucherValue;
           }
@@ -384,10 +431,10 @@ class Payment extends Component {
             }
           }
 
-          if(dataBasket.totalNettAmount - voucherDiscount > 0){
+          if(totalAmount - voucherDiscount > 0){
             voucherDiscountList.paymentAmount = discount 
-            if(discount > (dataBasket.totalNettAmount - (voucherDiscount || 0)) ){
-              voucherDiscountList.paymentAmount = (dataBasket.totalNettAmount - (voucherDiscount || 0))
+            if(discount > (totalAmount - (voucherDiscount || 0)) ){
+              voucherDiscountList.paymentAmount = (totalAmount - (voucherDiscount || 0))
             }
             
             this.state.voucherDiscountList.push(voucherDiscountList)
@@ -490,14 +537,8 @@ class Payment extends Component {
     let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]} point to ${this.getCurrency(
       parseInt(pointsToRebateRatio.split(":")[1])
     )}`;
-
-    console.log(selectedPoint)
     
-    this.setState({
-      textRasio,
-      selectedPoint,
-      needPoint,
-    });
+    this.setState({ textRasio, selectedPoint, needPoint });
   };
 
   scrollPoint = (data) => {
@@ -506,32 +547,22 @@ class Payment extends Component {
   };
 
   calculateSelectedPoint = (selectedPoint, type = null) => {
-    let { dataBasket, pointsToRebateRatio, detailPoint, discountVoucher } = this.state;
-    let totalAmount = dataBasket.totalNettAmount - discountVoucher
+    let { pointsToRebateRatio, detailPoint, totalPrice, discountPoint } = this.state;
+    totalPrice = totalPrice + discountPoint
 
-    if (detailPoint.roundingOptions === "DECIMAL") {
-      if (type === "selectedPoint") {
-        selectedPoint = (totalAmount / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
-      }
-      selectedPoint = parseFloat(selectedPoint.toFixed(2));
-      return selectedPoint
-    } else {
-      if (type === "selectedPoint") {
-        selectedPoint = (Math.floor(totalAmount) / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
-      }
-      if (type === "allin") selectedPoint = Math.floor(selectedPoint);
-      else selectedPoint = Math.ceil(selectedPoint);
-
-      return selectedPoint < 0 ? 0 : selectedPoint
+    if (type === "selectedPoint") {
+      selectedPoint = (totalPrice / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
     }
+    selectedPoint = parseFloat(selectedPoint.toFixed(2));
+    if(detailPoint.roundingOptions !== "DECIMAL") {
+      selectedPoint = Math.ceil(selectedPoint);
+    }
+    return selectedPoint
   };
 
-  setPoint = async (selectedPoint, dataBasket = null, pointsToRebateRatio) => {
-    if (!dataBasket) dataBasket = this.state.dataBasket;
-    if (!pointsToRebateRatio) pointsToRebateRatio = this.state.pointsToRebateRatio;
-
+  setPoint = async (selectedPoint, discountPoint) => {
     localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) );
-    this.setState({ selectedPoint, discountPoint: selectedPoint});
+    this.setState({ selectedPoint, discountPoint });
 
     await this.getDataBasket();
     return selectedPoint;
@@ -578,7 +609,7 @@ class Payment extends Component {
     let { orderingMode, dataBasket, deliveryAddress,
       selectedVoucher, selectedPoint, totalPrice, selectedCard,
       scanTable, voucherDiscountList, detailPoint, pointsToRebateRatio,
-      orderActionDate, orderActionTime, storeDetail,
+      orderActionDate, orderActionTime, storeDetail, discountPoint,
       orderActionTimeSlot
     } = this.state;
 
@@ -590,13 +621,6 @@ class Payment extends Component {
       isNeedConfirmation, 
       payAtPOS,
       orderingMode,
-      // validateOutletSetting: {
-      //   enableDelivery: storeDetail.enableDelivery,
-      //   enableDineIn: storeDetail.enableDineIn,
-      //   enableStoreCheckOut: storeDetail.enableStoreCheckOut,
-      //   enableStorePickUp: storeDetail.enableStorePickUp,
-      //   enableTakeAway: storeDetail.enableTakeAway,
-      // },
     };
 
     if(scanTable) payload.tableNo = scanTable.table || scanTable.tableNo || "-"
@@ -617,27 +641,16 @@ class Payment extends Component {
       payload.payments = payload.payments.concat(voucherDiscountList)
     } 
 
-    if (selectedPoint > 0) {
-      let paymentAmount = 0
-      if (detailPoint.roundingOptions !== "INTEGER") {
-        paymentAmount = (selectedPoint / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
-      } else {
-        paymentAmount = (selectedPoint / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
-        paymentAmount = Math.floor(paymentAmount)
-      }
-
+    if (selectedPoint > 0) {      
       payload.payments.push({
         paymentType: "point",
         redeemValue: selectedPoint,
-        paymentAmount: paymentAmount,
+        paymentAmount: discountPoint,
         isPoint: true
       })
     }
 
     if(selectedCard) {
-      if(this.props.deliveryProvider && this.props.deliveryProvider.deliveryFeeFloat){
-        totalPrice = totalPrice + this.props.deliveryProvider.deliveryFeeFloat
-      }
       payload.payments.push({
         paymentType: selectedCard.paymentID,
         paymentID: selectedCard.paymentID,
@@ -734,7 +747,7 @@ class Payment extends Component {
     if(orderingMode === "DINEIN" && orderingMode === "TAKEAWAY") deliveryFee = 0
 
     let currency = this.props.companyInfo && this.props.companyInfo.currency;
-    let formattedPrice = (this.getCurrency(totalPrice + deliveryFee) || "").split((currency && currency.code) || " ")[1];
+    let formattedPrice = (this.getCurrency(totalPrice) || "").split((currency && currency.code) || " ")[1];
     let totalAmount = (this.getCurrency(dataBasket && dataBasket.totalNettAmount + deliveryFee) || "").split((currency && currency.code) || " ")[1]
     let basketLength = 0;
     if (basket && basket.details) {
@@ -743,10 +756,10 @@ class Payment extends Component {
       });
     }
 
-    let nameCreditCard = `Pay ${this.getCurrency(totalPrice + deliveryFee)}`
+    let nameCreditCard = `Pay ${this.getCurrency(totalPrice)}`
     if(selectedCard){
       let lengthNumber = selectedCard.details.maskedAccountNumber.toString().length
-      nameCreditCard = "Pay " + this.getCurrency(totalPrice + deliveryFee) + " with " 
+      nameCreditCard = "Pay " + this.getCurrency(totalPrice) + " with " 
       nameCreditCard += selectedCard.details.cardIssuer.toUpperCase() + " " 
       nameCreditCard += selectedCard.details.maskedAccountNumber.substr(lengthNumber - 4) + " "
     }
@@ -840,7 +853,7 @@ class Payment extends Component {
         <div
           className="col-full"
           style={{
-            marginTop: config.prefix === "emenu" ? 70 : 90,
+            marginTop: config.prefix === "emenu" ? 120 : 140,
             marginBottom: 50,
             padding: 0,
           }}
@@ -850,6 +863,16 @@ class Payment extends Component {
               className="stretch-full-width"
               style={{ display: "flex", justifyContent: "center" }}
             >
+              <div style={{
+                flexDirection: "row", position: "fixed", zIndex: 10, width: "100%", marginTop: -60,
+                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
+                height: 40
+              }} className="background-theme">
+                <div style={{ marginLeft: 10, fontSize: 16 }}
+                  onClick={() => this.props.history.goBack()}>
+                  <i className="fa fa-chevron-left"></i> Back
+                </div>
+              </div>
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 {dataBasket && (
                   <div style={{ width: "100%" }}>
@@ -958,17 +981,17 @@ class Payment extends Component {
                       handleRedeemPoint={() => this.handleRedeemPoint()}
                       getCurrency={(price) => this.getCurrency(price)}
                       scrollPoint={(data) => this.scrollPoint(data)}
-                      setPoint={(point) => this.setPoint(point)}
+                      setPoint={(point, discountPoint) => this.setPoint(point, discountPoint)}
                       handleCancelVoucher={(item) => this.handleCancelVoucher(item)}
                       handleCancelPoint={() => this.cancelSelectPoint()}
-                      disabledBtn={(totalPrice + deliveryFee) === 0}
+                      disabledBtn={(totalPrice) === 0}
                     />
 
                     {this.props.isLoggedIn && (
                       <PaymentMethodBasket
                         data={this.state}
                         roleBtnClear={!this.props.isLoggedIn}
-                        disabledBtn={(totalPrice + deliveryFee) === 0}
+                        disabledBtn={(totalPrice) === 0}
                         handleCancelCreditCard={() => this.handleCancelCreditCard()}
                         getCurrency={(price) => this.getCurrency(price)}
                       />
@@ -984,8 +1007,8 @@ class Payment extends Component {
                     >
                       <Button
                         disabled={
-                          (!selectedCard && (totalPrice + deliveryFee) > 0) ||
-                          (selectedCard && selectedCard.minimumPayment && (totalPrice + deliveryFee) < selectedCard.minimumPayment)
+                          (!selectedCard && (totalPrice) > 0) ||
+                          (selectedCard && selectedCard.minimumPayment && (totalPrice) < selectedCard.minimumPayment)
                         }
                         onClick={() => this.handleSettle()}
                         className="customer-group button"

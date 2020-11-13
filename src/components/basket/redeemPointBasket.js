@@ -6,9 +6,8 @@ export default class RedeemPointBasket extends Component {
   render() {
     let props = this.props.data
     let discountPoint = props.selectedPoint / props.pointsToRebateRatio.split(":")[0]
+    if(discountPoint > (props.discountPoint + props.totalPrice)) discountPoint = props.discountPoint + props.totalPrice
     discountPoint = discountPoint.toFixed(2);
-    // if (props.detailPoint.roundingOptions !== "DECIMAL") discountPoint = Math.floor(discountPoint);
-    // else discountPoint = discountPoint.toFixed(2);
 
     return (
       <div>
@@ -67,7 +66,7 @@ export default class RedeemPointBasket extends Component {
 
                   <Button className="button"
                     data-toggle="modal" data-target="#redeem-point-modal"
-                    onClick={() => this.props.setPoint(props.selectedPoint)}
+                    onClick={() => this.props.setPoint(props.selectedPoint, discountPoint)}
                     style={{
                       width: "100%", marginTop: 10, borderRadius: 5, height: 50
                     }}>{`Set Point - ${this.props.getCurrency(discountPoint)}`}</Button>

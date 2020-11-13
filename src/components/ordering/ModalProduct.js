@@ -5,7 +5,6 @@ import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
 
-const Swal = require("sweetalert2");
 class ModalProduct extends Component {
   constructor(props) {
     super(props);
@@ -1042,7 +1041,6 @@ class ModalProduct extends Component {
   };
 
   render() {
-    let { isLoading } = this.state;
     return (
       <div>
         <span
@@ -1068,7 +1066,6 @@ class ModalProduct extends Component {
         {this.modalOrderingMode()}
         {this.modalQtyModifier()}
         {this.modalMessage()}
-        {isLoading ? Swal.showLoading() : Swal.close()}
       </div>
     );
   }

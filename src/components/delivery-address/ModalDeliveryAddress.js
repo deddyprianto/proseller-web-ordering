@@ -287,7 +287,7 @@ class ModalDeliveryAdderss extends Component {
                       </div>
                     }
                   </div>
-                  <div
+                  {/* <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
@@ -300,21 +300,21 @@ class ModalDeliveryAdderss extends Component {
                         width: "100%",
                         marginTop: "1rem",
                       }}
-                    >
+                    > */}
                       <GoogleMaps 
                         deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
                         setAddress={deliveryAddress.setAddress || false}
                         handleChange={(field, value) => this.props.handleChange(field, value)}
                       />
-                    </div>
-                  </div>
+                    {/* </div>
+                  </div> */}
 
                   <Button
                     disabled={!postalCodeIsValid}
                     className="button"
                     style={{
                       width: "100%",
-                      marginTop: 10,
+                      marginTop: 20,
                       borderRadius: 5,
                       height: 50,
                     }}

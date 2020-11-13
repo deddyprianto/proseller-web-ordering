@@ -5,6 +5,7 @@ export const PaymentAction = {
   removePaymentCard,
   registerPaymentCard,
   checkPaymentCard,
+  setDefaultPaymentCard,
   setData
 };
 
@@ -35,7 +36,15 @@ function registerPaymentCard(payload) {
 
 function checkPaymentCard(id) {
   return async (dispatch) => {
-    let response = await PaymentService.api('GET', null, 'account/check/' + id, 'Bearer')
+    let response = await PaymentService.api('GET', null, `account/check/${id}`, 'Bearer')
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
+    return response
+  };
+}
+
+function setDefaultPaymentCard(id) {
+  return async (dispatch) => {
+    let response = await PaymentService.api('GET', null, `account/setdefault/${id}`, 'Bearer')
     if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     return response
   };

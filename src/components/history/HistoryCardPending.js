@@ -38,6 +38,14 @@ class InboxCard extends Component {
 
   render() {
     const { items } = this.props;
+    let discount = 0
+    if(items.payments){
+      items.payments.forEach(items => {
+        if(items.paymentType === "voucher" || items.paymentType === "point"){
+          discount += items.paymentAmount
+        }
+      });
+    }
     return (
       <div
         style={{
@@ -87,15 +95,21 @@ class InboxCard extends Component {
             >
               {items.status.replace(/_/g, " ")}
             </div>
+            <div
+              className="modal-title"
+              style={{ fontWeight: "bold", fontSize: 10, lineHeight: "17px" }}
+            >
+              {`${items.queueNo} - ${items.details.length} items - ${this.getCurrency((items.totalNettAmount + (items.deliveryFee || 0)) - discount)}`}
+            </div>
           </div>
         </div>
         <div>
-          <div
+          {/* <div
             className="modal-title"
-            style={{ fontWeight: "bold", fontSize: 14, textAlign: "right", width: 65, marginTop: -20 }}
-          >
-            {items.details.length + " items"}
-          </div>
+            style={{ fontWeight: "bold", fontSize: 14, textAlign: "right",  marginTop: -20 }}
+          >{console.log(items.queueNo)}
+            {`${items.queueNo} - ${items.details.length} items - ${(items.totalNettAmount + (items.deliveryFee || 0)) - discount}`}
+          </div> */}
           <div
             className="font-color-theme"
             style={{
