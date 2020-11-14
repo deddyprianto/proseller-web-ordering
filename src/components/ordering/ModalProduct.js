@@ -793,14 +793,14 @@ class ModalProduct extends Component {
     );
   };
 
-  checkOrderValidation(validation, type) {
+  checkOrderValidation(validation, type, nickname) {
     if (type === "titleAmount") {
       if (validation.minAmount === 0 && validation.maxAmount > 0) {
-        return "Amount maximum"
+        return `Maximum amount for ${nickname.toLowerCase()}`
       } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
-        return "Amount minimum"
+        return `Minimum amount for ${nickname.toLowerCase()}`
       } else {
-        return "Amount range"
+        return `Range amount for ${nickname.toLowerCase()}`
       }
     } else if (type === "descAmount") {
       if (validation.minAmount === 0 && validation.maxAmount > 0) {
@@ -812,11 +812,11 @@ class ModalProduct extends Component {
       }
     } else if (type === "titleQty") {
       if (validation.minQty === 0 && validation.maxQty > 0) {
-        return "Item quantity maximum"
+        return `Maximum item quantity for ${nickname.toLowerCase()}`
       } else if (validation.minQty > 0 && validation.maxQty === 0) {
-        return "Item quantity minimum"
+        return `Minimum item quantity for ${nickname.toLowerCase()}`
       } else {
-        return "Item quantity range"
+        return `Range item quantity for ${nickname.toLowerCase()}`
       }
     } else if (type === "descQty") {
       if (validation.minQty === 0 && validation.maxQty > 0) {
@@ -860,18 +860,18 @@ class ModalProduct extends Component {
               orderValidation.maxAmount ? (
                 <div style={{ display: "flex", marginTop: -10 }}>
                   <strong style={{ marginRight: 5 }}>
-                    {this.checkOrderValidation(orderValidation, "titleAmount")}
+                    {this.checkOrderValidation(orderValidation, "titleAmount", nickname || name)}
                   </strong>
-                  {this.checkOrderValidation(orderValidation, "descAmount")}
+                  {this.checkOrderValidation(orderValidation, "descAmount", nickname || name)}
                 </div>
               ) : null}
             {orderValidation.minQty ||
               orderValidation.maxQty ? (
                 <div style={{ display: "flex", marginTop: -10 }}>
                   <strong style={{ marginRight: 5 }}>
-                    {this.checkOrderValidation(orderValidation, "titleQty")}
+                    {this.checkOrderValidation(orderValidation, "titleQty", nickname || name)}
                   </strong>
-                  {this.checkOrderValidation(orderValidation, "descQty")}
+                  {this.checkOrderValidation(orderValidation, "descQty", nickname || name)}
                 </div>
               ) : null}
           </div>
