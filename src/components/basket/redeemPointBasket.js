@@ -27,9 +27,26 @@ export default class RedeemPointBasket extends Component {
                   <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 16, marginBottom: 10 }}>
                     My Points
                   </div>
-                  <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, marginBottom: 10 }}>
-                    {props.detailPoint.point}
+                  <div >
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, marginBottom: 10 }}>
+                      {props.detailPoint.point - (props.pendingPoints || 0)}
+                    </div>
+                    {
+                      props.pendingPoints && props.pendingPoints > 0 &&
+                      <div style={{textAlign: "center", marginRight: -50, textDecorationLine: "line-through", marginTop: -12}}>
+                        {props.detailPoint.point}
+                      </div>
+                    }
                   </div>
+                  {
+                    props.pendingPoints && props.pendingPoints > 0 ?
+                    <div className="text" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
+                    }}>
+                      {`Your ${props.pendingPoints} points is blocked, because your order has not been completed.`}
+                    </div> : null
+                  }
                   <div style={{ textAlign: "center", marginBottom: 20 }} >
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
                       {props.textRasio}

@@ -278,7 +278,14 @@ class ModalDetailHistory extends Component {
                   >
                     <div style={{ fontSize: 14 }}>TOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency((detail.totalNettAmount + (detail.deliveryFee || 0)) - discount)}
+                      {this.getCurrency(
+                        (
+                          (detail.totalNettAmount + (detail.deliveryFee || 0)) - discount
+                        ) < 0 ? 0 :
+                        (
+                          (detail.totalNettAmount + (detail.deliveryFee || 0)) - discount
+                        )
+                      )}
                     </div>
                   </div>
 

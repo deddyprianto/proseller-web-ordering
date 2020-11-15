@@ -510,10 +510,9 @@ class Payment extends Component {
   };
 
   handleRedeemPoint = async () => {
-    // localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+    let {pendingPoints, totalPoint, pointsToRebateRatio} = this.state
     let selectedPoint = this.state.selectedPoint || 0;
-    let totalPoint = this.state.totalPoint;
-    let pointsToRebateRatio = this.state.pointsToRebateRatio;
+    totalPoint = totalPoint - pendingPoints
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
 
     if (selectedPoint <= 0) {
@@ -555,7 +554,7 @@ class Payment extends Component {
     }
     selectedPoint = parseFloat(selectedPoint.toFixed(2));
     if(detailPoint.roundingOptions !== "DECIMAL") {
-      selectedPoint = Math.ceil(selectedPoint);
+      selectedPoint = Math.floor(selectedPoint);
     }
     return selectedPoint
   };
@@ -608,8 +607,8 @@ class Payment extends Component {
 
     let { orderingMode, dataBasket, deliveryAddress,
       selectedVoucher, selectedPoint, totalPrice, selectedCard,
-      scanTable, voucherDiscountList, detailPoint, pointsToRebateRatio,
-      orderActionDate, orderActionTime, storeDetail, discountPoint,
+      scanTable, voucherDiscountList, orderActionDate, 
+      orderActionTime, storeDetail, discountPoint,
       orderActionTimeSlot
     } = this.state;
 

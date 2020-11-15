@@ -4,7 +4,7 @@ import moment from "moment";
 
 export default class ModalPointsDetail extends Component {
   render() {
-    const { detailPoint } = this.props
+    const { detailPoint, pendingPoints } = this.props
     return (
       <div>
         <div className="modal fade" id="points-detail-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -80,6 +80,15 @@ export default class ModalPointsDetail extends Component {
                         ))
                       }
                     </div>
+                    {
+                      pendingPoints && pendingPoints > 0 ?
+                      <div className="text text-warning-theme" style={{
+                        fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                        marginTop: 10, marginBottom: 10,
+                      }}>
+                        {`Your ${pendingPoints} points is blocked, because your order has not been completed.`}
+                      </div> : null
+                    }
                   </div>
 
                 </div>

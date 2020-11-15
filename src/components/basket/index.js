@@ -7,7 +7,7 @@ import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
-import _, { add } from "lodash";
+import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
 import loadable from "@loadable/component";

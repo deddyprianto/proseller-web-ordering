@@ -140,13 +140,24 @@ export default class MenuBasket extends Component {
             <div style={{ fontWeight: "bold", fontSize: 16 }}>
               {
                 this.props.getCurrency(
-                  props.dataBasket.totalNettAmount + 
                   (
-                    (props.dataBasket.orderingMode === "DELIVERY" && 
-                    props.provaiderDelivery && 
-                    props.provaiderDelivery.deliveryFeeFloat) || 0
-                  ) -
-                  discount
+                    props.dataBasket.totalNettAmount + 
+                    (
+                      (props.dataBasket.orderingMode === "DELIVERY" && 
+                      props.provaiderDelivery && 
+                      props.provaiderDelivery.deliveryFeeFloat) || 0
+                    ) -
+                    discount
+                  ) < 0 ? 0 :
+                  (
+                    props.dataBasket.totalNettAmount + 
+                    (
+                      (props.dataBasket.orderingMode === "DELIVERY" && 
+                      props.provaiderDelivery && 
+                      props.provaiderDelivery.deliveryFeeFloat) || 0
+                    ) -
+                    discount
+                  )
                 )
               }
             </div>

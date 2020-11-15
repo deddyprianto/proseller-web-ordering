@@ -148,7 +148,8 @@ class DetailRewords extends Component {
       campaignPointActive,
       totalPoint,
       campaignPointAnnouncement,
-      pointIcon
+      pointIcon,
+      pendingPoints
     } = this.state
 
     return (
@@ -186,8 +187,17 @@ class DetailRewords extends Component {
                   }
                   <div style={{ textAlign: "center", fontWeight: "bold", paddingTop: 10 }}>My Points</div>
                   <div className="text-value" style={{ fontSize: 35, textAlign: "center", marginBottom: 13, marginTop: 5 }}>
-                    {this.state.totalPoint.toFixed(2)}
+                    {totalPoint.toFixed(2)}
                   </div>
+                  {
+                    pendingPoints && pendingPoints > 0 ?
+                    <div className="text text-warning-theme" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10
+                    }}>
+                      {`Your ${pendingPoints} points is blocked, because your order has not been completed.`}
+                    </div> : null
+                  }
                   <Button size="sm" color="ghost-warning"
                     style={{ marginTop: -4, fontWeight: "bold", width: 150 }}
                     data-toggle="modal" data-target="#points-detail-modal"
@@ -225,10 +235,10 @@ class DetailRewords extends Component {
   }
 
   render() {
-    let { loadingShow, dataStamps, stampsDetail, image, detailPoint } = this.state
+    let { loadingShow, dataStamps, stampsDetail, image, detailPoint, pendingPoints } = this.state
     return (
       <div style={{ paddingTop: 20 }}>
-        <ModalPointsDetail detailPoint={detailPoint} />
+        <ModalPointsDetail detailPoint={detailPoint} pendingPoints={pendingPoints}/>
         <ModalStampsDetail data={dataStamps} detail={stampsDetail} image={image} />
         <ModalEditProfile />
         <Row>
