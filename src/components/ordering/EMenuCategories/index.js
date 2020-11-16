@@ -42,7 +42,7 @@ const EMenuCategories = ({
   return (
     <ul
       id="header-categories"
-      className="nav nav-tabs pizzaro-nav-tabs categories-product sticky"
+      className="nav nav-tabs pizzaro-nav-tabs categories-product background-theme sticky"
       style={{
         marginTop: -20,
         zIndex: 200,

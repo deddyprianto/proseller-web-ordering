@@ -129,13 +129,13 @@ class Footer extends Component {
                   borderRadius: 20,
                   height: 20,
                   display: "flex",
-                  color: "#FFF",
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: -25,
-                  border: "2px solid #FFF",
+                  border: `2px solid ${this.props.color.background}`,
                   paddingLeft: 4,
                   paddingRight: 4,
+                  fontWeight: "bold"
                 }}
               >
                 {basketLength}

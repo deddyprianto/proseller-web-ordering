@@ -388,7 +388,7 @@ class Basket extends Component {
           orderActionTimeSlot: timeSlot[0].time,
         })
       } else {
-        for (let index = 0; index < maxDays || maxLoopingGetTimeSlot; index++) {
+        for (let index = 0; index < Number(maxDays || maxLoopingGetTimeSlot); index++) {
           payload.date = moment(payload.date).add(1, 'd').format("YYYY-MM-DD")
           timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
           if(timeSlot.resultCode === 200) {
