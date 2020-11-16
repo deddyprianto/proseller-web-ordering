@@ -48,7 +48,7 @@ class Footer extends Component {
 
   render() {
     let { dataBasket } = this.state;
-    let { isLoggedIn, broadcast, dataPendingLength } = this.props;
+    let { isLoggedIn, dataPendingLength } = this.props;
     let basketLength = 0;
     if (dataBasket && dataBasket.details) {
       dataBasket.details.forEach((cart) => {

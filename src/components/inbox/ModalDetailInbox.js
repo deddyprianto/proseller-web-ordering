@@ -2,6 +2,17 @@ import React, { Component } from 'react';
 import moment from 'moment';
 
 export default class ModalDetailInbox extends Component {
+  linkDetection = (text) => {
+    if(text){
+      try {
+        let urlRegex = /(https?:\/\/[^\s]+)/g;
+        text = text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>')
+        return <p dangerouslySetInnerHTML={{__html: text}} />
+      } catch (error) { }
+    }
+    return text
+  }
+  
   render() {
     const { data } = this.props
     return (
@@ -24,7 +35,8 @@ export default class ModalDetailInbox extends Component {
                   paddingRight: 10, paddingTop: 5
                 }}>
                   <div style={{ fontSize: 14, lineHeight: "20px" }}>
-                    {data.message}
+                    {this.linkDetection(data.message)}
+                    {/* {`Test <a href="http://auntieannesg.com/" target="_blank">http://auntieannesg.com/</a> test test 123123`} */}
                   </div>
                   <div style={{ marginTop: 10, fontSize: 10, fontStyle: 'italic', textAlign: "right" }}>
                     {moment(data.createdOn).format('DD/MM/YY HH:mm')}

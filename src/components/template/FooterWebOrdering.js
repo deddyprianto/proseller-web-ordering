@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
 import config from "../../config";
-import { HistoryAction } from "../../redux/actions/HistoryAction";
 
 class Footer extends Component {
   constructor(props) {

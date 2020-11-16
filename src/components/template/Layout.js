@@ -43,17 +43,20 @@ class Layout extends Component {
   }
 
   componentDidMount = async () => {
+    const { isLoggedIn } = this.props;
     const { isEmenu } = this.state;
     let infoCompany = await this.props.dispatch(
       MasterdataAction.getInfoCompany()
     );
 
-    Promise.all([
-      this.props.dispatch(
-        InboxAction.getBroadcast({ take: 5, skip: 0 })
-      ),
-      this.props.dispatch(HistoryAction.getBasketPending())
-    ]);
+    if(isLoggedIn){
+      Promise.all([
+        this.props.dispatch(
+          InboxAction.getBroadcast({ take: 5, skip: 0 })
+        ),
+        this.props.dispatch(HistoryAction.getBasketPending())
+      ]);
+    }
 
     localStorage.setItem(
       `${config.prefix}_infoCompany`,
