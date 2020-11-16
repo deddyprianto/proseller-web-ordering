@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
+import { Link } from 'react-router-dom';
 // import Lottie from "lottie-react-web";
 // import emptyGif from "../assets/gif/empty-and-lost.json";
 
@@ -17,8 +18,15 @@ const DetailProfile = loadable(() =>
 class Profile extends Component {
   constructor(props) {
     super(props);
+
+    let isProfile = true;
+
+    try {
+      if (window.location.hash.split("#")[1] === '/rewards') isProfile = false;
+    }catch(e){}
+
     this.state = {
-      isProfile: true,
+      isProfile,
       enableOrdering: false
     };
   }
@@ -31,6 +39,12 @@ class Profile extends Component {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
+    let isProfile = true;
+    try {
+      if (window.location.hash.split("#")[1] === '/rewards') isProfile = false;
+      this.setState({isProfile});
+    }catch(e){}
+
     if (this.props !== prevProps) {
       let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
       if (enableOrdering) {
@@ -86,20 +100,23 @@ class Profile extends Component {
                 marginTop: -40,
               }}
             >
-              <Button
-                className={isProfile ? "use-select" : "un-select"}
-                style={{ height: 50, fontWeight: "bold" }}
-                onClick={() => this.setState({ isProfile: true })}
-              >
-                Profile
-              </Button>
-              <Button
-                className={!isProfile ? "use-select" : "un-select"}
-                style={{ height: 50, fontWeight: "bold" }}
-                onClick={() => this.setState({ isProfile: false })}
-              >
-                Rewards
-              </Button>
+              <Link to="/profile">
+                <Button
+                  className={isProfile ? "use-select" : "un-select"}
+                  style={{ height: 50, fontWeight: "bold" }}
+                  onClick={() => this.setState({ isProfile: true })}
+                >
+                  Profile
+                </Button>
+              </Link>
+              <Link to="/rewards">
+                <Button
+                  className={!isProfile ? "use-select" : "un-select"}
+                  style={{ height: 50, fontWeight: "bold" }}
+                >
+                  Rewards
+                </Button>
+              </Link>
             </div>
             <main
               id="main"
