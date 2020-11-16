@@ -48,7 +48,7 @@ class Footer extends Component {
 
   render() {
     let { dataBasket } = this.state;
-    let { isLoggedIn } = this.props;
+    let { isLoggedIn, broadcast, dataPendingLength } = this.props;
     let basketLength = 0;
     if (dataBasket && dataBasket.details) {
       dataBasket.details.forEach((cart) => {
@@ -99,6 +99,20 @@ class Footer extends Component {
             </div>
           </Link>
           <Link onClick={() => this.removeDataPayment(true)} to="/history" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
+            {dataPendingLength && dataPendingLength > 0 &&
+              <div
+                className="text-btn-theme"
+                style={{
+                  backgroundColor: this.props.color.primary, fontSize: 9, position: "absolute",
+                  marginTop: -18, minWidth: 18, borderRadius: 18, height: 18, display: "flex",
+                  alignItems: "center", justifyContent: "center", marginRight: -25,
+                  border: `2px solid ${this.props.color.background}`, paddingLeft: 4,
+                  paddingRight: 4, fontWeight: "bold"
+                }}
+              >
+                  {dataPendingLength}
+              </div>
+            }
             <i className={`fa fa-history ${this.activeRoute({ path: "/history", name: "History" })}`} aria-hidden="true" style={{ fontSize: 20, margin: 15 }} ></i>
             <div className={`${this.activeRoute({ path: "/history", name: "History" })}`} style={{ marginTop: -22, fontSize: 11 }} >
               History
@@ -131,6 +145,8 @@ const mapStateToProps = (state, ownProps) => {
     account: state,
     basket: state.order.basket,
     color: state.theme.color,
+    broadcast: state.broadcast.broadcast,
+    dataPendingLength: state.order.dataPendingLength,
   };
 };
 const mapDispatchToProps = (dispatch) => {

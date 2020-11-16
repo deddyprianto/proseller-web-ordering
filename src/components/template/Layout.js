@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import loadable from "@loadable/component";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { AuthActions } from "../../redux/actions/AuthAction";
+import { InboxAction } from "../../redux/actions/InboxAction";
+import { HistoryAction } from "../../redux/actions/HistoryAction";
 import { Switch, Route, Redirect } from "react-router-dom";
 import config from "../../config";
 
@@ -45,6 +47,14 @@ class Layout extends Component {
     let infoCompany = await this.props.dispatch(
       MasterdataAction.getInfoCompany()
     );
+
+    Promise.all([
+      this.props.dispatch(
+        InboxAction.getBroadcast({ take: 5, skip: 0 })
+      ),
+      this.props.dispatch(HistoryAction.getBasketPending())
+    ]);
+
     localStorage.setItem(
       `${config.prefix}_infoCompany`,
       JSON.stringify(encryptor.encrypt(infoCompany))

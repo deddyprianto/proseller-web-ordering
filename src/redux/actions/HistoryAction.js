@@ -38,7 +38,15 @@ function getBasketPending() {
       let dataPending = response.data
       let dataPendingLength = (dataPending && dataPending.length) || 0
       response.data = { dataPending, dataPendingLength }
+      dispatch(setData({Data: dataPendingLength}, "PENDING_ORDERS"))
     }
     return response
+  };
+}
+
+function setData(data, constant) {
+  return {
+    type: constant,
+    payload: data.Data,
   };
 }
