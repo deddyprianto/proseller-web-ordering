@@ -8,6 +8,7 @@ const defaultState = {
   basket: JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`)) || {},
   productsSearch: undefined,
   deliveryProviders: null,
+  dataPendingLength: undefined,
   setting: [],
   selectedDeliveryProvider:
     encryptor.decrypt(lsLoad(`${config.prefix}_deliveryProvider`, true)) ||
@@ -52,6 +53,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         setting: action.payload,
+      };
+    case "PENDING_ORDERS":
+      return {
+        ...state,
+        dataPendingLength: action.payload,
       };
     default:
       return state;

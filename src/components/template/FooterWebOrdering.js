@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
 import config from "../../config";
+import { HistoryAction } from "../../redux/actions/HistoryAction";
 
 class Footer extends Component {
   constructor(props) {
@@ -10,7 +11,7 @@ class Footer extends Component {
       loadingShow: true,
       isLoading: false,
       dataBasket: null,
-      enableOrdering: true
+      enableOrdering: true,
     };
   }
 
@@ -56,7 +57,7 @@ class Footer extends Component {
     }
   }
   render() {
-    let { isLoggedIn } = this.props
+    let { isLoggedIn, broadcast, dataPendingLength } = this.props
     let { enableOrdering } = this.state
     return (
       <div className="hidden-lg hidden-md">
@@ -69,6 +70,20 @@ class Footer extends Component {
             </Link>
           }
           <Link onClick={() => this.removeDataPayment(true)} to="/history" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            {dataPendingLength > 0 &&
+              <div
+                className="text-btn-theme"
+                style={{
+                  backgroundColor: this.props.color.primary, fontSize: 9, position: "absolute",
+                  marginTop: -18, minWidth: 18, borderRadius: 18, height: 18, display: "flex",
+                  alignItems: "center", justifyContent: "center", marginRight: -25,
+                  border: `2px solid ${this.props.color.background}`, paddingLeft: 4,
+                  paddingRight: 4, fontWeight: "bold"
+                }}
+              >
+                  {dataPendingLength}
+              </div>
+            }
             <i className={`fa fa-history ${this.activeRoute({ path: "/history", name: "History" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
             <div className={`${this.activeRoute({ path: "/history", name: "History" })}`} style={{ marginTop: -22, fontSize: 12 }}>History</div>
           </Link>
@@ -89,6 +104,20 @@ class Footer extends Component {
           {
             (isLoggedIn || !enableOrdering) &&
             <Link onClick={() => this.removeDataPayment()} to="/inbox" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+              {broadcast && broadcast.broadcastUnreadLength > 0 &&
+                <div
+                  className="text-btn-theme"
+                  style={{
+                    backgroundColor: this.props.color.primary, fontSize: 9, position: "absolute",
+                    marginTop: -18, minWidth: 18, borderRadius: 18, height: 18, display: "flex",
+                    alignItems: "center", justifyContent: "center", marginRight: -25,
+                    border: `2px solid ${this.props.color.background}`, paddingLeft: 4,
+                    paddingRight: 4, fontWeight: "bold"
+                  }}
+                >
+                    {broadcast.broadcastUnreadLength}
+                </div>
+              }
               <i className={`fa fa-envelope ${this.activeRoute({ path: "/inbox", name: "Inbox" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
               <div className={`${this.activeRoute({ path: "/inbox", name: "Inbox" })}`} style={{ marginTop: -22, fontSize: 12 }}>Inbox</div>
             </Link>
@@ -105,6 +134,9 @@ const mapStateToProps = (state, ownProps) => {
     account: state,
     basket: state.order.basket,
     setting: state.order.setting,
+    broadcast: state.broadcast.broadcast,
+    dataPendingLength: state.order.dataPendingLength,
+    color: state.theme.color,
   };
 };
 const mapDispatchToProps = (dispatch) => {
