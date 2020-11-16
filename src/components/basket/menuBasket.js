@@ -114,7 +114,7 @@ class MenuBasket extends Component {
           {
             props.provaiderDelivery &&
             props.provaiderDelivery.minPurchaseForFreeDelivery &&
-            basket.orderingMode === "DELIVERY" &&
+            props.dataBasket.orderingMode === "DELIVERY" &&
             <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
               {`${this.props.getCurrency(Number(deficiencyFreeDelivery))} more to free delivery`}
               <div style={{ backgroundColor: "gray", borderRadius: 5}} >
