@@ -99,7 +99,7 @@ class Footer extends Component {
             </div>
           </Link>
           <Link onClick={() => this.removeDataPayment(true)} to="/history" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
-            {dataPendingLength && dataPendingLength > 0 &&
+            {dataPendingLength && dataPendingLength > 0 ?
               <div
                 className="text-btn-theme"
                 style={{
@@ -110,8 +110,8 @@ class Footer extends Component {
                   paddingRight: 4, fontWeight: "bold"
                 }}
               >
-                  {dataPendingLength}
-              </div>
+                {dataPendingLength}
+              </div> : null
             }
             <i className={`fa fa-history ${this.activeRoute({ path: "/history", name: "History" })}`} aria-hidden="true" style={{ fontSize: 20, margin: 15 }} ></i>
             <div className={`${this.activeRoute({ path: "/history", name: "History" })}`} style={{ marginTop: -22, fontSize: 11 }} >

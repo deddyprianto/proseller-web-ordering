@@ -342,8 +342,8 @@ class Basket extends Component {
         provider.deliveryFeeFloat = provider.deliveryFee;
         provider.deliveryFee = this.getCurrency(provider.deliveryFee);
       });
-
-      if(deliveryProvaider.length > 0){
+      
+      if(deliveryProvaider && deliveryProvaider.length > 0){
         provaiderDelivery = deliveryProvaider[0]
       }
 

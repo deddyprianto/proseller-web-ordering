@@ -173,7 +173,8 @@ class MenuBasket extends Component {
                 isLoggedIn={this.props.isLoggedIn}
               />
             }
-            {props.deliveryProvaider &&
+            {
+              props.deliveryProvaider &&
               props.deliveryProvaider.length > 1 && (
                 <ProviderDeliveryBasket
                   data={props}
@@ -182,7 +183,26 @@ class MenuBasket extends Component {
                     this.props.handleSetProvaider(item)
                   }
                 />
-              )}
+              )
+            }
+
+            {
+              !props.deliveryProvaider &&
+              props.dataBasket.orderingMode === "DELIVERY" &&
+              <div
+                style={{
+                  border: "1px solid #DCDCDC",
+                  borderRadius: 5,
+                  marginTop: 10,
+                }}
+              >
+                <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                  The delivery provider has not set it. 
+                  Please confirm with the service provider.
+                </div>
+              </div>
+            }
+
           </div>
         )}
 
