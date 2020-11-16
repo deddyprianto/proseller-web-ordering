@@ -59,8 +59,8 @@ class Footer extends Component {
     let { isLoggedIn } = this.props
     let { enableOrdering } = this.state
     return (
-      <div>
-        <div className="pizzaro-handheld-footer-bar" style={{ display: "flex", justifyContent: "space-between" }}>
+      <div className="hidden-lg hidden-md">
+        <div className="pizzaro-handheld-footer-bar " style={{ display: "flex", justifyContent: "space-between" }}>
           {
             enableOrdering &&
             <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
@@ -77,6 +77,20 @@ class Footer extends Component {
             <Link onClick={() => this.removeDataPayment()} to="/profile" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
               <i className={`fa fa-user ${this.activeRoute({ path: "/profile", name: "Profile" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
               <div className={`${this.activeRoute({ path: "/profile", name: "Profile" })}`} style={{ marginTop: -22, fontSize: 12 }}>Profile</div>
+            </Link>
+          }
+          {
+            (isLoggedIn || !enableOrdering) &&
+            <Link onClick={() => this.removeDataPayment()} to="/rewards" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+              <i className={`fa fa-gift ${this.activeRoute({ path: "/rewards", name: "Rewards" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
+              <div className={`${this.activeRoute({ path: "/rewards", name: "Rewards" })}`} style={{ marginTop: -22, fontSize: 12 }}>Rewards</div>
+            </Link>
+          }
+          {
+            (isLoggedIn || !enableOrdering) &&
+            <Link onClick={() => this.removeDataPayment()} to="/inbox" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+              <i className={`fa fa-envelope ${this.activeRoute({ path: "/inbox", name: "Inbox" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
+              <div className={`${this.activeRoute({ path: "/inbox", name: "Inbox" })}`} style={{ marginTop: -22, fontSize: 12 }}>Inbox</div>
             </Link>
           }
         </div>

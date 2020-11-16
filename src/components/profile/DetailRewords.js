@@ -186,23 +186,23 @@ class DetailRewords extends Component {
                     <img src={pointIcon} alt="my point" style={{height: 100, objectFit: "contain", marginTop: 10}}/>
                   }
                   <div style={{ textAlign: "center", fontWeight: "bold", paddingTop: 10 }}>My Points</div>
-                  <div className="text-value" style={{ fontSize: 35, textAlign: "center", marginBottom: 13, marginTop: 5 }}>
+                  <div className="text-value" style={{ fontSize: 42, textAlign: "center", marginBottom: 20, marginTop: 10 }}>
                     {totalPoint.toFixed(2)}
                   </div>
                   {
                     pendingPoints && pendingPoints > 0 ?
                     <div className="text text-warning-theme" style={{
                       fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
-                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10
+                      marginTop: 10, marginBottom: 20, marginLeft: 10, marginRight: 10
                     }}>
                       {`Your ${pendingPoints} points is blocked, because your order has not been completed.`}
                     </div> : null
                   }
                   <Button size="sm" color="ghost-warning"
-                    style={{ marginTop: -4, fontWeight: "bold", width: 150 }}
+                    style={{ marginTop: -4, fontWeight: "bold", width: 150, marginBottom: 20 }}
                     data-toggle="modal" data-target="#points-detail-modal"
                   >
-                    More Detail
+                    Learn More
                   </Button>
                 </div>
             }
@@ -216,7 +216,8 @@ class DetailRewords extends Component {
               <div 
                 className="background-theme"
                 style={{
-                  padding: 10, marginTop: 10,
+                  padding: 10, 
+                  marginTop: 30,
                   borderRadius: 10, border: "1px solid #CDCDCD",
                   boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                   cursor: "pointer"

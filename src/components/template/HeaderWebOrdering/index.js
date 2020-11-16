@@ -347,7 +347,7 @@ class Header extends Component {
                 <ul className="menu">
                   {
                     enableOrdering &&
-                    <li className="menu-item ">
+                    <li className="menu-item menu-hide">
                       <Link to="/">
                         <i className="fa fa-book" />
                         Menu
@@ -355,7 +355,7 @@ class Header extends Component {
                     </li>
                   }
                   {(isLoggedIn || !enableOrdering) && (
-                    <li className="menu-item ">
+                    <li className="menu-item menu-hide">
                       <Link to="/profile">
                         <i className="fa fa-user" />
                         Profile
@@ -363,7 +363,7 @@ class Header extends Component {
                     </li>
                   )}
                   {isLoggedIn && (
-                    <li className="menu-item ">
+                    <li className="menu-item menu-hide">
                       <Link to="/history">
                         <i className="fa fa-history" />
                         History
@@ -371,7 +371,7 @@ class Header extends Component {
                     </li>
                   )}
                   {isLoggedIn && (
-                    <li className="menu-item ">
+                    <li className="menu-item menu-hide">
                       <Link to="/inbox">
                         <i className="fa fa-envelope-o" />
                         Inbox
@@ -379,10 +379,18 @@ class Header extends Component {
                     </li>
                   )}
                   {isLoggedIn && (
-                    <li className="menu-item ">
+                    <li className="menu-item menu-hide">
                       <Link to="/voucher">
                         <i className="fa fa-tags" />
                         Voucher
+                      </Link>
+                    </li>
+                  )}
+                  {isLoggedIn && (
+                    <li className="menu-item menu-hide">
+                      <Link to="/setting">
+                        <i className="fa fa-gear" />
+                        Setting
                       </Link>
                     </li>
                   )}
@@ -399,7 +407,7 @@ class Header extends Component {
                   )}
                   {!isLoggedIn && (
                     <li
-                      className="menu-item"
+                      className="menu-item menu-hide"
                       onClick={() => this.handleNavigation()}
                       data-toggle="modal"
                       data-target="#login-register-modal"

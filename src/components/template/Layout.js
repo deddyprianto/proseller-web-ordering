@@ -90,6 +90,7 @@ class Layout extends Component {
             {enableOrdering && <Route exact path={"/signIn"} component={Home} /> }
             {enableOrdering && <Route exact path={"/basket"} component={Basket} /> }
             {(isLoggedIn || !enableOrdering) && <Route exact path={"/profile"} component={Profile} /> }
+            {(isLoggedIn || !enableOrdering) && <Route exact path={"/rewards"} component={Profile} /> }
             {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
             {isLoggedIn &&  <Route exact path={"/voucher"} component={Voucher} /> }
             {isLoggedIn &&  <Route exact path={"/setting"} component={Setting} /> }

@@ -136,7 +136,7 @@ class DetailProfile extends Component {
             >
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontSize: 16, fontWeight: "bold" }} >
-                  Customer Group
+                  Membership
                 </div>
                 <div
                   className="customer-group-name"

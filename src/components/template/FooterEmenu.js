@@ -57,7 +57,7 @@ class Footer extends Component {
     }
     
     return (
-      <div>
+      <div className="hidden-lg hidden-md">
         <div
           className="pizzaro-handheld-footer-bar"
           style={{
