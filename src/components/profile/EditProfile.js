@@ -452,21 +452,33 @@ class EditProfile extends Component {
             titleEditAccount={(title) => this.setState({titleEditAccount: title})}
           />
 
-          <div style={{border: "1px solid #CCC", borderRadius: 5, padding: 10, marginTop: 20}}>
-            <div className="color" onClick={() => this.toggleEditPassword()} style={{textAlign: "right", cursor: "pointer"}}>
-              <div style={{fontSize: 14, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <b>Change Password </b>
-                {
-                  defaultEdit.password ?
-                  <i className="fa fa-arrow-circle-o-up" /> :
-                  <i className="fa fa-arrow-circle-o-down" />
-                }
+          {this.checkLoginSetting() && 
+            <div style={{border: "1px solid #CCC", borderRadius: 5, padding: 10, marginTop: 20}}>
+              <div className="color" onClick={() => this.toggleEditPassword()} style={{textAlign: "right", cursor: "pointer"}}>
+                <div style={{fontSize: 14, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                  <b>Change Password </b>
+                  {
+                    defaultEdit.password ?
+                    <i className="fa fa-arrow-circle-o-up" /> :
+                    <i className="fa fa-arrow-circle-o-down" />
+                  }
+                </div>
               </div>
-            </div>
-            {defaultEdit.password && this.viewPassword()}
-          </div>
+              {defaultEdit.password && this.viewPassword()}
+            </div>}
         </div>
       )
+    }
+  }
+
+  checkLoginSetting = () => {
+    try{
+      const { setting } = this.props;
+      const find = setting.find(item => item.settingKey === "EnableRegisterWithPassword" && item.settingValue == true);
+      if (find === undefined) return false;
+      return true;
+    }catch(e){
+      return true;
     }
   }
   
