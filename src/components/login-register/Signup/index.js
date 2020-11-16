@@ -36,7 +36,10 @@ const SignUp = ({
 
   if(minimumAge && fields){
     fields.forEach(mandatory => {
-      if(mandatory.fieldName === "birthDate") mandatory.minimumAge = minimumAge
+      if(mandatory.fieldName === "birthDate") {
+        mandatory.minimumAge = minimumAge
+        mandatory.isAutoDisable = false
+      }
     });
   }
 

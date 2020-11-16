@@ -126,8 +126,13 @@ const Field = ({ field, handleValueChange, value, roundedBorder, error, titleEdi
             max={maxDate}
             min={minDate}
             value={value[field.fieldName]}
-            style={{backgroundColor: (field.fieldName === "birthDate" && initialValue ? "#DCDCDC" : "#FFF")}}
-            disabled={field.fieldName === "birthDate" && initialValue}
+            style={{
+              backgroundColor: (
+                field.fieldName === "birthDate" && 
+                initialValue && field.isAutoDisable !== false ? "#DCDCDC" : "#FFF"
+              )
+            }}
+            disabled={field.fieldName === "birthDate" && initialValue && field.isAutoDisable !== false}
             className={cx(styles.input, {
               [styles.rounded]: roundedBorder,
             })}
