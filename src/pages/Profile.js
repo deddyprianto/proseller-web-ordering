@@ -91,7 +91,7 @@ class Profile extends Component {
       >
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
-            <div
+            {/* <div
               style={{
                 flexDirection: "row",
                 position: "fixed",
@@ -117,7 +117,7 @@ class Profile extends Component {
                   Rewards
                 </Button>
               </Link>
-            </div>
+            </div> */}
             <main
               id="main"
               className="site-main"
