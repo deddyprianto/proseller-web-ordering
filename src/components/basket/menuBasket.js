@@ -15,14 +15,27 @@ import config from "../../config";
 
 class MenuBasket extends Component {
   render() {
-    let props = this.props.data;
-    let basket = this.props.basket;
-    let productQuantity = this.props.productQuantity;
+    let {colorTheme, data, basket, productQuantity} = this.props
+    let props = data;
     let { minQty, maxQty, minAmount, maxAmount } = this.props.orderValidation;
     minQty = minQty || 0
     maxQty = maxQty || 0
     minAmount = minAmount || 0
     maxAmount = maxAmount || 0
+
+    let deficiencyAmount = minAmount - basket.totalNettAmount
+    let deficiencyAmountPercent = (basket.totalNettAmount/minAmount) * 100
+    if(deficiencyAmount < 0) deficiencyAmount = 0
+    if(deficiencyAmountPercent > 100) deficiencyAmountPercent = 100
+
+    let deficiencyFreeDelivery = 0
+    let deficiencyFreeDeliveryPercent = 0
+    if(props.provaiderDelivery && props.provaiderDelivery.minPurchaseForFreeDelivery){
+      deficiencyFreeDelivery = props.provaiderDelivery.minPurchaseForFreeDelivery - basket.totalNettAmount
+      deficiencyFreeDeliveryPercent = (basket.totalNettAmount/props.provaiderDelivery.minPurchaseForFreeDelivery) * 100
+      if(deficiencyFreeDelivery < 0) deficiencyFreeDelivery = 0
+      if(deficiencyFreeDeliveryPercent > 100) deficiencyFreeDeliveryPercent = 100
+    }
     
     return (
       <div style={{ marginTop: -8 }}>
@@ -33,8 +46,8 @@ class MenuBasket extends Component {
             marginTop: 10,
           }}
         >
-          {basket.totalGrossAmount >= minAmount ? (
-            basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
+          {basket.totalNettAmount >= minAmount ? (
+            basket.totalNettAmount <= maxAmount || maxAmount === 0 ? (
               productQuantity >= minQty ? (
                 productQuantity <= maxQty || maxQty === 0 ? null : (
                   <div>
@@ -80,6 +93,35 @@ class MenuBasket extends Component {
                 </div>
               </div>
             )}
+        </div>
+
+        <div
+          style={{
+            border: "1px solid #DCDCDC",
+            borderRadius: 5,
+            marginTop: 10,
+          }}
+        >
+          {
+            minAmount > 0 &&
+            <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
+              {`${this.props.getCurrency(deficiencyAmount)} more to min order of ${this.props.getCurrency(minAmount)}`}
+              <div style={{ backgroundColor: "gray", borderRadius: 5}} >
+                <div style={{height: 5, width: `${deficiencyAmountPercent}%`, backgroundColor: colorTheme.primary, borderRadius: 5}}/>
+              </div>
+            </div>
+          }
+          {
+            props.provaiderDelivery &&
+            props.provaiderDelivery.minPurchaseForFreeDelivery &&
+            basket.orderingMode === "DELIVERY" &&
+            <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
+              {`${this.props.getCurrency(Number(deficiencyFreeDelivery))} more to free delivery`}
+              <div style={{ backgroundColor: "gray", borderRadius: 5}} >
+                <div style={{height: 5, width: `${deficiencyFreeDeliveryPercent}%`, backgroundColor: colorTheme.primary, borderRadius: 5}}/>
+              </div>
+            </div>
+          }
         </div>
 
         {props.dataBasket &&
@@ -322,6 +364,7 @@ class MenuBasket extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     deliveryProviders: state.order.deliveryProviders,
+    colorTheme: state.theme.color
   };
 };
 const mapDispatchToProps = (dispatch) => {

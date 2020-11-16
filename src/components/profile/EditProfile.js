@@ -474,7 +474,7 @@ class EditProfile extends Component {
   checkLoginSetting = () => {
     try{
       const { setting } = this.props;
-      const find = setting.find(item => item.settingKey === "EnableRegisterWithPassword" && item.settingValue == true);
+      const find = setting.find(item => item.settingKey === "EnableRegisterWithPassword" && item.settingValue);
       if (find === undefined) return false;
       return true;
     }catch(e){

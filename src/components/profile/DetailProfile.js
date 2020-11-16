@@ -281,8 +281,8 @@ class DetailProfile extends Component {
             </Link>
 
             <div
-              className="profile-dashboard"
               onClick={() => this.handleLogout()}
+              className="background-theme"
               style={{
                 padding: 10,
                 marginTop: 10,
@@ -310,7 +310,7 @@ class DetailProfile extends Component {
     let { loadingShow } = this.state;
     let { qrcode } = this.props;
     return (
-      <div style={{ paddingTop: 20 }}>
+      <div>
         <ModalQRCode qrcode={qrcode} />
         <ModalEditProfile />
         <Row>

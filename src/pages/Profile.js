@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Button } from "reactstrap";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
-import { Link } from 'react-router-dom';
+// import { Button } from "reactstrap";
+// import { Link } from 'react-router-dom';
 // import Lottie from "lottie-react-web";
 // import emptyGif from "../assets/gif/empty-and-lost.json";
 
@@ -85,7 +85,7 @@ class Profile extends Component {
       <div
         className="col-full"
         style={{
-          marginTop: config.prefix === "emenu" ? 100 : 120,
+          marginTop: config.prefix === "emenu" ? 80 : 90,
           marginBottom: 50,
         }}
       >

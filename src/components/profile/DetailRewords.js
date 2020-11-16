@@ -129,7 +129,7 @@ class DetailRewords extends Component {
                       ))
                     }
                     <Button size="sm" color="ghost-warning"
-                      style={{ marginTop: -4, fontWeight: "bold", width: 150 }}
+                      style={{ marginTop: -4, fontWeight: "bold", width: 150, marginBottom: 20 }}
                       data-toggle="modal" data-target="#stamps-detail-modal"
                     >
                       More Detail
@@ -238,7 +238,7 @@ class DetailRewords extends Component {
   render() {
     let { loadingShow, dataStamps, stampsDetail, image, detailPoint, pendingPoints } = this.state
     return (
-      <div style={{ paddingTop: 20 }}>
+      <div>
         <ModalPointsDetail detailPoint={detailPoint} pendingPoints={pendingPoints}/>
         <ModalStampsDetail data={dataStamps} detail={stampsDetail} image={image} />
         <ModalEditProfile />
