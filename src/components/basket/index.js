@@ -70,9 +70,10 @@ class Basket extends Component {
       orderingTimeMinutes: {},
       orderingTimeHours: [],
       orderingTimeSlot: [],
-      maxLoopingGetTimeSlot: 5,
-      maxLoopingSetTimeSlot: 5,
-      nextDayIsAvailable: moment().add(1, 'd').format("YYYY-MM-DD")
+      maxLoopingGetTimeSlot: 7,
+      maxLoopingSetTimeSlot: 7,
+      nextDayIsAvailable: moment().add(1, 'd').format("YYYY-MM-DD"),
+      isEditDate: false
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -367,7 +368,7 @@ class Basket extends Component {
   }
 
   checkPickUpDateTime = async (checkOperationalHours, date, check) => {
-    let {storeDetail, dataBasket, maxLoopingGetTimeSlot} = this.state
+    let {storeDetail, dataBasket, maxLoopingGetTimeSlot, isEditDate} = this.state
     let dateTime = new Date();
     let payload = {
       outletID: storeDetail.sortKey,
@@ -386,24 +387,31 @@ class Basket extends Component {
           orderingTimeSlot: timeSlot, 
           orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
           orderActionTimeSlot: timeSlot[0].time,
+          isEditDate: true
         })
       } else {
-        for (let index = 0; index < Number(maxDays || maxLoopingGetTimeSlot); index++) {
-          payload.date = moment(payload.date).add(1, 'd').format("YYYY-MM-DD")
-          timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
-          if(timeSlot.resultCode === 200) {
-            timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
-            if(timeSlot.length > 0){
-              this.setState({nextDayIsAvailable: payload.date})
-              break
+        if(isEditDate){
+          for (let index = 0; index < Number(maxDays || maxLoopingGetTimeSlot); index++) {
+            payload.date = moment(payload.date).add(1, 'd').format("YYYY-MM-DD")
+            timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
+            if(timeSlot.resultCode === 200) {
+              timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
+              if(timeSlot.length > 0){
+                this.setState({nextDayIsAvailable: payload.date})
+                break
+              }
             }
           }
+          this.setState({ 
+            orderActionTimeSlot: null, 
+            orderingTimeSlot: [],
+            orderActionTime: moment().add(1, 'h').format("HH") + ":00"
+          })
+        } else {
+          date = moment(date).add(1, 'd').format("YYYY-MM-DD")
+          this.setState({ orderActionDate: date })
+          this.checkPickUpDateTime(checkOperationalHours, date, check)
         }
-        this.setState({ 
-          orderActionTimeSlot: null, 
-          orderingTimeSlot: [],
-          orderActionTime: moment().add(1, 'h').format("HH") + ":00"
-        })
       }
     }
   }

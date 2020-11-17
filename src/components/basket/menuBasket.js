@@ -107,7 +107,11 @@ class MenuBasket extends Component {
             <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
               {`${this.props.getCurrency(deficiencyAmount)} more to min order of ${this.props.getCurrency(minAmount)}`}
               <div style={{ backgroundColor: "gray", borderRadius: 5}} >
-                <div style={{height: 5, width: `${deficiencyAmountPercent}%`, backgroundColor: colorTheme.primary, borderRadius: 5}}/>
+                <div style={{
+                  height: 5, width: `${deficiencyAmountPercent}%`, 
+                  backgroundColor: deficiencyAmountPercent === 100 ? "#067E30" : colorTheme.primary, 
+                  borderRadius: 5
+                }}/>
               </div>
             </div>
           }
@@ -118,7 +122,11 @@ class MenuBasket extends Component {
             <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
               {`${this.props.getCurrency(Number(deficiencyFreeDelivery))} more to free delivery`}
               <div style={{ backgroundColor: "gray", borderRadius: 5}} >
-                <div style={{height: 5, width: `${deficiencyFreeDeliveryPercent}%`, backgroundColor: colorTheme.primary, borderRadius: 5}}/>
+                <div style={{
+                  height: 5, width: `${deficiencyFreeDeliveryPercent}%`, 
+                  backgroundColor: deficiencyFreeDeliveryPercent === 100 ? "#067E30" : colorTheme.primary, 
+                  borderRadius: 5
+                }}/>
               </div>
             </div>
           }
