@@ -309,11 +309,13 @@ class Payment extends Component {
 
       if (dataBasket.details && dataBasket.details.length > 0) {
         if(selectedVoucher.appliedTo === "PRODUCT"){
+          let check = null
           for (let i = 0; i < dataBasket.details.length; i++) {
             let details = dataBasket.details[i];
-            let check = selectedVoucher.appliedItems.find(items => { return items.value === details.product.id})
+            check = selectedVoucher.appliedItems.find(items => { return items.value === details.product.id})
             if(check) checkProduct = details
           }
+          // todo check modifier
         } else if(selectedVoucher.appliedTo === "COLLECTION"){
           for (let index = 0; index < selectedVoucher.appliedItems.length; index++) {
             let appliedItems = selectedVoucher.appliedItems[index];

@@ -368,11 +368,12 @@ class Basket extends Component {
   }
 
   checkPickUpDateTime = async (checkOperationalHours, date, check) => {
-    let {storeDetail, dataBasket, maxLoopingGetTimeSlot, isEditDate} = this.state
+    let {storeDetail, dataBasket, maxLoopingGetTimeSlot, isEditDate, orderingMode} = this.state
     let dateTime = new Date();
     let payload = {
       outletID: storeDetail.sortKey,
       date: date,
+      orderingMode,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
     }
 
@@ -387,7 +388,8 @@ class Basket extends Component {
           orderingTimeSlot: timeSlot, 
           orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
           orderActionTimeSlot: timeSlot[0].time,
-          isEditDate: true
+          isEditDate: true,
+          orderActionDate: date
         })
       } else {
         if(isEditDate){
@@ -409,7 +411,6 @@ class Basket extends Component {
           })
         } else {
           date = moment(date).add(1, 'd').format("YYYY-MM-DD")
-          this.setState({ orderActionDate: date })
           this.checkPickUpDateTime(checkOperationalHours, date, check)
         }
       }
@@ -668,7 +669,10 @@ class Basket extends Component {
     localStorage.setItem(`${config.prefix}_ordering_mode`, orderingMode);
     this.setState({ orderingMode, isLoading: true });
     await this.getDataBasket(true, orderingMode);
-    this.setState({ isLoading: false });
+
+    let orderActionDate = moment().format("YYYY-MM-DD")
+    this.setState({ isLoading: false, orderActionDate, isEditDate: false });
+    await this.checkPickUpDateTime(this.state.checkOperationalHours, orderActionDate, true)
   };
 
   setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
