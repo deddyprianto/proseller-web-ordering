@@ -369,6 +369,7 @@ class Basket extends Component {
 
   checkPickUpDateTime = async (checkOperationalHours, date, check) => {
     let {storeDetail, dataBasket, maxLoopingGetTimeSlot, isEditDate, orderingMode} = this.state
+    if(!storeDetail) return
     let dateTime = new Date();
     let payload = {
       outletID: storeDetail.sortKey,
