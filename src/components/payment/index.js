@@ -419,7 +419,8 @@ class Payment extends Component {
           }
 
           if (voucherType === "discPercentage") {
-            discount = Number(totalAmount - voucherDiscount) * (Number(voucherValue) / 100);
+            // discount = Number(totalAmount - voucherDiscount) * (Number(voucherValue) / 100);
+            discount = Number(totalAmount) * (Number(voucherValue) / 100);
           } else {
             discount = voucherValue;
           }
