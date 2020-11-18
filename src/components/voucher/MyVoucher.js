@@ -52,8 +52,12 @@ class MyVoucher extends Component {
 
   render() {
     let { showGiftModal, voucherToGift } = this.state;
-    const { myVoucher } = this.props;
-    
+    let { myVoucher } = this.props;
+
+    if(this.props.handleSelect && myVoucher){
+      myVoucher = myVoucher.filter(items => {return items.validity.canOnlyRedeemedByMerchant !== true})
+    }
+
     return (
       <div>
         {showGiftModal && (

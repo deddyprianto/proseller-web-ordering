@@ -368,10 +368,7 @@ class Payment extends Component {
               if (statusValidHour) {
                 discount = voucherValue;
                 if (voucherType === "discPercentage") {
-                  discount =
-                    Number(checkProduct.unitPrice) *
-                    Number(checkProduct.quantity) *
-                    (Number(voucherValue) / 100);
+                  discount = Number(checkProduct.unitPrice) * (Number(voucherValue) / 100);
                 }
 
                 if (selectedVoucher.capAmount !== undefined) {
@@ -387,7 +384,10 @@ class Payment extends Component {
                   return items.paymentType === "voucher" && items.voucherId === selectedVoucher.id && items.paymentAmount
                 });
 
-                if(checkProduct.nettAmount - voucherDiscount > 0){
+                if(
+                  (checkProduct.nettAmount - voucherDiscount > 0) && 
+                  (this.state.voucherDiscountList.length < checkProduct.quantity)
+                ){
                   voucherDiscountList.paymentAmount = discount 
                   if(discount > (checkProduct.nettAmount - (voucherDiscount || 0)) ){
                     voucherDiscountList.paymentAmount = Number((checkProduct.nettAmount - (voucherDiscount || 0)).toFixed(2))
@@ -400,7 +400,6 @@ class Payment extends Component {
                     selectedVoucher,
                   });
                 } else {
-                  // this.handleCancelVoucher(selectedVoucher)
                   this.setRemoveVoucher("Sorry, the discount has exceeded the total price for a specific product!", selectedVoucher);
                 }
               } else {
