@@ -164,12 +164,12 @@ class MenuBasket extends Component {
           />
         )}
 
-        {props.dataBasket.totalTaxAmount > 0 && (
+        {/* {props.dataBasket.totalTaxAmount > 0 && (
           <TaxAmount
             data={props}
             getCurrency={(price) => this.props.getCurrency(price)}
           />
-        )}
+        )} */}
 
         {props.orderingMode && props.orderingMode === "DELIVERY" && (
           <div>
@@ -216,8 +216,6 @@ class MenuBasket extends Component {
 
         {
           props.orderingMode && 
-          props.timeSlot && 
-          props.timeSlot.length > 0 &&
           props.storeDetail.timeSlots && 
           props.storeDetail.timeSlots.length > 0 && 
           props.storeDetail.orderingMode !== 'DINEIN' &&
@@ -231,64 +229,79 @@ class MenuBasket extends Component {
           />
         }
 
+        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, }}> 
+          {
+            props.provaiderDelivery &&
+            props.provaiderDelivery.minPurchaseForFreeDelivery &&
+            props.orderingMode === "DELIVERY" &&
+            <div>
+              <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
+                {`Enjoy free delivery when your order amount is more than ${this.props.getCurrency(Number(props.provaiderDelivery.minPurchaseForFreeDelivery))}`}
+              </div>
+              <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
+            </div>
+          }
+
+          <div style={{ marginLeft: 10, marginRight: 10 }}>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+              <div style={{ fontWeight: "bold" }}> Subtotal </div>
+              <div style={{ fontWeight: "bold" }} >
+                {`${this.props.getCurrency(props.dataBasket.totalGrossAmount)}`}
+              </div>
+            </div>
+          </div>
+
+          {
+            props.provaiderDelivery &&
+            props.orderingMode &&
+            props.orderingMode === "DELIVERY" && (
+            <div style={{ marginLeft: 10, marginRight: 10 }}>
+              {
+                props.provaiderDelivery ? (
+                  props.provaiderDelivery.deliveryFeeFloat < 0 ? (
+                  <div className="small text-left text-warning-theme" style={{ 
+                    lineHeight: "17px", textAlign: "center", marginTop: 10 
+                  }}>
+                    Delivery is not available in your area.
+                  </div>
+                  ) : props.provaiderDelivery.deliveryFee ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div style={{ fontWeight: "bold" }}>
+                        Delivery Fee
+                      </div>
+                      <div
+                        style={{ fontWeight: "bold" }}
+                      >{`${props.provaiderDelivery.deliveryFee}`}</div>
+                    </div>
+                  ) : (
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                      Checking delivery availability...
+                    </div>
+                  )
+                ) : null
+              }
+            </div>
+          )}
+
+          <div style={{ marginLeft: 10, marginRight: 10 }}>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+              <div style={{ fontWeight: "bold" }}> Tax Amount </div>
+              <div style={{ fontWeight: "bold" }} >
+                {`${this.props.getCurrency(props.dataBasket.totalTaxAmount)}`}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {
           props.widthSelected >= 1200 && 
-          <div
-            style={{
-              border: "1px solid #DCDCDC",
-              borderRadius: 5,
-              marginTop: 10,
-            }}
-          >
-            {
-              props.provaiderDelivery &&
-              props.provaiderDelivery.minPurchaseForFreeDelivery &&
-              props.orderingMode === "DELIVERY" &&
-              <div>
-                <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                  {`Enjoy free delivery when your order amount is more than ${this.props.getCurrency(Number(props.provaiderDelivery.minPurchaseForFreeDelivery))}`}
-                </div>
-                <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-              </div>
-            }
-  
-            {props.provaiderDelivery &&
-              props.orderingMode &&
-              props.orderingMode === "DELIVERY" && (
-                <div style={{ marginLeft: 10, marginRight: 10 }}>
-                  {
-                    props.provaiderDelivery ? (
-                      props.provaiderDelivery.deliveryFeeFloat < 0 ? (
-                      <div className="small text-left text-warning-theme" style={{ 
-                        lineHeight: "17px", textAlign: "center", marginTop: 10 
-                      }}>
-                        Delivery is not available in your area.
-                      </div>
-                      ) : props.provaiderDelivery.deliveryFee ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <div style={{ fontWeight: "bold" }}>
-                            Delivery Fee
-                          </div>
-                          <div
-                            style={{ fontWeight: "bold" }}
-                          >{`${props.provaiderDelivery.deliveryFee}`}</div>
-                        </div>
-                      ) : (
-                        <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                          Checking delivery availability...
-                        </div>
-                      )
-                    ) : null
-                  }
-                </div>
-              )}
-  
+          <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, }}> 
               <div
                 style={{
                   display: "flex",
@@ -302,12 +315,7 @@ class MenuBasket extends Component {
                 <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} >
                   {
                     this.props.getCurrency(
-                      props.dataBasket.totalNettAmount + 
-                      (
-                        (props.dataBasket.orderingMode === "DELIVERY" && 
-                        props.provaiderDelivery && 
-                        props.provaiderDelivery.deliveryFeeFloat) || 0
-                      )
+                      props.dataBasket.totalNettAmount
                     )
                   }
                 </div>

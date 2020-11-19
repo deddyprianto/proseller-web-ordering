@@ -103,7 +103,6 @@ class SettleSuccess extends Component {
 
   render() {
     let { settleSuccess, paymentSuccess, infoCompany } = this.state;
-    let deliveryFee = this.props.deliveryProvider ? this.props.deliveryProvider.deliveryFeeFloat : 0;
     let colorText = this.props.color.primary || "#c00a27"
     let paymentStatus = settleSuccess && settleSuccess.message === "payment failed!" ? false : true
     let discount = 0
@@ -115,7 +114,7 @@ class SettleSuccess extends Component {
       });
     }
     
-    let totalAmount = ((settleSuccess && settleSuccess.totalNettAmount) || paymentSuccess.totalPrice) + (deliveryFee || 0)
+    let totalAmount = ((settleSuccess && settleSuccess.totalNettAmount) || paymentSuccess.totalPrice)
 
     return (
       <div>

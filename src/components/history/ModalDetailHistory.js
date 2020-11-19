@@ -194,24 +194,20 @@ class ModalDetailHistory extends Component {
                   ))}
 
                   <div
-                    style={{
-                      backgroundColor: "#CDCDCD",
-                      height: 1,
-                      marginTop: 10,
-                      marginBottom: 10,
+                    style={{ 
+                      backgroundColor: "#CDCDCD", height: 1,
+                      marginTop: 10, marginBottom: 10,
                     }}
                   />
                   <div
                     style={{
-                      marginLeft: 5,
-                      marginRight: 5,
-                      display: "flex",
-                      justifyContent: "space-between",
+                      marginLeft: 5,  marginRight: 5,
+                      display: "flex", justifyContent: "space-between",
                     }}
                   >
                     <div style={{ fontSize: 14 }}>SUBTOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency(detail.totalNettAmount)}
+                      {this.getCurrency(detail.totalGrossAmount)}
                     </div>
                   </div>
 
@@ -236,28 +232,56 @@ class ModalDetailHistory extends Component {
                       >
                         <div style={{ fontSize: 14 }}>DELIVERY FEE</div>
                         <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                          {this.getCurrency(detail.deliveryFee)}
+                          {`+ ${this.getCurrency(detail.deliveryFee)}`}
                         </div>
                       </div>
                     </div> : null
                   }
 
+                  <div
+                    style={{ 
+                      backgroundColor: "#CDCDCD", height: 1,
+                      marginTop: 10, marginBottom: 10,
+                    }}
+                  />
+                  <div
+                    style={{
+                      marginLeft: 5,  marginRight: 5,
+                      display: "flex", justifyContent: "space-between",
+                    }}
+                  >
+                    <div style={{ fontSize: 14 }}>TAX AMOUNT</div>
+                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                      {`+ ${this.getCurrency(detail.totalTaxAmount)}`}
+                    </div>
+                  </div>
+
                   {
                     detail.payments &&
-                    detail.payments.map((items, key) => (
-                      (items.paymentType === "voucher" || items.paymentType === "point") &&
-                      <div key={key}
+                    <div>
+                      <div
                         style={{ 
-                          marginLeft: 5, marginRight: 5, 
-                          display: "flex", justifyContent: "flex-end", color: "#03AC0E"
+                          backgroundColor: "#CDCDCD", height: 1,
+                          marginTop: 10, marginBottom: 10,
                         }}
-                      >
-                        <div style={{ fontSize: 14, marginRight: 10 }}>{items.paymentName}</div>
-                        <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                          {this.getCurrency(items.paymentAmount)}
-                        </div>
-                      </div>
-                    ))
+                      />
+                      {
+                        detail.payments.map((items, key) => (
+                          (items.paymentType === "voucher" || items.paymentType === "point") &&
+                          <div key={key}
+                            style={{ 
+                              marginLeft: 5, marginRight: 5, 
+                              display: "flex", justifyContent: "flex-end", color: "#03AC0E"
+                            }}
+                          >
+                            <div style={{ fontSize: 14, marginRight: 10 }}>{items.paymentName}</div>
+                            <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                              {`- ${this.getCurrency(items.paymentAmount)}`}
+                            </div>
+                          </div>
+                        ))
+                      }
+                    </div>
                   }
 
                   <div
@@ -280,10 +304,10 @@ class ModalDetailHistory extends Component {
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
                       {this.getCurrency(
                         (
-                          (detail.totalNettAmount + (detail.deliveryFee || 0)) - discount
+                          detail.totalNettAmount - discount
                         ) < 0 ? 0 :
                         (
-                          (detail.totalNettAmount + (detail.deliveryFee || 0)) - discount
+                          detail.totalNettAmount - discount
                         )
                       )}
                     </div>
@@ -317,7 +341,7 @@ class ModalDetailHistory extends Component {
                             {detail.paymentCard.paymentName}
                           </div>
                           <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            {this.getCurrency((detail.totalNettAmount + (detail.deliveryFee || 0) - discount))}
+                            {this.getCurrency((detail.totalNettAmount - discount))}
                           </div>
                         </div>
                       )}

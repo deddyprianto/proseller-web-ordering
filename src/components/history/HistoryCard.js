@@ -89,10 +89,10 @@ class InboxCard extends Component {
               <div style={{ fontWeight: "bold", fontSize: 14 }}>
                 {this.getCurrency(
                   (
-                    items.totalNettAmount + (items.deliveryFee || 0) - discount
+                    items.totalNettAmount - discount
                   ) < 0 ? 0 : 
                   (
-                    items.totalNettAmount + (items.deliveryFee || 0) - discount
+                    items.totalNettAmount - discount
                   )
                 )}
               </div>

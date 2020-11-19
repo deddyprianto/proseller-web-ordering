@@ -91,19 +91,30 @@ export default class MenuBasket extends Component {
         </div>
 
         <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingTop: 5, paddingBottom: 5 }}>
-          {
-            props.dataBasket.totalTaxAmount > 0 &&
-            <TaxAmount data={props} getCurrency={(price) => this.props.getCurrency(price)} />
-          }
-
           <div style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
               <div>Sub Total</div>
               <div style={{ fontWeight: "bold" }}>
-                {this.props.getCurrency(props.dataBasket.totalNettAmount)}
+                {this.props.getCurrency(props.dataBasket.totalGrossAmount)}
               </div>
             </div>
           </div>
+          
+          {
+            props.dataBasket.deliveryFee && props.dataBasket.orderingMode && 
+            props.dataBasket.orderingMode === "DELIVERY" &&
+            <div style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
+              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                <div>Delivery Fee</div>
+                <div style={{ fontWeight: "bold" }}>{`+ ${this.props.getCurrency(props.dataBasket.deliveryFee)}`}</div>
+              </div>
+            </div>
+          }
+
+          {
+            props.dataBasket.totalTaxAmount > 0 &&
+            <TaxAmount data={props} getCurrency={(price) => this.props.getCurrency(price)} />
+          }
 
           {
             props.dataBasket.payments && 
@@ -121,17 +132,6 @@ export default class MenuBasket extends Component {
               </div>
             ))
           }
-          
-          {
-            props.dataBasket.deliveryFee && props.dataBasket.orderingMode && 
-            props.dataBasket.orderingMode === "DELIVERY" &&
-            <div style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                <div>Delivery Fee</div>
-                <div style={{ fontWeight: "bold" }}>{`+ ${this.props.getCurrency(props.dataBasket.deliveryFee)}`}</div>
-              </div>
-            </div>
-          }
         </div>
 
         <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingTop: 10, paddingBottom: 10 }}>
@@ -141,22 +141,10 @@ export default class MenuBasket extends Component {
               {
                 this.props.getCurrency(
                   (
-                    props.dataBasket.totalNettAmount + 
-                    (
-                      (props.dataBasket.orderingMode === "DELIVERY" && 
-                      props.provaiderDelivery && 
-                      props.provaiderDelivery.deliveryFeeFloat) || 0
-                    ) -
-                    discount
+                    props.dataBasket.totalNettAmount - discount
                   ) < 0 ? 0 :
                   (
-                    props.dataBasket.totalNettAmount + 
-                    (
-                      (props.dataBasket.orderingMode === "DELIVERY" && 
-                      props.provaiderDelivery && 
-                      props.provaiderDelivery.deliveryFeeFloat) || 0
-                    ) -
-                    discount
+                    props.dataBasket.totalNettAmount - discount
                   )
                 )
               }

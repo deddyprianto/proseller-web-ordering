@@ -99,17 +99,11 @@ class InboxCard extends Component {
               className="modal-title"
               style={{ fontWeight: "bold", fontSize: 10, lineHeight: "17px" }}
             >
-              {`${items.queueNo} - ${items.details.length} items - ${this.getCurrency((items.totalNettAmount + (items.deliveryFee || 0)) - discount)}`}
+              {`${items.queueNo} - ${items.details.length} items - ${this.getCurrency((items.totalNettAmount) - discount)}`}
             </div>
           </div>
         </div>
         <div>
-          {/* <div
-            className="modal-title"
-            style={{ fontWeight: "bold", fontSize: 14, textAlign: "right",  marginTop: -20 }}
-          >{console.log(items.queueNo)}
-            {`${items.queueNo} - ${items.details.length} items - ${(items.totalNettAmount + (items.deliveryFee || 0)) - discount}`}
-          </div> */}
           <div
             className="font-color-theme"
             style={{

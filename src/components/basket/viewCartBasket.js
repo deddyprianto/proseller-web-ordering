@@ -259,76 +259,6 @@ const ViewCartBasket = ({
             justifyContent: "center",
           }}
         >
-          {/* <div style={{ marginLeft: 10, marginRight: 10 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                <div style={{ fontWeight: "bold", color: "gray" }}>Sub Total</div>
-                <div style={{ fontWeight: "bold", color: "gray" }}>
-                  {getCurrency(basket && basket.totalNettAmount)}
-                </div>
-              </div>
-            </div> */}
-
-          {/* {
-              (props.discountVoucher + props.discountPoint) > 0 &&
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>Discount</div>
-                  <div style={{ fontWeight: "bold", color: "#03AC0E" }}>{`${getCurrency(props.discountVoucher + props.discountPoint)}`}</div>
-                </div>
-              </div>
-            } */}
-
-          {/* {basket.totalGrossAmount >= minAmount ? (
-            basket.totalGrossAmount <= maxAmount || maxAmount === 0 ? (
-              productQuantity >= minQty ? (
-                productQuantity <= maxQty || maxQty === 0 ? null : (
-                  <div>
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                      {
-                        `Your order has exceeded maximum quantity for
-                        ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (maximum quantity ${maxQty}). 
-                        Please remove some item from your order.`
-                      }
-                    </div>
-                    <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-                  </div>
-                )
-              ) : (
-                  <div>
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                      {
-                        `Your order hasn't reached minimum quantity for
-                        ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum quantity ${minQty}). 
-                        Please add more item to your order.`
-                      }
-                    </div>
-                    <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-                  </div>
-                )
-            ) : (
-                <div>
-                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                    {
-                      `Your order has exceeded maximum amount for
-                      ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (maximum amount ${getCurrency(maxAmount)}). 
-                      Please remove some item from your order.`
-                    }
-                  </div>
-                  <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-                </div>
-              )
-          ) : (
-              <div>
-                <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                  {
-                    `Your order hasn't reached minimum amount for
-                    ${config.checkNickName(data.dataBasket.orderingMode, data.storeDetail)} (minimum amount ${getCurrency(minAmount)}). 
-                    Please add more item to your order.`
-                  }
-                </div>
-                <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-              </div>
-            )} */}
           {
             deliveryProvider &&
             deliveryProvider.minPurchaseForFreeDelivery &&
@@ -342,39 +272,21 @@ const ViewCartBasket = ({
             </div>
           }
 
-          {isLoggedIn &&
+          {
+            isLoggedIn &&
             deliveryProvider &&
             props.orderingMode &&
-            props.orderingMode === "DELIVERY" && (
-              <div style={{ marginLeft: 10, marginRight: 10 }}>
-                {deliveryProvider ? (
-                  deliveryProvider.deliveryFeeFloat < 0 ? (
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                      Delivery is not available in your area.
-                    </div>
-                  ) : deliveryProvider.deliveryFee ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <div style={{ fontWeight: "bold" }}>
-                        Delivery Fee
-                      </div>
-                      <div
-                        style={{ fontWeight: "bold" }}
-                      >{`${deliveryProvider.deliveryFeeFloat > 0 ? deliveryProvider.deliveryFee : 'Free'}`}</div>
-                    </div>
-                  ) : (
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                      Checking delivery availability...
-                    </div>
-                  )
-                ) : null}
-              </div>
-            )}
+            props.orderingMode === "DELIVERY" && 
+            <div style={{ marginLeft: 10, marginRight: 10 }}>
+              {deliveryProvider ? (
+                deliveryProvider.deliveryFeeFloat < 0 ? (
+                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    Delivery is not available in your area.
+                  </div>
+                ) : null
+              ) : null}
+            </div>
+          }
 
           <div
             style={{
@@ -403,8 +315,7 @@ const ViewCartBasket = ({
             >
               {
                 getCurrency(
-                  data.dataBasket.totalNettAmount + 
-                  (data.dataBasket.orderingMode === "DELIVERY" && deliveryProvider && deliveryProvider.deliveryFeeFloat)
+                  data.dataBasket.totalNettAmount
                 )
               }
             </div>

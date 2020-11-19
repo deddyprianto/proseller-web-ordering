@@ -260,9 +260,6 @@ class Payment extends Component {
         : 1;
 
     let totalPrice = dataSettle.dataBasket.totalNettAmount
-    if(dataSettle.orderingMode === "DELIVERY" && dataSettle.provaiderDelivery){
-      totalPrice = totalPrice + dataSettle.provaiderDelivery.deliveryFeeFloat
-    }
     let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
     let discountPoint = Number(this.state.discountPoint)
     if(discountPoint === 0) {
@@ -413,9 +410,6 @@ class Payment extends Component {
           }
         } else {
           let totalAmount = dataBasket.totalNettAmount
-          if(dataBasket.orderingMode === "DELIVERY" && this.state.dataSettle.provaiderDelivery){
-            totalAmount = totalAmount + this.state.dataSettle.provaiderDelivery.deliveryFeeFloat
-          }
 
           if (voucherType === "discPercentage") {
             // discount = Number(totalAmount - voucherDiscount) * (Number(voucherValue) / 100);
@@ -633,9 +627,6 @@ class Payment extends Component {
       payload.deliveryService = "-";
       payload.deliveryProviderId = this.props.deliveryProvider.id;
       payload.deliveryFee = this.props.deliveryProvider.deliveryFeeFloat;
-
-      payload.amount = payload.amount + this.props.deliveryProvider.deliveryFeeFloat
-      payload.totalNettAmount = payload.totalNettAmount + this.props.deliveryProvider.deliveryFeeFloat
     }
 
     if (selectedVoucher !== null) {
@@ -744,7 +735,7 @@ class Payment extends Component {
     } = this.state;
     let { basket } = this.props;
     
-    let deliveryFee = this.props.deliveryProvider ? this.props.deliveryProvider.deliveryFeeFloat : 0;
+    let deliveryFee = 0;
     if(orderingMode === "DINEIN" && orderingMode === "TAKEAWAY") deliveryFee = 0
 
     let currency = this.props.companyInfo && this.props.companyInfo.currency;

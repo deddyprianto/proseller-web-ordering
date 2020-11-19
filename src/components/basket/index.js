@@ -355,7 +355,8 @@ class Basket extends Component {
         provaiderDelivery = deliveryProvaider.find(items => {return items.id === dataBasket.deliveryProviderId})
       }  
 
-      this.setState({ deliveryProvaider, provaiderDelivery });
+      this.handleSetProvaider(provaiderDelivery)
+      this.setState({ deliveryProvaider });
     } 
 
     await this.props.dispatch({
@@ -363,10 +364,6 @@ class Basket extends Component {
       payload: deliveryProvaider,
     });
 
-    await this.props.dispatch({
-      type: "SET_SELECTED_DELIVERY_PROVIDERS",
-      payload: provaiderDelivery,
-    });
     return {deliveryProvaider, provaiderDelivery}
   }
 
@@ -402,8 +399,14 @@ class Basket extends Component {
       }
     }
     
-    timeSlot = timeSlot.find(items => {return items.date === date})
+    if(isEditDate) {
+      timeSlot = timeSlot.find(items => {return items.date === date})
+    } else {
+      timeSlot = timeSlot[0]
+    }
+    
     if(timeSlot) {
+      date = timeSlot.date
       timeSlot = timeSlot.timeSlot.filter(items => {return items.isAvailable})
     }
 
@@ -709,7 +712,7 @@ class Basket extends Component {
 
   setOrderingMode = async (orderingMode) => {
     localStorage.setItem(`${config.prefix}_ordering_mode`, orderingMode);
-    this.setState({ orderingMode, isLoading: true });
+    this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
     await this.getDataBasket(true, orderingMode);
 
     let orderActionDate = moment().format("YYYY-MM-DD")
@@ -961,11 +964,34 @@ class Basket extends Component {
   };
 
   handleSetProvaider = async (data) => {
+    let {orderingMode, provaiderDelivery} = this.state
     this.setState({ provaiderDelivery: data });
+    
+    await this.props.dispatch({
+      type: "SET_SELECTED_DELIVERY_PROVIDERS",
+      payload: data,
+    });
+
     this.state.deliveryProvaider.forEach((provider) => {
       if (provider.id === data.id) provider.default = true;
       else delete provider.default;
     });
+
+    if(!provaiderDelivery){
+      let profider = {...data, deliveryFee: data.deliveryFeeFloat}
+
+      let dataBasket = await this.props.dispatch(
+        OrderAction.changeOrderingMode({ orderingMode, profider })
+      );
+      if (dataBasket.resultCode === 200) {
+        dataBasket = dataBasket.data;
+        localStorage.setItem(
+          `${config.prefix}_dataBasket`, 
+          JSON.stringify(encryptor.encrypt(dataBasket))
+        );
+        await this.getDataBasket()
+      }
+    }
   };
 
   setViewCart = async (status = null) => {

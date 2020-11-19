@@ -17,7 +17,7 @@ export default class SelectPicupDateTime extends Component {
 
     let date = moment().format("YYYY-MM-DD")
     let textTitle = "Pickup";
-    if (textTitle === "DELIVERY") textTitle = "Delivery"
+    if (props.orderingMode === "DELIVERY") textTitle = "Delivery"
 
     return (
       <div>
@@ -40,7 +40,7 @@ export default class SelectPicupDateTime extends Component {
                 <div style={{textAlign: "left"}}>
                   <div>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
-                      <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Date</div>
+                      <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>{textTitle} Date</div>
                       <div 
                         onClick={() => this.setState({showModeDates: !this.state.showModeDates})}
                         className="color-active" 
@@ -78,7 +78,7 @@ export default class SelectPicupDateTime extends Component {
                               }
                               style={{
                                 textAlign: "center", cursor: "pointer",
-                                borderRadius: 5, width: "18%",
+                                borderRadius: 5, width: `${(100/props.timeSlot.length) - 2}%`,
                                 margin: (props.orderActionDate === slot.date ? 1 : 0)
                               }}
                             >
@@ -97,7 +97,7 @@ export default class SelectPicupDateTime extends Component {
                   </div>
 
                   <div style={{marginTop: 10, marginBottom: 10}}>
-                    <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Time</div>
+                    <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>{textTitle} Time</div>
                     {
                       props.orderingTimeSlot && props.orderingTimeSlot.length > 0 ? 
                       <select

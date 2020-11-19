@@ -87,10 +87,6 @@ class History extends Component {
             >
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 <div>
-                  {/* <Lottie
-                    options={{ animationData: emptyGif }}
-                    style={{ height: 250 }}
-                  /> */}
                   <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   <div style={{ textAlign: "center" }}>No History Payment</div>
                 </div>
@@ -121,17 +117,18 @@ class History extends Component {
             >
               <Button
                 className={isTransaction ? "use-select" : "un-select"}
-                style={{ height: 50, color: "#FFF", fontWeight: "bold" }}
+                style={{ height: 50, fontWeight: "bold" }}
                 onClick={() => this.setState({ isTransaction: true })}
               >
                 Orders
               </Button>
               <Button
                 className={!isTransaction ? "use-select" : "un-select"}
-                style={{ height: 50, color: "#FFF", fontWeight: "bold" }}
+                style={{ height: 50, fontWeight: "bold" }}
                 onClick={() => this.setState({ isTransaction: false })}
-              >{`Pending Orders ${dataPendingLength > 0 ? `(${dataPendingLength})` : ""
-                }`}</Button>
+              >
+                {`Pending Orders ${dataPendingLength > 0 ? `(${dataPendingLength})` : "" }`}
+              </Button>
             </div>
             <main
               id="main"

@@ -8,7 +8,7 @@ export default class TaxAmount extends Component {
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
           <div style={{ fontSize: 14 }}>Tax Amount</div>
           <div style={{ fontWeight: "bold", fontSize: 14 }}>
-            {this.props.getCurrency(props.dataBasket.totalTaxAmount)}
+            {`+ ${this.props.getCurrency(props.dataBasket.totalTaxAmount)}`}
           </div>
         </div>
       </div>
