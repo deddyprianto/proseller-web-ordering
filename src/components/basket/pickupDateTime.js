@@ -64,13 +64,21 @@ class PickupDateTime extends Component {
           </div>
         </div>
         {
-          !props.orderActionTimeSlot &&
+          !props.orderActionTimeSlot && 
           <div className="text text-warning-theme small" style={{lineHeight: "17px", textAlign: "justify", marginTop: 5}}> 
-            Your selected delivery date:{" "}
-            {` ${moment(props.orderActionDate).format("DD MMM YYYY")}`}, 
-            does not have any available {` ${textTitle.toLowerCase()}`} time slot. 
-            Next available {` ${textTitle.toLowerCase()}`} date is 
-            {` ${moment(props.nextDayIsAvailable).format("DD MMM YYYY")}`}.
+            {
+              props.nextDayIsAvailable ?
+              <div>
+                Your selected delivery date:{" "}
+                {` ${moment(props.orderActionDate).format("DD MMM YYYY")}`}, 
+                does not have any available {` ${textTitle.toLowerCase()}`} time slot. 
+                Next available {` ${textTitle.toLowerCase()}`} date is 
+                {` ${moment(props.nextDayIsAvailable).format("DD MMM YYYY")}`}.
+              </div> :
+              <div>
+                Timeslot is not available
+              </div>
+            }
           </div>
         }
       </div>

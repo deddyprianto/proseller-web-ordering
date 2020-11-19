@@ -72,8 +72,9 @@ class Basket extends Component {
       orderingTimeSlot: [],
       maxLoopingGetTimeSlot: 7,
       maxLoopingSetTimeSlot: 7,
-      nextDayIsAvailable: moment().add(1, 'd').format("YYYY-MM-DD"),
-      isEditDate: false
+      nextDayIsAvailable: null,
+      isEditDate: false,
+      timeSlot: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -290,8 +291,10 @@ class Basket extends Component {
       });
 
       // check validate pick date time
-      let check = this.state.orderActionDate === moment().format("YYYY-MM-DD")
-      await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
+      if(orderingMode !== 'DINEIN') {
+        let check = this.state.orderActionDate === moment().format("YYYY-MM-DD")
+        await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
+      }
       await this.submitOtomatis(dataBasket, scanTable);
       if(!checkOperationalHours.status){
         let message = "Sorry, we're closed today!"
@@ -367,55 +370,93 @@ class Basket extends Component {
     return {deliveryProvaider, provaiderDelivery}
   }
 
-  checkPickUpDateTime = async (checkOperationalHours, date, check) => {
-    let {storeDetail, dataBasket, maxLoopingGetTimeSlot, isEditDate, orderingMode} = this.state
+  checkPickUpDateTime = async (checkOperationalHours, date, check, changeOrderingMode) => {
+    let {storeDetail, maxLoopingGetTimeSlot, maxLoopingSetTimeSlot, isEditDate, orderingMode, timeSlot} = this.state
     if(!storeDetail) return
+
+    let orderingModeField = orderingMode === "DINEIN" ? "dineIn" : orderingMode === "DELIVERY" ? "delivery" : "takeAway";
+    let {maxDays} = storeDetail.orderValidation[orderingModeField]
+    if(!maxDays) maxDays = 5
+
     let dateTime = new Date();
     let payload = {
       outletID: storeDetail.sortKey,
-      date: date,
-      orderingMode,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+      date,
+      maxDays,
+      orderingMode,
     }
 
-    let orderingModeField = dataBasket.orderingMode === "DINEIN" ? "dineIn" : dataBasket.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
-    let {maxDays} = storeDetail.orderValidation[orderingModeField]
-    let timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
+    if(timeSlot.length === 0 || changeOrderingMode){
+      timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
+      if(timeSlot.resultCode === 200){
+        timeSlot = timeSlot.data.filter(items => { 
+          return items.timeSlot.filter(item => {
+            return item.isAvailable
+          })
+         })
+         this.setState({timeSlot})
+      } else {
+        maxLoopingSetTimeSlot = 0
+        timeSlot = []
+      }
+    }
     
-    if(timeSlot.resultCode === 200){
-      timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
-      if(timeSlot.length > 0){
+    timeSlot = timeSlot.find(items => {return items.date === date})
+    if(timeSlot) {
+      timeSlot = timeSlot.timeSlot.filter(items => {return items.isAvailable})
+    }
+
+    if(timeSlot && timeSlot.length > 0) {
+      this.setState({ 
+        orderingTimeSlot: timeSlot, 
+        orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
+        orderActionTimeSlot: timeSlot[0].time,
+        isEditDate: true,
+        orderActionDate: date
+      })
+    } else {
+      if(isEditDate){
+        for (let index = 0; index <= maxLoopingGetTimeSlot; index++) {
+          let {dateDay, status} = this.getTimeSlotAvailable(date)
+          if(status) break
+          date = dateDay
+        }
+
         this.setState({ 
-          orderingTimeSlot: timeSlot, 
-          orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
-          orderActionTimeSlot: timeSlot[0].time,
-          isEditDate: true,
-          orderActionDate: date
+          orderActionTimeSlot: null, 
+          orderingTimeSlot: [],
+          orderActionTime: moment().add(1, 'h').format("HH") + ":00"
         })
       } else {
-        if(isEditDate){
-          for (let index = 0; index < Number(maxDays || maxLoopingGetTimeSlot); index++) {
-            payload.date = moment(payload.date).add(1, 'd').format("YYYY-MM-DD")
-            timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
-            if(timeSlot.resultCode === 200) {
-              timeSlot = timeSlot.data.filter(items => { return items.isAvailable })
-              if(timeSlot.length > 0){
-                this.setState({nextDayIsAvailable: payload.date})
-                break
-              }
-            }
-          }
+        if(maxLoopingSetTimeSlot > 0){
+          this.setState({maxLoopingSetTimeSlot: maxLoopingSetTimeSlot - 1})
+          date = moment(date).add(1, 'd').format("YYYY-MM-DD")
+          this.checkPickUpDateTime(checkOperationalHours, date, check)
+        } else {
           this.setState({ 
             orderActionTimeSlot: null, 
             orderingTimeSlot: [],
             orderActionTime: moment().add(1, 'h').format("HH") + ":00"
           })
-        } else {
-          date = moment(date).add(1, 'd').format("YYYY-MM-DD")
-          this.checkPickUpDateTime(checkOperationalHours, date, check)
         }
       }
     }
+  }
+
+  getTimeSlotAvailable = (dateDay) => {
+    try {
+      dateDay = moment(dateDay).add(1, 'd').format("YYYY-MM-DD")
+      let timeSlot = this.state.timeSlot.find(items => {return items.date === dateDay})
+      if(timeSlot) {
+        timeSlot = timeSlot.timeSlot.filter(items => {return items.isAvailable})
+      }
+      if(timeSlot && timeSlot.length > 0) {
+        this.setState({nextDayIsAvailable: dateDay})
+        return {dateDay, status: true}
+      }
+      return {dateDay, status: false}
+    } catch (error) {}
   }
 
   componentDidUpdate() {
@@ -673,7 +714,7 @@ class Basket extends Component {
 
     let orderActionDate = moment().format("YYYY-MM-DD")
     this.setState({ isLoading: false, orderActionDate, isEditDate: false });
-    await this.checkPickUpDateTime(this.state.checkOperationalHours, orderActionDate, true)
+    await this.checkPickUpDateTime(this.state.checkOperationalHours, orderActionDate, true, true)
   };
 
   setPoint = (point, dataBasket = null, pointsToRebateRatio) => {

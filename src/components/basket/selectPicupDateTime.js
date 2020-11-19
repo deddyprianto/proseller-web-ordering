@@ -8,12 +8,12 @@ export default class SelectPicupDateTime extends Component {
   state = {
     orderActionDate: this.props.data.orderActionDate,
     orderActionTime: this.props.data.orderActionTime,
+    showModeDates: this.props.data.timeSlot && this.props.data.timeSlot.length > 0 ? false : true
   }
 
   render() {
     let props = this.props.data
-    let orderingModeField = props.orderingMode === "DINEIN" ? "dineIn" : props.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
-    let { maxDays } = props.storeDetail.orderValidation[orderingModeField];
+    let dateMax = props.timeSlot && props.timeSlot[props.timeSlot.length - 1] && props.timeSlot[props.timeSlot.length - 1].date
 
     let date = moment().format("YYYY-MM-DD")
     let textTitle = "Pickup";
@@ -39,20 +39,61 @@ export default class SelectPicupDateTime extends Component {
               <div className="modal-body">
                 <div style={{textAlign: "left"}}>
                   <div>
-                    <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Date</div>
-                    <input
-                      type="date"
-                      min={date}
-                      max={(maxDays && moment().add(maxDays, "d").format("YYYY-MM-DD"))}
-                      value={props.orderActionDate}
-                      className={cx(styles.input, {
-                        [styles.rounded]: false,
-                      })}
-                      style={{backgroundColor: '#FFF', width: "100%"}}
-                      onChange={(e) =>
-                        this.props.handleSetState('orderActionDate', moment(e.target.value).format("YYYY-MM-DD"))
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                      <div style={{fontWeight: "bold", marginLeft: 5, fontSize: 12}}>Delivery Date</div>
+                      <div 
+                        onClick={() => this.setState({showModeDates: !this.state.showModeDates})}
+                        className="color-active" 
+                        style={{fontWeight: "bold", marginLeft: 5, fontSize: 12, cursor: "pointer"}}
+                      >
+                        <i className="fa fa-calendar" aria-hidden="true" /> More Dates
+                      </div>
+                    </div>
+                    {
+                      this.state.showModeDates ?
+                      <input
+                        type="date"
+                        min={date}
+                        max={dateMax}
+                        value={props.orderActionDate}
+                        className={cx(styles.input, {
+                          [styles.rounded]: false,
+                        })}
+                        style={{backgroundColor: '#FFF', width: "100%"}}
+                        onChange={(e) =>
+                          this.props.handleSetState('orderActionDate', moment(e.target.value).format("YYYY-MM-DD"))
+                        }
+                      /> :
+                      <div>
+                      {
+                        props.timeSlot && 
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        {
+                          props.timeSlot.map((slot, key) => (
+                            <div 
+                              key={key} 
+                              className={props.orderActionDate === slot.date ? "select-gender" : "un-select-gender"}
+                              onClick={() => 
+                                this.props.handleSetState('orderActionDate', moment(slot.date).format("YYYY-MM-DD"))
+                              }
+                              style={{
+                                textAlign: "center", cursor: "pointer",
+                                borderRadius: 5, width: "18%",
+                                margin: (props.orderActionDate === slot.date ? 1 : 0)
+                              }}
+                            >
+                              <div style={{fontWeight: "bold", fontSize: 12}}>
+                                {moment().format("YYYY-MM-DD") === slot.date ? "TODAY" : moment(slot.date).format("ddd").toLocaleUpperCase()}
+                              </div>
+                              <div style={{fontWeight: "bold", fontSize: 20}}>{moment(slot.date).format("DD")}</div>
+                              <div style={{fontWeight: "bold", fontSize: 14}}>{moment(slot.date).format("MMM").toLocaleUpperCase()}</div>
+                            </div>
+                          ))
+                        }
+                        </div>
                       }
-                    />
+                      </div>
+                    }
                   </div>
 
                   <div style={{marginTop: 10, marginBottom: 10}}>
@@ -72,11 +113,19 @@ export default class SelectPicupDateTime extends Component {
                         }
                       </select> :
                       <div className="text text-warning-theme small" style={{lineHeight: "17px", textAlign: "justify", marginLeft: 5}}> 
-                        Your selected delivery date:{" "}
-                        {` ${moment(props.orderActionDate).format("DD MMM YYYY")}`}, 
-                        does not have any available {` ${textTitle.toLowerCase()}`} time slot. 
-                        Next available {` ${textTitle.toLowerCase()}`} date is 
-                        {` ${moment(props.nextDayIsAvailable).format("DD MMM YYYY")}`}.
+                        {
+                          props.nextDayIsAvailable ?
+                          <div>
+                            Your selected delivery date:{" "}
+                            {` ${moment(props.orderActionDate).format("DD MMM YYYY")}`}, 
+                            does not have any available {` ${textTitle.toLowerCase()}`} time slot. 
+                            Next available {` ${textTitle.toLowerCase()}`} date is 
+                            {` ${moment(props.nextDayIsAvailable).format("DD MMM YYYY")}`}.
+                          </div> :
+                          <div>
+                            Timeslot is not available
+                          </div>
+                        }
                       </div>
                     }
                   </div>

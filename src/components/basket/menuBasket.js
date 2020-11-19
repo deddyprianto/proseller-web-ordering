@@ -214,27 +214,22 @@ class MenuBasket extends Component {
           </div>
         )}
 
-        {props.orderingMode && 
-        props.storeDetail.timeSlots && 
-        props.storeDetail.timeSlots.length > 0 && (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        ) && (
-            <div>
-              {
-                <PickupDateTime
-                  data={props}
-                  roleBtnClear={this.props.roleBtnClear}
-                  isLoggedIn={this.props.isLoggedIn}
-                  handleSetState={(field, value) =>
-                    this.props.handleSetState(field, value)
-                  }
-                />
-              }
-            </div>
-        )}
+        {
+          props.orderingMode && 
+          props.timeSlot && 
+          props.timeSlot.length > 0 &&
+          props.storeDetail.timeSlots && 
+          props.storeDetail.timeSlots.length > 0 && 
+          props.storeDetail.orderingMode !== 'DINEIN' &&
+          <PickupDateTime
+            data={props}
+            roleBtnClear={this.props.roleBtnClear}
+            isLoggedIn={this.props.isLoggedIn}
+            handleSetState={(field, value) =>
+              this.props.handleSetState(field, value)
+            }
+          />
+        }
 
         {
           props.widthSelected >= 1200 && 
