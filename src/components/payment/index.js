@@ -18,6 +18,7 @@ import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
+import { uuid } from "uuidv4";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -240,50 +241,60 @@ class Payment extends Component {
 
     this.setState({ dataSettle });
 
-    if(selectedVoucher){
-      await this.props.dispatch(PaymentAction.setData(selectedVoucher, "SELECT_VOUCHER"))
-      this.setState({voucherDiscountList: [], discountVoucher: 0})
-      for (let index = 0; index < selectedVoucher.length; index++) {
-        let element = selectedVoucher[index];
-        await this.getStatusVoucher(
-          element,
-          dataSettle.storeDetail,
-          dataSettle.dataBasket
-        ); 
+    if (dataSettle.paidMembership === true) {
+      let totalPrice = dataSettle.dataBasket.totalNettAmount
+      this.setState({
+        dataBasket: dataSettle.dataBasket,
+        storeDetail: {},
+        totalPrice,
+        isLoading: false,
+      });
+    } else {
+      if(selectedVoucher){
+        await this.props.dispatch(PaymentAction.setData(selectedVoucher, "SELECT_VOUCHER"))
+        this.setState({voucherDiscountList: [], discountVoucher: 0})
+        for (let index = 0; index < selectedVoucher.length; index++) {
+          let element = selectedVoucher[index];
+          await this.getStatusVoucher(
+            element,
+            dataSettle.storeDetail,
+            dataSettle.dataBasket
+          ); 
+        }
       }
-    }
-
-    const point = selectedPoint || 0;
-    const pointToRebate =
-      parseInt(dataSettle.pointsToRebateRatio.split(":")[0]) > 0
-        ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
-        : 1;
-
-    let totalPrice = dataSettle.dataBasket.totalNettAmount
-    let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
-    let discountPoint = Number(this.state.discountPoint)
-    if(discountPoint === 0) {
-      discountPoint = point / pointToRebate;
-      if(discountPoint > 0 && discountPoint + (voucherDiscount || 0) > totalPrice){
-        discountPoint = totalPrice - (voucherDiscount || 0)
+  
+      const point = selectedPoint || 0;
+      const pointToRebate =
+        parseInt(dataSettle.pointsToRebateRatio.split(":")[0]) > 0
+          ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
+          : 1;
+  
+      let totalPrice = dataSettle.dataBasket.totalNettAmount
+      let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
+      let discountPoint = Number(this.state.discountPoint)
+      if(discountPoint === 0) {
+        discountPoint = point / pointToRebate;
+        if(discountPoint > 0 && discountPoint + (voucherDiscount || 0) > totalPrice){
+          discountPoint = totalPrice - (voucherDiscount || 0)
+        }
+        discountPoint = Number(discountPoint.toFixed(2));
       }
-      discountPoint = Number(discountPoint.toFixed(2));
+  
+      let discount = discountPoint + voucherDiscount;
+      
+      totalPrice = totalPrice - discount < 0 ? 0 : totalPrice - discount;
+      if(totalPrice === 0) selectedCard = null
+  
+      this.setState({
+        ...dataSettle,
+        selectedVoucher,
+        selectedCard,
+        selectedPoint,
+        totalPrice,
+        discountPoint,
+        isLoading: false,
+      });
     }
-
-    let discount = discountPoint + voucherDiscount;
-    
-    totalPrice = totalPrice - discount < 0 ? 0 : totalPrice - discount;
-    if(totalPrice === 0) selectedCard = null
-
-    this.setState({
-      ...dataSettle,
-      selectedVoucher,
-      selectedCard,
-      selectedPoint,
-      totalPrice,
-      discountPoint,
-      isLoading: false,
-    });
   };
 
   getStatusVoucher = async (selectedVoucher, storeDetail, dataBasket) => {
@@ -569,7 +580,7 @@ class Payment extends Component {
   };
 
   handleSettle = async (payAtPOS) => {
-    let { selectedCard } = this.state;
+    let { selectedCard, dataSettle } = this.state;
 
     if (selectedCard) {
       let userInput = selectedCard.details.userInput;
@@ -585,7 +596,85 @@ class Payment extends Component {
       }
     }
 
-    this.submitSettle(null, payAtPOS);
+    if (dataSettle.paidMembership) {
+      this.payMembership();
+    } else {
+      this.submitSettle(null, payAtPOS);
+    }
+  };
+
+  payMembership = async (need = null, payAtPOS = false) => {
+    Swal.fire({
+      onOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const customerInfo = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_account`))
+    );
+
+    let { dataSettle, totalPrice, selectedCard } = this.state;
+    
+    delete dataSettle.plan.isSelected
+    
+    let payload = {
+      payments: [],
+      price: totalPrice,
+      referenceNo: uuid(),
+      dataPay: {
+        paidMembershipPlan: dataSettle.plan,
+        id: dataSettle.membership.id
+      },
+      customerId: `customer::${customerInfo.idToken.payload.id}`
+    };
+
+    if(selectedCard) {
+      payload.payments.push({
+        paymentType: selectedCard.paymentID,
+        paymentID: selectedCard.paymentID,
+        paymentName: selectedCard.paymentName,
+        accountId: selectedCard.accountID,
+        paymentAmount: totalPrice
+      })
+    }
+
+    // console.log(payload)
+    // return;
+
+    let response;
+    response = await this.props.dispatch(OrderAction.submitMembership(payload));
+    console.log(response)
+
+    if (response && response.resultCode === 400) {
+      Swal.fire(
+        "Oppss!",
+        response.message || (response.data && response.data.message) || "Payment Failed!",
+        "error"
+      );
+    } else {
+      // if need further actions
+      if (response.Data.data.action !== undefined) {
+        if (response.Data.data.action.type === "url") {
+          this.getPendingPayment(response.data);
+        }
+      } else {
+        response.Data.data.outlet = {
+          name: dataSettle.outlet.name
+        }
+        localStorage.setItem(
+          `${config.prefix}_settleSuccess`,
+          JSON.stringify(encryptor.encrypt(response.Data.data))
+        );
+        localStorage.setItem(
+          `${config.prefix}_paymentSuccess`,
+          JSON.stringify(encryptor.encrypt(this.state))
+        );
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        this.togglePlay();
+        this.props.history.push("/settleSuccess");
+      }
+    }
   };
 
   submitSettle = async (need = null, payAtPOS = false) => {
@@ -964,20 +1053,23 @@ class Payment extends Component {
                       }}
                     />
 
-                    <AddPromo
-                      data={this.state}
-                      roleBtnClear={!this.props.isLoggedIn}
-                      cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                      cancelSelectPoint={() => this.cancelSelectPoint()}
-                      handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                      handleRedeemPoint={() => this.handleRedeemPoint()}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      scrollPoint={(data) => this.scrollPoint(data)}
-                      setPoint={(point, discountPoint) => this.setPoint(point, discountPoint)}
-                      handleCancelVoucher={(item) => this.handleCancelVoucher(item)}
-                      handleCancelPoint={() => this.cancelSelectPoint()}
-                      disabledBtn={(totalPrice) === 0}
-                    />
+                    {
+                      dataSettle.paidMembership === undefined && 
+                      <AddPromo
+                        data={this.state}
+                        roleBtnClear={!this.props.isLoggedIn}
+                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                        cancelSelectPoint={() => this.cancelSelectPoint()}
+                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                        handleRedeemPoint={() => this.handleRedeemPoint()}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        scrollPoint={(data) => this.scrollPoint(data)}
+                        setPoint={(point, discountPoint) => this.setPoint(point, discountPoint)}
+                        handleCancelVoucher={(item) => this.handleCancelVoucher(item)}
+                        handleCancelPoint={() => this.cancelSelectPoint()}
+                        disabledBtn={(totalPrice) === 0}
+                      />
+                    }
 
                     {this.props.isLoggedIn && (
                       <PaymentMethodBasket

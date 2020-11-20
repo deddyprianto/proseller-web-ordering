@@ -9,6 +9,7 @@ import _ from "lodash";
 import config from "../../config";
 
 import { lsLoad } from "../../helpers/localStorage";
+import { CRMService } from "../../Services/CRMService";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
@@ -36,6 +37,7 @@ export const OrderAction = {
   getSettingOrdering,
   moveCart,
   getTimeSlot,
+  submitMembership
 };
 
 function shareURL(tableNo, outletID, orderMode) {
@@ -444,6 +446,14 @@ function submitTakeAway(payload) {
 function submitSettle(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api( "POST", payload, `cart/customer/settle`, "Bearer" );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    return response;
+  };
+}
+
+function submitMembership(payload) {
+  return async (dispatch) => {
+    let response = await CRMService.api( "POST", payload, `sales/customer/submit`, "bearer" );
     if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
     return response;
   };

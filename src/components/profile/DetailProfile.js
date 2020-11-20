@@ -149,6 +149,17 @@ class DetailProfile extends Component {
                   {account.customerGroupName}
                 </div>
               </div>
+              <Link to="/paid-membership">
+                <div
+                  className="customer-group-name"
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Upgrade <i className="fa fa-chevron-right" aria-hidden="true" />
+                </div>
+              </Link>
             </div>
 
             <div
