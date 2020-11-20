@@ -116,7 +116,7 @@ export default class SelectPicupDateTime extends Component {
                         {
                           props.nextDayIsAvailable ?
                           <div>
-                            Your selected delivery date:{" "}
+                            Your selected {` ${textTitle.toLowerCase()}`} date:{" "}
                             {` ${moment(props.orderActionDate).format("DD MMM YYYY")}`}, 
                             does not have any available {` ${textTitle.toLowerCase()}`} time slot. 
                             Next available {` ${textTitle.toLowerCase()}`} date is 

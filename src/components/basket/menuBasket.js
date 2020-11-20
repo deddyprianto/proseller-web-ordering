@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import TableNo from "./tableNo";
 import StatusOrder from "./statusOrder";
 import OrderingMode from "./orderingMode";
-import TaxAmount from "./taxAmount";
 import TotalSurchargeAmount from "./TotalSurchargeAmount";
 import PickupDateTime from "./pickupDateTime";
 import DeliveryAddressBasket from "./deliveryAddressBasket";
