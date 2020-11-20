@@ -654,17 +654,18 @@ class Payment extends Component {
       );
     } else {
       // if need further actions
-      if (response.Data.data.action !== undefined) {
-        if (response.Data.data.action.type === "url") {
+      if (response.Data.action !== undefined) {
+        if (response.Data.action.type === "url") {
           this.getPendingPayment(response.data);
         }
       } else {
-        response.Data.data.outlet = {
+        response.Data.outlet = {
           name: dataSettle.outlet.name
         }
+        response.Data.paidMembership = true
         localStorage.setItem(
           `${config.prefix}_settleSuccess`,
-          JSON.stringify(encryptor.encrypt(response.Data.data))
+          JSON.stringify(encryptor.encrypt(response.Data))
         );
         localStorage.setItem(
           `${config.prefix}_paymentSuccess`,

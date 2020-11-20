@@ -9,31 +9,30 @@ export default class CardMembership extends Component {
           <div style={styles.coupon_left} className="button">
             <p style={styles.name}>{item.name}</p>
             <p style={styles.price}>${item.defaultPrice}</p>
-            <select
-              className="button"
-              name={"card-membership"}
-              style={{borderRadius: 2, border: 'none'}}
-              onChange={(e) => {
-                try{
-                  this.props.setPlan(index, e.target.value)
-                }catch(e){}
-              }}
-            >
-              {item.paidMembershipPlan.map((option, idx) => {
-                return (
-                  <option
-                    value={idx}
-                    key={idx}
-                  >
-                    per {option.period}{" "} {option.periodUnit.toLowerCase()}
-                  </option>
-                );
-              })}
-            </select>
-            <p>
-              per {item.paidMembershipPlan[0].period}{" "}
-              {item.paidMembershipPlan[0].periodUnit.toLowerCase()}
-            </p>
+            <div style={{display: 'inline', width: '100%'}}>
+              <select
+                className="button"
+                name={"card-membership"}
+                style={{borderRadius: 2, border: 'none', width: '80%'}}
+                onChange={(e) => {
+                  try{
+                    this.props.setPlan(index, e.target.value)
+                  }catch(e){}
+                }}
+              >
+                {item.paidMembershipPlan.map((option, idx) => {
+                  return (
+                    <option
+                      value={idx}
+                      key={idx}
+                    >
+                      per {option.period}{" "} {option.periodUnit.toLowerCase()}
+                    </option>
+                  );
+                })}
+              </select>
+              <i className="fa fa-chevron-down" style={{fontSize: 12, color: 'white'}}></i>
+            </div>
           </div>
           <div style={styles.coupon_con} onClick={() => this.props.setMembership(item)}>
             <p style={{ color: "black", fontSize: 13 }}>{item.paidMembershipInformation}</p>
@@ -78,7 +77,7 @@ const styles = {
     textAlign: "left",
     padding: 10,
     whiteSpace: "pre",
-    overflowY: "hidden",
+    overflowY: "scroll",
     height: "150px",
     maxHeight: "150px",
     position: "relative",

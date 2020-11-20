@@ -5,6 +5,7 @@ import QRCodeLogo from "../../assets/images/icon-qrcode.png";
 import profile from "../../assets/images/default-profile.png";
 import Shimmer from "react-shimmer-effect";
 import { ReferralAction } from "../../redux/actions/ReferralAction";
+import { CustomerAction } from "../../redux/actions/CustomerAction";
 import ModalEditProfile from "./ModalEditProfile";
 import { Link } from "react-router-dom";
 import config from "../../config";
@@ -17,6 +18,7 @@ class DetailProfile extends Component {
     this.state = {
       loadingShow: true,
       referall: "0/0",
+      dataCustomer: {}
     };
   }
 
@@ -24,6 +26,9 @@ class DetailProfile extends Component {
     let response = await this.props.dispatch(
       ReferralAction.getReferral({ customerId: this.props.account.signAs })
     );
+    let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
+    if (dataCustomer.ResultCode === 200) this.setState({dataCustomer: dataCustomer.Data[0]})
+    
     if (response.ResultCode === 200)
       this.setState({
         referall: `${response.Data.amount}/${response.Data.capacity}`,
@@ -51,6 +56,7 @@ class DetailProfile extends Component {
 
   viewLeftPage = (loadingShow) => {
     let { account } = this.props;
+    let { dataCustomer } = this.state;
     if (account.defaultImageURL === undefined)
       account.defaultImageURL = profile;
 
@@ -146,7 +152,7 @@ class DetailProfile extends Component {
                     paddingBottom: 10,
                   }}
                 >
-                  {account.customerGroupName}
+                  {dataCustomer.customerGroupName}
                 </div>
               </div>
               <Link to="/paid-membership">
