@@ -156,13 +156,6 @@ class MenuBasket extends Component {
           />
         </div>
 
-        {props.dataBasket.totalSurchargeAmount > 0 && (
-          <TotalSurchargeAmount
-            data={props}
-            getCurrency={(price) => this.props.getCurrency(price)}
-          />
-        )}
-
         {/* {props.dataBasket.totalTaxAmount > 0 && (
           <TaxAmount
             data={props}
@@ -249,6 +242,13 @@ class MenuBasket extends Component {
               </div>
             </div>
           </div>
+
+          {props.dataBasket.totalSurchargeAmount > 0 && (
+            <TotalSurchargeAmount
+              data={props}
+              getCurrency={(price) => this.props.getCurrency(price)}
+            />
+          )}
 
           {
             props.provaiderDelivery &&
