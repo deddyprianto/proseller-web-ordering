@@ -156,13 +156,6 @@ class MenuBasket extends Component {
           />
         </div>
 
-        {props.dataBasket.totalSurchargeAmount > 0 && (
-          <TotalSurchargeAmount
-            data={props}
-            getCurrency={(price) => this.props.getCurrency(price)}
-          />
-        )}
-
         {/* {props.dataBasket.totalTaxAmount > 0 && (
           <TaxAmount
             data={props}
@@ -217,7 +210,7 @@ class MenuBasket extends Component {
           props.orderingMode && 
           props.storeDetail.timeSlots && 
           props.storeDetail.timeSlots.length > 0 && 
-          props.storeDetail.orderingMode !== 'DINEIN' &&
+          props.orderingMode !== 'DINEIN' &&
           <PickupDateTime
             data={props}
             roleBtnClear={this.props.roleBtnClear}
@@ -228,7 +221,7 @@ class MenuBasket extends Component {
           />
         }
 
-        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, }}> 
+        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingTop: 5, paddingBottom: 5 }}> 
           {
             props.provaiderDelivery &&
             props.provaiderDelivery.minPurchaseForFreeDelivery &&
@@ -249,6 +242,13 @@ class MenuBasket extends Component {
               </div>
             </div>
           </div>
+
+          {props.dataBasket.totalSurchargeAmount > 0 && (
+            <TotalSurchargeAmount
+              data={props}
+              getCurrency={(price) => this.props.getCurrency(price)}
+            />
+          )}
 
           {
             props.provaiderDelivery &&
