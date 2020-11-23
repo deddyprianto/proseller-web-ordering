@@ -13,7 +13,7 @@ import config from "../../config";
 import loadable from "@loadable/component";
 import moment from 'moment';
 import { isEmptyArray } from "../../helpers/CheckEmpty";
-import { max } from "lodash";
+// import { max } from "lodash";
 const ModalQRCode = loadable(() => import("./ModalQRCode"));
 
 class DetailProfile extends Component {
@@ -82,7 +82,7 @@ class DetailProfile extends Component {
 
   getLabel = () => {
     try{
-      const { memberships, dataCustomer } = this.state;
+      const { dataCustomer } = this.state;
       const maxRanking = this.getMaxRanking();
       if (dataCustomer.customerGroupLevel === maxRanking) return 'Renew'
       return 'Upgrade'
