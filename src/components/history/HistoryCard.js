@@ -36,6 +36,14 @@ class InboxCard extends Component {
     return nameMerge
   }
 
+  getDetailInfo = (items) => {
+    try{
+      return `Membership ${items.details[0].name} ${items.details[0].period} ${items.details[0].periodUnit.toLowerCase()}`
+    }catch(e) {
+      return null;
+    }
+  }
+
   render() {
     const { items } = this.props;
     let discount = 0
@@ -84,17 +92,21 @@ class InboxCard extends Component {
                 className="modal-title"
                 style={{ fontWeight: "bold", fontSize: 14, lineHeight: "17px" }}
               >
-                {items.outlet && this.checkNameOutlet(items.outlet.name)}
+                {items.outlet === undefined ? this.getDetailInfo(items) : items.outlet && this.checkNameOutlet(items.outlet.name)}
               </div>
               <div style={{ fontWeight: "bold", fontSize: 14 }}>
-                {this.getCurrency(
-                  (
-                    items.totalNettAmount - discount
-                  ) < 0 ? 0 : 
-                  (
-                    items.totalNettAmount - discount
+                {
+                  items.totalNettAmount === undefined ? this.getCurrency(items.price) 
+                  :
+                  this.getCurrency(
+                    (
+                      items.totalNettAmount - discount
+                    ) < 0 ? 0 : 
+                    (
+                      items.totalNettAmount - discount
+                    )
                   )
-                )}
+                }
               </div>
             </div>
           </div>

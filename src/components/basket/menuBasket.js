@@ -221,7 +221,7 @@ class MenuBasket extends Component {
           />
         }
 
-        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, }}> 
+        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingBottom: 10, paddingTop: 10 }}> 
           {
             props.provaiderDelivery &&
             props.provaiderDelivery.minPurchaseForFreeDelivery &&

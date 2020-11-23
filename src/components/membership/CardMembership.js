@@ -35,7 +35,7 @@ export default class CardMembership extends Component {
             </div>
           </div>
           <div style={styles.coupon_con} onClick={() => this.props.setMembership(item)}>
-            <p style={{ color: "black", fontSize: 13 }}>{item.paidMembershipInformation}</p>
+            <p style={{ color: "black", fontSize: 13, lineHeight: 1.4, fontFamily: 'Arial' }}>{item.paidMembershipInformation}</p>
           </div>
         </div>
       </div>

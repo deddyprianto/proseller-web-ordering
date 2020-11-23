@@ -241,60 +241,50 @@ class Payment extends Component {
 
     this.setState({ dataSettle });
 
-    if (dataSettle.paidMembership === true) {
-      let totalPrice = dataSettle.dataBasket.totalNettAmount
-      this.setState({
-        dataBasket: dataSettle.dataBasket,
-        storeDetail: {},
-        totalPrice,
-        isLoading: false,
-      });
-    } else {
-      if(selectedVoucher){
-        await this.props.dispatch(PaymentAction.setData(selectedVoucher, "SELECT_VOUCHER"))
-        this.setState({voucherDiscountList: [], discountVoucher: 0})
-        for (let index = 0; index < selectedVoucher.length; index++) {
-          let element = selectedVoucher[index];
-          await this.getStatusVoucher(
-            element,
-            dataSettle.storeDetail,
-            dataSettle.dataBasket
-          ); 
-        }
+    if(selectedVoucher){
+      await this.props.dispatch(PaymentAction.setData(selectedVoucher, "SELECT_VOUCHER"))
+      this.setState({voucherDiscountList: [], discountVoucher: 0})
+      for (let index = 0; index < selectedVoucher.length; index++) {
+        let element = selectedVoucher[index];
+        await this.getStatusVoucher(
+          element,
+          dataSettle.storeDetail,
+          dataSettle.dataBasket
+        ); 
       }
-  
-      const point = selectedPoint || 0;
-      const pointToRebate =
-        parseInt(dataSettle.pointsToRebateRatio.split(":")[0]) > 0
-          ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
-          : 1;
-  
-      let totalPrice = dataSettle.dataBasket.totalNettAmount
-      let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
-      let discountPoint = Number(this.state.discountPoint)
-      if(discountPoint === 0) {
-        discountPoint = point / pointToRebate;
-        if(discountPoint > 0 && discountPoint + (voucherDiscount || 0) > totalPrice){
-          discountPoint = totalPrice - (voucherDiscount || 0)
-        }
-        discountPoint = Number(discountPoint.toFixed(2));
-      }
-  
-      let discount = discountPoint + voucherDiscount;
-      
-      totalPrice = totalPrice - discount < 0 ? 0 : totalPrice - discount;
-      if(totalPrice === 0) selectedCard = null
-  
-      this.setState({
-        ...dataSettle,
-        selectedVoucher,
-        selectedCard,
-        selectedPoint,
-        totalPrice,
-        discountPoint,
-        isLoading: false,
-      });
     }
+
+    const point = selectedPoint || 0;
+    const pointToRebate =
+      parseInt(dataSettle.pointsToRebateRatio.split(":")[0]) > 0
+        ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
+        : 1;
+
+    let totalPrice = dataSettle.dataBasket.totalNettAmount
+    let voucherDiscount = _.sumBy(this.state.voucherDiscountList, items => { return items.paymentType === "voucher" && items.paymentAmount});
+    let discountPoint = Number(this.state.discountPoint)
+    if(discountPoint === 0) {
+      discountPoint = point / pointToRebate;
+      if(discountPoint > 0 && discountPoint + (voucherDiscount || 0) > totalPrice){
+        discountPoint = totalPrice - (voucherDiscount || 0)
+      }
+      discountPoint = Number(discountPoint.toFixed(2));
+    }
+
+    let discount = discountPoint + voucherDiscount;
+    
+    totalPrice = totalPrice - discount < 0 ? 0 : totalPrice - discount;
+    if(totalPrice === 0) selectedCard = null
+
+    this.setState({
+      ...dataSettle,
+      selectedVoucher,
+      selectedCard,
+      selectedPoint,
+      totalPrice,
+      discountPoint,
+      isLoading: false,
+    });
   };
 
   getStatusVoucher = async (selectedVoucher, storeDetail, dataBasket) => {
@@ -355,7 +345,7 @@ class Payment extends Component {
         isVoucher: true
       }
       
-      if (checkOutlet) {
+      if (checkOutlet || storeDetail.paidMembership) {
         if (
           selectedVoucher.appliedTo !== "ALL" &&
           selectedVoucher.appliedItems && 
@@ -614,7 +604,7 @@ class Payment extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_account`))
     );
 
-    let { dataSettle, totalPrice, selectedCard } = this.state;
+    let { dataSettle, totalPrice, selectedCard, selectedVoucher, selectedPoint, voucherDiscountList, discountPoint } = this.state;
     
     delete dataSettle.plan.isSelected
     
@@ -628,6 +618,29 @@ class Payment extends Component {
       },
       customerId: `customer::${customerInfo.idToken.payload.id}`
     };
+
+    if (selectedVoucher !== null) {
+      payload.payments = payload.payments.concat(voucherDiscountList)
+    } 
+
+    if (selectedPoint > 0) {      
+      payload.payments.push({
+        paymentType: "point",
+        redeemValue: selectedPoint,
+        paymentAmount: discountPoint,
+        isPoint: true
+      })
+    }
+
+    if(selectedCard) {
+      payload.payments.push({
+        paymentType: selectedCard.paymentID,
+        paymentID: selectedCard.paymentID,
+        paymentName: selectedCard.paymentName,
+        accountId: selectedCard.accountID,
+        paymentAmount: totalPrice
+      })
+    }
 
     if(selectedCard) {
       payload.payments.push({
@@ -929,6 +942,7 @@ class Payment extends Component {
         </div>
       );
     }
+    
     return (
       <div>
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}
@@ -1054,23 +1068,20 @@ class Payment extends Component {
                       }}
                     />
 
-                    {
-                      dataSettle.paidMembership === undefined && 
-                      <AddPromo
-                        data={this.state}
-                        roleBtnClear={!this.props.isLoggedIn}
-                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                        cancelSelectPoint={() => this.cancelSelectPoint()}
-                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                        handleRedeemPoint={() => this.handleRedeemPoint()}
-                        getCurrency={(price) => this.getCurrency(price)}
-                        scrollPoint={(data) => this.scrollPoint(data)}
-                        setPoint={(point, discountPoint) => this.setPoint(point, discountPoint)}
-                        handleCancelVoucher={(item) => this.handleCancelVoucher(item)}
-                        handleCancelPoint={() => this.cancelSelectPoint()}
-                        disabledBtn={(totalPrice) === 0}
-                      />
-                    }
+                    <AddPromo
+                      data={this.state}
+                      roleBtnClear={!this.props.isLoggedIn}
+                      cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                      cancelSelectPoint={() => this.cancelSelectPoint()}
+                      handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                      handleRedeemPoint={() => this.handleRedeemPoint()}
+                      getCurrency={(price) => this.getCurrency(price)}
+                      scrollPoint={(data) => this.scrollPoint(data)}
+                      setPoint={(point, discountPoint) => this.setPoint(point, discountPoint)}
+                      handleCancelVoucher={(item) => this.handleCancelVoucher(item)}
+                      handleCancelPoint={() => this.cancelSelectPoint()}
+                      disabledBtn={(totalPrice) === 0}
+                    />
 
                     {this.props.isLoggedIn && (
                       <PaymentMethodBasket

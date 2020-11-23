@@ -6,10 +6,14 @@ import profile from "../../assets/images/default-profile.png";
 import Shimmer from "react-shimmer-effect";
 import { ReferralAction } from "../../redux/actions/ReferralAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
+import { MembershiplAction } from "../../redux/actions/MembershipAction";
 import ModalEditProfile from "./ModalEditProfile";
 import { Link } from "react-router-dom";
 import config from "../../config";
 import loadable from "@loadable/component";
+import moment from 'moment';
+import { isEmptyArray } from "../../helpers/CheckEmpty";
+import { max } from "lodash";
 const ModalQRCode = loadable(() => import("./ModalQRCode"));
 
 class DetailProfile extends Component {
@@ -18,7 +22,8 @@ class DetailProfile extends Component {
     this.state = {
       loadingShow: true,
       referall: "0/0",
-      dataCustomer: {}
+      dataCustomer: {},
+      memberships: [],
     };
   }
 
@@ -26,8 +31,16 @@ class DetailProfile extends Component {
     let response = await this.props.dispatch(
       ReferralAction.getReferral({ customerId: this.props.account.signAs })
     );
-    let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
-    if (dataCustomer.ResultCode === 200) this.setState({dataCustomer: dataCustomer.Data[0]})
+    
+    try{
+      let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
+      if (dataCustomer.ResultCode === 200) this.setState({dataCustomer: dataCustomer.Data[0]})
+    }catch(e){}
+
+    try{
+      let dataMembership = await this.props.dispatch( MembershiplAction.getPaidMembership() );
+      if (dataMembership && !isEmptyArray(dataMembership.data)) this.setState({memberships: dataMembership.data})
+    }catch(e){}
     
     if (response.ResultCode === 200)
       this.setState({
@@ -54,12 +67,36 @@ class DetailProfile extends Component {
     );
   };
 
+  getMaxRanking = () => {
+    try{
+      const { memberships } = this.state;
+      let largest= 0;
+      for (let i=0; i < memberships.length; i++){
+          if (memberships[i].ranking > largest) {
+              largest = memberships[i].ranking
+          }
+      }
+      return largest;
+    }catch(e){}
+  }
+
+  getLabel = () => {
+    try{
+      const { memberships, dataCustomer } = this.state;
+      const maxRanking = this.getMaxRanking();
+      if (dataCustomer.customerGroupLevel === maxRanking) return 'Renew'
+      return 'Upgrade'
+    }catch(e){
+      return 'Upgrade'
+    }
+  }
+
   viewLeftPage = (loadingShow) => {
     let { account } = this.props;
-    let { dataCustomer } = this.state;
+    let { dataCustomer, memberships } = this.state;
     if (account.defaultImageURL === undefined)
       account.defaultImageURL = profile;
-
+    
     return (
       <div style={{ marginBottom: 10 }}>
         {loadingShow && (
@@ -147,25 +184,29 @@ class DetailProfile extends Component {
                 <div
                   className="customer-group-name"
                   style={{
-                    fontSize: 30,
+                    fontSize: 27,
                     fontWeight: "bold",
                     paddingBottom: 10,
                   }}
                 >
                   {dataCustomer.customerGroupName}
                 </div>
+                {dataCustomer.expiryCustomerGroup && <span className="font-color-theme" style={{fontSize: 14, fontWeight: "bold" }}>( till {moment(dataCustomer.expiryCustomerGroup).format("DD MMMM YYYY")} )</span>}
               </div>
-              <Link to="/paid-membership">
-                <div
-                  className="customer-group-name"
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Upgrade <i className="fa fa-chevron-right" aria-hidden="true" />
-                </div>
-              </Link>
+              {
+                !isEmptyArray(memberships) &&
+                <Link to="/paid-membership">
+                  <div
+                    className="customer-group-name"
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {this.getLabel()} <i style={{fontSize: 11}} className="fa fa-chevron-right" aria-hidden="true" />
+                  </div>
+                </Link>
+              }
             </div>
 
             <div

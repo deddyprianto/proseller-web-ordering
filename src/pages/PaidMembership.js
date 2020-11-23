@@ -3,6 +3,8 @@ import loadable from "@loadable/component";
 import { connect } from "react-redux";
 import config from "../config";
 import { MembershiplAction } from "../redux/actions/MembershipAction";
+import { CustomerAction } from "../redux/actions/CustomerAction";
+import { CampaignAction } from "../redux/actions/CampaignAction";
 import { Button } from 'reactstrap';
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const CardMembership = loadable(() =>
@@ -14,18 +16,33 @@ class PaidMembership extends Component {
     super(props);
     this.state = {
       memberships: [],
-      selectedMembership: null
+      selectedMembership: null,
+      dataCustomer: {}
     };
   }
 
   componentDidMount = async () => {
     const response = await this.props.dispatch(MembershiplAction.getPaidMembership())
+
+    try{
+      let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
+      if (dataCustomer.ResultCode === 200) this.setState({dataCustomer: dataCustomer.Data[0]})
+    }catch(e){}
+
     if (response && response.data) {
       for (let i = 0; i < response.data.length; i++) {
         response.data[i].defaultPrice = response.data[i].paidMembershipPlan[0].price
       }
       this.setState({memberships: response.data});
     }
+
+    try{
+      let infoCompany = await encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+      this.props.dispatch(
+        CampaignAction.getCampaignPoints({ history: "false" }, infoCompany && infoCompany.companyId)
+      );
+    }catch(e){}
+
   };
 
   componentDidUpdate(prevProps) {}
@@ -64,9 +81,13 @@ class PaidMembership extends Component {
   upgradeMembership = () => {
     const { selectedMembership } = this.state
     const plan = selectedMembership.paidMembershipPlan.find(item => item.isSelected)
+    
     const payload = {
       membership: this.state.selectedMembership,
       plan: plan,
+      detailPoint: this.props.campaignPoint,
+      pointsToRebateRatio: this.props.campaignPoint.pointsToRebateRatio,
+      pendingPoints: this.props.campaignPoint.pendingPoints || 0,
       dataBasket: {
         totalNettAmount: plan.price,
         outlet: {
@@ -74,15 +95,35 @@ class PaidMembership extends Component {
         },
       },
       outlet: {
-        name: `Membership ${selectedMembership.name} ${plan.period} ${plan.periodUnit.toLowerCase()}`
+        name: `Membership ${selectedMembership.name} ${plan.period} ${plan.periodUnit.toLowerCase()}`,
+        enablePayAtPOS: false
+      },
+      storeDetail: {
+        name: `Membership ${selectedMembership.name} ${plan.period} ${plan.periodUnit.toLowerCase()}`,
+        enablePayAtPOS: false,
+        enableRedeemPoint: true,
+        paidMembership: true
       },
       paidMembership: true
     }
+    
     localStorage.setItem(
       `${config.prefix}_dataSettle`,
       JSON.stringify(encryptor.encrypt(payload))
     );
     this.props.history.push("/payment");
+  }
+
+  getTextInfo = () => {
+    try{
+      const { dataCustomer, selectedMembership } = this.state;
+      if (dataCustomer.customerGroupLevel === selectedMembership.ranking) {
+        return 'Renew'
+      } else if (dataCustomer.customerGroupLevel > selectedMembership.ranking) {
+        return 'Downgrade to'
+      }
+      return 'Upgrade to'
+    }catch(e) { return 'Upgrade to'}
   }
 
   render() {
@@ -169,7 +210,7 @@ class PaidMembership extends Component {
                     marginRight: '5%', 
                     marginLeft: '5%'
                   }}>
-                  <b className="text-btn-theme">Upgrade {selectedMembership.name} {this.detailMembership()}</b>
+                  <b className="text-btn-theme">{this.getTextInfo()} {selectedMembership.name} {this.detailMembership()}</b>
                 </Button>
               </div>
             }
@@ -185,6 +226,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
     pointData: state.campaign.data,
+    campaignPoint: state.campaign.data,
   };
 };
 
