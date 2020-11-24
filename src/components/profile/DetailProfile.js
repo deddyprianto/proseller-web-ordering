@@ -17,6 +17,7 @@ class DetailProfile extends Component {
     this.state = {
       loadingShow: true,
       referall: "0/0",
+      isEmenu: window.location.pathname.includes("emenu")
     };
   }
 
@@ -197,7 +198,7 @@ class DetailProfile extends Component {
   }
 
   viewRightPage = (loadingShow) => {
-    let { referall } = this.state;
+    let { referall, isEmenu } = this.state;
 
     return (
       <div>
@@ -235,6 +236,31 @@ class DetailProfile extends Component {
                 </div>
               </Link>
             )}
+
+            {
+              isEmenu && 
+              <Link to="/rewards">
+                <div
+                  className="background-theme"
+                  style={{
+                    padding: 10,
+                    marginTop: 10,
+                    borderRadius: 10,
+                    border: "1px solid #CDCDCD",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ textAlign: "center" }}>
+                    <div
+                      style={{ fontSize: 14, fontWeight: "bold" }}
+                    >
+                      <i className="fa fa-gift" aria-hidden="true" /> Rewards
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            }
 
             <Link to="/payment-method">
               <div

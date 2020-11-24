@@ -16,7 +16,8 @@ let Portal = ({
   loginByEmail,
   loginByMobile,
   enableOrdering,
-  companyInfo
+  companyInfo,
+  color
 }) => {
   let initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
   let initialCodePhone = "+65";
@@ -81,7 +82,8 @@ let Portal = ({
                   disableSearchIcon
                   inputStyle={{
                     width: 0,
-                    border: "1px solid #FFF",
+                    border: `1px solid ${color}`,
+                    backgroundColor: color,
                     height: 40,
                   }}
                   dropdownStyle={{

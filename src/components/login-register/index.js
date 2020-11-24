@@ -954,6 +954,7 @@ class LoginRegister extends Component {
               ></SignUp>
             ) : (
                   <Portal
+                    color={this.props.color.background}
                     method={method}
                     handleMethodChange={(value) => {
                       this.setState({ method: value });
@@ -983,8 +984,9 @@ const mapStateToProps = (state) => ({
   companyInfoError: state[reducer].companyInfo.errors,
   fields: state.customer.fields,
   setting: state.order.setting,
+  color: state.theme.color
 });
-
+ 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });

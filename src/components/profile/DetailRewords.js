@@ -27,7 +27,8 @@ class DetailRewords extends Component {
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
-      pointIcon: ""
+      pointIcon: "",
+      isEmenu: window.location.pathname.includes("emenu"),
     }
   }
 
@@ -149,11 +150,20 @@ class DetailRewords extends Component {
       totalPoint,
       campaignPointAnnouncement,
       pointIcon,
-      pendingPoints
+      pendingPoints,
+      isEmenu
     } = this.state
 
     return (
       <div>
+        {
+          isEmenu &&
+          <Link to="/profile">
+            <div className="background-theme" style={{ marginLeft: 10, fontSize: 16, textAlign: 'left', }}>
+              <i className="fa fa-chevron-left"></i> Back
+            </div>
+          </Link>
+        }
         {
           loadingShow &&
           <div>
