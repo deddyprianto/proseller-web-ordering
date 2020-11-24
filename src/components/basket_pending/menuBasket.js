@@ -48,10 +48,6 @@ export default class MenuBasket extends Component {
               isLoggedIn={this.props.isLoggedIn}
             />
           </div>
-          {
-            props.dataBasket.totalSurchargeAmount > 0 &&
-            <TotalSurchargeAmount data={props} getCurrency={(price) => this.props.getCurrency(price)} />
-          }
 
           {
             props.dataBasket.orderingMode && props.dataBasket.orderingMode === "DELIVERY" &&
@@ -99,6 +95,11 @@ export default class MenuBasket extends Component {
               </div>
             </div>
           </div>
+
+          {
+            props.dataBasket.totalSurchargeAmount > 0 &&
+            <TotalSurchargeAmount data={props} getCurrency={(price) => this.props.getCurrency(price)} />
+          }
           
           {
             props.dataBasket.deliveryFee && props.dataBasket.orderingMode && 
