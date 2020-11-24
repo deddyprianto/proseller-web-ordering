@@ -126,13 +126,13 @@ class Footer extends Component {
               </div>
             </Link>
           }
-          {
+          {/* {
             isLoggedIn &&
             <Link onClick={() => this.removeDataPayment()} to="/rewards" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
               <i className={`fa fa-gift ${this.activeRoute({ path: "/rewards", name: "Rewards" })}`} aria-hidden="true" style={{ fontSize: 20, margin: 15 }}></i>
               <div className={`${this.activeRoute({ path: "/rewards", name: "Rewards" })}`} style={{ marginTop: -22, fontSize: 11 }}>Rewards</div>
             </Link>
-          }
+          } */}
         </div>
       </div>
     );
