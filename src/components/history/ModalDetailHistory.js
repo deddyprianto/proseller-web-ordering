@@ -334,7 +334,7 @@ class ModalDetailHistory extends Component {
                   >
                     <div style={{ fontSize: 14 }}>TOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {detail.totalNettAmount === undefined ? this.getCurrency(detail.price) :
+                      {detail.totalNettAmount === undefined ? this.getCurrency(detail.subTotal) :
                         this.getCurrency(
                         (
                           detail.totalNettAmount - discount
@@ -374,7 +374,7 @@ class ModalDetailHistory extends Component {
                             {detail.paymentCard.paymentName}
                           </div>
                           <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            {detail.totalNettAmount === undefined ? this.getCurrency(detail.price) : this.getCurrency((detail.totalNettAmount - discount))}
+                            {this.getCurrency(((detail.totalNettAmount || detail.price) - discount))}
                           </div>
                         </div>
                       )}

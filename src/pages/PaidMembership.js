@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
 import config from "../config";
+import Shimmer from "react-shimmer-effect";
 import { MembershiplAction } from "../redux/actions/MembershipAction";
 import { CustomerAction } from "../redux/actions/CustomerAction";
 import { CampaignAction } from "../redux/actions/CampaignAction";
@@ -17,7 +18,8 @@ class PaidMembership extends Component {
     this.state = {
       memberships: [],
       selectedMembership: null,
-      dataCustomer: {}
+      dataCustomer: {},
+      loading: true,
     };
   }
 
@@ -33,7 +35,7 @@ class PaidMembership extends Component {
       for (let i = 0; i < response.data.length; i++) {
         response.data[i].defaultPrice = response.data[i].paidMembershipPlan[0].price
       }
-      this.setState({memberships: response.data});
+      this.setState({memberships: response.data, loading: false});
     }
 
     try{
@@ -126,8 +128,24 @@ class PaidMembership extends Component {
     }catch(e) { return 'Upgrade to'}
   }
 
+  viewShimmer = (isHeight = 100) => {
+    return (
+      <Shimmer>
+        <div
+          style={{
+            width: "100%",
+            height: isHeight,
+            alignSelf: "center",
+            borderRadius: "8px",
+            marginBottom: 10,
+          }}
+        />
+      </Shimmer>
+    );
+  };
+
   render() {
-    const { memberships, selectedMembership } = this.state;
+    const { memberships, selectedMembership, loading } = this.state;
     return (
       <div
         className="col-full"
@@ -177,6 +195,13 @@ class PaidMembership extends Component {
             >
               <div style={{ marginTop: 20 }}>
                 {
+                  loading ?
+                  <>
+                    {this.viewShimmer()}
+                    {this.viewShimmer()}
+                    {this.viewShimmer()}
+                  </>
+                  :
                   memberships.map((item, idx) => 
                     <CardMembership 
                       key={idx} 

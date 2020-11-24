@@ -1,44 +1,47 @@
 import React, { Component } from "react";
+import { Col } from "reactstrap";
 
 export default class CardMembership extends Component {
   render() {
     let { item, index, selectedMembership } = this.props;
     return (
-      <div style={styles.wrap}>
-        <div style={selectedMembership !== null && selectedMembership.id === item.id ? styles.couponSelected : styles.coupon}>
-          <div style={styles.coupon_left} className="button">
-            <p style={styles.name}>{item.name}</p>
-            <p style={styles.price}>${item.defaultPrice}</p>
-            <div style={{display: 'inline', width: '100%'}}>
-              <select
-                className="button"
-                name={"card-membership"}
-                style={{borderRadius: 2, border: 'none', width: '80%'}}
-                onChange={(e) => {
-                  try{
-                    this.props.setPlan(index, e.target.value)
-                  }catch(e){}
-                }}
-              >
-                {item.paidMembershipPlan.map((option, idx) => {
-                  return (
-                    <option
-                      value={idx}
-                      key={idx}
-                    >
-                      per {option.period}{" "} {option.periodUnit.toLowerCase()}
-                    </option>
-                  );
-                })}
-              </select>
-              <i className="fa fa-chevron-down" style={{fontSize: 12, color: 'white'}}></i>
+      <Col sm={6}>
+        <div style={styles.wrap}>
+          <div style={selectedMembership !== null && selectedMembership.id === item.id ? styles.couponSelected : styles.coupon}>
+            <div style={styles.coupon_left} className="button">
+              <p style={styles.name}>{item.name}</p>
+              <p style={styles.price}>${item.defaultPrice}</p>
+              <div style={{display: 'inline', width: '100%'}}>
+                <select
+                  className="button"
+                  name={"card-membership"}
+                  style={{borderRadius: 2, border: 'none', width: '80%'}}
+                  onChange={(e) => {
+                    try{
+                      this.props.setPlan(index, e.target.value)
+                    }catch(e){}
+                  }}
+                >
+                  {item.paidMembershipPlan.map((option, idx) => {
+                    return (
+                      <option
+                        value={idx}
+                        key={idx}
+                      >
+                        per {option.period}{" "} {option.periodUnit.toLowerCase()}
+                      </option>
+                    );
+                  })}
+                </select>
+                <i className="fa fa-chevron-down" style={{fontSize: 12, color: 'white'}}></i>
+              </div>
+            </div>
+            <div style={styles.coupon_con} onClick={() => this.props.setMembership(item)}>
+              <p style={{ color: "black", fontSize: 13, lineHeight: 1.4, fontFamily: 'Arial' }}>{item.paidMembershipInformation}</p>
             </div>
           </div>
-          <div style={styles.coupon_con} onClick={() => this.props.setMembership(item)}>
-            <p style={{ color: "black", fontSize: 13, lineHeight: 1.4, fontFamily: 'Arial' }}>{item.paidMembershipInformation}</p>
-          </div>
         </div>
-      </div>
+      </Col>
     );
   }
 }
@@ -51,8 +54,8 @@ const styles = {
   coupon: {
     display: "flex",
     overflow: "hidden",
-    borderRadius: "10px",
-    border: '0.3px solid black'
+    borderRadius: "15px",
+    border: '1px solid black'
   },
   couponSelected: {
     display: "flex",

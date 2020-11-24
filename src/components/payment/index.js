@@ -545,7 +545,7 @@ class Payment extends Component {
   calculateSelectedPoint = (selectedPoint, type = null) => {
     let { pointsToRebateRatio, detailPoint, totalPrice, discountPoint } = this.state;
     totalPrice = totalPrice + discountPoint
-
+    
     if (type === "selectedPoint") {
       selectedPoint = (totalPrice / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
     }
@@ -557,7 +557,7 @@ class Payment extends Component {
   };
 
   setPoint = async (selectedPoint, discountPoint) => {
-    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) );
+    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) )
     this.setState({ selectedPoint, discountPoint });
 
     await this.getDataBasket();
@@ -610,7 +610,7 @@ class Payment extends Component {
     
     let payload = {
       payments: [],
-      price: totalPrice,
+      price: dataSettle.dataBasket.totalNettAmount,
       referenceNo: uuid(),
       dataPay: {
         paidMembershipPlan: dataSettle.plan,
@@ -642,16 +642,6 @@ class Payment extends Component {
       })
     }
 
-    if(selectedCard) {
-      payload.payments.push({
-        paymentType: selectedCard.paymentID,
-        paymentID: selectedCard.paymentID,
-        paymentName: selectedCard.paymentName,
-        accountId: selectedCard.accountID,
-        paymentAmount: totalPrice
-      })
-    }
-
     // console.log(payload)
     // return;
 
@@ -659,7 +649,7 @@ class Payment extends Component {
     response = await this.props.dispatch(OrderAction.submitMembership(payload));
     console.log(response)
 
-    if (response && response.resultCode === 400) {
+    if (response && response.ResultCode === 400) {
       Swal.fire(
         "Oppss!",
         response.message || (response.data && response.data.message) || "Payment Failed!",
@@ -686,6 +676,11 @@ class Payment extends Component {
         );
         localStorage.removeItem(`${config.prefix}_dataSettle`);
         this.togglePlay();
+        localStorage.removeItem(`${config.prefix}_selectedPoint`);
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        
+        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
         this.props.history.push("/settleSuccess");
       }
     }
