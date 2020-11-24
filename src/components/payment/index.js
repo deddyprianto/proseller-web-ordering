@@ -18,6 +18,7 @@ import { CampaignAction } from "../../redux/actions/CampaignAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
+import { uuid } from "uuidv4";
 
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -344,7 +345,7 @@ class Payment extends Component {
         isVoucher: true
       }
       
-      if (checkOutlet) {
+      if (checkOutlet || storeDetail.paidMembership) {
         if (
           selectedVoucher.appliedTo !== "ALL" &&
           selectedVoucher.appliedItems && 
@@ -544,7 +545,7 @@ class Payment extends Component {
   calculateSelectedPoint = (selectedPoint, type = null) => {
     let { pointsToRebateRatio, detailPoint, totalPrice, discountPoint } = this.state;
     totalPrice = totalPrice + discountPoint
-
+    
     if (type === "selectedPoint") {
       selectedPoint = (totalPrice / pointsToRebateRatio.split(":")[1]) * pointsToRebateRatio.split(":")[0];
     }
@@ -556,7 +557,7 @@ class Payment extends Component {
   };
 
   setPoint = async (selectedPoint, discountPoint) => {
-    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) );
+    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) )
     this.setState({ selectedPoint, discountPoint });
 
     await this.getDataBasket();
@@ -569,7 +570,7 @@ class Payment extends Component {
   };
 
   handleSettle = async (payAtPOS) => {
-    let { selectedCard } = this.state;
+    let { selectedCard, dataSettle } = this.state;
 
     if (selectedCard) {
       let userInput = selectedCard.details.userInput;
@@ -585,7 +586,104 @@ class Payment extends Component {
       }
     }
 
-    this.submitSettle(null, payAtPOS);
+    if (dataSettle.paidMembership) {
+      this.payMembership();
+    } else {
+      this.submitSettle(null, payAtPOS);
+    }
+  };
+
+  payMembership = async (need = null, payAtPOS = false) => {
+    Swal.fire({
+      onOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const customerInfo = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_account`))
+    );
+
+    let { dataSettle, totalPrice, selectedCard, selectedVoucher, selectedPoint, voucherDiscountList, discountPoint } = this.state;
+    
+    delete dataSettle.plan.isSelected
+    
+    let payload = {
+      payments: [],
+      price: dataSettle.dataBasket.totalNettAmount,
+      referenceNo: uuid(),
+      dataPay: {
+        paidMembershipPlan: dataSettle.plan,
+        id: dataSettle.membership.id
+      },
+      customerId: `customer::${customerInfo.idToken.payload.id}`
+    };
+
+    if (selectedVoucher !== null) {
+      payload.payments = payload.payments.concat(voucherDiscountList)
+    } 
+
+    if (selectedPoint > 0) {      
+      payload.payments.push({
+        paymentType: "point",
+        redeemValue: selectedPoint,
+        paymentAmount: discountPoint,
+        isPoint: true
+      })
+    }
+
+    if(selectedCard) {
+      payload.payments.push({
+        paymentType: selectedCard.paymentID,
+        paymentID: selectedCard.paymentID,
+        paymentName: selectedCard.paymentName,
+        accountId: selectedCard.accountID,
+        paymentAmount: totalPrice
+      })
+    }
+
+    // console.log(payload)
+    // return;
+
+    let response;
+    response = await this.props.dispatch(OrderAction.submitMembership(payload));
+    console.log(response)
+
+    if (response && response.ResultCode === 400) {
+      Swal.fire(
+        "Oppss!",
+        response.message || (response.data && response.data.message) || "Payment Failed!",
+        "error"
+      );
+    } else {
+      // if need further actions
+      if (response.Data.action !== undefined) {
+        if (response.Data.action.type === "url") {
+          this.getPendingPayment(response.data);
+        }
+      } else {
+        response.Data.outlet = {
+          name: dataSettle.outlet.name
+        }
+        response.Data.paidMembership = true
+        localStorage.setItem(
+          `${config.prefix}_settleSuccess`,
+          JSON.stringify(encryptor.encrypt(response.Data))
+        );
+        localStorage.setItem(
+          `${config.prefix}_paymentSuccess`,
+          JSON.stringify(encryptor.encrypt(this.state))
+        );
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        this.togglePlay();
+        localStorage.removeItem(`${config.prefix}_selectedPoint`);
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        
+        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
+        this.props.history.push("/settleSuccess");
+      }
+    }
   };
 
   submitSettle = async (need = null, payAtPOS = false) => {
@@ -839,6 +937,7 @@ class Payment extends Component {
         </div>
       );
     }
+    
     return (
       <div>
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}

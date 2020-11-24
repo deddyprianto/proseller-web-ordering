@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 export default class RedeemPointBasket extends Component {
   render() {
     let props = this.props.data
-    let discountPoint = props.selectedPoint / props.pointsToRebateRatio.split(":")[0]
+    let discountPoint = (props.selectedPoint / props.pointsToRebateRatio.split(":")[0]) * props.pointsToRebateRatio.split(":")[1]
     if(discountPoint > (props.discountPoint + props.totalPrice)) discountPoint = props.discountPoint + props.totalPrice
     discountPoint = discountPoint.toFixed(2);
 

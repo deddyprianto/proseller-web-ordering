@@ -98,7 +98,11 @@ class SettleSuccess extends Component {
     localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    this.props.history.push("/history");
+    if (this.state.settleSuccess.paidMembership === true) {
+      this.props.history.push("/profile");
+    } else {
+      this.props.history.push("/history");
+    }
   };
 
   render() {

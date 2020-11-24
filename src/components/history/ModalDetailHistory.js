@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
+import { isEmptyArray } from "../../helpers/CheckEmpty";
 
 class ModalDetailHistory extends Component {
   getCurrency = (price) => {
@@ -124,19 +125,22 @@ class ModalDetailHistory extends Component {
                       marginBottom: 10,
                     }}
                   />
-                  <div
-                    style={{
-                      marginLeft: 5,
-                      marginRight: 5,
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ fontSize: 14, textAlign: "left", lineHeight: "17px" }}>OUTLET NAME</div>
-                    <div style={{ fontSize: 14, fontWeight: "bold", textAlign: "right", lineHeight: "17px" }}>
-                      {detail.outletName}
+                  {
+                    detail.outletName &&
+                    <div
+                      style={{
+                        marginLeft: 5,
+                        marginRight: 5,
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div style={{ fontSize: 14, textAlign: "left", lineHeight: "17px" }}>OUTLET NAME</div>
+                      <div style={{ fontSize: 14, fontWeight: "bold", textAlign: "right", lineHeight: "17px" }}>
+                        {detail.outletName}
+                      </div>
                     </div>
-                  </div>
+                  }
 
                   <div
                     style={{
@@ -169,7 +173,7 @@ class ModalDetailHistory extends Component {
                     }}
                   />
                   <div style={{ fontSize: 14, textAlign: "left" }}>ITEMS</div>
-                  {detail.dataPay.map((item, key) => (
+                  {!isEmptyArray(detail.dataPay) && detail.dataPay.map((item, key) => (
                     <div
                       key={key}
                       style={{
@@ -193,6 +197,30 @@ class ModalDetailHistory extends Component {
                     </div>
                   ))}
 
+                  {isEmptyArray(detail.dataPay) && !isEmptyArray(detail.details) && detail.details.map((item, key) => (
+                    <div
+                      key={key}
+                      style={{
+                        marginLeft: 10,
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginBottom: 5,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "bold",
+                          textAlign: "left",
+                        }}
+                      >{`${item.period} ${item.periodUnit.toLowerCase()} Membership ${item.name}`}</div>
+                      <div style={{ fontSize: 12, fontWeight: "bold" }}>
+                        {this.getCurrency(item.price)}
+                      </div>
+                    </div>
+                  ))}
+
                   <div
                     style={{ 
                       backgroundColor: "#CDCDCD", height: 1,
@@ -207,7 +235,7 @@ class ModalDetailHistory extends Component {
                   >
                     <div style={{ fontSize: 14 }}>SUBTOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency(detail.totalGrossAmount)}
+                      {this.getCurrency(detail.totalGrossAmount || detail.price)}
                     </div>
                   </div>
 
@@ -237,24 +265,28 @@ class ModalDetailHistory extends Component {
                       </div>
                     </div> : null
                   }
-
+                
                   <div
                     style={{ 
                       backgroundColor: "#CDCDCD", height: 1,
                       marginTop: 10, marginBottom: 10,
                     }}
                   />
-                  <div
-                    style={{
-                      marginLeft: 5,  marginRight: 5,
-                      display: "flex", justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ fontSize: 14 }}>TAX AMOUNT</div>
-                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {`+ ${this.getCurrency(detail.totalTaxAmount)}`}
+
+                  {
+                    detail.totalTaxAmount &&
+                    <div
+                      style={{
+                        marginLeft: 5,  marginRight: 5,
+                        display: "flex", justifyContent: "space-between",
+                      }}
+                    >
+                      <div style={{ fontSize: 14 }}>TAX AMOUNT</div>
+                      <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                        {`+ ${this.getCurrency(detail.totalTaxAmount)}`}
+                      </div>
                     </div>
-                  </div>
+                  }
 
                   {
                     detail.payments &&
@@ -302,7 +334,8 @@ class ModalDetailHistory extends Component {
                   >
                     <div style={{ fontSize: 14 }}>TOTAL</div>
                     <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      {this.getCurrency(
+                      {detail.totalNettAmount === undefined ? this.getCurrency(detail.subTotal) :
+                        this.getCurrency(
                         (
                           detail.totalNettAmount - discount
                         ) < 0 ? 0 :
@@ -341,7 +374,7 @@ class ModalDetailHistory extends Component {
                             {detail.paymentCard.paymentName}
                           </div>
                           <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                            {this.getCurrency((detail.totalNettAmount - discount))}
+                            {this.getCurrency(((detail.totalNettAmount || detail.price) - discount))}
                           </div>
                         </div>
                       )}
