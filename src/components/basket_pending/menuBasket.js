@@ -48,7 +48,7 @@ export default class MenuBasket extends Component {
               isLoggedIn={this.props.isLoggedIn}
             />
           </div>
-          
+
           {
             props.dataBasket.orderingMode && props.dataBasket.orderingMode === "DELIVERY" &&
             <div>
