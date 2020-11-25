@@ -214,7 +214,11 @@ class ModalDetailHistory extends Component {
                           fontWeight: "bold",
                           textAlign: "left",
                         }}
-                      >{`${item.period} ${item.periodUnit.toLowerCase()} Membership ${item.name}`}</div>
+                      >
+                        {
+                          detail.dataPay.storeValueCard ? `${item.name}` : `${item.period} ${item.periodUnit.toLowerCase()} Membership ${item.name}`
+                        }
+                      </div>
                       <div style={{ fontSize: 12, fontWeight: "bold" }}>
                         {this.getCurrency(item.price)}
                       </div>

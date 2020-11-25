@@ -12,7 +12,7 @@ import CreditCard from "@material-ui/icons/CreditCard";
 import ModalPaymentMethod from "./ModalPaymentMethod";
 import _ from "lodash";
 import { uuid } from "uuidv4";
-
+import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -477,21 +477,22 @@ class PaymentMethod extends Component {
                               Store Value Card
                             </div>
                           </div>
-                          <Button
-                            className="button"
-                            data-toggle="modal"
-                            data-target="#delivery-address-modal"
-                            style={{
-                              width: 100,
-                              paddingLeft: 5,
-                              paddingRight: 5,
-                              borderRadius: 5,
-                              height: 40,
-                            }}
-                            onClick={() => console.log('asem')}
-                          >
-                            <i className="fa fa-plus" aria-hidden="true" /> Buy
-                          </Button>
+                          <Link to="/svc">
+                            <Button
+                              className="button"
+                              data-toggle="modal"
+                              data-target="#delivery-address-modal"
+                              style={{
+                                width: 100,
+                                paddingLeft: 5,
+                                paddingRight: 5,
+                                borderRadius: 5,
+                                height: 40,
+                              }}
+                            >
+                              <i className="fa fa-plus" aria-hidden="true" /> Buy
+                            </Button>
+                          </Link>
                         </div>
                         {/* <Row>
                           {item.data.map((card, keyCard) => (

@@ -100,6 +100,8 @@ class SettleSuccess extends Component {
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
     if (this.state.settleSuccess.paidMembership === true) {
       this.props.history.push("/profile");
+    } else if (this.state.settleSuccess.paySVC === true) {
+      this.props.history.push("/svc");
     } else {
       this.props.history.push("/history");
     }

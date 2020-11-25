@@ -345,7 +345,7 @@ class Payment extends Component {
         isVoucher: true
       }
       
-      if (checkOutlet || storeDetail.paidMembership) {
+      if (checkOutlet || storeDetail.paidMembership || storeDetail.paySVC) {
         if (
           selectedVoucher.appliedTo !== "ALL" &&
           selectedVoucher.appliedItems && 
@@ -588,8 +588,117 @@ class Payment extends Component {
 
     if (dataSettle.paidMembership) {
       this.payMembership();
+    } else if(dataSettle.paySVC){
+      this.paySVC()
     } else {
       this.submitSettle(null, payAtPOS);
+    }
+  };
+
+  paySVC = async (need = null, payAtPOS = false) => {
+    Swal.fire({
+      onOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const customerInfo = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_account`))
+    );
+
+    let { dataSettle, totalPrice, selectedCard, selectedVoucher, selectedPoint, voucherDiscountList, discountPoint } = this.state;
+  
+
+    let payload = {
+      payments: [],
+      price: dataSettle.dataBasket.totalNettAmount,
+      referenceNo: uuid(),
+      dataPay: {
+        storeValueCard: {
+          value: dataSettle.storeValueCard.value,
+          expiryOn: dataSettle.storeValueCardexpiryOn,
+          expiryOnUnit: dataSettle.storeValueCard.expiryOnUnit,
+          retailPrice: dataSettle.storeValueCard.retailPrice,
+          amountAfterDisc: dataSettle.detailPurchase.details[0].amountAfterDisc,
+          amountAfterTax: dataSettle.detailPurchase.details[0].amountAfterTax,
+          billDiscAmount: dataSettle.detailPurchase.details[0].billDiscAmount,
+          discountableAmount: dataSettle.detailPurchase.details[0].discountableAmount,
+          lineDiscAmount: dataSettle.detailPurchase.details[0].lineDiscAmount,
+          lineDiscPercentage: dataSettle.detailPurchase.details[0].lineDiscPercentage,
+          taxPercentage: dataSettle.detailPurchase.details[0].taxPercentage,
+          taxableAmount: dataSettle.detailPurchase.details[0].taxableAmount,
+          totalDiscAmount: dataSettle.detailPurchase.details[0].totalDiscAmount,
+          quantity: dataSettle.detailPurchase.details[0].quantity
+        },
+        id: dataSettle.storeValueCard.id
+      },
+      customerId: `customer::${customerInfo.idToken.payload.id}`
+    };
+
+    if (selectedVoucher !== null) {
+      payload.payments = payload.payments.concat(voucherDiscountList)
+    } 
+
+    if (selectedPoint > 0) {      
+      payload.payments.push({
+        paymentType: "point",
+        redeemValue: selectedPoint,
+        paymentAmount: discountPoint,
+        isPoint: true
+      })
+    }
+
+    if(selectedCard) {
+      payload.payments.push({
+        paymentType: selectedCard.paymentID,
+        paymentID: selectedCard.paymentID,
+        paymentName: selectedCard.paymentName,
+        accountId: selectedCard.accountID,
+        paymentAmount: totalPrice
+      })
+    }
+
+    // console.log(payload)
+    // return;
+
+    let response;
+    response = await this.props.dispatch(OrderAction.submitMembership(payload));
+    console.log(response)
+
+    if (response && response.ResultCode === 400) {
+      Swal.fire(
+        "Oppss!",
+        response.message || (response.data && response.data.message) || "Payment Failed!",
+        "error"
+      );
+    } else {
+      // if need further actions
+      if (response.Data.action !== undefined) {
+        if (response.Data.action.type === "url") {
+          this.getPendingPayment(response.data);
+        }
+      } else {
+        response.Data.outlet = {
+          name: dataSettle.outlet.name
+        }
+        response.Data.paySVC = true
+        localStorage.setItem(
+          `${config.prefix}_settleSuccess`,
+          JSON.stringify(encryptor.encrypt(response.Data))
+        );
+        localStorage.setItem(
+          `${config.prefix}_paymentSuccess`,
+          JSON.stringify(encryptor.encrypt(this.state))
+        );
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        this.togglePlay();
+        localStorage.removeItem(`${config.prefix}_selectedPoint`);
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        
+        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
+        this.props.history.push("/settleSuccess");
+      }
     }
   };
 
