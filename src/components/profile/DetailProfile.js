@@ -7,6 +7,7 @@ import Shimmer from "react-shimmer-effect";
 import { ReferralAction } from "../../redux/actions/ReferralAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { MembershiplAction } from "../../redux/actions/MembershipAction";
+import { SVCAction } from "../../redux/actions/SVCAction";
 import ModalEditProfile from "./ModalEditProfile";
 import { Link } from "react-router-dom";
 import config from "../../config";
@@ -22,8 +23,10 @@ class DetailProfile extends Component {
     this.state = {
       loadingShow: true,
       referall: "0/0",
+      isEmenu: window.location.pathname.includes("emenu"),
       dataCustomer: {},
       memberships: [],
+      svc: []
     };
   }
 
@@ -41,6 +44,9 @@ class DetailProfile extends Component {
       let dataMembership = await this.props.dispatch( MembershiplAction.getPaidMembership() );
       if (dataMembership && !isEmptyArray(dataMembership.data)) this.setState({memberships: dataMembership.data})
     }catch(e){}
+
+    const svc = await this.props.dispatch(SVCAction.loadSVC())
+    if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
     
     if (response.ResultCode === 200)
       this.setState({
@@ -255,7 +261,7 @@ class DetailProfile extends Component {
   }
 
   viewRightPage = (loadingShow) => {
-    let { referall } = this.state;
+    let { referall, isEmenu, svc } = this.state;
 
     return (
       <div>
@@ -266,8 +272,34 @@ class DetailProfile extends Component {
             {this.viewShimmer(50)}
           </div>
         )}
+
         {!loadingShow && (
           <div>
+            {
+              svc.length > 0 && 
+              <Link to="/svc">
+                <div
+                  className="background-theme"
+                  style={{
+                    padding: 10,
+                    marginTop: 10,
+                    borderRadius: 10,
+                    border: "1px solid #CDCDCD",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ textAlign: "center" }}>
+                    <div
+                      style={{ fontSize: 15, fontWeight: "bold" }}
+                    >
+                      <i className="fa fa-money" aria-hidden="true" /> Store Value Card
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            }
+
             {referall.split("/")[1] !== "0" && (
               <Link to="/referral">
                 <div
@@ -293,6 +325,31 @@ class DetailProfile extends Component {
                 </div>
               </Link>
             )}
+
+            {
+              isEmenu && 
+              <Link to="/rewards">
+                <div
+                  className="background-theme"
+                  style={{
+                    padding: 10,
+                    marginTop: 10,
+                    borderRadius: 10,
+                    border: "1px solid #CDCDCD",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ textAlign: "center" }}>
+                    <div
+                      style={{ fontSize: 14, fontWeight: "bold" }}
+                    >
+                      <i className="fa fa-gift" aria-hidden="true" /> Rewards
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            }
 
             <Link to="/payment-method">
               <div

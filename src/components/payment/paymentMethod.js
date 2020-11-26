@@ -5,13 +5,14 @@ import Iframe from "react-iframe";
 
 import config from "../../config";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
+import { SVCAction } from "../../redux/actions/SVCAction";
 import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { connect } from "react-redux";
 import CreditCard from "@material-ui/icons/CreditCard";
 import ModalPaymentMethod from "./ModalPaymentMethod";
 import _ from "lodash";
 import { uuid } from "uuidv4";
-
+import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -30,6 +31,7 @@ class PaymentMethod extends Component {
       getPaymentMethod: false,
       showAddPaymentForm: false,
       addPaymentFormUrl: "",
+      svc: []
     };
   }
 
@@ -38,6 +40,8 @@ class PaymentMethod extends Component {
       localStorage.getItem(`${config.prefix}_getPaymentMethod`) || false
     );
     this.setState({ getPaymentMethod });
+    const svc = await this.props.dispatch(SVCAction.loadSVC())
+    if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
     this.getDataPaymentCard();
   };
 
@@ -79,9 +83,9 @@ class PaymentMethod extends Component {
           }
         });
       });
+      
       this.setState({ paymentTypes });
     }
-
     this.setState({ loadingShow: false, infoCompany });
   };
 
@@ -243,6 +247,7 @@ class PaymentMethod extends Component {
       paymentTypes,
       detailCard,
       getPaymentMethod,
+      svc
     } = this.state;
     return (
       <div
@@ -446,7 +451,149 @@ class PaymentMethod extends Component {
                         </Row>
                       </div>
                     ))}
-                    {paymentTypes.length === 0 && (
+                    {
+                      svc.length > 0 &&
+                      <div key={1} style={{ marginBottom: 10 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: 10,
+                            alignItems: "center",
+                          }}
+                        >
+                          <div
+                            className="customer-group-name"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <CreditCard style={{ fontSize: 20 }} />
+                            <div
+                              style={{
+                                marginLeft: 5,
+                                fontWeight: "bold",
+                                fontSize: 12,
+                              }}
+                            >
+                              Store Value Card
+                            </div>
+                          </div>
+                          <Link to="/svc">
+                            <Button
+                              className="button"
+                              data-toggle="modal"
+                              data-target="#delivery-address-modal"
+                              style={{
+                                width: 100,
+                                paddingLeft: 5,
+                                paddingRight: 5,
+                                borderRadius: 5,
+                                height: 40,
+                              }}
+                            >
+                              <i className="fa fa-plus" aria-hidden="true" /> Buy
+                            </Button>
+                          </Link>
+                        </div>
+                        {/* <Row>
+                          {item.data.map((card, keyCard) => (
+                            <Col key={keyCard} sm={6}>
+                              <div
+                                style={{
+                                  padding: 10,
+                                  borderRadius: 5,
+                                  marginBottom: 5,
+                                  color: "#FFF",
+                                  cursor: "pointer",
+                                  backgroundColor: "#1d282e",
+                                  border: "1 solid #FFF"
+                                }}
+                                data-toggle="modal"
+                                data-target={
+                                  !getPaymentMethod && "#payment-method-modal"
+                                }
+                                onClick={() => this.handleSelectCard(card)}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <div
+                                    style={{ fontSize: 16, fontWeight: "bold" }}
+                                  >
+                                    {card.details.cardIssuer.toUpperCase()}
+                                  </div>
+                                  {card.default === true && (
+                                    <div
+                                      className="profile-dashboard"
+                                      style={{
+                                        paddingLeft: 10,
+                                        paddingRight: 10,
+                                        borderBottomLeftRadius: 5,
+                                        marginTop: -20,
+                                        marginRight: -10,
+                                        fontSize: 12,
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      DEFAULT
+                                    </div>
+                                  )}
+                                  {card.selected === true && (
+                                    <div
+                                      className="profile-dashboard"
+                                      style={{
+                                        paddingLeft: 10,
+                                        paddingRight: 10,
+                                        borderBottomLeftRadius: 5,
+                                        marginTop: -20,
+                                        marginRight: -10,
+                                        fontSize: 12,
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      SELECTED
+                                    </div>
+                                  )}
+                                  {!card.default && !card.selected && (
+                                    <CreditCard style={{ fontSize: 20 }} />
+                                  )}
+                                </div>
+                                <div
+                                  style={{
+                                    textAlign: "center",
+                                    fontSize: 18,
+                                    marginTop: 15,
+                                    marginBottom: 15,
+                                  }}
+                                >
+                                  {card.details.maskedAccountNumber}
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <div style={{ fontSize: 12 }}>{`${
+                                    card.details.firstName || ""
+                                  } ${card.details.lastName || ""}`}</div>
+                                  <div
+                                    style={{ fontSize: 12 }}
+                                  >{`VALID THRU ${card.details.cardExpiryMonth} / ${card.details.cardExpiryYear}`}</div>
+                                </div>
+                              </div>
+                            </Col>
+                          ))}
+                        </Row> */}
+                      </div>
+                    }
+                    {paymentTypes.length === 0 && svc.length === 0 && (
                       <div>
                         {/* <Lottie
                           options={{ animationData: emptyGif }}

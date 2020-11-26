@@ -38,7 +38,11 @@ class InboxCard extends Component {
 
   getDetailInfo = (items) => {
     try{
-      return `Membership ${items.details[0].name} ${items.details[0].period} ${items.details[0].periodUnit.toLowerCase()}`
+      if (items.dataPay && items.dataPay.storeValueCard){
+        return `${items.details[0].name}`
+      } else {
+        return `Membership ${items.details[0].name} ${items.details[0].period} ${items.details[0].periodUnit.toLowerCase()}`
+      }
     }catch(e) {
       return null;
     }
