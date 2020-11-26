@@ -34,10 +34,10 @@ class AddPromo extends Component {
                   width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
                   alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
                 }}>
-                <dev style={{display: "flex", alignItems: "center"}}>
+                <div style={{display: "flex", alignItems: "center"}}>
                   <RedeemIcon style={{ fontSize: 16, marginRight: 10 }} />
                   Use Voucher
-                </dev>
+                </div>
                 <i className="fa fa-chevron-right" aria-hidden="true" />
               </Button>
               {
@@ -75,10 +75,10 @@ class AddPromo extends Component {
                   width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
                   alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
                 }}>
-                <dev style={{display: "flex", alignItems: "center"}}>
+                <div style={{display: "flex", alignItems: "center"}}>
                   <i className="fa fa-tags" aria-hidden="true" style={{ fontSize: 16, marginRight: 10 }}/>
                   {`${props.selectedPoint > 0 ? `${props.selectedPoint} point` : 'Use Point'}`}
-                </dev>
+                </div>
                 <i className="fa fa-chevron-right" aria-hidden="true" />
               </Button>
               {

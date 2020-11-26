@@ -19,7 +19,7 @@ class MySVC extends Component {
 
   componentDidMount = async () => {
     await this.props.dispatch(SVCAction.summarySVC())
-    await this.getHistorySVC()
+    await this.props.dispatch(SVCAction.historySVC([]))
     this.setState({ loadingShow: false })
   };
 
@@ -78,9 +78,6 @@ class MySVC extends Component {
           <p style={{fontSize: 27}}>{this.getCurrency(this.props.balance)}</p>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', marginTop: 20,  }}>
-            {/* <div style={{ display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
-              <i style={{ marginRight: 5 }} className="fa fa-plus customer-group-name"></i> <b className="customer-group-name">Top Up Now</b>
-            </div> */}
             <Link to={'/buy-svc'} style={{ display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
               <div>
                 <i style={{ marginRight: 5 }} className="fa fa-plus customer-group-name"></i> <b className="customer-group-name">Buy SVC</b>
@@ -105,7 +102,7 @@ class MySVC extends Component {
                       <p style={{fontSize: 12, marginTop: -20}}>Expire on {moment(item.expiryDate).format("DD MMM YYYY")}</p>
                     </div>
                     <div style={{textAlign: 'right'}}>
-                      <b className="customer-group-name" style={{fontSize: 14}}>{this.getCurrency(item.purchasedValue)}</b>
+                      <b className="customer-group-name" style={{fontSize: 14}}>{this.getCurrency(item.totalNettAmount)}</b>
                       <br />
                       <b className="" style={{fontSize: 14}}>Balance : {this.getCurrency(item.balance)}</b>
                     </div>

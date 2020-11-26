@@ -7,6 +7,7 @@ import Shimmer from "react-shimmer-effect";
 import Iframe from "react-iframe";
 import LoadingPayAtPOS from "../loading/LoadingPayAtPOS";
 import AddPromo from "../basket/addPromo";
+import SelectSVC from "../svc/SelectSVC";
 import { connect } from "react-redux";
 import PaymentMethodBasket from "../basket/paymentMethodBasket";
 import { OrderAction } from "../../redux/actions/OrderAction";
@@ -19,7 +20,7 @@ import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
 import { uuid } from "uuidv4";
-
+import { SVCAction } from "../../redux/actions/SVCAction";
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const companyInfo = encryptor.decrypt(
@@ -72,7 +73,9 @@ class Payment extends Component {
       showPaymentPage: false,
       paymentUrl: "",
       paymentCard: [],
-      voucherDiscountList: []
+      voucherDiscountList: [],
+      amountSVC: 0,
+      svc: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -93,8 +96,21 @@ class Payment extends Component {
       );
       if (response.ResultCode === 200) this.setState(response.Data);
     }
+    const svc = await this.props.dispatch(SVCAction.loadSVC())
+    await this.props.dispatch(SVCAction.summarySVC())
+    if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
     this.setState({ loadingShow: false });
   };
+
+
+  setAmountSVC = (amountSVC) => {
+    this.setState({amountSVC})
+  }
+
+  cancelAmountSVC = async () => {
+    await this.setState({amountSVC: 0})
+    await this.getDataBasket();
+  }
 
   viewShimmer = (isHeight = 100) => {
     return (
@@ -274,6 +290,11 @@ class Payment extends Component {
     let discount = discountPoint + voucherDiscount;
     
     totalPrice = totalPrice - discount < 0 ? 0 : totalPrice - discount;
+
+    if (this.state.amountSVC > 0) {
+      totalPrice -= Number(this.state.amountSVC)
+    }
+
     if(totalPrice === 0) selectedCard = null
 
     this.setState({
@@ -615,7 +636,7 @@ class Payment extends Component {
       referenceNo: uuid(),
       dataPay: {
         storeValueCard: {
-          value: dataSettle.storeValueCard.value,
+          value: (dataSettle.storeValueCard.value * dataSettle.detailPurchase.details[0].quantity),
           expiryOn: dataSettle.storeValueCardexpiryOn,
           expiryOnUnit: dataSettle.storeValueCard.expiryOnUnit,
           retailPrice: dataSettle.storeValueCard.retailPrice,
@@ -628,7 +649,8 @@ class Payment extends Component {
           taxPercentage: dataSettle.detailPurchase.details[0].taxPercentage,
           taxableAmount: dataSettle.detailPurchase.details[0].taxableAmount,
           totalDiscAmount: dataSettle.detailPurchase.details[0].totalDiscAmount,
-          quantity: dataSettle.detailPurchase.details[0].quantity
+          quantity: dataSettle.detailPurchase.details[0].quantity,
+          totalNettAmount: dataSettle.dataBasket.totalNettAmount
         },
         id: dataSettle.storeValueCard.id
       },
@@ -859,6 +881,15 @@ class Payment extends Component {
       })
     }
 
+    if (this.state.amountSVC > 0) {
+      payload.payments.push({
+        paymentType: "Store Value Card",
+        paymentName: "Store Value Card",
+        paymentAmount: Number(this.state.amountSVC),
+        isSVC: true
+      })
+    }
+
     // console.log(payload)
     // return
 
@@ -938,7 +969,7 @@ class Payment extends Component {
 
   render() {
     let { dataBasket, totalPrice, selectedCard, isLoadingPOS, 
-      cartDetails, storeDetail, dataSettle, orderingMode
+      cartDetails, storeDetail, dataSettle, orderingMode, svc
     } = this.state;
     let { basket } = this.props;
     
@@ -1186,6 +1217,18 @@ class Payment extends Component {
                       handleCancelPoint={() => this.cancelSelectPoint()}
                       disabledBtn={(totalPrice) === 0}
                     />
+
+                    {
+                      svc && svc.length > 0 && dataSettle.paySVC === undefined &&
+                      <SelectSVC
+                        data={this.state}
+                        setAmountSVC={this.setAmountSVC}
+                        cancelAmountSVC={this.cancelAmountSVC}
+                        getDataBasket={this.getDataBasket}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        disabledBtn={(totalPrice) === 0}
+                      />
+                    }
 
                     {this.props.isLoggedIn && (
                       <PaymentMethodBasket

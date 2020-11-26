@@ -19,7 +19,7 @@ class ModalDetailSVC extends Component {
 
   handlePurchaseSVC = async () => {
     let { dataDetail } = this.props;
-    let { detailPurchase } = this.state;
+    let { detailPurchase, count } = this.state;
 
     const payload = {
       detailPurchase,
@@ -30,15 +30,15 @@ class ModalDetailSVC extends Component {
       dataBasket: {
         totalNettAmount: detailPurchase.totalNettAmount,
         outlet: {
-          name: `${dataDetail.name} SVC`,
+          name: `${count} x ${dataDetail.name} SVC`,
         },
       },
       outlet: {
-        name: `${dataDetail.name} SVC`,
+        name: `${count} x ${dataDetail.name} SVC`,
         enablePayAtPOS: false,
       },
       storeDetail: {
-        name: `${dataDetail.name} SVC`,
+        name: `${count} x ${dataDetail.name} SVC`,
         enablePayAtPOS: false,
         enableRedeemPoint: true,
         paidMembership: true,
