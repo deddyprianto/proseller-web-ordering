@@ -108,11 +108,6 @@ const App = (props) => {
     }
 
     await props.dispatch(OrderAction.getSettingOrdering());
-    if(window.location.hash.split("#")[1] === "/signin" && !isLoggedIn){
-      try {
-        document.getElementById("login-register-btn").click();
-      } catch (error) {}
-    }
 
     try {
       let position = await props.dispatch(OutletAction.getCoordinates())

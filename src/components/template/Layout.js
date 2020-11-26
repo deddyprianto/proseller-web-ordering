@@ -73,6 +73,13 @@ class Layout extends Component {
       } catch (error) { }
       this.setState({infoCompany})
     }
+
+    if(window.location.href.includes('/signin') && !isLoggedIn){
+      try {
+        document.getElementById("login-register-btn").click();
+      } catch (error) {}
+    }
+
   };
 
   componentDidUpdate = (prevProps, prevState) => {
