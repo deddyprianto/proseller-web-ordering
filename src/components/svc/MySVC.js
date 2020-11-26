@@ -2,47 +2,29 @@ import React, { Component } from "react";
 import { SVCAction } from "../../redux/actions/SVCAction";
 import { connect } from "react-redux";
 import Shimmer from "react-shimmer-effect";
-import { Col, Row } from "reactstrap";
-import voucherIcon from "../../assets/images/voucher-icon.png";
 import GiftVoucherModal from "./GiftVoucherModal";
 import moment from 'moment'
-import config from '../../config'
-import { data } from "jquery";
+import { Link } from "react-router-dom";
+import { isEmptyObject } from "../../helpers/CheckEmpty";
 
 class MySVC extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isMyVoucher: true,
       loadingShow: true,
-      showGiftModal: false,
-      voucherToGift: null,
-      balance: 0,
       history: [],
       dataLength: 0
     };
   }
 
   componentDidMount = async () => {
-    const summary = await this.props.dispatch(SVCAction.summarySVC())
-    if (summary && summary.resultCode === 200) await this.setState({balance: summary.data.balance})
-
+    await this.props.dispatch(SVCAction.summarySVC())
     await this.getHistorySVC()
-
     this.setState({ loadingShow: false })
   };
 
   getHistorySVC = async () => {
-    const history = await this.props.dispatch(SVCAction.historySVC(this.state.history.length))
-    if (history && history.resultCode === 200) {
-      if (this.state.history.length === 0) {
-        await this.setState({history: history.data, dataLength: history.dataLength})
-      } else {
-        let dataHistory = this.state.history
-        dataHistory = [...dataHistory, ...history.data]
-        await this.setState({history: dataHistory, dataLength: history.dataLength})
-      }
-    }
+    await this.props.dispatch(SVCAction.historySVC(this.props.history.data))
   }
 
   getCurrency = (price) => {
@@ -77,13 +59,15 @@ class MySVC extends Component {
   };
 
   render() {
-    let { showGiftModal, voucherToGift, balance, history, dataLength } = this.state;
-
+    const { showGiftModal } = this.state;
+    const { history } = this.props;
+    console.log(history)
     return (
       <div>
         {showGiftModal && (
           <GiftVoucherModal
-            voucher={voucherToGift}
+            balance={this.props.balance}
+            stringBalance={this.getCurrency(this.props.balance)}
             onClose={() =>
               this.setState({ showGiftModal: false, voucher: null })
             }
@@ -91,13 +75,18 @@ class MySVC extends Component {
         )}
         <div className="button" style={{ boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)", marginTop: 20, padding: 10, paddingTop: 15, paddingBottom: 15, width: '100%', borderRadius: 10 }}>
           <p>Total Balance</p>
-          <p style={{fontSize: 27}}>{this.getCurrency(balance)}</p>
+          <p style={{fontSize: 27}}>{this.getCurrency(this.props.balance)}</p>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', marginTop: 20,  }}>
-            <div style={{ display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
+            {/* <div style={{ display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
               <i style={{ marginRight: 5 }} className="fa fa-plus customer-group-name"></i> <b className="customer-group-name">Top Up Now</b>
-            </div>
-            <div style={{ padding: 5, display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
+            </div> */}
+            <Link to={'/buy-svc'} style={{ display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
+              <div>
+                <i style={{ marginRight: 5 }} className="fa fa-plus customer-group-name"></i> <b className="customer-group-name">Buy SVC</b>
+              </div>
+            </Link>
+            <div onClick={() => this.setState({showGiftModal: true})} style={{ padding: 5, display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
               <i style={{ marginRight: 5 }} className="fa fa-send customer-group-name"></i> <b className="customer-group-name">Transfer</b>
             </div>
           </div>
@@ -107,25 +96,27 @@ class MySVC extends Component {
           <p style={{fontSize: 23, color: 'black', fontWeight: 'bold', textAlign: 'left'}}>History</p>
           <div>
             {
-              history.map(item =>
-                <>
-                  <div key={item.id} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+              !isEmptyObject(history) && history.data.map(item =>
+                <div key={item.id}>
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <div style={{textAlign: 'left'}}>
                       <b className="customer-group-name" style={{marginBottom: -5, fontSize: 16}}>{item.from.toUpperCase()}</b>
                       <p style={{fontSize: 12, marginTop: -5 }}> <span style={{textTransform: 'capitalize'}}>{item.from}</span> on {moment(item.purchaseDate).format("DD MMM YYYY")}</p>
                       <p style={{fontSize: 12, marginTop: -20}}>Expire on {moment(item.expiryDate).format("DD MMM YYYY")}</p>
                     </div>
                     <div style={{textAlign: 'right'}}>
-                      <b className="customer-group-name" style={{fontSize: 16}}>{this.getCurrency(item.balance)}</b>
+                      <b className="customer-group-name" style={{fontSize: 14}}>{this.getCurrency(item.purchasedValue)}</b>
+                      <br />
+                      <b className="" style={{fontSize: 14}}>Balance : {this.getCurrency(item.balance)}</b>
                     </div>
                   </div>  
                   <hr />
-                </>
+                </div>
               )
             }
-            {history.length === 0 && <p style={{ fontSize: 20 }}>Data History is Empty</p> }
+            {!isEmptyObject(history) && history.data.length === 0 && <p style={{ fontSize: 20 }}>Data History is Empty</p> }
             {
-              history.length < dataLength &&
+              !isEmptyObject(history) && history.data.length < history.dataLength &&
               <button onClick={this.getHistorySVC} className="button" style={{padding: 5}}>
                 Load More
               </button>
@@ -141,6 +132,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
     companyInfo: state.masterdata.companyInfo.data,
+    balance: state.svc.summary,
+    history: state.svc.history,
   };
 };
 

@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import { SVCAction } from '../../redux/actions/SVCAction';
 import { connect } from "react-redux";
 import Shimmer from "react-shimmer-effect";
-import {
-  Col,
-  Row,
-} from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import voucherIcon from '../../assets/images/voucher-icon.png'
 import ModalDetailSVC from './ModalDetailSVC';
 import config from "../../config"
-
+import calculateTAX from "../../helpers/TaxCalculation";
 class BuySVC extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +14,8 @@ class BuySVC extends Component {
       isMyVoucher: true,
       loadingShow: true,
       dataDetail: null,
-      svc: []
+      svc: [],
+      detailPurchase: {}
     }
   }
 
@@ -52,11 +50,48 @@ class BuySVC extends Component {
     return price;
   };
 
+  findTax = async (dataDetail) => {
+    let returnData = {
+      outlet: this.props.defaultOutlet,
+      details: [],
+    };
+    let product = {};
+    product.unitPrice = dataDetail.retailPrice;
+    product.quantity = 1;
+    product.product = dataDetail;
+    returnData.details.push(product);
+
+    const detailPurchase = await calculateTAX(returnData.details, returnData, {});
+
+    await this.setState({ dataDetail, detailPurchase })
+  };
+
   render() {
-    let { loadingShow, svc, dataDetail } = this.state
+    let { loadingShow, svc, dataDetail, detailPurchase } = this.state
     return (
-      <div>
-        <ModalDetailSVC history={this.props.history} dataDetail={dataDetail} getCurrency={(price) => this.getCurrency(price)} />
+      <div style={{ marginTop: 80, }}>
+        <ModalDetailSVC detailPurchase={detailPurchase} history={this.props.history} dataDetail={dataDetail} getCurrency={(price) => this.getCurrency(price)} />
+        <div
+          style={{
+            flexDirection: "row",
+            position: "fixed",
+            width: "100%",
+            display: "flex",
+            zIndex: 2,
+            marginTop: -60,
+            height: 40,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          className="background-theme"
+        >
+          <div
+            style={{ marginLeft: 10, fontSize: 16 }}
+            onClick={() => this.props.history.goBack()}
+          >
+            <i className="fa fa-chevron-left"></i> Back
+          </div>
+        </div>
         {
           loadingShow &&
           <Row>
@@ -70,7 +105,7 @@ class BuySVC extends Component {
         }
         {
           !loadingShow &&
-          <Row>
+          <Row style={{ marginTop: 150, padding: 5 }}>
             {
               svc.map((item, key) => (
                 <Col key={key} sm={6}>
@@ -80,7 +115,7 @@ class BuySVC extends Component {
                     width: "100%", boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer", display: "flex", borderRadius: 10, height: 100
                   }} 
-                  onClick={() => this.setState({ dataDetail: item })} 
+                  onClick={() => this.findTax(item)} 
                   data-toggle="modal" data-target={"#voucher-detail-modal"}>
                     
                     <img style={{ width: '50%', height: 100, objectFit: "contain", overflow: 'hidden', marginLeft: 5, borderRadius: 5 }}
@@ -122,6 +157,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account.idToken.payload,
     companyInfo: state.masterdata.companyInfo.data,
+    defaultOutlet: state.outlet.defaultOutlet,
     pointData: state.campaign.data,
   };
 };

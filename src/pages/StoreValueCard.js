@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { Button } from "reactstrap";
+import { Link } from "react-router-dom";
+// import { Button } from "reactstrap";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
-import config from "../config";
+// import config from "../config";
 import { CampaignAction } from '../redux/actions/CampaignAction';
 
 const MySVC = loadable(() => import("../components/svc/MySVC"));
-const BuySVC = loadable(() => import("../components/svc/BuySVC"));
+// const BuySVC = loadable(() => import("../components/svc/BuySVC"));
 
 class StoreValueCard extends Component {
   constructor(props) {
@@ -36,13 +37,14 @@ class StoreValueCard extends Component {
   }
 
   render() {
-    let {isMySVC, totalPoint} = this.state;
+    // let {isMySVC, totalPoint} = this.state;
     return (
       <div
         className="col-full"
         style={{
-          marginTop: config.prefix === "emenu" ? 100 : 160,
-          marginBottom: 50,
+          // marginTop: config.prefix === "emenu" ? 100 : 160,
+          marginTop: 100,
+          // marginBottom: 20,
         }}
       >
         <div id="primary" className="content-area">
@@ -53,7 +55,7 @@ class StoreValueCard extends Component {
                 position: "fixed",
                 zIndex: 10,
                 width: "100%",
-                marginTop: -100,
+                marginTop: -40,
                 display: "flex",
                 height: 40,
                 justifyContent: "space-between",
@@ -61,17 +63,15 @@ class StoreValueCard extends Component {
               }}
               className="background-theme"
             >
-              <div
-                style={{ marginLeft: 10, fontSize: 16 }}
-                onClick={() => this.props.history.goBack()}
-              >
-                <i className="fa fa-chevron-left"></i> Back
-              </div>
-              <div style={{ marginRight: 10, fontSize: 16, fontWeight: "bold" }}>
-                <i className="fa fa-tags" aria-hidden="true" /> {totalPoint.toFixed(2)}
-              </div>
+              <Link to={'/profile'}>
+                <div
+                  style={{ marginLeft: 10, fontSize: 16 }}
+                >
+                  <i className="fa fa-chevron-left"></i> Back
+                </div>
+              </Link>
             </div>
-            <div
+            {/* <div
               style={{
                 flexDirection: "row",
                 position: "fixed",
@@ -94,15 +94,14 @@ class StoreValueCard extends Component {
               >
                 Buy SVC
               </Button>
-            </div>
+            </div> */}
             <main
               id="main"
               className="site-main"
               style={{ textAlign: "center" }}
             >
               <div style={{ marginTop: 20 }}>
-                {this.state.isMySVC && <MySVC history={this.props.history} />}
-                {!this.state.isMySVC && <BuySVC  history={this.props.history} />}
+                <MySVC history={this.props.history} />
               </div>
             </main>
           </div>

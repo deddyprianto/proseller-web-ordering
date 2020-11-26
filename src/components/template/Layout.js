@@ -19,6 +19,7 @@ const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
 const StoreValueCard = loadable(() => import("../../pages/StoreValueCard"));
+const BuyStoreValueCard = loadable(() => import("../../components/svc/BuySVC"));
 const DeliveryAddress = loadable(() => import("../../components/delivery-address") );
 const Payment = loadable(() => import("../../components/payment/index"));
 const PaymentMethod = loadable(() => import("../../components/payment/paymentMethod") );
@@ -109,6 +110,7 @@ class Layout extends Component {
             {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
             {isLoggedIn &&  <Route exact path={"/voucher"} component={Voucher} /> }
             {isLoggedIn &&  <Route exact path={"/svc"} component={StoreValueCard} /> }
+            {isLoggedIn &&  <Route exact path={"/buy-svc"} component={BuyStoreValueCard} /> }
             {isLoggedIn &&  <Route exact path={"/setting"} component={Setting} /> }
             {isLoggedIn && <Route exact path={"/payment-method"} component={PaymentMethod} /> }
             {isLoggedIn && <Route exact path={"/delivery-address"} component={DeliveryAddress} /> }

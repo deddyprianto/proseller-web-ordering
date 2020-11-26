@@ -14,6 +14,7 @@ import masterdata from "./MasterdataReducer";
 import theme from "./ThemeReducer";
 import voucher from "./VoucherReducer";
 import payment from "./PaymentReducer";
+import svc from "./SVCReducer";
 
 const rootReducer = combineReducers({
   auth,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   theme,
   voucher,
   payment,
+  svc
 });
 
 export default rootReducer;

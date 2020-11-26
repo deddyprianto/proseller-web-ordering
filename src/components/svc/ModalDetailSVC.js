@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import voucherIcon from "../../assets/images/voucher-icon.png";
-import { Button } from "reactstrap";
 import config from "../../config";
 import calculateTAX from "../../helpers/TaxCalculation";
 import styles from "./GiftVoucherModal/styles.module.css";
@@ -13,7 +12,7 @@ class ModalDetailSVC extends Component {
     super(props);
     this.state = {
       isLoading: false,
-      count: 0,
+      count: 1,
       detailPurchase: {},
     };
   }
@@ -74,11 +73,13 @@ class ModalDetailSVC extends Component {
 
   componentDidUpdate = async (prevProps) => {
     try {
-      if (prevProps.dataDetail.id !== this.props.dataDetail.id) {
+      if (this.state.count === 1) {
         this.setState({
-          count: 0,
-          detailPurchase: {},
+          detailPurchase: this.props.detailPurchase,
         });
+      }
+      if (prevProps.dataDetail.id !== this.props.dataDetail.id) {
+        this.setState({ count: 1 });
       }
     } catch (e) {}
   };

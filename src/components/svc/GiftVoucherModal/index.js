@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
-import { VoucherAction } from "../../../redux/actions/VoucherAction";
+import { SVCAction } from "../../../redux/actions/SVCAction";
 
 import { connect } from "react-redux";
 
 import cx from "classnames";
 
 import styles from "./styles.module.css";
-import voucherIcon from "../../../assets/images/voucher-icon.png";
 
 import Swal from "sweetalert2";
 
 const GiftVoucherModal = ({
-  voucher,
+  balance,
+  stringBalance,
   onClose,
-  isSubmitting,
   failed,
   color,
   dispatch,
@@ -23,26 +22,30 @@ const GiftVoucherModal = ({
   successMessage,
   account,
 }) => {
-  const [count, setCount] = useState(0);
   const [method, setMethod] = useState("email");
   const [receiver, setReceiver] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [isSubmitting, setSubmit] = useState(false);
 
   const handleSubmit = () => {
+    setSubmit(true)
     const { email, phoneNumber } = account;
     if (email === receiver || phoneNumber === receiver) {
       dispatch({
-        type: "SEND_VOUCHER_FAILED",
-        payload: "Can't gift voucher to your own account",
+        type: "TRANSFER_SVC_FAILED",
+        payload: "Can't transfer to your own account",
       });
     } else {
       const sendMethod =
-        method === "email" ? "transferToEmail" : "transferToPhoneNumber";
+        method === "email" ? "email" : "phoneNumber";
       const payload = {
-        voucherID: voucher.id,
-        quantity: count,
         [sendMethod]: receiver,
+        value: Number(amount)
       };
-      dispatch(VoucherAction.transferVoucher(payload));
+      dispatch(SVCAction.transferSVC(payload));
+      setReceiver("");
+      setAmount(0)
+      setSubmit(false)
     }
   };
 
@@ -54,18 +57,10 @@ const GiftVoucherModal = ({
   }, []);
 
   useEffect(() => {
-    if (count > voucher.totalRedeem) {
-      setCount(voucher.totalRedeem);
-    }
-    if (count < 0 || count === "") {
-      setCount(0);
-    }
-  }, [count]);
-
-  useEffect(() => {
     setReceiver("");
+    setAmount(0)
     dispatch({
-      type: "INIT_VOUCHER_SEND",
+      type: "INIT_TRANSFER_SVC",
     });
   }, [method]);
 
@@ -74,7 +69,7 @@ const GiftVoucherModal = ({
       {isSubmitting ? Swal.showLoading() : Swal.close()}
       <div className={cx(styles.modal, "background-theme")}>
         <div className={styles.header}>
-          <div>Gift Voucher</div>
+          <div>Transfer Store Value Card</div>
           <button
             onClick={onClose}
             className={cx(styles.closeButton, "close close-modal")}
@@ -85,27 +80,26 @@ const GiftVoucherModal = ({
         <div className={styles.scrollable}>
           <div className={styles.body}>
             <div className={styles.image}>
-              <img
-                src={voucher.image ? voucher.image : voucherIcon}
-                alt="voucher"
-              />
+              
             </div>
-            <div className={styles.name}>{voucher.name}</div>
-            <div className={styles.description}>{`Discount ${voucher.voucherType === "discPercentage"
-              ? voucher.voucherValue + "%"
-              : "$" + voucher.voucherValue
-              }`}</div>
+            <div className={styles.description}>Total Balance</div>
+            <div className={styles.name}>{stringBalance}</div>
             <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
             <div className={styles.receiverForm} style={{ marginBottom: 10 }}>
-              {failed && (
-                <div className={styles.errorMessage}>{errorMessage}</div>
-              )}
-              {!isSubmitting && !failed && (
-                <div className={styles.successMessage}>{successMessage}</div>
-              )}
-              <div>Gift to:</div>
+              <div style={{textAlign: 'left'}}><b>Amount to Transfer :</b></div>
               <input
-                type={method === "email" ? "email" : "number"}
+                type={'number'}
+                onFocus={(e) => setAmount("")}
+                name="amountToTransfer"
+                placeholder={`Enter amount to transfer`}
+                value={amount}
+                onChange={(e) => e.target.value <= balance ? setAmount(e.target.value) : false}
+              ></input>
+            </div>
+            <div className={styles.receiverForm} style={{ marginBottom: 10 }}>
+              <div style={{textAlign: 'left'}}><b>Transfer to :</b></div>
+              <input
+                type={method === "email" ? "email" : "text"}
                 name="receiver"
                 placeholder={`Enter ${method === "email" ? "email" : "phone number"}`}
                 value={receiver}
@@ -123,47 +117,22 @@ const GiftVoucherModal = ({
               </div>
             </div>
             <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
-            <div style={{ marginTop: 10 }}>Voucher owned : {voucher.totalRedeem} items</div>
-            <div className={styles.counter} style={{ marginTop: -30, marginBottom: -20 }}>
-              <button
-                className="font-color-theme"
-                onClick={() => count > 0 && setCount(count - 1)}
-                disabled={count === 0}
-              >
-                -
-              </button>
-              <input
-                type="number"
-                name="count"
-                min={0}
-                value={count}
-                style={{height: 40, fontSize: 20}}
-                onChange={(e) =>
-                  e.target.value !== ""
-                    ? setCount(parseInt(e.target.value))
-                    : setCount(0)
-                }
-              ></input>
-              <button
-                className="font-color-theme"
-                onClick={() =>
-                  count <= voucher.totalRedeem && setCount(count + 1)
-                }
-                disabled={count === voucher.totalRedeem}
-              >
-                +
-              </button>
-            </div>
-            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
           </div>
+
+          {failed && (
+            <div style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }} className={styles.errorMessage}><b>{errorMessage}</b></div>
+          )}
+          {!isSubmitting && !failed && (
+            <div style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }} className={styles.successMessage}><b>{successMessage}</b></div>
+          )}
 
           <div className={styles.footer} style={{ marginTop: 10 }}>
             <button 
               onClick={handleSubmit} 
-              disabled={isSubmitting || count < 1} 
+              disabled={isSubmitting || amount < 1} 
               style={{ width: "100%", borderRadius: 5, height: 50 }}
             >
-              <i className="fa fa-paper-plane" aria-hidden="true"></i> Send Gifts
+              <i className="fa fa-paper-plane" aria-hidden="true"></i> Transfer 
             </button>
           </div>
         </div>
@@ -173,11 +142,10 @@ const GiftVoucherModal = ({
 };
 
 GiftVoucherModal.propTypes = {
-  voucher: PropTypes.object,
+  balance: PropTypes.number,
+  stringBalance: PropTypes.string,
   onClose: PropTypes.func,
-  isSubmitting: PropTypes.bool,
   failed: PropTypes.bool,
-  color: PropTypes.string,
   dispatch: PropTypes.func,
   errorMessage: PropTypes.string,
   successMessage: PropTypes.string,
@@ -186,10 +154,9 @@ GiftVoucherModal.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    isSubmitting: state.voucher.isSending,
-    failed: state.voucher.sendFailed,
-    errorMessage: state.voucher.errorMessage,
-    successMessage: state.voucher.successMessage,
+    failed: state.svc.sendFailed,
+    errorMessage: state.svc.errorMessage,
+    successMessage: state.svc.successMessage,
     color: state.theme.color,
     account: state.auth.account.idToken.payload,
   };

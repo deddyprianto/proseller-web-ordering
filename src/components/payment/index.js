@@ -495,8 +495,8 @@ class Payment extends Component {
   };
 
   cancelSelectPoint = async () => {
-    this.setState({ discountPoint: 0, selectedPoint: 0});
-    localStorage.removeItem(`${config.prefix}_selectedPoint`);
+    await this.setState({ discountPoint: 0, selectedPoint: 0});
+    await localStorage.removeItem(`${config.prefix}_selectedPoint`);
     await this.getDataBasket();
   };
 
@@ -557,8 +557,8 @@ class Payment extends Component {
   };
 
   setPoint = async (selectedPoint, discountPoint) => {
-    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) )
-    this.setState({ selectedPoint, discountPoint });
+    await localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(selectedPoint)) )
+    await this.setState({ selectedPoint, discountPoint });
 
     await this.getDataBasket();
     return selectedPoint;
