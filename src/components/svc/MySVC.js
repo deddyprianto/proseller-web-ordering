@@ -61,7 +61,7 @@ class MySVC extends Component {
   render() {
     const { showGiftModal } = this.state;
     const { history } = this.props;
-    console.log(history)
+    
     return (
       <div>
         {showGiftModal && (
@@ -94,7 +94,7 @@ class MySVC extends Component {
 
         <div style={{marginTop: 20}}>
           <p style={{fontSize: 23, color: 'black', fontWeight: 'bold', textAlign: 'left'}}>History</p>
-          <div>
+          <div style={{ paddingBottom: 30 }}>
             {
               !isEmptyObject(history) && history.data.map(item =>
                 <div key={item.id}>
