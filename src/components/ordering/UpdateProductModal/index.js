@@ -75,10 +75,10 @@ const UpdateProductModal = ({
     );
     document.getElementById("open-modal-product").click();
   };
-
+  
   return (
     <div className={styles.modalContainer}>
-      <div className={styles.modal}>
+      <div className={styles.modal} style={{ backgroundColor: colorTheme.background }}>
         <div className={styles.header}>
           <div>This item in cart</div>
           <button
