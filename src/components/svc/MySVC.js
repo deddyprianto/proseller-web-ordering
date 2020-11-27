@@ -116,6 +116,8 @@ class MySVC extends Component {
             style={{
               flexDirection: "row",
               width: "100%",
+              borderRadius: 7,
+              overflow: 'hidden',
               marginBottom: 10
             }}
           >

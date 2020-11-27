@@ -23,8 +23,8 @@ class ModalDetailHistory extends Component {
       let data = []
       const { detail } = this.props;
       if (detail.payments.length > 0){
-        detail.payments.map(item => {
-          if (item.isVoucher !== true && item.isPoint !== true && item.isAppPayment !== true) {
+        for (let i = 0; i < detail.payments.length; i++) {
+          if (detail.payments[i].isVoucher !== true && detail.payments[i].isPoint !== true && detail.payments[i].isAppPayment !== true) {
             data.push(
               <div
                 style={{
@@ -36,15 +36,15 @@ class ModalDetailHistory extends Component {
                 }}
               >
                 <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                  {item.paymentType}
+                  {detail.payments[i].paymentType}
                 </div>
                 <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                  {this.getCurrency(item.paymentAmount)}
+                  {this.getCurrency(detail.payments[i].paymentAmount)}
                 </div>
               </div>
             )
           }
-        })
+        }
         return data
       }
       return null
