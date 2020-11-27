@@ -7,6 +7,7 @@ import { MembershiplAction } from "../redux/actions/MembershipAction";
 import { CustomerAction } from "../redux/actions/CustomerAction";
 import { CampaignAction } from "../redux/actions/CampaignAction";
 import { Button } from 'reactstrap';
+import calculateTAX from "../helpers/TaxCalculation";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const CardMembership = loadable(() =>
   import("../components/membership/CardMembership")
@@ -191,7 +192,7 @@ class PaidMembership extends Component {
             <main
               id="main"
               className="site-main"
-              style={{ textAlign: "center" }}
+              style={{ textAlign: "center", paddingBottom: selectedMembership !== null ? 200 : 20 }}
             >
               <div style={{ marginTop: 20 }}>
                 {
@@ -202,16 +203,32 @@ class PaidMembership extends Component {
                     {this.viewShimmer()}
                   </>
                   :
-                  memberships.map((item, idx) => 
-                    <CardMembership 
-                      key={idx} 
-                      index={idx} 
-                      item={item} 
-                      selectedMembership={selectedMembership} 
-                      setPlan={this.setPlan}
-                      setMembership={this.setMembership}
-                    />
-                  )
+                  <div>
+                    {
+                      memberships.map((item, idx) => 
+                      <CardMembership 
+                        key={idx} 
+                        index={idx} 
+                        item={item} 
+                        selectedMembership={selectedMembership} 
+                        setPlan={this.setPlan}
+                        setMembership={this.setMembership}
+                      />
+                    )
+                    }
+                    {
+                      memberships.map((item, idx) => 
+                      <CardMembership 
+                        key={idx} 
+                        index={idx} 
+                        item={item} 
+                        selectedMembership={selectedMembership} 
+                        setPlan={this.setPlan}
+                        setMembership={this.setMembership}
+                      />
+                    )
+                    }
+                  </div>
                 }
               </div>
             </main>
@@ -222,10 +239,60 @@ class PaidMembership extends Component {
                 position: 'fixed', 
                 zIndex: 30,
                 bottom: 50, 
-                padding: 20,
+                padding: 15,
                 backgroundColor: 'white',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                boxShadow: "1px 5px 25px rgba(128, 128, 128, 0.5)",
               }}>
+                <div style={{ marginBottom: 3 }}>
+                  <hr />
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: -5,
+                      marginBottom: -5,
+                    }}
+                  >
+                    <p
+                      style={{ fontWeight: "bold" }}
+                      className="customer-gr"
+                    >
+                      Tax Amount
+                    </p>
+                    <p
+                      style={{ fontWeight: "bold" }}
+                      className="font-color-theme"
+                    >
+                      SGD akjsa
+                    </p>
+                  </div>
+                  <hr />
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: -5,
+                      marginBottom: -5,
+                    }}
+                  >
+                    <p
+                      style={{ fontWeight: "bold" }}
+                      className="font-color-theme"
+                    >
+                      Total
+                    </p>
+                    <p
+                      style={{ fontWeight: "bold" }}
+                      className="font-color-theme"
+                    >
+                      SGD 1212
+                    </p>
+                  </div>
+                  <hr />
+                </div>
                 <Button 
                   onClick={this.upgradeMembership}
                   className="btn btn-footer" 
