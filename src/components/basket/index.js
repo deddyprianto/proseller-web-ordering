@@ -341,7 +341,7 @@ class Basket extends Component {
 
       let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
 
-      deliveryProvaider = response.dataProfider
+      deliveryProvaider = response.dataProvider
       deliveryProvaider && deliveryProvaider.forEach(async (provider) => {
         provider.deliveryFeeFloat = provider.deliveryFee;
         provider.deliveryFee = this.getCurrency(provider.deliveryFee);
@@ -978,10 +978,10 @@ class Basket extends Component {
     });
 
     if(!provaiderDelivery){
-      let profider = {...data, deliveryFee: data.deliveryFeeFloat}
+      let provider = {...data, deliveryFee: data.deliveryFeeFloat}
 
       let dataBasket = await this.props.dispatch(
-        OrderAction.changeOrderingMode({ orderingMode, profider })
+        OrderAction.changeOrderingMode({ orderingMode, provider })
       );
       if (dataBasket.resultCode === 200) {
         dataBasket = dataBasket.data;

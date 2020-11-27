@@ -81,6 +81,7 @@ class Payment extends Component {
   }
 
   componentDidMount = async () => {
+    await this.props.dispatch(SVCAction.summarySVC())
     await this.getDataBasket();
     this.setState({ loadingShow: true });
     if (this.props.isLoggedIn) {
@@ -97,7 +98,6 @@ class Payment extends Component {
       if (response.ResultCode === 200) this.setState(response.Data);
     }
     const svc = await this.props.dispatch(SVCAction.loadSVC())
-    await this.props.dispatch(SVCAction.summarySVC())
     if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
     this.setState({ loadingShow: false });
   };
@@ -1347,6 +1347,7 @@ const mapStateToProps = (state, ownProps) => {
     paymentCard: state.payment.paymentCard,
     color: state.theme.color,
     setting: state.order.setting,
+    balanceSVC: state.svc.summary,
   };
 };
 

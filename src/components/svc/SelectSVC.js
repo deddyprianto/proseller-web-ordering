@@ -5,6 +5,28 @@ import UseSVC from "../svc/useSVC";
 import { connect } from "react-redux";
 
 class SelectSVC extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      alreadySet: false
+    };
+  }
+  
+  setDefaultValueSVC = () => {
+    // set default SVC
+    try{
+      if (this.state.alreadySet === false) {
+        const props = this.props.data;
+        if (props.dataSettle.dataBasket.totalNettAmount >= this.props.balance) {
+          this.props.setAmountSVC(this.props.balance)
+        } else {
+          this.props.setAmountSVC(props.dataSettle.dataBasket.totalNettAmount)
+        }
+        this.setState({alreadySet: true})
+      }
+    }catch(e){}
+  }
+
   render() {
     let props = this.props.data;
     let colorText = this.props.color.primary
@@ -41,8 +63,7 @@ class SelectSVC extends Component {
           data-toggle="modal"
           data-target="#use-svc-modal"
           className="background-theme"
-          // disabled={this.props.disabledBtn}
-          // onClick={() => localStorage.setItem(`${config.prefix}_getPaymentMethod`, true)}
+          onClick={this.setDefaultValueSVC}
           style={{
             fontWeight: "bold",
             cursor: "pointer",

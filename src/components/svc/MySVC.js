@@ -66,10 +66,10 @@ class MySVC extends Component {
   };
 
   getLabelActivity = (item) => {
-    if (item === 'REDEEM_SVC') return 'Redeem SVC'
+    if (item === 'REDEEM_SVC') return 'Redeem'
     if (item === 'RECEIVE_TRANSFER_SVC') return 'Receive Transfer'
     if (item === 'TRANSFER_SVC') return 'Transfer SVC'
-    if (item === 'DEDUCT_SVC') return 'Deduct SVC'
+    if (item === 'DEDUCT_SVC') return 'Deduct'
     if (item === 'TOPUP_SVC') return 'Top Up'
     return item
   }
