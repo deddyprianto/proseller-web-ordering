@@ -172,7 +172,7 @@ class MySVC extends Component {
                 <p style={{fontSize: 23, color: 'black', fontWeight: 'bold', textAlign: 'left' }}>Balance Expiration</p>
                 <div style={{ paddingBottom: 30 }}>
                   {
-                    !isEmptyObject(historyExpiration) && historyExpiration.data.map(item =>
+                    !isEmptyObject(historyExpiration) && historyExpiration.data.filter(data => data.balance).map(item =>
                       <div key={item.id}>
                         <div style={{ display: 'flex', flexDirection: 'row' }}>
                           <div style={{textAlign: 'left'}}>
