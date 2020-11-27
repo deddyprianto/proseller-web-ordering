@@ -679,6 +679,7 @@ class ModalProduct extends Component {
                 </button>
               ) : (
                   <button
+                    id="add-product-modal"
                     disabled={disableButton}
                     className="btn btn-block btn-footer"
                     onClick={this.processCart}
@@ -710,6 +711,10 @@ class ModalProduct extends Component {
     localStorage.setItem(`${config.prefix}_ordering_mode`, mode);
     try {
       document.getElementById("dismiss-ordering-mode").click();
+    } catch (error) { }
+    
+    try {
+      document.getElementById("add-product-modal").click();
     } catch (error) { }
   };
 
