@@ -21,8 +21,24 @@ class PaidMembership extends Component {
       selectedMembership: null,
       dataCustomer: {},
       loading: true,
+      detailPurchase: {}
     };
   }
+
+  getCurrency = (price) => {
+    if (this.props.companyInfo) {
+      if (price !== undefined) {
+        const { currency } = this.props.companyInfo;
+        if (!price || price === "-") price = 0;
+        let result = price.toLocaleString(currency.locale, {
+          style: "currency",
+          currency: currency.code,
+        });
+        return result;
+      }
+    }
+    return price;
+  };
 
   componentDidMount = async () => {
     const response = await this.props.dispatch(MembershiplAction.getPaidMembership())
@@ -50,7 +66,7 @@ class PaidMembership extends Component {
 
   componentDidUpdate(prevProps) {}
 
-  setPlan = (idx, idxPlan) => {
+  setPlan = async (idx, idxPlan) => {
     let { memberships } = this.state;
 
     for (let i = 0; i < memberships.length; i++) {
@@ -61,28 +77,51 @@ class PaidMembership extends Component {
 
     memberships[idx].defaultPrice = memberships[idx].paidMembershipPlan[idxPlan].price
     memberships[idx].paidMembershipPlan[idxPlan].isSelected = true
-    this.setState({
+
+    await this.findTax(memberships[idx].paidMembershipPlan[idxPlan])
+
+    await this.setState({
       memberships, 
       selectedMembership: memberships[idx]
     });
   }
 
+  findTax = async (dataDetail) => {
+    let returnData = {
+      outlet: this.props.defaultOutlet,
+      details: [],
+    };
+    let product = {};
+    product.unitPrice = dataDetail.price;
+    product.quantity = 1;
+    product.product = dataDetail;
+    returnData.details.push(product);
+
+    const detailPurchase = await calculateTAX(returnData.details, returnData, {});
+    await this.setState({ detailPurchase })
+  };
+
   setMembership = async (selectedMembership) => {
     const find = selectedMembership.paidMembershipPlan.find(item => item.isSelected === true);
-    if (find === undefined) selectedMembership.paidMembershipPlan[0].isSelected = true
-    this.setState({
+    if (find === undefined) {
+      selectedMembership.paidMembershipPlan[0].isSelected = true
+      await this.findTax(selectedMembership.paidMembershipPlan[0])
+    } else {
+      await this.findTax(find)
+    }
+    await this.setState({
       selectedMembership,
     });
   }
 
   detailMembership = () => {
-    const { selectedMembership } = this.state;
+    const { selectedMembership, detailPurchase } = this.state;
     const find = selectedMembership.paidMembershipPlan.find(item => item.isSelected);
-    if (find !== undefined) return `$${find.price} / ${find.period} ${find.periodUnit.toLowerCase()}`
+    if (find !== undefined) return `$${detailPurchase.totalNettAmount} / ${find.period} ${find.periodUnit.toLowerCase()}`
   }
 
   upgradeMembership = () => {
-    const { selectedMembership } = this.state
+    const { selectedMembership, detailPurchase } = this.state
     const plan = selectedMembership.paidMembershipPlan.find(item => item.isSelected)
     
     const payload = {
@@ -90,9 +129,10 @@ class PaidMembership extends Component {
       plan: plan,
       detailPoint: this.props.campaignPoint,
       pointsToRebateRatio: this.props.campaignPoint.pointsToRebateRatio,
+      detailPurchase,
       pendingPoints: this.props.campaignPoint.pendingPoints || 0,
       dataBasket: {
-        totalNettAmount: plan.price,
+        totalNettAmount: detailPurchase.totalNettAmount,
         outlet: {
           name: `Membership ${selectedMembership.name} ${plan.period} ${plan.periodUnit.toLowerCase()}`
         },
@@ -146,7 +186,7 @@ class PaidMembership extends Component {
   };
 
   render() {
-    const { memberships, selectedMembership, loading } = this.state;
+    const { memberships, selectedMembership, loading, detailPurchase } = this.state;
     return (
       <div
         className="col-full"
@@ -203,32 +243,16 @@ class PaidMembership extends Component {
                     {this.viewShimmer()}
                   </>
                   :
-                  <div>
-                    {
-                      memberships.map((item, idx) => 
-                      <CardMembership 
-                        key={idx} 
-                        index={idx} 
-                        item={item} 
-                        selectedMembership={selectedMembership} 
-                        setPlan={this.setPlan}
-                        setMembership={this.setMembership}
-                      />
-                    )
-                    }
-                    {
-                      memberships.map((item, idx) => 
-                      <CardMembership 
-                        key={idx} 
-                        index={idx} 
-                        item={item} 
-                        selectedMembership={selectedMembership} 
-                        setPlan={this.setPlan}
-                        setMembership={this.setMembership}
-                      />
-                    )
-                    }
-                  </div>
+                  memberships.map((item, idx) => 
+                    <CardMembership 
+                      key={idx} 
+                      index={idx} 
+                      item={item} 
+                      selectedMembership={selectedMembership} 
+                      setPlan={this.setPlan}
+                      setMembership={this.setMembership}
+                    />
+                  )
                 }
               </div>
             </main>
@@ -265,7 +289,7 @@ class PaidMembership extends Component {
                       style={{ fontWeight: "bold" }}
                       className="font-color-theme"
                     >
-                      SGD akjsa
+                      {this.getCurrency(detailPurchase.totalTaxAmount)}
                     </p>
                   </div>
                   <hr />
@@ -288,7 +312,7 @@ class PaidMembership extends Component {
                       style={{ fontWeight: "bold" }}
                       className="font-color-theme"
                     >
-                      SGD 1212
+                      {this.getCurrency(detailPurchase.totalNettAmount)}
                     </p>
                   </div>
                   <hr />
@@ -319,6 +343,8 @@ const mapStateToProps = (state, ownProps) => {
     account: state.auth.account.idToken.payload,
     pointData: state.campaign.data,
     campaignPoint: state.campaign.data,
+    defaultOutlet: state.outlet.defaultOutlet,
+    companyInfo: state.masterdata.companyInfo.data,
   };
 };
 

@@ -750,6 +750,20 @@ class Payment extends Component {
       customerId: `customer::${customerInfo.idToken.payload.id}`
     };
 
+    // ADD TAX
+    try{
+      payload.dataPay.paidMembershipPlan.amountAfterDisc = dataSettle.detailPurchase.details[0].amountAfterDisc
+      payload.dataPay.paidMembershipPlan.amountAfterTax  = dataSettle.detailPurchase.details[0].amountAfterTax
+      payload.dataPay.paidMembershipPlan.billDiscAmount = dataSettle.detailPurchase.details[0].billDiscAmount
+      payload.dataPay.paidMembershipPlan.discountableAmount = dataSettle.detailPurchase.details[0].discountableAmount
+      payload.dataPay.paidMembershipPlan.lineDiscAmount = dataSettle.detailPurchase.details[0].lineDiscAmount
+      payload.dataPay.paidMembershipPlan.lineDiscPercentage = dataSettle.detailPurchase.details[0].lineDiscPercentage
+      payload.dataPay.paidMembershipPlan.taxPercentage = dataSettle.detailPurchase.details[0].taxPercentage
+      payload.dataPay.paidMembershipPlan.taxableAmount = dataSettle.detailPurchase.details[0].taxableAmount
+      payload.dataPay.paidMembershipPlan.totalDiscAmount = dataSettle.detailPurchase.details[0].totalDiscAmount
+      payload.dataPay.paidMembershipPlan.totalNettAmount = dataSettle.dataBasket.totalNettAmount
+    }catch(e){}
+
     if (selectedVoucher !== null) {
       payload.payments = payload.payments.concat(voucherDiscountList)
     } 
