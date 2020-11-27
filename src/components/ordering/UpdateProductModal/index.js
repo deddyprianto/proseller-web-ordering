@@ -78,7 +78,7 @@ const UpdateProductModal = ({
 
   return (
     <div className={styles.modalContainer}>
-      <div className={styles.modal}>
+      <div className={styles.modal} style={{ backgroundColor: colorTheme.background }}>
         <div className={styles.header}>
           <div>This item in cart</div>
           <button

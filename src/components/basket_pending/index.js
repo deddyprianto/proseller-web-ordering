@@ -263,9 +263,9 @@ class Basket extends Component {
       };
 
       let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
-      if(!response.dataProfider) return
+      if(!response.dataProvider) return
 
-      deliveryProvaider = response.dataProfider
+      deliveryProvaider = response.dataProvider
       deliveryProvaider.forEach(async (provider) => {
         provider.deliveryFeeFloat = provider.deliveryFee;
         provider.deliveryFee = this.getCurrency(provider.deliveryFee);

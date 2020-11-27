@@ -376,8 +376,8 @@ class DeliveryAddress extends Component {
                               </div>
                               {getDeliveryAddress &&
                                 this.props.deliveryAddress &&
-                                items.addressName ===
-                                  this.props.deliveryAddress.addressName && (
+                                items.address ===
+                                  this.props.deliveryAddress.address && (
                                   <div
                                     className="profile-dashboard"
                                     style={{
@@ -432,9 +432,9 @@ class DeliveryAddress extends Component {
                                   className="border-theme background-theme"
                                   disabled={
                                     (this.props.deliveryAddress &&
-                                      items.addressName ===
+                                      items.address ===
                                         this.props.deliveryAddress
-                                          .addressName) ||
+                                          .address) ||
                                     false
                                   }
                                   style={{
