@@ -18,17 +18,51 @@ class ModalDetailHistory extends Component {
     }
   };
 
+  renderOtherPaymentMethod = () => {
+    try{
+      let data = []
+      const { detail } = this.props;
+      if (detail.payments.length > 0){
+        detail.payments.map(item => {
+          if (item.isVoucher !== true && item.isPoint !== true && item.isAppPayment !== true) {
+            data.push(
+              <div
+                style={{
+                  marginLeft: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                  {item.paymentType}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                  {this.getCurrency(item.paymentAmount)}
+                </div>
+              </div>
+            )
+          }
+        })
+        return data
+      }
+      return null
+    }catch(e){
+      return null
+    }
+  }
+
   render() {
     const { detail } = this.props;
     let discount = 0
     if(detail.payments){
       detail.payments.forEach(items => {
-        if(items.paymentType === "voucher" || items.paymentType === "point"){
+        if(items.paymentType === "voucher" || items.paymentType === "point" || items.paymentType === "Store Value Card"){
           discount += items.paymentAmount
         }
       });
     }
-
     return (
       <div>
         <div
@@ -384,6 +418,8 @@ class ModalDetailHistory extends Component {
                       )}
                     </div>
                   }
+
+                  {this.renderOtherPaymentMethod()}
 
                   <div
                     style={{

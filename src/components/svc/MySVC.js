@@ -6,6 +6,7 @@ import GiftVoucherModal from "./GiftVoucherModal";
 import moment from 'moment'
 import { Link } from "react-router-dom";
 import { isEmptyObject } from "../../helpers/CheckEmpty";
+import { Button } from "reactstrap";
 
 class MySVC extends Component {
   constructor(props) {
@@ -13,18 +14,24 @@ class MySVC extends Component {
     this.state = {
       loadingShow: true,
       history: [],
-      dataLength: 0
+      dataLength: 0,
+      isHistory: true
     };
   }
 
   componentDidMount = async () => {
     await this.props.dispatch(SVCAction.summarySVC())
+    await this.props.dispatch(SVCAction.historyCustomerActivity([]))
     await this.props.dispatch(SVCAction.historySVC([]))
     this.setState({ loadingShow: false })
   };
 
   getHistorySVC = async () => {
-    await this.props.dispatch(SVCAction.historySVC(this.props.history.data))
+    await this.props.dispatch(SVCAction.historyCustomerActivity(this.props.history.data))
+  }
+
+  getHistoryExpireSVC = async () => {
+    await this.props.dispatch(SVCAction.historySVC(this.props.historyExpiration.data))
   }
 
   getCurrency = (price) => {
@@ -58,9 +65,23 @@ class MySVC extends Component {
     );
   };
 
+  getLabelActivity = (item) => {
+    if (item === 'REDEEM_SVC') return 'Redeem SVC'
+    if (item === 'RECEIVE_TRANSFER_SVC') return 'Receive Transfer'
+    if (item === 'TRANSFER_SVC') return 'Transfer SVC'
+    if (item === 'DEDUCT_SVC') return 'Deduct SVC'
+    if (item === 'TOPUP_SVC') return 'Top Up'
+    return item
+  }
+
+  getLabelType = (item) => {
+    if (item === 'REDEEM_SVC' || item === 'TRANSFER_SVC' || item === 'DEDUCT_SVC')  return '-'
+    else return '+'
+  }
+
   render() {
-    const { showGiftModal } = this.state;
-    const { history } = this.props;
+    const { showGiftModal, isHistory } = this.state;
+    const { history, historyExpiration } = this.props;
     
     return (
       <div>
@@ -90,36 +111,87 @@ class MySVC extends Component {
         </div>
 
         <div style={{marginTop: 20}}>
-          <p style={{fontSize: 23, color: 'black', fontWeight: 'bold', textAlign: 'left'}}>History</p>
-          <div style={{ paddingBottom: 30 }}>
-            {
-              !isEmptyObject(history) && history.data.map(item =>
-                <div key={item.id}>
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <div style={{textAlign: 'left'}}>
-                      <b className="customer-group-name" style={{marginBottom: -5, fontSize: 16}}>{item.from.toUpperCase()}</b>
-                      <p style={{fontSize: 12, marginTop: -5 }}> <span style={{textTransform: 'capitalize'}}>{item.from}</span> on {moment(item.purchaseDate).format("DD MMM YYYY")}</p>
-                      <p style={{fontSize: 12, marginTop: -20}}>Expire on {moment(item.expiryDate).format("DD MMM YYYY")}</p>
-                    </div>
-                    <div style={{textAlign: 'right'}}>
-                      <b className="customer-group-name" style={{fontSize: 14}}>{this.getCurrency(item.totalNettAmount)}</b>
-                      <br />
-                      <b className="" style={{fontSize: 14}}>Balance : {this.getCurrency(item.balance)}</b>
-                    </div>
-                  </div>  
-                  <hr />
-                </div>
-              )
-            }
-            {!isEmptyObject(history) && history.data.length === 0 && <p style={{ fontSize: 20 }}>Data History is Empty</p> }
-            {
-              !isEmptyObject(history) && history.data.length < history.dataLength &&
-              <button onClick={this.getHistorySVC} className="button" style={{padding: 5}}>
-                Load More
-              </button>
-            }
+
+          <div
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              marginBottom: 10
+            }}
+          >
+            <Button
+              className={isHistory ? "use-select" : "un-select"}
+              style={{ height: 50, fontWeight: "bold" }}
+              onClick={() => this.setState({ isHistory: true })}
+            >
+              History
+            </Button>
+            <Button
+              className={!isHistory ? "use-select" : "un-select"}
+              style={{ height: 50, fontWeight: "bold" }}
+              onClick={() => this.setState({ isHistory: false })}
+            >
+              Expiration
+            </Button>
           </div>
-        </div>
+
+          {
+            isHistory ?
+              <div>
+                <p style={{fontSize: 23, color: 'black', fontWeight: 'bold', textAlign: 'left' }}>History</p>
+                <div style={{ paddingBottom: 30 }}>
+                  {
+                    !isEmptyObject(history) && history.data.map(item =>
+                      <div key={item.id}>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: -10, marginTop: -5 }}>
+                          <div style={{textAlign: 'left'}}>
+                            <b className="customer-group-name" style={{marginBottom: -5, fontSize: 16}}>{this.getLabelActivity(item.activityType)}</b>
+                            <p style={{fontSize: 12, marginTop: -5 }}> on {moment(item.activityDate).format("DD MMM YYYY")}</p>
+                          </div>
+                          <div style={{textAlign: 'right'}}>
+                            <b className="customer-group-name" style={{fontSize: 14}}> {this.getLabelType(item.activityType)} {this.getCurrency(item.amount)}</b>
+                          </div>
+                        </div>  
+                        <hr />
+                      </div>
+                    )
+                  }
+                  {!isEmptyObject(history) && history.data.length === 0 && <p style={{ fontSize: 20 }}>Data History is Empty</p> }
+                  {
+                    !isEmptyObject(history) && history.data.length < history.dataLength &&
+                    <button onClick={this.getHistorySVC} className="button" style={{padding: 5}}>
+                      Load More History
+                    </button>
+                  }
+                </div>
+              </div>
+              :
+              <div>
+                <p style={{fontSize: 23, color: 'black', fontWeight: 'bold', textAlign: 'left' }}>Balance Expiration</p>
+                <div style={{ paddingBottom: 30 }}>
+                  {
+                    !isEmptyObject(historyExpiration) && historyExpiration.data.map(item =>
+                      <div key={item.id}>
+                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                          <div style={{textAlign: 'left'}}>
+                              <p><b className="customer-group-name" style={{marginBottom: -5, fontSize: 16}}>{this.getCurrency(item.balance)}</b> {'  '} will Expire on {moment(item.expiryDate).format("DD MMM YYYY")}</p> 
+                          </div>
+                        </div>  
+                        <hr />
+                      </div>
+                    )
+                  }
+                  {!isEmptyObject(historyExpiration) && historyExpiration.data.length === 0 && <p style={{ fontSize: 20 }}>Data History is Empty</p> }
+                  {
+                    !isEmptyObject(historyExpiration) && historyExpiration.data.length < historyExpiration.dataLength &&
+                    <button onClick={this.getHistoryExpireSVC} className="button" style={{padding: 5}}>
+                      Load More
+                    </button>
+                  }
+                </div>
+              </div>
+          }
+          </div>
       </div>
     );
   }
@@ -131,6 +203,7 @@ const mapStateToProps = (state, ownProps) => {
     companyInfo: state.masterdata.companyInfo.data,
     balance: state.svc.summary,
     history: state.svc.history,
+    historyExpiration: state.svc.historyExpiration,
   };
 };
 

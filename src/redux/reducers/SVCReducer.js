@@ -4,7 +4,8 @@ const initialState = {
   errorMessage: "",
   successMessage: "",
   summary: 0,
-  history: {}
+  history: {},
+  historyExpiration: {}
 };
 
 export default function reducer(state = initialState, action) {
@@ -26,6 +27,11 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         history: action.payload,
+      };
+    case "GET_HISTORY_EXPIRATION_SUCCESS":
+      return {
+        ...state,
+        historyExpiration: action.payload,
       };
     case "TRANSFER_SVC_SUCCESS":
       return {

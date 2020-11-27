@@ -9,7 +9,8 @@ export const SVCAction = {
   loadSVC,
   summarySVC,
   historySVC,
-  transferSVC
+  transferSVC,
+  historyCustomerActivity
 };
 
 function transferSVC(payload) {
@@ -22,6 +23,7 @@ function transferSVC(payload) {
       });
     } else {
       dispatch(SVCAction.summarySVC())
+      dispatch(SVCAction.historyCustomerActivity())
       dispatch(SVCAction.historySVC())
       dispatch({ type: "TRANSFER_SVC_SUCCESS" });
     }
@@ -45,6 +47,44 @@ function historySVC(history = []) {
       isDetail: true
     }
     let response = await CRMService.api('POST', payload, 'storevaluecard/history', 'bearer')
+    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
+    else {
+      if (history.length === 0) {
+        dispatch({
+          type: "GET_HISTORY_EXPIRATION_SUCCESS",
+          payload: response || {},
+        });
+      } else {
+        let dataHistory = history
+        dataHistory = [...dataHistory, ...response.data]
+        response.data = dataHistory
+        dispatch({
+          type: "GET_HISTORY_EXPIRATION_SUCCESS",
+          payload: response || {},
+        });
+      }
+    }
+    return response
+  };
+}
+
+function historyCustomerActivity(history = []) {
+  return async (dispatch) => {
+
+    const payload = {
+      skip: history.length || 0,
+      take: 5,
+      parameters: [
+        {
+          id: 'search',
+          value: '_SVC',
+        },
+      ],
+    };
+
+    const customerId = `${customerInfo.idToken.payload.id}`
+
+    let response = await CRMService.api('POST', payload, `customer/activity/${customerId}`, 'bearer')
     if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response)
     else {
       if (history.length === 0) {
