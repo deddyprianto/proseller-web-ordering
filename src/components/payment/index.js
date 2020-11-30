@@ -536,7 +536,7 @@ class Payment extends Component {
     let selectedPoint = this.state.selectedPoint || 0;
     totalPoint = totalPoint - pendingPoints
     
-    if (dataSettle.paySVC || amountSVC == 0) {
+    if (dataSettle.paySVC || amountSVC === 0) {
       totalPoint = totalPoint - lockPoints
     }
 
