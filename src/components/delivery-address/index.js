@@ -154,14 +154,15 @@ class DeliveryAddress extends Component {
       if (result.value) {
         this.setState({ isLoading: true });
         let addressDelivery = this.state.addressDelivery;
+        
         if (
           this.props.deliveryAddress &&
-          this.props.deliveryAddress.addressName === data.addressName
+          this.props.deliveryAddress.address === data.address
         ) {
           this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: null });
         }
         addressDelivery = addressDelivery.filter(function (a) {
-          return a.addressName !== data.addressName;
+          return a.address !== data.address;
         });
 
         let payload = {

@@ -55,6 +55,21 @@ class ModalDeliveryAdderss extends Component {
       getDeliveryAddress
     } = this.props;
 
+    if (isNew) {
+      if (addressDelivery !== null) {
+        const find = addressDelivery.find(item => item.addressName === deliveryAddress.addressName)
+        if (find !== undefined){
+          await this.setState({ isLoading: false });
+          Swal.fire({
+            icon: "warning",
+            title: `${deliveryAddress.addressName} address is already added.`,
+            showConfirmButton: true,
+          });
+          return
+        }
+      }
+    }
+    
     if (!deliveryAddress.city) {
       let province = await this.props.dispatch(
         MasterdataAction.getAddressLocation(countryCode)
