@@ -178,7 +178,28 @@ class ModalDetailSVC extends Component {
                   ></div>
 
                   {!isEmptyObject(detailPurchase) && (
-                    <div style={{ marginBottom: 80 }}>
+                    <div style={{ marginBottom: 50 }}>
+                      <hr />
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <p
+                          style={{ fontWeight: "bold" }}
+                          className="customer-gr"
+                        >
+                          Point Rewards
+                        </p>
+                        <p
+                          style={{ fontWeight: "bold" }}
+                          className="font-color-theme"
+                        >
+                          {dataDetail.pointReward * count}
+                        </p>
+                      </div>
                       <hr />
                       <div
                         style={{

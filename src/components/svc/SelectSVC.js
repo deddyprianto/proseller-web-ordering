@@ -12,9 +12,10 @@ class SelectSVC extends Component {
     };
   }
   
-  setDefaultValueSVC = () => {
+  setDefaultValueSVC = async () => {
     // set default SVC
     try{
+      await this.props.cancelSelectPoint()
       if (this.state.alreadySet === false) {
         const props = this.props.data;
         if (props.dataSettle.dataBasket.totalNettAmount >= this.props.balance) {

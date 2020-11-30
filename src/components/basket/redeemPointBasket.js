@@ -5,6 +5,25 @@ import { Button } from 'reactstrap';
 export default class RedeemPointBasket extends Component {
   render() {
     let props = this.props.data
+
+    if (props.detailPoint.point === undefined) props.detailPoint.point = props.detailPoint.detailPoint.point
+
+    let totalPoint = props.detailPoint.point
+    totalPoint = totalPoint - (props.pendingPoints || 0)
+
+    if (props.dataSettle.paySVC || props.amountSVC === 0) {
+      totalPoint = totalPoint - (props.lockPoints || 0)
+    }
+
+    if (props.percentageUseSVC > 0) {
+      let minusPoint = 0;
+      minusPoint = (props.percentageUseSVC/100) * props.lockPoints 
+      totalPoint = totalPoint - (props.lockPoints - minusPoint)
+      if(props.detailPoint.roundingOptions !== "DECIMAL") {
+        totalPoint = Math.floor(totalPoint);
+      }
+    }
+
     let discountPoint = (props.selectedPoint / props.pointsToRebateRatio.split(":")[0]) * props.pointsToRebateRatio.split(":")[1]
     if(discountPoint > (props.discountPoint + props.totalPrice)) discountPoint = props.discountPoint + props.totalPrice
     discountPoint = discountPoint.toFixed(2);
@@ -29,15 +48,35 @@ export default class RedeemPointBasket extends Component {
                   </div>
                   <div >
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, marginBottom: 10 }}>
-                      {props.detailPoint.point - (props.pendingPoints || 0)}
+                      {totalPoint}
                     </div>
                     {
-                      props.pendingPoints && props.pendingPoints > 0 &&
+                      props.pendingPoints && props.pendingPoints > 0 ?
                       <div style={{textAlign: "center", marginRight: -50, textDecorationLine: "line-through", marginTop: -12}}>
                         {props.detailPoint.point}
                       </div>
+                      :
+                      null
                     }
                   </div>
+                  {
+                    props.lockPoints && props.lockPoints && props.dataSettle.paySVC === undefined && props.percentageUseSVC < 100 ?
+                    <div className="text" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
+                    }}>
+                      {`Your ${props.lockPoints} SVC points is locked because you only use ${props.percentageUseSVC.toFixed(2)}% of your SVC balance. `}
+                    </div> : null
+                  }
+                  {
+                    props.lockPoints && props.lockPoints && props.dataSettle.paySVC ?
+                    <div className="text" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
+                    }}>
+                      {`Your ${props.lockPoints} SVC points is locked on SVC Purchase.`}
+                    </div> : null
+                  }
                   {
                     props.pendingPoints && props.pendingPoints > 0 ?
                     <div className="text" style={{

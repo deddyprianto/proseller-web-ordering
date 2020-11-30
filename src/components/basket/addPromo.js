@@ -9,7 +9,7 @@ class AddPromo extends Component {
     let props = this.props.data
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
-
+    
     return (
       <div>
         <RedeemPointBasket

@@ -101,9 +101,10 @@ function getCampaignPoints(payload = null, companyId = null) {
       if (response.Data.trigger && response.Data.trigger.campaignTrigger === "COMPLETE_PROFILE" && !response.Data.trigger.status) {
         campaignPointAnnouncement = true
       }
-
+      
       response.Data = {
         pendingPoints: response.Data.pendingPoints, 
+        lockPoints: response.Data.lockPoints || 0, 
         totalPoint, campaignPointActive, campaignPointAnnouncement, detailPoint, pointsToRebateRatio,
         xstep: roundingOptions === "DECIMAL" ? 0.01 : 1
       }

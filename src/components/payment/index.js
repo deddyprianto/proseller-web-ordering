@@ -75,7 +75,8 @@ class Payment extends Component {
       paymentCard: [],
       voucherDiscountList: [],
       amountSVC: 0,
-      svc: []
+      svc: [],
+      percentageUseSVC: 0
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -103,12 +104,15 @@ class Payment extends Component {
   };
 
 
-  setAmountSVC = (amountSVC) => {
-    this.setState({amountSVC})
+  setAmountSVC = async (amountSVC) => {
+    let percentageUseSVC = 0;
+    percentageUseSVC = (amountSVC/this.props.balanceSVC) * 100;
+    await this.setState({amountSVC, percentageUseSVC})
   }
 
   cancelAmountSVC = async () => {
-    await this.setState({amountSVC: 0})
+    await this.cancelSelectPoint()
+    await this.setState({amountSVC: 0, percentageUseSVC: 0})
     await this.getDataBasket();
   }
 
@@ -528,9 +532,20 @@ class Payment extends Component {
   };
 
   handleRedeemPoint = async () => {
-    let {pendingPoints, totalPoint, pointsToRebateRatio} = this.state
+    let {pendingPoints, lockPoints, totalPoint, pointsToRebateRatio, amountSVC, dataSettle, percentageUseSVC} = this.state
     let selectedPoint = this.state.selectedPoint || 0;
     totalPoint = totalPoint - pendingPoints
+    
+    if (dataSettle.paySVC || amountSVC == 0) {
+      totalPoint = totalPoint - lockPoints
+    }
+
+    if (percentageUseSVC > 0) {
+      let minusPoint = 0;
+      minusPoint = (percentageUseSVC/100) * lockPoints 
+      totalPoint = totalPoint - (lockPoints - minusPoint)
+    }
+    
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
 
     if (selectedPoint <= 0) {
@@ -650,7 +665,8 @@ class Payment extends Component {
           taxableAmount: dataSettle.detailPurchase.details[0].taxableAmount,
           totalDiscAmount: dataSettle.detailPurchase.details[0].totalDiscAmount,
           quantity: dataSettle.detailPurchase.details[0].quantity,
-          totalNettAmount: dataSettle.dataBasket.totalNettAmount
+          totalNettAmount: dataSettle.dataBasket.totalNettAmount,
+          pointReward: (dataSettle.storeValueCard.pointReward * dataSettle.detailPurchase.details[0].quantity)
         },
         id: dataSettle.storeValueCard.id
       },
@@ -1236,6 +1252,7 @@ class Payment extends Component {
                       svc && svc.length > 0 && dataSettle.paySVC === undefined &&
                       <SelectSVC
                         data={this.state}
+                        cancelSelectPoint={() => this.cancelSelectPoint()}
                         setAmountSVC={this.setAmountSVC}
                         cancelAmountSVC={this.cancelAmountSVC}
                         getDataBasket={this.getDataBasket}
