@@ -30,7 +30,8 @@ const SignUp = ({
   enableSMSOTP,
   enableWhatsappOTP,
   enableOrdering,
-  minimumAge
+  minimumAge,
+  setting
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
 
@@ -42,6 +43,16 @@ const SignUp = ({
       }
     });
   }
+
+  let isTCAvailable = false 
+  let termsAndConditions = ''
+  try{
+    const find = setting.find(item => item.settingKey === "TermCondition")
+    if (find !== undefined) {
+      isTCAvailable =  true
+      termsAndConditions = find.settingValue
+    }
+  }catch(e){}
 
   return (
     <div className="modal-content" style={{ width: "100%" }}>
@@ -110,6 +121,8 @@ const SignUp = ({
         <PhoneForm
           phoneNumber={initialUserData.phoneNumber}
           handleChange={handleChange}
+          isTCAvailable={isTCAvailable}
+          termsAndConditions={termsAndConditions}
           handleSubmit={handlePhoneSubmit}
           error={errorEmail}
           errorPassword={errorPassword}
@@ -164,11 +177,13 @@ SignUp.propTypes = {
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
   fields: PropTypes.array,
+  setting: PropTypes.array,
 };
 
 const mapStateToProps = (state) => {
   return {
     fields: state.customer.fields,
+    setting: state.order.setting,
   };
 };
 

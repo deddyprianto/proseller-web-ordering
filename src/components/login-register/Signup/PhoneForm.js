@@ -14,6 +14,8 @@ const PhoneForm = ({
   errorName,
   error,
   children,
+  isTCAvailable,
+  termsAndConditions
 }) => {
 
   const [agreeTC, setAgreeTC] = useState(true)
@@ -61,24 +63,29 @@ const PhoneForm = ({
           error={errorPassword}
         ></PasswordField>
       )}
-      <div onClick={() => setAgreeTC(!agreeTC)} className="form-group form-check" style={{ marginTop: 5 }} data-toggle="collapse" href="#collapseExample">
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <CheckBox 
-            className="form-check-input"
-            handleChange={() => setAgreeTC(!agreeTC)}
-            selected={!agreeTC} 
-            setRadius={5} setHeight={20}
-          />
-          <label className="form-check-label" for="exampleCheck1" style={{ marginLeft: 10 }}>I Agree to Terms & Conditions </label>
-        </div>
-      </div>
-      <div className="collapse" id="collapseExample">
-        <div className="card card-body" style={{ textAlign: 'justify', fontSize: 11 }}>
-          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-        </div>
-      </div>
+      {
+        isTCAvailable &&
+        <>
+          <div onClick={() => setAgreeTC(!agreeTC)} className="form-group form-check" style={{ marginTop: 5 }} data-toggle="collapse" href="#collapseExample">
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <CheckBox 
+                className="form-check-input"
+                handleChange={() => setAgreeTC(!agreeTC)}
+                selected={!agreeTC} 
+                setRadius={5} setHeight={20}
+              />
+              <label className="form-check-label" for="exampleCheck1" style={{ marginLeft: 10 }}>I Agree to Terms & Conditions </label>
+            </div>
+          </div>
+          <div className="collapse" id="collapseExample">
+            <div className="card card-body" style={{ textAlign: 'justify', fontSize: 11 }}>
+              {termsAndConditions}
+            </div>
+          </div>
+        </>
+      }
       <Button
-        disabled={isSubmitting || agreeTC}
+        disabled={isSubmitting || agreeTC || !isTCAvailable}
         className="button"
         style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}
@@ -97,6 +104,8 @@ PhoneForm.propTypes = {
   error: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
+  termsAndConditions: PropTypes.string,
+  isTCAvailable: PropTypes.bool,
 };
 
 export default PhoneForm;

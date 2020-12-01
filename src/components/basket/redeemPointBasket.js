@@ -13,6 +13,9 @@ export default class RedeemPointBasket extends Component {
 
     if (props.dataSettle.paySVC || props.amountSVC === 0) {
       totalPoint = totalPoint - (props.lockPoints || 0)
+      if(props.detailPoint.roundingOptions !== "DECIMAL") {
+        totalPoint = Math.floor(totalPoint);
+      }
     }
 
     if (props.percentageUseSVC > 0) {
