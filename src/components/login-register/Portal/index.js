@@ -85,6 +85,8 @@ let Portal = ({
                     border: `1px solid ${color}`,
                     backgroundColor: color,
                     height: 40,
+                    outline: 'none',
+                    boxShadow: 'none'
                   }}
                   dropdownStyle={{
                     color: "#808080"

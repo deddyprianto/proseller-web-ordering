@@ -32,8 +32,20 @@ function check(payload) {
 }
 
 function sendOtp(payload) {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     dispatch(loader(true));
+    
+    // Check Sender Name
+    try{
+      const state = getState();
+      if (state.order.setting.length > 0) {
+        const find = state.order.setting.find(item => item.settingKey === "SenderName")
+        if (find !== undefined) {
+          payload.senderName = find.settingValue
+        }
+      }
+    }catch(e){}
+    
     let response = await CRMService.api(
       "POST",
       payload,
