@@ -30,7 +30,8 @@ const SignUp = ({
   enableSMSOTP,
   enableWhatsappOTP,
   enableOrdering,
-  minimumAge
+  minimumAge,
+  color
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
 
@@ -126,6 +127,7 @@ const SignUp = ({
       ) : (
             <EmailForm
               email={initialUserData.email}
+              color={color.background}
               handleChange={handleChange}
               handleSubmit={handleEmailSubmit}
               error={errorPhone}
@@ -163,12 +165,14 @@ SignUp.propTypes = {
   errorEmail: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
-  fields: PropTypes.array,
+  fields: PropTypes.array, 
+  color: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
   return {
     fields: state.customer.fields,
+    color: state.theme.color
   };
 };
 
