@@ -12,7 +12,7 @@ const UpdateProductModal = ({
   onClose,
   setAddNew,
   setSelectedItem,
-  colorTheme,
+  colorTheme, 
   getCurrency
 }) => {
   const handleAdd = () => {
@@ -29,7 +29,7 @@ const UpdateProductModal = ({
   }, []);
 
   const handleEdit = (item) => {
-    const { quantity, id, modifiers } = item;
+    const { quantity, id, modifiers, remark } = item;
 
     const modifiersList = modifiers.map((modifierGroup) =>
       modifierGroup.modifier.details.map((modifierItem) => {
@@ -67,6 +67,7 @@ const UpdateProductModal = ({
       {
         ...product,
         quantity,
+        remark,
         id,
         // modifiers,
         product: { ...product.product, productModifiers: newProductModifiers },
