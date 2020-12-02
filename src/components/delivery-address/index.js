@@ -230,7 +230,7 @@ class DeliveryAddress extends Component {
     if(codePostal && Number(codePostal)){
       // if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
       // if(postalCode.toString().length !== codePostal.toString().length) check = false
-      if(postalCode.toString().length < 5) check = false
+      if(postalCode.toString().length < 6) check = false
       if(postalCode.toString().length > 6) check = false
     } else {
       if(postalCode.toString().length !== 6) check = false
