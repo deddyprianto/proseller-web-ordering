@@ -73,6 +73,12 @@ function register(payload, enableRegisterWithPassword = false) {
     let url =
       (enableRegisterWithPassword && "customer/registerByPassword") ||
       "customer/register";
+    
+    try{
+      payload.smsNotification = true
+      payload.emailNotification = true
+    }catch(e){}
+
     let response = await CRMService.api("POST", payload, url);
     dispatch(setData(response, CONSTANT.KEY_AUTH_REGISTER));
     dispatch(loader(false));
