@@ -16,6 +16,8 @@ class AddPromo extends Component {
         <RedeemPointBasket
           data={props}
           campaignPoint={this.props.campaignPoint}
+          balanceSVC={this.props.balanceSVC || 0}
+          defaultBalance={this.props.defaultBalance || 0}
           handleRedeemPoint={() => this.props.handleRedeemPoint()}
           cancelSelectPoint={() => this.props.cancelSelectPoint()}
           getCurrency={(price) => this.props.getCurrency(price)}
@@ -103,6 +105,8 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     selectedVoucher: state.payment.selectedVoucher,
     campaignPoint: state.campaign.data,
+    balanceSVC: state.svc.summary,
+    defaultBalance: state.svc.defaultBalance,
   };
 };
 

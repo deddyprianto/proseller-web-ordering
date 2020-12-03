@@ -8,7 +8,7 @@ export default class RedeemPointBasket extends Component {
 
     if (props.detailPoint.point === undefined) props.detailPoint.point = props.detailPoint.detailPoint.point
 
-    let totalPoint = props.detailPoint.point
+    let totalPoint = this.props.campaignPoint.totalPoint
     totalPoint = totalPoint - (props.pendingPoints || 0)
     
     if (props.dataSettle.paySVC || props.amountSVC === 0) {
@@ -18,11 +18,15 @@ export default class RedeemPointBasket extends Component {
       }
     }
      
+    let diffPoints = 0
     if (props.percentageUseSVC > 0) {
       let minusPoint = 0;
-      minusPoint = (props.percentageUseSVC/100) * this.props.campaignPoint.lockPoints 
-      totalPoint = totalPoint - (this.props.campaignPoint.lockPoints - minusPoint)
-      // console.log(props.lockPoints - minusPoint)
+      minusPoint = (props.amountSVC/this.props.defaultBalance) * this.props.campaignPoint.defaultPoints 
+      let diff = this.props.campaignPoint.lockPoints - minusPoint
+      diff = diff < 0 ? 0 : diff
+      diffPoints = diff
+      totalPoint = totalPoint - diff
+      
       if(props.detailPoint.roundingOptions !== "DECIMAL") {
         totalPoint = Math.floor(totalPoint);
       }
@@ -64,12 +68,12 @@ export default class RedeemPointBasket extends Component {
                     }
                   </div>
                   {
-                    this.props.campaignPoint && this.props.campaignPoint.lockPoints && props.dataSettle.paySVC === undefined && props.percentageUseSVC < 100 ?
+                    diffPoints > 0 ?
                     <div className="text" style={{
                       fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
                       marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
                     }}>
-                      {`Your ${this.props.campaignPoint.lockPoints} SVC points is locked because you only use ${props.percentageUseSVC.toFixed(2)}% of your SVC balance. `}
+                      {`Your ${diffPoints} SVC points is locked because you haven't used up your entire SVC balance.`}
                     </div> : null
                   }
                   {

@@ -105,6 +105,7 @@ function getCampaignPoints(payload = null, companyId = null) {
       response.Data = {
         pendingPoints: response.Data.pendingPoints, 
         lockPoints: response.Data.lockPoints || 0, 
+        defaultPoints: response.Data.defaultPoints || 0, 
         totalPoint, campaignPointActive, campaignPointAnnouncement, detailPoint, pointsToRebateRatio,
         xstep: roundingOptions === "DECIMAL" ? 0.01 : 1
       }

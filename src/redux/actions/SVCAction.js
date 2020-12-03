@@ -116,7 +116,7 @@ function summarySVC() {
     else {
       dispatch({
         type: "GET_SUMMARY_SUCCESS",
-        payload: response.data.balance || 0,
+        payload: response.data,
       });
     }
     return response

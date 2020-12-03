@@ -532,7 +532,9 @@ class Payment extends Component {
   };
 
   handleRedeemPoint = async () => {
-    let {pendingPoints, totalPoint, pointsToRebateRatio, amountSVC, dataSettle, percentageUseSVC} = this.state
+    let {pendingPoints, pointsToRebateRatio, amountSVC, dataSettle, percentageUseSVC} = this.state
+    let totalPoint = this.props.campaignPoint.totalPoint
+
     let selectedPoint = this.state.selectedPoint || 0;
     totalPoint = totalPoint - pendingPoints
     
@@ -542,8 +544,10 @@ class Payment extends Component {
 
     if (percentageUseSVC > 0) {
       let minusPoint = 0;
-      minusPoint = (percentageUseSVC/100) * this.props.campaignPoint.lockPoints 
-      totalPoint = totalPoint - (this.props.campaignPoint.lockPoints - minusPoint)
+      minusPoint = (amountSVC/this.props.defaultBalance) * this.props.campaignPoint.defaultPoints 
+      let diff = this.props.campaignPoint.lockPoints - minusPoint
+      diff = diff < 0 ? 0 : diff
+      totalPoint = totalPoint - diff
     }
     
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
@@ -1365,6 +1369,7 @@ const mapStateToProps = (state, ownProps) => {
     color: state.theme.color,
     setting: state.order.setting,
     balanceSVC: state.svc.summary,
+    defaultBalance: state.svc.defaultBalance,
   };
 };
 
