@@ -12,7 +12,6 @@ import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import styles from "./styles.module.css";
 
-const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Header extends Component {
@@ -24,7 +23,7 @@ class Header extends Component {
       infoCompany: {},
       outletsRefs: {},
       enableOrdering: true,
-      logoCompany: config.url_logo
+      logoCompany: config.url_logo,
     };
   }
 
@@ -38,7 +37,9 @@ class Header extends Component {
 
   componentDidUpdate = (prevProps) => {
     if (this.props !== prevProps) {
-      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
+      let enableOrdering = this.props.setting.find((items) => {
+        return items.settingKey === "EnableOrdering";
+      });
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
@@ -46,10 +47,12 @@ class Header extends Component {
       let infoCompany = encryptor.decrypt(
         JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
       );
-      let logoCompany = this.props.setting.find(items => { return items.settingKey === "Logo" })
+      let logoCompany = this.props.setting.find((items) => {
+        return items.settingKey === "Logo";
+      });
       if (logoCompany && logoCompany.settingValue) {
         this.setState({ logoCompany: logoCompany.settingValue });
-      } else if (infoCompany && infoCompany.imageURL){
+      } else if (infoCompany && infoCompany.imageURL) {
         this.setState({ logoCompany: infoCompany.imageURL });
       }
     }
@@ -93,23 +96,39 @@ class Header extends Component {
     window.location.reload();
   }
 
-  handleOutletChange(e) {
+  async handleOutletChange(e) {
     const outletId = e.target.value;
-    Swal.fire({
-      title: "Change Outlet ?",
-      text: "Cart from previous outlet will be removed",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then((result) => {
-      if (result && result.value) {
-        this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
-        localStorage.removeItem(`${config.prefix}_offlineCart`);
-        this.props.dispatch(OrderAction.deleteCart(this.props.isLoggedIn));
-      }
-    });
+    const payloadMoveCart = {
+      cart: this.props.basket,
+      changeOutletID: "outlet::" + outletId,
+    };
+    this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
+    if (this.props.isLoggedIn) {
+      this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
+    } else {
+      this.props.dispatch(
+        OrderAction.buildCart({
+          ...this.props.basket,
+          outletID: outletId,
+          outlet: this.props.defaultOutlet,
+        })
+      );
+    }
+    // Swal.fire({
+    //   title: "Change Outlet ?",
+    //   text: "Cart from previous outlet will be removed",
+    //   icon: "warning",
+    //   showCancelButton: true,
+    //   confirmButtonColor: "#3085d6",
+    //   cancelButtonColor: "#d33",
+    //   confirmButtonText: "Yes",
+    // }).then((result) => {
+    //   if (result && result.value) {
+    //     this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
+    //     localStorage.removeItem(`${config.prefix}_offlineCart`);
+    //     this.props.dispatch(OrderAction.deleteCart(this.props.isLoggedIn));
+    //   }
+    // });
   }
 
   render() {
@@ -162,27 +181,27 @@ class Header extends Component {
                   style={{ fontSize: 22, marginBottom: -5 }}
                 />
                 <span className="color" style={{ fontSize: 15 }}>
-                  {
-                    outlets && outlets.length > 1 ?
-                      <select
-                        className={styles.outletNameSelect}
-                        onChange={(e) => this.handleOutletChange(e)}
-                        value={defaultOutlet.id}
-                      >
-                        {outlets &&
-                          outlets.map((outlet, key) => (
-                            <option
-                              key={key}
-                              ref={this.state.outletsRefs[outlet.id]}
-                              value={outlet.id}
-                              // selected={outlet.id === defaultOutlet.id}
-                            >
-                              {outlet.name}
-                            </option>
-                          ))}
-                      </select> :
-                      outlets[0] && outlets[0].name
-                  }
+                  {outlets && outlets.length > 1 ? (
+                    <select
+                      className={styles.outletNameSelect}
+                      onChange={(e) => this.handleOutletChange(e)}
+                      value={defaultOutlet.id}
+                    >
+                      {outlets &&
+                        outlets.map((outlet, key) => (
+                          <option
+                            key={key}
+                            ref={this.state.outletsRefs[outlet.id]}
+                            value={outlet.id}
+                            // selected={outlet.id === defaultOutlet.id}
+                          >
+                            {outlet.name}
+                          </option>
+                        ))}
+                    </select>
+                  ) : (
+                    outlets[0] && outlets[0].name
+                  )}
                 </span>
               </div>
             </div>
@@ -207,8 +226,7 @@ class Header extends Component {
                 <span className="screen-reader-text">Menu</span>
               </button>
 
-              {
-                enableOrdering &&
+              {enableOrdering && (
                 <Link
                   to="/basket"
                   className="menu-toggle"
@@ -242,18 +260,16 @@ class Header extends Component {
                           justifyContent: "center",
                           top: 0,
                           right: 0,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
                         {basketLength}
                       </div>
                     )}
-                    <i
-                      className="fa fa-shopping-basket font-color-theme"
-                    />
+                    <i className="fa fa-shopping-basket font-color-theme" />
                   </div>
                 </Link>
-              }
+              )}
 
               <div className="primary-navigation">
                 <ul
@@ -261,15 +277,14 @@ class Header extends Component {
                   className="menu nav-menu"
                   aria-expanded="false"
                 >
-                  {
-                    enableOrdering &&
+                  {enableOrdering && (
                     <li
                       className={this.activeRoute({ path: "/", name: "Home" })}
                       onClick={() => this.handelOnClick()}
                     >
                       <Link to="/">Menu</Link>
                     </li>
-                  }
+                  )}
                   {(isLoggedIn || !enableOrdering) && (
                     <li
                       className={this.activeRoute({
@@ -321,7 +336,14 @@ class Header extends Component {
                         className="woocommerce-Button button"
                         name="login"
                         value="Log Out"
-                        style={{ width: 160, padding: 0, paddingLeft: 5, paddingRight: 5, height: 40, borderRadius: 10, }}
+                        style={{
+                          width: 160,
+                          padding: 0,
+                          paddingLeft: 5,
+                          paddingRight: 5,
+                          height: 40,
+                          borderRadius: 10,
+                        }}
                       />
                     </li>
                   )}
@@ -336,7 +358,15 @@ class Header extends Component {
                         className="woocommerce-Button button"
                         name="login"
                         value="Log In / Sign Up"
-                        style={{ width: 160, padding: 0, paddingLeft: 5, paddingRight: 5, height: 40, borderRadius: 10, marginTop: 15  }}
+                        style={{
+                          width: 160,
+                          padding: 0,
+                          paddingLeft: 5,
+                          paddingRight: 5,
+                          height: 40,
+                          borderRadius: 10,
+                          marginTop: 15,
+                        }}
                       />
                     </li>
                   )}
@@ -345,15 +375,14 @@ class Header extends Component {
               <div className="handheld-navigation navigation-theme">
                 <span className="phm-close">Close</span>
                 <ul className="menu">
-                  {
-                    enableOrdering &&
+                  {enableOrdering && (
                     <li className="menu-item menu-hide">
                       <Link to="/">
                         <i className="fa fa-book" />
                         Menu
                       </Link>
                     </li>
-                  }
+                  )}
                   {(isLoggedIn || !enableOrdering) && (
                     <li className="menu-item menu-hide">
                       <Link to="/profile">
@@ -422,8 +451,7 @@ class Header extends Component {
               </div>
             </nav>
             {/* #site-navigation */}
-            {
-              enableOrdering &&
+            {enableOrdering && (
               <ul
                 className="site-header-cart menu"
                 style={{ textAlign: "right" }}
@@ -459,20 +487,18 @@ class Header extends Component {
                             justifyContent: "center",
                             top: 0,
                             left: 25,
-                            fontWeight: "bold"
+                            fontWeight: "bold",
                           }}
                         >
                           {basketLength}
                         </div>
                       )}
-                      <i
-                        className="fa fa-shopping-basket font-color-theme"
-                      />
+                      <i className="fa fa-shopping-basket font-color-theme" />
                     </div>
                   </li>
                 </Link>
               </ul>
-            }
+            )}
           </div>
         </header>
       </div>

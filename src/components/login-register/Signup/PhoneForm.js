@@ -127,7 +127,9 @@ const PhoneForm = ({
               className="card card-body"
               style={{ textAlign: "justify", fontSize: 11 }}
             >
-              {termsAndConditions}
+              <textarea disabled rows={10}>
+                {termsAndConditions}
+              </textarea>
             </div>
           </div>
         </>
