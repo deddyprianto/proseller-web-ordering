@@ -10,18 +10,19 @@ export default class RedeemPointBasket extends Component {
 
     let totalPoint = props.detailPoint.point
     totalPoint = totalPoint - (props.pendingPoints || 0)
-
+    
     if (props.dataSettle.paySVC || props.amountSVC === 0) {
-      totalPoint = totalPoint - (props.lockPoints || 0)
+      totalPoint = totalPoint - (this.props.campaignPoint.lockPoints || 0)
       if(props.detailPoint.roundingOptions !== "DECIMAL") {
         totalPoint = Math.floor(totalPoint);
       }
     }
-
+     
     if (props.percentageUseSVC > 0) {
       let minusPoint = 0;
-      minusPoint = (props.percentageUseSVC/100) * props.lockPoints 
-      totalPoint = totalPoint - (props.lockPoints - minusPoint)
+      minusPoint = (props.percentageUseSVC/100) * this.props.campaignPoint.lockPoints 
+      totalPoint = totalPoint - (this.props.campaignPoint.lockPoints - minusPoint)
+      // console.log(props.lockPoints - minusPoint)
       if(props.detailPoint.roundingOptions !== "DECIMAL") {
         totalPoint = Math.floor(totalPoint);
       }
@@ -63,21 +64,21 @@ export default class RedeemPointBasket extends Component {
                     }
                   </div>
                   {
-                    props.lockPoints && props.lockPoints && props.dataSettle.paySVC === undefined && props.percentageUseSVC < 100 ?
+                    this.props.campaignPoint && this.props.campaignPoint.lockPoints && props.dataSettle.paySVC === undefined && props.percentageUseSVC < 100 ?
                     <div className="text" style={{
                       fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
                       marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
                     }}>
-                      {`Your ${props.lockPoints} SVC points is locked because you only use ${props.percentageUseSVC.toFixed(2)}% of your SVC balance. `}
+                      {`Your ${this.props.campaignPoint.lockPoints} SVC points is locked because you only use ${props.percentageUseSVC.toFixed(2)}% of your SVC balance. `}
                     </div> : null
                   }
                   {
-                    props.lockPoints && props.lockPoints && props.dataSettle.paySVC ?
+                    this.props.campaignPoint && this.props.campaignPoint.lockPoints && props.dataSettle.paySVC ?
                     <div className="text" style={{
                       fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
                       marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
                     }}>
-                      {`Your ${props.lockPoints} SVC points is locked on SVC Purchase.`}
+                      {`Your ${this.props.campaignPoint.lockPoints} SVC points is locked on SVC Purchase.`}
                     </div> : null
                   }
                   {

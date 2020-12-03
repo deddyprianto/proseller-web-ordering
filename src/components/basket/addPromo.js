@@ -9,11 +9,13 @@ class AddPromo extends Component {
     let props = this.props.data
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
-    
+    // console.log(props) 
+
     return (
       <div>
         <RedeemPointBasket
           data={props}
+          campaignPoint={this.props.campaignPoint}
           handleRedeemPoint={() => this.props.handleRedeemPoint()}
           cancelSelectPoint={() => this.props.cancelSelectPoint()}
           getCurrency={(price) => this.props.getCurrency(price)}
@@ -99,7 +101,8 @@ class AddPromo extends Component {
 const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
-    selectedVoucher: state.payment.selectedVoucher
+    selectedVoucher: state.payment.selectedVoucher,
+    campaignPoint: state.campaign.data,
   };
 };
 
