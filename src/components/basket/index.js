@@ -61,7 +61,7 @@ class Basket extends Component {
       dataCVV: "",
       isEmenu: window.location.pathname.includes("emenu"),
       orderActionDate: moment().format("YYYY-MM-DD"),
-      orderActionTime: moment().add(1, 'h').format("HH") + ":00",
+      orderActionTime: moment().add(1, "h").format("HH") + ":00",
       orderActionTimeSlot: null,
       checkOperationalHours: {},
       orderingTime: [],
@@ -74,7 +74,7 @@ class Basket extends Component {
       maxLoopingSetTimeSlot: 7,
       nextDayIsAvailable: null,
       isEditDate: false,
-      timeSlot: []
+      timeSlot: [],
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -114,7 +114,7 @@ class Basket extends Component {
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) { }
+      } catch (error) {}
     }, 0);
     await this.getDataBasket();
   };
@@ -169,11 +169,13 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   loadLocalStorage = async () => {
-    let locationCustomer = JSON.parse(localStorage.getItem(`${config.prefix}_locationCustomer`))
+    let locationCustomer = JSON.parse(
+      localStorage.getItem(`${config.prefix}_locationCustomer`)
+    );
     let selectedVoucher = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
     );
@@ -191,12 +193,14 @@ class Basket extends Component {
     );
     let dataBasket = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
-    );    
-    
+    );
+
     // if infoCompany is empty
     if (!infoCompany) {
       let time = setInterval(async () => {
-        infoCompany = await encryptor.decrypt(JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+        infoCompany = await encryptor.decrypt(
+          JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+        );
         if (infoCompany) clearInterval(time);
       }, 0);
     } else {
@@ -207,55 +211,78 @@ class Basket extends Component {
     if (!dataBasket) dataBasket = await this.getDataBasket_();
 
     return {
-      locationCustomer, selectedVoucher, selectedPoint, 
-      scanTable, infoCompany, selectedCard, dataBasket
-    }
-  }
+      locationCustomer,
+      selectedVoucher,
+      selectedPoint,
+      scanTable,
+      infoCompany,
+      selectedCard,
+      dataBasket,
+    };
+  };
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props;
-    let { 
-      selectedVoucher, selectedPoint, 
-      scanTable, infoCompany, selectedCard, dataBasket
-    } = await this.loadLocalStorage()
+    let {
+      selectedVoucher,
+      selectedPoint,
+      scanTable,
+      infoCompany,
+      selectedCard,
+      dataBasket,
+    } = await this.loadLocalStorage();
     let deliveryAddress = this.props.deliveryAddress;
 
     if (isLoggedIn) {
       this.props.dispatch(CustomerAction.getVoucher());
       this.props.dispatch(
-        CampaignAction.getCampaignPoints({ history: "false" }, infoCompany && infoCompany.companyId)
+        CampaignAction.getCampaignPoints(
+          { history: "false" },
+          infoCompany && infoCompany.companyId
+        )
       );
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode;
-      let response = await this.props.dispatch(OrderAction.buildCart(dataBasket));
+      let response = await this.props.dispatch(
+        OrderAction.buildCart(dataBasket)
+      );
       if (!response.message) dataBasket = response.data;
     }
 
     if (dataBasket) {
-      if(!orderingMode) orderingMode = this.state.orderingMode
-      dataBasket.orderingMode = orderingMode
+      if (!orderingMode) orderingMode = this.state.orderingMode;
+      dataBasket.orderingMode = orderingMode;
 
       // move cart based on delivery address
-      if(deliveryAddress && orderingMode === "DELIVERY"){
+      if (
+        deliveryAddress &&
+        orderingMode === "DELIVERY" &&
+        this.props.outletChanged === false
+      ) {
         let payloadMoveCart = {
           orderBy: "provider",
           cart: dataBasket,
-          deliveryAddress
-        }
-        dataBasket = await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
+          deliveryAddress,
+        };
+        dataBasket = await this.props.dispatch(
+          OrderAction.moveCart(payloadMoveCart)
+        );
       }
 
       // set delivery provider
-      await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket)
-      
+      await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
+
       // set default outlet
-      let storeDetail = await this.setDefaultOutlet(dataBasket)
-      
+      let storeDetail = await this.setDefaultOutlet(dataBasket);
+
       // set voucher
       await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
       let discount = (selectedPoint || 0) + this.state.discountVoucher;
-      let totalPrice = (dataBasket.totalNettAmount - discount < 0) ? 0 : (dataBasket.totalNettAmount - discount);
+      let totalPrice =
+        dataBasket.totalNettAmount - discount < 0
+          ? 0
+          : dataBasket.totalNettAmount - discount;
 
       if (dataBasket.orderingMode) {
         dataBasket.orderingMode = orderingMode;
@@ -274,12 +301,13 @@ class Basket extends Component {
         if (surcharge.resultCode === 200) {
           dataBasket = surcharge.data;
           localStorage.setItem(
-            `${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(dataBasket))
+            `${config.prefix}_dataBasket`,
+            JSON.stringify(encryptor.encrypt(dataBasket))
           );
         }
       }
 
-      let checkOperationalHours = this.checkOperationalHours(storeDetail)
+      let checkOperationalHours = this.checkOperationalHours(storeDetail);
       this.setState({
         dataBasket,
         storeDetail,
@@ -291,13 +319,18 @@ class Basket extends Component {
       });
 
       // check validate pick date time
-      if(orderingMode !== 'DINEIN') {
-        let check = this.state.orderActionDate === moment().format("YYYY-MM-DD")
-        await this.checkPickUpDateTime(checkOperationalHours, this.state.orderActionDate, check)
+      if (orderingMode !== "DINEIN") {
+        let check =
+          this.state.orderActionDate === moment().format("YYYY-MM-DD");
+        await this.checkPickUpDateTime(
+          checkOperationalHours,
+          this.state.orderActionDate,
+          check
+        );
       }
       await this.submitOtomatis(dataBasket, scanTable);
-      if(!checkOperationalHours.status){
-        let message = "Sorry, we're closed today!"
+      if (!checkOperationalHours.status) {
+        let message = "Sorry, we're closed today!";
         Swal.fire("Oppss!", message, "error");
       }
     } else {
@@ -321,59 +354,87 @@ class Basket extends Component {
   };
 
   setDefaultOutlet = async (dataBasket) => {
-    let storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
+    let storeDetail = await this.props.dispatch(
+      MasterdataAction.getOutletByID(dataBasket.outlet.id)
+    );
     if (storeDetail && storeDetail.id) {
-      storeDetail = config.getValidation(storeDetail)
+      storeDetail = config.getValidation(storeDetail);
     }
-    return storeDetail
-  }
+    return storeDetail;
+  };
 
   setDeliveryProvider = async (deliveryAddress, orderingMode, dataBasket) => {
-    let provaiderDelivery = null
-    let deliveryProvaider = []
+    let provaiderDelivery = null;
+    let deliveryProvaider = [];
 
-    if ( deliveryAddress && orderingMode !== "DINEIN" && orderingMode !== "TAKEAWAY") {
+    if (
+      deliveryAddress &&
+      orderingMode !== "DINEIN" &&
+      orderingMode !== "TAKEAWAY"
+    ) {
       let payload = {
         outletId: dataBasket.outlet.id,
         cartID: dataBasket.cartID,
         deliveryAddress: deliveryAddress,
       };
 
-      let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
+      let response = await this.props.dispatch(
+        OrderAction.getCalculateFee(payload)
+      );
 
-      deliveryProvaider = response.dataProvider
-      deliveryProvaider && deliveryProvaider.forEach(async (provider) => {
-        provider.deliveryFeeFloat = provider.deliveryFee;
-        provider.deliveryFee = this.getCurrency(provider.deliveryFee);
-      });
-      
-      if(deliveryProvaider && deliveryProvaider.length > 0){
-        provaiderDelivery = deliveryProvaider[0]
+      deliveryProvaider = response.dataProvider;
+      deliveryProvaider &&
+        deliveryProvaider.forEach(async (provider) => {
+          provider.deliveryFeeFloat = provider.deliveryFee;
+          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
+        });
+
+      if (deliveryProvaider && deliveryProvaider.length > 0) {
+        provaiderDelivery = deliveryProvaider[0];
       }
 
       if (dataBasket.deliveryProviderId) {
-        provaiderDelivery = deliveryProvaider.find(items => {return items.id === dataBasket.deliveryProviderId})
-      }  
+        provaiderDelivery = deliveryProvaider.find((items) => {
+          return items.id === dataBasket.deliveryProviderId;
+        });
+      }
 
-      this.handleSetProvaider(provaiderDelivery)
+      this.handleSetProvaider(provaiderDelivery);
       this.setState({ deliveryProvaider });
-    } 
+    }
 
     await this.props.dispatch({
       type: "SET_DELIVERY_PROVIDERS",
       payload: deliveryProvaider,
     });
 
-    return {deliveryProvaider, provaiderDelivery}
-  }
+    return { deliveryProvaider, provaiderDelivery };
+  };
 
-  checkPickUpDateTime = async (checkOperationalHours, date, check, changeOrderingMode) => {
-    let {storeDetail, maxLoopingGetTimeSlot, maxLoopingSetTimeSlot, isEditDate, orderingMode, timeSlot} = this.state
-    if(!storeDetail) return
+  checkPickUpDateTime = async (
+    checkOperationalHours,
+    date,
+    check,
+    changeOrderingMode
+  ) => {
+    let {
+      storeDetail,
+      maxLoopingGetTimeSlot,
+      maxLoopingSetTimeSlot,
+      isEditDate,
+      orderingMode,
+      timeSlot,
+    } = this.state;
+    if (!storeDetail) return;
 
-    let orderingModeField = orderingMode === "DINEIN" ? "dineIn" : orderingMode === "DELIVERY" ? "delivery" : "takeAway";
-    let {maxDays} = storeDetail.orderValidation[orderingModeField]
-    if(!maxDays) maxDays = 5
+    let orderingModeField =
+      orderingMode === "DINEIN"
+        ? "dineIn"
+        : orderingMode === "DELIVERY"
+        ? "delivery"
+        : "takeAway";
+    let { maxDays } = storeDetail.orderValidation[orderingModeField];
+    if (!maxDays) maxDays = 5;
 
     let dateTime = new Date();
     let payload = {
@@ -382,98 +443,108 @@ class Basket extends Component {
       date,
       maxDays,
       orderingMode,
-    }
+    };
 
-    if(timeSlot.length === 0 || changeOrderingMode){
-      timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload))
-      if(timeSlot.resultCode === 200){
-        timeSlot = timeSlot.data.filter(items => { 
-          return items.timeSlot.filter(item => {
-            return item.isAvailable
-          })
-         })
-         this.setState({timeSlot})
+    if (timeSlot.length === 0 || changeOrderingMode) {
+      timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
+      if (timeSlot.resultCode === 200) {
+        timeSlot = timeSlot.data.filter((items) => {
+          return items.timeSlot.filter((item) => {
+            return item.isAvailable;
+          });
+        });
+        this.setState({ timeSlot });
       } else {
-        maxLoopingSetTimeSlot = 0
-        timeSlot = []
+        maxLoopingSetTimeSlot = 0;
+        timeSlot = [];
       }
     }
-    
-    if(isEditDate) {
-      timeSlot = timeSlot.find(items => {return items.date === date})
+
+    if (isEditDate) {
+      timeSlot = timeSlot.find((items) => {
+        return items.date === date;
+      });
     } else {
-      timeSlot = timeSlot[0]
-    }
-    
-    if(timeSlot) {
-      date = timeSlot.date
-      timeSlot = timeSlot.timeSlot.filter(items => {return items.isAvailable})
+      timeSlot = timeSlot[0];
     }
 
-    if(timeSlot && timeSlot.length > 0) {
-      this.setState({ 
-        orderingTimeSlot: timeSlot, 
+    if (timeSlot) {
+      date = timeSlot.date;
+      timeSlot = timeSlot.timeSlot.filter((items) => {
+        return items.isAvailable;
+      });
+    }
+
+    if (timeSlot && timeSlot.length > 0) {
+      this.setState({
+        orderingTimeSlot: timeSlot,
         orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
         orderActionTimeSlot: timeSlot[0].time,
         isEditDate: true,
-        orderActionDate: date
-      })
+        orderActionDate: date,
+      });
     } else {
-      if(isEditDate){
+      if (isEditDate) {
         for (let index = 0; index <= maxLoopingGetTimeSlot; index++) {
-          let {dateDay, status} = this.getTimeSlotAvailable(date)
-          if(status) break
-          date = dateDay
+          let { dateDay, status } = this.getTimeSlotAvailable(date);
+          if (status) break;
+          date = dateDay;
         }
 
-        this.setState({ 
-          orderActionTimeSlot: null, 
+        this.setState({
+          orderActionTimeSlot: null,
           orderingTimeSlot: [],
-          orderActionTime: moment().add(1, 'h').format("HH") + ":00"
-        })
+          orderActionTime: moment().add(1, "h").format("HH") + ":00",
+        });
       } else {
-        if(maxLoopingSetTimeSlot > 0){
-          this.setState({maxLoopingSetTimeSlot: maxLoopingSetTimeSlot - 1})
-          date = moment(date).add(1, 'd').format("YYYY-MM-DD")
-          this.checkPickUpDateTime(checkOperationalHours, date, check)
+        if (maxLoopingSetTimeSlot > 0) {
+          this.setState({ maxLoopingSetTimeSlot: maxLoopingSetTimeSlot - 1 });
+          date = moment(date).add(1, "d").format("YYYY-MM-DD");
+          this.checkPickUpDateTime(checkOperationalHours, date, check);
         } else {
-          this.setState({ 
-            orderActionTimeSlot: null, 
+          this.setState({
+            orderActionTimeSlot: null,
             orderingTimeSlot: [],
-            orderActionTime: moment().add(1, 'h').format("HH") + ":00"
-          })
+            orderActionTime: moment().add(1, "h").format("HH") + ":00",
+          });
         }
       }
     }
-  }
+  };
 
   getTimeSlotAvailable = (dateDay) => {
     try {
-      dateDay = moment(dateDay).add(1, 'd').format("YYYY-MM-DD")
-      let timeSlot = this.state.timeSlot.find(items => {return items.date === dateDay})
-      if(timeSlot) {
-        timeSlot = timeSlot.timeSlot.filter(items => {return items.isAvailable})
+      dateDay = moment(dateDay).add(1, "d").format("YYYY-MM-DD");
+      let timeSlot = this.state.timeSlot.find((items) => {
+        return items.date === dateDay;
+      });
+      if (timeSlot) {
+        timeSlot = timeSlot.timeSlot.filter((items) => {
+          return items.isAvailable;
+        });
       }
-      if(timeSlot && timeSlot.length > 0) {
-        this.setState({nextDayIsAvailable: dateDay})
-        return {dateDay, status: true}
+      if (timeSlot && timeSlot.length > 0) {
+        this.setState({ nextDayIsAvailable: dateDay });
+        return { dateDay, status: true };
       }
-      return {dateDay, status: false}
+      return { dateDay, status: false };
     } catch (error) {}
-  }
+  };
 
   componentDidUpdate() {
-    if(
+    if (
       this.props.orderingSetting &&
       this.props.orderingSetting.length > 0 &&
-      this.state.orderingSetting.length === 0 
-    ) this.setState({ orderingSetting: this.props.orderingSetting });
+      this.state.orderingSetting.length === 0
+    )
+      this.setState({ orderingSetting: this.props.orderingSetting });
 
     if (
       this.props.campaignPoint &&
       this.props.campaignPoint.detailPoint &&
       !this.state.detailPoint
-    ) this.setState(this.props.campaignPoint);
+    )
+      this.setState(this.props.campaignPoint);
 
     if (this.props.myVoucher && !this.state.myVoucher)
       this.setState({ myVoucher: this.props.myVoucher });
@@ -488,7 +559,10 @@ class Basket extends Component {
       !response.data.message &&
       response.data.status !== "failed"
     ) {
-      localStorage.setItem(`${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(response.data)));
+      localStorage.setItem(
+        `${config.prefix}_dataBasket`,
+        JSON.stringify(encryptor.encrypt(response.data))
+      );
       this.setState({ dataBasket: response.data });
       return response.data;
     }
@@ -559,9 +633,12 @@ class Basket extends Component {
             let validHourFrom = validHour.from;
             let validHourTo = validHour.to;
             if (activeWeekDays[date.getDay()].active) {
-              let from = `${tanggal}T${validHourFrom}:00+${region}`
-              let to = `${tanggal}T${validHourTo}:00+${region}`
-              let statusValidHour = moment(moment().format()).isBetween(from,to);
+              let from = `${tanggal}T${validHourFrom}:00+${region}`;
+              let to = `${tanggal}T${validHourTo}:00+${region}`;
+              let statusValidHour = moment(moment().format()).isBetween(
+                from,
+                to
+              );
               if (statusValidHour) {
                 if (voucherType === "discPercentage") {
                   discount =
@@ -674,10 +751,11 @@ class Basket extends Component {
       selectedPoint = 0;
     }
 
-    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
-      } point to ${this.getCurrency(
-        parseInt(pointsToRebateRatio.split(":")[1])
-      )}`;
+    let textRasio = `Redeem ${
+      pointsToRebateRatio.split(":")[0]
+    } point to ${this.getCurrency(
+      parseInt(pointsToRebateRatio.split(":")[1])
+    )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -715,17 +793,31 @@ class Basket extends Component {
     this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
     await this.getDataBasket(true, orderingMode);
 
-    let orderActionDate = moment().format("YYYY-MM-DD")
+    let orderActionDate = moment().format("YYYY-MM-DD");
     this.setState({ isLoading: false, orderActionDate, isEditDate: false });
-    await this.checkPickUpDateTime(this.state.checkOperationalHours, orderActionDate, true, true)
+    await this.checkPickUpDateTime(
+      this.state.checkOperationalHours,
+      orderActionDate,
+      true,
+      true
+    );
   };
 
   setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
     if (!dataBasket) dataBasket = this.state.dataBasket;
-    if (!pointsToRebateRatio)  pointsToRebateRatio = this.state.pointsToRebateRatio; 
-    let totalPrice = (point / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
-    totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
-    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)) );
+    if (!pointsToRebateRatio)
+      pointsToRebateRatio = this.state.pointsToRebateRatio;
+    let totalPrice =
+      (point / pointsToRebateRatio.split(":")[0]) *
+      pointsToRebateRatio.split(":")[1];
+    totalPrice =
+      dataBasket.totalNettAmount - totalPrice < 0
+        ? 0
+        : dataBasket.totalNettAmount - totalPrice;
+    localStorage.setItem(
+      `${config.prefix}_selectedPoint`,
+      JSON.stringify(encryptor.encrypt(point))
+    );
     this.setState({
       selectedPoint: point,
       discountPoint: point,
@@ -820,20 +912,28 @@ class Basket extends Component {
   };
 
   handleSubmit = async () => {
-    let { orderingMode, storeDetail, scanTable, dataBasket, orderingSetting } = this.state;
+    let {
+      orderingMode,
+      storeDetail,
+      scanTable,
+      dataBasket,
+      orderingSetting,
+    } = this.state;
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
       document.getElementById("login-register-btn").click();
       return;
     }
-    
+
     if (this.checkScan()) return this.props.history.push("/scanTable");
     else if (orderingMode === "TAKEAWAY") {
       this.setState({ isLoading: true });
-      let isNeedConfirmation = false
-      let enableAutoConfirmation = orderingSetting.find(items => { return items.settingKey === "EnableAutoConfirmation" })
+      let isNeedConfirmation = false;
+      let enableAutoConfirmation = orderingSetting.find((items) => {
+        return items.settingKey === "EnableAutoConfirmation";
+      });
       if (enableAutoConfirmation) {
-        isNeedConfirmation = enableAutoConfirmation.settingValue || false
+        isNeedConfirmation = enableAutoConfirmation.settingValue || false;
       }
 
       let payload = {
@@ -841,7 +941,7 @@ class Basket extends Component {
         orderingMode: orderingMode,
         partitionKey: this.props.basket.partitionKey,
         sortKey: this.props.basket.sortKey,
-        isNeedConfirmation
+        isNeedConfirmation,
       };
 
       let response;
@@ -890,23 +990,27 @@ class Basket extends Component {
       storeDetail &&
       storeDetail.outletType !== "QUICKSERVICE"
     ) {
-      let isNeedConfirmation = false
-      let enableAutoConfirmation = orderingSetting.find(items => { return items.settingKey === "EnableAutoConfirmation" })
+      let isNeedConfirmation = false;
+      let enableAutoConfirmation = orderingSetting.find((items) => {
+        return items.settingKey === "EnableAutoConfirmation";
+      });
       if (enableAutoConfirmation) {
-        isNeedConfirmation = enableAutoConfirmation.settingValue || false
+        isNeedConfirmation = enableAutoConfirmation.settingValue || false;
       }
 
       let payload = {
         tableNo: scanTable.tableNo || scanTable.table,
         orderingMode: orderingMode,
-        isNeedConfirmation
+        isNeedConfirmation,
       };
 
       if (!payload.tableNo) return this.props.history.push("/scanTable");
 
-      let response = await this.props.dispatch(OrderAction.submitBasket(payload));
+      let response = await this.props.dispatch(
+        OrderAction.submitBasket(payload)
+      );
 
-      console.log('submit', response)
+      console.log("submit", response);
       if (response && response.resultCode === 200) {
         this.setState({ dataBasket: response.data });
         localStorage.removeItem(`${config.prefix}_dataBasket`);
@@ -914,7 +1018,10 @@ class Basket extends Component {
           OrderAction.setData({}, "DATA_BASKET")
         );
         this.setState({ isLoading: false });
-        localStorage.setItem(`${config.prefix}_dataSettle`, JSON.stringify(encryptor.encrypt(this.state)));
+        localStorage.setItem(
+          `${config.prefix}_dataSettle`,
+          JSON.stringify(encryptor.encrypt(this.state))
+        );
         this.props.history.push("/payment");
       } else {
         Swal.fire(
@@ -923,7 +1030,7 @@ class Basket extends Component {
           "error"
         );
         localStorage.removeItem(`${config.prefix}_scanTable`);
-        this.setState({ scanTable: null })
+        this.setState({ scanTable: null });
         this.props.history.push("/scanTable");
       }
 
@@ -964,9 +1071,9 @@ class Basket extends Component {
   };
 
   handleSetProvaider = async (data) => {
-    let {orderingMode, provaiderDelivery} = this.state
+    let { orderingMode, provaiderDelivery } = this.state;
     this.setState({ provaiderDelivery: data });
-    
+
     await this.props.dispatch({
       type: "SET_SELECTED_DELIVERY_PROVIDERS",
       payload: data,
@@ -977,8 +1084,8 @@ class Basket extends Component {
       else delete provider.default;
     });
 
-    if(!provaiderDelivery){
-      let provider = {...data, deliveryFee: data.deliveryFeeFloat}
+    if (!provaiderDelivery) {
+      let provider = { ...data, deliveryFee: data.deliveryFeeFloat };
 
       let dataBasket = await this.props.dispatch(
         OrderAction.changeOrderingMode({ orderingMode, provider })
@@ -986,10 +1093,10 @@ class Basket extends Component {
       if (dataBasket.resultCode === 200) {
         dataBasket = dataBasket.data;
         localStorage.setItem(
-          `${config.prefix}_dataBasket`, 
+          `${config.prefix}_dataBasket`,
           JSON.stringify(encryptor.encrypt(dataBasket))
         );
-        await this.getDataBasket()
+        await this.getDataBasket();
       }
     }
   };
@@ -1024,18 +1131,27 @@ class Basket extends Component {
   handleSetState = async (field, value) => {
     this.setState({ [field]: value });
     if (field === "dataBasket") {
-      localStorage.setItem( `${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(value)) );
+      localStorage.setItem(
+        `${config.prefix}_dataBasket`,
+        JSON.stringify(encryptor.encrypt(value))
+      );
       window.location.reload();
     } else if (field === "orderActionDate") {
-      let check = value === moment().format("YYYY-MM-DD")
-      await this.checkPickUpDateTime(this.state.checkOperationalHours, value, check)
-    } else if (field === "orderActionTimeHours"){
-      let orderingTimeHours = this.state.orderingTimeHours
-      orderingTimeHours.forEach((item, index) => {        
-        if(Number(item) === Number(value)){
-          let orderActionTimeSlot = `${item}:00 - ${orderingTimeHours[index+1] || (item + 1)}:00`
-          this.setState({orderActionTimeSlot})
-          return
+      let check = value === moment().format("YYYY-MM-DD");
+      await this.checkPickUpDateTime(
+        this.state.checkOperationalHours,
+        value,
+        check
+      );
+    } else if (field === "orderActionTimeHours") {
+      let orderingTimeHours = this.state.orderingTimeHours;
+      orderingTimeHours.forEach((item, index) => {
+        if (Number(item) === Number(value)) {
+          let orderActionTimeSlot = `${item}:00 - ${
+            orderingTimeHours[index + 1] || item + 1
+          }:00`;
+          this.setState({ orderActionTimeSlot });
+          return;
         }
       });
     }
@@ -1080,7 +1196,11 @@ class Basket extends Component {
                     options={{ animationData: emptyGif }}
                     style={{ height: 250 }}
                   /> */}
-                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
+                  <img
+                    src={config.url_emptyImage}
+                    alt="is empty"
+                    style={{ marginTop: 30 }}
+                  />
                   <div>Data is empty</div>
                 </div>
               )}
@@ -1155,6 +1275,7 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     deliveryAddress: state.order.deliveryAddress,
     orderingSetting: state.order.setting,
+    outletChanged: state.outlet.outletChanged,
   };
 };
 

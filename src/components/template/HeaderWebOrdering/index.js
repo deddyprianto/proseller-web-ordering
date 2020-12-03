@@ -103,6 +103,7 @@ class Header extends Component {
       changeOutletID: "outlet::" + outletId,
     };
     this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
+    this.props.dispatch({ type: "OUTLET_CHANGED", data: true });
     if (this.props.isLoggedIn) {
       this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
     } else {
@@ -114,21 +115,6 @@ class Header extends Component {
         })
       );
     }
-    // Swal.fire({
-    //   title: "Change Outlet ?",
-    //   text: "Cart from previous outlet will be removed",
-    //   icon: "warning",
-    //   showCancelButton: true,
-    //   confirmButtonColor: "#3085d6",
-    //   cancelButtonColor: "#d33",
-    //   confirmButtonText: "Yes",
-    // }).then((result) => {
-    //   if (result && result.value) {
-    //     this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
-    //     localStorage.removeItem(`${config.prefix}_offlineCart`);
-    //     this.props.dispatch(OrderAction.deleteCart(this.props.isLoggedIn));
-    //   }
-    // });
   }
 
   render() {
