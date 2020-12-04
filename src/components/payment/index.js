@@ -349,6 +349,13 @@ class Payment extends Component {
         });
       } else checkOutlet = true;
 
+      if (selectedVoucher.minPurchaseAmount && selectedVoucher.minPurchaseAmount > 0) {
+        if (dataBasket.totalNettAmount < selectedVoucher.minPurchaseAmount) {
+          this.setRemoveVoucher(`The minimum purchase amount to use this voucher is ${this.getCurrency(selectedVoucher.minPurchaseAmount)}`, selectedVoucher);
+          return
+        }
+      }
+
       let voucherType = selectedVoucher.voucherType;
       let voucherValue = selectedVoucher.voucherValue;
       let discount = 0;
@@ -393,10 +400,8 @@ class Payment extends Component {
         } else if (selectedVoucher.appliedTo === "CATEGORY") {
           for (let i = 0; i < dataBasket.details.length; i++) {
             let details = dataBasket.details[i];
-            let check = selectedVoucher.appliedItems.find((items) => {
-              return items.value === details.categoryID.split("::")[1];
-            });
-            if (check) checkProduct = details;
+            let check = selectedVoucher.appliedItems.find(items => { return items.value === details.product.categoryID})
+            if(check) checkProduct = details
           }
         }
       }

@@ -17,6 +17,7 @@ const EmailForm = ({
   error,
   children,
   invitationCode,
+  color
 }) => {
   const initialCountry = "SG";
   const [phoneCountryCode, setPhoneCountryCode] = useState("+65");
@@ -71,8 +72,11 @@ const EmailForm = ({
               disableSearchIcon
               inputStyle={{
                 width: 0,
-                border: "1px solid #FFF",
+                border: `1px solid ${color}`,
+                backgroundColor: color,
                 height: 40,
+                outline: 'none',
+                boxShadow: 'none'
               }}
               dropdownStyle={{
                 color: "#808080",

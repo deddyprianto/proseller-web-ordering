@@ -143,7 +143,10 @@ class ModalProduct extends Component {
   decrease = () => {
     try {
       let { selectedItem } = this.state;
-      if (selectedItem.quantity > 1) {
+      let minimum = 0;
+      if (this.props.addNew) minimum = 1
+      
+      if (selectedItem.quantity > minimum) {
         selectedItem.quantity -= 1;
         if(!this.isItemExist(this.state.selectedItem) && selectedItem.quantity === 0) {
           selectedItem.quantity = 1

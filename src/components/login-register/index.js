@@ -489,6 +489,18 @@ class LoginRegister extends Component {
     }
   };
 
+  getAge = (DOB) => {
+      let today = new Date();
+      let birthDate = new Date(DOB);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      let m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age = age - 1;
+      }
+
+      return age;
+  }
+
   handleMobileRegister = async () => {
     let enableSMSOTP = this.state.enableSMSOTP;
     let enableWhatsappOTP = this.state.enableWhatsappOTP;
@@ -567,27 +579,18 @@ class LoginRegister extends Component {
         ...customFields,
       };
 
-      let listName = "";
-      mandatory.forEach((field) => {
-        if (
-          !payload[field.fieldName] ||
-          (payload[field.fieldName] && payload[field.fieldName] === "")
-        ) {
-          if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== ""
-          ) {
-            payload[field.fieldName] = this.state[field.fieldName];
-            field.check = true;
-          } else if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== "" &&
-            field.defaultValue &&
-            field.defaultValue !== "-" &&
-            field.defaultValue !== ""
-          ) {
-            payload[field.fieldName] = field.defaultValue;
-            field.check = true;
+      let listName = ""
+      mandatory.forEach(field => {
+        if( !payload[field.fieldName] || (payload[field.fieldName] && (payload[field.fieldName] === "" || payload[field.fieldName] === "Invalid date")) ) {
+          if(this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== 'Invalid date'){
+            payload[field.fieldName] = this.state[field.fieldName]
+            field.check = true
+          } else if(
+            this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== "Invalid date" &&
+            field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""
+          ){
+            payload[field.fieldName] = field.defaultValue
+            field.check = true
           } else {
             listName += field.displayName + ", ";
             field.check = false;
@@ -604,6 +607,15 @@ class LoginRegister extends Component {
         listName = listName.substr(0, listName.length - 2);
         Swal.fire("Oppss!", `${listName} is required`, "error");
         return;
+      }
+
+      // Validate minimum age
+      if (this.state.minimumAge > 0) {
+        const currentAge = this.getAge(payload.birthDate)
+        if (currentAge < this.state.minimumAge) {
+          Swal.fire("Oppss!", `The minimum age for registration is ${this.state.minimumAge} years old`, "error"); 
+          return
+        }
       }
 
       this.setState({ isLoading: true });
@@ -881,27 +893,18 @@ class LoginRegister extends Component {
         ...customFields,
       };
 
-      let listName = "";
-      mandatory.forEach((field) => {
-        if (
-          !payload[field.fieldName] ||
-          (payload[field.fieldName] && payload[field.fieldName] === "")
-        ) {
-          if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== ""
-          ) {
-            payload[field.fieldName] = this.state[field.fieldName];
-            field.check = true;
-          } else if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== "" &&
-            field.defaultValue &&
-            field.defaultValue !== "-" &&
-            field.defaultValue !== ""
-          ) {
-            payload[field.fieldName] = field.defaultValue;
-            field.check = true;
+      let listName = ""
+      mandatory.forEach(field => {
+        if( !payload[field.fieldName] || (payload[field.fieldName] && (payload[field.fieldName] === "" || payload[field.fieldName] === "Invalid date")) ) {
+          if(this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== 'Invalid date'){
+            payload[field.fieldName] = this.state[field.fieldName]
+            field.check = true
+          } else if(
+            this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== "Invalid date" &&
+            field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""
+          ){
+            payload[field.fieldName] = field.defaultValue
+            field.check = true
           } else {
             listName += field.displayName + ", ";
             field.check = false;
@@ -920,6 +923,15 @@ class LoginRegister extends Component {
         return;
       }
 
+      // Validate minimum age
+      if (this.state.minimumAge > 0) {
+        const currentAge = this.getAge(payload.birthDate)
+        if (currentAge < this.state.minimumAge) {
+          Swal.fire("Oppss!", `The minimum age for registration is ${this.state.minimumAge} years old`, "error"); 
+          return
+        }
+      }
+      
       this.setState({ isLoading: true });
       let response = await this.props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
@@ -1095,7 +1107,7 @@ const mapStateToProps = (state) => ({
   defaultEmail: state.customer.defaultEmail,
   referralCode: state.auth.invitationCode,
 });
-
+ 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });

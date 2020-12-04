@@ -154,14 +154,15 @@ class DeliveryAddress extends Component {
       if (result.value) {
         this.setState({ isLoading: true });
         let addressDelivery = this.state.addressDelivery;
+        
         if (
           this.props.deliveryAddress &&
-          this.props.deliveryAddress.addressName === data.addressName
+          this.props.deliveryAddress.address === data.address
         ) {
           this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: null });
         }
         addressDelivery = addressDelivery.filter(function (a) {
-          return a.addressName !== data.addressName;
+          return a.address !== data.address;
         });
 
         let payload = {
@@ -229,7 +230,7 @@ class DeliveryAddress extends Component {
     if(codePostal && Number(codePostal)){
       // if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
       // if(postalCode.toString().length !== codePostal.toString().length) check = false
-      if(postalCode.toString().length < 5) check = false
+      if(postalCode.toString().length < 6) check = false
       if(postalCode.toString().length > 6) check = false
     } else {
       if(postalCode.toString().length !== 6) check = false
@@ -376,8 +377,8 @@ class DeliveryAddress extends Component {
                               </div>
                               {getDeliveryAddress &&
                                 this.props.deliveryAddress &&
-                                items.addressName ===
-                                  this.props.deliveryAddress.addressName && (
+                                items.address ===
+                                  this.props.deliveryAddress.address && (
                                   <div
                                     className="profile-dashboard"
                                     style={{
@@ -432,9 +433,9 @@ class DeliveryAddress extends Component {
                                   className="border-theme background-theme"
                                   disabled={
                                     (this.props.deliveryAddress &&
-                                      items.addressName ===
+                                      items.address ===
                                         this.props.deliveryAddress
-                                          .addressName) ||
+                                          .address) ||
                                     false
                                   }
                                   style={{

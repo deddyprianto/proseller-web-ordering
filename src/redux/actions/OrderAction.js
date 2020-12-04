@@ -571,12 +571,12 @@ function getProvider(
 
 function getCalculateFee(payload) {
   return async (dispatch) => {
-    let response = await OrderingService.api(
-      "POST",
-      payload,
-      `delivery/calculateFee`,
-      "Bearer"
-    );
+    let response = await OrderingService.api( "POST", payload, `delivery/calculateFee`, "Bearer" );
+    try{
+      if (response.data.dataProfider !== undefined){
+        response.data.dataProvider = response.data.dataProfider
+      }
+    }catch(e){}
     return response.data;
   };
 }

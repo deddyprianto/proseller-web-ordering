@@ -382,15 +382,14 @@ class Basket extends Component {
         OrderAction.getCalculateFee(payload)
       );
 
-      deliveryProvaider = response.dataProvider;
-      deliveryProvaider &&
-        deliveryProvaider.forEach(async (provider) => {
-          provider.deliveryFeeFloat = provider.deliveryFee;
-          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
-        });
-
-      if (deliveryProvaider && deliveryProvaider.length > 0) {
-        provaiderDelivery = deliveryProvaider[0];
+      deliveryProvaider = response.dataProvider
+      deliveryProvaider && deliveryProvaider.forEach(async (provider) => {
+        provider.deliveryFeeFloat = provider.deliveryFee;
+        provider.deliveryFee = this.getCurrency(provider.deliveryFee);
+      });
+      
+      if(deliveryProvaider && deliveryProvaider.length > 0){
+        provaiderDelivery = deliveryProvaider[0]
       }
 
       if (dataBasket.deliveryProviderId) {

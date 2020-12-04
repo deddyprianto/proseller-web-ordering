@@ -55,6 +55,22 @@ class ModalDeliveryAdderss extends Component {
       getDeliveryAddress
     } = this.props;
 
+    if (isNew) {
+      if (addressDelivery !== null) {
+        const find = addressDelivery.find(item => item.addressName === deliveryAddress.addressName)
+        if (find !== undefined){
+          await this.setState({ isLoading: false });
+          Swal.fire({
+            icon: "warning",
+            title: `${deliveryAddress.addressName} address is already added.`,
+            showConfirmButton: true,
+          });
+          return
+        }
+      }
+    }
+    
+    
     if (!deliveryAddress.city) {
       let province = await this.props.dispatch(
         MasterdataAction.getAddressLocation(countryCode)
@@ -108,6 +124,21 @@ class ModalDeliveryAdderss extends Component {
       });
     }
   };
+
+  checkFields = () => {
+    let { deliveryAddress } = this.props;
+    try{
+      if (deliveryAddress.addressName === "" || deliveryAddress.addressName === null ||
+          deliveryAddress.street === "" || deliveryAddress.street === undefined ||
+          deliveryAddress.unitNo === "" || deliveryAddress.unitNo === undefined ||
+          deliveryAddress.postalCode === "" || deliveryAddress.postalCode === undefined
+        )
+        return true
+      else return false
+    }catch(e) {
+      return true
+    }
+  }
 
   render() {
     let {
@@ -310,7 +341,7 @@ class ModalDeliveryAdderss extends Component {
                   </div> */}
 
                   <Button
-                    disabled={!postalCodeIsValid}
+                    disabled={!postalCodeIsValid || this.checkFields()}
                     className="button"
                     style={{
                       width: "100%",

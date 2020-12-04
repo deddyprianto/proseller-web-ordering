@@ -17,7 +17,7 @@ let Portal = ({
   loginByMobile,
   enableOrdering,
   companyInfo,
-  color,
+  color
 }) => {
   let initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
   let initialCodePhone = "+65";
@@ -89,8 +89,8 @@ let Portal = ({
                     border: `1px solid ${color}`,
                     backgroundColor: color,
                     height: 40,
-                    outline: "none",
-                    boxShadow: "none",
+                    outline: 'none',
+                    boxShadow: 'none'
                   }}
                   dropdownStyle={{
                     color: "#808080",
