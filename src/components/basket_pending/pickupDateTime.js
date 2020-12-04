@@ -24,7 +24,7 @@ class PickupDateTime extends Component {
         </div>
         <div style={{fontWeight: "bold", fontSize: 14, lineHeight: "20px"}}>
           <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
-          <div>{`${props.dataBasket.orderActionTimeSlot}`}</div>
+          { props.dataBasket.orderActionTimeSlot && <div>{`${props.dataBasket.orderActionTimeSlot}`}</div> }
         </div>
       </div>
     );

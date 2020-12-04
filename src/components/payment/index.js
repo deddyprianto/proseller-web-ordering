@@ -631,6 +631,8 @@ class Payment extends Component {
       totalPoint = totalPoint - diff
     }
 
+    if (totalPoint < 0) totalPoint = 0
+
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
 
     if (selectedPoint <= 0) {
