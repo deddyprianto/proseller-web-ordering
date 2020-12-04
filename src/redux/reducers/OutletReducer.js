@@ -1,6 +1,5 @@
 import { CONSTANT } from "../../helpers";
 import config from "../../config";
-import { data } from "jquery";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const defaultState = {
