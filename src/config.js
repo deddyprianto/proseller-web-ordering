@@ -2,9 +2,11 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "demo";
-let companyHost = "auntieanne";
-let endPoint = `https://${companyHost}${ stage !== "" ? "-" + stage : "" }.proseller.io`;
+let stage = "dev";
+let companyHost = "qiji";
+let endPoint = `https://${companyHost}${
+  stage !== "" ? "-" + stage : ""
+}.proseller.io`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {
@@ -88,12 +90,14 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
     orderingSetting.theme.color &&
     orderingSetting.theme.color.secondary;
   let defaultSetting = {
-    theme: { 
-      color: { 
-        secondary: "#C00A27", primary: "#C00A27",
-        font: "#808080", background: "#FFFFFF", 
-        navigation: "#C00A27"
-      } 
+    theme: {
+      color: {
+        secondary: "#C00A27",
+        primary: "#C00A27",
+        font: "#808080",
+        background: "#FFFFFF",
+        navigation: "#C00A27",
+      },
     },
     settings: [
       { settingKey: "LoginByEmail", settingValue: true },

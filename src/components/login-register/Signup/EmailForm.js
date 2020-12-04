@@ -16,6 +16,7 @@ const EmailForm = ({
   errorName,
   error,
   children,
+  invitationCode,
 }) => {
   const initialCountry = "SG";
   const [phoneCountryCode, setPhoneCountryCode] = useState("+65");
@@ -35,11 +36,18 @@ const EmailForm = ({
         <input
           type="text"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          style={{borderRadius: 5}}
+          style={{ borderRadius: 5 }}
           onChange={(e) => handleChange("name", e.target.value)}
         />
         {errorName !== "" && (
-          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: "red",
+              lineHeight: "15px",
+            }}
+          >
             {errorName}
           </div>
         )}
@@ -57,7 +65,7 @@ const EmailForm = ({
               enableSearch={true}
               autoFormat={false}
               onChange={(e) => {
-                setPhoneCountryCode(`+${e}`)
+                setPhoneCountryCode(`+${e}`);
               }}
               onKeyDown={() => document.getElementById("phoneInput").focus()}
               disableSearchIcon
@@ -67,7 +75,7 @@ const EmailForm = ({
                 height: 40,
               }}
               dropdownStyle={{
-                color: "#808080"
+                color: "#808080",
               }}
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
@@ -101,7 +109,19 @@ const EmailForm = ({
           error={errorPassword}
         ></PasswordField>
       )}
-      hjhv
+      {invitationCode && (
+        <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <label for="referral">Referral Code</label>
+          <input
+            type="text"
+            value={invitationCode}
+            disabled
+            className="woocommerce-Input woocommerce-Input--text input-text"
+            style={{ borderRadius: 5 }}
+            onChange={(e) => handleChange("referral", e.target.value, true)}
+          />
+        </p>
+      )}
       <Button
         disabled={isSubmitting}
         className="button"
@@ -122,6 +142,7 @@ EmailForm.propTypes = {
   error: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
+  invitationCode: PropTypes.string,
 };
 
 export default EmailForm;
