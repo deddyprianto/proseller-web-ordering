@@ -382,14 +382,15 @@ class Basket extends Component {
         OrderAction.getCalculateFee(payload)
       );
 
-      deliveryProvaider = response.dataProvider
-      deliveryProvaider && deliveryProvaider.forEach(async (provider) => {
-        provider.deliveryFeeFloat = provider.deliveryFee;
-        provider.deliveryFee = this.getCurrency(provider.deliveryFee);
-      });
-      
-      if(deliveryProvaider && deliveryProvaider.length > 0){
-        provaiderDelivery = deliveryProvaider[0]
+      deliveryProvaider = response.dataProvider;
+      deliveryProvaider &&
+        deliveryProvaider.forEach(async (provider) => {
+          provider.deliveryFeeFloat = provider.deliveryFee;
+          provider.deliveryFee = this.getCurrency(provider.deliveryFee);
+        });
+
+      if (deliveryProvaider && deliveryProvaider.length > 0) {
+        provaiderDelivery = deliveryProvaider[0];
       }
 
       if (dataBasket.deliveryProviderId) {
@@ -477,10 +478,10 @@ class Basket extends Component {
     if (timeSlot && timeSlot.length > 0) {
       this.setState({
         orderingTimeSlot: timeSlot,
-        orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
-        orderActionTimeSlot: timeSlot[0].time,
+        // orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
+        // orderActionTimeSlot: timeSlot[0].time,
         isEditDate: true,
-        orderActionDate: date,
+        // orderActionDate: date,
       });
     } else {
       if (isEditDate) {
