@@ -173,7 +173,7 @@ const EmailForm = ({
         </>
       )}
       <Button
-        disabled={isSubmitting}
+        disabled={isSubmitting || agreeTC || !isTCAvailable}
         className="button"
         style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}
