@@ -92,12 +92,20 @@ const PhoneForm = ({
       )}
       {isTCAvailable && (
         <>
+          <div style={{ marginTop: "2rem" }}>
+            <div
+              className="card card-body"
+              style={{ textAlign: "justify", fontSize: 11 }}
+            >
+              <textarea disabled rows={10}>
+                {termsAndConditions}
+              </textarea>
+            </div>
+          </div>
           <div
             onClick={() => setAgreeTC(!agreeTC)}
             className="form-group form-check"
             style={{ marginTop: 5 }}
-            data-toggle="collapse"
-            href="#collapseExample"
           >
             <div
               style={{
@@ -120,16 +128,6 @@ const PhoneForm = ({
               >
                 I Agree to Terms & Conditions{" "}
               </label>
-            </div>
-          </div>
-          <div className="collapse" id="collapseExample">
-            <div
-              className="card card-body"
-              style={{ textAlign: "justify", fontSize: 11 }}
-            >
-              <textarea disabled rows={10}>
-                {termsAndConditions}
-              </textarea>
             </div>
           </div>
         </>
