@@ -307,6 +307,7 @@ class DetailProfile extends Component {
                   style={{
                     padding: 10,
                     borderRadius: 10,
+                    marginTop: 10,
                     border: "1px solid #CDCDCD",
                     boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer",

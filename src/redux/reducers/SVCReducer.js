@@ -4,6 +4,7 @@ const initialState = {
   errorMessage: "",
   successMessage: "",
   summary: 0,
+  defaultBalance: 0,
   history: {},
   historyExpiration: {}
 };
@@ -21,7 +22,8 @@ export default function reducer(state = initialState, action) {
     case "GET_SUMMARY_SUCCESS":
       return {
         ...state,
-        summary: action.payload,
+        summary: action.payload.balance,
+        defaultBalance: action.payload.defaultBalance,
       };
     case "GET_HISTORY_SUCCESS":
       return {

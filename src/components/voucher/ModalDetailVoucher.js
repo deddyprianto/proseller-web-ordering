@@ -57,8 +57,9 @@ class ModalDetailVoucher extends Component {
 
   render() {
     let { dataDetail, getCurrency, pointData } = this.props
+    
     let { count } = this.state
-    let disableBtn = dataDetail && dataDetail.redeemValue > pointData.totalPoint - (pointData.pendingPoints || 0)
+    let disableBtn = dataDetail && dataDetail.redeemValue > (pointData.totalPoint - (pointData.pendingPoints || 0) - (pointData.lockPoints || 0) )
     let maxRedeem = 0
     if(dataDetail){
       maxRedeem = Math.floor(pointData.totalPoint / dataDetail.redeemValue)
@@ -101,6 +102,16 @@ class ModalDetailVoucher extends Component {
                       marginTop: 10, marginBottom: 10
                     }}>
                       {`Your ${pointData.pendingPoints} points is blocked, because your order has not been completed.`}
+                    </div> : null
+                  }
+
+                  {
+                    pointData.lockPoints && pointData.lockPoints > 0 ?
+                    <div className="text text-warning-theme" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10
+                    }}>
+                      {`Your ${pointData.lockPoints} SVC points are locked, because your Store Value Card balance is still remaining.`}
                     </div> : null
                   }
 
