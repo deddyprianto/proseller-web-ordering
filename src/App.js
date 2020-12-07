@@ -172,15 +172,10 @@ const App = (props) => {
       console.log("I have referral!", referralCode);
       props.dispatch(ReferralAction.getReferralById(referralCode));
       props.dispatch(AuthActions.setInvitationCode(referralCode));
-      let loginPageRendered = false;
-      while (!loginPageRendered) {
-        try {
-          document.getElementById("login-register-btn").click();
-          loginPageRendered = true;
-        } catch (error) {
-          console.log(error);
-          loginPageRendered = false;
-        }
+      try {
+        document.getElementById("login-register-btn").click();
+      } catch (error) {
+        console.log(error);
       }
     }
 
