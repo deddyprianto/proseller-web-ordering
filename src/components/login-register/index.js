@@ -820,7 +820,8 @@ class LoginRegister extends Component {
       if (offlineCart !== null) {
         lsStore(config.prefix + "_offlineCart", offlineCart, true);
       }
-      window.location.reload();
+      const url = window.location.href.split("?")[0];
+      window.location.replace(url);
     } catch (err) {
       console.log(err);
       let error = "Account not exist";
