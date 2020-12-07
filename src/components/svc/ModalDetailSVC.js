@@ -22,6 +22,7 @@ class ModalDetailSVC extends Component {
     let { detailPurchase, count } = this.state;
 
     const payload = {
+      outletDetail: this.props.defaultOutlet,
       detailPurchase,
       storeValueCard: dataDetail,
       detailPoint: this.props.campaignPoint,

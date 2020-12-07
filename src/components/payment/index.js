@@ -756,6 +756,7 @@ class Payment extends Component {
 
     let payload = {
       payments: [],
+      outletId: dataSettle.outletDetail.id,
       price: dataSettle.dataBasket.totalNettAmount,
       referenceNo: uuid(),
       dataPay: {
@@ -882,6 +883,7 @@ class Payment extends Component {
 
     let payload = {
       payments: [],
+      outletId: dataSettle.outletDetail.id,
       price: dataSettle.dataBasket.totalNettAmount,
       referenceNo: uuid(),
       dataPay: {

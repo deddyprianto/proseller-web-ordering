@@ -125,6 +125,7 @@ class PaidMembership extends Component {
     const plan = selectedMembership.paidMembershipPlan.find(item => item.isSelected)
     
     const payload = {
+      outletDetail: this.props.defaultOutlet,
       membership: this.state.selectedMembership,
       plan: plan,
       detailPoint: this.props.campaignPoint,
