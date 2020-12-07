@@ -786,7 +786,7 @@ class LoginRegister extends Component {
       }, 1000);
 
       try {
-        let payload = { email: this.state.email };
+        let payload = { email: this.state.email.toLowerCase() };
         let response = await this.props.dispatch(AuthActions.sendOtp(payload));
         response = response.Data;
         // console.log(response)
