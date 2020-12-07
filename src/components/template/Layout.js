@@ -76,9 +76,11 @@ class Layout extends Component {
     }
 
     if(window.location.href.includes('/signin')){
-      console.log('SIGN IN')
       try {
-        document.getElementById("login-register-btn").click();
+        console.log('SIGN IN')
+        setTimeout(() => {
+          document.getElementById("login-register-btn").click();
+        }, 700)
       } catch (error) {}
     }
 
