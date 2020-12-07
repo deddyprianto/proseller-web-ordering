@@ -33,7 +33,7 @@ const SignUp = ({
   minimumAge,
   setting,
   invitationCode,
-  color
+  color,
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
 
@@ -143,6 +143,8 @@ const SignUp = ({
         <EmailForm
           color={color.background}
           email={initialUserData.email}
+          isTCAvailable={isTCAvailable}
+          termsAndConditions={termsAndConditions}
           handleChange={handleChange}
           handleSubmit={handleEmailSubmit}
           error={errorPhone}
@@ -184,7 +186,7 @@ SignUp.propTypes = {
   fields: PropTypes.array,
   setting: PropTypes.array,
   invitationCode: PropTypes.string,
-  color: PropTypes.object
+  color: PropTypes.object,
 };
 
 const mapStateToProps = (state) => {
@@ -192,7 +194,7 @@ const mapStateToProps = (state) => {
     fields: state.customer.fields,
     setting: state.order.setting,
     invitationCode: state.auth.invitationCode,
-    color: state.theme.color
+    color: state.theme.color,
   };
 };
 
