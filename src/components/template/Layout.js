@@ -75,7 +75,8 @@ class Layout extends Component {
       this.setState({infoCompany})
     }
 
-    if(window.location.href.includes('/signin') && !isLoggedIn){
+    if(window.location.href.includes('/signin')){
+      console.log('SIGN IN')
       try {
         document.getElementById("login-register-btn").click();
       } catch (error) {}
