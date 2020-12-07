@@ -170,15 +170,19 @@ const App = (props) => {
     if (param && param["referral"] && !isLoggedIn && !account) {
       const referralCode = param["referral"].split("#")[0];
       console.log("I have referral!", referralCode);
-      props.dispatch(ReferralAction.getReferralById(referralCode));
-      props.dispatch(AuthActions.setInvitationCode(referralCode));
-      setTimeout(() => {
-        try {
-          document.getElementById("login-register-btn").click();
-        } catch (error) {
-          console.log(error);
-        }
-      }, 600);
+      const isAvailable = await props.dispatch(
+        ReferralAction.getReferralById(referralCode)
+      );
+      if (isAvailable) {
+        props.dispatch(AuthActions.setInvitationCode(referralCode));
+        setTimeout(() => {
+          try {
+            document.getElementById("login-register-btn").click();
+          } catch (error) {
+            console.log(error);
+          }
+        }, 600);
+      }
     }
 
     if (window.location.hash.split("#")[1] !== "/") {
@@ -243,6 +247,8 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo,
     setting: state.order.setting,
+    defaultEmail: state.customer.defaultEmail,
+    defaultPhoneNumber: state.customer.defaultPhoneNumber,
   };
 };
 

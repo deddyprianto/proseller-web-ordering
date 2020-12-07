@@ -69,7 +69,13 @@ function getReferralById(id) {
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
-    else if (response.Data && response.Data.list && response.Data.list[0]) {
+    else if (
+      response.Data &&
+      response.Data.list &&
+      response.Data.list[0] &&
+      response.Data.list[0].signUpStatus !== "DONE"
+    ) {
+      console.log(response.Data.list[0].signUpStatus);
       if (response.Data.list[0].email) {
         dispatch({
           type: "SET_DEFAULT_EMAIL",
@@ -81,7 +87,9 @@ function getReferralById(id) {
           data: response.Data.list[0].phoneNumber,
         });
       }
+      return true;
     }
-    return response;
+
+    return false;
   };
 }
