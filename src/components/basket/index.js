@@ -411,6 +411,17 @@ class Basket extends Component {
     return { deliveryProvaider, provaiderDelivery };
   };
 
+  getDatesBetweenDates = (startDate, endDate) => {
+    let dates = [];
+    const theDate = new Date(startDate);
+    theDate.setDate(theDate.getDate() + 1);
+    while (theDate < endDate) {
+      dates = [...dates, new Date(theDate)];
+      theDate.setDate(theDate.getDate() + 1);
+    }
+    return dates;
+  };
+
   checkPickUpDateTime = async (
     checkOperationalHours,
     date,
@@ -453,7 +464,25 @@ class Basket extends Component {
             return item.isAvailable;
           });
         });
-        this.setState({ timeSlot });
+        let prevDates = new Date();
+        prevDates.setDate(prevDates.getDate() - 1);
+        const newTimeslot = timeSlot.map((slot) => {
+          if (!prevDates) {
+            prevDates = new Date(slot.date);
+            return slot;
+          }
+          const dateBetween = this.getDatesBetweenDates(
+            prevDates,
+            new Date(slot.date)
+          ).map((date) => ({
+            date: moment(date).format("YYYY-MM-DD"),
+            timeSlot: [],
+          }));
+          prevDates = new Date(slot.date);
+          return [...dateBetween, slot];
+        });
+        console.log(newTimeslot.flat(2));
+        this.setState({ timeSlot: newTimeslot.flat(2) });
       } else {
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];

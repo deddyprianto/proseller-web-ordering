@@ -110,7 +110,8 @@ export default class SelectPicupDateTime extends Component {
                           cursor: "pointer",
                         }}
                       >
-                        <i className="fa fa-calendar" aria-hidden="true" /> More
+                        <i className="fa fa-calendar" aria-hidden="true" />{" "}
+                        {this.state.showModeDates ? "Less " : "More "}
                         Dates
                       </div>
                     </div>
