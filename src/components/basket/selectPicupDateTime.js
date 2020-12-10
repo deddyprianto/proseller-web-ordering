@@ -4,9 +4,11 @@ import cx from "classnames";
 import moment from "moment";
 import styles from "../profile/CustomFields/styles.module.css";
 import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 export default class SelectPicupDateTime extends Component {
   state = {
+    selectedDate: this.props.data.orderActionDate,
     orderActionDate: this.props.data.orderActionDate,
     orderActionTime: this.props.data.orderActionTime,
     showModeDates:
@@ -24,7 +26,13 @@ export default class SelectPicupDateTime extends Component {
 
     let date = moment().format("YYYY-MM-DD");
     let textTitle = "Pickup";
-    const timeSlots = [...props.timeSlot.slice(0, 5)];
+    const selectedDateIndex = props.timeSlot.indexOf(
+      props.timeSlot.find((slot) => slot.date === this.state.selectedDate)
+    );
+
+    const timeSlots = [
+      ...props.timeSlot.slice(selectedDateIndex, selectedDateIndex + 5),
+    ];
     if (props.orderingMode === "DELIVERY") textTitle = "Delivery";
 
     return (
@@ -135,12 +143,37 @@ export default class SelectPicupDateTime extends Component {
                           }
                         /> */}
                         <Calendar
-                          onChange={(e) =>
+                          onChange={(value) => {
                             this.props.handleSetState(
                               "orderActionDate",
-                              moment(e.target.value).format("YYYY-MM-DD")
-                            )
-                          }
+                              moment(value).format("YYYY-MM-DD")
+                            );
+                            const defaultTimeSlot = props.timeSlot.find(
+                              (slot) =>
+                                slot.date === moment(value).format("YYYY-MM-DD")
+                            );
+                            if (
+                              defaultTimeSlot &&
+                              defaultTimeSlot.timeSlot.length > 0
+                            ) {
+                              this.props.handleSetState(
+                                "orderActionTimeSlot",
+                                defaultTimeSlot.timeSlot[0].time
+                              );
+                              this.props.handleSetState(
+                                "orderActionTime",
+                                defaultTimeSlot.timeSlot[0].time.split(" - ")[0]
+                              );
+                              this.setState({
+                                showModeDates: false,
+                                selectedDate: moment(value).format(
+                                  "YYYY-MM-DD"
+                                ),
+                              });
+                            }
+                          }}
+                          maxDate={new Date(dateMax)}
+                          minDate={new Date(date)}
                           value={new Date(props.orderActionDate)}
                         />
                       </div>
@@ -161,12 +194,32 @@ export default class SelectPicupDateTime extends Component {
                                     ? "select-gender"
                                     : "un-select-gender"
                                 }
-                                onClick={() =>
+                                onClick={() => {
                                   this.props.handleSetState(
                                     "orderActionDate",
                                     moment(slot.date).format("YYYY-MM-DD")
-                                  )
-                                }
+                                  );
+                                  const defaultTimeSlot = props.timeSlot.find(
+                                    (defaultSlot) =>
+                                      defaultSlot.date ===
+                                      moment(slot.date).format("YYYY-MM-DD")
+                                  );
+                                  if (
+                                    defaultTimeSlot &&
+                                    defaultTimeSlot.timeSlot.length > 0
+                                  ) {
+                                    this.props.handleSetState(
+                                      "orderActionTimeSlot",
+                                      defaultTimeSlot.timeSlot[0].time
+                                    );
+                                    this.props.handleSetState(
+                                      "orderActionTime",
+                                      defaultTimeSlot.timeSlot[0].time.split(
+                                        " - "
+                                      )[0]
+                                    );
+                                  }
+                                }}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",

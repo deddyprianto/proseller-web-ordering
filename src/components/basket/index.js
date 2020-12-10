@@ -481,7 +481,6 @@ class Basket extends Component {
           prevDates = new Date(slot.date);
           return [...dateBetween, slot];
         });
-        console.log(newTimeslot.flat(2));
         this.setState({ timeSlot: newTimeslot.flat(2) });
       } else {
         maxLoopingSetTimeSlot = 0;
@@ -509,8 +508,8 @@ class Basket extends Component {
         orderingTimeSlot: timeSlot,
         // orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
         // orderActionTimeSlot: timeSlot[0].time,
-        isEditDate: true,
         // orderActionDate: date,
+        isEditDate: true,
       });
     } else {
       if (isEditDate) {
