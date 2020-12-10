@@ -67,7 +67,7 @@ class Basket extends Component {
         localStorage.getItem(`${config.prefix}_order_action_time`) ||
         moment().add(1, "h").format("HH") + ":00",
       orderActionTimeSlot:
-        localStorage.getItem(`${config.prefix}_order_action_timeslot`) || null,
+        localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
       checkOperationalHours: {},
       orderingTime: [],
 
