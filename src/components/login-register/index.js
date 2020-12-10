@@ -477,6 +477,8 @@ class LoginRegister extends Component {
       localStorage.clear();
       lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
       lsStore(config.prefix + "_offlineCart", offlineCart, true);
+      const url = window.location.href.split("?")[0];
+      window.location.replace(url);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -822,6 +824,7 @@ class LoginRegister extends Component {
       }
       const url = window.location.href.split("?")[0];
       window.location.replace(url);
+      window.location.reload();
     } catch (err) {
       console.log(err);
       let error = "Account not exist";
