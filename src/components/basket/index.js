@@ -60,9 +60,14 @@ class Basket extends Component {
       deliveryProvaider: [],
       dataCVV: "",
       isEmenu: window.location.pathname.includes("emenu"),
-      orderActionDate: moment().format("YYYY-MM-DD"),
-      orderActionTime: moment().add(1, "h").format("HH") + ":00",
-      orderActionTimeSlot: null,
+      orderActionDate:
+        localStorage.getItem(`${config.prefix}_order_action_date`) ||
+        moment().format("YYYY-MM-DD"),
+      orderActionTime:
+        localStorage.getItem(`${config.prefix}_order_action_time`) ||
+        moment().add(1, "h").format("HH") + ":00",
+      orderActionTimeSlot:
+        localStorage.getItem(`${config.prefix}_order_action_timeslot`) || null,
       checkOperationalHours: {},
       orderingTime: [],
 
@@ -1134,6 +1139,7 @@ class Basket extends Component {
       window.location.reload();
     } else if (field === "orderActionDate") {
       let check = value === moment().format("YYYY-MM-DD");
+      localStorage.setItem(`${config.prefix}_order_action_date`, value);
       await this.checkPickUpDateTime(
         this.state.checkOperationalHours,
         value,
@@ -1150,6 +1156,10 @@ class Basket extends Component {
           return;
         }
       });
+    } else if (field === "orderActionTime") {
+      localStorage.setItem(`${config.prefix}_order_action_time`, value);
+    } else if (field === "orderActionTimeSlot") {
+      localStorage.setItem(`${config.prefix}_order_action_time_slot`, value);
     }
   };
 
