@@ -477,6 +477,14 @@ class Basket extends Component {
     }
 
     if (timeSlot && timeSlot.length > 0) {
+      localStorage.setItem(
+        `${config.prefix}_order_action_time`,
+        timeSlot[0].time
+      );
+      localStorage.setItem(
+        `${config.prefix}_order_action_time_slot`,
+        timeSlot[0].time.split(" - ")[0]
+      );
       this.setState({
         orderingTimeSlot: timeSlot,
         orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
