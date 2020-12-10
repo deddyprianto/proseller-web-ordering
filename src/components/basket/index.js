@@ -434,7 +434,7 @@ class Basket extends Component {
         ? "delivery"
         : "takeAway";
     let { maxDays } = storeDetail.orderValidation[orderingModeField];
-    if (!maxDays) maxDays = 5;
+    if (!maxDays) maxDays = 90;
 
     let dateTime = new Date();
     let payload = {
