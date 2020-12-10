@@ -3,6 +3,7 @@ import { Button } from "reactstrap";
 import cx from "classnames";
 import moment from "moment";
 import styles from "../profile/CustomFields/styles.module.css";
+import Calendar from "react-calendar";
 
 export default class SelectPicupDateTime extends Component {
   state = {
@@ -116,22 +117,33 @@ export default class SelectPicupDateTime extends Component {
                       </div>
                     </div>
                     {this.state.showModeDates ? (
-                      <input
-                        type="date"
-                        min={date}
-                        max={dateMax}
-                        value={props.orderActionDate}
-                        className={cx(styles.input, {
-                          [styles.rounded]: false,
-                        })}
-                        style={{ backgroundColor: "#FFF", width: "100%" }}
-                        onChange={(e) =>
-                          this.props.handleSetState(
-                            "orderActionDate",
-                            moment(e.target.value).format("YYYY-MM-DD")
-                          )
-                        }
-                      />
+                      <div>
+                        {/* <input
+                          type="date"
+                          min={date}
+                          max={dateMax}
+                          value={props.orderActionDate}
+                          className={cx(styles.input, {
+                            [styles.rounded]: false,
+                          })}
+                          style={{ backgroundColor: "#FFF", width: "100%" }}
+                          onChange={(e) =>
+                            this.props.handleSetState(
+                              "orderActionDate",
+                              moment(e.target.value).format("YYYY-MM-DD")
+                            )
+                          }
+                        /> */}
+                        <Calendar
+                          onChange={(e) =>
+                            this.props.handleSetState(
+                              "orderActionDate",
+                              moment(e.target.value).format("YYYY-MM-DD")
+                            )
+                          }
+                          value={new Date(props.orderActionDate)}
+                        />
+                      </div>
                     ) : (
                       <div>
                         {props.timeSlot && (
