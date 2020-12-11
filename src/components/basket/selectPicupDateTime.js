@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { Button } from "reactstrap";
-import cx from "classnames";
 import moment from "moment";
-import styles from "../profile/CustomFields/styles.module.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -143,6 +141,7 @@ export default class SelectPicupDateTime extends Component {
                           }
                         /> */}
                         <Calendar
+                          className="calender"
                           onChange={(value) => {
                             this.props.handleSetState(
                               "orderActionDate",

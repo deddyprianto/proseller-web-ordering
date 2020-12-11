@@ -67,6 +67,16 @@ const styles = {
         color: (e) => e.theme.color.font
       },
       ".font-color-theme, [class*=' po-']:before, .header-v4 .primary-navigation .current-menu-item > a, .menu-item": { color: (e) => e.theme.color.font },
+      ".react-calendar__navigation button, .react-calendar__tile, .react-calendar__month-view__weekdays__weekday": {
+        color: (e) => "gray",
+      },
+      "button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--range": {
+        background: (e) => e.theme.color.primary,
+        color: (e) => e.theme.color.textButtonColor,
+      },
+      "button.react-calendar__tile.react-calendar__tile--now.react-calendar__month-view__days__day": {
+        background: (e) => "#F0F0F0",
+      }
   },
 };
 export default styles;
