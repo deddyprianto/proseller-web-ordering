@@ -1181,7 +1181,10 @@ class Basket extends Component {
       localStorage.setItem(`${config.prefix}_order_action_date`, value);
       if (
         this.state.timeSlot.length > 0 &&
-        this.state.timeSlot[this.state.timeSlot.length - 1].date === value
+        (this.state.timeSlot[this.state.timeSlot.length - 1].date === value ||
+          this.state.timeSlot[this.state.timeSlot.length - 2].date === value ||
+          this.state.timeSlot[this.state.timeSlot.length - 3].date === value ||
+          this.state.timeSlot[this.state.timeSlot.length - 4].date === value)
       ) {
         const dates = this.getDatesBetweenDates(
           new Date(this.state.timeSlot[this.state.timeSlot.length - 1].date),
