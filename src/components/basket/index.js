@@ -416,13 +416,20 @@ class Basket extends Component {
     return { deliveryProvaider, provaiderDelivery };
   };
 
-  getDatesBetweenDates = (startDate, endDate) => {
+  getDatesBetweenDates = (startDate, endDate, days = 0) => {
     let dates = [];
     const theDate = new Date(startDate);
     theDate.setDate(theDate.getDate() + 1);
-    while (theDate < endDate) {
-      dates = [...dates, new Date(theDate)];
-      theDate.setDate(theDate.getDate() + 1);
+    if (days === 0) {
+      while (theDate < endDate) {
+        dates = [...dates, new Date(theDate)];
+        theDate.setDate(theDate.getDate() + 1);
+      }
+    } else {
+      for (let i = 0; i < days; i++) {
+        dates = [...dates, new Date(theDate)];
+        theDate.setDate(theDate.getDate() + 1);
+      }
     }
     return dates;
   };
@@ -509,14 +516,6 @@ class Basket extends Component {
     }
 
     if (timeSlot && timeSlot.length > 0) {
-      localStorage.setItem(
-        `${config.prefix}_order_action_time`,
-        timeSlot[0].time
-      );
-      localStorage.setItem(
-        `${config.prefix}_order_action_time_slot`,
-        timeSlot[0].time.split(" - ")[0]
-      );
       this.setState({
         orderingTimeSlot: timeSlot,
         // orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
@@ -1180,6 +1179,22 @@ class Basket extends Component {
     } else if (field === "orderActionDate") {
       let check = value === moment().format("YYYY-MM-DD");
       localStorage.setItem(`${config.prefix}_order_action_date`, value);
+      if (
+        this.state.timeSlot.length > 0 &&
+        this.state.timeSlot[this.state.timeSlot.length - 1].date === value
+      ) {
+        const dates = this.getDatesBetweenDates(
+          new Date(this.state.timeSlot[this.state.timeSlot.length - 1].date),
+          new Date(this.state.timeSlot[this.state.timeSlot.length - 1].date),
+          5
+        ).map((date) => ({
+          date: moment(date).format("YYYY-MM-DD"),
+          timeSlot: [],
+        }));
+        this.setState((prevState) => ({
+          timeSlot: [...prevState.timeSlot, ...dates],
+        }));
+      }
       await this.checkPickUpDateTime(
         this.state.checkOperationalHours,
         value,
