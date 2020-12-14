@@ -5,8 +5,8 @@ import Shimmer from "react-shimmer-effect";
 import { Col, Row } from "reactstrap";
 import voucherIcon from "../../assets/images/voucher-icon.png";
 import GiftVoucherModal from "./GiftVoucherModal";
-import moment from 'moment'
-import config from '../../config'
+import moment from "moment";
+import config from "../../config";
 
 class MyVoucher extends Component {
   constructor(props) {
@@ -16,6 +16,7 @@ class MyVoucher extends Component {
       loadingShow: true,
       showGiftModal: false,
       voucherToGift: null,
+      allowVoucherGift: false,
     };
   }
 
@@ -54,8 +55,10 @@ class MyVoucher extends Component {
     let { showGiftModal, voucherToGift } = this.state;
     let { myVoucher } = this.props;
 
-    if(this.props.handleSelect && myVoucher){
-      myVoucher = myVoucher.filter(items => {return items.validity.canOnlyRedeemedByMerchant !== true})
+    if (this.props.handleSelect && myVoucher) {
+      myVoucher = myVoucher.filter((items) => {
+        return items.validity.canOnlyRedeemedByMerchant !== true;
+      });
     }
 
     return (
@@ -91,21 +94,28 @@ class MyVoucher extends Component {
                     this.props.handleSelect && this.props.handleSelect(item)
                   }
                 >
-                  {
-                    !this.props.handleSelect &&
-                    <div className="profile-dashboard" style={{
-                        position: "absolute", width: '29%',
-                        paddingLeft: 5, paddingRight: 5,
-                        fontSize: 12, bottom: 0, left: 15,
-                        borderTopRightRadius: 10, fontWeight: "bold",
-                        textAlign: "center"
-                      }}>
+                  {!this.props.handleSelect && this.state.allowVoucherGift && (
+                    <div
+                      className="profile-dashboard"
+                      style={{
+                        position: "absolute",
+                        width: "29%",
+                        paddingLeft: 5,
+                        paddingRight: 5,
+                        fontSize: 12,
+                        bottom: 0,
+                        left: 15,
+                        borderTopRightRadius: 10,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                      }}
+                    >
                       <button
                         style={{
                           fontSize: "1.2rem",
                           padding: 0,
                           borderRadius: "1rem",
-                          backgroundColor: "rgba(0,0,0,0)"
+                          backgroundColor: "rgba(0,0,0,0)",
                         }}
                         onClick={() => {
                           this.props.dispatch({ type: "INIT_VOUCHER_SEND" });
@@ -118,7 +128,7 @@ class MyVoucher extends Component {
                         <i className="fa fa-gift"></i> Send Gift
                       </button>
                     </div>
-                  }
+                  )}
 
                   <div
                     className="profile-dashboard text-btn-theme"
@@ -155,35 +165,51 @@ class MyVoucher extends Component {
                       marginRight: 10,
                       textAlign: "left",
                       marginTop: 5,
-                      display: "flex", flexDirection: "column", justifyContent: "center" 
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
                   >
                     <div
                       className="customer-group-name"
-                      style={{ fontSize: 14, fontWeight: "bold", lineHeight: "17px" }}
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "bold",
+                        lineHeight: "17px",
+                      }}
                     >
                       {item.name}
                     </div>
-                    {
-                      item.voucherDesc &&
+                    {item.voucherDesc && (
                       <div style={{ fontSize: 12, marginTop: -5 }}>
-                        <i className="fa fa-commenting-o" aria-hidden="true"></i> {item.voucherDesc}
+                        <i
+                          className="fa fa-commenting-o"
+                          aria-hidden="true"
+                        ></i>{" "}
+                        {item.voucherDesc}
                       </div>
-                    }
-                    {
-                      item.expiryDate &&
+                    )}
+                    {item.expiryDate && (
                       <div style={{ fontSize: 12, marginTop: -5 }}>
-                        <i className="fa fa-clock-o" aria-hidden="true"></i> {`Expire on ${moment(item.expiryDate).format("DD MMM YYYY")}`}
+                        <i className="fa fa-clock-o" aria-hidden="true"></i>{" "}
+                        {`Expire on ${moment(item.expiryDate).format(
+                          "DD MMM YYYY"
+                        )}`}
                       </div>
-                    }
+                    )}
                     <div
                       className="customer-group-name"
-                      style={{ fontSize: 12, fontWeight: "bold", marginTop: -5 }}
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "bold",
+                        marginTop: -5,
+                      }}
                     >
-                      {`Discount ${item.voucherType === "discPercentage"
-                        ? item.voucherValue + "%"
-                        : "$" + item.voucherValue
-                        }`}
+                      {`Discount ${
+                        item.voucherType === "discPercentage"
+                          ? item.voucherValue + "%"
+                          : "$" + item.voucherValue
+                      }`}
                     </div>
                   </div>
                 </div>
@@ -195,7 +221,11 @@ class MyVoucher extends Component {
                   options={{ animationData: emptyGif }}
                   style={{ height: 250 }}
                 /> */}
-                <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
+                <img
+                  src={config.url_emptyImage}
+                  alt="is empty"
+                  style={{ marginTop: 30 }}
+                />
                 <div>Data is empty</div>
               </div>
             )}
