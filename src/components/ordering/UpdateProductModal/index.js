@@ -12,8 +12,8 @@ const UpdateProductModal = ({
   onClose,
   setAddNew,
   setSelectedItem,
-  colorTheme, 
-  getCurrency
+  colorTheme,
+  getCurrency,
 }) => {
   const handleAdd = () => {
     setAddNew(true);
@@ -76,10 +76,13 @@ const UpdateProductModal = ({
     );
     document.getElementById("open-modal-product").click();
   };
-  
+
   return (
     <div className={styles.modalContainer}>
-      <div className={styles.modal} style={{ backgroundColor: colorTheme.background }}>
+      <div
+        className={styles.modal}
+        style={{ backgroundColor: colorTheme.background }}
+      >
         <div className={styles.header}>
           <div>This item in cart</div>
           <button
@@ -107,24 +110,41 @@ const UpdateProductModal = ({
                 };
               });
               return (
-                <div className={styles.product} style={{ borderRadius: 5, marginBottom: 5 }} onClick={() => handleEdit(item)}>
+                <div
+                  className={styles.product}
+                  style={{ borderRadius: 5, marginBottom: 5 }}
+                  onClick={() => handleEdit(item)}
+                >
                   <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
                     <span
                       className="customer-group-name"
-                      style={{ marginRight: 5, fontSize: 12, fontWeight: "bold" }}
+                      style={{
+                        marginRight: 5,
+                        fontSize: 12,
+                        fontWeight: "bold",
+                      }}
                     >
                       {`${item.quantity}x`}
                     </span>
-                    <span style={{ fontSize: 12, fontWeight: "bold" }} >
-                      {`${item.product.name} (${getCurrency(Number(item.product.retailPrice))})`}
+                    <span style={{ fontSize: 12, fontWeight: "bold" }}>
+                      {`${item.product.name} (${getCurrency(
+                        Number(item.product.retailPrice)
+                      )})`}
                     </span>
                   </Typography>
-                  
+
                   {modifiersList.length > 0 &&
                     modifiersList.map((modifierGroup) => {
                       return (
                         <div className={styles.addOns}>
-                          <div style={{ fontSize: 10, fontStyle: "italic", marginBottom: -5, marginTop: -5 }}>
+                          <div
+                            style={{
+                              fontSize: 10,
+                              fontStyle: "italic",
+                              marginBottom: -5,
+                              marginTop: -5,
+                            }}
+                          >
                             Add On:
                           </div>
                           <div className={styles.items}>
@@ -133,17 +153,30 @@ const UpdateProductModal = ({
                                 <Typography
                                   key={modifierItem.id}
                                   style={{
-                                    lineHeight: "15px", textAlign: "left", paddingTop: -10,
+                                    lineHeight: "15px",
+                                    textAlign: "left",
+                                    paddingTop: -10,
                                   }}
                                 >
                                   <span
                                     className="color-active"
-                                    style={{ marginRight: 3, fontStyle: "italic", fontSize: 10, }}
+                                    style={{
+                                      marginRight: 3,
+                                      fontStyle: "italic",
+                                      fontSize: 10,
+                                    }}
                                   >
                                     {`${modifierItem.quantity}x`}
                                   </span>
-                                  <span style={{ fontSize: 10, fontStyle: "italic", }} >
-                                    {`${modifierItem.name} (${getCurrency(Number(modifierItem.price))})`}
+                                  <span
+                                    style={{
+                                      fontSize: 10,
+                                      fontStyle: "italic",
+                                    }}
+                                  >
+                                    {`${modifierItem.name} (${getCurrency(
+                                      Number(modifierItem.price)
+                                    )})`}
                                   </span>
                                 </Typography>
                               );
@@ -154,18 +187,28 @@ const UpdateProductModal = ({
                     })}
 
                   {item.remark && item.remark !== "-" && (
-                    <div className="font-color-theme" style={{ 
-                      display: "flex", marginLeft: -5, marginTop: -5, marginBottom: -10 
-                    }}>
+                    <div
+                      className="font-color-theme"
+                      style={{
+                        display: "flex",
+                        marginLeft: -5,
+                        marginTop: -5,
+                        marginBottom: -10,
+                      }}
+                    >
                       <div
                         style={{
-                          fontStyle: "italic", fontSize: 10, textAlign: "justify",
+                          fontStyle: "italic",
+                          fontSize: 10,
+                          textAlign: "justify",
                           marginLeft: 5,
                         }}
                       >{`Note:`}</div>
                       <div
                         style={{
-                          fontStyle: "italic", fontSize: 10, textAlign: "justify",
+                          fontStyle: "italic",
+                          fontSize: 10,
+                          textAlign: "justify",
                           marginLeft: 5,
                         }}
                       >
@@ -174,39 +217,51 @@ const UpdateProductModal = ({
                     </div>
                   )}
 
-                  <div 
-                    className="customer-group-name" 
+                  <div
+                    className="customer-group-name"
                     style={{
-                      textAlign: "left", fontSize: 12, fontWeight: "bold",
-                      marginTop: -5
+                      textAlign: "left",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      marginTop: -5,
                     }}
                   >
                     {getCurrency(Number(item.grossAmount.toFixed(2)))}
                   </div>
-                  
+
                   <button
                     className={styles.editButton}
                     style={{ color: color, fontSize: 12 }}
                   >
-                    <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
+                    <i className="fa fa-pencil-square-o" aria-hidden="true" />{" "}
+                    Edit
                   </button>
 
-                  <div style={{height: 1, backgroundColor: "#DCDCDC", marginTop: 4}}/>
+                  <div
+                    style={{
+                      height: 1,
+                      backgroundColor: "#DCDCDC",
+                      marginTop: 4,
+                    }}
+                  />
                 </div>
               );
             })}
           </div>
         </div>
         <div className={styles.footer}>
-          <button onClick={handleAdd} style={{height: 50, width: "100%"}}>
+          <button onClick={handleAdd} style={{ height: 50, width: "100%" }}>
             <i className="fa fa-plus" aria-hidden="true" /> Make Another
           </button>
-          <button 
+          <button
             className="border-theme background-theme"
-            onClick={onClose} 
+            onClick={onClose}
             style={{
-              height: 50, width: 80, color: colorTheme.primary,
-              border: `1px solid ${colorTheme.primary}`, marginLeft: 5
+              height: 50,
+              width: 80,
+              color: colorTheme.primary,
+              border: `1px solid ${colorTheme.primary}`,
+              marginLeft: 5,
             }}
           >
             Close

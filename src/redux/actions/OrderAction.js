@@ -225,6 +225,7 @@ function processUpdateCart(basket, products) {
         dataproduct.remark = product.remark;
 
       if (!isEmptyArray(product.product.productModifiers)) {
+        console.log(product.product.productModifiers);
         let totalModifier = 0;
         let productModifiers = [...product.product.productModifiers];
         dataproduct.modifiers = productModifiers;
@@ -253,13 +254,11 @@ function processUpdateCart(basket, products) {
 
         //  calculate total modifier
         await dataproduct.modifiers.forEach((group) => {
-          if (group.postToServer === true) {
-            group.modifier.details.forEach((detail) => {
-              if (detail.quantity !== undefined && detail.quantity > 0) {
-                totalModifier += parseFloat(detail.quantity * detail.price);
-              }
-            });
-          }
+          group.modifier.details.forEach((detail) => {
+            if (detail.quantity !== undefined && detail.quantity > 0) {
+              totalModifier += parseFloat(detail.quantity * detail.price);
+            }
+          });
         });
 
         // check if item modifier was deleted, if yes, then remove array modifier
@@ -273,6 +272,7 @@ function processUpdateCart(basket, products) {
         //  add total item modifier to subtotal product
         dataproduct.unitPrice += totalModifier;
       }
+      console.log(dataproduct);
 
       payload.push(dataproduct);
     }
