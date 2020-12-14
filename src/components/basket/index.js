@@ -491,6 +491,12 @@ class Basket extends Component {
           prevDates = new Date(slot.date);
           return [...dateBetween, slot];
         });
+        const firstAvailableDate = newTimeslot
+          .flat(2)
+          .find((slot) => slot.timeSlot.length > 0);
+        console.log(firstAvailableDate);
+        if (firstAvailableDate)
+          this.setState({ nextDayIsAvailable: firstAvailableDate.date });
         this.setState({ timeSlot: newTimeslot.flat(2) });
       } else {
         maxLoopingSetTimeSlot = 0;
