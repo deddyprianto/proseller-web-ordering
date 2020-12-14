@@ -7,9 +7,6 @@ const defaultState = {
     encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_defaultOutlet`))
     ) || {},
-  outletChanged:
-    encryptor.decrypt(localStorage.getItem(`${config.prefix}_outletChanged`)) ||
-    false,
   outlets: [],
 };
 
@@ -31,15 +28,6 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         outlets: action.data,
-      };
-    case "OUTLET_CHANGED":
-      localStorage.setItem(
-        `${config.prefix}_outletChanged`,
-        encryptor.encrypt(action.data)
-      );
-      return {
-        ...state,
-        outletChanged: action.data,
       };
     default:
       return state;

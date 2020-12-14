@@ -103,7 +103,6 @@ class Header extends Component {
       changeOutletID: "outlet::" + outletId,
     };
     this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
-    this.props.dispatch({ type: "OUTLET_CHANGED", data: true });
     if (this.props.isLoggedIn) {
       this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
     } else {
@@ -120,6 +119,9 @@ class Header extends Component {
   render() {
     let { isLoggedIn, basket, defaultOutlet, outlets } = this.props;
     let { infoCompany, enableOrdering, logoCompany } = this.state;
+    const outletSelection = this.props.setting.find(
+      (item) => item.settingKey === "OutletSelection"
+    );
 
     let basketLength = 0;
     if (basket && basket.details) {
@@ -167,7 +169,11 @@ class Header extends Component {
                   style={{ fontSize: 22, marginBottom: -5 }}
                 />
                 <span className="color" style={{ fontSize: 15 }}>
-                  {outlets && outlets.length > 1 ? (
+                  {outlets &&
+                  outlets.length > 1 &&
+                  outletSelection &&
+                  (outletSelection.settingValue !== "NEAREST" ||
+                    this.props.orderingMode !== "DELIVERY") ? (
                     <select
                       className={styles.outletNameSelect}
                       onChange={(e) => this.handleOutletChange(e)}
@@ -186,7 +192,7 @@ class Header extends Component {
                         ))}
                     </select>
                   ) : (
-                    outlets[0] && outlets[0].name
+                    defaultOutlet.name
                   )}
                 </span>
               </div>
@@ -502,6 +508,7 @@ const mapStateToProps = (state, ownProps) => {
     color: state.theme.color,
     outlets: state.outlet.outlets,
     setting: state.order.setting,
+    orderingMode: state.order.orderingMode,
   };
 };
 const mapDispatchToProps = (dispatch) => {

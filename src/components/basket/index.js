@@ -252,12 +252,15 @@ class Basket extends Component {
     if (dataBasket) {
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
-
+      const outletSelection = this.props.orderingSetting.find(
+        (item) => item.settingKey === "OutletSelection"
+      );
       // move cart based on delivery address
       if (
         deliveryAddress &&
         orderingMode === "DELIVERY" &&
-        this.props.outletChanged === false
+        outletSelection &&
+        outletSelection.settingValue === "NEAREST"
       ) {
         let payloadMoveCart = {
           orderBy: "provider",
@@ -1337,7 +1340,6 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     deliveryAddress: state.order.deliveryAddress,
     orderingSetting: state.order.setting,
-    outletChanged: state.outlet.outletChanged,
     orderingMode: state.order.orderingMode,
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
