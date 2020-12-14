@@ -54,20 +54,15 @@ class Basket extends Component {
       pointsToRebateRatio: "0:0",
       roundingOptions: "INTEGER",
       xstep: 1,
-      orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`),
+      orderingMode: this.props.orderingMode,
       btnBasketOrder: true,
       play: false,
       deliveryProvaider: [],
       dataCVV: "",
       isEmenu: window.location.pathname.includes("emenu"),
-      orderActionDate:
-        localStorage.getItem(`${config.prefix}_order_action_date`) ||
-        moment().format("YYYY-MM-DD"),
-      orderActionTime:
-        localStorage.getItem(`${config.prefix}_order_action_time`) ||
-        moment().add(1, "h").format("HH") + ":00",
-      orderActionTimeSlot:
-        localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
+      orderActionDate: this.props.orderActionDate,
+      orderActionTime: this.props.orderActionTime,
+      orderActionTimeSlot: this.props.orderActionTimeSlot,
       checkOperationalHours: {},
       orderingTime: [],
 
@@ -463,7 +458,7 @@ class Basket extends Component {
     let payload = {
       outletID: storeDetail.sortKey,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
-      date,
+      date: moment(dateTime).format("YYYY-MM-DD"),
       maxDays,
       orderingMode,
     };
@@ -829,7 +824,7 @@ class Basket extends Component {
   };
 
   setOrderingMode = async (orderingMode) => {
-    localStorage.setItem(`${config.prefix}_ordering_mode`, orderingMode);
+    this.props.dispatch({ type: "SET_ORDERING_MODE", payload: orderingMode });
     this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
     await this.getDataBasket(true, orderingMode);
 
@@ -1178,7 +1173,7 @@ class Basket extends Component {
       window.location.reload();
     } else if (field === "orderActionDate") {
       let check = value === moment().format("YYYY-MM-DD");
-      localStorage.setItem(`${config.prefix}_order_action_date`, value);
+      this.props.dispatch({ type: "SET_ORDER_ACTION_DATE", payload: value });
       if (
         this.state.timeSlot.length > 0 &&
         (this.state.timeSlot[this.state.timeSlot.length - 1].date === value ||
@@ -1215,9 +1210,12 @@ class Basket extends Component {
         }
       });
     } else if (field === "orderActionTime") {
-      localStorage.setItem(`${config.prefix}_order_action_time`, value);
+      this.props.dispatch({ type: "SET_ORDER_ACTION_TIME", payload: value });
     } else if (field === "orderActionTimeSlot") {
-      localStorage.setItem(`${config.prefix}_order_action_time_slot`, value);
+      this.props.dispatch({
+        type: "SET_ORDER_ACTION_TIME_SLOT",
+        payload: value,
+      });
     }
   };
 
@@ -1340,6 +1338,10 @@ const mapStateToProps = (state, ownProps) => {
     deliveryAddress: state.order.deliveryAddress,
     orderingSetting: state.order.setting,
     outletChanged: state.outlet.outletChanged,
+    orderingMode: state.order.orderingMode,
+    orderActionDate: state.order.orderActionDate,
+    orderActionTime: state.order.orderActionTime,
+    orderActionTimeSlot: state.order.orderActionTimeSlot,
   };
 };
 

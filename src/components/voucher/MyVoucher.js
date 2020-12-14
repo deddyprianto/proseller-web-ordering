@@ -16,7 +16,6 @@ class MyVoucher extends Component {
       loadingShow: true,
       showGiftModal: false,
       voucherToGift: null,
-      allowVoucherGift: false,
     };
   }
 
@@ -94,41 +93,42 @@ class MyVoucher extends Component {
                     this.props.handleSelect && this.props.handleSelect(item)
                   }
                 >
-                  {!this.props.handleSelect && this.state.allowVoucherGift && (
-                    <div
-                      className="profile-dashboard"
-                      style={{
-                        position: "absolute",
-                        width: "29%",
-                        paddingLeft: 5,
-                        paddingRight: 5,
-                        fontSize: 12,
-                        bottom: 0,
-                        left: 15,
-                        borderTopRightRadius: 10,
-                        fontWeight: "bold",
-                        textAlign: "center",
-                      }}
-                    >
-                      <button
+                  {!this.props.handleSelect &&
+                    item.validity.allowCustomerToSendVoucher && (
+                      <div
+                        className="profile-dashboard"
                         style={{
-                          fontSize: "1.2rem",
-                          padding: 0,
-                          borderRadius: "1rem",
-                          backgroundColor: "rgba(0,0,0,0)",
-                        }}
-                        onClick={() => {
-                          this.props.dispatch({ type: "INIT_VOUCHER_SEND" });
-                          this.setState({
-                            showGiftModal: true,
-                            voucherToGift: item,
-                          });
+                          position: "absolute",
+                          width: "29%",
+                          paddingLeft: 5,
+                          paddingRight: 5,
+                          fontSize: 12,
+                          bottom: 0,
+                          left: 15,
+                          borderTopRightRadius: 10,
+                          fontWeight: "bold",
+                          textAlign: "center",
                         }}
                       >
-                        <i className="fa fa-gift"></i> Send Gift
-                      </button>
-                    </div>
-                  )}
+                        <button
+                          style={{
+                            fontSize: "1.2rem",
+                            padding: 0,
+                            borderRadius: "1rem",
+                            backgroundColor: "rgba(0,0,0,0)",
+                          }}
+                          onClick={() => {
+                            this.props.dispatch({ type: "INIT_VOUCHER_SEND" });
+                            this.setState({
+                              showGiftModal: true,
+                              voucherToGift: item,
+                            });
+                          }}
+                        >
+                          <i className="fa fa-gift"></i> Send Gift
+                        </button>
+                      </div>
+                    )}
 
                   <div
                     className="profile-dashboard text-btn-theme"

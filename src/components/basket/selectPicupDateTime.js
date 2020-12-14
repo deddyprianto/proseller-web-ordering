@@ -124,22 +124,6 @@ export default class SelectPicupDateTime extends Component {
                     </div>
                     {this.state.showModeDates ? (
                       <div>
-                        {/* <input
-                          type="date"
-                          min={date}
-                          max={dateMax}
-                          value={props.orderActionDate}
-                          className={cx(styles.input, {
-                            [styles.rounded]: false,
-                          })}
-                          style={{ backgroundColor: "#FFF", width: "100%" }}
-                          onChange={(e) =>
-                            this.props.handleSetState(
-                              "orderActionDate",
-                              moment(e.target.value).format("YYYY-MM-DD")
-                            )
-                          }
-                        /> */}
                         <Calendar
                           className="calender"
                           onChange={(value) => {
@@ -157,11 +141,15 @@ export default class SelectPicupDateTime extends Component {
                             ) {
                               this.props.handleSetState(
                                 "orderActionTimeSlot",
-                                defaultTimeSlot.timeSlot[0].time
+                                defaultTimeSlot.timeSlot.find(
+                                  (slot) => slot.isAvailable
+                                ).time
                               );
                               this.props.handleSetState(
                                 "orderActionTime",
-                                defaultTimeSlot.timeSlot[0].time.split(" - ")[0]
+                                defaultTimeSlot.timeSlot
+                                  .find((slot) => slot.isAvailable)
+                                  .time.split(" - ")[0]
                               );
                               this.setState({
                                 showModeDates: false,
@@ -209,13 +197,15 @@ export default class SelectPicupDateTime extends Component {
                                   ) {
                                     this.props.handleSetState(
                                       "orderActionTimeSlot",
-                                      defaultTimeSlot.timeSlot[0].time
+                                      defaultTimeSlot.timeSlot.find(
+                                        (slot) => slot.isAvailable
+                                      ).time
                                     );
                                     this.props.handleSetState(
                                       "orderActionTime",
-                                      defaultTimeSlot.timeSlot[0].time.split(
-                                        " - "
-                                      )[0]
+                                      defaultTimeSlot.timeSlot
+                                        .find((slot) => slot.isAvailable)
+                                        .time.split(" - ")[0]
                                     );
                                   }
                                 }}
