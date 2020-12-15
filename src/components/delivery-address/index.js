@@ -127,6 +127,7 @@ class DeliveryAddress extends Component {
       let city = await this.props.dispatch(
         MasterdataAction.getAddressLocation(countryCode, province.code)
       );
+      await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
       let optionsCity = [];
       city.data.forEach((element) => {
         optionsCity.push({
@@ -199,6 +200,7 @@ class DeliveryAddress extends Component {
 
   handleSelected = async (items) => {
     localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
+    await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
     this.props.history.goBack();

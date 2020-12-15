@@ -98,6 +98,7 @@ class ModalDeliveryAdderss extends Component {
     let response = await this.props.dispatch(
       CustomerAction.updateCustomerProfile(payload)
     );
+    await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     console.log(response);
     if (response.ResultCode === 200) {
       await getDataDeliveryAddress();

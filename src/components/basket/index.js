@@ -252,8 +252,9 @@ class Basket extends Component {
     if (dataBasket) {
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
+      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
       // move cart based on delivery address
-      if ( deliveryAddress && orderingMode === "DELIVERY" ) {
+      if ( deliveryAddress && orderingMode === "DELIVERY" && isOutletChanged !== 'true') {
         let payloadMoveCart = {
           orderBy: "provider",
           cart: dataBasket,
@@ -885,9 +886,10 @@ class Basket extends Component {
           let selected = _.filter(dataBasket.details, (items) => {
             return items.selected !== false;
           });
-          if (dataBasket.details.length === selected.length)
+          if (dataBasket.details.length === selected.length){
+            await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
             await this.props.dispatch(OrderAction.deleteCart());
-          else {
+          } else {
             let payload = [];
             for (let index = 0; index < selected.length; index++) {
               let items = selected[index];
@@ -903,6 +905,7 @@ class Basket extends Component {
             window.location.reload();
           }
         } else {
+          await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
         await this.getDataBasket();
