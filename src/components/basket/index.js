@@ -529,12 +529,13 @@ class Basket extends Component {
       });
     } else {
       if (isEditDate) {
+        console.log("isEditDate is true");
         for (let index = 0; index <= maxLoopingGetTimeSlot; index++) {
           let { dateDay, status } = this.getTimeSlotAvailable(date);
           if (status) break;
           date = dateDay;
         }
-
+        console.log("Set orderActionTimeSlot to null...");
         this.setState({
           orderActionTimeSlot: null,
           orderingTimeSlot: [],
@@ -546,6 +547,7 @@ class Basket extends Component {
           date = moment(date).add(1, "d").format("YYYY-MM-DD");
           this.checkPickUpDateTime(checkOperationalHours, date, check);
         } else {
+          console.log("Set orderACtionTime...");
           this.setState({
             orderActionTimeSlot: null,
             orderingTimeSlot: [],

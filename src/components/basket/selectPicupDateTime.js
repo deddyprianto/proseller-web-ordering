@@ -7,13 +7,26 @@ import "react-calendar/dist/Calendar.css";
 export default class SelectPicupDateTime extends Component {
   state = {
     selectedDate: this.props.data.orderActionDate,
-    orderActionDate: this.props.data.orderActionDate,
-    orderActionTime: this.props.data.orderActionTime,
+    initialOrderActionDate: this.props.data.orderActionDate,
+    initialOrderActionTime: this.props.data.orderActionTime,
+    initialOrderActionTimeSlot: this.props.data.orderActionTimeSlot,
     showModeDates:
       this.props.data.timeSlot && this.props.data.timeSlot.length > 0
         ? false
         : true,
   };
+
+  componentDidMount() {
+    const firstAvailableTimeSlot = this.props.data.orderingTimeSlot.find(
+      (slot) => slot.isAvailable
+    );
+    console.log(firstAvailableTimeSlot);
+    if (firstAvailableTimeSlot && !this.props.data.orderActionTimeSlot) {
+      this.setState({
+        currentTimeSlot: firstAvailableTimeSlot.time,
+      });
+    }
+  }
 
   render() {
     let props = this.props.data;
@@ -67,11 +80,15 @@ export default class SelectPicupDateTime extends Component {
                   onClick={() => {
                     this.props.handleSetState(
                       "orderActionDate",
-                      this.state.orderActionDate
+                      this.state.initialOrderActionDate
                     );
                     this.props.handleSetState(
                       "orderActionTime",
-                      this.state.orderActionTime
+                      this.state.initialOrderActionTime
+                    );
+                    this.props.handleSetState(
+                      "orderActionTimeSlot",
+                      this.state.initialOrderActionTimeSlot
                     );
                   }}
                   style={{
@@ -325,6 +342,34 @@ export default class SelectPicupDateTime extends Component {
                         "orderActionTime",
                         `${props.orderActionTimeSlot.split(" - ")[0]}`
                       );
+                    this.setState({
+                      initialOrderActionDate: this.props.data.orderActionDate,
+                      initialOrderActionTime: this.props.data.orderActionTime,
+                      initialOrderActionTimeSlot: this.props.data
+                        .orderActionTimeSlot,
+                    });
+                    if (this.state.currentTimeSlot) {
+                      this.props.handleSetState(
+                        "orderActionDate",
+                        `${this.state.initialOrderActionDate}`
+                      );
+                      this.props.handleSetState(
+                        "orderActionTime",
+                        `${this.state.currentTimeSlot.split(" - ")[0]}`
+                      );
+                      this.props.handleSetState(
+                        "orderActionTimeSlot",
+                        `${this.state.currentTimeSlot}`
+                      );
+                      this.setState({
+                        initialOrderActionDate: this.props.data.orderActionDate,
+                        initialOrderActionTime: this.state.currentTimeSlot.split(
+                          " - "
+                        )[0],
+                        initialOrderActionTimeSlot: this.state.currentTimeSlot,
+                        currentTimeSlot: null,
+                      });
+                    }
                   }}
                   style={{
                     width: "100%",
