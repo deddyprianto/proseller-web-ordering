@@ -98,26 +98,26 @@ class Header extends Component {
 
   async handleOutletChange(e) {
     const outletId = e.target.value;
-    const currentLocation = window.location.hash;
-    if (currentLocation.includes('/basket')) {
-      const payloadMoveCart = {
-        cart: this.props.basket,
-        changeOutletID: "outlet::" + outletId,
-      };
-      this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
-      if (this.props.isLoggedIn) {
+    const payloadMoveCart = {
+      cart: this.props.basket,
+      changeOutletID: "outlet::" + outletId,
+    };
+    this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
+    if (this.props.isLoggedIn) {
+      const currentLocation = window.location.hash;
+      if (currentLocation.includes('/basket')) {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
         await window.location.reload()
-      } else {
-        this.props.dispatch(
-          OrderAction.buildCart({
-            ...this.props.basket,
-            outletID: outletId,
-            outlet: this.props.defaultOutlet,
-          })
-        );
       }
+    } else {
+      this.props.dispatch(
+        OrderAction.buildCart({
+          ...this.props.basket,
+          outletID: outletId,
+          outlet: this.props.defaultOutlet,
+        })
+      );
     }
   }
 
