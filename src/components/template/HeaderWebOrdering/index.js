@@ -102,7 +102,7 @@ class Header extends Component {
       cart: this.props.basket,
       changeOutletID: "outlet::" + outletId,
     };
-    this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
+    await this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
     if (this.props.isLoggedIn) {
       const currentLocation = window.location.hash;
       if (currentLocation.includes('/basket')) {

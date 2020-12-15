@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
-import GoogleMaps from "./GoogleMaps";
+// import GoogleMaps from "./GoogleMaps";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
@@ -333,11 +333,11 @@ class ModalDeliveryAdderss extends Component {
                         marginTop: "1rem",
                       }}
                     > */}
-                      <GoogleMaps 
+                      {/* <GoogleMaps 
                         deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
                         setAddress={deliveryAddress.setAddress || false}
                         handleChange={(field, value) => this.props.handleChange(field, value)}
-                      />
+                      /> */}
                     {/* </div>
                   </div> */}
 
