@@ -195,6 +195,7 @@ class ModalDeliveryAdderss extends Component {
                     right: 10,
                     top: 16,
                   }}
+                  onClick={() => this.props.resetDeliveryAddress()}
                 >
                   <span aria-hidden="true" style={{ fontSize: 30 }}>
                     ×

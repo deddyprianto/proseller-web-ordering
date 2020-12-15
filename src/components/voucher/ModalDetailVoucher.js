@@ -55,12 +55,6 @@ class ModalDetailVoucher extends Component {
     })
   }
 
-  componentWillUnmount = () => {
-    try {
-      document.getElementById('btn-close-detail-voucher').click()
-    }catch(e) { }
-  }
-
   render() {
     let { dataDetail, getCurrency, pointData } = this.props
     
