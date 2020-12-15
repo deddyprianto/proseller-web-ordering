@@ -574,6 +574,16 @@ class ModalProduct extends Component {
     );
   };
 
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('close-product-modal').click()
+    }catch(e) { }
+
+    try {
+      document.getElementById('dismiss-ordering-mode').click()
+    }catch(e) { }
+  }
+
   detailProduct = () => {
     let { disableButton, selectedItem } = this.state;
     let { defaultOutlet, data } = this.props;
@@ -608,7 +618,7 @@ class ModalProduct extends Component {
               height: 35,
             }}
           >
-            <i className="fa fa-times text-btn-theme"></i>
+            <i id="close-product-modal" className="fa fa-times text-btn-theme"></i>
           </button>
         </div>
         <div className="modal-body modal-body-product">

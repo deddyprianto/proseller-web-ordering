@@ -19,6 +19,12 @@ class ModalDeliveryAdderss extends Component {
     };
   }
 
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('btn-close-address').click()
+    }catch(e) { }
+  }
+
   setProvince = async (e) => {
     let { deliveryAddress, countryCode } = this.props;
     deliveryAddress.province = e.value;

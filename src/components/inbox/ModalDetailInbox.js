@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import moment from 'moment';
 
 export default class ModalDetailInbox extends Component {
+
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('dismiss-button-inbox-detail').click()
+    }catch(e) { }
+  }
+
   linkDetection = (text) => {
     if(text){
       try {
@@ -22,7 +29,7 @@ export default class ModalDetailInbox extends Component {
             <div className="modal-content" style={{ width: "100%", marginTop: 100, marginBottom: 100 }}>
               <div className="modal-header" style={{ display: "flex", justifyContent: "left" }}>
                 <h5 className="modal-title" id="exampleModalLabel" style={{ fontSize: 16 }}>{data.name}</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close" style={{
+                <button id="dismiss-button-inbox-detail" type="button" className="close" data-dismiss="modal" aria-label="Close" style={{
                   position: "absolute", right: 10, top: 13
                 }}>
                   <span aria-hidden="true" style={{ fontSize: 30 }}>×</span>

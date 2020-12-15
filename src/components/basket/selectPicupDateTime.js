@@ -16,6 +16,12 @@ export default class SelectPicupDateTime extends Component {
         : true,
   };
 
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('btn-close-timeslot').click()
+    }catch(e) { }
+  }
+
   componentDidMount() {
     const firstAvailableTimeSlot = this.props.data.orderingTimeSlot.find(
       (slot) => slot.isAvailable
@@ -73,6 +79,7 @@ export default class SelectPicupDateTime extends Component {
                   {textTitle} Date & Time
                 </h5>
                 <button
+                  id="btn-close-timeslot"
                   type="button"
                   className="close"
                   data-dismiss="modal"
