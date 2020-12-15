@@ -119,9 +119,6 @@ class Header extends Component {
   render() {
     let { isLoggedIn, basket, defaultOutlet, outlets } = this.props;
     let { infoCompany, enableOrdering, logoCompany } = this.state;
-    const outletSelection = this.props.setting.find(
-      (item) => item.settingKey === "OutletSelection"
-    );
 
     let basketLength = 0;
     if (basket && basket.details) {
@@ -169,31 +166,23 @@ class Header extends Component {
                   style={{ fontSize: 22, marginBottom: -5 }}
                 />
                 <span className="color" style={{ fontSize: 15 }}>
-                  {outlets &&
-                  outlets.length > 1 &&
-                  outletSelection &&
-                  (outletSelection.settingValue !== "NEAREST" ||
-                    this.props.orderingMode !== "DELIVERY") ? (
-                    <select
-                      className={styles.outletNameSelect}
-                      onChange={(e) => this.handleOutletChange(e)}
-                      value={defaultOutlet.id}
-                    >
-                      {outlets &&
-                        outlets.map((outlet, key) => (
-                          <option
-                            key={key}
-                            ref={this.state.outletsRefs[outlet.id]}
-                            value={outlet.id}
-                            // selected={outlet.id === defaultOutlet.id}
-                          >
-                            {outlet.name}
-                          </option>
-                        ))}
-                    </select>
-                  ) : (
-                    defaultOutlet.name
-                  )}
+                  <select
+                    className={styles.outletNameSelect}
+                    onChange={(e) => this.handleOutletChange(e)}
+                    value={defaultOutlet.id}
+                  >
+                    {outlets &&
+                      outlets.map((outlet, key) => (
+                        <option
+                          key={key}
+                          ref={this.state.outletsRefs[outlet.id]}
+                          value={outlet.id}
+                          // selected={outlet.id === defaultOutlet.id}
+                        >
+                          {outlet.name}
+                        </option>
+                      ))}
+                  </select>
                 </span>
               </div>
             </div>
