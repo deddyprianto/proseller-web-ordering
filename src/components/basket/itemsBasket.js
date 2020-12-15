@@ -8,8 +8,9 @@ import { Link } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import CheckBox from "../setting/checkBoxCostume";
-
+import config from "../../config";
 const Swal = require("sweetalert2");
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class ItemsBasket extends Component {
   constructor(props) {
@@ -28,6 +29,16 @@ class ItemsBasket extends Component {
     productSelected = JSON.parse(JSON.stringify(productSelected));
     let dataBasket = JSON.parse(JSON.stringify(props.dataBasket));
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
+    
+    const productBackup = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_productsBackup`))
+    );
+
+    try{
+      if (storeDetail.product[0].item === undefined || storeDetail.product[0].item.length === 0) {
+        storeDetail.product = productBackup
+      }
+    }catch(e){}
 
     if (storeDetail && storeDetail.product) {
       storeDetail.product.forEach((group) => {
@@ -133,6 +144,7 @@ class ItemsBasket extends Component {
 
   openModal = (item) => {
     let props = this.props.data;
+
     if (props.storeDetail && props.storeDetail.product) {
       this.selectProduct(item, "Update");
       document.getElementById("detail-product-btn").click();
