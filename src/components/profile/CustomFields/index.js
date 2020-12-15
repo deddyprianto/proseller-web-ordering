@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Col, Row } from "reactstrap";
 import Field from "./Field";
@@ -26,8 +26,13 @@ const CustomFields = ({
     handleChange(e.target.name, e.target.value);
   };
 
+  const initialRender = useRef(true);
   useEffect(() => {
-    handleChange("address", `${value.street}, ${value.unitNo}`);
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      handleChange("address", `${value.street}, ${value.unitNo}`);
+    }
   }, [value]);
 
   return (
