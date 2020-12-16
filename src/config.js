@@ -2,7 +2,7 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "demo";
+let stage = "prod";
 let companyHost = "auntieanne";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""
