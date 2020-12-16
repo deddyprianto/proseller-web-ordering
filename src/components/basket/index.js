@@ -457,6 +457,7 @@ class Basket extends Component {
     if (!maxDays) maxDays = 90;
 
     let dateTime = new Date();
+
     let payload = {
       outletID: storeDetail.sortKey,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
@@ -464,6 +465,12 @@ class Basket extends Component {
       maxDays,
       orderingMode,
     };
+
+    const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
+    const newOutletID = await localStorage.getItem(`${config.prefix}_outletChangedFromHeader`)
+    if (isOutletChanged === 'true') {
+      if (newOutletID !== undefined && newOutletID !== null) payload.outletID = `outlet::${newOutletID}`
+    }
 
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
@@ -834,12 +841,13 @@ class Basket extends Component {
   };
 
   setOrderingMode = async (orderingMode) => {
-    this.props.dispatch({ type: "SET_ORDERING_MODE", payload: orderingMode });
-    this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
+    await this.props.dispatch({ type: "SET_ORDERING_MODE", payload: orderingMode });
+    
+    await this.setState({ orderingMode, isLoading: true, provaiderDelivery: null, orderActionTimeSlot: null });
     await this.getDataBasket(true, orderingMode);
 
     let orderActionDate = moment().format("YYYY-MM-DD");
-    this.setState({ isLoading: false, orderActionDate, isEditDate: false });
+    await this.setState({ isLoading: false, orderActionDate, isEditDate: false });
     await this.checkPickUpDateTime(
       this.state.checkOperationalHours,
       orderActionDate,

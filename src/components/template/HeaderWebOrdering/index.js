@@ -109,6 +109,9 @@ class Header extends Component {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
         await localStorage.setItem(`${config.prefix}_outletChangedFromHeader`, outletId);
+        await localStorage.removeItem(`${config.prefix}_order_action_date`);
+        await localStorage.removeItem(`${config.prefix}_order_action_time`);
+        await localStorage.removeItem(`${config.prefix}_order_action_time_slot`);
         await localStorage.removeItem(`${config.prefix}_deliveryProvider`);
         await setTimeout(() => {
           window.location.reload()
