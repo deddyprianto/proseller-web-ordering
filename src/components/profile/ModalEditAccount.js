@@ -121,7 +121,9 @@ class ModalEditAccount extends Component {
               onChange={(e) => {
                 this.setState({phoneCountryCode: `+${e}`})
               }}
-              onKeyDown={() => document.getElementById("phoneInput").focus()}
+              onKeyDown={() =>
+                document.getElementById("phoneInputEdit").focus()
+              }
               disableSearchIcon
               inputStyle={{
                 width: "0",
@@ -137,7 +139,7 @@ class ModalEditAccount extends Component {
           </div>
           <Input
             type="number"
-            id="phoneInput"
+            id="phoneInputEdit"
             value={newPhoneNumber}
             className={styles.phoneField}
             onChange={(e) => this.setState({newPhoneNumber: e.target.value})}

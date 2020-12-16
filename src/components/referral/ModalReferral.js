@@ -67,7 +67,8 @@ export default class ModalReferral extends Component {
                   }
                 </div>
                 <Button className="button" data-toggle="modal" data-target="#referral-modal"
-                  style={{ width: "100%", marginTop: 10, borderRadius: 5 }} onClick={() => sendInvitation()}>
+                  disabled={mobileNo.length < 10}
+                  style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 40 }} onClick={() => sendInvitation()}>
                   Send Invititation
                 </Button>
               </div>
