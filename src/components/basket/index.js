@@ -374,6 +374,12 @@ class Basket extends Component {
         deliveryAddress: deliveryAddress,
       };
 
+      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
+      const newOutletID = await localStorage.getItem(`${config.prefix}_outletChangedFromHeader`)
+      if (isOutletChanged === 'true') {
+        if (newOutletID !== undefined && newOutletID !== null) payload.outletId = newOutletID
+      }
+
       let response = await this.props.dispatch(
         OrderAction.getCalculateFee(payload)
       );
@@ -888,6 +894,7 @@ class Basket extends Component {
           });
           if (dataBasket.details.length === selected.length){
             await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+            await localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
             await this.props.dispatch(OrderAction.deleteCart());
           } else {
             let payload = [];

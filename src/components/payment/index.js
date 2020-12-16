@@ -1116,6 +1116,7 @@ class Payment extends Component {
           JSON.stringify(encryptor.encrypt(this.state))
         );
         localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+        localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
         localStorage.removeItem(`${config.prefix}_selectedPoint`);
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);

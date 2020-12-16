@@ -108,7 +108,11 @@ class Header extends Component {
       if (currentLocation.includes('/basket')) {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
-        await window.location.reload()
+        await localStorage.setItem(`${config.prefix}_outletChangedFromHeader`, outletId);
+        await localStorage.removeItem(`${config.prefix}_deliveryProvider`);
+        await setTimeout(() => {
+          window.location.reload()
+        }, 300)
       }
     } else {
       this.props.dispatch(
