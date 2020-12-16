@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import PhoneInput from "react-phone-input-2";
 import { Input, Button } from "reactstrap";
+import CheckBox from "../../setting/checkBoxCostume";
 
 import styles from "./styles.module.css";
 import PasswordField from "../PasswordField";
@@ -16,11 +17,15 @@ const EmailForm = ({
   errorName,
   error,
   children,
-  color
+  invitationCode,
+  color,
+  isTCAvailable,
+  termsAndConditions,
 }) => {
   const initialCountry = "SG";
   const [phoneCountryCode, setPhoneCountryCode] = useState("+65");
   const [phone, setPhone] = useState("");
+  const [agreeTC, setAgreeTC] = useState(true);
 
   useEffect(() => {
     handleChange("phoneNumber", phoneCountryCode + phone);
@@ -36,11 +41,18 @@ const EmailForm = ({
         <input
           type="text"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          style={{borderRadius: 5}}
+          style={{ borderRadius: 5 }}
           onChange={(e) => handleChange("name", e.target.value)}
         />
         {errorName !== "" && (
-          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: "red",
+              lineHeight: "15px",
+            }}
+          >
             {errorName}
           </div>
         )}
@@ -58,7 +70,7 @@ const EmailForm = ({
               enableSearch={true}
               autoFormat={false}
               onChange={(e) => {
-                setPhoneCountryCode(`+${e}`)
+                setPhoneCountryCode(`+${e}`);
               }}
               onKeyDown={() => document.getElementById("phoneInput").focus()}
               disableSearchIcon
@@ -67,11 +79,11 @@ const EmailForm = ({
                 border: `1px solid ${color}`,
                 backgroundColor: color,
                 height: 40,
-                outline: 'none',
-                boxShadow: 'none'
+                outline: "none",
+                boxShadow: "none",
               }}
               dropdownStyle={{
-                color: "#808080"
+                color: "#808080",
               }}
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
@@ -105,8 +117,63 @@ const EmailForm = ({
           error={errorPassword}
         ></PasswordField>
       )}
+      {invitationCode && (
+        <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <label for="referral">Referral Code</label>
+          <input
+            type="text"
+            value={invitationCode}
+            disabled
+            className="woocommerce-Input woocommerce-Input--text input-text"
+            style={{ borderRadius: 5 }}
+            onChange={(e) => handleChange("referral", e.target.value, true)}
+          />
+        </p>
+      )}
+      {isTCAvailable && (
+        <>
+          <div style={{ marginTop: "2rem" }}>
+            <div
+              className="card card-body"
+              style={{ textAlign: "justify", fontSize: 11 }}
+            >
+              <textarea disabled rows={10}>
+                {termsAndConditions}
+              </textarea>
+            </div>
+          </div>
+          <div
+            onClick={() => setAgreeTC(!agreeTC)}
+            className="form-group form-check"
+            style={{ marginTop: 5 }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <CheckBox
+                className="form-check-input"
+                handleChange={() => setAgreeTC(!agreeTC)}
+                selected={!agreeTC}
+                setRadius={5}
+                setHeight={20}
+              />
+              <label
+                className="form-check-label"
+                for="exampleCheck1"
+                style={{ marginLeft: 10 }}
+              >
+                I Agree to Terms & Conditions{" "}
+              </label>
+            </div>
+          </div>
+        </>
+      )}
       <Button
-        disabled={isSubmitting}
+        disabled={isSubmitting || agreeTC || !isTCAvailable}
         className="button"
         style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}
@@ -125,6 +192,9 @@ EmailForm.propTypes = {
   error: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
+  invitationCode: PropTypes.string,
+  isTCAvailable: PropTypes.bool,
+  termsAndConditions: PropTypes.string,
 };
 
 export default EmailForm;

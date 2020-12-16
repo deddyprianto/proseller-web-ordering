@@ -3,6 +3,13 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import moment from "moment";
 
 export default class ModalPointsDetail extends Component {
+
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('dismiss-modal-point-detail').click()
+    }catch(e) { }
+  }
+
   render() {
     const { detailPoint, pendingPoints } = this.props
     return (
@@ -12,7 +19,7 @@ export default class ModalPointsDetail extends Component {
             <div className="modal-content" style={{ width: "100%", marginTop: 100, marginBottom: 100 }}>
               <div className="modal-header" style={{ display: "flex", justifyContent: "center" }}>
                 <h5 className="modal-title" id="exampleModalLabel" style={{ fontSize: 20 }}>Point Detail</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close" style={{
+                <button id="dismiss-modal-point-detail" type="button" className="close" data-dismiss="modal" aria-label="Close" style={{
                   position: "absolute", right: 10, top: 16
                 }}>
                   <span aria-hidden="true" style={{ fontSize: 30 }}>×</span>

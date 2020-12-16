@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
-import GoogleMaps from "./GoogleMaps";
+// import GoogleMaps from "./GoogleMaps";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
@@ -17,6 +17,12 @@ class ModalDeliveryAdderss extends Component {
       isLoading: false,
       optionsCity: [],
     };
+  }
+
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('btn-close-address').click()
+    }catch(e) { }
   }
 
   setProvince = async (e) => {
@@ -98,6 +104,7 @@ class ModalDeliveryAdderss extends Component {
     let response = await this.props.dispatch(
       CustomerAction.updateCustomerProfile(payload)
     );
+    await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     console.log(response);
     if (response.ResultCode === 200) {
       await getDataDeliveryAddress();
@@ -188,6 +195,7 @@ class ModalDeliveryAdderss extends Component {
                     right: 10,
                     top: 16,
                   }}
+                  onClick={() => this.props.resetDeliveryAddress()}
                 >
                   <span aria-hidden="true" style={{ fontSize: 30 }}>
                     ×
@@ -332,11 +340,11 @@ class ModalDeliveryAdderss extends Component {
                         marginTop: "1rem",
                       }}
                     > */}
-                      <GoogleMaps 
+                      {/* <GoogleMaps 
                         deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
                         setAddress={deliveryAddress.setAddress || false}
                         handleChange={(field, value) => this.props.handleChange(field, value)}
-                      />
+                      /> */}
                     {/* </div>
                   </div> */}
 

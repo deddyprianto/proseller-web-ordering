@@ -9,11 +9,15 @@ class AddPromo extends Component {
     let props = this.props.data
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
+    // console.log(props) 
 
     return (
       <div>
         <RedeemPointBasket
           data={props}
+          campaignPoint={this.props.campaignPoint}
+          balanceSVC={this.props.balanceSVC || 0}
+          defaultBalance={this.props.defaultBalance || 0}
           handleRedeemPoint={() => this.props.handleRedeemPoint()}
           cancelSelectPoint={() => this.props.cancelSelectPoint()}
           getCurrency={(price) => this.props.getCurrency(price)}
@@ -34,10 +38,10 @@ class AddPromo extends Component {
                   width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
                   alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
                 }}>
-                <dev style={{display: "flex", alignItems: "center"}}>
+                <div style={{display: "flex", alignItems: "center"}}>
                   <RedeemIcon style={{ fontSize: 16, marginRight: 10 }} />
                   Use Voucher
-                </dev>
+                </div>
                 <i className="fa fa-chevron-right" aria-hidden="true" />
               </Button>
               {
@@ -75,10 +79,10 @@ class AddPromo extends Component {
                   width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row",
                   alignItems: "center", fontSize: 13, height: 40, border: `1px solid ${colorText}`
                 }}>
-                <dev style={{display: "flex", alignItems: "center"}}>
+                <div style={{display: "flex", alignItems: "center"}}>
                   <i className="fa fa-tags" aria-hidden="true" style={{ fontSize: 16, marginRight: 10 }}/>
                   {`${props.selectedPoint > 0 ? `${props.selectedPoint} point` : 'Use Point'}`}
-                </dev>
+                </div>
                 <i className="fa fa-chevron-right" aria-hidden="true" />
               </Button>
               {
@@ -99,7 +103,10 @@ class AddPromo extends Component {
 const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
-    selectedVoucher: state.payment.selectedVoucher
+    selectedVoucher: state.payment.selectedVoucher,
+    campaignPoint: state.campaign.data,
+    balanceSVC: state.svc.summary,
+    defaultBalance: state.svc.defaultBalance,
   };
 };
 

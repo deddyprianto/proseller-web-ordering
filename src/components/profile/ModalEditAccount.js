@@ -127,6 +127,8 @@ class ModalEditAccount extends Component {
                 width: "0",
                 border: "1px solid #FFF",
                 height: 40,
+                outline: 'none',
+                boxShadow: 'none'
               }}
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>

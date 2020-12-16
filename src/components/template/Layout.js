@@ -14,9 +14,13 @@ const FooterEmenu = loadable(() => import("./FooterEmenu"));
 const FooterWebOrdering = loadable(() => import("./FooterWebOrdering"));
 const Home = loadable(() => import("../../pages/Home"));
 const Profile = loadable(() => import("../../pages/Profile"));
+const PaidMembership = loadable(() => import("../../pages/PaidMembership"));
 const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
+const StoreValueCard = loadable(() => import("../../pages/StoreValueCard"));
+const BuyStoreValueCard = loadable(() => import("../../components/svc/BuySVC"));
+const UseSVC = loadable(() => import("../../components/svc/useSVC"));
 const DeliveryAddress = loadable(() => import("../../components/delivery-address") );
 const Payment = loadable(() => import("../../components/payment/index"));
 const PaymentMethod = loadable(() => import("../../components/payment/paymentMethod") );
@@ -70,6 +74,16 @@ class Layout extends Component {
       } catch (error) { }
       this.setState({infoCompany})
     }
+
+    if(window.location.href.includes('/signin')){
+      try {
+        console.log('SIGN IN')
+        setTimeout(() => {
+          document.getElementById("login-register-btn").click();
+        }, 700)
+      } catch (error) {}
+    }
+
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -106,6 +120,9 @@ class Layout extends Component {
             {(isLoggedIn || !enableOrdering) && <Route exact path={"/rewards"} component={Profile} /> }
             {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
             {isLoggedIn &&  <Route exact path={"/voucher"} component={Voucher} /> }
+            {isLoggedIn &&  <Route exact path={"/svc"} component={StoreValueCard} /> }
+            {isLoggedIn &&  <Route exact path={"/buy-svc"} component={BuyStoreValueCard} /> }
+            {isLoggedIn &&  <Route exact path={"/use-svc"} component={UseSVC} /> }
             {isLoggedIn &&  <Route exact path={"/setting"} component={Setting} /> }
             {isLoggedIn && <Route exact path={"/payment-method"} component={PaymentMethod} /> }
             {isLoggedIn && <Route exact path={"/delivery-address"} component={DeliveryAddress} /> }
@@ -115,6 +132,7 @@ class Layout extends Component {
             {isLoggedIn &&  <Route exact path={"/scanTable"} component={ScanTable} /> }
             {isLoggedIn &&  <Route exact path={"/settleSuccess"} component={SettleSuccess} /> }
             {isLoggedIn && <Route exact path={"/history/detail"} component={PendingDetail} /> }
+            {isLoggedIn && <Route exact path={"/paid-membership"} component={PaidMembership} /> }
             <Route exact path={"/history"} component={History} />
             <Route exact path={"/payment"} component={Payment} />
             <Redirect from="*" to={!enableOrdering ? '/profile' : '/'} />

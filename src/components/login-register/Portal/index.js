@@ -26,7 +26,7 @@ let Portal = ({
   let [value, setValue] = useState("");
 
   useEffect(() => {
-    if(initialCountry === "ID") setPhoneCountryCode("+62")
+    if (initialCountry === "ID") setPhoneCountryCode("+62");
 
     handleChange(
       method === "phone" ? "phoneNumber" : "email",
@@ -64,7 +64,9 @@ let Portal = ({
       <div className="modal-body">
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
           <label htmlFor="email">
-            {`Enter your ${method === "phone" ? "Mobile Number" : "Email Address"} `}
+            {`Enter your ${
+              method === "phone" ? "Mobile Number" : "Email Address"
+            } `}
             <span className="required">*</span>
           </label>
           <div className={styles.fieldGroup}>
@@ -76,9 +78,11 @@ let Portal = ({
                   enableSearch={true}
                   autoFormat={false}
                   onChange={(e) => {
-                    setPhoneCountryCode(`+${e}`)
+                    setPhoneCountryCode(`+${e}`);
                   }}
-                  onKeyDown={() => document.getElementById("phoneInput").focus()}
+                  onKeyDown={() =>
+                    document.getElementById("phoneInput").focus()
+                  }
                   disableSearchIcon
                   inputStyle={{
                     width: 0,
@@ -89,7 +93,7 @@ let Portal = ({
                     boxShadow: 'none'
                   }}
                   dropdownStyle={{
-                    color: "#808080"
+                    color: "#808080",
                   }}
                 ></PhoneInput>
                 <div className={styles.phoneCountryCode}>
@@ -106,16 +110,16 @@ let Portal = ({
                 onChange={(e) => setValue(e.target.value)}
               ></Input>
             ) : (
-                <input
-                  type="email"
-                  value={value}
-                  className={cx(
-                    "woocommerce-Input woocommerce-Input--text input-text",
-                    styles.emailField
-                  )}
-                  onChange={(e) => setValue(e.target.value)}
-                ></input>
-              )}
+              <input
+                type="email"
+                value={value}
+                className={cx(
+                  "woocommerce-Input woocommerce-Input--text input-text",
+                  styles.emailField
+                )}
+                onChange={(e) => setValue(e.target.value)}
+              ></input>
+            )}
           </div>
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
@@ -125,16 +129,18 @@ let Portal = ({
         >
           Next
         </Button>
-        {
-          ((method === 'email' && loginByMobile) || (method === 'phone' && loginByEmail)) &&
+        {((method === "email" && loginByMobile) ||
+          (method === "phone" && loginByEmail)) && (
           <div
             className={cx("modal-title", styles.switchMethodButton)}
-            onClick={() => handleMethodChange(method === "phone" ? "email" : "phone")}
+            onClick={() =>
+              handleMethodChange(method === "phone" ? "email" : "phone")
+            }
           >
             Use {method !== "phone" ? "Mobile Number" : "Email Address"} to Sign
             In / Sign Up
           </div>
-        }
+        )}
       </div>
     </div>
   );

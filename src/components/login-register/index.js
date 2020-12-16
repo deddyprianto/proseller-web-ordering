@@ -20,12 +20,12 @@ class LoginRegister extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      method: "phone",
+      method: this.props.defaultEmail || "phone",
       userStatus: "NOT_CHECKED",
       isLoading: false,
       payloadResponse: {},
 
-      phoneNumber: "",
+      phoneNumber: this.props.defaultPhoneNumber || "",
       modalShow: false,
       errorPhone: "",
       show: false,
@@ -53,7 +53,7 @@ class LoginRegister extends Component {
 
       name: "",
       errorName: "",
-      email: "",
+      email: this.props.defaultEmail || "",
       errorEmail: "",
 
       enableRegisterWithPassword: false,
@@ -65,7 +65,7 @@ class LoginRegister extends Component {
       enableSMSOTP: false,
       enableWhatsappOTP: false,
       enableOrdering: false,
-      minimumAge: null
+      minimumAge: null,
     };
   }
 
@@ -117,38 +117,78 @@ class LoginRegister extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props !== prevProps) {
-      let enableRegisterWithPassword = this.props.setting.find(items => { return items.settingKey === "EnableRegisterWithPassword" })
+      let enableRegisterWithPassword = this.props.setting.find((items) => {
+        return items.settingKey === "EnableRegisterWithPassword";
+      });
       if (enableRegisterWithPassword) {
-        this.setState({ enableRegisterWithPassword: enableRegisterWithPassword.settingValue });
+        this.setState({
+          enableRegisterWithPassword: enableRegisterWithPassword.settingValue,
+        });
       }
 
-      let loginByMobile = this.props.setting.find(items => { return items.settingKey === "LoginByMobile" })
+      let loginByMobile = this.props.setting.find((items) => {
+        return items.settingKey === "LoginByMobile";
+      });
       if (loginByMobile) {
         this.setState({ loginByMobile: loginByMobile.settingValue || true });
       }
 
-      let loginByEmail = this.props.setting.find(items => { return items.settingKey === "LoginByEmail" })
+      let loginByEmail = this.props.setting.find((items) => {
+        return items.settingKey === "LoginByEmail";
+      });
       if (loginByEmail) {
         this.setState({ loginByEmail: loginByEmail.settingValue || true });
       }
-      if (loginByEmail && (loginByEmail.settingValue || true) && loginByMobile && !loginByMobile.settingValue) {
-        this.setState({ method: 'email' });
+      if (
+        loginByEmail &&
+        (loginByEmail.settingValue || true) &&
+        loginByMobile &&
+        !loginByMobile.settingValue
+      ) {
+        this.setState({ method: "email" });
       }
 
-      let mobileOTP = this.props.setting.find(items => { return items.settingKey === "MobileOTP" })
+      let mobileOTP = this.props.setting.find((items) => {
+        return items.settingKey === "MobileOTP";
+      });
       if (mobileOTP) {
-        let check = mobileOTP.settingValue !== "WHATSAPP"
+        let check = mobileOTP.settingValue !== "WHATSAPP";
         this.setState({ enableSMSOTP: check, enableWhatsappOTP: !check });
       }
 
-      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
+      let enableOrdering = this.props.setting.find((items) => {
+        return items.settingKey === "EnableOrdering";
+      });
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
 
-      let minimumAge = this.props.setting.find(items => { return items.settingKey === "MinimumAge" })
+      let minimumAge = this.props.setting.find((items) => {
+        return items.settingKey === "MinimumAge";
+      });
       if (minimumAge) {
         this.setState({ minimumAge: Number(minimumAge.settingValue) });
+      }
+      if (this.props.defaultEmail) {
+        this.setState({
+          email: this.props.defaultEmail,
+          method: "email",
+          userStatus: "NOT_REGISTERED",
+          payloadResponse: { email: this.props.defaultEmail },
+        });
+      }
+      if (this.props.defaultPhoneNumber) {
+        this.setState({
+          phoneNumber: this.props.defaultPhoneNumber,
+          method: "phone",
+          userStatus: "NOT_REGISTERED",
+          payloadResponse: { phoneNumber: this.props.defaultPhoneNumber },
+        });
+      }
+      if (this.props.referralCode) {
+        this.setState({
+          referralCode: this.props.referralCode,
+        });
       }
     }
 
@@ -238,7 +278,7 @@ class LoginRegister extends Component {
 
     this.setState({ [jenis]: data });
     if (jenis === "name") {
-      if((/^[A-Za-z\s]+$/.test(data))) this.setState({ errorName: "" });
+      if (/^[A-Za-z\s]+$/.test(data)) this.setState({ errorName: "" });
       else this.setState({ errorName: "Name is alphabets only" });
     } else if (jenis === "phoneNumber") {
       this.setState({ errorPhone: "" });
@@ -276,8 +316,8 @@ class LoginRegister extends Component {
   };
 
   handleMobileCheck = async () => {
-    let enableSMSOTP = this.state.enableSMSOTP
-    let enableWhatsappOTP = this.state.enableWhatsappOTP
+    let enableSMSOTP = this.state.enableSMSOTP;
+    let enableWhatsappOTP = this.state.enableWhatsappOTP;
     let phoneNumber = this.state.phoneNumber;
     if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
 
@@ -300,7 +340,7 @@ class LoginRegister extends Component {
           payloadResponse: { phoneNumber },
           btnSubmit: false,
         });
-      } else if(response) {
+      } else if (response) {
         if (response.data.status === "SUSPENDED") {
           Swal.fire(
             "Suspended!",
@@ -308,16 +348,18 @@ class LoginRegister extends Component {
             "error"
           );
         } else if (response.data.confirmation) {
-          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
-          if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
+          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP("SMSOTP");
+          if (!enableSMSOTP && enableWhatsappOTP)
+            this.handleSendOTP("WhatsappOTP");
           this.setState({
             userStatus: "REGISTERED",
             payloadResponse: response.data,
             btnSubmit: false,
           });
         } else {
-          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
-          if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
+          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP("SMSOTP");
+          if (!enableSMSOTP && enableWhatsappOTP)
+            this.handleSendOTP("WhatsappOTP");
           this.setState({
             userStatus: "REGISTERED",
             payloadResponse: response.data,
@@ -329,7 +371,7 @@ class LoginRegister extends Component {
     this.setState({ isLoading: false });
   };
 
-  handleSendOTP = async (sendBy = 'SMSOTP') => {
+  handleSendOTP = async (sendBy = "SMSOTP") => {
     if (!this.state.enableRegisterWithPassword) {
       let payloadResponse = this.state.payloadResponse;
       let phoneNumber = this.state.phoneNumber;
@@ -403,7 +445,7 @@ class LoginRegister extends Component {
           payload = { email: payloadResponse.email };
 
         // console.log(this.state.sendCounter)
-        console.log(payload)
+        console.log(payload);
         let response = await this.props.dispatch(AuthActions.sendOtp(payload));
         response = response.Data;
         // console.log(response)
@@ -435,6 +477,8 @@ class LoginRegister extends Component {
       localStorage.clear();
       lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
       lsStore(config.prefix + "_offlineCart", offlineCart, true);
+      const url = window.location.href.split("?")[0];
+      window.location.replace(url);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -448,20 +492,20 @@ class LoginRegister extends Component {
   };
 
   getAge = (DOB) => {
-      let today = new Date();
-      let birthDate = new Date(DOB);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      let m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age = age - 1;
-      }
+    let today = new Date();
+    let birthDate = new Date(DOB);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age = age - 1;
+    }
 
-      return age;
-  }
+    return age;
+  };
 
   handleMobileRegister = async () => {
-    let enableSMSOTP = this.state.enableSMSOTP
-    let enableWhatsappOTP = this.state.enableWhatsappOTP
+    let enableSMSOTP = this.state.enableSMSOTP;
+    let enableWhatsappOTP = this.state.enableWhatsappOTP;
     let payloadResponse = this.state.payloadResponse;
 
     try {
@@ -469,17 +513,24 @@ class LoginRegister extends Component {
       let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
       let email = this.state.email.toLowerCase().trim();
       const fields = this.props.fields;
-      let mandatory = []
-      mandatory = fields.filter(items => {return items.signUpField === true && items.mandatory === true})
-      mandatory.push({fieldName: "name", displayName: "Name"})
-      mandatory.push({fieldName: "phoneNumber", displayName: "Phone Number"})
-      mandatory.push({fieldName: "email", displayName: "Email"})
-      mandatory.push({fieldName: "password", displayName: "Password"})
-
-      const customFields = fields && fields.reduce((acc, field) => {
-        if (!field.signUpField) return { ...acc };
-        return { ...acc, [field.fieldName]: this.state[field.fieldName] || "" };
+      let mandatory = [];
+      mandatory = fields.filter((items) => {
+        return items.signUpField === true && items.mandatory === true;
       });
+      mandatory.push({ fieldName: "name", displayName: "Name" });
+      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
+      mandatory.push({ fieldName: "email", displayName: "Email" });
+      mandatory.push({ fieldName: "password", displayName: "Password" });
+
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) return { ...acc };
+          return {
+            ...acc,
+            [field.fieldName]: this.state[field.fieldName] || "",
+          };
+        });
 
       if (customFields) {
         delete customFields.displayName;
@@ -491,7 +542,7 @@ class LoginRegister extends Component {
         delete customFields.show;
         delete customFields.type;
       }
-      
+
       let errorEmail = "";
       let cekEmail = regEmail.test(String(email).toLowerCase());
       if (!cekEmail) errorEmail = "Email not valid";
@@ -511,50 +562,78 @@ class LoginRegister extends Component {
         return;
       }
 
-      if(!enableRegisterWithPassword) password = generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 })
+      if (!enableRegisterWithPassword)
+        password = generate([8], {
+          specials: 0,
+          nums: 2,
+          uppers: 3,
+          lowers: 3,
+        });
 
       let payload = {
         phoneNumber: payloadResponse.phoneNumber,
         email: email,
         password: password,
         username: payloadResponse.phoneNumber,
+        ...(this.state.referralCode && {
+          referralCode: this.state.referralCode,
+        }),
         ...customFields,
       };
 
-      let listName = ""
-      mandatory.forEach(field => {
-        if( !payload[field.fieldName] || (payload[field.fieldName] && (payload[field.fieldName] === "" || payload[field.fieldName] === "Invalid date")) ) {
-          if(this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== 'Invalid date'){
-            payload[field.fieldName] = this.state[field.fieldName]
-            field.check = true
-          } else if(
-            this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== "Invalid date" &&
-            field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""
-          ){
-            payload[field.fieldName] = field.defaultValue
-            field.check = true
+      let listName = "";
+      mandatory.forEach((field) => {
+        if (
+          !payload[field.fieldName] ||
+          (payload[field.fieldName] &&
+            (payload[field.fieldName] === "" ||
+              payload[field.fieldName] === "Invalid date"))
+        ) {
+          if (
+            this.state[field.fieldName] &&
+            this.state[field.fieldName] !== "" &&
+            this.state[field.fieldName] !== "Invalid date"
+          ) {
+            payload[field.fieldName] = this.state[field.fieldName];
+            field.check = true;
+          } else if (
+            this.state[field.fieldName] &&
+            this.state[field.fieldName] !== "" &&
+            this.state[field.fieldName] !== "Invalid date" &&
+            field.defaultValue &&
+            field.defaultValue !== "-" &&
+            field.defaultValue !== ""
+          ) {
+            payload[field.fieldName] = field.defaultValue;
+            field.check = true;
           } else {
-            listName += field.displayName + ", "
-            field.check = false
+            listName += field.displayName + ", ";
+            field.check = false;
           }
         } else {
-          field.check = true
+          field.check = true;
         }
       });
 
-      mandatory = mandatory.filter(items => { return items.check === false})
-      if(mandatory.length > 0) {
+      mandatory = mandatory.filter((items) => {
+        return items.check === false;
+      });
+      if (mandatory.length > 0) {
         listName = listName.substr(0, listName.length - 2);
         Swal.fire("Oppss!", `${listName} is required`, "error");
-        return
+        return;
       }
 
       // Validate minimum age
       if (this.state.minimumAge > 0) {
-        const currentAge = this.getAge(payload.birthDate)
+        const currentAge = this.getAge(payload.birthDate);
         if (currentAge < this.state.minimumAge) {
-          Swal.fire("Oppss!", `The minimum age for registration is ${this.state.minimumAge} years old`, "error"); 
-          return
+          Swal.fire(
+            "Oppss!",
+            `The minimum age for registration is ${this.state.minimumAge} years old`,
+            "error"
+          );
+          return;
         }
       }
 
@@ -589,9 +668,11 @@ class LoginRegister extends Component {
           if (enableRegisterWithPassword) this.handleMobileLogin();
           else {
             this.setState({ showPage: "mobileSignUp", signUpSuccess: true });
-            if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP('SMSOTP');
-            if (!enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('WhatsappOTP');
-            if (enableSMSOTP && enableWhatsappOTP) this.handleSendOTP('SMSOTP');
+            if (enableSMSOTP && !enableWhatsappOTP)
+              this.handleSendOTP("SMSOTP");
+            if (!enableSMSOTP && enableWhatsappOTP)
+              this.handleSendOTP("WhatsappOTP");
+            if (enableSMSOTP && enableWhatsappOTP) this.handleSendOTP("SMSOTP");
           }
         } catch (error) {
           console.log(error);
@@ -707,7 +788,7 @@ class LoginRegister extends Component {
       }, 1000);
 
       try {
-        let payload = { email: this.state.email };
+        let payload = { email: this.state.email.toLowerCase() };
         let response = await this.props.dispatch(AuthActions.sendOtp(payload));
         response = response.Data;
         // console.log(response)
@@ -741,6 +822,8 @@ class LoginRegister extends Component {
       if (offlineCart !== null) {
         lsStore(config.prefix + "_offlineCart", offlineCart, true);
       }
+      const url = window.location.href.split("?")[0];
+      window.location.replace(url);
       window.location.reload();
     } catch (err) {
       console.log(err);
@@ -764,19 +847,26 @@ class LoginRegister extends Component {
     try {
       let errorPhone = "";
       const fields = this.props.fields;
-      let mandatory = []
-      mandatory = fields.filter(items => {return items.signUpField === true && items.mandatory === true})
-      mandatory.push({fieldName: "name", displayName: "Name"})
-      mandatory.push({fieldName: "phoneNumber", displayName: "Phone Number"})
-      mandatory.push({fieldName: "email", displayName: "Email"})
-      mandatory.push({fieldName: "password", displayName: "Password"})
-
-      const customFields = fields && fields.reduce((acc, field) => {
-        if (!field.signUpField) return { ...acc };
-        return { ...acc, [field.fieldName]: this.state[field.fieldName] || "" };
+      let mandatory = [];
+      mandatory = fields.filter((items) => {
+        return items.signUpField === true && items.mandatory === true;
       });
+      mandatory.push({ fieldName: "name", displayName: "Name" });
+      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
+      mandatory.push({ fieldName: "email", displayName: "Email" });
+      mandatory.push({ fieldName: "password", displayName: "Password" });
 
-      if(customFields){
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) return { ...acc };
+          return {
+            ...acc,
+            [field.fieldName]: this.state[field.fieldName] || "",
+          };
+        });
+
+      if (customFields) {
         delete customFields.displayName;
         delete customFields.fieldName;
         delete customFields.format;
@@ -805,53 +895,81 @@ class LoginRegister extends Component {
         return;
       }
 
-      if(!enableRegisterWithPassword) password = generate([8], { specials: 0, nums: 2, uppers: 3, lowers: 3 })
+      if (!enableRegisterWithPassword)
+        password = generate([8], {
+          specials: 0,
+          nums: 2,
+          uppers: 3,
+          lowers: 3,
+        });
 
       let payload = {
         phoneNumber: phoneNumber,
-        email: payloadResponse.email,
+        email: payloadResponse.email.toLowerCase(),
         password: password,
-        username: payloadResponse.email,
+        username: payloadResponse.email.toLowerCase(),
+        ...(this.state.referralCode && {
+          referralCode: this.state.referralCode,
+        }),
         ...customFields,
       };
 
-      let listName = ""
-      mandatory.forEach(field => {
-        if( !payload[field.fieldName] || (payload[field.fieldName] && (payload[field.fieldName] === "" || payload[field.fieldName] === "Invalid date")) ) {
-          if(this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== 'Invalid date'){
-            payload[field.fieldName] = this.state[field.fieldName]
-            field.check = true
-          } else if(
-            this.state[field.fieldName] && this.state[field.fieldName] !== "" && this.state[field.fieldName] !== "Invalid date" &&
-            field.defaultValue && field.defaultValue !== "-" && field.defaultValue !== ""
-          ){
-            payload[field.fieldName] = field.defaultValue
-            field.check = true
+      let listName = "";
+      mandatory.forEach((field) => {
+        if (
+          !payload[field.fieldName] ||
+          (payload[field.fieldName] &&
+            (payload[field.fieldName] === "" ||
+              payload[field.fieldName] === "Invalid date"))
+        ) {
+          if (
+            this.state[field.fieldName] &&
+            this.state[field.fieldName] !== "" &&
+            this.state[field.fieldName] !== "Invalid date"
+          ) {
+            payload[field.fieldName] = this.state[field.fieldName];
+            field.check = true;
+          } else if (
+            this.state[field.fieldName] &&
+            this.state[field.fieldName] !== "" &&
+            this.state[field.fieldName] !== "Invalid date" &&
+            field.defaultValue &&
+            field.defaultValue !== "-" &&
+            field.defaultValue !== ""
+          ) {
+            payload[field.fieldName] = field.defaultValue;
+            field.check = true;
           } else {
-            listName += field.displayName + ", "
-            field.check = false
+            listName += field.displayName + ", ";
+            field.check = false;
           }
         } else {
-          field.check = true
+          field.check = true;
         }
       });
 
-      mandatory = mandatory.filter(items => { return items.check === false})
-      if(mandatory.length > 0) {
+      mandatory = mandatory.filter((items) => {
+        return items.check === false;
+      });
+      if (mandatory.length > 0) {
         listName = listName.substr(0, listName.length - 2);
         Swal.fire("Oppss!", `${listName} is required`, "error");
-        return
+        return;
       }
 
       // Validate minimum age
       if (this.state.minimumAge > 0) {
-        const currentAge = this.getAge(payload.birthDate)
+        const currentAge = this.getAge(payload.birthDate);
         if (currentAge < this.state.minimumAge) {
-          Swal.fire("Oppss!", `The minimum age for registration is ${this.state.minimumAge} years old`, "error"); 
-          return
+          Swal.fire(
+            "Oppss!",
+            `The minimum age for registration is ${this.state.minimumAge} years old`,
+            "error"
+          );
+          return;
         }
       }
-      
+
       this.setState({ isLoading: true });
       let response = await this.props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
@@ -906,10 +1024,18 @@ class LoginRegister extends Component {
   };
 
   render() {
-    let { 
-      isLoading, userStatus, method, email, phoneNumber, 
-      loginByEmail, loginByMobile, enableSMSOTP, enableWhatsappOTP, 
-      enableOrdering, minimumAge
+    let {
+      isLoading,
+      userStatus,
+      method,
+      email,
+      phoneNumber,
+      loginByEmail,
+      loginByMobile,
+      enableSMSOTP,
+      enableWhatsappOTP,
+      enableOrdering,
+      minimumAge,
     } = this.state;
     return (
       <div>
@@ -983,22 +1109,22 @@ class LoginRegister extends Component {
                 minimumAge={minimumAge}
               ></SignUp>
             ) : (
-                  <Portal
-                    color={this.props.color.background}
-                    method={method}
-                    handleMethodChange={(value) => {
-                      this.setState({ method: value });
-                    }}
-                    handlePhoneCheck={this.handleMobileCheck}
-                    handleChange={this.handleInput}
-                    handleEmailCheck={this.handleEmailCheck}
-                    error={this.state.errorPhone || this.state.errorEmail}
-                    loginByEmail={loginByEmail}
-                    loginByMobile={loginByMobile}
-                    enableOrdering={enableOrdering}
-                    companyInfo={this.props.companyInfo}
-                  ></Portal>
-                )}
+              <Portal
+                color={this.props.color.background}
+                method={method}
+                handleMethodChange={(value) => {
+                  this.setState({ method: value });
+                }}
+                handlePhoneCheck={this.handleMobileCheck}
+                handleChange={this.handleInput}
+                handleEmailCheck={this.handleEmailCheck}
+                error={this.state.errorPhone || this.state.errorEmail}
+                loginByEmail={loginByEmail}
+                loginByMobile={loginByMobile}
+                enableOrdering={enableOrdering}
+                companyInfo={this.props.companyInfo}
+              ></Portal>
+            )}
           </div>
         </div>
       </div>
@@ -1014,9 +1140,12 @@ const mapStateToProps = (state) => ({
   companyInfoError: state[reducer].companyInfo.errors,
   fields: state.customer.fields,
   setting: state.order.setting,
-  color: state.theme.color
+  color: state.theme.color,
+  defaultPhoneNumber: state.customer.defaultPhoneNumber,
+  defaultEmail: state.customer.defaultEmail,
+  referralCode: state.auth.invitationCode,
 });
- 
+
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });

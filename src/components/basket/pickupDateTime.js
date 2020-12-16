@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Button } from "reactstrap";
-import SelectPicupDateTime from './selectPicupDateTime';
+import SelectPicupDateTime from "./selectPicupDateTime";
 import moment from "moment";
 
 class PickupDateTime extends Component {
   render() {
     let props = this.props.data;
     var textTitle = props.orderingMode;
-    if (textTitle === "STOREPICKUP") textTitle = "Pickup"
-    if (textTitle === "STORECHECKOUT") textTitle = "Pickup"
-    if (textTitle === "DELIVERY") textTitle = "Delivery"
-    if (textTitle === "TAKEAWAY") textTitle = "Pickup"
+    if (textTitle === "STOREPICKUP") textTitle = "Pickup";
+    if (textTitle === "STORECHECKOUT") textTitle = "Pickup";
+    if (textTitle === "DELIVERY") textTitle = "Delivery";
+    if (textTitle === "TAKEAWAY") textTitle = "Pickup";
     return (
       <div
         style={{
@@ -32,7 +32,7 @@ class PickupDateTime extends Component {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <div style={{ fontWeight: "bold", fontSize: 14 }}>
@@ -40,8 +40,11 @@ class PickupDateTime extends Component {
           </div>
           <div>
             <Button
-              disabled={this.props.roleBtnClear || !props.btnBasketOrder ? true : false}
-              data-toggle="modal" data-target="#pickup-date-modal"
+              disabled={
+                this.props.roleBtnClear || !props.btnBasketOrder ? true : false
+              }
+              data-toggle="modal"
+              data-target="#pickup-date-modal"
               style={{
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -52,35 +55,41 @@ class PickupDateTime extends Component {
                 justifyContent: "space-between",
               }}
             >
-              <i className="fa fa-clock-o" style={{ fontSize: 20 }} aria-hidden="true" />
+              <i
+                className="fa fa-clock-o"
+                style={{ fontSize: 20 }}
+                aria-hidden="true"
+              />
               <div style={{ fontSize: 12 }}>
-                <div>{`${moment(props.orderActionDate).format('DD MMM YYYY')}`}</div>
-                {
-                  props.orderActionTimeSlot && 
-                  <div>{`${props.orderActionTimeSlot}`}</div>
-                }
+                {props.orderActionTimeSlot ? (
+                  <React.Fragment>
+                    <div>{`${moment(props.orderActionDate).format(
+                      "DD MMM YYYY"
+                    )}`}</div>
+                    <div>{`${props.orderActionTimeSlot}`}</div>
+                  </React.Fragment>
+                ) : (
+                  <div>Select Timeslot</div>
+                )}
               </div>
             </Button>
           </div>
         </div>
-        {
-          !props.orderActionTimeSlot && 
-          <div className="text text-warning-theme small" style={{lineHeight: "17px", textAlign: "justify", marginTop: 5}}> 
-            {
-              props.nextDayIsAvailable ?
-              <div>
-                Your selected {` ${textTitle.toLowerCase()}`} date:{" "}
-                {` ${moment(props.orderActionDate).format("DD MMM YYYY")}`}, 
-                does not have any available {` ${textTitle.toLowerCase()}`} time slot. 
-                Next available {` ${textTitle.toLowerCase()}`} date is 
-                {` ${moment(props.nextDayIsAvailable).format("DD MMM YYYY")}`}.
-              </div> :
-              <div>
+        {!props.orderActionTimeSlot && (
+          <div
+            style={{ lineHeight: "17px", textAlign: "justify", marginTop: 5 }}
+          >
+            {props.nextDayIsAvailable ? (
+              <div className="text text-primary-theme small">
+                Please select a timeslot
+              </div>
+            ) : (
+              <div className="text text-warning-theme small">
                 Timeslot is not available
               </div>
-            }
+            )}
           </div>
-        }
+        )}
       </div>
     );
   }

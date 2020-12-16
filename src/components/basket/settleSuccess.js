@@ -17,7 +17,7 @@ class SettleSuccess extends Component {
       dataBasket: null,
       paymentSuccess: {},
       infoCompany: {},
-      successIcon: ""
+      successIcon: "",
     };
   }
 
@@ -36,13 +36,16 @@ class SettleSuccess extends Component {
     let dataBasket = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
     );
-    let orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
-    
-    console.log(paymentSuccess)
-    console.log(settleSuccess)
+    const { orderingMode } = this.props;
 
-    let settingConfig = this.props.setting.find(items => { return items.settingKey === "PaymentSuccessIcon" })
-    if (settingConfig) this.setState({ successIcon: settingConfig.settingValue });
+    console.log(paymentSuccess);
+    console.log(settleSuccess);
+
+    let settingConfig = this.props.setting.find((items) => {
+      return items.settingKey === "PaymentSuccessIcon";
+    });
+    if (settingConfig)
+      this.setState({ successIcon: settingConfig.settingValue });
 
     this.setState({
       countryCode: infoCompany.countryCode,
@@ -51,12 +54,12 @@ class SettleSuccess extends Component {
       settleSuccess,
       orderingMode,
       paymentSuccess,
-      dataBasket
+      dataBasket,
     });
     setTimeout(() => {
       try {
         document.getElementById("open-modal-status").click();
-      } catch (error) { }
+      } catch (error) {}
     }, 2500);
   };
 
@@ -76,8 +79,18 @@ class SettleSuccess extends Component {
 
   getMonth(value) {
     var mount = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
     return mount[value];
   }
@@ -110,42 +123,51 @@ class SettleSuccess extends Component {
     } else {
       this.props.history.push("/history");
     }
-
   };
 
   getHeadMessage = (message) => {
-    try{
-      message = message.split(',')
-      return message[0]
-    }catch(e){
-      return 'Congratulations'
+    try {
+      message = message.split(",");
+      return message[0];
+    } catch (e) {
+      return "Congratulations";
     }
-  }
+  };
 
   getSubtitleMessage = (message) => {
-    try{
-      message = message.split(',')
-      return message[1]
-    }catch(e){
-      return ''
+    try {
+      message = message.split(",");
+      return message[1];
+    } catch (e) {
+      return "";
     }
-  }
+  };
 
   render() {
-    let { settleSuccess, paymentSuccess, infoCompany, successIcon } = this.state;
-    let colorText = this.props.color.primary || "#c00a27"
-    let secondaryColor = this.props.color.secondary || "#c00a27"
-    let paymentStatus = settleSuccess && settleSuccess.message === "payment failed!" ? false : true
-    let discount = 0
-    if(settleSuccess && settleSuccess.payments){
-      settleSuccess.payments.forEach(items => {
-        if(items.paymentType === "voucher" || items.paymentType === "point"){
-          discount += items.paymentAmount
+    let {
+      settleSuccess,
+      paymentSuccess,
+      infoCompany,
+      successIcon,
+    } = this.state;
+    let colorText = this.props.color.primary || "#c00a27";
+    let secondaryColor = this.props.color.secondary || "#c00a27";
+    let paymentStatus =
+      settleSuccess && settleSuccess.message === "payment failed!"
+        ? false
+        : true;
+    let discount = 0;
+    if (settleSuccess && settleSuccess.payments) {
+      settleSuccess.payments.forEach((items) => {
+        if (items.paymentType === "voucher" || items.paymentType === "point") {
+          discount += items.paymentAmount;
         }
       });
     }
-    
-    let totalAmount = ((settleSuccess && settleSuccess.totalNettAmount) || paymentSuccess.totalPrice)
+
+    let totalAmount =
+      (settleSuccess && settleSuccess.totalNettAmount) ||
+      paymentSuccess.totalPrice;
     return (
       <div>
         <ModalStatus paymentStatus={paymentStatus} />
@@ -167,30 +189,97 @@ class SettleSuccess extends Component {
                       borderRadius: 5,
                     }}
                   >
-                    <h2 className="text-center" style={{color: secondaryColor, fontFamily: 'Arial Black'}}>{this.getHeadMessage(settleSuccess.message || "Please proceed payment at the store")}</h2>
-                    <h4 className="text-center" style={{color: secondaryColor, fontFamily: 'Arial Black'}}>{this.getSubtitleMessage(settleSuccess.message || "Please proceed payment at the store")}</h4>
-                    {
-                      successIcon && successIcon !== "" ?
-                      <img src={successIcon} alt="success logo" style={{height: 200, objectFit: "contain", marginTop: 10, margin: '0 auto', display: 'block'}}/>
-                      : 
-                      <div style={{ display: "flex", justifyContent: "center" }}>
-                        <i className={`fa ${paymentStatus ? "fa-check-circle" : "fa-times-circle"} background-theme`} aria-hidden="true" style={{ 
-                          marginTop: 10, fontSize: 180, color: colorText,
-                        }}/>
+                    <h2
+                      className="text-center"
+                      style={{
+                        color: secondaryColor,
+                        fontFamily: "Arial Black",
+                      }}
+                    >
+                      {this.getHeadMessage(
+                        settleSuccess.message ||
+                          "Please proceed payment at the store"
+                      )}
+                    </h2>
+                    <h4
+                      className="text-center"
+                      style={{
+                        color: secondaryColor,
+                        fontFamily: "Arial Black",
+                      }}
+                    >
+                      {this.getSubtitleMessage(
+                        settleSuccess.message ||
+                          "Please proceed payment at the store"
+                      )}
+                    </h4>
+                    {successIcon && successIcon !== "" ? (
+                      <img
+                        src={successIcon}
+                        alt="success logo"
+                        style={{
+                          height: 200,
+                          objectFit: "contain",
+                          marginTop: 10,
+                          margin: "0 auto",
+                          display: "block",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{ display: "flex", justifyContent: "center" }}
+                      >
+                        <i
+                          className={`fa ${
+                            paymentStatus
+                              ? "fa-check-circle"
+                              : "fa-times-circle"
+                          } background-theme`}
+                          aria-hidden="true"
+                          style={{
+                            marginTop: 10,
+                            fontSize: 180,
+                            color: colorText,
+                          }}
+                        />
                       </div>
-                    }
+                    )}
                     <div
                       style={{
                         marginTop: 30,
                         display: "flex",
                         flexDirection: "row",
-                        justifyContent: 'space-between',
-                        verticalAlign: 'top'
+                        justifyContent: "space-between",
+                        verticalAlign: "top",
                       }}
                     >
-                      <div style={{ display: "flex", flexDirection: 'row', alignItems: "center", marginTop: -15 }}>
-                        <div style={{width: 30, height: 30, borderRadius: 50, border: `1px solid ${colorText}`, justifyContent: 'center'}}>
-                        <i className="fa fa-shopping-cart" aria-hidden="true" style={{ color: colorText, fontSize: 18,  alignSelf: 'center', marginLeft: 4}}/>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginTop: -15,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 50,
+                            border: `1px solid ${colorText}`,
+                            justifyContent: "center",
+                          }}
+                        >
+                          <i
+                            className="fa fa-shopping-cart"
+                            aria-hidden="true"
+                            style={{
+                              color: colorText,
+                              fontSize: 18,
+                              alignSelf: "center",
+                              marginLeft: 4,
+                            }}
+                          />
                         </div>
                         <div style={{ marginLeft: 10 }}>
                           <div
@@ -198,7 +287,7 @@ class SettleSuccess extends Component {
                               color: colorText,
                               fontWeight: "bold",
                               textAlign: "left",
-                              fontSize: 14
+                              fontSize: 14,
                             }}
                           >
                             {infoCompany.companyName}
@@ -208,10 +297,11 @@ class SettleSuccess extends Component {
                               color: colorText,
                               textAlign: "left",
                               marginTop: -8,
-                              fontSize: 12
+                              fontSize: 12,
                             }}
                           >
-                            {settleSuccess.outletName || settleSuccess.outlet.name}
+                            {settleSuccess.outletName ||
+                              settleSuccess.outlet.name}
                           </div>
                         </div>
                       </div>
@@ -224,7 +314,9 @@ class SettleSuccess extends Component {
                             textAlign: "center",
                           }}
                         >
-                          {settleSuccess.payAtPOS ? "Amount to Pay" : "You've Paid"}
+                          {settleSuccess.payAtPOS
+                            ? "Amount to Pay"
+                            : "You've Paid"}
                         </div>
                         <div
                           style={{
@@ -232,7 +324,7 @@ class SettleSuccess extends Component {
                             flexDirection: "row",
                             justifyContent: "center",
                             marginLeft: -20,
-                            marginTop: 10
+                            marginTop: 10,
                           }}
                         >
                           <div
@@ -243,20 +335,24 @@ class SettleSuccess extends Component {
                               marginTop: -20,
                             }}
                           >
-                            {this.props.companyInfo && this.props.companyInfo.currency.code}
+                            {this.props.companyInfo &&
+                              this.props.companyInfo.currency.code}
                           </div>
                           <div>
-                            <div style={{fontSize: 20,fontWeight: "bold"}}>
+                            <div style={{ fontSize: 20, fontWeight: "bold" }}>
                               {this.getCurrency(totalAmount - discount)}
                             </div>
-                            {
-                              discount > 0 &&
-                              <div style={{
-                                textAlign: "right", marginRight: -10, textDecorationLine: "line-through"
-                              }}>
+                            {discount > 0 && (
+                              <div
+                                style={{
+                                  textAlign: "right",
+                                  marginRight: -10,
+                                  textDecorationLine: "line-through",
+                                }}
+                              >
                                 {this.getCurrency(totalAmount)}
                               </div>
-                            }
+                            )}
                           </div>
                         </div>
                       </div>
@@ -285,10 +381,13 @@ class SettleSuccess extends Component {
                         }}
                       >
                         <div>Date & Time</div>
-                        <div>{this.getDate(settleSuccess.createdAt || settleSuccess.createdOn)}</div>
+                        <div>
+                          {this.getDate(
+                            settleSuccess.createdAt || settleSuccess.createdOn
+                          )}
+                        </div>
                       </div>
-                      {
-                        settleSuccess.paymentType &&
+                      {settleSuccess.paymentType && (
                         <div
                           style={{
                             display: "flex",
@@ -299,7 +398,7 @@ class SettleSuccess extends Component {
                           <div>Paid By</div>
                           <div>{settleSuccess.paymentType || "-"}</div>
                         </div>
-                      }
+                      )}
                     </div>
                     <div
                       style={{
@@ -352,6 +451,7 @@ const mapStateToProps = (state) => {
     deliveryProvider: state.order.selectedDeliveryProvider,
     color: state.theme.color,
     setting: state.order.setting,
+    orderingMode: state.order.orderingMode,
   };
 };
 

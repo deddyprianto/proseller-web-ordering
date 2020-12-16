@@ -26,27 +26,34 @@ class ModalProduct extends Component {
         STOREPICKUP: "enableStorePickUp",
         STORECHECKOUT: "enableStoreCheckOut",
         DELIVERY: "enableDelivery",
-      }
+      },
     };
   }
 
   ruleModifierNotPassed = () => {
     try {
-      let selectedItem = this.state.selectedItem
+      let selectedItem = this.state.selectedItem;
       let productModifiers = selectedItem.product.productModifiers;
 
-      if ( selectedItem.quantity === 0 || selectedItem.quantity === undefined ) return false;
+      if (selectedItem.quantity === 0 || selectedItem.quantity === undefined)
+        return false;
 
       for (let i = 0; i < productModifiers.length; i++) {
         let lengthDetail = 0;
-        let modifierDetail = productModifiers[i].modifier.details
+        let modifierDetail = productModifiers[i].modifier.details;
         for (let x = 0; x < modifierDetail.length; x++) {
-          if ( modifierDetail[x].quantity > 0 && modifierDetail[x].quantity !== undefined ) {
-            lengthDetail += modifierDetail[x].quantity; 
+          if (
+            modifierDetail[x].quantity > 0 &&
+            modifierDetail[x].quantity !== undefined
+          ) {
+            lengthDetail += modifierDetail[x].quantity;
           }
         }
         // check rule min max
-        if (productModifiers[i].modifier.min !== 0 || productModifiers[i].modifier.max !== 0) {
+        if (
+          productModifiers[i].modifier.min !== 0 ||
+          productModifiers[i].modifier.max !== 0
+        ) {
           // check min modifier
           if (
             lengthDetail < productModifiers[i].modifier.min &&
@@ -81,7 +88,11 @@ class ModalProduct extends Component {
     if (nextProps.addNew) {
       selectedItem = { ...selectedItem, quantity: 1 };
     }
-    this.setState({ selectedItem, basket: nextProps.basket, disableButton: false });
+    this.setState({
+      selectedItem,
+      basket: nextProps.basket,
+      disableButton: false,
+    });
   }
 
   renderImageProduct = (item) => {
@@ -144,17 +155,20 @@ class ModalProduct extends Component {
     try {
       let { selectedItem } = this.state;
       let minimum = 0;
-      if (this.props.addNew) minimum = 1
-      
+      if (this.props.addNew) minimum = 1;
+
       if (selectedItem.quantity > minimum) {
         selectedItem.quantity -= 1;
-        if(!this.isItemExist(this.state.selectedItem) && selectedItem.quantity === 0) {
-          selectedItem.quantity = 1
+        if (
+          !this.isItemExist(this.state.selectedItem) &&
+          selectedItem.quantity === 0
+        ) {
+          selectedItem.quantity = 1;
         }
 
         this.setState({ selectedItem });
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   increase = () => {
@@ -162,11 +176,11 @@ class ModalProduct extends Component {
       let { selectedItem } = this.state;
       selectedItem.quantity += 1;
       this.setState({ selectedItem });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   processCart = async () => {
-    const orderMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
+    const orderMode = this.props.orderingMode;
     try {
       if (!orderMode) {
         document.getElementById("open-modal-ordering-mode").click();
@@ -183,11 +197,12 @@ class ModalProduct extends Component {
 
           // check name and quantity modifier that hasnt been success passed min & max
           try {
-            let productModifiers = this.state.selectedItem.product.productModifiers;
+            let productModifiers = this.state.selectedItem.product
+              .productModifiers;
             for (let i = 0; i < productModifiers.length; i++) {
               let lengthDetail = 0;
-              let modifierDetail = productModifiers[i].modifier.details
-              for ( let x = 0; x < modifierDetail.length; x++ ) {
+              let modifierDetail = productModifiers[i].modifier.details;
+              for (let x = 0; x < modifierDetail.length; x++) {
                 if (
                   modifierDetail[x].quantity > 0 &&
                   modifierDetail[x].quantity !== undefined
@@ -210,7 +225,7 @@ class ModalProduct extends Component {
                 break;
               }
             }
-          } catch (e) { }
+          } catch (e) {}
 
           if (name !== "Item") {
             let message = { title: "Warning", message: "" };
@@ -239,14 +254,16 @@ class ModalProduct extends Component {
           document.getElementById("detail-product-modal").click();
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   isItemExist = (item) => {
     try {
       const { basket } = this.state;
       if (!isEmptyObject(basket)) {
-        const find = basket.details.find((data) => data.product.id === item.product.id);
+        const find = basket.details.find(
+          (data) => data.product.id === item.product.id
+        );
         if (find !== undefined) return true;
         else return false;
       } else {
@@ -267,9 +284,9 @@ class ModalProduct extends Component {
 
     if (type !== "checkbox") {
       for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-        let modifierData = selectedItem.product.productModifiers[i].modifier
+        let modifierData = selectedItem.product.productModifiers[i].modifier;
         if (modifierData.max === 1) {
-          for ( let j = 0; j < modifierData.details.length; j++ ) {
+          for (let j = 0; j < modifierData.details.length; j++) {
             modifierData.details[j].quantity = 0;
             modifierData.details[j].isSelected = false;
           }
@@ -280,11 +297,17 @@ class ModalProduct extends Component {
     await this.setState({ selectedItem });
 
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-      let modifierDetail = selectedItem.product.productModifiers[i].modifier.details
-      for (let j = 0;j < modifierDetail.length;j++) {
-        if (modifierDetail[j].id === item.id ) {
-          let isSelected = selectedItem.product.productModifiers[i].modifier.details[j].isSelected
-          if ( modifierDetail[j].quantity === undefined || modifierDetail[j].quantity === 0) {
+      let modifierDetail =
+        selectedItem.product.productModifiers[i].modifier.details;
+      for (let j = 0; j < modifierDetail.length; j++) {
+        if (modifierDetail[j].id === item.id) {
+          let isSelected =
+            selectedItem.product.productModifiers[i].modifier.details[j]
+              .isSelected;
+          if (
+            modifierDetail[j].quantity === undefined ||
+            modifierDetail[j].quantity === 0
+          ) {
             modifierDetail[j].quantity = 1;
             modifierDetail[j].isSelected = !isSelected;
             selectedItem.product.productModifiers[i].postToServer = true;
@@ -292,7 +315,8 @@ class ModalProduct extends Component {
             modifierDetail[j].quantity = undefined;
             modifierDetail[j].isSelected = !isSelected;
 
-            if (type === undefined) selectedItem.product.productModifiers[i].postToServer = undefined;
+            if (type === undefined)
+              selectedItem.product.productModifiers[i].postToServer = undefined;
           }
         }
       }
@@ -304,11 +328,12 @@ class ModalProduct extends Component {
     const { selectedItem } = this.state;
 
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-      let modifierDetail = selectedItem.product.productModifiers[i].modifier.details
-      for (let j = 0; j < modifierDetail.length; j++ ) {
-        if ( modifierDetail[j].id === item.id ) {
-          if ( 
-            modifierDetail[j].quantity !== undefined && 
+      let modifierDetail =
+        selectedItem.product.productModifiers[i].modifier.details;
+      for (let j = 0; j < modifierDetail.length; j++) {
+        if (modifierDetail[j].id === item.id) {
+          if (
+            modifierDetail[j].quantity !== undefined &&
             modifierDetail[j].quantity !== 0
           ) {
             return modifierDetail[j].quantity;
@@ -324,13 +349,16 @@ class ModalProduct extends Component {
       <div className="card card-modifier">
         <div style={{ marginLeft: 5, marginRight: 10 }}>
           {item.modifier.details.map((data) => (
-            <div 
+            <div
               className="item-modifier"
               style={{
-                display: "flex", paddingBottom: 15, alignItems: "center"
-            }}>
-              <div 
-                style={{display: "flex", alignItems: "center"}}
+                display: "flex",
+                paddingBottom: 15,
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center" }}
                 className="title-modifier"
                 onClick={() => this.addItemIsYesNo(data)}
               >
@@ -340,7 +368,12 @@ class ModalProduct extends Component {
                   className="scaled-checkbox form-check-input checkbox-modifier"
                   onClick={() => this.addItemIsYesNo(data)}
                 />
-                <div className="subtitle-modifier" style={{lineHeight: "20px", marginRight: 10}}>{item.modifierName}</div>
+                <div
+                  className="subtitle-modifier"
+                  style={{ lineHeight: "20px", marginRight: 10 }}
+                >
+                  {item.modifierName}
+                </div>
               </div>
               <div>{this.getCurrency(data.price)}</div>
             </div>
@@ -371,30 +404,46 @@ class ModalProduct extends Component {
             {item.modifier.details.map((data) => (
               <div
                 className={
-                  data.orderingStatus === "UNAVAILABLE" ? "item-modifier product-unavailable" : "item-modifier"
+                  data.orderingStatus === "UNAVAILABLE"
+                    ? "item-modifier product-unavailable"
+                    : "item-modifier"
                 }
-                style={{display: "flex", alignItems: "center", paddingBottom: 15}}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: 15,
+                }}
               >
-                <div style={{display: "flex", alignItems: "center"}}>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <input
                     type="checkbox"
                     checked={
-                      data.quantity !== undefined && data.quantity !== 0 &&
-                      data.orderingStatus !== "UNAVAILABLE" ? true : false
+                      data.quantity !== undefined &&
+                      data.quantity !== 0 &&
+                      data.orderingStatus !== "UNAVAILABLE"
+                        ? true
+                        : false
                     }
                     className="scaled-checkbox form-check-input checkbox-modifier"
                     onClick={() => this.addItemIsYesNo(data, "checkbox")}
                   />
-                  <div className="subtitle-modifier" style={{lineHeight: "20px", marginRight: 10}}>
+                  <div
+                    className="subtitle-modifier"
+                    style={{ lineHeight: "20px", marginRight: 10 }}
+                  >
                     <span className="color">
-                      {data.quantity !== undefined && data.quantity !== 0 ? `${data.quantity}x ` : null}
+                      {data.quantity !== undefined && data.quantity !== 0
+                        ? `${data.quantity}x `
+                        : null}
                     </span>
                     <span onClick={() => this.addItemIsYesNo(data, "checkbox")}>
                       {data.name}
                     </span>
                     {data.quantity !== undefined && data.quantity !== 0 ? (
                       <span
-                        onClick={() => this.setState({ selectedModifier: data })}
+                        onClick={() =>
+                          this.setState({ selectedModifier: data })
+                        }
                         data-toggle="modal"
                         data-target="#qty-modifier"
                         className="color"
@@ -405,11 +454,11 @@ class ModalProduct extends Component {
                     ) : null}
                   </div>
                 </div>
-                {
-                  data.orderingStatus === "UNAVAILABLE" ?  
-                  <div>UNAVAILABLE</div> : 
+                {data.orderingStatus === "UNAVAILABLE" ? (
+                  <div>UNAVAILABLE</div>
+                ) : (
                   <div>{this.getCurrency(data.price)}</div>
-                }
+                )}
               </div>
             ))}
           </div>
@@ -457,7 +506,7 @@ class ModalProduct extends Component {
 
   toggleModifier = async (i) => {
     let { selectedItem } = this.state;
-    let modifier = selectedItem.product.productModifiers[i].modifier
+    let modifier = selectedItem.product.productModifiers[i].modifier;
     selectedItem.product.productModifiers[i].modifier.show = !modifier.show;
     await this.setState({ selectedItem });
   };
@@ -483,12 +532,18 @@ class ModalProduct extends Component {
             {item.modifier.details.map((data) => (
               <div
                 className={
-                  data.orderingStatus === "UNAVAILABLE" ? "item-modifier product-unavailable" : "item-modifier"
+                  data.orderingStatus === "UNAVAILABLE"
+                    ? "item-modifier product-unavailable"
+                    : "item-modifier"
                 }
-                style={{display: "flex", alignItems: "center", paddingBottom: 15}}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: 15,
+                }}
               >
                 <div
-                  style={{display: "flex", alignItems: "center"}}
+                  style={{ display: "flex", alignItems: "center" }}
                   className="title-modifier"
                   onClick={() => this.addItemIsYesNo(data)}
                 >
@@ -499,13 +554,18 @@ class ModalProduct extends Component {
                     onClick={() => this.addItemIsYesNo(data)}
                   />
 
-                  <div className="subtitle-modifier" style={{lineHeight: "20px", marginRight: 10}}>{data.name}</div>
+                  <div
+                    className="subtitle-modifier"
+                    style={{ lineHeight: "20px", marginRight: 10 }}
+                  >
+                    {data.name}
+                  </div>
                 </div>
-                {
-                  data.orderingStatus === "UNAVAILABLE" ? 
-                  <div>UNAVAILABLE</div> :
+                {data.orderingStatus === "UNAVAILABLE" ? (
+                  <div>UNAVAILABLE</div>
+                ) : (
                   <div>{this.getCurrency(data.price)}</div>
-                }
+                )}
               </div>
             ))}
           </div>
@@ -514,12 +574,22 @@ class ModalProduct extends Component {
     );
   };
 
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('close-product-modal').click()
+    }catch(e) { }
+
+    try {
+      document.getElementById('dismiss-ordering-mode').click()
+    }catch(e) { }
+  }
+
   detailProduct = () => {
     let { disableButton, selectedItem } = this.state;
     let { defaultOutlet, data } = this.props;
-    
+
     if (data) defaultOutlet = data.storeDetail;
-    
+
     return (
       <div
         className="modal-content"
@@ -548,7 +618,7 @@ class ModalProduct extends Component {
               height: 35,
             }}
           >
-            <i className="fa fa-times text-btn-theme"></i>
+            <i id="close-product-modal" className="fa fa-times text-btn-theme"></i>
           </button>
         </div>
         <div className="modal-body modal-body-product">
@@ -557,9 +627,10 @@ class ModalProduct extends Component {
               <div className="col-md-5 col-sm-12" style={{ marginBottom: 15 }}>
                 <center>
                   <img
-                    style={{borderRadius: 5}}
+                    style={{ borderRadius: 5 }}
                     className="detail-image attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1"
-                    src={this.renderImageProduct(selectedItem)} alt="product"
+                    src={this.renderImageProduct(selectedItem)}
+                    alt="product"
                   />
                 </center>
               </div>
@@ -645,7 +716,9 @@ class ModalProduct extends Component {
               className="btn btn-increase"
               onClick={this.decrease}
             >
-              <b  className="text-btn-theme" style={{ fontSize: 20 }}>-</b>
+              <b className="text-btn-theme" style={{ fontSize: 20 }}>
+                -
+              </b>
             </button>
             <b
               className="color"
@@ -664,7 +737,9 @@ class ModalProduct extends Component {
               className="btn btn-increase"
               onClick={this.increase}
             >
-              <b  className="text-btn-theme" style={{ fontSize: 20 }}>+</b>
+              <b className="text-btn-theme" style={{ fontSize: 20 }}>
+                +
+              </b>
             </button>
           </div>
           <div style={{ width: "100%", marginLeft: 10 }}>
@@ -675,34 +750,38 @@ class ModalProduct extends Component {
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b className="text-btn-theme">{`${selectedItem.quantity === 0 ? "Remove" : "Update"
-                    } ${this.props.companyInfo &&
+                  <b className="text-btn-theme">{`${
+                    selectedItem.quantity === 0 ? "Remove" : "Update"
+                  } ${
+                    this.props.companyInfo &&
                     this.props.companyInfo.currency.code
-                    } ${this.calculateTotal()}`}</b>
+                  } ${this.calculateTotal()}`}</b>
                 </button>
               ) : (
-                  <button
-                    disabled={disableButton}
-                    className="btn btn-block btn-footer"
-                    onClick={this.processCart}
-                  >
-                    <b className="text-btn-theme">
-                      Add{" "}
-                      {`${this.props.companyInfo &&
-                        this.props.companyInfo.currency.code
-                        } ${this.calculateTotal()}`}
-                    </b>
-                  </button>
-                )
-            ) : (
                 <button
+                  id="add-product-modal"
                   disabled={disableButton}
                   className="btn btn-block btn-footer"
                   onClick={this.processCart}
                 >
-                  <b className="text-btn-theme">Loading...</b>
+                  <b className="text-btn-theme">
+                    Add{" "}
+                    {`${
+                      this.props.companyInfo &&
+                      this.props.companyInfo.currency.code
+                    } ${this.calculateTotal()}`}
+                  </b>
                 </button>
-              )}
+              )
+            ) : (
+              <button
+                disabled={disableButton}
+                className="btn btn-block btn-footer"
+                onClick={this.processCart}
+              >
+                <b className="text-btn-theme">Loading...</b>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -710,21 +789,29 @@ class ModalProduct extends Component {
   };
 
   setOrderingMode = (mode) => {
-    localStorage.setItem(`${config.prefix}_ordering_mode`, mode);
+    this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
     try {
       document.getElementById("dismiss-ordering-mode").click();
-    } catch (error) { }
+    } catch (error) {}
+
+    try {
+      document.getElementById("add-product-modal").click();
+    } catch (error) {}
   };
 
   modalOrderingMode = () => {
     let { defaultOutlet, setting } = this.props;
-    let { orderingModeStatus } = this.state
-    let allowedOrderingMode = setting.find(items => { return items.settingKey === "AllowedOrderingMode" })
+    let { orderingModeStatus } = this.state;
+    let allowedOrderingMode = setting.find((items) => {
+      return items.settingKey === "AllowedOrderingMode";
+    });
     if (allowedOrderingMode) {
-      allowedOrderingMode = allowedOrderingMode.settingValue
+      allowedOrderingMode = allowedOrderingMode.settingValue;
       for (let key in orderingModeStatus) {
-        let check = allowedOrderingMode.find(mode => {return mode === key})
-        if (!check) defaultOutlet[orderingModeStatus[key]] = false
+        let check = allowedOrderingMode.find((mode) => {
+          return mode === key;
+        });
+        if (!check) defaultOutlet[orderingModeStatus[key]] = false;
       }
     }
 
@@ -753,27 +840,40 @@ class ModalProduct extends Component {
             </div>
             <div className="modal-body">
               <div className="col-md-12">
-                <div style={{ justifyContent: "center" }} >
-                  {
-                    defaultOutlet.enableDineIn === true && 
-                    this.viewCartOrderingMode("DINEIN", defaultOutlet.orderValidation.dineIn, "fa-cutlery", defaultOutlet.dineInName)
-                  }
-                  {
-                    defaultOutlet.enableTakeAway === true && 
-                    this.viewCartOrderingMode("TAKEAWAY", defaultOutlet.orderValidation.takeAway, "fa-shopping-basket", defaultOutlet.takeAwayName)
-                  }
-                  {
-                    defaultOutlet.enableStorePickUp === true && 
-                    this.viewCartOrderingMode("STOREPICKUP", defaultOutlet.orderValidation.storepickup, "fa-shopping-basket")
-                  }
-                  {
-                    defaultOutlet.enableStoreCheckOut === true && 
-                    this.viewCartOrderingMode("STORECHECKOUT", defaultOutlet.orderValidation.storecheckout, "fa-shopping-basket")
-                  }
-                  {
-                    defaultOutlet.enableDelivery === true && 
-                    this.viewCartOrderingMode("DELIVERY", defaultOutlet.orderValidation.delivery, "fa-car", defaultOutlet.deliveryName)
-                  }
+                <div style={{ justifyContent: "center" }}>
+                  {defaultOutlet.enableDineIn === true &&
+                    this.viewCartOrderingMode(
+                      "DINEIN",
+                      defaultOutlet.orderValidation.dineIn,
+                      "fa-cutlery",
+                      defaultOutlet.dineInName
+                    )}
+                  {defaultOutlet.enableTakeAway === true &&
+                    this.viewCartOrderingMode(
+                      "TAKEAWAY",
+                      defaultOutlet.orderValidation.takeAway,
+                      "fa-shopping-basket",
+                      defaultOutlet.takeAwayName
+                    )}
+                  {defaultOutlet.enableStorePickUp === true &&
+                    this.viewCartOrderingMode(
+                      "STOREPICKUP",
+                      defaultOutlet.orderValidation.storepickup,
+                      "fa-shopping-basket"
+                    )}
+                  {defaultOutlet.enableStoreCheckOut === true &&
+                    this.viewCartOrderingMode(
+                      "STORECHECKOUT",
+                      defaultOutlet.orderValidation.storecheckout,
+                      "fa-shopping-basket"
+                    )}
+                  {defaultOutlet.enableDelivery === true &&
+                    this.viewCartOrderingMode(
+                      "DELIVERY",
+                      defaultOutlet.orderValidation.delivery,
+                      "fa-car",
+                      defaultOutlet.deliveryName
+                    )}
                 </div>
                 <p
                   id="dismiss-ordering-mode"
@@ -799,88 +899,124 @@ class ModalProduct extends Component {
   checkOrderValidation(validation, type, nickname) {
     if (type === "titleAmount") {
       if (validation.minAmount === 0 && validation.maxAmount > 0) {
-        return `Maximum amount for ${nickname.toLowerCase()}`
+        return `Maximum amount for ${nickname.toLowerCase()}`;
       } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
-        return `Minimum amount for ${nickname.toLowerCase()}`
+        return `Minimum amount for ${nickname.toLowerCase()}`;
       } else {
-        return `Range amount for ${nickname.toLowerCase()}`
+        return `Range amount for ${nickname.toLowerCase()}`;
       }
     } else if (type === "descAmount") {
       if (validation.minAmount === 0 && validation.maxAmount > 0) {
-        return this.getCurrency(validation.maxAmount)
+        return this.getCurrency(validation.maxAmount);
       } else if (validation.minAmount > 0 && validation.maxAmount === 0) {
-        return this.getCurrency(validation.minAmount)
+        return this.getCurrency(validation.minAmount);
       } else {
-        return `${this.getCurrency(validation.minAmount)} to ${this.getCurrency(validation.maxAmount)}`
+        return `${this.getCurrency(validation.minAmount)} to ${this.getCurrency(
+          validation.maxAmount
+        )}`;
       }
     } else if (type === "titleQty") {
       if (validation.minQty === 0 && validation.maxQty > 0) {
-        return `Maximum item quantity for ${nickname.toLowerCase()}`
+        return `Maximum item quantity for ${nickname.toLowerCase()}`;
       } else if (validation.minQty > 0 && validation.maxQty === 0) {
-        return `Minimum item quantity for ${nickname.toLowerCase()}`
+        return `Minimum item quantity for ${nickname.toLowerCase()}`;
       } else {
-        return `Range item quantity for ${nickname.toLowerCase()}`
+        return `Range item quantity for ${nickname.toLowerCase()}`;
       }
     } else if (type === "descQty") {
       if (validation.minQty === 0 && validation.maxQty > 0) {
-        return `${validation.maxQty} items`
+        return `${validation.maxQty} items`;
       } else if (validation.minQty > 0 && validation.maxQty === 0) {
-        return `${validation.minQty} items`
+        return `${validation.minQty} items`;
       } else {
-        return `${validation.minQty} to ${validation.maxQty} items`
+        return `${validation.minQty} to ${validation.maxQty} items`;
       }
     }
   }
 
-  viewCartOrderingMode(name, orderValidation, icon, nickname){
-    orderValidation.minQty = orderValidation.minQty || 0
-    orderValidation.maxQty = orderValidation.maxQty || 0
-    orderValidation.minAmount = orderValidation.minAmount || 0
-    orderValidation.maxAmount = orderValidation.maxAmount || 0
+  viewCartOrderingMode(name, orderValidation, icon, nickname) {
+    orderValidation.minQty = orderValidation.minQty || 0;
+    orderValidation.maxQty = orderValidation.maxQty || 0;
+    orderValidation.minAmount = orderValidation.minAmount || 0;
+    orderValidation.maxAmount = orderValidation.maxAmount || 0;
 
-    if(!nickname || (nickname && nickname === "")) nickname = false
-    
+    if (!nickname || (nickname && nickname === "")) nickname = false;
+
     return (
       <div
         className="order-mode"
         onClick={() => this.setOrderingMode(name)}
         style={{
-          height: (orderValidation.minAmount ? 80 : 50), alignItems: "center", justifyContent: "center",
-          padding: 5
+          height: orderValidation.minAmount ? 80 : 50,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 5,
         }}
       >
-        <div style={{ display: "flex", flexDirection: "row", marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-          <i className={`fa ${icon} color icon-order`} style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}></i>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            marginTop: 5,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <i
+            className={`fa ${icon} color icon-order`}
+            style={{ marginTop: 0, marginRight: 5, fontSize: 20 }}
+          ></i>
           <div className="color" style={{ fontWeight: "bold", fontSize: 14 }}>
             {nickname || name}
           </div>
         </div>
-        {
-          orderValidation &&
+        {orderValidation && (
           <div style={{ fontSize: 12, marginTop: -5 }}>
-            <div style={{ height: 1, width: "100%", backgroundColor: "#CDCDCD", marginTop: 5, marginBottom: 10 }} />
-            {orderValidation.minAmount ||
-              orderValidation.maxAmount ? (
-                <div style={{ display: "flex", marginTop: -10 }}>
-                  <strong style={{ marginRight: 5 }}>
-                    {this.checkOrderValidation(orderValidation, "titleAmount", nickname || name)}
-                  </strong>
-                  {this.checkOrderValidation(orderValidation, "descAmount", nickname || name)}
-                </div>
-              ) : null}
-            {orderValidation.minQty ||
-              orderValidation.maxQty ? (
-                <div style={{ display: "flex", marginTop: -10 }}>
-                  <strong style={{ marginRight: 5 }}>
-                    {this.checkOrderValidation(orderValidation, "titleQty", nickname || name)}
-                  </strong>
-                  {this.checkOrderValidation(orderValidation, "descQty", nickname || name)}
-                </div>
-              ) : null}
+            <div
+              style={{
+                height: 1,
+                width: "100%",
+                backgroundColor: "#CDCDCD",
+                marginTop: 5,
+                marginBottom: 10,
+              }}
+            />
+            {orderValidation.minAmount || orderValidation.maxAmount ? (
+              <div style={{ display: "flex", marginTop: -10 }}>
+                <strong style={{ marginRight: 5 }}>
+                  {this.checkOrderValidation(
+                    orderValidation,
+                    "titleAmount",
+                    nickname || name
+                  )}
+                </strong>
+                {this.checkOrderValidation(
+                  orderValidation,
+                  "descAmount",
+                  nickname || name
+                )}
+              </div>
+            ) : null}
+            {orderValidation.minQty || orderValidation.maxQty ? (
+              <div style={{ display: "flex", marginTop: -10 }}>
+                <strong style={{ marginRight: 5 }}>
+                  {this.checkOrderValidation(
+                    orderValidation,
+                    "titleQty",
+                    nickname || name
+                  )}
+                </strong>
+                {this.checkOrderValidation(
+                  orderValidation,
+                  "descQty",
+                  nickname || name
+                )}
+              </div>
+            ) : null}
           </div>
-        }
+        )}
       </div>
-    )
+    );
   }
 
   increaseModifier = () => {
@@ -943,7 +1079,9 @@ class ModalProduct extends Component {
                     style={{ marginLeft: -10, minWidth: 40 }}
                     onClick={this.decreaseModifier}
                   >
-                    <b  className="text-btn-theme" style={{ fontSize: 20 }}>-</b>
+                    <b className="text-btn-theme" style={{ fontSize: 20 }}>
+                      -
+                    </b>
                   </button>
                   <div>
                     <b style={{ fontSize: 20 }}>{selectedModifier.quantity}</b>
@@ -953,7 +1091,9 @@ class ModalProduct extends Component {
                     style={{ marginRight: -10, minWidth: 40 }}
                     onClick={this.increaseModifier}
                   >
-                    <b className="text-btn-theme" style={{ fontSize: 20 }}>+</b>
+                    <b className="text-btn-theme" style={{ fontSize: 20 }}>
+                      +
+                    </b>
                   </button>
                 </div>
                 {selectedModifier.quantity === 0 ? (
@@ -971,20 +1111,20 @@ class ModalProduct extends Component {
                     Remove
                   </button>
                 ) : (
-                    <button
-                      id="dismiss-ordering-mode"
-                      data-dismiss="modal"
-                      className="btn btn-block btn-footer text-btn-theme"
-                      style={{
-                        marginTop: 30,
-                        marginBottom: 20,
-                        height: 40,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      OK
-                    </button>
-                  )}
+                  <button
+                    id="dismiss-ordering-mode"
+                    data-dismiss="modal"
+                    className="btn btn-block btn-footer text-btn-theme"
+                    style={{
+                      marginTop: 30,
+                      marginBottom: 20,
+                      height: 40,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    OK
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -1081,6 +1221,7 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
     setting: state.order.setting,
+    orderingMode: state.order.orderingMode,
   };
 };
 

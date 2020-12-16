@@ -32,6 +32,8 @@ export default function reducer(state = defaultState, action) {
       return Object.assign({}, state, {
         payload: action.data,
       });
+    case "SET_REFERRAL_CODE":
+      return {...state, invitationCode: action.data}
     default:
       return state;
   }

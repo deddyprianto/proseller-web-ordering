@@ -12,6 +12,7 @@ import { MasterdataAction } from "./redux/actions/MaterdataAction";
 import { OrderAction } from "./redux/actions/OrderAction";
 import { CustomerAction } from "./redux/actions/CustomerAction";
 import { PaymentAction } from "./redux/actions/PaymentAction";
+import { ReferralAction } from "./redux/actions/ReferralAction";
 
 import locale_en from "react-intl/locale-data/en";
 import locale_id from "react-intl/locale-data/id";
@@ -52,10 +53,10 @@ const App = (props) => {
     deliveryProviders,
     deliveryAddress,
     setting,
-    defaultOutlet
+    defaultOutlet,
   } = props;
 
-  const [enableOrdering, setEnableOrdering] = useState(false)
+  const [enableOrdering, setEnableOrdering] = useState(false);
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -65,8 +66,11 @@ const App = (props) => {
     const newColor = g | (b << 8) | (r << 16);
     return newColor.toString(16);
   };
-  
-  const hoverColor = `#${lightenDarkenColor( (props.theme.color.primary || "#c00a27").substring(1), -10 )}`;
+
+  const hoverColor = `#${lightenDarkenColor(
+    (props.theme.color.primary || "#c00a27").substring(1),
+    -10
+  )}`;
 
   sheet.update({ theme: { ...props.theme, hoverColor } });
 
@@ -85,71 +89,107 @@ const App = (props) => {
   };
 
   const checkUser = async () => {
-    window.onhashchange = function() {
+    window.onhashchange = function () {
       try {
         // get modals
-        const modals = document.getElementsByClassName('modal');
+        const modals = document.getElementsByClassName("modal");
 
         // get modal backdrops
-        for(let i=0; i<modals.length; i++) {
-          modals[i].classList.remove('show');
-          modals[i].setAttribute('aria-hidden', 'true');
-          modals[i].setAttribute('style', 'display: none');
+        for (let i = 0; i < modals.length; i++) {
+          modals[i].classList.remove("show");
+          modals[i].setAttribute("aria-hidden", "true");
+          modals[i].setAttribute("style", "display: none");
         }
 
         // get modal backdrops
-        const modalsBackdrops = document.getElementsByClassName('modal-backdrop');
+        const modalsBackdrops = document.getElementsByClassName(
+          "modal-backdrop"
+        );
 
         // remove every modal backdrop
-        for(let i=0; i<modalsBackdrops.length; i++) {
+        for (let i = 0; i < modalsBackdrops.length; i++) {
           document.body.removeChild(modalsBackdrops[i]);
         }
-      } catch (error) { }
-    }
+      } catch (error) {}
+    };
 
     await props.dispatch(OrderAction.getSettingOrdering());
-    if(window.location.hash.split("#")[1] === "/signin" && !isLoggedIn){
-      try {
-        document.getElementById("login-register-btn").click();
-      } catch (error) {}
-    }
 
     try {
-      let position = await props.dispatch(OutletAction.getCoordinates())
-      let location = { latitude: position.coords.latitude, longitude: position.coords.longitude }
-      localStorage.setItem(`${config.prefix}_locationCustomer`, JSON.stringify(location));
+      let position = await props.dispatch(OutletAction.getCoordinates());
+      let location = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      localStorage.setItem(
+        `${config.prefix}_locationCustomer`,
+        JSON.stringify(location)
+      );
     } catch (error) {
-      console.log("Get location false")
+      console.log("Get location false");
     }
 
-    if (!isLoggedIn || !account) localStorage.removeItem(`${config.prefix}_account`);
+    if (!isLoggedIn || !account)
+      localStorage.removeItem(`${config.prefix}_account`);
     if (account) {
       await props.dispatch(PaymentAction.getPaymentCard());
-      await handleRelogin(account)
-      setInterval(async () => { await handleRelogin(account) }, 1000);
+      await handleRelogin(account);
+      setInterval(async () => {
+        await handleRelogin(account);
+      }, 1000);
     }
 
     let param = getUrlParameters();
     if (param && param["input"]) {
       param = getUrlParameters(base64.decode(decodeURI(param["input"])));
-      localStorage.setItem(`${config.prefix}_scanTable`, JSON.stringify(encryptor.encrypt(param)));
-      console.log("input url", param)
+      localStorage.setItem(
+        `${config.prefix}_scanTable`,
+        JSON.stringify(encryptor.encrypt(param))
+      );
+      console.log("input url", param);
 
-      if (param.orderingMode) localStorage.setItem(`${config.prefix}_ordering_mode`, param.orderingMode);
-      defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true));
-      
-      if (defaultOutlet && defaultOutlet.id) defaultOutlet = config.getValidation(defaultOutlet)
+      if (param.orderingMode)
+        localStorage.setItem(
+          `${config.prefix}_ordering_mode`,
+          param.orderingMode
+        );
+      defaultOutlet = await props.dispatch(
+        MasterdataAction.getOutletByID(param["outlet"].split("::")[1], true)
+      );
+
+      if (defaultOutlet && defaultOutlet.id)
+        defaultOutlet = config.getValidation(defaultOutlet);
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
-      if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)){
+      if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
         defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
+      }
+    }
+
+    if (param && param["referral"] && !isLoggedIn && !account) {
+      const referralCode = param["referral"].split("#")[0];
+      console.log("I have referral!", referralCode);
+      const isAvailable = await props.dispatch(
+        ReferralAction.getReferralById(referralCode)
+      );
+      if (isAvailable) {
+        props.dispatch(AuthActions.setInvitationCode(referralCode));
+        setTimeout(() => {
+          try {
+            document.getElementById("login-register-btn").click();
+          } catch (error) {
+            console.log(error);
+          }
+        }, 600);
       }
     }
 
     if (window.location.hash.split("#")[1] !== "/") {
       if (!param && defaultOutlet && defaultOutlet.id && enableOrdering) {
-        defaultOutlet = await props.dispatch(MasterdataAction.getOutletByID(defaultOutlet.id,true));
+        defaultOutlet = await props.dispatch(
+          MasterdataAction.getOutletByID(defaultOutlet.id, true)
+        );
       }
       props.dispatch(OrderAction.getCart());
     }
@@ -164,15 +204,17 @@ const App = (props) => {
     if (moment(timeNow).isSameOrAfter(timeExp)) {
       await props.dispatch(AuthActions.refreshToken());
     }
-  }
-  
+  };
+
   useEffect(() => {
     if (setting) {
-      let enableOrdering = setting.find(items => { return items.settingKey === "EnableOrdering" })
+      let enableOrdering = setting.find((items) => {
+        return items.settingKey === "EnableOrdering";
+      });
       if (enableOrdering) {
-        setEnableOrdering(enableOrdering.settingValue)
+        setEnableOrdering(enableOrdering.settingValue);
       }
-      
+
       // let outletSelection = setting.find(items => { return items.settingKey === "OutletSelection" })
       // console.log(outletSelection)
     }
@@ -205,6 +247,8 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo,
     setting: state.order.setting,
+    defaultEmail: state.customer.defaultEmail,
+    defaultPhoneNumber: state.customer.defaultPhoneNumber,
   };
 };
 

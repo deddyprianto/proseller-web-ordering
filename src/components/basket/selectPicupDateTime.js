@@ -1,18 +1,38 @@
 import React, { Component } from "react";
 import { Button } from "reactstrap";
-import cx from "classnames";
 import moment from "moment";
-import styles from "../profile/CustomFields/styles.module.css";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 export default class SelectPicupDateTime extends Component {
   state = {
-    orderActionDate: this.props.data.orderActionDate,
-    orderActionTime: this.props.data.orderActionTime,
+    selectedDate: this.props.data.orderActionDate,
+    initialOrderActionDate: this.props.data.orderActionDate,
+    initialOrderActionTime: this.props.data.orderActionTime,
+    initialOrderActionTimeSlot: this.props.data.orderActionTimeSlot,
     showModeDates:
       this.props.data.timeSlot && this.props.data.timeSlot.length > 0
         ? false
         : true,
   };
+
+  componentWillUnmount = () => {
+    try {
+      document.getElementById('btn-close-timeslot').click()
+    }catch(e) { }
+  }
+
+  componentDidMount() {
+    const firstAvailableTimeSlot = this.props.data.orderingTimeSlot.find(
+      (slot) => slot.isAvailable
+    );
+    console.log(firstAvailableTimeSlot);
+    if (firstAvailableTimeSlot && !this.props.data.orderActionTimeSlot) {
+      this.setState({
+        currentTimeSlot: firstAvailableTimeSlot.time,
+      });
+    }
+  }
 
   render() {
     let props = this.props.data;
@@ -23,7 +43,13 @@ export default class SelectPicupDateTime extends Component {
 
     let date = moment().format("YYYY-MM-DD");
     let textTitle = "Pickup";
-    const timeSlots = [...props.timeSlot.slice(0, 5)];
+    const selectedDateIndex = props.timeSlot.indexOf(
+      props.timeSlot.find((slot) => slot.date === this.state.selectedDate)
+    );
+
+    const timeSlots = [
+      ...props.timeSlot.slice(selectedDateIndex, selectedDateIndex + 5),
+    ];
     if (props.orderingMode === "DELIVERY") textTitle = "Delivery";
 
     return (
@@ -53,6 +79,7 @@ export default class SelectPicupDateTime extends Component {
                   {textTitle} Date & Time
                 </h5>
                 <button
+                  id="btn-close-timeslot"
                   type="button"
                   className="close"
                   data-dismiss="modal"
@@ -60,11 +87,15 @@ export default class SelectPicupDateTime extends Component {
                   onClick={() => {
                     this.props.handleSetState(
                       "orderActionDate",
-                      this.state.orderActionDate
+                      this.state.initialOrderActionDate
                     );
                     this.props.handleSetState(
                       "orderActionTime",
-                      this.state.orderActionTime
+                      this.state.initialOrderActionTime
+                    );
+                    this.props.handleSetState(
+                      "orderActionTimeSlot",
+                      this.state.initialOrderActionTimeSlot
                     );
                   }}
                   style={{
@@ -110,27 +141,53 @@ export default class SelectPicupDateTime extends Component {
                           cursor: "pointer",
                         }}
                       >
-                        <i className="fa fa-calendar" aria-hidden="true" /> More
+                        <i className="fa fa-calendar" aria-hidden="true" />{" "}
+                        {this.state.showModeDates ? "Less " : "More "}
                         Dates
                       </div>
                     </div>
                     {this.state.showModeDates ? (
-                      <input
-                        type="date"
-                        min={date}
-                        max={dateMax}
-                        value={props.orderActionDate}
-                        className={cx(styles.input, {
-                          [styles.rounded]: false,
-                        })}
-                        style={{ backgroundColor: "#FFF", width: "100%" }}
-                        onChange={(e) =>
-                          this.props.handleSetState(
-                            "orderActionDate",
-                            moment(e.target.value).format("YYYY-MM-DD")
-                          )
-                        }
-                      />
+                      <div>
+                        <Calendar
+                          className="calender"
+                          onChange={(value) => {
+                            this.props.handleSetState(
+                              "orderActionDate",
+                              moment(value).format("YYYY-MM-DD")
+                            );
+                            const defaultTimeSlot = props.timeSlot.find(
+                              (slot) =>
+                                slot.date === moment(value).format("YYYY-MM-DD")
+                            );
+                            if (
+                              defaultTimeSlot &&
+                              defaultTimeSlot.timeSlot.length > 0
+                            ) {
+                              this.props.handleSetState(
+                                "orderActionTimeSlot",
+                                defaultTimeSlot.timeSlot.find(
+                                  (slot) => slot.isAvailable
+                                ).time
+                              );
+                              this.props.handleSetState(
+                                "orderActionTime",
+                                defaultTimeSlot.timeSlot
+                                  .find((slot) => slot.isAvailable)
+                                  .time.split(" - ")[0]
+                              );
+                              this.setState({
+                                showModeDates: false,
+                                selectedDate: moment(value).format(
+                                  "YYYY-MM-DD"
+                                ),
+                              });
+                            }
+                          }}
+                          maxDate={new Date(dateMax)}
+                          minDate={new Date(date)}
+                          value={new Date(props.orderActionDate)}
+                        />
+                      </div>
                     ) : (
                       <div>
                         {props.timeSlot && (
@@ -148,12 +205,34 @@ export default class SelectPicupDateTime extends Component {
                                     ? "select-gender"
                                     : "un-select-gender"
                                 }
-                                onClick={() =>
+                                onClick={() => {
                                   this.props.handleSetState(
                                     "orderActionDate",
                                     moment(slot.date).format("YYYY-MM-DD")
-                                  )
-                                }
+                                  );
+                                  const defaultTimeSlot = props.timeSlot.find(
+                                    (defaultSlot) =>
+                                      defaultSlot.date ===
+                                      moment(slot.date).format("YYYY-MM-DD")
+                                  );
+                                  if (
+                                    defaultTimeSlot &&
+                                    defaultTimeSlot.timeSlot.length > 0
+                                  ) {
+                                    this.props.handleSetState(
+                                      "orderActionTimeSlot",
+                                      defaultTimeSlot.timeSlot.find(
+                                        (slot) => slot.isAvailable
+                                      ).time
+                                    );
+                                    this.props.handleSetState(
+                                      "orderActionTime",
+                                      defaultTimeSlot.timeSlot
+                                        .find((slot) => slot.isAvailable)
+                                        .time.split(" - ")[0]
+                                    );
+                                  }
+                                }}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -270,6 +349,34 @@ export default class SelectPicupDateTime extends Component {
                         "orderActionTime",
                         `${props.orderActionTimeSlot.split(" - ")[0]}`
                       );
+                    this.setState({
+                      initialOrderActionDate: this.props.data.orderActionDate,
+                      initialOrderActionTime: this.props.data.orderActionTime,
+                      initialOrderActionTimeSlot: this.props.data
+                        .orderActionTimeSlot,
+                    });
+                    if (this.state.currentTimeSlot) {
+                      this.props.handleSetState(
+                        "orderActionDate",
+                        `${this.state.initialOrderActionDate}`
+                      );
+                      this.props.handleSetState(
+                        "orderActionTime",
+                        `${this.state.currentTimeSlot.split(" - ")[0]}`
+                      );
+                      this.props.handleSetState(
+                        "orderActionTimeSlot",
+                        `${this.state.currentTimeSlot}`
+                      );
+                      this.setState({
+                        initialOrderActionDate: this.props.data.orderActionDate,
+                        initialOrderActionTime: this.state.currentTimeSlot.split(
+                          " - "
+                        )[0],
+                        initialOrderActionTimeSlot: this.state.currentTimeSlot,
+                        currentTimeSlot: null,
+                      });
+                    }
                   }}
                   style={{
                     width: "100%",

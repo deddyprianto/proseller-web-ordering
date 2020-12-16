@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Col, Row } from "reactstrap";
 import Field from "./Field";
@@ -11,10 +11,13 @@ const CustomFields = ({
   defaultError,
   roundedBorder,
   titleEditAccount,
+  touched,
 }) => {
-  const fieldsToRender = fields && fields.filter((field) => {
-    return showSignUpFields ? field.signUpField === true : true;
-  });
+  const fieldsToRender =
+    fields &&
+    fields.filter((field) => {
+      return showSignUpFields ? field.signUpField === true : true;
+    });
 
   const [value, setValue] = useState(defaultValue);
 
@@ -23,47 +26,53 @@ const CustomFields = ({
     handleChange(e.target.name, e.target.value);
   };
 
+  const initialRender = useRef(true);
   useEffect(() => {
-    handleChange("address", `${value.street}, ${value.unitNo}`);
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      handleChange("address", `${value.street}, ${value.unitNo}`);
+    }
   }, [value]);
 
   return (
     <Row>
-      {fieldsToRender && fieldsToRender.map((field, keys) => {
-        if (field.type === "multipleField") {
-          return( 
+      {fieldsToRender &&
+        fieldsToRender.map((field, keys) => {
+          if (field.type === "multipleField") {
+            return (
+              <Col key={keys} sm={6}>
+                <Row>
+                  {field.children.map((child, key) => (
+                    <Col key={key} sm={6}>
+                      <Field
+                        handleValueChange={handleValueChange}
+                        value={value}
+                        field={{ ...child, mandatory: field.mandatory }}
+                        roundedBorder={roundedBorder}
+                        error={defaultError}
+                        touched={touched}
+                      ></Field>
+                    </Col>
+                  ))}
+                </Row>
+              </Col>
+            );
+          }
+          return (
             <Col key={keys} sm={6}>
-            <Row>
-              {
-                field.children.map((child, key) => (
-                  <Col key={key} sm={6}>
-                  <Field
-                    handleValueChange={handleValueChange}
-                    value={value}
-                    field={{...child, mandatory: field.mandatory}}
-                    roundedBorder={roundedBorder}
-                    error={defaultError}
-                  ></Field>
-                  </Col>
-                ))
-              }
-            </Row>
+              <Field
+                handleValueChange={handleValueChange}
+                value={value}
+                field={field}
+                roundedBorder={roundedBorder}
+                error={defaultError}
+                titleEditAccount={titleEditAccount}
+                touched={touched}
+              ></Field>
             </Col>
-          )
-        }
-        return (
-          <Col key={keys} sm={6}>
-            <Field
-              handleValueChange={handleValueChange}
-              value={value}
-              field={field}
-              roundedBorder={roundedBorder}
-              error={defaultError}
-              titleEditAccount={titleEditAccount}
-            ></Field>
-          </Col>
-        );
-      })}
+          );
+        })}
     </Row>
   );
 };

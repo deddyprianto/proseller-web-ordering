@@ -30,6 +30,7 @@ class DeliveryAddress extends Component {
         { value: "Other", label: "Other" },
       ],
       deliveryAddress: {},
+      backupDeliveryAddress: {},
       indexEdit: 0,
       isNew: false,
       getDeliveryAddress: false,
@@ -116,7 +117,8 @@ class DeliveryAddress extends Component {
 
   handleEdit = async (indexEdit, item) => {
     item.setAddress = false
-    console.log(item);
+    let backupDeliveryAddress = JSON.stringify(item)
+    backupDeliveryAddress = JSON.parse(backupDeliveryAddress)
     let countryCode = this.state.countryCode;
     let optionsProvince = this.state.optionsProvince;
     let province = optionsProvince.find((items) => {
@@ -127,6 +129,7 @@ class DeliveryAddress extends Component {
       let city = await this.props.dispatch(
         MasterdataAction.getAddressLocation(countryCode, province.code)
       );
+      await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
       let optionsCity = [];
       city.data.forEach((element) => {
         optionsCity.push({
@@ -138,8 +141,21 @@ class DeliveryAddress extends Component {
       // console.log(optionsCity)
       this.setState({ optionsCity, isLoading: false });
     }
-    this.setState({ deliveryAddress: item, isNew: false, indexEdit });
+    this.setState({ deliveryAddress: item, backupDeliveryAddress, isNew: false, indexEdit });
   };
+
+  resetDeliveryAddress = () => {
+    try{
+      let { backupDeliveryAddress, addressDelivery } = this.state;
+      for (let i = 0; i < addressDelivery.length; i++) {
+        if (addressDelivery[i].addressName === backupDeliveryAddress.addressName) {
+          addressDelivery[i] = backupDeliveryAddress;
+          break;
+        }
+      }
+      this.setState({ addressDelivery, postalCodeIsValid: true });
+    }catch(e){}
+  }
 
   handleDelete = async (data) => {
     Swal.fire({
@@ -199,6 +215,7 @@ class DeliveryAddress extends Component {
 
   handleSelected = async (items) => {
     localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
+    await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
     this.props.history.goBack();
@@ -266,6 +283,7 @@ class DeliveryAddress extends Component {
           getDataDeliveryAddress={() => this.getDataDeliveryAddress()}
           handleChange={(field, value) => this.handleChange(field, value)}
           handleSelected={(update) => this.handleSelected(update)}
+          resetDeliveryAddress={() => this.resetDeliveryAddress()}
           getDeliveryAddress={getDeliveryAddress}
           addressDelivery={addressDelivery}
           deliveryAddress={deliveryAddress}

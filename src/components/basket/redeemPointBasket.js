@@ -5,7 +5,36 @@ import { Button } from 'reactstrap';
 export default class RedeemPointBasket extends Component {
   render() {
     let props = this.props.data
-    let discountPoint = props.selectedPoint / props.pointsToRebateRatio.split(":")[0]
+
+    if (props.detailPoint.point === undefined) props.detailPoint.point = props.detailPoint.detailPoint.point
+
+    let totalPoint = this.props.campaignPoint.totalPoint
+    totalPoint = totalPoint - (props.pendingPoints || 0)
+    
+    if (props.dataSettle.paySVC || props.amountSVC === 0) {
+      totalPoint = totalPoint - (this.props.campaignPoint.lockPoints || 0)
+      if(props.detailPoint.roundingOptions !== "DECIMAL") {
+        totalPoint = Math.floor(totalPoint);
+      }
+    }
+     
+    let diffPoints = 0
+    if (props.percentageUseSVC > 0) {
+      let minusPoint = 0;
+      minusPoint = (props.amountSVC/this.props.defaultBalance) * this.props.campaignPoint.defaultPoints 
+      let diff = this.props.campaignPoint.lockPoints - minusPoint
+      diff = diff < 0 ? 0 : diff
+      diffPoints = diff
+      totalPoint = totalPoint - diff
+      
+      if(props.detailPoint.roundingOptions !== "DECIMAL") {
+        totalPoint = Math.floor(totalPoint);
+      }
+    }
+
+    if (totalPoint < 0) totalPoint = 0
+
+    let discountPoint = (props.selectedPoint / props.pointsToRebateRatio.split(":")[0]) * props.pointsToRebateRatio.split(":")[1]
     if(discountPoint > (props.discountPoint + props.totalPrice)) discountPoint = props.discountPoint + props.totalPrice
     discountPoint = discountPoint.toFixed(2);
 
@@ -29,15 +58,35 @@ export default class RedeemPointBasket extends Component {
                   </div>
                   <div >
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 40, marginBottom: 10 }}>
-                      {props.detailPoint.point - (props.pendingPoints || 0)}
+                      {totalPoint}
                     </div>
                     {
-                      props.pendingPoints && props.pendingPoints > 0 &&
+                      props.pendingPoints && props.pendingPoints > 0 ?
                       <div style={{textAlign: "center", marginRight: -50, textDecorationLine: "line-through", marginTop: -12}}>
                         {props.detailPoint.point}
                       </div>
+                      :
+                      null
                     }
                   </div>
+                  {
+                    diffPoints > 0 ?
+                    <div className="text" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
+                    }}>
+                      {`Your ${diffPoints} SVC points is locked because you haven't used up your entire SVC balance.`}
+                    </div> : null
+                  }
+                  {
+                    this.props.campaignPoint && this.props.campaignPoint.lockPoints && props.dataSettle.paySVC ?
+                    <div className="text" style={{
+                      fontSize: 14, border: "1px solid #DCDCDC", borderRadius: 5, padding: 5, lineHeight: "17px",
+                      marginTop: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, textAlign: "justify"
+                    }}>
+                      {`Your ${this.props.campaignPoint.lockPoints} SVC points is locked on SVC Purchase.`}
+                    </div> : null
+                  }
                   {
                     props.pendingPoints && props.pendingPoints > 0 ?
                     <div className="text" style={{

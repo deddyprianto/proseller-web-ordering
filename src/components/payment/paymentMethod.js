@@ -11,7 +11,6 @@ import CreditCard from "@material-ui/icons/CreditCard";
 import ModalPaymentMethod from "./ModalPaymentMethod";
 import _ from "lodash";
 import { uuid } from "uuidv4";
-
 import styles from "./styles.module.css";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -79,9 +78,9 @@ class PaymentMethod extends Component {
           }
         });
       });
+      
       this.setState({ paymentTypes });
     }
-
     this.setState({ loadingShow: false, infoCompany });
   };
 
@@ -242,7 +241,7 @@ class PaymentMethod extends Component {
       isLoading,
       paymentTypes,
       detailCard,
-      getPaymentMethod,
+      getPaymentMethod
     } = this.state;
     return (
       <div
@@ -446,6 +445,7 @@ class PaymentMethod extends Component {
                         </Row>
                       </div>
                     ))}
+                    
                     {paymentTypes.length === 0 && (
                       <div>
                         {/* <Lottie

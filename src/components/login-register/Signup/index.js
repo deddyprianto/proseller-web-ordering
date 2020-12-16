@@ -31,18 +31,30 @@ const SignUp = ({
   enableWhatsappOTP,
   enableOrdering,
   minimumAge,
-  color
+  setting,
+  invitationCode,
+  color,
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
 
-  if(minimumAge && fields){
-    fields.forEach(mandatory => {
-      if(mandatory.fieldName === "birthDate") {
-        mandatory.minimumAge = minimumAge
-        mandatory.isAutoDisable = false
+  if (minimumAge && fields) {
+    fields.forEach((mandatory) => {
+      if (mandatory.fieldName === "birthDate") {
+        mandatory.minimumAge = minimumAge;
+        mandatory.isAutoDisable = false;
       }
     });
   }
+
+  let isTCAvailable = false;
+  let termsAndConditions = "";
+  try {
+    const find = setting.find((item) => item.settingKey === "TermCondition");
+    if (find !== undefined) {
+      isTCAvailable = true;
+      termsAndConditions = find.settingValue;
+    }
+  } catch (e) {}
 
   return (
     <div className="modal-content" style={{ width: "100%" }}>
@@ -111,11 +123,14 @@ const SignUp = ({
         <PhoneForm
           phoneNumber={initialUserData.phoneNumber}
           handleChange={handleChange}
+          isTCAvailable={isTCAvailable}
+          termsAndConditions={termsAndConditions}
           handleSubmit={handlePhoneSubmit}
           error={errorEmail}
           errorPassword={errorPassword}
           enablePassword={enablePassword}
           errorName={errorName}
+          invitationCode={invitationCode}
         >
           <CustomFields
             fields={fields}
@@ -125,24 +140,27 @@ const SignUp = ({
           ></CustomFields>
         </PhoneForm>
       ) : (
-            <EmailForm
-              email={initialUserData.email}
-              color={color.background}
-              handleChange={handleChange}
-              handleSubmit={handleEmailSubmit}
-              error={errorPhone}
-              errorPassword={errorPassword}
-              enablePassword={enablePassword}
-              errorName={errorName}
-            >
-              <CustomFields
-                fields={fields}
-                handleChange={handleChange}
-                showSignUpFields={true}
-                roundedBorder={false}
-              ></CustomFields>
-            </EmailForm>
-          )}
+        <EmailForm
+          color={color.background}
+          email={initialUserData.email}
+          isTCAvailable={isTCAvailable}
+          termsAndConditions={termsAndConditions}
+          handleChange={handleChange}
+          handleSubmit={handleEmailSubmit}
+          error={errorPhone}
+          errorPassword={errorPassword}
+          enablePassword={enablePassword}
+          errorName={errorName}
+          invitationCode={invitationCode}
+        >
+          <CustomFields
+            fields={fields}
+            handleChange={handleChange}
+            showSignUpFields={true}
+            roundedBorder={false}
+          ></CustomFields>
+        </EmailForm>
+      )}
     </div>
   );
 };
@@ -165,14 +183,18 @@ SignUp.propTypes = {
   errorEmail: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
-  fields: PropTypes.array, 
-  color: PropTypes.object
+  fields: PropTypes.array,
+  setting: PropTypes.array,
+  invitationCode: PropTypes.string,
+  color: PropTypes.object,
 };
 
 const mapStateToProps = (state) => {
   return {
     fields: state.customer.fields,
-    color: state.theme.color
+    setting: state.order.setting,
+    invitationCode: state.auth.invitationCode,
+    color: state.theme.color,
   };
 };
 

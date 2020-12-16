@@ -5,10 +5,16 @@ import QRCodeLogo from "../../assets/images/icon-qrcode.png";
 import profile from "../../assets/images/default-profile.png";
 import Shimmer from "react-shimmer-effect";
 import { ReferralAction } from "../../redux/actions/ReferralAction";
+import { CustomerAction } from "../../redux/actions/CustomerAction";
+import { MembershiplAction } from "../../redux/actions/MembershipAction";
+import { SVCAction } from "../../redux/actions/SVCAction";
 import ModalEditProfile from "./ModalEditProfile";
 import { Link } from "react-router-dom";
 import config from "../../config";
 import loadable from "@loadable/component";
+import moment from 'moment';
+import { isEmptyArray } from "../../helpers/CheckEmpty";
+// import { max } from "lodash";
 const ModalQRCode = loadable(() => import("./ModalQRCode"));
 
 class DetailProfile extends Component {
@@ -17,7 +23,10 @@ class DetailProfile extends Component {
     this.state = {
       loadingShow: true,
       referall: "0/0",
-      isEmenu: window.location.pathname.includes("emenu")
+      isEmenu: window.location.pathname.includes("emenu"),
+      dataCustomer: {},
+      memberships: [],
+      svc: []
     };
   }
 
@@ -25,6 +34,20 @@ class DetailProfile extends Component {
     let response = await this.props.dispatch(
       ReferralAction.getReferral({ customerId: this.props.account.signAs })
     );
+    
+    try{
+      let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
+      if (dataCustomer.ResultCode === 200) this.setState({dataCustomer: dataCustomer.Data[0]})
+    }catch(e){}
+
+    try{
+      let dataMembership = await this.props.dispatch( MembershiplAction.getPaidMembership() );
+      if (dataMembership && !isEmptyArray(dataMembership.data)) this.setState({memberships: dataMembership.data})
+    }catch(e){}
+
+    const svc = await this.props.dispatch(SVCAction.loadSVC())
+    if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
+    
     if (response.ResultCode === 200)
       this.setState({
         referall: `${response.Data.amount}/${response.Data.capacity}`,
@@ -50,11 +73,36 @@ class DetailProfile extends Component {
     );
   };
 
+  getMaxRanking = () => {
+    try{
+      const { memberships } = this.state;
+      let largest= 0;
+      for (let i=0; i < memberships.length; i++){
+          if (memberships[i].ranking > largest) {
+              largest = memberships[i].ranking
+          }
+      }
+      return largest;
+    }catch(e){}
+  }
+
+  getLabel = () => {
+    try{
+      const { dataCustomer } = this.state;
+      const maxRanking = this.getMaxRanking();
+      if (dataCustomer.customerGroupLevel === maxRanking) return 'Renew'
+      return 'Upgrade'
+    }catch(e){
+      return 'Upgrade'
+    }
+  }
+
   viewLeftPage = (loadingShow) => {
     let { account } = this.props;
+    let { dataCustomer, memberships } = this.state;
     if (account.defaultImageURL === undefined)
       account.defaultImageURL = profile;
-
+    
     return (
       <div style={{ marginBottom: 10 }}>
         {loadingShow && (
@@ -142,14 +190,29 @@ class DetailProfile extends Component {
                 <div
                   className="customer-group-name"
                   style={{
-                    fontSize: 30,
+                    fontSize: 27,
                     fontWeight: "bold",
                     paddingBottom: 10,
                   }}
                 >
-                  {account.customerGroupName}
+                  {dataCustomer.customerGroupName}
                 </div>
+                {dataCustomer.expiryCustomerGroup && <span className="font-color-theme" style={{fontSize: 14, fontWeight: "bold" }}>( till {moment(dataCustomer.expiryCustomerGroup).format("DD MMMM YYYY")} )</span>}
               </div>
+              {
+                !isEmptyArray(memberships) &&
+                <Link to="/paid-membership">
+                  <div
+                    className="customer-group-name"
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {this.getLabel()} <i style={{fontSize: 11}} className="fa fa-chevron-right" aria-hidden="true" />
+                  </div>
+                </Link>
+              }
             </div>
 
             <div
@@ -198,7 +261,7 @@ class DetailProfile extends Component {
   }
 
   viewRightPage = (loadingShow) => {
-    let { referall, isEmenu } = this.state;
+    let { referall, isEmenu, svc } = this.state;
 
     return (
       <div>
@@ -209,8 +272,34 @@ class DetailProfile extends Component {
             {this.viewShimmer(50)}
           </div>
         )}
+
         {!loadingShow && (
           <div>
+            {
+              svc.length > 0 && 
+              <Link to="/svc">
+                <div
+                  className="background-theme"
+                  style={{
+                    padding: 10,
+                    marginTop: 10,
+                    borderRadius: 10,
+                    border: "1px solid #CDCDCD",
+                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ textAlign: "center" }}>
+                    <div
+                      style={{ fontSize: 15, fontWeight: "bold" }}
+                    >
+                      <i className="fa fa-money" aria-hidden="true" /> Store Value Card
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            }
+
             {referall.split("/")[1] !== "0" && (
               <Link to="/referral">
                 <div
@@ -218,6 +307,7 @@ class DetailProfile extends Component {
                   style={{
                     padding: 10,
                     borderRadius: 10,
+                    marginTop: 10,
                     border: "1px solid #CDCDCD",
                     boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
                     cursor: "pointer",

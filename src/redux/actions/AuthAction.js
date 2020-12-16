@@ -15,6 +15,7 @@ export const AuthActions = {
   register,
   refreshToken,
   setData,
+  setInvitationCode
 };
 
 function check(payload) {
@@ -108,6 +109,13 @@ function refreshToken() {
     }
   };
 }
+
+function setInvitationCode(code) {
+  return async (dispatch) => {
+    dispatch({type : 'SET_REFERRAL_CODE', data: code});
+  }
+}
+
 
 function setData(data, constant) {
   return {

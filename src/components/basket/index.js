@@ -54,20 +54,15 @@ class Basket extends Component {
       pointsToRebateRatio: "0:0",
       roundingOptions: "INTEGER",
       xstep: 1,
-      orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`),
+      orderingMode: this.props.orderingMode,
       btnBasketOrder: true,
       play: false,
       deliveryProvaider: [],
       dataCVV: "",
       isEmenu: window.location.pathname.includes("emenu"),
-      orderActionDate:
-        localStorage.getItem(`${config.prefix}_order_action_date`) ||
-        moment().format("YYYY-MM-DD"),
-      orderActionTime:
-        localStorage.getItem(`${config.prefix}_order_action_time`) ||
-        moment().add(1, "h").format("HH") + ":00",
-      orderActionTimeSlot:
-        localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
+      orderActionDate: this.props.orderActionDate,
+      orderActionTime: this.props.orderActionTime,
+      orderActionTimeSlot: this.props.orderActionTimeSlot,
       checkOperationalHours: {},
       orderingTime: [],
 
@@ -257,9 +252,9 @@ class Basket extends Component {
     if (dataBasket) {
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
-
+      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
       // move cart based on delivery address
-      if (deliveryAddress && orderingMode === "DELIVERY") {
+      if ( deliveryAddress && orderingMode === "DELIVERY" && isOutletChanged !== 'true') {
         let payloadMoveCart = {
           orderBy: "provider",
           cart: dataBasket,
@@ -379,6 +374,12 @@ class Basket extends Component {
         deliveryAddress: deliveryAddress,
       };
 
+      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
+      const newOutletID = await localStorage.getItem(`${config.prefix}_outletChangedFromHeader`)
+      if (isOutletChanged === 'true') {
+        if (newOutletID !== undefined && newOutletID !== null) payload.outletId = newOutletID
+      }
+
       let response = await this.props.dispatch(
         OrderAction.getCalculateFee(payload)
       );
@@ -412,6 +413,24 @@ class Basket extends Component {
     return { deliveryProvaider, provaiderDelivery };
   };
 
+  getDatesBetweenDates = (startDate, endDate, days = 0) => {
+    let dates = [];
+    const theDate = new Date(startDate);
+    theDate.setDate(theDate.getDate() + 1);
+    if (days === 0) {
+      while (theDate < endDate) {
+        dates = [...dates, new Date(theDate)];
+        theDate.setDate(theDate.getDate() + 1);
+      }
+    } else {
+      for (let i = 0; i < days; i++) {
+        dates = [...dates, new Date(theDate)];
+        theDate.setDate(theDate.getDate() + 1);
+      }
+    }
+    return dates;
+  };
+
   checkPickUpDateTime = async (
     checkOperationalHours,
     date,
@@ -441,7 +460,7 @@ class Basket extends Component {
     let payload = {
       outletID: storeDetail.sortKey,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
-      date,
+      date: moment(dateTime).format("YYYY-MM-DD"),
       maxDays,
       orderingMode,
     };
@@ -454,7 +473,30 @@ class Basket extends Component {
             return item.isAvailable;
           });
         });
-        this.setState({ timeSlot });
+        let prevDates = new Date();
+        prevDates.setDate(prevDates.getDate() - 1);
+        const newTimeslot = timeSlot.map((slot) => {
+          if (!prevDates) {
+            prevDates = new Date(slot.date);
+            return slot;
+          }
+          const dateBetween = this.getDatesBetweenDates(
+            prevDates,
+            new Date(slot.date)
+          ).map((date) => ({
+            date: moment(date).format("YYYY-MM-DD"),
+            timeSlot: [],
+          }));
+          prevDates = new Date(slot.date);
+          return [...dateBetween, slot];
+        });
+        const firstAvailableDate = newTimeslot
+          .flat(2)
+          .find((slot) => slot.timeSlot.length > 0);
+        console.log(firstAvailableDate);
+        if (firstAvailableDate)
+          this.setState({ nextDayIsAvailable: firstAvailableDate.date });
+        this.setState({ timeSlot: newTimeslot.flat(2) });
       } else {
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
@@ -477,29 +519,22 @@ class Basket extends Component {
     }
 
     if (timeSlot && timeSlot.length > 0) {
-      localStorage.setItem(
-        `${config.prefix}_order_action_time`,
-        timeSlot[0].time
-      );
-      localStorage.setItem(
-        `${config.prefix}_order_action_time_slot`,
-        timeSlot[0].time.split(" - ")[0]
-      );
       this.setState({
         orderingTimeSlot: timeSlot,
-        orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
-        orderActionTimeSlot: timeSlot[0].time,
+        // orderActionTime: `${timeSlot[0].time.split(" - ")[0]}`,
+        // orderActionTimeSlot: timeSlot[0].time,
+        // orderActionDate: date,
         isEditDate: true,
-        orderActionDate: date,
       });
     } else {
       if (isEditDate) {
+        console.log("isEditDate is true");
         for (let index = 0; index <= maxLoopingGetTimeSlot; index++) {
           let { dateDay, status } = this.getTimeSlotAvailable(date);
           if (status) break;
           date = dateDay;
         }
-
+        console.log("Set orderActionTimeSlot to null...");
         this.setState({
           orderActionTimeSlot: null,
           orderingTimeSlot: [],
@@ -511,6 +546,7 @@ class Basket extends Component {
           date = moment(date).add(1, "d").format("YYYY-MM-DD");
           this.checkPickUpDateTime(checkOperationalHours, date, check);
         } else {
+          console.log("Set orderACtionTime...");
           this.setState({
             orderActionTimeSlot: null,
             orderingTimeSlot: [],
@@ -798,7 +834,7 @@ class Basket extends Component {
   };
 
   setOrderingMode = async (orderingMode) => {
-    localStorage.setItem(`${config.prefix}_ordering_mode`, orderingMode);
+    this.props.dispatch({ type: "SET_ORDERING_MODE", payload: orderingMode });
     this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
     await this.getDataBasket(true, orderingMode);
 
@@ -856,9 +892,11 @@ class Basket extends Component {
           let selected = _.filter(dataBasket.details, (items) => {
             return items.selected !== false;
           });
-          if (dataBasket.details.length === selected.length)
+          if (dataBasket.details.length === selected.length){
+            await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+            await localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
             await this.props.dispatch(OrderAction.deleteCart());
-          else {
+          } else {
             let payload = [];
             for (let index = 0; index < selected.length; index++) {
               let items = selected[index];
@@ -874,6 +912,7 @@ class Basket extends Component {
             window.location.reload();
           }
         } else {
+          await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
         await this.getDataBasket();
@@ -1147,7 +1186,26 @@ class Basket extends Component {
       window.location.reload();
     } else if (field === "orderActionDate") {
       let check = value === moment().format("YYYY-MM-DD");
-      localStorage.setItem(`${config.prefix}_order_action_date`, value);
+      this.props.dispatch({ type: "SET_ORDER_ACTION_DATE", payload: value });
+      if (
+        this.state.timeSlot.length > 0 &&
+        (this.state.timeSlot[this.state.timeSlot.length - 1].date === value ||
+          this.state.timeSlot[this.state.timeSlot.length - 2].date === value ||
+          this.state.timeSlot[this.state.timeSlot.length - 3].date === value ||
+          this.state.timeSlot[this.state.timeSlot.length - 4].date === value)
+      ) {
+        const dates = this.getDatesBetweenDates(
+          new Date(this.state.timeSlot[this.state.timeSlot.length - 1].date),
+          new Date(this.state.timeSlot[this.state.timeSlot.length - 1].date),
+          5
+        ).map((date) => ({
+          date: moment(date).format("YYYY-MM-DD"),
+          timeSlot: [],
+        }));
+        this.setState((prevState) => ({
+          timeSlot: [...prevState.timeSlot, ...dates],
+        }));
+      }
       await this.checkPickUpDateTime(
         this.state.checkOperationalHours,
         value,
@@ -1165,9 +1223,12 @@ class Basket extends Component {
         }
       });
     } else if (field === "orderActionTime") {
-      localStorage.setItem(`${config.prefix}_order_action_time`, value);
+      this.props.dispatch({ type: "SET_ORDER_ACTION_TIME", payload: value });
     } else if (field === "orderActionTimeSlot") {
-      localStorage.setItem(`${config.prefix}_order_action_time_slot`, value);
+      this.props.dispatch({
+        type: "SET_ORDER_ACTION_TIME_SLOT",
+        payload: value,
+      });
     }
   };
 
@@ -1289,6 +1350,10 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     deliveryAddress: state.order.deliveryAddress,
     orderingSetting: state.order.setting,
+    orderingMode: state.order.orderingMode,
+    orderActionDate: state.order.orderActionDate,
+    orderActionTime: state.order.orderActionTime,
+    orderActionTimeSlot: state.order.orderActionTimeSlot,
   };
 };
 

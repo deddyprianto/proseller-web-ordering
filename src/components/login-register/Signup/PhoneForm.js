@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Button } from "reactstrap";
 import PasswordField from "../PasswordField";
+import CheckBox from "../../setting/checkBoxCostume";
 
 const PhoneForm = ({
   phoneNumber,
@@ -13,7 +14,12 @@ const PhoneForm = ({
   errorName,
   error,
   children,
+  isTCAvailable,
+  termsAndConditions,
+  invitationCode,
 }) => {
+  const [agreeTC, setAgreeTC] = useState(true);
+
   return (
     <div className="modal-body">
       <p className="text-muted">{`Register for ${phoneNumber || "-"}`}</p>
@@ -24,11 +30,18 @@ const PhoneForm = ({
         <input
           type="text"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          style={{borderRadius: 5}}
+          style={{ borderRadius: 5 }}
           onChange={(e) => handleChange("name", e.target.value, true)}
         />
         {errorName !== "" && (
-          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: "red",
+              lineHeight: "15px",
+            }}
+          >
             {errorName}
           </div>
         )}
@@ -41,11 +54,18 @@ const PhoneForm = ({
         <input
           type="email"
           className="woocommerce-Input woocommerce-Input--text input-text"
-          style={{borderRadius: 5}}
+          style={{ borderRadius: 5 }}
           onChange={(e) => handleChange("email", e.target.value, true)}
         />
         {error !== "" && (
-          <div style={{ marginTop: 5, marginBottom: 5, color: "red",lineHeight: "15px", }}>
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: "red",
+              lineHeight: "15px",
+            }}
+          >
             {error}
           </div>
         )}
@@ -57,8 +77,63 @@ const PhoneForm = ({
           error={errorPassword}
         ></PasswordField>
       )}
+      {invitationCode && (
+        <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <label for="referral">Referral Code</label>
+          <input
+            type="text"
+            value={invitationCode}
+            disabled
+            className="woocommerce-Input woocommerce-Input--text input-text"
+            style={{ borderRadius: 5 }}
+            onChange={(e) => handleChange("referral", e.target.value, true)}
+          />
+        </p>
+      )}
+      {isTCAvailable && (
+        <>
+          <div style={{ marginTop: "2rem" }}>
+            <div
+              className="card card-body"
+              style={{ textAlign: "justify", fontSize: 11 }}
+            >
+              <textarea disabled rows={10}>
+                {termsAndConditions}
+              </textarea>
+            </div>
+          </div>
+          <div
+            onClick={() => setAgreeTC(!agreeTC)}
+            className="form-group form-check"
+            style={{ marginTop: 5 }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <CheckBox
+                className="form-check-input"
+                handleChange={() => setAgreeTC(!agreeTC)}
+                selected={!agreeTC}
+                setRadius={5}
+                setHeight={20}
+              />
+              <label
+                className="form-check-label"
+                for="exampleCheck1"
+                style={{ marginLeft: 10 }}
+              >
+                I Agree to Terms & Conditions{" "}
+              </label>
+            </div>
+          </div>
+        </>
+      )}
       <Button
-        disabled={isSubmitting}
+        disabled={isSubmitting || agreeTC || !isTCAvailable}
         className="button"
         style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}
@@ -77,6 +152,9 @@ PhoneForm.propTypes = {
   error: PropTypes.string,
   errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
+  termsAndConditions: PropTypes.string,
+  isTCAvailable: PropTypes.bool,
+  invitationCode: PropTypes.string,
 };
 
 export default PhoneForm;

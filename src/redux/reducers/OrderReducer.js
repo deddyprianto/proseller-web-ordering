@@ -1,3 +1,4 @@
+import moment from "moment";
 import { CONSTANT } from "../../helpers";
 import { lsLoad } from "../../helpers/localStorage";
 import config from "../../config";
@@ -5,7 +6,8 @@ import config from "../../config";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
-  basket: JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`)) || {},
+  basket:
+    JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`)) || {},
   productsSearch: undefined,
   deliveryProviders: null,
   dataPendingLength: undefined,
@@ -17,6 +19,15 @@ const defaultState = {
     encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`))
     ) || null,
+  orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`) || null,
+  orderActionDate:
+    localStorage.getItem(`${config.prefix}_order_action_date`) ||
+    moment().format("YYYY-MM-DD"),
+  orderActionTime:
+    localStorage.getItem(`${config.prefix}_order_action_time`) ||
+    moment().add(1, "h").format("HH") + ":00",
+  orderActionTimeSlot:
+    localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -58,6 +69,39 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         dataPendingLength: action.payload,
+      };
+    case "SET_ORDERING_MODE":
+      localStorage.setItem(`${config.prefix}_ordering_mode`, action.payload);
+      return {
+        ...state,
+        orderingMode: action.payload,
+      };
+    case "SET_ORDER_ACTION_DATE":
+      localStorage.setItem(
+        `${config.prefix}_order_action_date`,
+        action.payload
+      );
+      return {
+        ...state,
+        orderActionDate: action.payload,
+      };
+    case "SET_ORDER_ACTION_TIME":
+      localStorage.setItem(
+        `${config.prefix}_order_action_time`,
+        action.payload
+      );
+      return {
+        ...state,
+        orderActionTime: action.payload,
+      };
+    case "SET_ORDER_ACTION_TIME_SLOT":
+      localStorage.setItem(
+        `${config.prefix}_order_action_time_slot`,
+        action.payload
+      );
+      return {
+        ...state,
+        orderActionTimeSlot: action.payload,
       };
     default:
       return state;
