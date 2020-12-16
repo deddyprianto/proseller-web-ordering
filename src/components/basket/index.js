@@ -841,9 +841,15 @@ class Basket extends Component {
   };
 
   setOrderingMode = async (orderingMode) => {
+    const oldOrderingMode = this.state.orderingMode
+
+    if (oldOrderingMode !== orderingMode) {
+      await this.setState({ orderActionTimeSlot: null });
+    }
+
     await this.props.dispatch({ type: "SET_ORDERING_MODE", payload: orderingMode });
-    
-    await this.setState({ orderingMode, isLoading: true, provaiderDelivery: null, orderActionTimeSlot: null });
+
+    await this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
     await this.getDataBasket(true, orderingMode);
 
     let orderActionDate = moment().format("YYYY-MM-DD");
