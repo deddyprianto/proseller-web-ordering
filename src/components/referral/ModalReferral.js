@@ -17,6 +17,15 @@ export default class ModalReferral extends Component {
       setModeInvite, modeInvitation, sendInvitation,
       changeAddress, address, changeMobileNo, mobileNo
     } = this.props
+
+    const regEmail = /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    let isDisable = true
+    if(modeInvitation === 'email'){
+      isDisable = !regEmail.test(String(address).toLowerCase());
+    } else {
+      isDisable = mobileNo.length < 10
+    }
+
     return (
       <div>
         <div className="modal fade" id="referral-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -67,7 +76,7 @@ export default class ModalReferral extends Component {
                   }
                 </div>
                 <Button className="button" data-toggle="modal" data-target="#referral-modal"
-                  disabled={mobileNo.length < 10}
+                  disabled={isDisable}
                   style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 40 }} onClick={() => sendInvitation()}>
                   Send Invititation
                 </Button>
