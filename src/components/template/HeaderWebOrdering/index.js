@@ -115,7 +115,7 @@ class Header extends Component {
         await localStorage.removeItem(`${config.prefix}_deliveryProvider`);
         await setTimeout(() => {
           window.location.reload()
-        }, 300)
+        }, 100)
       }
     } else {
       this.props.dispatch(

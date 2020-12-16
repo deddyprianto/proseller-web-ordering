@@ -60,6 +60,13 @@ function getInfoCompany() {
 function getOutletByID(id, isProduct = true) {
   return async (dispatch) => {
     if(id !== undefined){
+
+      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
+      const newOutletID = await localStorage.getItem(`${config.prefix}_outletChangedFromHeader`)
+      if (isOutletChanged === 'true') {
+        if (newOutletID !== undefined && newOutletID !== null) id = newOutletID
+      }
+
       let response = await MasterDataService.api( "GET", null, `outlets/get/${id}`, "Bearer" );
       if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
       else if (isProduct) dispatch(getProductByOutletID(id));
