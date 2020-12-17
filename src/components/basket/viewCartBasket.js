@@ -31,6 +31,8 @@ const ViewCartBasket = ({
   basket,
   handleSetState
 }) => {
+  if(!basket.details && data.dataBasket) basket = data.dataBasket
+  
   if (!outlet.orderValidation) {
     outlet = data.storeDetail
     if (!outlet.orderValidation) outlet = config.getValidation(outlet)
@@ -371,7 +373,7 @@ const ViewCartBasket = ({
                 <Button
                   disabled={btnSattleStatusDisable}
                   onClick={() => {
-                    roleTitleSettle() ? handleSettle() : handleSubmit();
+                    roleOnClickSettle() ? handleSettle() : handleSubmit();
                   }}
                   className="button"
                   style={{

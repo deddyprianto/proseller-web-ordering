@@ -1102,7 +1102,7 @@ class Payment extends Component {
       );
     } else {
       // if need further actions
-      if (response.data.action !== undefined) {
+      if (response.data && response.data.action !== undefined) {
         if (response.data.action.type === "url") {
           this.getPendingPayment(response.data);
         }

@@ -250,6 +250,10 @@ class Basket extends Component {
     }
 
     if (dataBasket) {
+      if(dataBasket.isPaymentComplete !== undefined) {
+        dataBasket = await this.getDataBasketPending(dataBasket);
+      }
+
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
       const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
@@ -290,7 +294,7 @@ class Basket extends Component {
         };
       }
 
-      if (isChangeMode || dataBasket.totalSurchargeAmount === 0) {
+      if ((isChangeMode || dataBasket.totalSurchargeAmount === 0) && dataBasket.isPaymentComplete === undefined) {
         let surcharge = await this.props.dispatch(
           OrderAction.changeOrderingMode({ orderingMode })
         );
@@ -304,6 +308,7 @@ class Basket extends Component {
       }
 
       let checkOperationalHours = this.checkOperationalHours(storeDetail);
+      
       this.setState({
         dataBasket,
         storeDetail,
@@ -316,8 +321,7 @@ class Basket extends Component {
 
       // check validate pick date time
       if (orderingMode !== "DINEIN") {
-        let check =
-          this.state.orderActionDate === moment().format("YYYY-MM-DD");
+        let check = this.state.orderActionDate === moment().format("YYYY-MM-DD");
         await this.checkPickUpDateTime(
           checkOperationalHours,
           this.state.orderActionDate,
@@ -347,6 +351,18 @@ class Basket extends Component {
       selectedCard,
       deliveryAddress,
     });
+  };
+
+  getDataBasketPending = async (dataBasket) => {
+    let response = await this.props.dispatch(OrderAction.getCartPending(dataBasket.id));
+    if (response.resultCode === 200) {
+      localStorage.setItem(`${config.prefix}_dataBasket`,
+        JSON.stringify(encryptor.encrypt(response.data))
+      );
+      this.setState({ dataBasket: response.data });
+      return response.data
+    } 
+    return dataBasket
   };
 
   setDefaultOutlet = async (dataBasket) => {
@@ -1074,7 +1090,8 @@ class Basket extends Component {
 
       console.log("submit", response);
       if (response && response.resultCode === 200) {
-        this.setState({ dataBasket: response.data });
+        dataBasket = response.data
+        this.setState({ dataBasket });
         localStorage.removeItem(`${config.prefix}_dataBasket`);
         response = await this.props.dispatch(
           OrderAction.setData({}, "DATA_BASKET")
@@ -1084,7 +1101,13 @@ class Basket extends Component {
           `${config.prefix}_dataSettle`,
           JSON.stringify(encryptor.encrypt(this.state))
         );
-        this.props.history.push("/payment");
+
+        console.log(dataBasket)
+        if(dataBasket.status === "SUBMITTED"){
+          this.props.history.push("/history");
+        } else {
+          this.props.history.push("/payment");
+        }
       } else {
         Swal.fire(
           "Oppss!",
@@ -1111,7 +1134,7 @@ class Basket extends Component {
     if (
       orderingMode === "DINEIN" &&
       storeDetail.outletType === "RESTO" &&
-      (!scanTable || (scanTable && !scanTable.tableNo))
+      (!scanTable || (scanTable && (!scanTable.tableNo && !scanTable.table)))
     ) {
       return true;
     } else if (
@@ -1119,7 +1142,7 @@ class Basket extends Component {
       storeDetail.outletType === "QUICKSERVICE" &&
       storeDetail.enableTableScan !== false &&
       storeDetail.enableDineIn !== false &&
-      (!scanTable || (scanTable && !scanTable.tableNo))
+      (!scanTable || (scanTable && (!scanTable.tableNo && !scanTable.table)))
     ) {
       return true;
     }
@@ -1259,6 +1282,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
+
     return (
       <div
         className="col-full"
@@ -1279,12 +1303,9 @@ class Basket extends Component {
                   <Col sm={6}>{this.viewShimmer()}</Col>
                 </Row>
               )}
-              {!loadingShow && (!dataBasket || !this.props.basket.details) && (
+              
+              {!loadingShow && (!dataBasket && !this.props.basket.details) && (
                 <div>
-                  {/* <Lottie
-                    options={{ animationData: emptyGif }}
-                    style={{ height: 250 }}
-                  /> */}
                   <img
                     src={config.url_emptyImage}
                     alt="is empty"
@@ -1293,7 +1314,8 @@ class Basket extends Component {
                   <div>Data is empty</div>
                 </div>
               )}
-              {!loadingShow && dataBasket && this.props.basket.details && (
+
+              {!loadingShow && (dataBasket || this.props.basket.details) && (
                 <div style={{ marginBottom: 250 }}>
                   {viewCart && (
                     <ViewCartBasket

@@ -55,7 +55,8 @@ class HistoryPending extends Component {
                 dataPending.map((items, keys) => (
                   <Col key={keys} sm={6} data-toggle="modal" data-target="#detail-inbox-modal"
                     onClick={() => this.handleDetail(items)}>
-                    <Link to="/history/detail">
+                      {console.log(items)}
+                    <Link to={items.isPaymentComplete ? "/history/detail" : "/basket"}>
                       <HistoryCard items={items} countryCode={countryCode} />
                     </Link>
                   </Col>
@@ -64,10 +65,6 @@ class HistoryPending extends Component {
               {
                 dataPendingLength === 0 &&
                 <div>
-                  {/* <Lottie
-                    options={{ animationData: emptyGif }}
-                    style={{ height: 250 }}
-                  /> */}
                   <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
                   <div>Data is empty</div>
                 </div>
