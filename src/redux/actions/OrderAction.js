@@ -331,13 +331,7 @@ function moveCart(payload) {
         "Bearer"
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
-        console.log(response);
-        Swal.fire(
-          "Oppss!",
-          response.message || "Failed to change outlet",
-          "error"
-        );
-        return payload.cart;
+        return response;
       } else {
         dispatch(setData(response.data, CONSTANT.DATA_BASKET));
         return response.data;

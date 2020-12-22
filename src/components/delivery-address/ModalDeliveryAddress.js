@@ -21,9 +21,9 @@ class ModalDeliveryAdderss extends Component {
 
   componentWillUnmount = () => {
     try {
-      document.getElementById('btn-close-address').click()
-    }catch(e) { }
-  }
+      document.getElementById("btn-close-address").click();
+    } catch (e) {}
+  };
 
   setProvince = async (e) => {
     let { deliveryAddress, countryCode } = this.props;
@@ -58,25 +58,26 @@ class ModalDeliveryAdderss extends Component {
       getDataDeliveryAddress,
       countryCode,
       handleSelected,
-      getDeliveryAddress
+      getDeliveryAddress,
     } = this.props;
 
     if (isNew) {
       if (addressDelivery !== null) {
-        const find = addressDelivery.find(item => item.addressName === deliveryAddress.addressName)
-        if (find !== undefined){
+        const find = addressDelivery.find(
+          (item) => item.addressName === deliveryAddress.addressName
+        );
+        if (find !== undefined) {
           await this.setState({ isLoading: false });
           Swal.fire({
             icon: "warning",
             title: `${deliveryAddress.addressName} address is already added.`,
             showConfirmButton: true,
           });
-          return
+          return;
         }
       }
     }
-    
-    
+
     if (!deliveryAddress.city) {
       let province = await this.props.dispatch(
         MasterdataAction.getAddressLocation(countryCode)
@@ -85,10 +86,10 @@ class ModalDeliveryAdderss extends Component {
         deliveryAddress.city = province.data[0].name;
     }
 
-    delete deliveryAddress.setAddress
-    delete deliveryAddress.selected
+    delete deliveryAddress.setAddress;
+    delete deliveryAddress.selected;
 
-    console.log(deliveryAddress)
+    console.log(deliveryAddress);
 
     if (!addressDelivery) addressDelivery = [];
     if (isNew) addressDelivery.push(deliveryAddress);
@@ -108,10 +109,16 @@ class ModalDeliveryAdderss extends Component {
     console.log(response);
     if (response.ResultCode === 200) {
       await getDataDeliveryAddress();
-      if(getDeliveryAddress) await handleSelected(deliveryAddress);
+      if (getDeliveryAddress) await handleSelected(deliveryAddress);
       else {
-        localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(deliveryAddress)));
-        this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: deliveryAddress });
+        localStorage.setItem(
+          `${config.prefix}_deliveryAddress`,
+          JSON.stringify(encryptor.encrypt(deliveryAddress))
+        );
+        this.props.dispatch({
+          type: "SET_DELIVERY_ADDRESS",
+          payload: deliveryAddress,
+        });
       }
       this.setState({ isLoading: false });
       document.getElementById("btn-close-address").click();
@@ -134,18 +141,23 @@ class ModalDeliveryAdderss extends Component {
 
   checkFields = () => {
     let { deliveryAddress } = this.props;
-    try{
-      if (deliveryAddress.addressName === "" || deliveryAddress.addressName === null ||
-          deliveryAddress.street === "" || deliveryAddress.street === undefined ||
-          deliveryAddress.unitNo === "" || deliveryAddress.unitNo === undefined ||
-          deliveryAddress.postalCode === "" || deliveryAddress.postalCode === undefined
-        )
-        return true
-      else return false
-    }catch(e) {
-      return true
+    try {
+      if (
+        deliveryAddress.addressName === "" ||
+        deliveryAddress.addressName === null ||
+        deliveryAddress.street === "" ||
+        deliveryAddress.street === undefined ||
+        deliveryAddress.unitNo === "" ||
+        deliveryAddress.unitNo === undefined ||
+        deliveryAddress.postalCode === "" ||
+        deliveryAddress.postalCode === undefined
+      )
+        return true;
+      else return false;
+    } catch (e) {
+      return true;
     }
-  }
+  };
 
   render() {
     let {
@@ -154,9 +166,10 @@ class ModalDeliveryAdderss extends Component {
       optionsAddressName,
       optionsProvince,
       optionsCity,
-      postalCodeIsValid
+      postalCodeIsValid,
     } = this.props;
-    if (this.state.optionsCity.length !== 0) optionsCity = this.state.optionsCity;
+    if (this.state.optionsCity.length !== 0)
+      optionsCity = this.state.optionsCity;
 
     return (
       <div>
@@ -205,7 +218,7 @@ class ModalDeliveryAdderss extends Component {
               {deliveryAddress && (
                 <div className="modal-body" style={{ textAlign: "left" }}>
                   <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-                    <label style={{fontSize: 12}}>
+                    <label style={{ fontSize: 12 }}>
                       Address Name <span className="required">*</span>
                     </label>
                     <Select
@@ -217,8 +230,8 @@ class ModalDeliveryAdderss extends Component {
                       styles={{
                         option: (provided, state) => ({
                           ...provided,
-                          color: state.isSelected ? '#000' : '#808080'
-                        })
+                          color: state.isSelected ? "#000" : "#808080",
+                        }),
                       }}
                       options={optionsAddressName}
                       onChange={(e) =>
@@ -232,7 +245,7 @@ class ModalDeliveryAdderss extends Component {
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
                     >
-                      <label style={{fontSize: 12}}>
+                      <label style={{ fontSize: 12 }}>
                         Province <span className="required">*</span>
                       </label>
                       <Select
@@ -252,7 +265,7 @@ class ModalDeliveryAdderss extends Component {
                       className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                       style={{ marginTop: 10 }}
                     >
-                      <label style={{fontSize: 12}}>
+                      <label style={{ fontSize: 12 }}>
                         City <span className="required">*</span>
                       </label>
                       <Select
@@ -273,7 +286,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label style={{fontSize: 12}}>
+                    <label style={{ fontSize: 12 }}>
                       Street Name <span className="required">*</span>
                     </label>
                     <Input
@@ -290,7 +303,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label style={{fontSize: 12}}>
+                    <label style={{ fontSize: 12 }}>
                       Unit No. <span className="required">*</span>
                     </label>
                     <Input
@@ -307,7 +320,7 @@ class ModalDeliveryAdderss extends Component {
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
                   >
-                    <label style={{fontSize: 12}}>
+                    <label style={{ fontSize: 12 }}>
                       Postal Code <span className="required">*</span>
                     </label>
                     <Input
@@ -318,13 +331,14 @@ class ModalDeliveryAdderss extends Component {
                         this.props.handleChange("postalCode", e.target.value)
                       }
                     />
-                    {
-                      !postalCodeIsValid && 
-                      <div className="text text-warning-theme small" 
-                        style={{lineHeight: "15px", marginTop:5}}> 
-                        <em>Postal code is not valid</em> 
+                    {!postalCodeIsValid && (
+                      <div
+                        className="text text-warning-theme small"
+                        style={{ lineHeight: "15px", marginTop: 5 }}
+                      >
+                        <em>Postal code is not valid</em>
                       </div>
-                    }
+                    )}
                   </div>
                   {/* <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
@@ -340,12 +354,12 @@ class ModalDeliveryAdderss extends Component {
                         marginTop: "1rem",
                       }}
                     > */}
-                      {/* <GoogleMaps 
+                  {/* <GoogleMaps 
                         deliveryAddress={deliveryAddress.address || deliveryAddress.street || {}}
                         setAddress={deliveryAddress.setAddress || false}
                         handleChange={(field, value) => this.props.handleChange(field, value)}
                       /> */}
-                    {/* </div>
+                  {/* </div>
                   </div> */}
 
                   <Button
@@ -359,7 +373,8 @@ class ModalDeliveryAdderss extends Component {
                     }}
                     onClick={() => this.handleSaveAddress()}
                   >
-                    <i className="fa fa-floppy-o" aria-hidden="true" /> Save Address
+                    <i className="fa fa-floppy-o" aria-hidden="true" /> Save
+                    Address
                   </Button>
                 </div>
               )}

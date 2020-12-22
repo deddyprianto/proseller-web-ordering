@@ -34,7 +34,7 @@ class DeliveryAddress extends Component {
       indexEdit: 0,
       isNew: false,
       getDeliveryAddress: false,
-      postalCodeIsValid: true
+      postalCodeIsValid: true,
     };
   }
 
@@ -116,9 +116,9 @@ class DeliveryAddress extends Component {
   };
 
   handleEdit = async (indexEdit, item) => {
-    item.setAddress = false
-    let backupDeliveryAddress = JSON.stringify(item)
-    backupDeliveryAddress = JSON.parse(backupDeliveryAddress)
+    item.setAddress = false;
+    let backupDeliveryAddress = JSON.stringify(item);
+    backupDeliveryAddress = JSON.parse(backupDeliveryAddress);
     let countryCode = this.state.countryCode;
     let optionsProvince = this.state.optionsProvince;
     let province = optionsProvince.find((items) => {
@@ -141,21 +141,28 @@ class DeliveryAddress extends Component {
       // console.log(optionsCity)
       this.setState({ optionsCity, isLoading: false });
     }
-    this.setState({ deliveryAddress: item, backupDeliveryAddress, isNew: false, indexEdit });
+    this.setState({
+      deliveryAddress: item,
+      backupDeliveryAddress,
+      isNew: false,
+      indexEdit,
+    });
   };
 
   resetDeliveryAddress = () => {
-    try{
+    try {
       let { backupDeliveryAddress, addressDelivery } = this.state;
       for (let i = 0; i < addressDelivery.length; i++) {
-        if (addressDelivery[i].addressName === backupDeliveryAddress.addressName) {
+        if (
+          addressDelivery[i].addressName === backupDeliveryAddress.addressName
+        ) {
           addressDelivery[i] = backupDeliveryAddress;
           break;
         }
       }
       this.setState({ addressDelivery, postalCodeIsValid: true });
-    }catch(e){}
-  }
+    } catch (e) {}
+  };
 
   handleDelete = async (data) => {
     Swal.fire({
@@ -170,7 +177,7 @@ class DeliveryAddress extends Component {
       if (result.value) {
         this.setState({ isLoading: true });
         let addressDelivery = this.state.addressDelivery;
-        
+
         if (
           this.props.deliveryAddress &&
           this.props.deliveryAddress.address === data.address
@@ -214,7 +221,10 @@ class DeliveryAddress extends Component {
   };
 
   handleSelected = async (items) => {
-    localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
+    localStorage.setItem(
+      `${config.prefix}_deliveryAddress`,
+      JSON.stringify(encryptor.encrypt(items))
+    );
     await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
@@ -224,36 +234,41 @@ class DeliveryAddress extends Component {
   handleChange = (field, value) => {
     let { deliveryAddress } = this.state;
     deliveryAddress[field] = value;
-    if(field !== "address"){
-      deliveryAddress.address = `${deliveryAddress.street || ""}, ${deliveryAddress.unitNo || ""}, ${deliveryAddress.postalCode || ""}`;
+    if (field !== "address") {
+      deliveryAddress.address = `${deliveryAddress.street || ""}, ${
+        deliveryAddress.unitNo || ""
+      }, ${deliveryAddress.postalCode || ""}`;
     } else {
       deliveryAddress.setAddress = true;
-    } 
-    if(field === "street") {
+    }
+    if (field === "street") {
       deliveryAddress.setAddress = false;
-      if(deliveryAddress.postalCode){
-        this.validationPostalCode(deliveryAddress.postalCode, deliveryAddress.codePostal)
+      if (deliveryAddress.postalCode) {
+        this.validationPostalCode(
+          deliveryAddress.postalCode,
+          deliveryAddress.codePostal
+        );
       }
     }
-    if(field === "postalCode"){
-      this.validationPostalCode(value, deliveryAddress.codePostal)
+    if (field === "postalCode") {
+      this.validationPostalCode(value, deliveryAddress.codePostal);
     }
     this.setState({ deliveryAddress });
   };
 
-  validationPostalCode(postalCode, codePostal){
-    console.log(codePostal)
-    let check = true
-    if(codePostal && Number(codePostal)){
+  validationPostalCode(postalCode, codePostal) {
+    console.log(codePostal);
+    let check = true;
+    if (codePostal && Number(codePostal)) {
       // if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
       // if(postalCode.toString().length !== codePostal.toString().length) check = false
-      if(postalCode.toString().length < 6) check = false
-      if(postalCode.toString().length > 6) check = false
+      if (postalCode.toString().length < 6) check = false;
+      if (postalCode.toString().length > 6) check = false;
     } else {
-      if(postalCode.toString().length !== 6) check = false
+      if (postalCode.toString().length !== 6) check = false;
     }
-    this.setState({postalCodeIsValid: check})
-    return check
+    this.setState({ postalCodeIsValid: check });
+    return check;
   }
 
   render() {
@@ -352,7 +367,8 @@ class DeliveryAddress extends Component {
                     }}
                     onClick={() => this.handleAdd()}
                   >
-                    <i className="fa fa-plus" aria-hidden="true" /> Add New Address
+                    <i className="fa fa-plus" aria-hidden="true" /> Add New
+                    Address
                   </Button>
                 </div>
 
@@ -440,7 +456,7 @@ class DeliveryAddress extends Component {
                                   paddingRight: 5,
                                   borderRadius: 5,
                                   height: 40,
-                                  fontWeight: "bold"
+                                  fontWeight: "bold",
                                 }}
                                 onClick={() => this.handleEdit(key, items)}
                               >
@@ -452,13 +468,12 @@ class DeliveryAddress extends Component {
                                   disabled={
                                     (this.props.deliveryAddress &&
                                       items.address ===
-                                        this.props.deliveryAddress
-                                          .address) ||
+                                        this.props.deliveryAddress.address) ||
                                     false
                                   }
                                   style={{
                                     width: 150,
-                                    fontWeight: "bold"
+                                    fontWeight: "bold",
                                   }}
                                   onClick={() => this.handleSelected(items)}
                                 >
@@ -469,7 +484,7 @@ class DeliveryAddress extends Component {
                                   className="border-theme background-theme"
                                   style={{
                                     width: 150,
-                                    fontWeight: "bold"
+                                    fontWeight: "bold",
                                   }}
                                   onClick={() => this.handleDelete(items)}
                                 >

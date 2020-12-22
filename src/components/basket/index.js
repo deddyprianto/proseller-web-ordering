@@ -270,9 +270,18 @@ class Basket extends Component {
           cart: dataBasket,
           deliveryAddress,
         };
-        dataBasket = await this.props.dispatch(
+        const result = await this.props.dispatch(
           OrderAction.moveCart(payloadMoveCart)
         );
+        if (!result.message) {
+          dataBasket = result;
+        } else {
+          Swal.fire(
+            "Oppss!",
+            result.message || "Failed to change outlet",
+            "error"
+          );
+        }
       }
 
       // set delivery provider
@@ -434,7 +443,7 @@ class Basket extends Component {
           return items.id === dataBasket.deliveryProviderId;
         });
       }
-
+      console.log("calling handleSetProvider from setDeliveryProvider");
       this.handleSetProvaider(provaiderDelivery);
       this.setState({ deliveryProvaider });
     }
@@ -1217,6 +1226,7 @@ class Basket extends Component {
           `${config.prefix}_dataBasket`,
           JSON.stringify(encryptor.encrypt(dataBasket))
         );
+        console.log("Calling getDateBasket from handleSetProvaider");
         await this.getDataBasket();
       }
     }

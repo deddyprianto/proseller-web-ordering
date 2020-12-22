@@ -105,17 +105,22 @@ class Header extends Component {
     await this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
     if (this.props.isLoggedIn) {
       const currentLocation = window.location.hash;
-      if (currentLocation.includes('/basket')) {
+      if (currentLocation.includes("/basket")) {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
-        await localStorage.setItem(`${config.prefix}_outletChangedFromHeader`, outletId);
+        await localStorage.setItem(
+          `${config.prefix}_outletChangedFromHeader`,
+          outletId
+        );
         await localStorage.removeItem(`${config.prefix}_order_action_date`);
         await localStorage.removeItem(`${config.prefix}_order_action_time`);
-        await localStorage.removeItem(`${config.prefix}_order_action_time_slot`);
+        await localStorage.removeItem(
+          `${config.prefix}_order_action_time_slot`
+        );
         await localStorage.removeItem(`${config.prefix}_deliveryProvider`);
         await setTimeout(() => {
-          window.location.reload()
-        }, 100)
+          window.location.reload();
+        }, 100);
       }
     } else {
       this.props.dispatch(
@@ -140,7 +145,7 @@ class Header extends Component {
     }
     return (
       <div id="header-cwo">
-        <LoginRegister />
+        {!isLoggedIn && <LoginRegister />}
         <header
           id="masthead"
           className="site-header header-v4 background-theme"
