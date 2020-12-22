@@ -50,9 +50,9 @@ class Ordering extends Component {
 
     let defaultOutlet = this.props.defaultOutlet;
     if (defaultOutlet && defaultOutlet.id) {
-      defaultOutlet = config.getValidation(defaultOutlet)
+      defaultOutlet = config.getValidation(defaultOutlet);
     }
-    
+
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
     await this.fetchCategories(defaultOutlet);
@@ -61,7 +61,7 @@ class Ordering extends Component {
   componentDidUpdate = async (prevProps) => {
     if (prevProps.defaultOutlet.id !== this.props.defaultOutlet.id) {
       console.log("defaultOutlet Changed");
-      this.setState({processing: false})
+      this.setState({ processing: false });
       this.fetchCategories(this.props.defaultOutlet);
     }
   };
@@ -81,7 +81,7 @@ class Ordering extends Component {
   };
 
   componentWillUnmount() {
-    this.setState({processing: false})
+    this.setState({ processing: false });
     clearInterval(this.timeWhith);
     const { isEmenu } = this.state;
     window.removeEventListener(
@@ -107,7 +107,7 @@ class Ordering extends Component {
           header.style.top = 0;
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   handleScrollEmenu = (e) => {
@@ -124,12 +124,12 @@ class Ordering extends Component {
           searchButton.classList.add("search-button-absolute");
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   fetchCategories = async (outlet) => {
     try {
-      await this.setState({ loading: true});
+      await this.setState({ loading: true });
       const categories = await this.props.dispatch(
         ProductAction.fetchCategoryProduct(outlet)
       );
@@ -137,7 +137,7 @@ class Ordering extends Component {
       await this.setState({ categories, processing: true });
       await this.getProductPreset(categories, outlet);
       await this.setState({ loading: false });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   stopProcessing = async () => {
@@ -170,7 +170,7 @@ class Ordering extends Component {
       products[i] = {
         category: products[i].category,
         items: data.data,
-      }
+      };
 
       await this.setState({
         products,
@@ -185,8 +185,11 @@ class Ordering extends Component {
           );
           products[i].items = [...products[i].items, ...product.data];
           await this.setState({ products, productsBackup: products });
-          localStorage.setItem(`${config.prefix}_productsBackup`, JSON.stringify(encryptor.encrypt(products)));
-          j += 5;
+          localStorage.setItem(
+            `${config.prefix}_productsBackup`,
+            JSON.stringify(encryptor.encrypt(products))
+          );
+          j += 10;
         }
       }
       i++;
@@ -223,19 +226,23 @@ class Ordering extends Component {
                 group.modifier.yesNoDefaultValue === true &&
                 detail.yesNoValue === "no"
               ) {
-                product.product.productModifiers[i].modifier.details[j].isSelected = false;
+                product.product.productModifiers[i].modifier.details[
+                  j
+                ].isSelected = false;
               }
 
               if (
                 group.modifier.yesNoDefaultValue === false &&
                 detail.yesNoValue === "yes"
               ) {
-                product.product.productModifiers[i].modifier.details[j].isSelected = true;
+                product.product.productModifiers[i].modifier.details[
+                  j
+                ].isSelected = true;
               }
             }
           });
       });
-    } catch (e) { }
+    } catch (e) {}
 
     product.quantity = 1;
     product.remark = "";
@@ -280,12 +287,16 @@ class Ordering extends Component {
   searchProduct = async (query) => {
     try {
       const { productsBackup } = this.state;
-      this.setState({finished: true})
+      this.setState({ finished: true });
       if (query === "") {
-        this.setState({ loading: false, loadingSearching: false, products: productsBackup });
+        this.setState({
+          loading: false,
+          loadingSearching: false,
+          products: productsBackup,
+        });
         return;
       } else {
-        this.setState({loadingSearching: true})
+        this.setState({ loadingSearching: true });
       }
 
       let productsSearch = undefined;
@@ -303,7 +314,7 @@ class Ordering extends Component {
               items.push(productsBackup[i].items[j]);
             }
           }
-        } catch (e) { }
+        } catch (e) {}
 
         if (items.length !== 0) {
           if (productsSearch === undefined) {
@@ -321,7 +332,7 @@ class Ordering extends Component {
 
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getCurrency = (price) => {
@@ -366,8 +377,13 @@ class Ordering extends Component {
             className="full-width list-view columns-2 archive woocommerce-page html-change"
             style={{ marginTop: 100 }}
           >
-            <div className="tab-content">=
-              <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
+            <div className="tab-content">
+              =
+              <img
+                src={config.url_emptyImage}
+                alt="is empty"
+                style={{ marginTop: 30 }}
+              />
               <div
                 style={{
                   margin: 10,
@@ -440,19 +456,21 @@ class Ordering extends Component {
             }
           ></EMenuCategories>
         ) : (
-            <WebOrderingCategories
-              categoryRefs={categoryRefs}
-              loadingSearching={(status) => this.setState({ loadingSearching: status })}
-              finished={finished}
-              setLoading={(status) => this.setState({ loading: status })}
-              searchProduct={(query) => this.searchProduct(query)}
-              categories={categories}
-              selectedCategory={this.state.selectedCategory}
-              setSelectedCategory={(category) =>
-                this.setState({ selectedCategory: category })
-              }
-            ></WebOrderingCategories>
-          )}
+          <WebOrderingCategories
+            categoryRefs={categoryRefs}
+            loadingSearching={(status) =>
+              this.setState({ loadingSearching: status })
+            }
+            finished={finished}
+            setLoading={(status) => this.setState({ loading: status })}
+            searchProduct={(query) => this.searchProduct(query)}
+            categories={categories}
+            selectedCategory={this.state.selectedCategory}
+            setSelectedCategory={(category) =>
+              this.setState({ selectedCategory: category })
+            }
+          ></WebOrderingCategories>
+        )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
@@ -467,9 +485,12 @@ class Ordering extends Component {
                         id={i}
                         ref={categoryRefs[i]}
                         className="title font-color-theme"
-                        style={{ 
-                          fontSize: 14, marginLeft: 15, marginBottom: 10, 
-                          paddingTop: 10, fontWeight: "bold",
+                        style={{
+                          fontSize: 14,
+                          marginLeft: 15,
+                          marginBottom: 10,
+                          paddingTop: 10,
+                          fontWeight: "bold",
                         }}
                       >
                         {cat.category.name}
@@ -483,13 +504,19 @@ class Ordering extends Component {
                             const startTime = timeArray[0];
                             const endTime = timeArray[1];
                             const startHour = parseInt(startTime.split(":")[0]);
-                            const startMinute = parseInt(startTime.split(":")[1]);
+                            const startMinute = parseInt(
+                              startTime.split(":")[1]
+                            );
                             const endHour = parseInt(endTime.split(":")[0]);
                             const endMinute = parseInt(endTime.split(":")[1]);
                             const start = startHour * 60 + startMinute;
-                            const end = startHour > endHour ? endHour * 60 + endMinute + 24 * 60 : endHour * 60 + endMinute;
+                            const end =
+                              startHour > endHour
+                                ? endHour * 60 + endMinute + 24 * 60
+                                : endHour * 60 + endMinute;
                             const date = new Date();
-                            const now = date.getHours() * 60 + date.getMinutes();
+                            const now =
+                              date.getHours() * 60 + date.getMinutes();
                             return now <= end && now >= start;
                           });
                           if (!isEnabled) {
@@ -502,7 +529,12 @@ class Ordering extends Component {
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
                               selectProduct={this.selectProduct}
-                              showUpdateModal={(item) => this.setState({ showUpdateModal: true, selectedProduct: item })}
+                              showUpdateModal={(item) =>
+                                this.setState({
+                                  showUpdateModal: true,
+                                  selectedProduct: item,
+                                })
+                              }
                               key={j}
                               item={item}
                             />
@@ -514,8 +546,12 @@ class Ordering extends Component {
 
                 {!loadingSearching && !loading && products.length === 0 && (
                   <div>
-                    <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
-                    <h3 className="color text-center" style={{fontSize: 16}}>
+                    <img
+                      src={config.url_emptyImage}
+                      alt="is empty"
+                      style={{ marginTop: 30 }}
+                    />
+                    <h3 className="color text-center" style={{ fontSize: 16 }}>
                       Oppss.. Item Not Found.
                     </h3>
                   </div>
