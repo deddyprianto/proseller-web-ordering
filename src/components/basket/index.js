@@ -250,15 +250,21 @@ class Basket extends Component {
     }
 
     if (dataBasket) {
-      if(dataBasket.isPaymentComplete !== undefined) {
+      if (dataBasket.isPaymentComplete !== undefined) {
         dataBasket = await this.getDataBasketPending(dataBasket);
       }
 
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
-      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
+      const isOutletChanged = await localStorage.getItem(
+        `${config.prefix}_isOutletChanged`
+      );
       // move cart based on delivery address
-      if ( deliveryAddress && orderingMode === "DELIVERY" && isOutletChanged !== 'true') {
+      if (
+        deliveryAddress &&
+        orderingMode === "DELIVERY" &&
+        isOutletChanged !== "true"
+      ) {
         let payloadMoveCart = {
           orderBy: "provider",
           cart: dataBasket,
@@ -294,7 +300,10 @@ class Basket extends Component {
         };
       }
 
-      if ((isChangeMode || dataBasket.totalSurchargeAmount === 0) && dataBasket.isPaymentComplete === undefined) {
+      if (
+        (isChangeMode || dataBasket.totalSurchargeAmount === 0) &&
+        dataBasket.isPaymentComplete === undefined
+      ) {
         let surcharge = await this.props.dispatch(
           OrderAction.changeOrderingMode({ orderingMode })
         );
@@ -308,7 +317,7 @@ class Basket extends Component {
       }
 
       let checkOperationalHours = this.checkOperationalHours(storeDetail);
-      
+
       this.setState({
         dataBasket,
         storeDetail,
@@ -321,7 +330,8 @@ class Basket extends Component {
 
       // check validate pick date time
       if (orderingMode !== "DINEIN") {
-        let check = this.state.orderActionDate === moment().format("YYYY-MM-DD");
+        let check =
+          this.state.orderActionDate === moment().format("YYYY-MM-DD");
         await this.checkPickUpDateTime(
           checkOperationalHours,
           this.state.orderActionDate,
@@ -354,15 +364,18 @@ class Basket extends Component {
   };
 
   getDataBasketPending = async (dataBasket) => {
-    let response = await this.props.dispatch(OrderAction.getCartPending(dataBasket.id));
+    let response = await this.props.dispatch(
+      OrderAction.getCartPending(dataBasket.id)
+    );
     if (response.resultCode === 200) {
-      localStorage.setItem(`${config.prefix}_dataBasket`,
+      localStorage.setItem(
+        `${config.prefix}_dataBasket`,
         JSON.stringify(encryptor.encrypt(response.data))
       );
       this.setState({ dataBasket: response.data });
-      return response.data
-    } 
-    return dataBasket
+      return response.data;
+    }
+    return dataBasket;
   };
 
   setDefaultOutlet = async (dataBasket) => {
@@ -390,10 +403,15 @@ class Basket extends Component {
         deliveryAddress: deliveryAddress,
       };
 
-      const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
-      const newOutletID = await localStorage.getItem(`${config.prefix}_outletChangedFromHeader`)
-      if (isOutletChanged === 'true') {
-        if (newOutletID !== undefined && newOutletID !== null) payload.outletId = newOutletID
+      const isOutletChanged = await localStorage.getItem(
+        `${config.prefix}_isOutletChanged`
+      );
+      const newOutletID = await localStorage.getItem(
+        `${config.prefix}_outletChangedFromHeader`
+      );
+      if (isOutletChanged === "true") {
+        if (newOutletID !== undefined && newOutletID !== null)
+          payload.outletId = newOutletID;
       }
 
       let response = await this.props.dispatch(
@@ -482,10 +500,15 @@ class Basket extends Component {
       orderingMode,
     };
 
-    const isOutletChanged = await localStorage.getItem(`${config.prefix}_isOutletChanged`)
-    const newOutletID = await localStorage.getItem(`${config.prefix}_outletChangedFromHeader`)
-    if (isOutletChanged === 'true') {
-      if (newOutletID !== undefined && newOutletID !== null) payload.outletID = `outlet::${newOutletID}`
+    const isOutletChanged = await localStorage.getItem(
+      `${config.prefix}_isOutletChanged`
+    );
+    const newOutletID = await localStorage.getItem(
+      `${config.prefix}_outletChangedFromHeader`
+    );
+    if (isOutletChanged === "true") {
+      if (newOutletID !== undefined && newOutletID !== null)
+        payload.outletID = `outlet::${newOutletID}`;
     }
 
     if (timeSlot.length === 0 || changeOrderingMode) {
@@ -857,19 +880,30 @@ class Basket extends Component {
   };
 
   setOrderingMode = async (orderingMode) => {
-    const oldOrderingMode = this.state.orderingMode
+    const oldOrderingMode = this.state.orderingMode;
 
     if (oldOrderingMode !== orderingMode) {
       await this.setState({ orderActionTimeSlot: null });
     }
 
-    await this.props.dispatch({ type: "SET_ORDERING_MODE", payload: orderingMode });
+    await this.props.dispatch({
+      type: "SET_ORDERING_MODE",
+      payload: orderingMode,
+    });
 
-    await this.setState({ orderingMode, isLoading: true, provaiderDelivery: null });
+    await this.setState({
+      orderingMode,
+      isLoading: true,
+      provaiderDelivery: null,
+    });
     await this.getDataBasket(true, orderingMode);
 
     let orderActionDate = moment().format("YYYY-MM-DD");
-    await this.setState({ isLoading: false, orderActionDate, isEditDate: false });
+    await this.setState({
+      isLoading: false,
+      orderActionDate,
+      isEditDate: false,
+    });
     await this.checkPickUpDateTime(
       this.state.checkOperationalHours,
       orderActionDate,
@@ -922,9 +956,11 @@ class Basket extends Component {
           let selected = _.filter(dataBasket.details, (items) => {
             return items.selected !== false;
           });
-          if (dataBasket.details.length === selected.length){
+          if (dataBasket.details.length === selected.length) {
             await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
-            await localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
+            await localStorage.removeItem(
+              `${config.prefix}_outletChangedFromHeader`
+            );
             await this.props.dispatch(OrderAction.deleteCart());
           } else {
             let payload = [];
@@ -1090,7 +1126,7 @@ class Basket extends Component {
 
       console.log("submit", response);
       if (response && response.resultCode === 200) {
-        dataBasket = response.data
+        dataBasket = response.data;
         this.setState({ dataBasket });
         localStorage.removeItem(`${config.prefix}_dataBasket`);
         response = await this.props.dispatch(
@@ -1102,8 +1138,8 @@ class Basket extends Component {
           JSON.stringify(encryptor.encrypt(this.state))
         );
 
-        console.log(dataBasket)
-        if(dataBasket.status === "SUBMITTED"){
+        console.log(dataBasket);
+        if (dataBasket.status === "SUBMITTED") {
           this.props.history.push("/history");
         } else {
           this.props.history.push("/payment");
@@ -1134,7 +1170,7 @@ class Basket extends Component {
     if (
       orderingMode === "DINEIN" &&
       storeDetail.outletType === "RESTO" &&
-      (!scanTable || (scanTable && (!scanTable.tableNo && !scanTable.table)))
+      (!scanTable || (scanTable && !scanTable.tableNo && !scanTable.table))
     ) {
       return true;
     } else if (
@@ -1142,7 +1178,7 @@ class Basket extends Component {
       storeDetail.outletType === "QUICKSERVICE" &&
       storeDetail.enableTableScan !== false &&
       storeDetail.enableDineIn !== false &&
-      (!scanTable || (scanTable && (!scanTable.tableNo && !scanTable.table)))
+      (!scanTable || (scanTable && !scanTable.tableNo && !scanTable.table))
     ) {
       return true;
     }
@@ -1303,8 +1339,8 @@ class Basket extends Component {
                   <Col sm={6}>{this.viewShimmer()}</Col>
                 </Row>
               )}
-              
-              {!loadingShow && (!dataBasket && !this.props.basket.details) && (
+
+              {!loadingShow && !dataBasket && !this.props.basket.details && (
                 <div>
                   <img
                     src={config.url_emptyImage}

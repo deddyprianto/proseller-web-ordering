@@ -11,6 +11,8 @@ import config from "../../config";
 import { lsLoad } from "../../helpers/localStorage";
 import { CRMService } from "../../Services/CRMService";
 
+const Swal = require("sweetalert2");
+
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
@@ -330,6 +332,11 @@ function moveCart(payload) {
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
         console.log(response);
+        Swal.fire(
+          "Oppss!",
+          response.message || "Failed to change outlet",
+          "error"
+        );
         return payload.cart;
       } else {
         dispatch(setData(response.data, CONSTANT.DATA_BASKET));
