@@ -283,7 +283,7 @@ class Basket extends Component {
         } else {
           Swal.fire(
             "Oppss!",
-            "Can not find outlet with available product(s) and delivery provider",
+            "Cannot find an outlet with available product(s) and delivery provider",
             "error"
           );
         }

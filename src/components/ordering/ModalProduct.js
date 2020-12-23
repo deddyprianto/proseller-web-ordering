@@ -4,6 +4,7 @@ import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
+import { isNull } from "lodash";
 
 class ModalProduct extends Component {
   constructor(props) {
@@ -179,12 +180,11 @@ class ModalProduct extends Component {
     } catch (e) {}
   };
 
-  processCart = async () => {
+  processCart = async (e, manualOrderingMode = "") => {
     const orderMode = this.props.orderingMode;
+    console.log(manualOrderingMode);
     try {
-      if (!orderMode) {
-        document.getElementById("open-modal-ordering-mode").click();
-      } else {
+      if (orderMode || manualOrderingMode !== "") {
         const { defaultOutlet } = this.props;
         const { selectedItem } = this.state;
         const { basket } = this.state;
@@ -253,6 +253,8 @@ class ModalProduct extends Component {
           this.props.handleSetState("dataBasket", response.data);
           document.getElementById("detail-product-modal").click();
         }
+      } else {
+        document.getElementById("open-modal-ordering-mode").click();
       }
     } catch (e) {}
   };
@@ -576,13 +578,13 @@ class ModalProduct extends Component {
 
   componentWillUnmount = () => {
     try {
-      document.getElementById('close-product-modal').click()
-    }catch(e) { }
+      document.getElementById("close-product-modal").click();
+    } catch (e) {}
 
     try {
-      document.getElementById('dismiss-ordering-mode').click()
-    }catch(e) { }
-  }
+      document.getElementById("dismiss-ordering-mode").click();
+    } catch (e) {}
+  };
 
   detailProduct = () => {
     let { disableButton, selectedItem } = this.state;
@@ -618,7 +620,10 @@ class ModalProduct extends Component {
               height: 35,
             }}
           >
-            <i id="close-product-modal" className="fa fa-times text-btn-theme"></i>
+            <i
+              id="close-product-modal"
+              className="fa fa-times text-btn-theme"
+            ></i>
           </button>
         </div>
         <div className="modal-body modal-body-product">
@@ -790,13 +795,14 @@ class ModalProduct extends Component {
 
   setOrderingMode = (mode) => {
     this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
+    this.processCart(null, mode);
     try {
       document.getElementById("dismiss-ordering-mode").click();
     } catch (error) {}
 
-    try {
-      document.getElementById("add-product-modal").click();
-    } catch (error) {}
+    // try {
+    //   document.getElementById("add-product-modal").click();
+    // } catch (error) {}
   };
 
   modalOrderingMode = () => {

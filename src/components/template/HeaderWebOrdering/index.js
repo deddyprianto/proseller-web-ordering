@@ -69,14 +69,15 @@ class Header extends Component {
       });
     }
     if (
-      this.props.defaultOutlet &&
-      this.props.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
+      prevProps.defaultOutlet !== this.props.defaultOutlet &&
+      prevProps.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
       this.props.outlets &&
       this.props.outlets.length > 1
     ) {
       const firstAvailableOutlet = this.props.outlets.find(
         (outlet) => outlet.orderingStatus === "AVAILABLE"
       );
+      console.log(firstAvailableOutlet);
       if (firstAvailableOutlet) {
         this.props.dispatch({
           type: CONSTANT.DEFAULT_OUTLET,
