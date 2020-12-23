@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { CONSTANT } from "../../../helpers";
 
 import config from "../../../config";
 import { OutletAction } from "../../../redux/actions/OutletAction";
@@ -66,6 +67,22 @@ class Header extends Component {
           },
         }));
       });
+    }
+    if (
+      this.props.defaultOutlet &&
+      this.props.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
+      this.props.outlets &&
+      this.props.outlets.length > 1
+    ) {
+      const firstAvailableOutlet = this.props.outlets.find(
+        (outlet) => outlet.orderingStatus === "AVAILABLE"
+      );
+      if (firstAvailableOutlet) {
+        this.props.dispatch({
+          type: CONSTANT.DEFAULT_OUTLET,
+          data: firstAvailableOutlet,
+        });
+      }
     }
   };
 
@@ -134,7 +151,12 @@ class Header extends Component {
   }
 
   render() {
-    let { isLoggedIn, basket, defaultOutlet, outlets } = this.props;
+    let { isLoggedIn, basket, defaultOutlet } = this.props;
+    let outlets =
+      this.props.outlets &&
+      this.props.outlets.filter(
+        (outlet) => outlet.orderingStatus === "AVAILABLE"
+      );
     let { infoCompany, enableOrdering, logoCompany } = this.state;
 
     let basketLength = 0;

@@ -260,10 +260,15 @@ class Basket extends Component {
         `${config.prefix}_isOutletChanged`
       );
       // move cart based on delivery address
+      console.log(this.props.outlets.length);
       if (
         deliveryAddress &&
         orderingMode === "DELIVERY" &&
-        isOutletChanged !== "true"
+        isOutletChanged !== "true" &&
+        this.props.outlets &&
+        this.props.outlets.length > 1 &&
+        dataBasket.provider &&
+        dataBasket.provider.calculationMode !== "FIX"
       ) {
         let payloadMoveCart = {
           orderBy: "provider",
@@ -278,7 +283,7 @@ class Basket extends Component {
         } else {
           Swal.fire(
             "Oppss!",
-            result.message || "Failed to change outlet",
+            "Can not find outlet with available product(s) and delivery provider",
             "error"
           );
         }
@@ -1426,6 +1431,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,
+    outlets: state.outlet.outlets,
     campaignPoint: state.campaign.data,
     myVoucher: state.customer.myVoucher,
     companyInfo: state.masterdata.companyInfo.data,
