@@ -1153,7 +1153,7 @@ class Basket extends Component {
         );
 
         console.log(dataBasket);
-        if (dataBasket.status === "SUBMITTED") {
+        if (dataBasket.status === "SUBMITTED" || dataBasket.outlet.outletType === 'RESTO') {
           this.props.history.push("/history");
         } else {
           this.props.history.push("/payment");

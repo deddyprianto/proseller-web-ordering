@@ -2,8 +2,8 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "dev";
-let companyHost = "qiji";
+let stage = "demo";
+let companyHost = "popejai";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""
 }.proseller.io`;

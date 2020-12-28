@@ -32,13 +32,14 @@ class ItemsBasket extends Component {
   };
 
   componentDidMount = () => {
+    console.log('databasket from itemBasket => ',this.props.dataBasket)
     this.setState({ dataBasket: this.props.dataBasket });
   };
 
   render() {
     let { data } = this.props;
     let { dataBasket } = this.state;
-    
+    console.log('databasket from itemBasket => ',this.props.dataBasket)
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>
         <ModalProduct

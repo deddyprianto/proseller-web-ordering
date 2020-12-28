@@ -147,7 +147,7 @@ const ViewCartBasket = ({
       ) ||
       (
         props.scanTable &&
-        props.scanTable.table
+        props.scanTable.table && basket.outlet.outletType !== 'RESTO'
       )
     );
   };
