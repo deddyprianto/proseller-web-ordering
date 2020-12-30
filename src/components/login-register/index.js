@@ -239,6 +239,11 @@ class LoginRegister extends Component {
         }
       }
     }
+
+    if (this.state.isLoading !== prevState.isLoading) {
+      if (this.state.isLoading) Swal.showLoading();
+      else Swal.close();
+    }
   }
 
   handleInput = (jenis, data) => {
@@ -804,7 +809,7 @@ class LoginRegister extends Component {
 
   handleEmailLogin = async (withOtp) => {
     let payloadResponse = this.state.payloadResponse;
-    this.setState({ isLoading: true });
+    Swal.showLoading();
     try {
       let payload = { email: payloadResponse.email };
 
@@ -827,12 +832,12 @@ class LoginRegister extends Component {
       window.location.reload();
     } catch (err) {
       console.log(err);
+      Swal.close();
       let error = "Account not exist";
       if (err.message) {
         error = err.message;
       }
       Swal.fire("Oppss!", error, "error");
-      this.setState({ isLoading: false });
     }
   };
 
@@ -1039,7 +1044,7 @@ class LoginRegister extends Component {
     } = this.state;
     return (
       <div>
-        {isLoading ? Swal.showLoading() : Swal.close()}
+        {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
         <div
           className="modal fade"
           id="login-register-modal"
