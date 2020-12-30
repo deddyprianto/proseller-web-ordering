@@ -466,7 +466,7 @@ class LoginRegister extends Component {
 
   handleMobileLogin = async (withOtp) => {
     let payloadResponse = this.state.payloadResponse;
-    this.setState({ isLoading: true });
+    Swal.showLoading();
     try {
       let payload = { phoneNumber: payloadResponse.phoneNumber };
 
@@ -492,7 +492,6 @@ class LoginRegister extends Component {
         error = err.message;
       }
       Swal.fire("Oppss!", error, "error");
-      this.setState({ isLoading: false });
     }
   };
 
