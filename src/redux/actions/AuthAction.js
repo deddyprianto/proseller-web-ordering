@@ -15,7 +15,7 @@ export const AuthActions = {
   register,
   refreshToken,
   setData,
-  setInvitationCode
+  setInvitationCode,
 };
 
 function check(payload) {
@@ -35,18 +35,20 @@ function check(payload) {
 function sendOtp(payload) {
   return async (dispatch, getState) => {
     dispatch(loader(true));
-    
+
     // Check Sender Name
-    try{
+    try {
       const state = getState();
       if (state.order.setting.length > 0) {
-        const find = state.order.setting.find(item => item.settingKey === "SenderName")
+        const find = state.order.setting.find(
+          (item) => item.settingKey === "SenderName"
+        );
         if (find !== undefined) {
-          payload.senderName = find.settingValue
+          payload.senderName = find.settingValue;
         }
       }
-    }catch(e){}
-    
+    } catch (e) {}
+
     let response = await CRMService.api(
       "POST",
       payload,
@@ -62,7 +64,8 @@ function login(payload) {
   return async (dispatch) => {
     dispatch(loader(true));
     let response = await CRMService.api("POST", payload, "customer/login");
-    dispatch(setData(response, CONSTANT.KEY_AUTH_LOGIN));
+    if (response && response.ResultCode < 400)
+      dispatch(setData(response, CONSTANT.KEY_AUTH_LOGIN));
     dispatch(loader(false));
     return response;
   };
@@ -74,11 +77,11 @@ function register(payload, enableRegisterWithPassword = false) {
     let url =
       (enableRegisterWithPassword && "customer/registerByPassword") ||
       "customer/register";
-    
-    try{
-      payload.smsNotification = true
-      payload.emailNotification = true
-    }catch(e){}
+
+    try {
+      payload.smsNotification = true;
+      payload.emailNotification = true;
+    } catch (e) {}
 
     let response = await CRMService.api("POST", payload, url);
     dispatch(setData(response, CONSTANT.KEY_AUTH_REGISTER));
@@ -102,7 +105,7 @@ function refreshToken() {
         account.accessToken.payload = response.payload;
         lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
       } else {
-        console.log("Refresh token", false)
+        console.log("Refresh token", false);
         // localStorage.clear();
         // window.location.reload();
       }
@@ -112,10 +115,9 @@ function refreshToken() {
 
 function setInvitationCode(code) {
   return async (dispatch) => {
-    dispatch({type : 'SET_REFERRAL_CODE', data: code});
-  }
+    dispatch({ type: "SET_REFERRAL_CODE", data: code });
+  };
 }
-
 
 function setData(data, constant) {
   return {
