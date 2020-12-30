@@ -48,11 +48,11 @@ class PaymentMethod extends Component {
     let paymentCardAccount = await this.props.dispatch(
       PaymentAction.getPaymentCard()
     );
-    
+
     let selectedCard = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
-    
+
     if (infoCompany.paymentTypes && paymentCardAccount.resultCode === 200) {
       let paymentTypes = infoCompany.paymentTypes;
       paymentTypes.forEach((elements) => {
@@ -60,25 +60,22 @@ class PaymentMethod extends Component {
           paymentID: elements.paymentID,
         });
         elements.data.forEach((element) => {
-          element.minimumPayment = elements.minimumPayment
-          if(element.isDefault){
+          element.minimumPayment = elements.minimumPayment;
+          if (element.isDefault) {
             element.default = true;
             localStorage.setItem(
               `${config.prefix}_paymentCardAccountDefault`,
               JSON.stringify(encryptor.encrypt(element))
             );
           }
-          if (
-            selectedCard &&
-            selectedCard.accountID === element.accountID
-          ) {
+          if (selectedCard && selectedCard.accountID === element.accountID) {
             element.selected = true;
           } else {
             delete element.selected;
           }
         });
       });
-      
+
       this.setState({ paymentTypes });
     }
     this.setState({ loadingShow: false, infoCompany });
@@ -184,11 +181,15 @@ class PaymentMethod extends Component {
           });
 
           let accountID = response.data.accountID;
-          response = await this.props.dispatch( PaymentAction.checkPaymentCard(accountID) );
-          
+          response = await this.props.dispatch(
+            PaymentAction.checkPaymentCard(accountID)
+          );
+
           let timeInterval = setInterval(async () => {
-            response = await this.props.dispatch( PaymentAction.checkPaymentCard(accountID) );
-            if(response.data.registrationStatus === "completed"){
+            response = await this.props.dispatch(
+              PaymentAction.checkPaymentCard(accountID)
+            );
+            if (response.data.registrationStatus === "completed") {
               localStorage.setItem(
                 `${config.prefix}_paymentCardAccountDefault`,
                 JSON.stringify(encryptor.encrypt(response.data))
@@ -196,7 +197,8 @@ class PaymentMethod extends Component {
               await this.getDataPaymentCard();
               this.setState({ showAddPaymentForm: false });
               this.handleSelectCard(response.data);
-              Swal.fire({ icon: "success",
+              Swal.fire({
+                icon: "success",
                 timer: 1500,
                 title: "Your Credit Card has been added.",
                 showConfirmButton: false,
@@ -241,7 +243,7 @@ class PaymentMethod extends Component {
       isLoading,
       paymentTypes,
       detailCard,
-      getPaymentMethod
+      getPaymentMethod,
     } = this.state;
     return (
       <div
@@ -342,7 +344,8 @@ class PaymentMethod extends Component {
                               }}
                               onClick={() => this.handleAddMethod(item)}
                             >
-                              <i className="fa fa-plus" aria-hidden="true" /> Add Card
+                              <i className="fa fa-plus" aria-hidden="true" />{" "}
+                              Add Card
                             </Button>
                           )}
                         </div>
@@ -357,7 +360,7 @@ class PaymentMethod extends Component {
                                   color: "#FFF",
                                   cursor: "pointer",
                                   backgroundColor: "#1d282e",
-                                  border: "1 solid #FFF"
+                                  border: "1 solid #FFF",
                                 }}
                                 data-toggle="modal"
                                 data-target={
@@ -376,7 +379,9 @@ class PaymentMethod extends Component {
                                   <div
                                     style={{ fontSize: 16, fontWeight: "bold" }}
                                   >
-                                    {card.details.cardIssuer.toUpperCase()}
+                                    {card.details.cardIssuer
+                                      ? card.details.cardIssuer.toUpperCase()
+                                      : "-"}
                                   </div>
                                   {card.default === true && (
                                     <div
@@ -445,14 +450,18 @@ class PaymentMethod extends Component {
                         </Row>
                       </div>
                     ))}
-                    
+
                     {paymentTypes.length === 0 && (
                       <div>
                         {/* <Lottie
                           options={{ animationData: emptyGif }}
                           style={{ height: 250 }}
                         /> */}
-                        <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
+                        <img
+                          src={config.url_emptyImage}
+                          alt="is empty"
+                          style={{ marginTop: 30 }}
+                        />
                         <div>Data is empty</div>
                       </div>
                     )}

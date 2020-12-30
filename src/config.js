@@ -39,7 +39,7 @@ if (process.env.REACT_APP_STAGE === "local") {
 }
 
 if (process.env.REACT_APP_STAGE === "demo") {
-  config.url_payment = `https://payment-demo.proseller.io/api/`;
+  config.url_payment = `https://payment.proseller-demo.com/api/`;
 } else if (process.env.REACT_APP_STAGE === "prod") {
   config.url_payment = `https://payment.proseller.io/api/`;
 } else if (

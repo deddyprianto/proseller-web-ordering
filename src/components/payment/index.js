@@ -349,10 +349,18 @@ class Payment extends Component {
         });
       } else checkOutlet = true;
 
-      if (selectedVoucher.minPurchaseAmount && selectedVoucher.minPurchaseAmount > 0) {
+      if (
+        selectedVoucher.minPurchaseAmount &&
+        selectedVoucher.minPurchaseAmount > 0
+      ) {
         if (dataBasket.totalNettAmount < selectedVoucher.minPurchaseAmount) {
-          this.setRemoveVoucher(`The minimum purchase amount to use this voucher is ${this.getCurrency(selectedVoucher.minPurchaseAmount)}`, selectedVoucher);
-          return
+          this.setRemoveVoucher(
+            `The minimum purchase amount to use this voucher is ${this.getCurrency(
+              selectedVoucher.minPurchaseAmount
+            )}`,
+            selectedVoucher
+          );
+          return;
         }
       }
 
@@ -400,8 +408,10 @@ class Payment extends Component {
         } else if (selectedVoucher.appliedTo === "CATEGORY") {
           for (let i = 0; i < dataBasket.details.length; i++) {
             let details = dataBasket.details[i];
-            let check = selectedVoucher.appliedItems.find(items => { return items.value === details.product.categoryID})
-            if(check) checkProduct = details
+            let check = selectedVoucher.appliedItems.find((items) => {
+              return items.value === details.product.categoryID;
+            });
+            if (check) checkProduct = details;
           }
         }
       }
@@ -613,25 +623,33 @@ class Payment extends Component {
   };
 
   handleRedeemPoint = async () => {
-    let {pendingPoints, pointsToRebateRatio, amountSVC, dataSettle, percentageUseSVC} = this.state
-    let totalPoint = this.props.campaignPoint.totalPoint
+    let {
+      pendingPoints,
+      pointsToRebateRatio,
+      amountSVC,
+      dataSettle,
+      percentageUseSVC,
+    } = this.state;
+    let totalPoint = this.props.campaignPoint.totalPoint;
 
     let selectedPoint = this.state.selectedPoint || 0;
     totalPoint = totalPoint - pendingPoints;
 
     if (dataSettle.paySVC || amountSVC === 0) {
-      totalPoint = totalPoint - this.props.campaignPoint.lockPoints
+      totalPoint = totalPoint - this.props.campaignPoint.lockPoints;
     }
 
     if (percentageUseSVC > 0) {
       let minusPoint = 0;
-      minusPoint = (amountSVC/this.props.defaultBalance) * this.props.campaignPoint.defaultPoints 
-      let diff = this.props.campaignPoint.lockPoints - minusPoint
-      diff = diff < 0 ? 0 : diff
-      totalPoint = totalPoint - diff
+      minusPoint =
+        (amountSVC / this.props.defaultBalance) *
+        this.props.campaignPoint.defaultPoints;
+      let diff = this.props.campaignPoint.lockPoints - minusPoint;
+      diff = diff < 0 ? 0 : diff;
+      totalPoint = totalPoint - diff;
     }
 
-    if (totalPoint < 0) totalPoint = 0
+    if (totalPoint < 0) totalPoint = 0;
 
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
 
@@ -1195,7 +1213,9 @@ class Payment extends Component {
       let lengthNumber = selectedCard.details.maskedAccountNumber.toString()
         .length;
       nameCreditCard = "Pay " + this.getCurrency(totalPrice) + " with ";
-      nameCreditCard += selectedCard.details.cardIssuer.toUpperCase() + " ";
+      nameCreditCard += selectedCard.details.cardIssuer
+        ? selectedCard.details.cardIssuer.toUpperCase() + " "
+        : "- ";
       nameCreditCard +=
         selectedCard.details.maskedAccountNumber.substr(lengthNumber - 4) + " ";
     }
