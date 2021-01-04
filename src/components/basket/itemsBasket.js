@@ -29,16 +29,19 @@ class ItemsBasket extends Component {
     productSelected = JSON.parse(JSON.stringify(productSelected));
     let dataBasket = JSON.parse(JSON.stringify(props.dataBasket));
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
-    
+
     const productBackup = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_productsBackup`))
     );
 
-    try{
-      if (storeDetail.product[0].item === undefined || storeDetail.product[0].item.length === 0) {
-        storeDetail.product = productBackup
+    try {
+      if (
+        storeDetail.product[0].item === undefined ||
+        storeDetail.product[0].item.length === 0
+      ) {
+        storeDetail.product = productBackup;
       }
-    }catch(e){}
+    } catch (e) {}
 
     if (storeDetail && storeDetail.product) {
       storeDetail.product.forEach((group) => {
@@ -74,19 +77,23 @@ class ItemsBasket extends Component {
                 group.modifier.yesNoDefaultValue === true &&
                 detail.yesNoValue === "no"
               ) {
-                product.product.productModifiers[i].modifier.details[j].isSelected = false;
+                product.product.productModifiers[i].modifier.details[
+                  j
+                ].isSelected = false;
               }
 
               if (
                 group.modifier.yesNoDefaultValue === false &&
                 detail.yesNoValue === "yes"
               ) {
-                product.product.productModifiers[i].modifier.details[j].isSelected = true;
+                product.product.productModifiers[i].modifier.details[
+                  j
+                ].isSelected = true;
               }
             }
           });
       });
-    } catch (e) { }
+    } catch (e) {}
 
     if (isEmptyObject(dataBasket)) {
       product.quantity = 1;
@@ -104,28 +111,36 @@ class ItemsBasket extends Component {
             // fill the modifier
             if (!isEmptyArray(find.modifiers)) {
               product.product.productModifiers &&
-              product.product.productModifiers.forEach((group, i) => {
-                group.modifier.details.forEach((detail, j) => {
-                  find.modifiers.forEach(data => {
-                    data.modifier.details.forEach(item => {
-                      // make mark that item is in basket
-                      if (data.modifierID === group.modifierID) {
-                        product.product.productModifiers[i].postToServer = true;
-                        // set quantity basket to product that openend
-                        if (item.id === detail.id) {
-                          // check for radio button
-                          if (group.modifier.max === 1) {
-                            product.product.productModifiers[i].modifier.show = data.modifier.show;
+                product.product.productModifiers.forEach((group, i) => {
+                  group.modifier.details.forEach((detail, j) => {
+                    find.modifiers.forEach((data) => {
+                      data.modifier.details.forEach((item) => {
+                        // make mark that item is in basket
+                        if (data.modifierID === group.modifierID) {
+                          product.product.productModifiers[
+                            i
+                          ].postToServer = true;
+                          // set quantity basket to product that openend
+                          if (item.id === detail.id) {
+                            // check for radio button
+                            if (group.modifier.max === 1) {
+                              product.product.productModifiers[
+                                i
+                              ].modifier.show = data.modifier.show;
+                            }
+                            product.product.productModifiers[
+                              i
+                            ].modifier.details[j].quantity = item.quantity;
+                            // for is selected
+                            product.product.productModifiers[
+                              i
+                            ].modifier.details[j].isSelected = item.isSelected;
                           }
-                          product.product.productModifiers[i].modifier.details[j].quantity = item.quantity;
-                          // for is selected
-                          product.product.productModifiers[i].modifier.details[j].isSelected = item.isSelected;
                         }
-                      }
+                      });
                     });
                   });
                 });
-              });
             }
           }
         } else {
@@ -208,10 +223,17 @@ class ItemsBasket extends Component {
                 display: "flex",
                 justifyContent: "space-between",
                 fontSize: 14,
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
-              <div style={{ fontWeight: "bold", color: this.props.color.primary || "#c00a27", textAlign: "left", lineHeight: "17px" }}>
+              <div
+                style={{
+                  fontWeight: "bold",
+                  color: this.props.color.primary || "#c00a27",
+                  textAlign: "left",
+                  lineHeight: "17px",
+                }}
+              >
                 {data.dataBasket.outlet.name}
               </div>
               <Link to="/">
@@ -254,10 +276,13 @@ class ItemsBasket extends Component {
                   alignItems: "center",
                 }}
               >
-                <CheckBox 
-                  handleChange={(status) => this.handleSelect(null, null, status)}
-                  selected={selected === dataBasket.details.length} 
-                  setRadius={5} setHeight={20}
+                <CheckBox
+                  handleChange={(status) =>
+                    this.handleSelect(null, null, status)
+                  }
+                  selected={selected === dataBasket.details.length}
+                  setRadius={5}
+                  setHeight={20}
                 />
                 <div style={{ marginLeft: 10 }}>Select All Items</div>
               </div>
@@ -300,10 +325,11 @@ class ItemsBasket extends Component {
                   }}
                 >
                   <div style={{ marginRight: 8 }}>
-                    <CheckBox 
+                    <CheckBox
                       handleChange={(status) => this.handleSelect(key, item)}
-                      selected={item.selected !== false} 
-                      setRadius={5} setHeight={20}
+                      selected={item.selected !== false}
+                      setRadius={5}
+                      setHeight={20}
                     />
                   </div>
                   <CardItemBasket
