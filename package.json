@@ -57,7 +57,7 @@
     "start": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e local react-scripts start",
     "build": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e local react-scripts build",
     "webordering-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://prod-web-ordering-1-0 --acl public-read",
-    "webordering-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
+    "webordering-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync build/ s3://demo-web-ordering-1-0 --acl public-read",
     "webordering-dev": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e dev react-scripts build && aws s3 sync build/ s3://dev-web-ordering-1-0 --acl public-read",
     "emenu-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://emenu-1-0 --acl public-read",
     "emenu-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync build/ s3://demo-emenu-1-0 --acl public-read",

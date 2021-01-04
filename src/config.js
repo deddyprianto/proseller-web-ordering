@@ -2,7 +2,7 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "demo";
+let stage = "dev";
 let companyHost = "edgeworks";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""
@@ -39,7 +39,7 @@ if (process.env.REACT_APP_STAGE === "local") {
 }
 
 if (process.env.REACT_APP_STAGE === "demo") {
-  config.url_payment = `https://payment.proseller-demo.com/api/`;
+  config.url_payment = `https://payment-demo.proseller.io/api/`;
 } else if (process.env.REACT_APP_STAGE === "prod") {
   config.url_payment = `https://payment.proseller.io/api/`;
 } else if (
