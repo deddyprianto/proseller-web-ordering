@@ -91,6 +91,7 @@ class DetailProfile extends Component {
       const { dataCustomer } = this.state;
       const maxRanking = this.getMaxRanking();
       if (dataCustomer.customerGroupLevel === maxRanking) return 'Renew'
+      if (dataCustomer.customerGroupLevel === undefined) return 'Renew'
       return 'Upgrade'
     }catch(e){
       return 'Upgrade'

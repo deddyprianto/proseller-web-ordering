@@ -2,11 +2,12 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "demo";
-let companyHost = "popejai";
-let endPoint = `https://${companyHost}${
-  stage !== "" ? "-" + stage : ""
-}.proseller.io`;
+let stage = "dev";
+let companyHost = "qiji";
+// let endPoint = `https://${companyHost}${
+//   stage !== "" ? "-" + stage : ""
+// }.proseller.io`;
+let endPoint = `https://${companyHost}-${stage}.proseller-${stage}.com`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {
@@ -46,9 +47,10 @@ if (process.env.REACT_APP_STAGE === "demo") {
   process.env.REACT_APP_STAGE === "local" ||
   process.env.REACT_APP_STAGE === "dev"
 ) {
-  config.url_payment = `https://payment${
-    stage !== "" ? "-" + stage : ""
-  }.proseller.io/api/`;
+  // config.url_payment = `https://payment${
+  //   stage !== "" ? "-" + stage : ""
+  // }.proseller.io/api/`;
+  config.url_payment = `https://payment.proseller-${stage}.com/api/`;
 } else {
   config.url_payment = process.env.REACT_APP_URLPAYMENT;
 }
