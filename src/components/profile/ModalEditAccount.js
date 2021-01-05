@@ -72,7 +72,8 @@ class ModalEditAccount extends Component {
   viewPhoneNumber(){
     let {phoneCountryCode, newPhoneNumber, isWaitingOTP, isSending, counterMinutes, counterSeconds} = this.state
     let phoneNumber = `${phoneCountryCode}${newPhoneNumber}`
-
+    const color = this.props.color.background
+    
     if(isWaitingOTP){
       return(
         <div>
@@ -126,8 +127,8 @@ class ModalEditAccount extends Component {
               }
               disableSearchIcon
               inputStyle={{
-                width: "0",
-                border: "1px solid #FFF",
+                border: `1px solid ${color}`,
+                backgroundColor: color,
                 height: 40,
                 outline: 'none',
                 boxShadow: 'none'
@@ -379,6 +380,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     companyInfo: state.masterdata.companyInfo.data,
     account: state.auth.account,
+    color: state.theme.color,
   };
 };
 

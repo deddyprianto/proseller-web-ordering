@@ -1369,12 +1369,7 @@ class Payment extends Component {
                                 textDecorationLine: "line-through",
                               }}
                             >
-                              {
-                                (this.getCurrency(totalAmount) || "").split(
-                                  this.props.companyInfo &&
-                                    this.props.companyInfo.currency.code
-                                )[1]
-                              }
+                              { totalAmount }
                             </div>
                           )}
                         </div>
