@@ -73,7 +73,7 @@ class ModalEditAccount extends Component {
     let {phoneCountryCode, newPhoneNumber, isWaitingOTP, isSending, counterMinutes, counterSeconds} = this.state
     let phoneNumber = `${phoneCountryCode}${newPhoneNumber}`
     const color = this.props.color.background
-    
+
     if(isWaitingOTP){
       return(
         <div>
@@ -127,11 +127,15 @@ class ModalEditAccount extends Component {
               }
               disableSearchIcon
               inputStyle={{
+                width: 0,
                 border: `1px solid ${color}`,
                 backgroundColor: color,
                 height: 40,
                 outline: 'none',
                 boxShadow: 'none'
+              }}
+              dropdownStyle={{
+                color: "#808080",
               }}
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>
