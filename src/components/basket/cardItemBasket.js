@@ -94,6 +94,25 @@ class CardItemBasket extends Component {
               </div>
             </div>
           )}
+
+          {/* POSSIBLE PROMOTION INFO */}
+          {
+            item.promotions && item.promotions.length > 0 &&
+            item.promotions.map(promo =>
+              <div style={{ marginTop: 10, paddingBottom: 5 }}>
+                <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
+                  <span
+                    className="customer-group-name"
+                    style={{ marginRight: 5, fontSize: 12 }}
+                  >
+                    - {promo.name}
+                  </span>
+                </Typography>
+              </div>
+            )
+          }
+          {/* POSSIBLE PROMOTION INFO */}
+
           {item.remark && item.remark !== "-" && (
             <div className="font-color-theme" style={{ 
               display: "flex", marginLeft: -5, marginTop: -5, marginBottom: -10 
