@@ -79,7 +79,7 @@ export default class ModalStampsDetail extends Component {
                   <br />
                   {
                     detail.expiryDate &&
-                    <p className="color">Your stamp will expire on {moment(detail.expiryDate).format("DD MMM YYYY")}</p>
+                    <p className="color"><b>Your stamp will expire on {moment(detail.expiryDate).format("DD MMM YYYY")}</b></p>
                   }
                 </div>
               </div>
