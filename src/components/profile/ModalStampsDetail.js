@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import StarIcon from "@material-ui/icons/Star";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
+import moment from "moment";
 
 export default class ModalStampsDetail extends Component {
   render() {
@@ -75,6 +76,11 @@ export default class ModalStampsDetail extends Component {
                       <img src={image} alt="My stamps" style={{ width: "100%", maxWidth: "333px" }} />
                     }
                   </div>
+                  <br />
+                  {
+                    detail.expiryDate &&
+                    <p className="color">Your stamp will expire on {moment(detail.expiryDate).format("DD MMM YYYY")}</p>
+                  }
                 </div>
               </div>
             </div>
