@@ -307,14 +307,15 @@ class ModalProduct extends Component {
             selectedItem.product.productModifiers[i].modifier.details[j]
               .isSelected;
           if (
-            modifierDetail[j].quantity === undefined ||
-            modifierDetail[j].quantity === 0
+            (modifierDetail[j].quantity === undefined ||
+              modifierDetail[j].quantity === 0) &&
+            isSelected === false
           ) {
             modifierDetail[j].quantity = 1;
             modifierDetail[j].isSelected = !isSelected;
             selectedItem.product.productModifiers[i].postToServer = true;
           } else {
-            modifierDetail[j].quantity = undefined;
+            modifierDetail[j].quantity = 0;
             modifierDetail[j].isSelected = !isSelected;
 
             if (type === undefined)

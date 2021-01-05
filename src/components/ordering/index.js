@@ -240,6 +240,9 @@ class Ordering extends Component {
                 product.product.productModifiers[i].modifier.details[
                   j
                 ].isSelected = true;
+                product.product.productModifiers[i].modifier.details[
+                  j
+                ].quantity = 0;
               }
             }
           });

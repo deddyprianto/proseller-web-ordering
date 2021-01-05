@@ -995,6 +995,7 @@ class Basket extends Component {
           await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
+        Swal.close();
         await this.getDataBasket();
       }
     });
@@ -1153,7 +1154,10 @@ class Basket extends Component {
         );
 
         console.log(dataBasket);
-        if (dataBasket.status === "SUBMITTED" || dataBasket.outlet.outletType === 'RESTO') {
+        if (
+          dataBasket.status === "SUBMITTED" ||
+          dataBasket.outlet.outletType === "RESTO"
+        ) {
           this.props.history.push("/history");
         } else {
           this.props.history.push("/payment");
