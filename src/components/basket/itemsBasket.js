@@ -30,9 +30,7 @@ class ItemsBasket extends Component {
     let dataBasket = JSON.parse(JSON.stringify(props.dataBasket));
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
 
-    const productBackup = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_productsBackup`))
-    );
+    const productBackup = this.props.categories;
 
     try {
       if (
@@ -47,6 +45,7 @@ class ItemsBasket extends Component {
       storeDetail.product.forEach((group) => {
         group.items.forEach((product) => {
           if (product.productID === productSelected.productID) {
+            console.log(product);
             product.id = productSelected.id;
             productSelected = product;
           }
@@ -56,6 +55,7 @@ class ItemsBasket extends Component {
 
     let product = JSON.stringify(productSelected);
     product = JSON.parse(product);
+    console.log(product);
 
     try {
       await product.product.productModifiers.forEach((group, i) => {
@@ -173,6 +173,7 @@ class ItemsBasket extends Component {
         if (props.storeDetail && props.storeDetail.product) {
           this.selectProduct(item, "Update");
           document.getElementById("detail-product-btn").click();
+          Swal.close();
           clearInterval(time);
           this.setState({ isLoading: false });
         }
@@ -367,6 +368,7 @@ const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
     basket: state.order.basket,
+    categories: state.product.categories,
   };
 };
 

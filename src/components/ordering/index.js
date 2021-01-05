@@ -11,6 +11,7 @@ import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
 import WebOrderingCategories from "./WebOrderingCategories";
 import EMenuCategories from "./EMenuCategories";
+import { CONSTANT } from "../../helpers";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Ordering extends Component {
@@ -185,15 +186,16 @@ class Ordering extends Component {
           );
           products[i].items = [...products[i].items, ...product.data];
           await this.setState({ products, productsBackup: products });
-          localStorage.setItem(
-            `${config.prefix}_productsBackup`,
-            JSON.stringify(encryptor.encrypt(products))
-          );
           j += 10;
         }
       }
       i++;
     }
+
+    this.props.dispatch({
+      type: CONSTANT.LIST_CATEGORY,
+      data: this.state.products,
+    });
 
     if (!this.state.processing) {
       this.setState({ products: [], productsBackup: [] });
