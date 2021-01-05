@@ -793,8 +793,9 @@ class ModalProduct extends Component {
     );
   };
 
-  setOrderingMode = (mode) => {
+  setOrderingMode = async (mode) => {
     this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
+    await this.setState({ disableButton: true });
     this.processCart(null, mode);
     try {
       document.getElementById("dismiss-ordering-mode").click();
