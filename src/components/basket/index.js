@@ -995,6 +995,7 @@ class Basket extends Component {
           await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
+        Swal.close()
         await this.getDataBasket();
       }
     });

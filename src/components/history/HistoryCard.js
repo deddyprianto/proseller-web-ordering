@@ -119,7 +119,12 @@ class InboxCard extends Component {
               className="modal-title"
               style={{ fontWeight: "bold", fontSize: 14, textAlign: "right" }}
             >
-              {items.point > 0 ? items.point + " points" : null}
+              {
+                items.status === 'COMPLETED' ?
+                items.point > 0 ? items.point + " points" : null
+                :
+                items.status
+              }
             </div>
             <div
               style={{
