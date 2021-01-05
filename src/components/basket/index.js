@@ -249,7 +249,7 @@ class Basket extends Component {
       if (!response.message) dataBasket = response.data;
     }
 
-    if (dataBasket) {
+    if (dataBasket && dataBasket.outlet !== undefined) {
       if (dataBasket.isPaymentComplete !== undefined) {
         dataBasket = await this.getDataBasketPending(dataBasket);
       }
