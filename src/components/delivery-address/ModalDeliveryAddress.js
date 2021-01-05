@@ -16,6 +16,7 @@ class ModalDeliveryAdderss extends Component {
     this.state = {
       isLoading: false,
       optionsCity: [],
+      initialAddress: this.props.deliveryAddress,
     };
   }
 
