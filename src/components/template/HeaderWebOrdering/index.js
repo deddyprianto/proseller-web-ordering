@@ -207,7 +207,7 @@ class Header extends Component {
                 />
                 <span className="color" style={{ fontSize: 15 }}>
                   <select
-                    className={styles.outletNameSelect}
+                    className={`${styles.outletNameSelect} color`}
                     onChange={(e) => this.handleOutletChange(e)}
                     value={defaultOutlet.id}
                   >
