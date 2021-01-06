@@ -1334,7 +1334,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-
+    
     return (
       <div
         className="col-full"
@@ -1367,7 +1367,7 @@ class Basket extends Component {
                 </div>
               )}
 
-              {!loadingShow && (dataBasket || this.props.basket.details) && (
+              {!loadingShow && (!isEmptyObject(dataBasket) || this.props.basket.details) && (
                 <div style={{ marginBottom: 250 }}>
                   {viewCart && (
                     <ViewCartBasket
