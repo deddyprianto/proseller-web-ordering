@@ -25,7 +25,7 @@ class ItemsBasket extends Component {
 
   selectProduct = async (productSelected, mode) => {
     let props = this.props.data;
-
+    const quantityItem = productSelected.quantity
     productSelected = JSON.parse(JSON.stringify(productSelected));
     let dataBasket = JSON.parse(JSON.stringify(props.dataBasket));
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
@@ -49,6 +49,7 @@ class ItemsBasket extends Component {
           if (product.productID === productSelected.productID) {
             product.id = productSelected.id;
             productSelected = product;
+            productSelected.quantity = quantityItem;
           }
         });
       });
@@ -144,7 +145,7 @@ class ItemsBasket extends Component {
             }
           }
         } else {
-          product.quantity = 1;
+          product.quantity = quantityItem;
           product.remark = "";
         }
       } else {
