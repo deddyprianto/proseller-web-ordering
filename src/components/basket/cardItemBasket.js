@@ -99,14 +99,20 @@ class CardItemBasket extends Component {
           {
             item.promotions && item.promotions.length > 0 &&
             item.promotions.map(promo =>
-              <div style={{ marginTop: 10, paddingBottom: 5 }}>
+              <div style={{ marginTop: 10 }}>
                 <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
-                  <span
-                    className="customer-group-name"
+                  <p
+                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
+                    style={{ marginRight: 5, fontSize: 12, width: 5, float: 'left' }}
+                  >
+                    - 
+                  </p>
+                  <p
+                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
                     style={{ marginRight: 5, fontSize: 12 }}
                   >
-                    - {promo.name}
-                  </span>
+                    {promo.name}
+                  </p>
                 </Typography>
               </div>
             )
@@ -143,9 +149,17 @@ class CardItemBasket extends Component {
                 textAlign: "left", fontSize: 12, fontWeight: "bold"
               }}
             >
-              {this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}
+              {
+                item.grossAmount !== item.nettAmount ?
+                <div>
+                  <span>{this.props.getCurrency(Number(item.nettAmount.toFixed(2)))}</span>
+                  <span style={{ textDecoration: 'line-through', marginLeft: 8 }}>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+                </div>
+                :
+                <span>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+              }
             </div>
-
+            
             <button
               className="customer-group-name" 
               style={{ 
