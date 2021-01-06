@@ -402,7 +402,12 @@ const ViewCartBasket = ({
                 ) : (
                   <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
                 )}
-                {roleTitleSettle() ? "Confirm & Pay" : "Submit"}
+                {roleTitleSettle()
+                  ? basket.outlet.outletType === "RESTO" &&
+                    basket.orderingMode === "DINEIN"
+                    ? "Settle"
+                    : "Confirm & Pay"
+                  : "Submit"}
               </Button>
             </div>
           )}

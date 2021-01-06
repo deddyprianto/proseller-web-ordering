@@ -242,7 +242,7 @@ class Ordering extends Component {
                 ].isSelected = true;
                 product.product.productModifiers[i].modifier.details[
                   j
-                ].quantity = 0;
+                ].quantity = 1;
               }
             }
           });

@@ -1154,11 +1154,21 @@ class Basket extends Component {
         );
 
         console.log(dataBasket);
-        if (
-          dataBasket.status === "SUBMITTED" ||
-          dataBasket.outlet.outletType === "RESTO"
-        ) {
+        if (dataBasket.status === "SUBMITTED") {
           this.props.history.push("/history");
+        } else if (
+          dataBasket.outlet.outletType === "RESTO" &&
+          dataBasket.orderingMode === "DINEIN"
+        ) {
+          Swal.fire(
+            "Order Submitted",
+            "Your order has been submitted",
+            "success"
+          ).then((result) => {
+            if (result.isConfirmed || result.isDismissed) {
+              this.props.history.push("/history");
+            }
+          });
         } else {
           this.props.history.push("/payment");
         }
