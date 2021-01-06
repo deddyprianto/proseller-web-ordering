@@ -109,7 +109,7 @@ class CardItemBasket extends Component {
                   </p>
                   <p
                     className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
-                    style={{ marginRight: 5, fontSize: 12 }}
+                    style={{ marginRight: 5, fontSize: 12, fontStyle: 'italic' }}
                   >
                     {promo.name}
                   </p>

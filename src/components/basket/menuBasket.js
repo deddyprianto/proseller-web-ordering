@@ -15,6 +15,7 @@ import config from "../../config";
 class MenuBasket extends Component {
   render() {
     let {colorTheme, data, basket, productQuantity} = this.props
+    
     let props = data;
     let { minQty, maxQty, minAmount, maxAmount } = this.props.orderValidation;
     minQty = minQty || 0

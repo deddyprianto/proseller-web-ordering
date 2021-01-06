@@ -249,7 +249,7 @@ class Basket extends Component {
       if (!response.message) dataBasket = response.data;
     }
 
-    if (dataBasket) {
+    if (dataBasket && dataBasket.outlet !== undefined) {
       if (dataBasket.isPaymentComplete !== undefined) {
         dataBasket = await this.getDataBasketPending(dataBasket);
       }
@@ -1367,7 +1367,7 @@ class Basket extends Component {
                 </div>
               )}
 
-              {!loadingShow && (dataBasket || this.props.basket.details) && (
+              {!loadingShow && (!isEmptyObject(dataBasket) || this.props.basket.details) && (
                 <div style={{ marginBottom: 250 }}>
                   {viewCart && (
                     <ViewCartBasket
