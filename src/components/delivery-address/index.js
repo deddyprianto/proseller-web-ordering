@@ -68,12 +68,17 @@ class DeliveryAddress extends Component {
           });
       }
 
-      this.setState({
-        addressDelivery: addressDelivery.Data,
-        backupDeliveryAddress: addressDelivery.Data.map((item) => ({
-          ...item,
-        })),
+      await this.setState({
+        addressDelivery: addressDelivery.Data
       });
+      
+      if (addressDelivery && addressDelivery.Data && addressDelivery.Data.length > 0) {
+        await this.setState({
+          backupDeliveryAddress: addressDelivery.Data.map((item) => ({
+            ...item,
+          }))
+        });
+      }
     }
     await this.handleGetProvider();
     this.setState({ loadingShow: false, countryCode: infoCompany.countryCode });

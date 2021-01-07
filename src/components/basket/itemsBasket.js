@@ -263,60 +263,65 @@ class ItemsBasket extends Component {
                 marginTop: 10,
               }}
             />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: 14,
-                marginTop: 5,
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <CheckBox
-                  handleChange={(status) =>
-                    this.handleSelect(null, null, status)
-                  }
-                  selected={selected === dataBasket.details.length}
-                  setRadius={5}
-                  setHeight={20}
-                />
-                <div style={{ marginLeft: 10 }}>Select All Items</div>
-              </div>
+            {
+              !isEmptyObject(dataBasket) && dataBasket.status === 'PENDING' &&
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 14,
+                    marginTop: 5,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <CheckBox
+                      handleChange={(status) =>
+                        this.handleSelect(null, null, status)
+                      }
+                      selected={selected === dataBasket.details.length}
+                      setRadius={5}
+                      setHeight={20}
+                    />
+                    <div style={{ marginLeft: 10 }}>Select All Items</div>
+                  </div>
 
-              <button
-                className="border-theme background-theme"
-                onClick={() =>
-                  !this.props.roleBtnClear && this.props.handleClear(dataBasket)
-                }
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  color: this.props.color.primary,
-                  border: `1px solid ${this.props.color.primary}`,
-                  borderRadius: 5,
-                  width: 100,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: this.props.roleBtnClear && "#CDCDCD",
-                }}
-              >
-                <DeleteIcon /> Delete
-              </button>
-            </div>
-            <div
-              style={{
-                backgroundColor: "#DCDCDC",
-                height: 3,
-                marginBottom: 10,
-                marginTop: 10,
-              }}
-            />
+                  <button
+                    className="border-theme background-theme"
+                    onClick={() =>
+                      !this.props.roleBtnClear && this.props.handleClear(dataBasket)
+                    }
+                    style={{
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      color: this.props.color.primary,
+                      border: `1px solid ${this.props.color.primary}`,
+                      borderRadius: 5,
+                      width: 100,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                    }}
+                  >
+                    <DeleteIcon /> Delete
+                  </button>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: "#DCDCDC",
+                    height: 3,
+                    marginBottom: 10,
+                    marginTop: 10,
+                  }}
+                />
+              </div>
+            }
             {dataBasket.details.map((item, key) => (
               <div key={key}>
                 <div
@@ -325,14 +330,17 @@ class ItemsBasket extends Component {
                     alignItems: "center",
                   }}
                 >
-                  <div style={{ marginRight: 8 }}>
-                    <CheckBox
-                      handleChange={(status) => this.handleSelect(key, item)}
-                      selected={item.selected !== false}
-                      setRadius={5}
-                      setHeight={20}
-                    />
-                  </div>
+                  {
+                    dataBasket.status === 'PENDING' &&
+                    <div style={{ marginRight: 8 }}>
+                      <CheckBox
+                        handleChange={(status) => this.handleSelect(key, item)}
+                        selected={item.selected !== false}
+                        setRadius={5}
+                        setHeight={20}
+                      />
+                    </div>
+                  }
                   <CardItemBasket
                     key={key}
                     data={item}

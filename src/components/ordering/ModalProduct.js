@@ -559,14 +559,21 @@ class ModalProduct extends Component {
                     this.addItemIsYesNo(data, "radio", item.modifierID)
                   }
                 >
-                  <input
-                    type="radio"
-                    checked={data.isSelected ? true : false}
-                    class="scaled-checkbox form-check-input checkbox-modifier"
-                    onClick={() =>
-                      this.addItemIsYesNo(data, "radio", item.modifierID)
+                  <div>
+                    {
+                      data.isSelected ?
+                      <div style={{border: '1px solid gray', width: 20, height: 20, borderRadius: 50, marginLeft: 3, padding: 2, justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+                        <div style={{ backgroundColor: '#3498db', width: 10, height: 10, borderRadius: 50}}></div>
+                      </div>
+                      :
+                      <div style={{border: '1px solid gray', width: 20, height: 20, borderRadius: 50, marginLeft: 3}}></div>
                     }
-                  />
+                    {/* <input
+                      type="radio"
+                      checked={data.isSelected ? true : false}
+                      class="scaled-checkbox form-check-input checkbox-modifier"
+                    /> */}
+                  </div>
 
                   <div
                     className="subtitle-modifier"
