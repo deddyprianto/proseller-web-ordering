@@ -6,7 +6,7 @@ import { CONSTANT } from "../../../helpers";
 import config from "../../../config";
 import { OutletAction } from "../../../redux/actions/OutletAction";
 import { OrderAction } from "../../../redux/actions/OrderAction";
-
+import { isEmptyObject } from "../../../helpers/CheckEmpty";
 import LoginRegister from "../../login-register";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -58,31 +58,33 @@ class Header extends Component {
       }
     }
 
-    if (prevProps.outlets !== this.props.outlets) {
-      this.props.outlets.forEach((outlet) => {
-        this.setState((prevState) => ({
-          outletsRefs: {
-            ...prevState.outletsRefs,
-            [outlet.id]: React.createRef(),
-          },
-        }));
-      });
-    }
-    if (
-      prevProps.defaultOutlet !== this.props.defaultOutlet &&
-      prevProps.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
-      this.props.outlets &&
-      this.props.outlets.length > 1
-    ) {
-      const firstAvailableOutlet = this.props.outlets.find(
-        (outlet) => outlet.orderingStatus === "AVAILABLE"
-      );
-      console.log(firstAvailableOutlet);
-      if (firstAvailableOutlet) {
-        this.props.dispatch({
-          type: CONSTANT.DEFAULT_OUTLET,
-          data: firstAvailableOutlet,
+    if (this.props.outletSelection !== 'MANUAL') {
+      if (prevProps.outlets !== this.props.outlets) {
+        this.props.outlets.forEach((outlet) => {
+          this.setState((prevState) => ({
+            outletsRefs: {
+              ...prevState.outletsRefs,
+              [outlet.id]: React.createRef(),
+            },
+          }));
         });
+      }
+      if (
+        prevProps.defaultOutlet !== this.props.defaultOutlet &&
+        prevProps.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
+        this.props.outlets &&
+        this.props.outlets.length > 1
+      ) {
+        const firstAvailableOutlet = this.props.outlets.find(
+          (outlet) => outlet.orderingStatus === "AVAILABLE"
+        );
+        console.log(firstAvailableOutlet);
+        if (firstAvailableOutlet) {
+          this.props.dispatch({
+            type: CONSTANT.DEFAULT_OUTLET,
+            data: firstAvailableOutlet,
+          });
+        }
       }
     }
   };
@@ -151,6 +153,60 @@ class Header extends Component {
     }
   }
 
+  displayOutletInfo = (outlets, defaultOutlet) => {
+    if (this.props.outletSelection === 'MANUAL') {
+      if (isEmptyObject(this.props.defaultOutlet)) {
+        return (
+          <div className={styles.outlet}>
+            <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>Choose Outlets</h4>
+          </div>
+        )
+      } else {
+        return (
+          <div className={styles.outlet}>
+              <Link to="/outlets">
+                <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>{this.props.defaultOutlet.name} <i style={{ marginLeft: 6, fontSize: 10 }} className="fa fa-chevron-right" /></h4>
+              </Link>
+            </div>
+        )
+      }
+    } else if (this.props.outletSelection === 'DEFAULT') {
+      return (
+        <div className={styles.outlet}>
+          <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>{this.props.defaultOutlet.name}</h4>
+        </div>
+      )
+    } else {
+      return (
+        <div className={styles.outlet}>
+          <LocationOnIcon
+            className="color"
+            style={{ fontSize: 22, marginBottom: -5 }}
+          />
+          <span className="color" style={{ fontSize: 15 }}>
+            <select
+              className={`${styles.outletNameSelect} color`}
+              onChange={(e) => this.handleOutletChange(e)}
+              value={defaultOutlet.id}
+            >
+              {outlets &&
+                outlets.map((outlet, key) => (
+                  <option
+                    key={key}
+                    ref={this.state.outletsRefs[outlet.id]}
+                    value={outlet.id}
+                    // selected={outlet.id === defaultOutlet.id}
+                  >
+                    {outlet.name}
+                  </option>
+                ))}
+            </select>
+          </span>
+        </div>
+      )
+    }
+  }
+
   render() {
     let { isLoggedIn, basket, defaultOutlet } = this.props;
     let outlets =
@@ -200,31 +256,7 @@ class Header extends Component {
                   src={infoCompany.imageURL || logoCompany}
                 />
               </Link>
-              <div className={styles.outlet}>
-                <LocationOnIcon
-                  className="color"
-                  style={{ fontSize: 22, marginBottom: -5 }}
-                />
-                <span className="color" style={{ fontSize: 15 }}>
-                  <select
-                    className={`${styles.outletNameSelect} color`}
-                    onChange={(e) => this.handleOutletChange(e)}
-                    value={defaultOutlet.id}
-                  >
-                    {outlets &&
-                      outlets.map((outlet, key) => (
-                        <option
-                          key={key}
-                          ref={this.state.outletsRefs[outlet.id]}
-                          value={outlet.id}
-                          // selected={outlet.id === defaultOutlet.id}
-                        >
-                          {outlet.name}
-                        </option>
-                      ))}
-                  </select>
-                </span>
-              </div>
+              {this.displayOutletInfo(outlets, defaultOutlet)}
             </div>
             <nav
               id="site-navigation"
@@ -537,6 +569,7 @@ const mapStateToProps = (state, ownProps) => {
     color: state.theme.color,
     outlets: state.outlet.outlets,
     setting: state.order.setting,
+    outletSelection: state.order.outletSelection,
     orderingMode: state.order.orderingMode,
   };
 };

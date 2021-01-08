@@ -134,7 +134,7 @@ class Ordering extends Component {
       const categories = await this.props.dispatch(
         ProductAction.fetchCategoryProduct(outlet)
       );
-      await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
+      // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({ categories, processing: true });
       await this.getProductPreset(categories, outlet);
       await this.setState({ loading: false });

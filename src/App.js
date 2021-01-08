@@ -54,9 +54,16 @@ const App = (props) => {
     deliveryAddress,
     setting,
     defaultOutlet,
+    outletSelection,
   } = props;
 
   const [enableOrdering, setEnableOrdering] = useState(false);
+
+  try{
+    if (window.location.hash === "#/") {
+      localStorage.removeItem(`${config.prefix}_defaultOutlet`)
+    }
+  }catch(e){}
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -113,7 +120,7 @@ const App = (props) => {
       } catch (error) {}
     };
 
-    await props.dispatch(OrderAction.getSettingOrdering());
+    const responseSettings = await props.dispatch(OrderAction.getSettingOrdering());
 
     try {
       let position = await props.dispatch(OutletAction.getCoordinates());
@@ -162,8 +169,15 @@ const App = (props) => {
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
       localStorage.removeItem(`${config.prefix}_scanTable`);
-      if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
-        defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
+      let outletSelectionMode = "DEFAULT";
+      if (responseSettings && responseSettings.settings !== undefined) {
+        const find = responseSettings.settings.find(item => item.settingKey === "OutletSelection");
+        if (find !== undefined) outletSelectionMode = find.settingValue
+      }
+      if (outletSelectionMode !== 'MANUAL') {
+        if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
+          defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
+        }
       }
     }
 
@@ -247,6 +261,7 @@ const mapStateToProps = (state, ownProps) => {
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo,
     setting: state.order.setting,
+    outletSelection: state.order.outletSelection,
     defaultEmail: state.customer.defaultEmail,
     defaultPhoneNumber: state.customer.defaultPhoneNumber,
   };

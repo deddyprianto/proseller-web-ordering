@@ -43,9 +43,31 @@ function getCoordinates() {
 }
 
 function getNearsesOutlet(position = null) {
-  return async (dispatch) => {
-    let data = await MasterDataService.api( "POST", position, "outlets/nearestoutlet" );
-    if(data.ResultCode === 400) data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+  return async (dispatch, getState) => {
+    const state = getState();
+    
+    // FIND ORDER SELECTION TYPE ( MANUAL / NEAREST / DEFAULT )
+    let orderModeType = "DEFAULT"
+    try{
+      console.log(state)
+      if (state.order.setting.length > 0) {
+        const find = state.order.setting.find(
+          (item) => item.settingKey === "OutletSelection"
+        );
+        if (find !== undefined) {
+          orderModeType = find.settingValue;
+        }
+        console.log(orderModeType, 'orderModeType')
+      }
+    }catch(e){}
+
+    let data = {}
+    if (orderModeType === 'NEAREST') {
+      data = await MasterDataService.api( "POST", position, "outlets/nearestoutlet" );
+      if(data.ResultCode === 400) data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+    } else {
+      data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+    }
 
     if (!isEmptyObject(data.data)) {
       if (data.data && data.data.id) data.data = config.getValidation(data.data)

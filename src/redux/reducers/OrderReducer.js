@@ -6,6 +6,7 @@ import config from "../../config";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
+  outletSelection: 'DEFAULT',
   basket:
     JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`)) || {},
   productsSearch: undefined,
@@ -36,6 +37,11 @@ export default function reducer(state = defaultState, action) {
         ...state,
         basket: action.data,
       };
+    case "OUTLET_SELECTION":
+        return {
+          ...state,
+          outletSelection: action.data,
+        };
     case "SEARCH":
       return {
         ...state,

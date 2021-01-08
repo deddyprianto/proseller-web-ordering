@@ -259,36 +259,37 @@ class Basket extends Component {
       const isOutletChanged = await localStorage.getItem(
         `${config.prefix}_isOutletChanged`
       );
-      // move cart based on delivery address
-      console.log(this.props.outlets.length);
-      if (
-        deliveryAddress &&
-        orderingMode === "DELIVERY" &&
-        isOutletChanged !== "true" &&
-        this.props.outlets &&
-        this.props.outlets.length > 1 &&
-        dataBasket.provider &&
-        dataBasket.provider.calculationMode !== "FIX"
-      ) {
-        let payloadMoveCart = {
-          orderBy: "provider",
-          cart: dataBasket,
-          deliveryAddress,
-        };
-        const result = await this.props.dispatch(
-          OrderAction.moveCart(payloadMoveCart)
-        );
-        if (!result.message) {
-          dataBasket = result;
-        } else {
-          Swal.fire(
-            "Oppss!",
-            "Cannot find an outlet with available product(s) and delivery provider",
-            "error"
+      // move cart based on delivery address if ordering setting is nearest outlet
+      if (this.props.outletSelection === 'NEAREST') {
+        if (
+          deliveryAddress &&
+          orderingMode === "DELIVERY" &&
+          isOutletChanged !== "true" &&
+          this.props.outlets &&
+          this.props.outlets.length > 1 &&
+          dataBasket.provider &&
+          dataBasket.provider.calculationMode !== "FIX"
+        ) {
+          let payloadMoveCart = {
+            orderBy: "provider",
+            cart: dataBasket,
+            deliveryAddress,
+          };
+          const result = await this.props.dispatch(
+            OrderAction.moveCart(payloadMoveCart)
           );
+          if (!result.message) {
+            dataBasket = result;
+          } else {
+            Swal.fire(
+              "Oppss!",
+              "Cannot find an outlet with available product(s) and delivery provider",
+              "error"
+            );
+          }
         }
       }
-
+      
       // set delivery provider
       await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
 
@@ -1442,6 +1443,7 @@ class Basket extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account && state.auth.account.idToken.payload,
+    outletSelection: state.order.outletSelection,
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,

@@ -40,7 +40,9 @@ export const OrderAction = {
   moveCart,
   getTimeSlot,
   submitMembership,
+  updateCartInfo
 };
+
 
 function shareURL(tableNo, outletID, orderMode) {
   return async (dispatch) => {
@@ -110,6 +112,18 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === "TextWarningColor";
         });
+      let outletSelection =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === "OutletSelection";
+        });
+      
+      if (outletSelection === undefined) {
+        outletSelection = 'DEFAULT'
+      } else {
+        outletSelection = outletSelection.settingValue
+      }
+
       let payload = {
         primary: primaryColor.settingValue || "#C00A27",
         secondary: secondaryColor.settingValue || "#C00A27",
@@ -124,7 +138,9 @@ function getSettingOrdering() {
         type: "DATA_SETTING_ORDERING",
         payload: data && data.settings,
       });
+      dispatch(setData(outletSelection, "OUTLET_SELECTION"));
     }
+    return data
   };
 }
 
@@ -408,6 +424,15 @@ function updateCart(payload) {
     await OrderingService.api("POST", payload, `cart/updateitem`, "Bearer");
     try {
       document.getElementById("close-modal").click();
+    } catch (e) {}
+    return dispatch(getCart());
+  };
+}
+
+function updateCartInfo(payload) {
+  return async (dispatch) => {
+    await OrderingService.api("POST", payload, `cart/updateCartInfo`, "Bearer");
+    try {
     } catch (e) {}
     return dispatch(getCart());
   };

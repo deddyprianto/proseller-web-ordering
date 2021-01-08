@@ -3,11 +3,11 @@ import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "dev";
-let companyHost = "qiji";
+let companyHost = "qiji-dev";
 // let endPoint = `https://${companyHost}${
 //   stage !== "" ? "-" + stage : ""
 // }.proseller.io`;
-let endPoint = `https://${companyHost}-${stage}.proseller-${stage}.com`;
+let endPoint = `https://${companyHost}.proseller-${stage}.com`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {

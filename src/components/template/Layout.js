@@ -18,6 +18,7 @@ const PaidMembership = loadable(() => import("../../pages/PaidMembership"));
 const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
+const OutletSelection = loadable(() => import("../../pages/OutletSelection"));
 const StoreValueCard = loadable(() => import("../../pages/StoreValueCard"));
 const BuyStoreValueCard = loadable(() => import("../../components/svc/BuySVC"));
 const UseSVC = loadable(() => import("../../components/svc/useSVC"));
@@ -114,6 +115,7 @@ class Layout extends Component {
         <div id="content" className="site-content">
           <Switch>
             {enableOrdering && <Route exact path={"/"} component={Home} /> }
+            {enableOrdering && <Route exact path={"/outlets"} component={OutletSelection} /> }
             {enableOrdering && <Route exact path={"/signIn"} component={Home} /> }
             {enableOrdering && <Route exact path={"/basket"} component={Basket} /> }
             {(isLoggedIn || !enableOrdering) && <Route exact path={"/profile"} component={Profile} /> }

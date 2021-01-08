@@ -10,6 +10,7 @@ export const MasterdataAction = {
   getInfoCompany,
   getOutletByID,
   getProductByOutletID,
+  setDefaultOutlet
 };
 
 function getAddressLocation(
@@ -75,6 +76,12 @@ function getOutletByID(id, isProduct = true) {
       dispatch(setData(response.data, CONSTANT.DEFAULT_OUTLET));
       return response.data;
     }
+  };
+}
+
+function setDefaultOutlet(outlet) {
+  return async (dispatch) => {
+    dispatch(setData(outlet, CONSTANT.DEFAULT_OUTLET));
   };
 }
 

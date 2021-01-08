@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
+import OutletSelection from "./OutletSelection";
 import { OrderAction } from "../redux/actions/OrderAction";
 import { PromotionAction } from "../redux/actions/PromotionAction";
 import LoadingAddCart from "../components/loading/LoadingAddCart";
@@ -16,7 +17,7 @@ class Home extends Component {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.pathname.includes("emenu")
     };
   }
 
@@ -69,10 +70,15 @@ class Home extends Component {
         >
           {this.state.loading ? <LoadingAddCart /> : null}
           <div className="stretch-full-width">
-            <main id="main" className="site-main">
-              {!isEmenu && <Promotion />}
-              <Ordering />
-            </main>
+            {
+              this.props.setting.outletSelection === 'MANUAL' && isEmptyObject(this.props.defaultOutlet) ?
+              <OutletSelection />
+              :
+              <main id="main" className="site-main">
+                {!isEmenu && <Promotion />}
+                <Ordering />
+              </main>
+            }
           </div>
         </div>
       </div>
@@ -80,7 +86,10 @@ class Home extends Component {
   }
 }
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    setting: state.order,
+    defaultOutlet: state.outlet.defaultOutlet,
+  };
 };
 
 export default connect(mapStateToProps)(Home);
