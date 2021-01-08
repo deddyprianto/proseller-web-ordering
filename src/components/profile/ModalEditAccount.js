@@ -72,6 +72,7 @@ class ModalEditAccount extends Component {
   viewPhoneNumber(){
     let {phoneCountryCode, newPhoneNumber, isWaitingOTP, isSending, counterMinutes, counterSeconds} = this.state
     let phoneNumber = `${phoneCountryCode}${newPhoneNumber}`
+    const color = this.props.color.background
 
     if(isWaitingOTP){
       return(
@@ -126,11 +127,15 @@ class ModalEditAccount extends Component {
               }
               disableSearchIcon
               inputStyle={{
-                width: "0",
-                border: "1px solid #FFF",
+                width: 0,
+                border: `1px solid ${color}`,
+                backgroundColor: color,
                 height: 40,
                 outline: 'none',
                 boxShadow: 'none'
+              }}
+              dropdownStyle={{
+                color: "#808080",
               }}
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>
@@ -379,6 +384,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     companyInfo: state.masterdata.companyInfo.data,
     account: state.auth.account,
+    color: state.theme.color,
   };
 };
 

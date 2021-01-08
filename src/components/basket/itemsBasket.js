@@ -174,7 +174,7 @@ class ItemsBasket extends Component {
         if (props.storeDetail && props.storeDetail.product) {
           this.selectProduct(item, "Update");
           document.getElementById("detail-product-btn").click();
-          Swal.close();
+          Swal.close()
           clearInterval(time);
           this.setState({ isLoading: false });
         }
