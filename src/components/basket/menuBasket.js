@@ -133,6 +133,7 @@ class MenuBasket extends Component {
         </div>
 
         {props.dataBasket &&
+          (props.dataBasket.queueNo !== undefined || ((props.scanTable && (props.scanTable.table || props.scanTable.tableNo)) || props.dataBasket.tableNo)) &&
           (props.dataBasket.tableNo || props.scanTable) &&
           props.dataBasket.orderingMode !== "DELIVERY" &&
           props.dataBasket.orderingMode !== "TAKEAWAY" &&
@@ -150,6 +151,7 @@ class MenuBasket extends Component {
         <div style={{ textAlign: "left" }}>
           <OrderingMode
             data={props}
+            basket={basket}
             roleDisableNotPending={this.props.roleDisableNotPending}
             setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
             getCurrency={(price) => this.props.getCurrency(price)}

@@ -31,21 +31,15 @@ class ItemsBasket extends Component {
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
 
     const productBackup = this.props.categories;
-
+    
     try {
-      if (
-        storeDetail.product[0].item === undefined ||
-        storeDetail.product[0].item.length === 0
-      ) {
-        storeDetail.product = productBackup;
-      }
+      storeDetail.product = productBackup;
     } catch (e) {}
-
+    
     if (storeDetail && storeDetail.product) {
       storeDetail.product.forEach((group) => {
         group.items.forEach((product) => {
           if (product.productID === productSelected.productID) {
-            console.log(product);
             product.id = productSelected.id;
             productSelected = product;
             productSelected.quantity = quantityItem;
@@ -165,20 +159,23 @@ class ItemsBasket extends Component {
       this.selectProduct(item, "Update");
       document.getElementById("detail-product-btn").click();
     } else {
-      Swal.fire({
-        onOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      let time = setInterval(() => {
-        if (props.storeDetail && props.storeDetail.product) {
-          this.selectProduct(item, "Update");
-          document.getElementById("detail-product-btn").click();
-          Swal.close()
-          clearInterval(time);
-          this.setState({ isLoading: false });
-        }
-      }, 0);
+      // Swal.fire({
+      //   onOpen: () => {
+      //     Swal.showLoading();
+      //   },
+      // });
+      this.selectProduct(item, "Update");
+      document.getElementById("detail-product-btn").click();
+      this.setState({ isLoading: false });
+      // let time = setInterval(() => {
+      //   if (props.storeDetail && props.storeDetail.product) {
+      //     this.selectProduct(item, "Update");
+      //     document.getElementById("detail-product-btn").click();
+      //     Swal.close()
+      //     clearInterval(time);
+      //     this.setState({ isLoading: false });
+      //   }
+      // }, 0);
     }
   };
 

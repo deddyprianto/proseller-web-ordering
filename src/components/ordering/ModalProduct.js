@@ -813,9 +813,17 @@ class ModalProduct extends Component {
   };
 
   setOrderingMode = async (mode) => {
-    this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
+    await this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
     await this.setState({ disableButton: true });
     this.processCart(null, mode);
+    if (mode !== "" && mode !== undefined && mode === null) {
+      setTimeout(() => {
+        const payload = {
+          orderingMode: mode
+        }
+        this.props.dispatch(OrderAction.updateCartInfo(payload))
+      }, 1000)
+    }
     try {
       document.getElementById("dismiss-ordering-mode").click();
     } catch (error) {}

@@ -208,7 +208,8 @@ class Basket extends Component {
     }
 
     // if databasket is empty
-    if (!dataBasket) dataBasket = await this.getDataBasket_();
+    // if (!dataBasket) dataBasket = await this.getDataBasket_();
+    dataBasket = await this.getDataBasket_();
 
     return {
       locationCustomer,
@@ -234,13 +235,13 @@ class Basket extends Component {
     let deliveryAddress = this.props.deliveryAddress;
 
     if (isLoggedIn) {
-      this.props.dispatch(CustomerAction.getVoucher());
-      this.props.dispatch(
-        CampaignAction.getCampaignPoints(
-          { history: "false" },
-          infoCompany && infoCompany.companyId
-        )
-      );
+      // this.props.dispatch(CustomerAction.getVoucher());
+      // this.props.dispatch(
+      //   CampaignAction.getCampaignPoints(
+      //     { history: "false" },
+      //     infoCompany && infoCompany.companyId
+      //   )
+      // );
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode;
       let response = await this.props.dispatch(
@@ -250,9 +251,9 @@ class Basket extends Component {
     }
 
     if (dataBasket && dataBasket.outlet !== undefined) {
-      if (dataBasket.isPaymentComplete !== undefined) {
-        dataBasket = await this.getDataBasketPending(dataBasket);
-      }
+      // if (dataBasket.isPaymentComplete !== undefined) {
+      //   dataBasket = await this.getDataBasketPending(dataBasket);
+      // }
 
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
@@ -297,13 +298,13 @@ class Basket extends Component {
       let storeDetail = await this.setDefaultOutlet(dataBasket);
 
       // set voucher
-      await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
+      // await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
-      let discount = (selectedPoint || 0) + this.state.discountVoucher;
-      let totalPrice =
-        dataBasket.totalNettAmount - discount < 0
-          ? 0
-          : dataBasket.totalNettAmount - discount;
+      // let discount = (selectedPoint || 0) + this.state.discountVoucher;
+      // let totalPrice =
+      //   dataBasket.totalNettAmount - discount < 0
+      //     ? 0
+      //     : dataBasket.totalNettAmount - discount;
 
       if (dataBasket.orderingMode) {
         dataBasket.orderingMode = orderingMode;
@@ -337,7 +338,7 @@ class Basket extends Component {
         dataBasket,
         storeDetail,
         scanTable,
-        totalPrice,
+        // totalPrice,
         checkOperationalHours,
         btnBasketOrder: checkOperationalHours.status,
         countryCode: infoCompany.countryCode,
@@ -395,7 +396,7 @@ class Basket extends Component {
 
   setDefaultOutlet = async (dataBasket) => {
     let storeDetail = await this.props.dispatch(
-      MasterdataAction.getOutletByID(dataBasket.outlet.id)
+      MasterdataAction.getOutletByID(dataBasket.outlet.id, false)
     );
     if (storeDetail && storeDetail.id) {
       storeDetail = config.getValidation(storeDetail);
@@ -905,6 +906,13 @@ class Basket extends Component {
       type: "SET_ORDERING_MODE",
       payload: orderingMode,
     });
+    
+    if (orderingMode !== "" && orderingMode !== undefined && orderingMode !== null) {
+      const payload = {
+        orderingMode: orderingMode
+      }
+      await this.props.dispatch(OrderAction.updateCartInfo(payload))
+    }
 
     await this.setState({
       orderingMode,
