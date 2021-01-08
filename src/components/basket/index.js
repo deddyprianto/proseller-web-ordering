@@ -366,8 +366,8 @@ class Basket extends Component {
       });
     }
 
+    await this.setState({ loadingShow: false })
     this.setState({
-      loadingShow: false,
       // isLoading: false,
       selectedPoint,
       discountPoint: selectedPoint || 0,

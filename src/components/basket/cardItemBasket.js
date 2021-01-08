@@ -109,6 +109,31 @@ class CardItemBasket extends Component {
               </div>
             </div>
           )}
+
+          {/* POSSIBLE PROMOTION INFO */}
+          {
+            item.promotions && item.promotions.length > 0 &&
+            item.promotions.map(promo =>
+              <div style={{ marginTop: 10 }}>
+                <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
+                  <p
+                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
+                    style={{ marginRight: 5, fontSize: 12, width: 5, float: 'left' }}
+                  >
+                    - 
+                  </p>
+                  <p
+                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
+                    style={{ marginRight: 5, fontSize: 12, fontStyle: 'italic' }}
+                  >
+                    {promo.name}
+                  </p>
+                </Typography>
+              </div>
+            )
+          }
+          {/* POSSIBLE PROMOTION INFO */}
+
           {item.remark && item.remark !== "-" && (
             <div
               className="font-color-theme"
@@ -154,9 +179,17 @@ class CardItemBasket extends Component {
                 fontWeight: "bold",
               }}
             >
-              {this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}
+              {
+                item.grossAmount !== item.nettAmount ?
+                <div>
+                  <span>{this.props.getCurrency(Number(item.nettAmount.toFixed(2)))}</span>
+                  <span style={{ textDecoration: 'line-through', marginLeft: 8 }}>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+                </div>
+                :
+                <span>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+              }
             </div>
-
+            
             <button
               className="customer-group-name"
               style={{

@@ -30,6 +30,7 @@ const ViewCartBasket = ({
   isLoggedIn,
   basket,
   handleSetState,
+  dataBasket
 }) => {
   if (!basket.details && data.dataBasket) basket = data.dataBasket;
 
@@ -320,7 +321,7 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              {getCurrency(data.dataBasket.totalNettAmount)}
+              {getCurrency(basket.totalNettAmount)}
             </div>
           </div>
 
