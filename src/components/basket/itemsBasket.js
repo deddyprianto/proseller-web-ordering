@@ -30,9 +30,7 @@ class ItemsBasket extends Component {
     let dataBasket = JSON.parse(JSON.stringify(props.dataBasket));
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
 
-    const productBackup = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_productsBackup`))
-    );
+    const productBackup = this.props.categories;
 
     try {
       if (
@@ -47,6 +45,7 @@ class ItemsBasket extends Component {
       storeDetail.product.forEach((group) => {
         group.items.forEach((product) => {
           if (product.productID === productSelected.productID) {
+            console.log(product);
             product.id = productSelected.id;
             productSelected = product;
             productSelected.quantity = quantityItem;
@@ -57,6 +56,7 @@ class ItemsBasket extends Component {
 
     let product = JSON.stringify(productSelected);
     product = JSON.parse(product);
+    console.log(product);
 
     try {
       await product.product.productModifiers.forEach((group, i) => {
@@ -174,6 +174,7 @@ class ItemsBasket extends Component {
         if (props.storeDetail && props.storeDetail.product) {
           this.selectProduct(item, "Update");
           document.getElementById("detail-product-btn").click();
+          Swal.close();
           clearInterval(time);
           this.setState({ isLoading: false });
         }
@@ -263,60 +264,65 @@ class ItemsBasket extends Component {
                 marginTop: 10,
               }}
             />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: 14,
-                marginTop: 5,
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <CheckBox
-                  handleChange={(status) =>
-                    this.handleSelect(null, null, status)
-                  }
-                  selected={selected === dataBasket.details.length}
-                  setRadius={5}
-                  setHeight={20}
-                />
-                <div style={{ marginLeft: 10 }}>Select All Items</div>
-              </div>
+            {
+              !isEmptyObject(dataBasket) && dataBasket.status === 'PENDING' &&
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 14,
+                    marginTop: 5,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <CheckBox
+                      handleChange={(status) =>
+                        this.handleSelect(null, null, status)
+                      }
+                      selected={selected === dataBasket.details.length}
+                      setRadius={5}
+                      setHeight={20}
+                    />
+                    <div style={{ marginLeft: 10 }}>Select All Items</div>
+                  </div>
 
-              <button
-                className="border-theme background-theme"
-                onClick={() =>
-                  !this.props.roleBtnClear && this.props.handleClear(dataBasket)
-                }
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  color: this.props.color.primary,
-                  border: `1px solid ${this.props.color.primary}`,
-                  borderRadius: 5,
-                  width: 100,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: this.props.roleBtnClear && "#CDCDCD",
-                }}
-              >
-                <DeleteIcon /> Delete
-              </button>
-            </div>
-            <div
-              style={{
-                backgroundColor: "#DCDCDC",
-                height: 3,
-                marginBottom: 10,
-                marginTop: 10,
-              }}
-            />
+                  <button
+                    className="border-theme background-theme"
+                    onClick={() =>
+                      !this.props.roleBtnClear && this.props.handleClear(dataBasket)
+                    }
+                    style={{
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      color: this.props.color.primary,
+                      border: `1px solid ${this.props.color.primary}`,
+                      borderRadius: 5,
+                      width: 100,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                    }}
+                  >
+                    <DeleteIcon /> Delete
+                  </button>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: "#DCDCDC",
+                    height: 3,
+                    marginBottom: 10,
+                    marginTop: 10,
+                  }}
+                />
+              </div>
+            }
             {dataBasket.details.map((item, key) => (
               <div key={key}>
                 <div
@@ -325,14 +331,17 @@ class ItemsBasket extends Component {
                     alignItems: "center",
                   }}
                 >
-                  <div style={{ marginRight: 8 }}>
-                    <CheckBox
-                      handleChange={(status) => this.handleSelect(key, item)}
-                      selected={item.selected !== false}
-                      setRadius={5}
-                      setHeight={20}
-                    />
-                  </div>
+                  {
+                    dataBasket.status === 'PENDING' &&
+                    <div style={{ marginRight: 8 }}>
+                      <CheckBox
+                        handleChange={(status) => this.handleSelect(key, item)}
+                        selected={item.selected !== false}
+                        setRadius={5}
+                        setHeight={20}
+                      />
+                    </div>
+                  }
                   <CardItemBasket
                     key={key}
                     data={item}
@@ -368,6 +377,7 @@ const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
     basket: state.order.basket,
+    categories: state.product.categories,
   };
 };
 

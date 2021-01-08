@@ -130,6 +130,7 @@ function getSettingOrdering() {
 
 function processAddCart(defaultOutlet, selectedItem) {
   return async (dispatch) => {
+    console.log(selectedItem);
     if (isEmptyData(selectedItem.product.retailPrice)) {
       selectedItem.product.retailPrice = 0;
     }
@@ -151,9 +152,6 @@ function processAddCart(defaultOutlet, selectedItem) {
       );
       let productModifiers = JSON.parse(productModifierClone);
 
-      productModifiers = productModifiers.filter(
-        (item) => item.postToServer === true
-      );
       product.modifiers = productModifiers;
 
       let tempDetails = [];

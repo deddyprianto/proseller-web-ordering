@@ -276,27 +276,27 @@ class ModalProduct extends Component {
     }
   };
 
-  addItemIsYesNo = async (item, type) => {
-    let { selectedItem } = this.state;
+  addItemIsYesNo = async (item, type, groupId) => {
+    const { selectedItem } = this.state;
 
     if (item.orderingStatus === "UNAVAILABLE") return;
 
-    selectedItem = JSON.stringify(selectedItem);
-    selectedItem = JSON.parse(selectedItem);
-
+    let itemCopy = { ...selectedItem };
     if (type !== "checkbox") {
-      for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-        let modifierData = selectedItem.product.productModifiers[i].modifier;
-        if (modifierData.max === 1) {
-          for (let j = 0; j < modifierData.details.length; j++) {
-            modifierData.details[j].quantity = 0;
-            modifierData.details[j].isSelected = false;
+      for (let i = 0; i < itemCopy.product.productModifiers.length; i++) {
+        if (itemCopy.product.productModifiers[i].modifierID === groupId) {
+          let modifierData = itemCopy.product.productModifiers[i].modifier;
+          if (modifierData.max === 1) {
+            for (let j = 0; j < modifierData.details.length; j++) {
+              modifierData.details[j].quantity = 0;
+              modifierData.details[j].isSelected = false;
+            }
           }
         }
       }
     }
 
-    await this.setState({ selectedItem });
+    await this.setState({ selectedItem: itemCopy });
 
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
       let modifierDetail =
@@ -307,14 +307,15 @@ class ModalProduct extends Component {
             selectedItem.product.productModifiers[i].modifier.details[j]
               .isSelected;
           if (
-            modifierDetail[j].quantity === undefined ||
-            modifierDetail[j].quantity === 0
+            (modifierDetail[j].quantity === undefined ||
+              modifierDetail[j].quantity === 0) &&
+            isSelected === false
           ) {
             modifierDetail[j].quantity = 1;
             modifierDetail[j].isSelected = !isSelected;
             selectedItem.product.productModifiers[i].postToServer = true;
           } else {
-            modifierDetail[j].quantity = undefined;
+            modifierDetail[j].quantity = 0;
             modifierDetail[j].isSelected = !isSelected;
 
             if (type === undefined)
@@ -348,7 +349,7 @@ class ModalProduct extends Component {
 
   renderItemIsYesNo = (item) => {
     return (
-      <div className="card card-modifier">
+      <div className="renderItemIsYesNo card card-modifier">
         <div style={{ marginLeft: 5, marginRight: 10 }}>
           {item.modifier.details.map((data) => (
             <div
@@ -362,13 +363,14 @@ class ModalProduct extends Component {
               <div
                 style={{ display: "flex", alignItems: "center" }}
                 className="title-modifier"
-                onClick={() => this.addItemIsYesNo(data)}
+                onClick={() =>
+                  this.addItemIsYesNo(data, "yesOrNo", item.modifierID)
+                }
               >
                 <input
                   type="checkbox"
                   checked={data.isSelected}
                   className="scaled-checkbox form-check-input checkbox-modifier"
-                  onClick={() => this.addItemIsYesNo(data)}
                 />
                 <div
                   className="subtitle-modifier"
@@ -387,7 +389,7 @@ class ModalProduct extends Component {
 
   renderItemCheckbox = (item, i) => {
     return (
-      <div className="card card-modifier">
+      <div className="renderItemCheckbox card card-modifier">
         <div
           onClick={() => this.toggleModifier(i)}
           className="card-header header-modifier"
@@ -427,7 +429,9 @@ class ModalProduct extends Component {
                         : false
                     }
                     className="scaled-checkbox form-check-input checkbox-modifier"
-                    onClick={() => this.addItemIsYesNo(data, "checkbox")}
+                    onClick={() =>
+                      this.addItemIsYesNo(data, "checkbox", item.modifierID)
+                    }
                   />
                   <div
                     className="subtitle-modifier"
@@ -438,7 +442,11 @@ class ModalProduct extends Component {
                         ? `${data.quantity}x `
                         : null}
                     </span>
-                    <span onClick={() => this.addItemIsYesNo(data, "checkbox")}>
+                    <span
+                      onClick={() =>
+                        this.addItemIsYesNo(data, "checkbox", item.modifierID)
+                      }
+                    >
                       {data.name}
                     </span>
                     {data.quantity !== undefined && data.quantity !== 0 ? (
@@ -547,14 +555,25 @@ class ModalProduct extends Component {
                 <div
                   style={{ display: "flex", alignItems: "center" }}
                   className="title-modifier"
-                  onClick={() => this.addItemIsYesNo(data)}
+                  onClick={() =>
+                    this.addItemIsYesNo(data, "radio", item.modifierID)
+                  }
                 >
-                  <input
-                    type="radio"
-                    checked={data.isSelected ? true : false}
-                    class="scaled-checkbox form-check-input checkbox-modifier"
-                    onClick={() => this.addItemIsYesNo(data)}
-                  />
+                  <div>
+                    {
+                      data.isSelected ?
+                      <div style={{border: '1px solid gray', width: 20, height: 20, borderRadius: 50, marginLeft: 3, padding: 2, justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+                        <div style={{ backgroundColor: '#3498db', width: 10, height: 10, borderRadius: 50}}></div>
+                      </div>
+                      :
+                      <div style={{border: '1px solid gray', width: 20, height: 20, borderRadius: 50, marginLeft: 3}}></div>
+                    }
+                    {/* <input
+                      type="radio"
+                      checked={data.isSelected ? true : false}
+                      class="scaled-checkbox form-check-input checkbox-modifier"
+                    /> */}
+                  </div>
 
                   <div
                     className="subtitle-modifier"
