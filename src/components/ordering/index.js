@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Product from "./Product";
-import { OutletAction } from "../../redux/actions/OutletAction";
+// import { OutletAction } from "../../redux/actions/OutletAction";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
@@ -12,7 +12,7 @@ import UpdateProductModal from "./UpdateProductModal";
 import WebOrderingCategories from "./WebOrderingCategories";
 import EMenuCategories from "./EMenuCategories";
 import { CONSTANT } from "../../helpers";
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+// const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Ordering extends Component {
   constructor(props) {

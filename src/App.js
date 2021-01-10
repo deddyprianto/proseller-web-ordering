@@ -54,7 +54,6 @@ const App = (props) => {
     deliveryAddress,
     setting,
     defaultOutlet,
-    outletSelection,
   } = props;
 
   const [enableOrdering, setEnableOrdering] = useState(false);

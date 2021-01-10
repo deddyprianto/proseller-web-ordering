@@ -1029,7 +1029,7 @@ class LoginRegister extends Component {
 
   render() {
     let {
-      isLoading,
+      // isLoading,
       userStatus,
       method,
       email,

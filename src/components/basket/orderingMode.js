@@ -4,11 +4,9 @@ import { connect } from "react-redux";
 import SendIcon from "@material-ui/icons/Send";
 import { Button } from "reactstrap";
 import ModalOrderingMode from "./ModalOrderingMode";
-import config from "../../config";
 
 class OrderingMode extends Component {
   componentDidMount = () => {
-    let props = this.props.data;
     if (this.props.basket.orderingMode === undefined || this.props.basket.orderingMode === "") {
       document.getElementById("ordering-mode-basket-btn").click();
     }

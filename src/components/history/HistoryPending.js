@@ -9,7 +9,7 @@ import HistoryCard from "./HistoryCardPending";
 import { Link } from "react-router-dom";
 
 import { CONSTANT } from "../../helpers";
-import { constant } from "lodash";
+// import { constant } from "lodash";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");

@@ -11,7 +11,7 @@ import config from "../../config";
 import { lsLoad } from "../../helpers/localStorage";
 import { CRMService } from "../../Services/CRMService";
 
-const Swal = require("sweetalert2");
+// const Swal = require("sweetalert2");
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));

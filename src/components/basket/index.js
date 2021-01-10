@@ -4,8 +4,8 @@ import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import { CampaignAction } from "../../redux/actions/CampaignAction";
+// import { CustomerAction } from "../../redux/actions/CustomerAction";
+// import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
@@ -225,7 +225,7 @@ class Basket extends Component {
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props;
     let {
-      selectedVoucher,
+      // selectedVoucher,
       selectedPoint,
       scanTable,
       infoCompany,

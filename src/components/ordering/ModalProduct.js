@@ -4,7 +4,6 @@ import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
-import { isNull } from "lodash";
 
 class ModalProduct extends Component {
   constructor(props) {

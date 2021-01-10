@@ -8,9 +8,9 @@ import { Link } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import CheckBox from "../setting/checkBoxCostume";
-import config from "../../config";
-const Swal = require("sweetalert2");
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+// import config from "../../config";
+// const Swal = require("sweetalert2");
+// const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class ItemsBasket extends Component {
   constructor(props) {
