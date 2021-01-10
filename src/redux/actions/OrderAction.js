@@ -458,11 +458,13 @@ function getCart(isSetData = true) {
       `cart/getcart`,
       "Bearer"
     );
+    
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== "No details data") {
-      if (isSetData)
+      if (isSetData) {
         return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+      }
       return response.data;
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
@@ -470,6 +472,7 @@ function getCart(isSetData = true) {
     } else if (response.data === null) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
+    return response
   };
 }
 

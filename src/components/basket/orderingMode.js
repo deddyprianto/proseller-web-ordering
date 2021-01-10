@@ -7,7 +7,7 @@ import ModalOrderingMode from "./ModalOrderingMode";
 
 class OrderingMode extends Component {
   componentDidMount = () => {
-    if (this.props.basket.orderingMode === undefined || this.props.basket.orderingMode === "") {
+    if (this.props.basket.orderingMode === undefined || this.props.basket.orderingMode === "" || this.props.basket.orderingMode === null) {
       document.getElementById("ordering-mode-basket-btn").click();
     }
   };
