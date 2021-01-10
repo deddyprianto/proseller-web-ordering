@@ -4,6 +4,7 @@ import Shimmer from "react-shimmer-effect";
 import config from "../../config";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
+import { OrderAction } from "../../redux/actions/OrderAction";
 import { connect } from "react-redux";
 import ModalDeliveryAddress from "./ModalDeliveryAddress";
 // import { findKey } from "lodash";
@@ -225,6 +226,16 @@ class DeliveryAddress extends Component {
       `${config.prefix}_deliveryAddress`,
       JSON.stringify(encryptor.encrypt(items))
     );
+    
+    
+    // Save address info to server
+    if (items !== undefined) {
+      const payload = {
+        deliveryAddress: items
+      }
+      this.props.dispatch(OrderAction.updateCartInfo(payload))
+    }
+
     await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
