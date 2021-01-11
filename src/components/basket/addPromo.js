@@ -7,23 +7,27 @@ import RedeemIcon from '@material-ui/icons/Redeem';
 class AddPromo extends Component {
   render() {
     let props = this.props.data
+    // console.log(props)
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
-    // console.log(props) 
+    console.log(props, 'ini') 
 
     return (
       <div>
-        <RedeemPointBasket
-          data={props}
-          campaignPoint={this.props.campaignPoint}
-          balanceSVC={this.props.balanceSVC || 0}
-          defaultBalance={this.props.defaultBalance || 0}
-          handleRedeemPoint={() => this.props.handleRedeemPoint()}
-          cancelSelectPoint={() => this.props.cancelSelectPoint()}
-          getCurrency={(price) => this.props.getCurrency(price)}
-          scrollPoint={(data) => this.props.scrollPoint(data)}
-          setPoint={(point, discountPoint) => this.props.setPoint(point, discountPoint)}
-        />
+        {
+          props.detailPoint && props.detailPoint !== null && props.detailPoint.point !== null &&
+          <RedeemPointBasket
+            data={props}
+            campaignPoint={this.props.campaignPoint}
+            balanceSVC={this.props.balanceSVC || 0}
+            defaultBalance={this.props.defaultBalance || 0}
+            handleRedeemPoint={() => this.props.handleRedeemPoint()}
+            cancelSelectPoint={() => this.props.cancelSelectPoint()}
+            getCurrency={(price) => this.props.getCurrency(price)}
+            scrollPoint={(data) => this.props.scrollPoint(data)}
+            setPoint={(point, discountPoint) => this.props.setPoint(point, discountPoint)}
+          />
+        }
         <div style={{ width: "100%", }}>
           {
             props.myVoucher && props.myVoucher.length > 0 &&
