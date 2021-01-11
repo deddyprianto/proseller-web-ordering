@@ -292,8 +292,10 @@ class Basket extends Component {
       }
       
       // set delivery provider
-      await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
-
+      if (orderingMode === 'DELIVERY' || dataBasket.orderingMode === 'DELIVERY') {
+        await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
+      }
+      
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket);
 
