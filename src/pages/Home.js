@@ -71,7 +71,7 @@ class Home extends Component {
           {this.state.loading ? <LoadingAddCart /> : null}
           <div className="stretch-full-width">
             {
-              this.props.setting.outletSelection === 'MANUAL' && isEmptyObject(this.props.defaultOutlet) ?
+              this.props.setting.outletSelection === 'MANUAL' && isEmptyObject(this.props.defaultOutlet) && !isEmenu ?
               <OutletSelection />
               :
               <main id="main" className="site-main">
