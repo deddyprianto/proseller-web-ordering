@@ -49,7 +49,6 @@ function getNearsesOutlet(position = null) {
     // FIND ORDER SELECTION TYPE ( MANUAL / NEAREST / DEFAULT )
     let orderModeType = "DEFAULT"
     try{
-      console.log(state)
       if (state.order.setting.length > 0) {
         const find = state.order.setting.find(
           (item) => item.settingKey === "OutletSelection"
