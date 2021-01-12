@@ -224,6 +224,7 @@ class Basket extends Component {
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props;
+    await this.setState({loadingShow: true})
     let {
       // selectedVoucher,
       selectedPoint,
@@ -292,9 +293,7 @@ class Basket extends Component {
       }
       
       // set delivery provider
-      if (orderingMode === 'DELIVERY' || dataBasket.orderingMode === 'DELIVERY') {
-        await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
-      }
+      await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
       
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket);
@@ -899,7 +898,7 @@ class Basket extends Component {
 
   setOrderingMode = async (orderingMode) => {
     const oldOrderingMode = this.state.orderingMode;
-
+    await this.setState({loadingShow: true})
     if (oldOrderingMode !== orderingMode) {
       await this.setState({ orderActionTimeSlot: null });
     }
