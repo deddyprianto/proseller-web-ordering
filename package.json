@@ -1,7 +1,7 @@
 {
   "name": "web-ordering-crm",
   "version": "1.0.0",
-  "homepage": "/emenu",
+  "homepage": "/webordering",
   "private": true,
   "dependencies": {
     "@loadable/component": "^5.13.1",

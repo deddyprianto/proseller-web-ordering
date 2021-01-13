@@ -208,8 +208,8 @@ class Basket extends Component {
     }
 
     // if databasket is empty
-    // if (!dataBasket) dataBasket = await this.getDataBasket_();
-    dataBasket = await this.getDataBasket_();
+    if (!dataBasket) dataBasket = await this.getDataBasket_();
+    // dataBasket = await this.getDataBasket_();
 
     return {
       locationCustomer,
@@ -334,8 +334,8 @@ class Basket extends Component {
       }
 
       let checkOperationalHours = this.checkOperationalHours(storeDetail);
-
-      this.setState({
+      
+      await this.setState({
         dataBasket,
         storeDetail,
         scanTable,

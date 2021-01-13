@@ -180,7 +180,7 @@ class CardItemBasket extends Component {
               }}
             >
               {
-                item.grossAmount !== item.nettAmount ?
+                item.grossAmount !== item.nettAmount && item.grossAmount > item.nettAmount ?
                 <div>
                   <span>{this.props.getCurrency(Number(item.nettAmount.toFixed(2)))}</span>
                   <span style={{ textDecoration: 'line-through', marginLeft: 8 }}>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
@@ -189,18 +189,20 @@ class CardItemBasket extends Component {
                 <span>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
               }
             </div>
-            
-            <button
-              className="customer-group-name"
-              style={{
-                fontSize: 12,
-                padding: 0,
-                margin: 0,
-                backgroundColor: "transparent",
-              }}
-            >
-              <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
-            </button>
+            {
+              this.props.dataBasket && this.props.dataBasket.status === 'PENDING' && 
+              <button
+                className="customer-group-name"
+                style={{
+                  fontSize: 12,
+                  padding: 0,
+                  margin: 0,
+                  backgroundColor: "transparent",
+                }}
+              >
+                <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
+              </button>
+            }
           </div>
         </div>
       </div>

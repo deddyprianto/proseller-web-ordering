@@ -200,12 +200,16 @@ class ItemsBasket extends Component {
   render() {
     let { data } = this.props;
     let dataBasket = this.props.basket;
+    if (isEmptyObject(this.props.basket)) {
+      dataBasket = data.dataBasket
+    }
     let selected = 0;
     if (dataBasket && dataBasket.details && dataBasket.details.length > 0) {
       dataBasket.details.forEach((items) => {
         if (items.selected !== false) selected += 1;
       });
     }
+    
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>
         <ModalProduct
