@@ -70,22 +70,41 @@ class OutletSelection extends Component {
                     <Col
                       key={keys}
                       sm={6}
-                      onClick={() => this.handleSelectOutlet(items)}
+                      onClick={() => items.orderingStatus !== 'UNAVAILABLE' ? this.handleSelectOutlet(items) : false}
                     >
                       <div style={{
+                          backgroundColor: items.orderingStatus !== 'UNAVAILABLE' ? 'white' : '#ecf0f1',
+                          opacity: items.orderingStatus !== 'UNAVAILABLE' ? 1 : 0.6,
                           boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.2)", border: "1px solid #CDCDCD",
                           padding: 10, cursor: "pointer", display: "flex",
                           flexDirection: "row", margin: 5, borderRadius: 5
                         }}>
                           <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "100%", textAlign: "left" }}>
                             <div style={{
-                              display: "flex", flexDirection: "row",
+                              flexDirection: "row",
                               justifyContent: "space-between"
                             }}>
                               <div className={"customer-group-name"}
-                                style={{ fontWeight: "bold", fontSize: 14 }}>
-                                {items.name}
+                                style={{ fontWeight: "bold", fontSize: 14, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <span style={{ fontSize: 17 }}>{items.name}</span>
+                                {
+                                  items.distance && 
+                                  <div>
+                                    <i className="fa fa-map-marker"></i>{'  '}
+                                    <span className="font-color-theme" style={{ fontSize: 11 }}>{items.distance}</span>
+                                  </div>
+                                }
                               </div>
+                              {
+                                items.outletStatus === true ?
+                                <div style={{ backgroundColor: '#2ecc71', display: 'inline-block', borderRadius: 7 }}>
+                                  <p style={{ padding: 4, marginBottom: -4, marginTop: -4, fontSize: 12 }}><b style={{ color: 'white' }}>Open</b></p>
+                                </div>
+                                :
+                                <div style={{ backgroundColor: '#e74c3c', display: 'inline-block', borderRadius: 7 }}>
+                                  <p style={{ padding: 4, marginBottom: -4, marginTop: -4, fontSize: 12 }}><b style={{ color: 'white' }}>Closed</b></p>
+                                </div>
+                              }
                             </div>
                           </div>
                         </div>

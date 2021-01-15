@@ -101,6 +101,7 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
           let getDistance = (geolib.getDistance(locationCustomer, element) / 1000).toFixed(2)
           element.distance = Number(getDistance)
         }
+        element.outletStatus = config.getOutletStatus(element)
         outletData.push(element)
       });
 
