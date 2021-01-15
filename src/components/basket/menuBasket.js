@@ -41,9 +41,9 @@ class MenuBasket extends Component {
       <div style={{ marginTop: -8 }}>
         <div
           style={{
-            border: "1px solid #DCDCDC",
-            borderRadius: 5,
-            marginTop: 10,
+            // border: "1px solid #DCDCDC",
+            // borderRadius: 5,
+            marginTop: 30,
           }}
         >
           {basket.totalNettAmount >= minAmount ? (
@@ -97,9 +97,9 @@ class MenuBasket extends Component {
 
         <div
           style={{
-            border: "1px solid #DCDCDC",
-            borderRadius: 5,
-            marginTop: 10,
+            // border: "1px solid #DCDCDC",
+            // borderRadius: 5,
+            // marginTop: 10,
           }}
         >
           {
@@ -194,9 +194,9 @@ class MenuBasket extends Component {
               props.dataBasket.orderingMode === "DELIVERY" &&
               <div
                 style={{
-                  border: "1px solid #DCDCDC",
-                  borderRadius: 5,
-                  marginTop: 10,
+                  // border: "1px solid #DCDCDC",
+                  // borderRadius: 5,
+                  // marginTop: 10,
                 }}
               >
                 <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
