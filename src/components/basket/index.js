@@ -293,7 +293,10 @@ class Basket extends Component {
       }
       
       // set delivery provider
-      await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
+      if (orderingMode === 'DELIVERY' || dataBasket.orderingMode === 'DELIVERY') {
+        await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
+        dataBasket = await this.getDataBasket_()
+      }
       
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket);
@@ -317,19 +320,19 @@ class Basket extends Component {
         };
       }
 
-      if (
-        (isChangeMode || dataBasket.totalSurchargeAmount === 0) &&
-        dataBasket.isPaymentComplete === undefined
-      ) {
+      // (isChangeMode || dataBasket.totalSurchargeAmount === 0) &&
+      //   dataBasket.isPaymentComplete === undefined
+      if (isChangeMode) {
         let surcharge = await this.props.dispatch(
           OrderAction.changeOrderingMode({ orderingMode })
         );
         if (surcharge.resultCode === 200) {
           dataBasket = surcharge.data;
-          localStorage.setItem(
+          await localStorage.setItem(
             `${config.prefix}_dataBasket`,
             JSON.stringify(encryptor.encrypt(dataBasket))
           );
+          dataBasket = await this.getDataBasket_()
         }
       }
 

@@ -6,12 +6,17 @@ import config from "../../config";
 
 class Product extends Component {
   renderImageProduct = (item) => {
+    const { productConfig } = this.props
     if (
       item.product.defaultImageURL &&
       !isEmptyData(item.product.defaultImageURL)
     ) {
       return item.product.defaultImageURL;
     } else {
+
+      if (productConfig && productConfig.color && productConfig.color.productPlaceholder !== null) {
+        return productConfig.color.productPlaceholder
+      }
       return config.image_placeholder;
     }
   };

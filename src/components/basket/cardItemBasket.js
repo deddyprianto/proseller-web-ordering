@@ -6,12 +6,16 @@ import config from "../../config";
 
 class CardItemBasket extends Component {
   renderImageProduct = (item) => {
+    const { color } = this.props;
     if (
       item.product.defaultImageURL &&
       !isEmptyData(item.product.defaultImageURL)
     ) {
       return item.product.defaultImageURL;
     } else {
+      if (color && color.productPlaceholder !== null) {
+        return color.productPlaceholder
+      }
       return config.image_placeholder;
     }
   };

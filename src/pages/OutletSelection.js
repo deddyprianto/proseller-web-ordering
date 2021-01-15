@@ -34,7 +34,7 @@ class OutletSelection extends Component {
   };
 
   componentDidMount = async () => {
-    let response = await this.props.dispatch(OutletAction.fetchAllOutlet());
+    let response = await this.props.dispatch(OutletAction.fetchAllOutlet(true));
     await this.setState({outlets: response});
     await this.setState({ loadingShow: false });
   };

@@ -96,6 +96,8 @@ class ModalProduct extends Component {
   }
 
   renderImageProduct = (item) => {
+    const { color } = this.props;
+    
     if (
       item.product &&
       item.product.defaultImageURL &&
@@ -103,6 +105,9 @@ class ModalProduct extends Component {
     ) {
       return item.product.defaultImageURL;
     } else {
+      if (color && color.productPlaceholder !== null) {
+        return color.productPlaceholder
+      }
       return config.image_placeholder;
     }
   };
@@ -847,7 +852,7 @@ class ModalProduct extends Component {
         if (!check) defaultOutlet[orderingModeStatus[key]] = false;
       }
     }
-
+    
     return (
       <div
         className="modal fade"
@@ -868,7 +873,12 @@ class ModalProduct extends Component {
               style={{ display: "flex", justifyContent: "center", padding: 7 }}
             >
               <h5 style={{ fontSize: 16, marginTop: 10 }} className="color">
-                Select your dining preference
+                {
+                  defaultOutlet && defaultOutlet.outletType === 'RETAIL' ?
+                  'Ordering Mode'
+                  :
+                  'Select your dining preference'
+                }
               </h5>
             </div>
             <div className="modal-body">

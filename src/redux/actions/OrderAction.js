@@ -117,6 +117,11 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === "OutletSelection";
         });
+      let ProductPlaceholder =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === "ProductPlaceholder";
+        });
       
       if (outletSelection === undefined) {
         outletSelection = 'DEFAULT'
@@ -124,6 +129,12 @@ function getSettingOrdering() {
         outletSelection = outletSelection.settingValue
       }
 
+      if (ProductPlaceholder === undefined) {
+        ProductPlaceholder = null
+      } else {
+        ProductPlaceholder = ProductPlaceholder.settingValue
+      }
+      
       let payload = {
         primary: primaryColor.settingValue || "#C00A27",
         secondary: secondaryColor.settingValue || "#C00A27",
@@ -132,6 +143,7 @@ function getSettingOrdering() {
         navigation: navigation.settingValue || "#C00A27",
         textButtonColor: textButtonColor.settingValue || "#FFFFFF",
         textWarningColor: textWarningColor.settingValue || "red",
+        productPlaceholder: ProductPlaceholder || null,
       };
       dispatch({ type: "SET_THEME", payload });
       dispatch({
@@ -364,6 +376,19 @@ function addCart(payload) {
       `cart/additem`,
       "Bearer"
     );
+    
+    // IF First time add cart, then call change Ordering mode
+    try{
+      const orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
+      if (response.data) {
+        if (response.data.details.length === 1) {
+          const payload = {
+            orderingMode: orderingMode
+          }
+          dispatch(changeOrderingMode(payload));
+        }
+      }
+    }catch(e){}
 
     try {
       document.getElementById("close-modal").click();

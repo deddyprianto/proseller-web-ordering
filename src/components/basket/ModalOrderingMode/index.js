@@ -117,7 +117,7 @@ class ModalOrderingMode extends Component {
         if (!check) props.storeDetail[orderingModeStatus[key]] = false
       }
     }
-
+    
     return (
       <div
         className="modal fade"
@@ -138,7 +138,12 @@ class ModalOrderingMode extends Component {
               style={{ display: "flex", justifyContent: "center", padding: 7 }}
             >
               <h5 style={{ fontSize: 16, marginTop: 10 }} className="color">
-                Select your dining preference
+                {
+                  outlet && outlet.outletType === 'RETAIL' ?
+                  'Ordering Mode'
+                  :
+                  'Select your dining preference'
+                }
               </h5>
             </div>
             <div className="modal-body">

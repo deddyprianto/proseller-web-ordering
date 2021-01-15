@@ -421,7 +421,7 @@ class Ordering extends Component {
         </div>
       );
     }
-
+    
     return (
       <div
         className="section-tabs container-product"
@@ -534,6 +534,7 @@ class Ordering extends Component {
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
                               selectProduct={this.selectProduct}
+                              productConfig={this.props.theme}
                               showUpdateModal={(item) =>
                                 this.setState({
                                   showUpdateModal: true,

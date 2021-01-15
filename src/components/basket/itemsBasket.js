@@ -345,6 +345,7 @@ class ItemsBasket extends Component {
                   }
                   <CardItemBasket
                     key={key}
+                    color={this.props.color}
                     data={item}
                     roleBtnClear={this.props.roleBtnClear}
                     dataBasket={dataBasket}
