@@ -291,14 +291,41 @@ class MenuBasket extends Component {
             </div>
           )}
 
-          <div style={{ marginLeft: 10, marginRight: 10 }}>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
-              <div style={{ fontWeight: "bold" }}> Tax Amount </div>
-              <div style={{ fontWeight: "bold" }} >
-                {`${this.props.getCurrency(props.dataBasket.totalTaxAmount)}`}
+          {
+            props.dataBasket.totalDiscountAmount > 0 &&
+            <div style={{ marginLeft: 10, marginRight: 10 }}>
+              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                <div style={{ fontWeight: "bold" }}> Discount </div>
+                <div style={{ fontWeight: "bold" }} >
+                  {`${this.props.getCurrency(props.dataBasket.totalDiscountAmount)}`}
+                </div>
               </div>
             </div>
-          </div>
+          }
+
+          {
+            props.dataBasket.inclusiveTax > 0 &&
+            <div style={{ marginLeft: 10, marginRight: 10 }}>
+              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                <div style={{ fontWeight: "bold" }}> Tax Amount </div>
+                <div style={{ fontWeight: "bold" }} >
+                  {`${this.props.getCurrency(props.dataBasket.inclusiveTax)}`}
+                </div>
+              </div>
+            </div>
+          }
+
+          {
+            props.dataBasket.exclusiveTax > 0 &&
+            <div style={{ marginLeft: 10, marginRight: 10 }}>
+              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                <div style={{ fontWeight: "bold" }}> Tax Amount </div>
+                <div style={{ fontWeight: "bold" }} >
+                  {`${this.props.getCurrency(props.dataBasket.exclusiveTax)}`}
+                </div>
+              </div>
+            </div>
+          }
         </div>
 
         {
