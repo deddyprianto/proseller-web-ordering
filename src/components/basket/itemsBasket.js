@@ -25,17 +25,18 @@ class ItemsBasket extends Component {
 
   selectProduct = async (productSelected, mode) => {
     let props = this.props.data;
-    const quantityItem = productSelected.quantity
+    const quantityItem = productSelected.quantity;
+    const originalQuantity = productSelected.originalQuantity;
+    const promoQuantity = productSelected.promoQuantity;
     productSelected = JSON.parse(JSON.stringify(productSelected));
     let dataBasket = JSON.parse(JSON.stringify(props.dataBasket));
     let storeDetail = JSON.parse(JSON.stringify(props.storeDetail));
-
     const productBackup = this.props.categories;
-    
+
     try {
       storeDetail.product = productBackup;
     } catch (e) {}
-    
+
     if (storeDetail && storeDetail.product) {
       storeDetail.product.forEach((group) => {
         group.items.forEach((product) => {
@@ -101,7 +102,6 @@ class ItemsBasket extends Component {
         if (find !== undefined) {
           await this.setState({ selectedItem: {} });
           if (mode === "Update") {
-            product.quantity = find.quantity;
             product.remark = find.remark;
             // fill the modifier
             if (!isEmptyArray(find.modifiers)) {
@@ -148,7 +148,15 @@ class ItemsBasket extends Component {
       }
     }
     product.mode = mode;
-    product = JSON.parse(JSON.stringify(product));
+    product = {
+      ...product,
+      ...(originalQuantity && {
+        originalQuantity,
+      }),
+      ...(promoQuantity && {
+        promoQuantity,
+      }),
+    };
     await this.setState({ selectedItem: product });
   };
 
@@ -201,7 +209,7 @@ class ItemsBasket extends Component {
     let { data } = this.props;
     let dataBasket = this.props.basket;
     if (isEmptyObject(this.props.basket)) {
-      dataBasket = data.dataBasket
+      dataBasket = data.dataBasket;
     }
     let selected = 0;
     if (dataBasket && dataBasket.details && dataBasket.details.length > 0) {
@@ -209,7 +217,7 @@ class ItemsBasket extends Component {
         if (items.selected !== false) selected += 1;
       });
     }
-    
+
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>
         <ModalProduct
@@ -265,8 +273,7 @@ class ItemsBasket extends Component {
                 marginTop: 10,
               }}
             />
-            {
-              !isEmptyObject(dataBasket) && dataBasket.status === 'PENDING' &&
+            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (
               <div>
                 <div
                   style={{
@@ -296,7 +303,8 @@ class ItemsBasket extends Component {
                   <button
                     className="border-theme background-theme"
                     onClick={() =>
-                      !this.props.roleBtnClear && this.props.handleClear(dataBasket)
+                      !this.props.roleBtnClear &&
+                      this.props.handleClear(dataBasket)
                     }
                     style={{
                       fontWeight: "bold",
@@ -323,7 +331,7 @@ class ItemsBasket extends Component {
                   }}
                 />
               </div>
-            }
+            )}
             {dataBasket.details.map((item, key) => (
               <div key={key}>
                 <div
@@ -332,8 +340,7 @@ class ItemsBasket extends Component {
                     alignItems: "center",
                   }}
                 >
-                  {
-                    dataBasket.status === 'PENDING' &&
+                  {dataBasket.status === "PENDING" && (
                     <div style={{ marginRight: 8 }}>
                       <CheckBox
                         handleChange={(status) => this.handleSelect(key, item)}
@@ -342,13 +349,13 @@ class ItemsBasket extends Component {
                         setHeight={20}
                       />
                     </div>
-                  }
+                  )}
                   <CardItemBasket
                     key={key}
                     color={this.props.color}
                     data={item}
                     roleBtnClear={this.props.roleBtnClear}
-                    dataBasket={dataBasket}
+                    dataasket={dataBasket}
                     getCurrency={(price) => this.props.getCurrency(price)}
                     openModal={(item) => this.openModal(item)}
                   />

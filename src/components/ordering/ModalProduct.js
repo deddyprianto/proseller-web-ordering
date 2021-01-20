@@ -97,7 +97,7 @@ class ModalProduct extends Component {
 
   renderImageProduct = (item) => {
     const { color } = this.props;
-    
+
     if (
       item.product &&
       item.product.defaultImageURL &&
@@ -106,7 +106,7 @@ class ModalProduct extends Component {
       return item.product.defaultImageURL;
     } else {
       if (color && color.productPlaceholder !== null) {
-        return color.productPlaceholder
+        return color.productPlaceholder;
       }
       return config.image_placeholder;
     }
@@ -254,7 +254,8 @@ class ModalProduct extends Component {
           let response = await this.props.dispatch(
             OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
           );
-          this.props.handleSetState("dataBasket", response.data);
+          // this.props.handleSetState("dataBasket", response.data);
+          console.log(selectedItem);
           document.getElementById("detail-product-modal").click();
         }
       } else {
@@ -564,14 +565,40 @@ class ModalProduct extends Component {
                   }
                 >
                   <div>
-                    {
-                      data.isSelected ?
-                      <div style={{border: '1px solid gray', width: 20, height: 20, borderRadius: 50, marginLeft: 3, padding: 2, justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
-                        <div style={{ backgroundColor: '#3498db', width: 10, height: 10, borderRadius: 50}}></div>
+                    {data.isSelected ? (
+                      <div
+                        style={{
+                          border: "1px solid gray",
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                          marginLeft: 3,
+                          padding: 2,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          display: "flex",
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundColor: "#3498db",
+                            width: 10,
+                            height: 10,
+                            borderRadius: 50,
+                          }}
+                        ></div>
                       </div>
-                      :
-                      <div style={{border: '1px solid gray', width: 20, height: 20, borderRadius: 50, marginLeft: 3}}></div>
-                    }
+                    ) : (
+                      <div
+                        style={{
+                          border: "1px solid gray",
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                          marginLeft: 3,
+                        }}
+                      ></div>
+                    )}
                     {/* <input
                       type="radio"
                       checked={data.isSelected ? true : false}
@@ -823,10 +850,10 @@ class ModalProduct extends Component {
     if (mode !== "" && mode !== undefined && mode === null) {
       setTimeout(() => {
         const payload = {
-          orderingMode: mode
-        }
-        this.props.dispatch(OrderAction.updateCartInfo(payload))
-      }, 1000)
+          orderingMode: mode,
+        };
+        this.props.dispatch(OrderAction.updateCartInfo(payload));
+      }, 1000);
     }
     try {
       document.getElementById("dismiss-ordering-mode").click();
@@ -852,7 +879,7 @@ class ModalProduct extends Component {
         if (!check) defaultOutlet[orderingModeStatus[key]] = false;
       }
     }
-    
+
     return (
       <div
         className="modal fade"
@@ -873,12 +900,9 @@ class ModalProduct extends Component {
               style={{ display: "flex", justifyContent: "center", padding: 7 }}
             >
               <h5 style={{ fontSize: 16, marginTop: 10 }} className="color">
-                {
-                  defaultOutlet && defaultOutlet.outletType === 'RETAIL' ?
-                  'Ordering Mode'
-                  :
-                  'Select your dining preference'
-                }
+                {defaultOutlet && defaultOutlet.outletType === "RETAIL"
+                  ? "Ordering Mode"
+                  : "Select your dining preference"}
               </h5>
             </div>
             <div className="modal-body">

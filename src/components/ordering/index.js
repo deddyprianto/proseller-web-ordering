@@ -207,6 +207,7 @@ class Ordering extends Component {
   selectProduct = async (productSelected, mode) => {
     let product = JSON.stringify(productSelected);
     product = JSON.parse(product);
+    console.log("calling select product");
 
     try {
       await product.product.productModifiers.forEach((group, i) => {
@@ -421,7 +422,7 @@ class Ordering extends Component {
         </div>
       );
     }
-    
+
     return (
       <div
         className="section-tabs container-product"

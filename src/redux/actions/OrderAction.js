@@ -40,9 +40,8 @@ export const OrderAction = {
   moveCart,
   getTimeSlot,
   submitMembership,
-  updateCartInfo
+  updateCartInfo,
 };
-
 
 function shareURL(tableNo, outletID, orderMode) {
   return async (dispatch) => {
@@ -122,19 +121,19 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === "ProductPlaceholder";
         });
-      
+
       if (outletSelection === undefined) {
-        outletSelection = 'DEFAULT'
+        outletSelection = "DEFAULT";
       } else {
-        outletSelection = outletSelection.settingValue
+        outletSelection = outletSelection.settingValue;
       }
 
       if (ProductPlaceholder === undefined) {
-        ProductPlaceholder = null
+        ProductPlaceholder = null;
       } else {
-        ProductPlaceholder = ProductPlaceholder.settingValue
+        ProductPlaceholder = ProductPlaceholder.settingValue;
       }
-      
+
       let payload = {
         primary: primaryColor.settingValue || "#C00A27",
         secondary: secondaryColor.settingValue || "#C00A27",
@@ -152,7 +151,7 @@ function getSettingOrdering() {
       });
       dispatch(setData(outletSelection, "OUTLET_SELECTION"));
     }
-    return data
+    return data;
   };
 }
 
@@ -241,12 +240,18 @@ function processUpdateCart(basket, products) {
     let payload = [];
     for (let index = 0; index < products.length; index++) {
       let product = products[index];
+      console.log("product:", product);
       let find = await basket.details.find((data) => data.id === product.id);
+      const quantity =
+        product.originalQuantity && product.promoQuantity
+          ? product.originalQuantity +
+            (product.quantity - product.promoQuantity)
+          : product.quantity;
       let dataproduct = {
         id: find.id,
         productID: product.productID,
         unitPrice: product.product.retailPrice,
-        quantity: product.quantity,
+        quantity,
       };
 
       if (product.remark !== "" && product.remark !== undefined)
@@ -376,19 +381,21 @@ function addCart(payload) {
       `cart/additem`,
       "Bearer"
     );
-    
+
     // IF First time add cart, then call change Ordering mode
-    try{
-      const orderingMode = localStorage.getItem(`${config.prefix}_ordering_mode`);
+    try {
+      const orderingMode = localStorage.getItem(
+        `${config.prefix}_ordering_mode`
+      );
       if (response.data) {
         if (response.data.details.length === 1) {
           const payload = {
-            orderingMode: orderingMode
-          }
+            orderingMode: orderingMode,
+          };
           dispatch(changeOrderingMode(payload));
         }
       }
-    }catch(e){}
+    } catch (e) {}
 
     try {
       document.getElementById("close-modal").click();
@@ -483,7 +490,7 @@ function getCart(isSetData = true) {
       `cart/getcart`,
       "Bearer"
     );
-    
+
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== "No details data") {
@@ -497,7 +504,7 @@ function getCart(isSetData = true) {
     } else if (response.data === null) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
-    return response
+    return response;
   };
 }
 
