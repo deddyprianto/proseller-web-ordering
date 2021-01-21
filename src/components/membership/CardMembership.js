@@ -7,37 +7,55 @@ export default class CardMembership extends Component {
     return (
       <Col sm={6}>
         <div style={styles.wrap}>
-          <div style={selectedMembership !== null && selectedMembership.id === item.id ? styles.couponSelected : styles.coupon}>
+          <div
+            style={
+              selectedMembership !== null && selectedMembership.id === item.id
+                ? styles.couponSelected
+                : styles.coupon
+            }
+          >
             <div style={styles.coupon_left} className="button">
               <p style={styles.name}>{item.name}</p>
               <p style={styles.price}>${item.defaultPrice}</p>
-              <div style={{display: 'inline', width: '100%'}}>
+              <div style={{ display: "inline", width: "100%" }}>
                 <select
                   className="button"
                   name={"card-membership"}
-                  style={{borderRadius: 2, border: 'none', width: '80%'}}
+                  style={{ borderRadius: 2, border: "none", width: "80%" }}
                   onChange={(e) => {
-                    try{
-                      this.props.setPlan(index, e.target.value)
-                    }catch(e){}
+                    try {
+                      this.props.setPlan(index, e.target.value);
+                    } catch (e) {}
                   }}
                 >
                   {item.paidMembershipPlan.map((option, idx) => {
                     return (
-                      <option
-                        value={idx}
-                        key={idx}
-                      >
-                        per {option.period}{" "} {option.periodUnit.toLowerCase()}
+                      <option value={idx} key={idx}>
+                        per {option.period} {option.periodUnit.toLowerCase()}
                       </option>
                     );
                   })}
                 </select>
-                <i className="fa fa-chevron-down" style={{fontSize: 12, color: 'white'}}></i>
+                <i
+                  className="fa fa-chevron-down"
+                  style={{ fontSize: 12, color: "white" }}
+                ></i>
               </div>
             </div>
-            <div style={styles.coupon_con} onClick={() => this.props.setMembership(item)}>
-              <p style={{ color: "black", fontSize: 13, lineHeight: 1.4, fontFamily: 'Arial' }}>{item.paidMembershipInformation}</p>
+            <div
+              style={styles.coupon_con}
+              onClick={() => this.props.setMembership(item)}
+            >
+              <p
+                style={{
+                  color: "black",
+                  fontSize: 13,
+                  lineHeight: 1.4,
+                  fontFamily: "Arial",
+                }}
+              >
+                {item.paidMembershipInformation}
+              </p>
             </div>
           </div>
         </div>
@@ -55,23 +73,23 @@ const styles = {
     display: "flex",
     overflow: "hidden",
     borderRadius: "15px",
-    border: '1px solid black'
+    border: "1px solid black",
   },
   couponSelected: {
     display: "flex",
     overflow: "hidden",
     borderRadius: "10px",
-    border: '2px solid red'
+    border: "2px solid red",
   },
   coupon_left: {
     padding: 10,
     float: "left",
-    width: "40%",
-    maxWidth: "40%",
+    width: "50%",
+    maxWidth: "50%",
     height: "150px",
     maxHeight: "150px",
     position: "relative",
-    borderRight: '4px dashed white'
+    borderRight: "4px dashed white",
   },
   coupon_con: {
     float: "left",
@@ -95,7 +113,7 @@ const styles = {
     borderRadius: 10,
     fontWeight: "bold",
     opacity: 0.8,
-    color: 'black'
+    color: "black",
   },
   price: {
     textAlign: "center",
