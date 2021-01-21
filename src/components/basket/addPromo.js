@@ -75,7 +75,7 @@ class AddPromo extends Component {
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10, display: "flex", alignItems: "center"
             }}>
-              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn || props.totalPrice === 0}
+              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn || props.totalPrice === 0 || this.props.campaignPoint.pointsToRebateRatio === "1:0"}
                 data-toggle="modal" data-target="#redeem-point-modal"
                 onClick={() => this.props.handleRedeemPoint()}
                 style={{

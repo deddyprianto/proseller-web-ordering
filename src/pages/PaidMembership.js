@@ -8,6 +8,7 @@ import { CustomerAction } from "../redux/actions/CustomerAction";
 import { CampaignAction } from "../redux/actions/CampaignAction";
 import { Button } from "reactstrap";
 import calculateTAX from "../helpers/TaxCalculation";
+import Swal from "sweetalert2";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const CardMembership = loadable(() =>
   import("../components/membership/CardMembership")
@@ -57,6 +58,22 @@ class PaidMembership extends Component {
       for (let i = 0; i < response.data.length; i++) {
         response.data[i].defaultPrice =
           response.data[i].paidMembershipPlan[0].price;
+        const combinedPlan = [
+          ...response.data[i].paidMembershipPlan,
+          ...response.data[i].paidMembershipPlanWithPoint,
+        ];
+        const plan = combinedPlan.reduce((acc, plan) => {
+          return {
+            ...acc,
+            [plan.periodUnit + plan.period]: {
+              ...acc[plan.periodUnit + plan.period],
+              ...plan,
+            },
+          };
+        }, {});
+        response.data[i].paidMembershipPlan = Object.keys(plan).map(
+          (key) => plan[key]
+        );
       }
       this.setState({ memberships: response.data, loading: false });
     }
@@ -131,15 +148,16 @@ class PaidMembership extends Component {
     });
   };
 
-  detailMembership = () => {
+  detailMembership = (withPoint = false) => {
     const { selectedMembership, detailPurchase } = this.state;
     const find = selectedMembership.paidMembershipPlan.find(
       (item) => item.isSelected
     );
+    const price = withPoint
+      ? find.point + " points"
+      : "$" + detailPurchase.totalNettAmount;
     if (find !== undefined)
-      return `$${detailPurchase.totalNettAmount} / ${
-        find.period
-      } ${find.periodUnit.toLowerCase()}`;
+      return `${price} / ${find.period} ${find.periodUnit.toLowerCase()}`;
   };
 
   upgradeMembership = () => {
@@ -188,6 +206,40 @@ class PaidMembership extends Component {
     this.props.history.push("/payment");
   };
 
+  redeemMembership = async () => {
+    const { selectedMembership } = this.state;
+    const plan = selectedMembership.paidMembershipPlan.find(
+      (item) => item.isSelected
+    );
+    const payload = {
+      membership: {
+        period: plan.period,
+        periodUnit: plan.periodUnit,
+        point: plan.point,
+        id: selectedMembership.id,
+      },
+      customerId: this.props.account.signAs,
+      redeemValue: plan.point,
+    };
+
+    const response = await this.props.dispatch(
+      MembershiplAction.redeemPaidMembership(payload)
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      Swal.fire("Oppss!", response.data.message, "error");
+    } else {
+      Swal.fire(
+        "Congratulations!",
+        `Your membership has been upgraded to ${selectedMembership.name}`,
+        "success"
+      ).then((result) => {
+        if (result.isConfirmed || result.isDismissed) {
+          this.props.history.push("/profile");
+        }
+      });
+    }
+  };
+
   getTextInfo = () => {
     try {
       const { dataCustomer, selectedMembership } = this.state;
@@ -225,6 +277,9 @@ class PaidMembership extends Component {
       loading,
       detailPurchase,
     } = this.state;
+    const selectedPlan =
+      selectedMembership &&
+      selectedMembership.paidMembershipPlan.find((item) => item.isSelected);
     return (
       <div
         className="col-full"
@@ -316,7 +371,7 @@ class PaidMembership extends Component {
               >
                 <div style={{ marginBottom: 3 }}>
                   <hr />
-                  {detailPurchase.totalTaxAmount > 0 && (
+                  {detailPurchase.totalTaxAmount > 0 && false && (
                     <div
                       style={{
                         display: "flex",
@@ -377,6 +432,34 @@ class PaidMembership extends Component {
                     {this.detailMembership()}
                   </b>
                 </Button>
+                {selectedPlan && selectedPlan.point && (
+                  <div
+                    style={{
+                      margin: "1rem 0",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    OR
+                  </div>
+                )}
+                {selectedPlan && selectedPlan.point && (
+                  <Button
+                    onClick={this.redeemMembership}
+                    className="btn btn-footer"
+                    style={{
+                      width: "90%",
+                      height: 50,
+                      marginRight: "5%",
+                      marginLeft: "5%",
+                    }}
+                  >
+                    <b className="text-btn-theme">
+                      Redeem {selectedMembership.name}{" "}
+                      {this.detailMembership(true)}
+                    </b>
+                  </Button>
+                )}
               </div>
             )}
           </div>

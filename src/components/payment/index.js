@@ -96,7 +96,7 @@ class Payment extends Component {
           companyInfo && companyInfo.companyId
         )
       );
-      console.log(response, 'response')
+      console.log(response, "response");
       if (response.ResultCode === 200) this.setState(response.Data);
     }
     const svc = await this.props.dispatch(SVCAction.loadSVC());
@@ -1390,7 +1390,7 @@ class Payment extends Component {
                                 textDecorationLine: "line-through",
                               }}
                             >
-                              { totalAmount }
+                              {totalAmount}
                             </div>
                           )}
                         </div>
