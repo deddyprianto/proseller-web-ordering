@@ -2,12 +2,12 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "dev";
+let stage = "demo";
 let companyHost = "superpets";
-// let endPoint = `https://${companyHost}${
-//   stage !== "" ? "-" + stage : ""
-// }.proseller.io`;
-let endPoint = `https://${companyHost}.proseller-${stage}.com`;
+let endPoint = `https://${companyHost}${
+  stage !== "" ? "-" + stage : ""
+}.proseller.io`;
+// let endPoint = `https://${companyHost}.proseller-${stage}.com`;
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {
@@ -90,14 +90,14 @@ config.getOperationalHours = function getOperationalHours(data) {
     var dd = date.getDate();
     var mm = date.getMonth() + 1;
     var yyyy = date.getFullYear();
-    let currentDate = mm + '/' + dd + '/' + yyyy;
+    let currentDate = mm + "/" + dd + "/" + yyyy;
     let day = date.getDay();
-    let time = date.getHours() + ':' + date.getMinutes();
+    let time = date.getHours() + ":" + date.getMinutes();
 
     let open;
     operationalHours
-      .filter(item => item.day === day && item.active === true)
-      .map(day => {
+      .filter((item) => item.day === day && item.active === true)
+      .map((day) => {
         if (
           Date.parse(`${currentDate} ${time}`) >=
             Date.parse(`${currentDate} ${day.open}`) &&
@@ -118,7 +118,7 @@ config.getOperationalHours = function getOperationalHours(data) {
 };
 
 config.getOutletStatus = function getOutletStatus(data) {
-  try{
+  try {
     if (data && data.operationalHours && data.operationalHours.length > 0) {
       if (config.getOperationalHours(data)) {
         return true;
@@ -136,9 +136,7 @@ config.getOutletStatus = function getOutletStatus(data) {
         return false;
       }
     }
-  }catch(e){
-    
-  }
+  } catch (e) {}
   return false;
 };
 
