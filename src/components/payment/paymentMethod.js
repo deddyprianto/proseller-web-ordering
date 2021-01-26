@@ -173,13 +173,24 @@ class PaymentMethod extends Component {
         let response = await this.props.dispatch(
           PaymentAction.registerPaymentCard(payload)
         );
+        let win = null;
         if (response.resultCode === 200) {
           this.setState({
             isLoading: false,
-            showAddPaymentForm: true,
+
             addPaymentFormUrl: response.data.url,
           });
-
+          if (
+            data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
+            data.forceNewTab
+          ) {
+            win = window.open(response.data.url, "_blank");
+            win.focus();
+          } else {
+            this.setState({
+              showAddPaymentForm: true,
+            });
+          }
           let accountID = response.data.accountID;
           response = await this.props.dispatch(
             PaymentAction.checkPaymentCard(accountID)
@@ -194,6 +205,9 @@ class PaymentMethod extends Component {
                 `${config.prefix}_paymentCardAccountDefault`,
                 JSON.stringify(encryptor.encrypt(response.data))
               );
+              if (win) {
+                win.close();
+              }
               await this.getDataPaymentCard();
               this.setState({ showAddPaymentForm: false });
               this.handleSelectCard(response.data);

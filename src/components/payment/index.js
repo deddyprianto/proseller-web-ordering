@@ -1111,7 +1111,7 @@ class Payment extends Component {
     }
     console.log(response);
 
-    if (response && response.resultCode === 400) {
+    if (response && response.resultCode >= 400) {
       Swal.fire(
         "Oppss!",
         response.message ||
