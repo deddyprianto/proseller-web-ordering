@@ -1090,9 +1090,6 @@ class Basket extends Component {
     );
     const orderActionDateObj = new Date(`${orderActionDate} 00:00`);
 
-    console.log(nowDateObj > orderActionDateObj);
-    console.log(orderActionDateObj);
-
     timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
     if (timeSlot.resultCode === 200) {
       timeSlot = timeSlot.data.filter((items) => {
