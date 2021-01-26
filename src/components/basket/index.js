@@ -224,7 +224,7 @@ class Basket extends Component {
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props;
-    await this.setState({loadingShow: true})
+    await this.setState({ loadingShow: true });
     let {
       // selectedVoucher,
       selectedPoint,
@@ -262,7 +262,7 @@ class Basket extends Component {
         `${config.prefix}_isOutletChanged`
       );
       // move cart based on delivery address if ordering setting is nearest outlet
-      if (this.props.outletSelection === 'NEAREST') {
+      if (this.props.outletSelection === "NEAREST") {
         if (
           deliveryAddress &&
           orderingMode === "DELIVERY" &&
@@ -291,13 +291,20 @@ class Basket extends Component {
           }
         }
       }
-      
+
       // set delivery provider
-      if (orderingMode === 'DELIVERY' || dataBasket.orderingMode === 'DELIVERY') {
-        await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
-        dataBasket = await this.getDataBasket_()
+      if (
+        orderingMode === "DELIVERY" ||
+        dataBasket.orderingMode === "DELIVERY"
+      ) {
+        await this.setDeliveryProvider(
+          deliveryAddress,
+          orderingMode,
+          dataBasket
+        );
+        dataBasket = await this.getDataBasket_();
       }
-      
+
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket);
 
@@ -332,12 +339,12 @@ class Basket extends Component {
             `${config.prefix}_dataBasket`,
             JSON.stringify(encryptor.encrypt(dataBasket))
           );
-          dataBasket = await this.getDataBasket_()
+          dataBasket = await this.getDataBasket_();
         }
       }
 
       let checkOperationalHours = this.checkOperationalHours(storeDetail);
-      
+
       await this.setState({
         dataBasket,
         storeDetail,
@@ -372,7 +379,7 @@ class Basket extends Component {
       });
     }
 
-    await this.setState({ loadingShow: false })
+    await this.setState({ loadingShow: false });
     this.setState({
       // isLoading: false,
       selectedPoint,
@@ -901,7 +908,7 @@ class Basket extends Component {
 
   setOrderingMode = async (orderingMode) => {
     const oldOrderingMode = this.state.orderingMode;
-    await this.setState({loadingShow: true})
+    await this.setState({ loadingShow: true });
     if (oldOrderingMode !== orderingMode) {
       await this.setState({ orderActionTimeSlot: null });
     }
@@ -910,12 +917,16 @@ class Basket extends Component {
       type: "SET_ORDERING_MODE",
       payload: orderingMode,
     });
-    
-    if (orderingMode !== "" && orderingMode !== undefined && orderingMode !== null) {
+
+    if (
+      orderingMode !== "" &&
+      orderingMode !== undefined &&
+      orderingMode !== null
+    ) {
       const payload = {
-        orderingMode: orderingMode
-      }
-      await this.props.dispatch(OrderAction.updateCartInfo(payload))
+        orderingMode: orderingMode,
+      };
+      await this.props.dispatch(OrderAction.updateCartInfo(payload));
     }
 
     await this.setState({
@@ -1008,7 +1019,7 @@ class Basket extends Component {
           await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
-        Swal.close()
+        Swal.close();
         await this.getDataBasket();
       }
     });
@@ -1025,7 +1036,13 @@ class Basket extends Component {
 
   handleSettle = async () => {
     let { selectedCard } = this.state;
-
+    const { defaultOutlet } = this.props;
+    const orderPreparationTime =
+      defaultOutlet.timeSlots &&
+      defaultOutlet.timeSlots[0] &&
+      defaultOutlet.timeSlots[0].defaultPreparationTime
+        ? defaultOutlet.timeSlots[0].defaultPreparationTime
+        : 0;
     if (!this.handleOpenLogin()) return;
 
     if (selectedCard) {
@@ -1037,6 +1054,56 @@ class Basket extends Component {
 
         if (Object.keys(needCVV).length !== 0) {
           console.log("need cvv");
+          return;
+        }
+      }
+    }
+
+    let {
+      storeDetail,
+      orderingMode,
+      timeSlot,
+      orderActionDate,
+      orderActionTime,
+    } = this.state;
+    if (!storeDetail) return;
+
+    let orderingModeField =
+      orderingMode === "DINEIN"
+        ? "dineIn"
+        : orderingMode === "DELIVERY"
+        ? "delivery"
+        : "takeAway";
+    let { maxDays } = storeDetail.orderValidation[orderingModeField];
+    if (!maxDays) maxDays = 90;
+
+    let dateTime = new Date();
+    let payload = {
+      outletID: storeDetail.sortKey,
+      clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+      date: moment(dateTime).format("YYYY-MM-DD"),
+      maxDays,
+      orderingMode,
+    };
+
+    timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
+    if (timeSlot.resultCode === 200) {
+      timeSlot = timeSlot.data.filter((items) => {
+        return items.timeSlot.filter((item) => {
+          return item.isAvailable;
+        });
+      });
+      const selectedTimeSlot = timeSlot.find(
+        (slot) => slot.date === orderActionDate
+      );
+      if (selectedTimeSlot) {
+        const minutesNow = new Date().getHours() * 60 + new Date().getMinutes();
+        const minutesTimeSlot =
+          new Date(`1970-01-01 ${orderActionTime}`).getHours() * 60 +
+          new Date(`1970-01-01 ${orderActionTime}`).getMinutes();
+        const difference = minutesTimeSlot - minutesNow;
+        if (difference < orderPreparationTime) {
+          Swal.fire("Oppss!", "Time Slot is not available", "error");
           return;
         }
       }
@@ -1360,7 +1427,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-    
+
     return (
       <div
         className="col-full"
@@ -1393,50 +1460,53 @@ class Basket extends Component {
                 </div>
               )}
 
-              {!loadingShow && (!isEmptyObject(dataBasket) || this.props.basket.details) && (
-                <div style={{ marginBottom: 250 }}>
-                  {viewCart && (
-                    <ViewCartBasket
-                      data={this.state}
-                      dataBasket={dataBasket}
-                      countryCode={countryCode}
-                      isLoggedIn={isLoggedIn}
-                      cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                      cancelSelectPoint={() => this.cancelSelectPoint()}
-                      handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                      handleRedeemPoint={() => this.handleRedeemPoint()}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      handleClear={(dataBasket) => this.handleClear(dataBasket)}
-                      scrollPoint={(data) => this.scrollPoint(data)}
-                      setPoint={(point) => this.setPoint(point)}
-                      handleSettle={() => this.handleSettle()}
-                      handleSubmit={() => this.handleSubmit()}
-                      setOrderingMode={(mode) => this.setOrderingMode(mode)}
-                      handleSetProvaider={(item) =>
-                        this.handleSetProvaider(item)
-                      }
-                      setViewCart={(status) => this.setViewCart(status)}
-                      handleSetState={(field, value) =>
-                        this.handleSetState(field, value)
-                      }
-                      handleOpenLogin={() => this.handleOpenLogin()}
-                    />
-                  )}
-                  {!viewCart && (
-                    <ViewProsessBasket
-                      data={this.state}
-                      dataBasket={dataBasket}
-                      countryCode={countryCode}
-                      isLoggedIn={isLoggedIn}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      setViewCart={(status) => this.setViewCart(status)}
-                      handleCompletedOrdering={(status) =>
-                        this.handleCompletedOrdering(status)
-                      }
-                    />
-                  )}
-                </div>
-              )}
+              {!loadingShow &&
+                (!isEmptyObject(dataBasket) || this.props.basket.details) && (
+                  <div style={{ marginBottom: 250 }}>
+                    {viewCart && (
+                      <ViewCartBasket
+                        data={this.state}
+                        dataBasket={dataBasket}
+                        countryCode={countryCode}
+                        isLoggedIn={isLoggedIn}
+                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                        cancelSelectPoint={() => this.cancelSelectPoint()}
+                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                        handleRedeemPoint={() => this.handleRedeemPoint()}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        handleClear={(dataBasket) =>
+                          this.handleClear(dataBasket)
+                        }
+                        scrollPoint={(data) => this.scrollPoint(data)}
+                        setPoint={(point) => this.setPoint(point)}
+                        handleSettle={() => this.handleSettle()}
+                        handleSubmit={() => this.handleSubmit()}
+                        setOrderingMode={(mode) => this.setOrderingMode(mode)}
+                        handleSetProvaider={(item) =>
+                          this.handleSetProvaider(item)
+                        }
+                        setViewCart={(status) => this.setViewCart(status)}
+                        handleSetState={(field, value) =>
+                          this.handleSetState(field, value)
+                        }
+                        handleOpenLogin={() => this.handleOpenLogin()}
+                      />
+                    )}
+                    {!viewCart && (
+                      <ViewProsessBasket
+                        data={this.state}
+                        dataBasket={dataBasket}
+                        countryCode={countryCode}
+                        isLoggedIn={isLoggedIn}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        setViewCart={(status) => this.setViewCart(status)}
+                        handleCompletedOrdering={(status) =>
+                          this.handleCompletedOrdering(status)
+                        }
+                      />
+                    )}
+                  </div>
+                )}
             </main>
           </div>
         </div>
