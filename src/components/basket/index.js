@@ -1085,6 +1085,13 @@ class Basket extends Component {
       maxDays,
       orderingMode,
     };
+    const nowDateObj = new Date(
+      `${moment(dateTime).format("YYYY-MM-DD")} 00:00`
+    );
+    const orderActionDateObj = new Date(`${orderActionDate} 00:00`);
+
+    console.log(nowDateObj > orderActionDateObj);
+    console.log(orderActionDateObj);
 
     timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
     if (timeSlot.resultCode === 200) {
@@ -1102,10 +1109,16 @@ class Basket extends Component {
           new Date(`1970-01-01 ${orderActionTime}`).getHours() * 60 +
           new Date(`1970-01-01 ${orderActionTime}`).getMinutes();
         const difference = minutesTimeSlot - minutesNow;
-        if (difference < orderPreparationTime) {
+        if (
+          nowDateObj === orderActionDateObj &&
+          difference < orderPreparationTime
+        ) {
           Swal.fire("Oppss!", "Time Slot is not available", "error");
           return;
         }
+      } else {
+        Swal.fire("Oppss!", "Time Slot date is not available", "error");
+        return;
       }
     }
 
