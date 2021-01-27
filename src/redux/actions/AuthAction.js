@@ -106,7 +106,15 @@ function refreshToken() {
         lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
       } else {
         console.log("Refresh token", false);
-        // localStorage.clear();
+        // const lsKeyList = [];
+
+        // for (let i = 0; i < localStorage.length; i++) {
+        //   const key = localStorage.key(i);
+        //   if (key.includes(`${config.prefix}_`)) {
+        //     lsKeyList.push(key);
+        //   }
+        // }
+        // lsKeyList.forEach((key) => localStorage.removeItem(key));
         // window.location.reload();
       }
     }

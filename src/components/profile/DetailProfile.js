@@ -12,7 +12,7 @@ import ModalEditProfile from "./ModalEditProfile";
 import { Link } from "react-router-dom";
 import config from "../../config";
 import loadable from "@loadable/component";
-import moment from 'moment';
+import moment from "moment";
 import { isEmptyArray } from "../../helpers/CheckEmpty";
 // import { max } from "lodash";
 const ModalQRCode = loadable(() => import("./ModalQRCode"));
@@ -26,7 +26,7 @@ class DetailProfile extends Component {
       isEmenu: window.location.pathname.includes("emenu"),
       dataCustomer: {},
       memberships: [],
-      svc: []
+      svc: [],
     };
   }
 
@@ -34,20 +34,26 @@ class DetailProfile extends Component {
     let response = await this.props.dispatch(
       ReferralAction.getReferral({ customerId: this.props.account.signAs })
     );
-    
-    try{
-      let dataCustomer = await this.props.dispatch( CustomerAction.getCustomerProfile() );
-      if (dataCustomer.ResultCode === 200) this.setState({dataCustomer: dataCustomer.Data[0]})
-    }catch(e){}
 
-    try{
-      let dataMembership = await this.props.dispatch( MembershiplAction.getPaidMembership() );
-      if (dataMembership && !isEmptyArray(dataMembership.data)) this.setState({memberships: dataMembership.data})
-    }catch(e){}
+    try {
+      let dataCustomer = await this.props.dispatch(
+        CustomerAction.getCustomerProfile()
+      );
+      if (dataCustomer.ResultCode === 200)
+        this.setState({ dataCustomer: dataCustomer.Data[0] });
+    } catch (e) {}
 
-    const svc = await this.props.dispatch(SVCAction.loadSVC())
-    if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
-    
+    try {
+      let dataMembership = await this.props.dispatch(
+        MembershiplAction.getPaidMembership()
+      );
+      if (dataMembership && !isEmptyArray(dataMembership.data))
+        this.setState({ memberships: dataMembership.data });
+    } catch (e) {}
+
+    const svc = await this.props.dispatch(SVCAction.loadSVC());
+    if (svc && svc.resultCode === 200) await this.setState({ svc: svc.data });
+
     if (response.ResultCode === 200)
       this.setState({
         referall: `${response.Data.amount}/${response.Data.capacity}`,
@@ -74,36 +80,36 @@ class DetailProfile extends Component {
   };
 
   getMaxRanking = () => {
-    try{
+    try {
       const { memberships } = this.state;
-      let largest= 0;
-      for (let i=0; i < memberships.length; i++){
-          if (memberships[i].ranking > largest) {
-              largest = memberships[i].ranking
-          }
+      let largest = 0;
+      for (let i = 0; i < memberships.length; i++) {
+        if (memberships[i].ranking > largest) {
+          largest = memberships[i].ranking;
+        }
       }
       return largest;
-    }catch(e){}
-  }
+    } catch (e) {}
+  };
 
   getLabel = () => {
-    try{
+    try {
       const { dataCustomer } = this.state;
       const maxRanking = this.getMaxRanking();
-      if (dataCustomer.customerGroupLevel === maxRanking) return 'Renew'
-      if (dataCustomer.customerGroupLevel === undefined) return 'Renew'
-      return 'Upgrade'
-    }catch(e){
-      return 'Upgrade'
+      if (dataCustomer.customerGroupLevel === maxRanking) return "Renew";
+      if (dataCustomer.customerGroupLevel === undefined) return "Renew";
+      return "Upgrade";
+    } catch (e) {
+      return "Upgrade";
     }
-  }
+  };
 
   viewLeftPage = (loadingShow) => {
     let { account } = this.props;
     let { dataCustomer, memberships } = this.state;
     if (account.defaultImageURL === undefined)
       account.defaultImageURL = profile;
-    
+
     return (
       <div style={{ marginBottom: 10 }}>
         {loadingShow && (
@@ -185,7 +191,7 @@ class DetailProfile extends Component {
               }}
             >
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 16, fontWeight: "bold" }} >
+                <div style={{ fontSize: 16, fontWeight: "bold" }}>
                   Membership
                 </div>
                 <div
@@ -198,10 +204,20 @@ class DetailProfile extends Component {
                 >
                   {dataCustomer.customerGroupName}
                 </div>
-                {dataCustomer.expiryCustomerGroup && <span className="font-color-theme" style={{fontSize: 14, fontWeight: "bold" }}>( till {moment(dataCustomer.expiryCustomerGroup).format("DD MMMM YYYY")} )</span>}
+                {dataCustomer.expiryCustomerGroup && (
+                  <span
+                    className="font-color-theme"
+                    style={{ fontSize: 14, fontWeight: "bold" }}
+                  >
+                    ( till{" "}
+                    {moment(dataCustomer.expiryCustomerGroup).format(
+                      "DD MMMM YYYY"
+                    )}{" "}
+                    )
+                  </span>
+                )}
               </div>
-              {
-                !isEmptyArray(memberships) &&
+              {!isEmptyArray(memberships) && (
                 <Link to="/paid-membership">
                   <div
                     className="customer-group-name"
@@ -210,10 +226,15 @@ class DetailProfile extends Component {
                       fontWeight: "bold",
                     }}
                   >
-                    {this.getLabel()} <i style={{fontSize: 11}} className="fa fa-chevron-right" aria-hidden="true" />
+                    {this.getLabel()}{" "}
+                    <i
+                      style={{ fontSize: 11 }}
+                      className="fa fa-chevron-right"
+                      aria-hidden="true"
+                    />
                   </div>
                 </Link>
-              }
+              )}
             </div>
 
             <div
@@ -227,7 +248,7 @@ class DetailProfile extends Component {
                 cursor: "pointer",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-around" }} >
+              <div style={{ display: "flex", justifyContent: "space-around" }}>
                 <Link to="/edit-profile" style={{ width: "50%" }}>
                   <div
                     className="font-color-theme"
@@ -257,7 +278,15 @@ class DetailProfile extends Component {
   };
 
   handleLogout() {
-    localStorage.clear();
+    const lsKeyList = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.includes(`${config.prefix}_`)) {
+        lsKeyList.push(key);
+      }
+    }
+    lsKeyList.forEach((key) => localStorage.removeItem(key));
     window.location.reload();
   }
 
@@ -276,8 +305,7 @@ class DetailProfile extends Component {
 
         {!loadingShow && (
           <div>
-            {
-              svc.length > 0 && 
+            {svc.length > 0 && (
               <Link to="/svc">
                 <div
                   className="background-theme"
@@ -291,15 +319,14 @@ class DetailProfile extends Component {
                   }}
                 >
                   <div style={{ textAlign: "center" }}>
-                    <div
-                      style={{ fontSize: 15, fontWeight: "bold" }}
-                    >
-                      <i className="fa fa-money" aria-hidden="true" /> Store Value Card
+                    <div style={{ fontSize: 15, fontWeight: "bold" }}>
+                      <i className="fa fa-money" aria-hidden="true" /> Store
+                      Value Card
                     </div>
                   </div>
                 </div>
               </Link>
-            }
+            )}
 
             {referall.split("/")[1] !== "0" && (
               <Link to="/referral">
@@ -328,8 +355,7 @@ class DetailProfile extends Component {
               </Link>
             )}
 
-            {
-              isEmenu && 
+            {isEmenu && (
               <Link to="/rewards">
                 <div
                   className="background-theme"
@@ -343,15 +369,13 @@ class DetailProfile extends Component {
                   }}
                 >
                   <div style={{ textAlign: "center" }}>
-                    <div
-                      style={{ fontSize: 14, fontWeight: "bold" }}
-                    >
+                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
                       <i className="fa fa-gift" aria-hidden="true" /> Rewards
                     </div>
                   </div>
                 </div>
               </Link>
-            }
+            )}
 
             <Link to="/payment-method">
               <div
@@ -366,10 +390,9 @@ class DetailProfile extends Component {
                 }}
               >
                 <div style={{ textAlign: "center" }}>
-                  <div
-                    style={{ fontSize: 14, fontWeight: "bold" }}
-                  >
-                    <i className="fa fa-credit-card-alt" aria-hidden="true" /> Payment Method
+                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                    <i className="fa fa-credit-card-alt" aria-hidden="true" />{" "}
+                    Payment Method
                   </div>
                 </div>
               </div>
@@ -388,10 +411,9 @@ class DetailProfile extends Component {
                 }}
               >
                 <div style={{ textAlign: "center" }}>
-                  <div
-                    style={{ fontSize: 14, fontWeight: "bold" }}
-                  >
-                    <i className="fa fa-home" aria-hidden="true" /> Delivery Address
+                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                    <i className="fa fa-home" aria-hidden="true" /> Delivery
+                    Address
                   </div>
                 </div>
               </div>
@@ -410,9 +432,7 @@ class DetailProfile extends Component {
               }}
             >
               <div style={{ textAlign: "center" }}>
-                <div
-                  style={{ fontSize: 16, fontWeight: "bold" }}
-                >
+                <div style={{ fontSize: 16, fontWeight: "bold" }}>
                   <i className="fa fa-sign-out" aria-hidden="true" /> Logout
                 </div>
               </div>

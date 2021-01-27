@@ -58,11 +58,11 @@ const App = (props) => {
 
   const [enableOrdering, setEnableOrdering] = useState(false);
 
-  try{
+  try {
     if (window.location.hash === "#/") {
-      localStorage.removeItem(`${config.prefix}_defaultOutlet`)
+      localStorage.removeItem(`${config.prefix}_defaultOutlet`);
     }
-  }catch(e){}
+  } catch (e) {}
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -119,7 +119,9 @@ const App = (props) => {
       } catch (error) {}
     };
 
-    const responseSettings = await props.dispatch(OrderAction.getSettingOrdering());
+    const responseSettings = await props.dispatch(
+      OrderAction.getSettingOrdering()
+    );
 
     try {
       let position = await props.dispatch(OutletAction.getCoordinates());
@@ -170,12 +172,16 @@ const App = (props) => {
       localStorage.removeItem(`${config.prefix}_scanTable`);
       let outletSelectionMode = "DEFAULT";
       if (responseSettings && responseSettings.settings !== undefined) {
-        const find = responseSettings.settings.find(item => item.settingKey === "OutletSelection");
-        if (find !== undefined) outletSelectionMode = find.settingValue
+        const find = responseSettings.settings.find(
+          (item) => item.settingKey === "OutletSelection"
+        );
+        if (find !== undefined) outletSelectionMode = find.settingValue;
       }
-      if (outletSelectionMode !== 'MANUAL') {
+      if (outletSelectionMode !== "MANUAL") {
         if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
-          defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
+          defaultOutlet = await props.dispatch(
+            OutletAction.fetchDefaultOutlet()
+          );
         }
       }
     }
