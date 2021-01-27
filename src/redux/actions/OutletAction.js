@@ -10,7 +10,8 @@ export const OutletAction = {
   fetchAllOutlet,
   fetchSingleOutlet,
   getCoordinates,
-  setData
+  setData,
+  getBackupOutlet
 };
 
 function fetchDefaultOutlet(defaultOutlet = {}) {
@@ -74,6 +75,13 @@ function getNearsesOutlet(position = null) {
       return data.data
     }
   }
+}
+
+function getBackupOutlet() {
+  return async (dispatch) => {
+    const data = await MasterDataService.api( "GET", null, `outlets/defaultoutlet` );
+    return data;
+  };
 }
 
 function fetchSingleOutlet(outlet) {

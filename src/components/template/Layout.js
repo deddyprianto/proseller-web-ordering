@@ -14,7 +14,9 @@ const FooterEmenu = loadable(() => import("./FooterEmenu"));
 const FooterWebOrdering = loadable(() => import("./FooterWebOrdering"));
 const Home = loadable(() => import("../../pages/Home"));
 const Profile = loadable(() => import("../../pages/Profile"));
-const PaidMembership = loadable(() => import("../../pages/PaidMembership"));
+// const PaidMembership = loadable(() => import("../../pages/PaidMembership"));
+const ListMembership = loadable(() => import("../../pages/ListMembership"));
+const DetailMembership = loadable(() => import("../../pages/DetailMembership"));
 const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
@@ -134,7 +136,8 @@ class Layout extends Component {
             {isLoggedIn &&  <Route exact path={"/scanTable"} component={ScanTable} /> }
             {isLoggedIn &&  <Route exact path={"/settleSuccess"} component={SettleSuccess} /> }
             {isLoggedIn && <Route exact path={"/history/detail"} component={PendingDetail} /> }
-            {isLoggedIn && <Route exact path={"/paid-membership"} component={PaidMembership} /> }
+            {isLoggedIn && <Route exact path={"/paid-membership"} component={ListMembership} /> }
+            {isLoggedIn && <Route exact path={"/detail-membership"} component={DetailMembership} /> }
             <Route exact path={"/history"} component={History} />
             <Route exact path={"/payment"} component={Payment} />
             <Redirect from="*" to={!enableOrdering ? '/profile' : '/'} />
