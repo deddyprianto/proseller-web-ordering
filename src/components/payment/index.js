@@ -653,7 +653,7 @@ class Payment extends Component {
     if (totalPoint < 0) totalPoint = 0;
 
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
-
+    console.log(needPoint, 'needPointneedPoint')
     if (selectedPoint <= 0) {
       selectedPoint = this.calculateSelectedPoint(
         selectedPoint,
@@ -706,6 +706,8 @@ class Payment extends Component {
     selectedPoint = parseFloat(selectedPoint.toFixed(2));
     if (detailPoint.roundingOptions !== "DECIMAL") {
       selectedPoint = Math.floor(selectedPoint);
+    } else {
+      selectedPoint = Math.ceil(selectedPoint);
     }
     return selectedPoint;
   };
@@ -946,6 +948,15 @@ class Payment extends Component {
         redeemValue: selectedPoint,
         paymentAmount: discountPoint,
         isPoint: true,
+      });
+    }
+
+    if (this.state.amountSVC > 0) {
+      payload.payments.push({
+        paymentType: "Store Value Card",
+        paymentName: "Store Value Card",
+        paymentAmount: Number(this.state.amountSVC),
+        isSVC: true,
       });
     }
 

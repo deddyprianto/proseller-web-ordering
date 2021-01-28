@@ -10,7 +10,6 @@ class AddPromo extends Component {
     // console.log(props)
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
-    console.log(props, 'ini') 
 
     return (
       <div>

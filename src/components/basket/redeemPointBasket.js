@@ -10,6 +10,7 @@ export default class RedeemPointBasket extends Component {
 
     let totalPoint = this.props.campaignPoint.totalPoint
     totalPoint = totalPoint - (props.pendingPoints || 0)
+    totalPoint = Number(totalPoint.toFixed(2))
     
     if (props.dataSettle.paySVC || props.amountSVC === 0) {
       totalPoint = totalPoint - (this.props.campaignPoint.lockPoints || 0)

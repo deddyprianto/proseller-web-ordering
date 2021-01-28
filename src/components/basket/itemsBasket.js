@@ -39,13 +39,15 @@ class ItemsBasket extends Component {
 
     if (storeDetail && storeDetail.product) {
       storeDetail.product.forEach((group) => {
-        group.items.forEach((product) => {
-          if (product.productID === productSelected.productID) {
-            product.id = productSelected.id;
-            productSelected = product;
-            productSelected.quantity = quantityItem;
-          }
-        });
+        if (group.items && group.items.length > 0) {
+          group.items.forEach((product) => {
+            if (product.productID === productSelected.productID) {
+              product.id = productSelected.id;
+              productSelected = product;
+              productSelected.quantity = quantityItem;
+            }
+          });
+        }
       });
     }
 
