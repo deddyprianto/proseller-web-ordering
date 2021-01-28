@@ -457,6 +457,11 @@ function updateCart(payload) {
     try {
       document.getElementById("close-modal").click();
     } catch (e) {}
+
+    if (window.location.hash === "#/basket") {
+      await localStorage.removeItem(`${config.prefix}_dataBasket`);
+      window.location.reload() 
+    }
     return dispatch(getCart());
   };
 }

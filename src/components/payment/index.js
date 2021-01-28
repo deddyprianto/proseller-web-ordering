@@ -653,7 +653,6 @@ class Payment extends Component {
     if (totalPoint < 0) totalPoint = 0;
 
     let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
-    console.log(needPoint, 'needPointneedPoint')
     if (selectedPoint <= 0) {
       selectedPoint = this.calculateSelectedPoint(
         selectedPoint,
