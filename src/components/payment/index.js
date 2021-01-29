@@ -705,8 +705,6 @@ class Payment extends Component {
     selectedPoint = parseFloat(selectedPoint.toFixed(2));
     if (detailPoint.roundingOptions !== "DECIMAL") {
       selectedPoint = Math.floor(selectedPoint);
-    } else {
-      selectedPoint = Math.ceil(selectedPoint);
     }
     return selectedPoint;
   };
@@ -1115,6 +1113,8 @@ class Payment extends Component {
       payload.orderActionDate = orderActionDate;
       payload.orderActionTime = orderActionTime;
       payload.orderActionTimeSlot = orderActionTimeSlot;
+      console.log(payload)
+      return
       response = await this.props.dispatch(OrderAction.submitTakeAway(payload));
     } else {
       response = await this.props.dispatch(OrderAction.submitSettle(payload));
