@@ -73,7 +73,7 @@ class OutletSelection extends Component {
                       onClick={() => items.orderingStatus !== 'UNAVAILABLE' ? this.handleSelectOutlet(items) : false}
                     >
                       <div style={{
-                          backgroundColor: items.orderingStatus !== 'UNAVAILABLE' ? 'white' : '#ecf0f1',
+                          backgroundColor: items.orderingStatus !== 'UNAVAILABLE' ? null : '#ecf0f1',
                           opacity: items.orderingStatus !== 'UNAVAILABLE' ? 1 : 0.6,
                           boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.2)", border: "1px solid #CDCDCD",
                           padding: 10, cursor: "pointer", display: "flex",
