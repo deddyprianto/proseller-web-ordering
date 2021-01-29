@@ -247,6 +247,19 @@ class Header extends Component {
     }
   };
 
+  renderLabel = () => {
+    try{
+      const { setting } = this.props;
+      if (setting && setting.length > 0) {
+        const find = setting.find(item => item.settingKey === 'MenuLabel');
+        if (find !== undefined) return find.settingValue;
+      }
+      return 'Menu'
+    } catch(e) {
+      return 'Menu'
+    }
+  }
+
   render() {
     let { isLoggedIn, basket, defaultOutlet } = this.props;
     let outlets =
@@ -473,7 +486,7 @@ class Header extends Component {
                     <li className="menu-item menu-hide">
                       <Link to="/">
                         <i className="fa fa-book" />
-                        Menu
+                        {this.renderLabel()}
                       </Link>
                     </li>
                   )}
