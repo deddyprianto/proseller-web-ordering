@@ -7,14 +7,23 @@ import RedeemIcon from '@material-ui/icons/Redeem';
 class AddPromo extends Component {
   render() {
     let props = this.props.data
-    // console.log(props)
+    let enableRedeemPoint = false;
+    if (props.pointsToRebateRatio === undefined || props.pointsToRebateRatio === null) {
+      enableRedeemPoint = true
+    } else {
+      if (props.pointsToRebateRatio === '1:0') {
+        enableRedeemPoint = false;
+      } else {
+        enableRedeemPoint = true;
+      }
+    }
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
 
     return (
       <div>
         {
-          props.detailPoint && props.detailPoint !== null && props.detailPoint.point !== null &&
+          props.detailPoint !== undefined && props.detailPoint !== null && props.detailPoint.point !== null &&
           <RedeemPointBasket
             data={props}
             campaignPoint={this.props.campaignPoint}
@@ -69,7 +78,7 @@ class AddPromo extends Component {
             </div>
           }
           {
-            props.totalPoint > 0 && props.storeDetail.enableRedeemPoint === true &&
+            props.totalPoint > 0 && enableRedeemPoint === true &&
             <div style={{ 
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10, display: "flex", alignItems: "center"
