@@ -39,6 +39,10 @@ export default class RedeemPointBasket extends Component {
     if(discountPoint > (props.discountPoint + props.totalPrice)) discountPoint = props.discountPoint + props.totalPrice
     discountPoint = discountPoint.toFixed(2);
 
+    if(props.detailPoint.roundingOptions === "DECIMAL") {
+      totalPoint = Number(totalPoint.toFixed(2))
+    }
+console.log(totalPoint, 'totalPoint')
     return (
       <div>
         <div className="modal fade" id="redeem-point-modal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

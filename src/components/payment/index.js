@@ -1113,8 +1113,6 @@ class Payment extends Component {
       payload.orderActionDate = orderActionDate;
       payload.orderActionTime = orderActionTime;
       payload.orderActionTimeSlot = orderActionTimeSlot;
-      console.log(payload)
-      return
       response = await this.props.dispatch(OrderAction.submitTakeAway(payload));
     } else {
       response = await this.props.dispatch(OrderAction.submitSettle(payload));
