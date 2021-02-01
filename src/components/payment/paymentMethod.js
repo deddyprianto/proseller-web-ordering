@@ -9,6 +9,7 @@ import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { connect } from "react-redux";
 import CreditCard from "@material-ui/icons/CreditCard";
 import ModalPaymentMethod from "./ModalPaymentMethod";
+import ModalPaymentPermission from "./ModalRegisterPermission";
 import _ from "lodash";
 import { uuid } from "uuidv4";
 import styles from "./styles.module.css";
@@ -29,6 +30,8 @@ class PaymentMethod extends Component {
       getPaymentMethod: false,
       showAddPaymentForm: false,
       addPaymentFormUrl: "",
+      latestCardRegistered: null,
+      CreditCardSelected: null
     };
   }
 
@@ -38,7 +41,51 @@ class PaymentMethod extends Component {
     );
     this.setState({ getPaymentMethod });
     this.getDataPaymentCard();
+    
+    window.addEventListener("focus", this.onFocus)
+
   };
+
+  componentWillUnmount() {
+    window.removeEventListener("focus", this.onFocus)
+  }
+
+  onFocus = async () => {
+    try{
+      if (this.state.latestCardRegistered === null) return
+      let accountID = this.state.latestCardRegistered.accountID;
+      const response = await this.props.dispatch(
+        PaymentAction.checkPaymentCard(accountID)
+      );
+      if (response.data.registrationStatus === "completed") {
+        localStorage.setItem(
+          `${config.prefix}_paymentCardAccountDefault`,
+          JSON.stringify(encryptor.encrypt(response.data))
+        );
+        
+        await this.getDataPaymentCard();
+        this.setState({ showAddPaymentForm: false });
+        this.handleSelectCard(response.data);
+        Swal.fire({
+          icon: "success",
+          timer: 1500,
+          title: "Your Credit Card has been added.",
+          showConfirmButton: false,
+        });
+      } else if (
+        response.data &&
+        response.data.registrationStatus === "failed"
+      ) {
+        this.setState({ showAddPaymentForm: false });
+        Swal.fire({
+          icon: "error",
+          timer: 1500,
+          showConfirmButton: false,
+          title: "Failed to add Credit Card!",
+        });
+      }
+    }catch(e) {}
+  }
 
   getDataPaymentCard = async () => {
     let infoCompany = await this.props.dispatch(
@@ -147,6 +194,13 @@ class PaymentMethod extends Component {
     this.setState({ detailCard: null, isLoading: false });
   };
 
+  removeDetailDataCard = () => {
+    this.setState({
+      latestCardRegistered: null,
+      CreditCardSelected: null
+    });
+  }
+
   handleAddMethod = async (data) => {
     let payload = {
       companyID: this.props.account.companyId,
@@ -154,6 +208,24 @@ class PaymentMethod extends Component {
       referenceNo: uuid(),
       paymentID: data.paymentID,
     };
+    // CHECK IF PAYMENT PROVIDER NEED TO OPEN NEW TAB, THEN REGISTER NOW
+    if (data.forceNewTab === true || data.paymentID === "MASTERCARD_PAYMENT_GATEWAY") {
+      await this.setState({ isLoading: true });
+      let response = await this.props.dispatch(
+        PaymentAction.registerPaymentCard(payload)
+      );
+      await this.setState({
+        isLoading: false,
+        addPaymentFormUrl: response.data.url,
+        latestCardRegistered: response.data,
+        CreditCardSelected: data
+      });
+      try {
+        document.getElementById('register-card-on-new-tab').click()
+      }catch(e){}
+      return;
+    }
+    
 
     Swal.fire({
       title: "Add a Card",
@@ -177,8 +249,8 @@ class PaymentMethod extends Component {
         if (response.resultCode === 200) {
           this.setState({
             isLoading: false,
-
             addPaymentFormUrl: response.data.url,
+            latestCardRegistered: response.data
           });
           if (
             data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
@@ -196,42 +268,44 @@ class PaymentMethod extends Component {
             PaymentAction.checkPaymentCard(accountID)
           );
 
-          let timeInterval = setInterval(async () => {
-            response = await this.props.dispatch(
-              PaymentAction.checkPaymentCard(accountID)
-            );
-            if (response.data.registrationStatus === "completed") {
-              localStorage.setItem(
-                `${config.prefix}_paymentCardAccountDefault`,
-                JSON.stringify(encryptor.encrypt(response.data))
+          if (data.forceNewTab !== true) {
+            let timeInterval = setInterval(async () => {
+              response = await this.props.dispatch(
+                PaymentAction.checkPaymentCard(accountID)
               );
-              if (win) {
-                win.close();
+              if (response.data.registrationStatus === "completed") {
+                localStorage.setItem(
+                  `${config.prefix}_paymentCardAccountDefault`,
+                  JSON.stringify(encryptor.encrypt(response.data))
+                );
+                if (win) {
+                  win.close();
+                }
+                await this.getDataPaymentCard();
+                this.setState({ showAddPaymentForm: false });
+                this.handleSelectCard(response.data);
+                Swal.fire({
+                  icon: "success",
+                  timer: 1500,
+                  title: "Your Credit Card has been added.",
+                  showConfirmButton: false,
+                });
+                return clearInterval(timeInterval);
+              } else if (
+                response.data &&
+                response.data.registrationStatus === "failed"
+              ) {
+                this.setState({ showAddPaymentForm: false });
+                Swal.fire({
+                  icon: "error",
+                  timer: 1500,
+                  showConfirmButton: false,
+                  title: "Failed to add Credit Card!",
+                });
+                return clearInterval(timeInterval);
               }
-              await this.getDataPaymentCard();
-              this.setState({ showAddPaymentForm: false });
-              this.handleSelectCard(response.data);
-              Swal.fire({
-                icon: "success",
-                timer: 1500,
-                title: "Your Credit Card has been added.",
-                showConfirmButton: false,
-              });
-              return clearInterval(timeInterval);
-            } else if (
-              response.data &&
-              response.data.registrationStatus === "failed"
-            ) {
-              this.setState({ showAddPaymentForm: false });
-              Swal.fire({
-                icon: "error",
-                timer: 1500,
-                showConfirmButton: false,
-                title: "Failed to add Credit Card!",
-              });
-              return clearInterval(timeInterval);
-            }
-          }, 5000);
+            }, 8000);
+          }
         }
       }
     });
@@ -272,6 +346,12 @@ class PaymentMethod extends Component {
           handleSetDefault={() => this.handleSetDefault()}
           handleRemoveCard={() => this.handleRemoveCard()}
         />
+        <ModalPaymentPermission
+          latestCardRegistered={this.state.latestCardRegistered}
+          CreditCardSelected={this.state.CreditCardSelected}
+          removeDetailDataCard={this.removeDetailDataCard}
+        />
+        <a id="register-card-on-new-tab" data-toggle="modal" data-target='#payment-method-permission'></a>
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div
@@ -347,8 +427,6 @@ class PaymentMethod extends Component {
                             item.data.length === 0) && (
                             <Button
                               className="button"
-                              data-toggle="modal"
-                              data-target="#delivery-address-modal"
                               style={{
                                 width: 100,
                                 paddingLeft: 5,
