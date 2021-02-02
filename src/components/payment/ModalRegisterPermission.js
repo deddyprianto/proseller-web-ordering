@@ -14,7 +14,7 @@ export default class ModalPaymentPermission extends Component {
         aria-hidden="true"
       >
         <div className="modal-dialog modal-dialog-centered" role="document">
-          {latestCardRegistered !== null ? (
+          {CreditCardSelected !== null && latestCardRegistered !== null ? (
             <div
               className="modal-content"
               style={{ width: "100%", marginTop: 100, marginBottom: 100 }}
