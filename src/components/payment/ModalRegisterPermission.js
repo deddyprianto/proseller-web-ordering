@@ -3,7 +3,7 @@ import { Button } from "reactstrap";
 
 export default class ModalPaymentPermission extends Component {
   render() {
-    let { latestCardRegistered, CreditCardSelected, removeDetailDataCard, refreshDatCard } = this.props;
+    let { latestCardRegistered, CreditCardSelected, removeDetailDataCard } = this.props;
     return (
       <div
         className="modal fade"
