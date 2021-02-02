@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Col, Row, Button } from 'reactstrap';
 import Lottie from 'lottie-react-web';
 import processingCollection from '../../assets/gif/cooking.json'
+import processingCollectionResto from '../../assets/gif/shopping-lady.json'
 import readyCollection from '../../assets/gif/food-ready.json';
 import onTheWay from '../../assets/gif/delivery.json';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
@@ -11,6 +12,10 @@ const ModalQRCode = loadable(() => import("../profile/ModalQRCode"));
 export default class ViewProsessBasket extends Component {
   render() {
     let props = this.props.data
+    let text = 'Please wait, We are preparing your food in the kitchen.';
+    if (props.dataBasket && props.dataBasket.outlet && props.dataBasket.outlet.outletType === 'RETAIL') {
+      text = 'Please wait, We are preparing your order.';
+    }
     return (
       <div>
         <ModalQRCode qrcode={props.dataBasket.cartID} field={"cartID"} title="Order QRCode" />
@@ -20,7 +25,8 @@ export default class ViewProsessBasket extends Component {
               <Lottie
                 options={{
                   animationData: (
-                    (props.dataBasket.status === "PROCESSING" && processingCollection) ||
+                    (props.dataBasket.status === "PROCESSING" && props.dataBasket.outlet.outletType !== 'RETAIL' && processingCollection) ||
+                    (props.dataBasket.status === "PROCESSING" && props.dataBasket.outlet.outletType === 'RETAIL' && processingCollectionResto) ||
                     (props.dataBasket.status === "READY_FOR_COLLECTION" && readyCollection) ||
                     (props.dataBasket.status === "READY_FOR_DELIVERY" && readyCollection) ||
                     (props.dataBasket.status === "ON_THE_WAY" && onTheWay)
@@ -31,7 +37,7 @@ export default class ViewProsessBasket extends Component {
               {
                 props.dataBasket.status === "PROCESSING" &&
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ marginTop: 40, fontSize: 18, textAlign: "center" }}>Please wait, We are preparing your food in the kitchen.</div>
+                  <div style={{ marginTop: 40, fontSize: 18, textAlign: "center" }}>{text}</div>
                   <div className="color-active" style={{ marginTop: 10, marginBottom: 10, fontWeight: "bold", textAlign: "center" }}>
                     {
                       props.dataBasket.queueNo &&
