@@ -1424,6 +1424,14 @@ class Basket extends Component {
     }
   };
 
+  updateCartInfo = async (remark) => {
+    const payload = {
+      remark,
+    };
+    await this.props.dispatch(OrderAction.updateCartInfo(payload));
+    await this.getDataBasket()
+  }
+
   render() {
     let {
       loadingShow,
@@ -1500,6 +1508,7 @@ class Basket extends Component {
                           this.handleSetState(field, value)
                         }
                         handleOpenLogin={() => this.handleOpenLogin()}
+                        updateCartInfo={this.updateCartInfo}
                       />
                     )}
                     {!viewCart && (

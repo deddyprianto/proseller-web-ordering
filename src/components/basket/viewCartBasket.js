@@ -30,7 +30,8 @@ const ViewCartBasket = ({
   isLoggedIn,
   basket,
   handleSetState,
-  dataBasket
+  dataBasket,
+  updateCartInfo
 }) => {
   // if (!basket.details && data.dataBasket) basket = data.dataBasket;
   if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
@@ -200,6 +201,7 @@ const ViewCartBasket = ({
             handleSetState={(field, value) => handleSetState(field, value)}
             handleClear={(dataBasket) => handleClear(dataBasket)}
             roleBtnClear={roleBtnClear()}
+            updateCartInfo={updateCartInfo}
           />
         </Col>
         <Col xs="12" sm="6">

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import CheckBox from "../setting/checkBoxCostume";
+import AddNotes from "./AddNotes";
 // import config from "../../config";
 // const Swal = require("sweetalert2");
 // const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -229,6 +230,10 @@ class ItemsBasket extends Component {
             this.props.handleSetState(field, value)
           }
         />
+        <AddNotes 
+          dataBasket={dataBasket} 
+          updateCartInfo={this.props.updateCartInfo}
+        />
         {dataBasket && dataBasket.details && dataBasket.details.length > 0 && (
           <div>
             <div
@@ -328,6 +333,89 @@ class ItemsBasket extends Component {
                   style={{
                     backgroundColor: "#DCDCDC",
                     height: 3,
+                    marginBottom: 10,
+                    marginTop: 10,
+                  }}
+                />
+              </div>
+            )}
+            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (dataBasket.remark === undefined || dataBasket.remark === '' || dataBasket.remark === null) && (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    fontSize: 14,
+                    marginTop: 5,
+                  }}
+                >
+                  <button
+                    className="background-theme"
+                    data-toggle="modal"
+                    data-target="#add-notes-modal"
+                    style={{
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      color: this.props.color.primary,
+                      border: `1px solid ${this.props.color.primary}`,
+                      borderRadius: 5,
+                      width: 100,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                    }}
+                  >
+                    <i className="fa fa-sticky-note-o" style={{marginRight: 5}} /> Notes
+                  </button>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: "#DCDCDC",
+                    height: 1,
+                    marginBottom: 10,
+                    marginTop: 10,
+                  }}
+                />
+              </div>
+            )}
+            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && dataBasket.remark !== undefined && dataBasket.remark !== '' && dataBasket.remark !== null && (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    fontSize: 14,
+                    marginTop: 5,
+                  }}
+                >
+                  <div>
+                    <p style={{fontSize: 13, lineHeight: 1, textAlign: 'left', fontStyle: 'italic'}}>"{dataBasket.remark}"</p>
+                    <button
+                      className="background-theme"
+                      data-toggle="modal"
+                      data-target="#add-notes-modal"
+                      style={{
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        color: this.props.color.primary,
+                        border: `1px solid ${this.props.color.primary}`,
+                        borderRadius: 5,
+                        width: 100,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                      }}
+                    >
+                      <i className="fa fa-sticky-note-o" style={{marginRight: 5}} /> Edit Notes
+                    </button>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: "#DCDCDC",
+                    height: 1,
                     marginBottom: 10,
                     marginTop: 10,
                   }}
