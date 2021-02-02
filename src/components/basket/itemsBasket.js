@@ -339,7 +339,7 @@ class ItemsBasket extends Component {
                 />
               </div>
             )}
-            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (dataBasket.remark === undefined || dataBasket.remark === '' || dataBasket.remark === null) && (
+            {/* {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (dataBasket.remark === undefined || dataBasket.remark === '' || dataBasket.remark === null) && (
               <div>
                 <div
                   style={{
@@ -421,7 +421,7 @@ class ItemsBasket extends Component {
                   }}
                 />
               </div>
-            )}
+            )} */}
             {dataBasket.details.map((item, key) => (
               <div key={key}>
                 <div
