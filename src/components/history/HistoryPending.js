@@ -73,7 +73,6 @@ class HistoryPending extends Component {
                 data-target="#detail-inbox-modal"
                 onClick={() => this.handleDetail(items)}
               >
-                {console.log(items)}
                 <Link
                   to={items.isPaymentComplete ? "/history/detail" : "/basket"}
                 >

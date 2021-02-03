@@ -32,7 +32,6 @@ class ItemsBasket extends Component {
   };
 
   componentDidMount = () => {
-    console.log('databasket from itemBasket => ',this.props.dataBasket)
     this.setState({ dataBasket: this.props.dataBasket });
   };
 

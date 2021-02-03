@@ -209,8 +209,9 @@ class ItemsBasket extends Component {
   };
 
   render() {
-    let { data } = this.props;
+    let { data, defaultOutlet } = this.props;
     let dataBasket = this.props.basket;
+    let enableNotes = false;
     if (isEmptyObject(this.props.basket)) {
       dataBasket = data.dataBasket;
     }
@@ -219,6 +220,10 @@ class ItemsBasket extends Component {
       dataBasket.details.forEach((items) => {
         if (items.selected !== false) selected += 1;
       });
+    }
+
+    if (defaultOutlet && defaultOutlet.enableOrderSpecialInstructions === true) {
+      enableNotes = true;
     }
 
     return (
@@ -339,7 +344,7 @@ class ItemsBasket extends Component {
                 />
               </div>
             )}
-            {/* {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (dataBasket.remark === undefined || dataBasket.remark === '' || dataBasket.remark === null) && (
+            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && enableNotes && (dataBasket.remark === undefined || dataBasket.remark === '' || dataBasket.remark === null) && (
               <div>
                 <div
                   style={{
@@ -379,7 +384,7 @@ class ItemsBasket extends Component {
                 />
               </div>
             )}
-            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && dataBasket.remark !== undefined && dataBasket.remark !== '' && dataBasket.remark !== null && (
+            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && enableNotes && dataBasket.remark !== undefined && dataBasket.remark !== '' && dataBasket.remark !== null && (
               <div>
                 <div
                   style={{
@@ -390,7 +395,7 @@ class ItemsBasket extends Component {
                   }}
                 >
                   <div>
-                    <p style={{fontSize: 13, lineHeight: 1, textAlign: 'left', fontStyle: 'italic'}}>"{dataBasket.remark}"</p>
+                    <p style={{fontSize: 14, lineHeight: 1, textAlign: 'left', fontStyle: 'italic'}}>"{dataBasket.remark}"</p>
                     <button
                       className="background-theme"
                       data-toggle="modal"
@@ -421,7 +426,7 @@ class ItemsBasket extends Component {
                   }}
                 />
               </div>
-            )} */}
+            )}
             {dataBasket.details.map((item, key) => (
               <div key={key}>
                 <div
@@ -477,6 +482,7 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     basket: state.order.basket,
     categories: state.product.categories,
+    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
