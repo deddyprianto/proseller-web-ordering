@@ -123,7 +123,7 @@ class InboxCard extends Component {
                 items.status === 'COMPLETED' ?
                 items.point > 0 ? items.point + " points" : null
                 :
-                items.status
+                <span style={{ color: '#e74c3c' }}>{items.status}</span>
               }
             </div>
             <div

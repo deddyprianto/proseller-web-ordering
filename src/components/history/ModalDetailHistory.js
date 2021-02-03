@@ -261,12 +261,12 @@ class ModalDetailHistory extends Component {
                       marginBottom: 10,
                     }}
                   />
-                  <div style={{ fontSize: 14, textAlign: "left" }}>ITEMS</div>
+                  <div style={{ fontSize: 14, textAlign: "left" }}>DETAIL ORDER :</div>
                   {!isEmptyArray(detail.dataPay) && detail.dataPay.map((item, key) => (
                     <div
                       key={key}
                       style={{
-                        marginLeft: 10,
+                        // marginLeft: 10,
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
@@ -281,7 +281,7 @@ class ModalDetailHistory extends Component {
                         }}
                       >{`${item.qty}x ${item.itemName}`}</div>
                       <div style={{ fontSize: 12, fontWeight: "bold" }}>
-                        {this.getCurrency(item.totalNettAmount)}
+                        {this.getCurrency(item.price)}
                       </div>
                     </div>
                   ))}
@@ -440,7 +440,7 @@ class ModalDetailHistory extends Component {
                   </div>
 
                   {
-                    detail.paymentType &&
+                    detail.paymentType && detail.status === 'COMPLETED' &&
                     <div>
                       <div
                         style={{
