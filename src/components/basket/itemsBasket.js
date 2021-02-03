@@ -209,7 +209,7 @@ class ItemsBasket extends Component {
   };
 
   render() {
-    let { data, defaultOutlet } = this.props;
+    let { data, defaultOutlet, isLoggedIn } = this.props;
     let dataBasket = this.props.basket;
     let enableNotes = false;
     if (isEmptyObject(this.props.basket)) {
@@ -222,7 +222,7 @@ class ItemsBasket extends Component {
       });
     }
 
-    if (defaultOutlet && defaultOutlet.enableOrderSpecialInstructions === true) {
+    if (defaultOutlet && defaultOutlet.enableOrderSpecialInstructions === true && isLoggedIn) {
       enableNotes = true;
     }
 
@@ -483,6 +483,7 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     categories: state.product.categories,
     defaultOutlet: state.outlet.defaultOutlet,
+    isLoggedIn: state.auth.isLoggedIn,
   };
 };
 
