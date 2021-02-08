@@ -27,6 +27,7 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
           localStorage.setItem(`${config.prefix}_locationCustomer`, JSON.stringify(location));
           return dispatch(getNearsesOutlet(location))
         }
+        return dispatch(getNearsesOutlet());
       } catch (error) {
         return dispatch(getNearsesOutlet())
       }
