@@ -3,7 +3,7 @@ import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "dev";
-let companyHost = "staple";
+let companyHost = "superpets";
 // let endPoint = `https://${companyHost}${
 //   stage !== "" ? "-" + stage : ""
 // }.proseller.io`;
