@@ -505,7 +505,6 @@ class Basket extends Component {
     if (!maxDays) maxDays = 90;
 
     let dateTime = new Date();
-
     let payload = {
       outletID: storeDetail.sortKey,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
@@ -513,17 +512,6 @@ class Basket extends Component {
       maxDays,
       orderingMode,
     };
-
-    const isOutletChanged = await localStorage.getItem(
-      `${config.prefix}_isOutletChanged`
-    );
-    const newOutletID = await localStorage.getItem(
-      `${config.prefix}_outletChangedFromHeader`
-    );
-    if (isOutletChanged === "true") {
-      if (newOutletID !== undefined && newOutletID !== null)
-        payload.outletID = `outlet::${newOutletID}`;
-    }
 
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
@@ -553,17 +541,36 @@ class Basket extends Component {
         const firstAvailableDate = newTimeslot
           .flat(2)
           .find((slot) => slot.timeSlot.length > 0);
-        console.log(firstAvailableDate);
+        console.log("newTimeslot :", newTimeslot.flat(2));
         if (firstAvailableDate)
           this.setState({ nextDayIsAvailable: firstAvailableDate.date });
         this.setState({ timeSlot: newTimeslot.flat(2) });
+        timeSlot = newTimeslot.flat(2);
+        if (
+          !newTimeslot.flat(2).find((dateSlot) => {
+            const dateTimeSlot = dateSlot.timeSlot.find(
+              (slot) =>
+                slot.time === this.state.orderActionTimeSlot && slot.isAvailable
+            );
+            if (dateSlot.date === this.state.orderActionDate && dateTimeSlot) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          this.setState({
+            orderActionDate: moment().format("YYYY-MM-DD"),
+            orderActionTime: moment().add(1, "h").format("HH") + ":00",
+            orderActionTimeSlot: null,
+          });
+          this.props.dispatch({ type: "DELETE_ORDER_ACTION_TIME_SLOT" });
+        }
       } else {
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
       }
     }
-
-    if (isEditDate) {
+    if (date) {
       timeSlot = timeSlot.find((items) => {
         return items.date === date;
       });
@@ -603,8 +610,8 @@ class Basket extends Component {
       } else {
         if (maxLoopingSetTimeSlot > 0) {
           this.setState({ maxLoopingSetTimeSlot: maxLoopingSetTimeSlot - 1 });
-          date = moment(date).add(1, "d").format("YYYY-MM-DD");
-          this.checkPickUpDateTime(checkOperationalHours, date, check);
+          // date = moment(date).add(1, "d").format("YYYY-MM-DD");
+          // this.checkPickUpDateTime(checkOperationalHours, date, check);
         } else {
           console.log("Set orderACtionTime...");
           this.setState({
@@ -995,7 +1002,7 @@ class Basket extends Component {
           await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
-        Swal.close()
+        Swal.close();
         await this.getDataBasket();
       }
     });
@@ -1012,7 +1019,13 @@ class Basket extends Component {
 
   handleSettle = async () => {
     let { selectedCard } = this.state;
-
+    const { defaultOutlet } = this.props;
+    const orderPreparationTime =
+      defaultOutlet.timeSlots &&
+      defaultOutlet.timeSlots[0] &&
+      defaultOutlet.timeSlots[0].defaultPreparationTime
+        ? defaultOutlet.timeSlots[0].defaultPreparationTime
+        : 0;
     if (!this.handleOpenLogin()) return;
 
     if (selectedCard) {
@@ -1026,6 +1039,66 @@ class Basket extends Component {
           console.log("need cvv");
           return;
         }
+      }
+    }
+
+    let {
+      storeDetail,
+      orderingMode,
+      timeSlot,
+      orderActionDate,
+      orderActionTime,
+    } = this.state;
+    if (!storeDetail) return;
+
+    let orderingModeField =
+      orderingMode === "DINEIN"
+        ? "dineIn"
+        : orderingMode === "DELIVERY"
+        ? "delivery"
+        : "takeAway";
+    let { maxDays } = storeDetail.orderValidation[orderingModeField];
+    if (!maxDays) maxDays = 90;
+
+    let dateTime = new Date();
+    let payload = {
+      outletID: storeDetail.sortKey,
+      clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+      date: moment(dateTime).format("YYYY-MM-DD"),
+      maxDays,
+      orderingMode,
+    };
+    const nowDateObj = new Date(
+      `${moment(dateTime).format("YYYY-MM-DD")} 00:00`
+    );
+    const orderActionDateObj = new Date(`${orderActionDate} 00:00`);
+
+    timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
+    if (timeSlot.resultCode === 200) {
+      timeSlot = timeSlot.data.filter((items) => {
+        return items.timeSlot.filter((item) => {
+          return item.isAvailable;
+        });
+      });
+      const selectedTimeSlot = timeSlot.find(
+        (slot) => slot.date === orderActionDate
+      );
+      if (selectedTimeSlot) {
+        const minutesNow = new Date().getHours() * 60 + new Date().getMinutes();
+        const minutesTimeSlot =
+          new Date(`1970-01-01 ${orderActionTime}`).getHours() * 60 +
+          new Date(`1970-01-01 ${orderActionTime}`).getMinutes();
+        const difference = minutesTimeSlot - minutesNow;
+        if (
+          nowDateObj.getTime() === orderActionDateObj.getTime() &&
+          difference < orderPreparationTime
+        ) {
+          Swal.fire("Oppss!", "Time Slot is not available", "error");
+          return;
+        }
+      } else {
+        Swal.fire("Oppss!", "Time Slot date is not available", "error");
+        return;
       }
     }
 
@@ -1334,7 +1407,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-    
+
     return (
       <div
         className="col-full"
@@ -1367,50 +1440,53 @@ class Basket extends Component {
                 </div>
               )}
 
-              {!loadingShow && (!isEmptyObject(dataBasket) || this.props.basket.details) && (
-                <div style={{ marginBottom: 250 }}>
-                  {viewCart && (
-                    <ViewCartBasket
-                      data={this.state}
-                      dataBasket={dataBasket}
-                      countryCode={countryCode}
-                      isLoggedIn={isLoggedIn}
-                      cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                      cancelSelectPoint={() => this.cancelSelectPoint()}
-                      handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                      handleRedeemPoint={() => this.handleRedeemPoint()}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      handleClear={(dataBasket) => this.handleClear(dataBasket)}
-                      scrollPoint={(data) => this.scrollPoint(data)}
-                      setPoint={(point) => this.setPoint(point)}
-                      handleSettle={() => this.handleSettle()}
-                      handleSubmit={() => this.handleSubmit()}
-                      setOrderingMode={(mode) => this.setOrderingMode(mode)}
-                      handleSetProvaider={(item) =>
-                        this.handleSetProvaider(item)
-                      }
-                      setViewCart={(status) => this.setViewCart(status)}
-                      handleSetState={(field, value) =>
-                        this.handleSetState(field, value)
-                      }
-                      handleOpenLogin={() => this.handleOpenLogin()}
-                    />
-                  )}
-                  {!viewCart && (
-                    <ViewProsessBasket
-                      data={this.state}
-                      dataBasket={dataBasket}
-                      countryCode={countryCode}
-                      isLoggedIn={isLoggedIn}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      setViewCart={(status) => this.setViewCart(status)}
-                      handleCompletedOrdering={(status) =>
-                        this.handleCompletedOrdering(status)
-                      }
-                    />
-                  )}
-                </div>
-              )}
+              {!loadingShow &&
+                (!isEmptyObject(dataBasket) || this.props.basket.details) && (
+                  <div style={{ marginBottom: 250 }}>
+                    {viewCart && (
+                      <ViewCartBasket
+                        data={this.state}
+                        dataBasket={dataBasket}
+                        countryCode={countryCode}
+                        isLoggedIn={isLoggedIn}
+                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                        cancelSelectPoint={() => this.cancelSelectPoint()}
+                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                        handleRedeemPoint={() => this.handleRedeemPoint()}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        handleClear={(dataBasket) =>
+                          this.handleClear(dataBasket)
+                        }
+                        scrollPoint={(data) => this.scrollPoint(data)}
+                        setPoint={(point) => this.setPoint(point)}
+                        handleSettle={() => this.handleSettle()}
+                        handleSubmit={() => this.handleSubmit()}
+                        setOrderingMode={(mode) => this.setOrderingMode(mode)}
+                        handleSetProvaider={(item) =>
+                          this.handleSetProvaider(item)
+                        }
+                        setViewCart={(status) => this.setViewCart(status)}
+                        handleSetState={(field, value) =>
+                          this.handleSetState(field, value)
+                        }
+                        handleOpenLogin={() => this.handleOpenLogin()}
+                      />
+                    )}
+                    {!viewCart && (
+                      <ViewProsessBasket
+                        data={this.state}
+                        dataBasket={dataBasket}
+                        countryCode={countryCode}
+                        isLoggedIn={isLoggedIn}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        setViewCart={(status) => this.setViewCart(status)}
+                        handleCompletedOrdering={(status) =>
+                          this.handleCompletedOrdering(status)
+                        }
+                      />
+                    )}
+                  </div>
+                )}
             </main>
           </div>
         </div>
