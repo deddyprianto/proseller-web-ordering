@@ -20,6 +20,11 @@ export default function reducer(state = defaultState, action) {
       return Object.assign({}, state, {
         categories: action.data,
       });
+    case "SET_CATEGORY_LIST":
+      return {
+        ...state,
+        categoryList: action.data,
+      };
     case CONSTANT.LIST_PRODUCT:
       return Object.assign({}, state, {
         products: action.data,
