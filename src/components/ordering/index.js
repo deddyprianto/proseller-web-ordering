@@ -228,7 +228,7 @@ class Ordering extends Component {
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
-                ].isSelected = false;
+                ].isSelected = true;
               }
 
               if (
@@ -237,7 +237,7 @@ class Ordering extends Component {
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
-                ].isSelected = true;
+                ].isSelected = false;
               }
             }
           });
