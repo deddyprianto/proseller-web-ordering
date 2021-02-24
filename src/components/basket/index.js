@@ -518,7 +518,6 @@ class Basket extends Component {
     if (!maxDays) maxDays = 90;
 
     let dateTime = new Date();
-
     let payload = {
       outletID: storeDetail.sortKey,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
@@ -526,17 +525,6 @@ class Basket extends Component {
       maxDays,
       orderingMode,
     };
-
-    const isOutletChanged = await localStorage.getItem(
-      `${config.prefix}_isOutletChanged`
-    );
-    const newOutletID = await localStorage.getItem(
-      `${config.prefix}_outletChangedFromHeader`
-    );
-    if (isOutletChanged === "true") {
-      if (newOutletID !== undefined && newOutletID !== null)
-        payload.outletID = `outlet::${newOutletID}`;
-    }
 
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
@@ -566,17 +554,36 @@ class Basket extends Component {
         const firstAvailableDate = newTimeslot
           .flat(2)
           .find((slot) => slot.timeSlot.length > 0);
-        console.log(firstAvailableDate);
+        console.log("newTimeslot :", newTimeslot.flat(2));
         if (firstAvailableDate)
           this.setState({ nextDayIsAvailable: firstAvailableDate.date });
         this.setState({ timeSlot: newTimeslot.flat(2) });
+        timeSlot = newTimeslot.flat(2);
+        if (
+          !newTimeslot.flat(2).find((dateSlot) => {
+            const dateTimeSlot = dateSlot.timeSlot.find(
+              (slot) =>
+                slot.time === this.state.orderActionTimeSlot && slot.isAvailable
+            );
+            if (dateSlot.date === this.state.orderActionDate && dateTimeSlot) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          this.setState({
+            orderActionDate: moment().format("YYYY-MM-DD"),
+            orderActionTime: moment().add(1, "h").format("HH") + ":00",
+            orderActionTimeSlot: null,
+          });
+          this.props.dispatch({ type: "DELETE_ORDER_ACTION_TIME_SLOT" });
+        }
       } else {
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
       }
     }
-
-    if (isEditDate) {
+    if (date) {
       timeSlot = timeSlot.find((items) => {
         return items.date === date;
       });
@@ -616,8 +623,8 @@ class Basket extends Component {
       } else {
         if (maxLoopingSetTimeSlot > 0) {
           this.setState({ maxLoopingSetTimeSlot: maxLoopingSetTimeSlot - 1 });
-          date = moment(date).add(1, "d").format("YYYY-MM-DD");
-          this.checkPickUpDateTime(checkOperationalHours, date, check);
+          // date = moment(date).add(1, "d").format("YYYY-MM-DD");
+          // this.checkPickUpDateTime(checkOperationalHours, date, check);
         } else {
           console.log("Set orderACtionTime...");
           this.setState({
@@ -1107,7 +1114,7 @@ class Basket extends Component {
           new Date(`1970-01-01 ${orderActionTime}`).getMinutes();
         const difference = minutesTimeSlot - minutesNow;
         if (
-          nowDateObj === orderActionDateObj &&
+          nowDateObj.getTime() === orderActionDateObj.getTime() &&
           difference < orderPreparationTime
         ) {
           Swal.fire("Oppss!", "Time Slot is not available", "error");
@@ -1429,8 +1436,8 @@ class Basket extends Component {
       remark,
     };
     await this.props.dispatch(OrderAction.updateCartInfo(payload));
-    await this.getDataBasket()
-  }
+    await this.getDataBasket();
+  };
 
   render() {
     let {

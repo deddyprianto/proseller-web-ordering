@@ -109,6 +109,25 @@ export default function reducer(state = defaultState, action) {
         ...state,
         orderActionTimeSlot: action.payload,
       };
+    case "DELETE_ORDER_ACTION_TIME_SLOT":
+      localStorage.removeItem(
+        `${config.prefix}_order_action_time`,
+        action.payload
+      );
+      localStorage.removeItem(
+        `${config.prefix}_order_action_time_slot`,
+        action.payload
+      );
+      localStorage.removeItem(
+        `${config.prefix}_order_action_date`,
+        action.payload
+      );
+      return {
+        ...state,
+        orderActionDate: moment().format("YYYY-MM-DD"),
+        orderActionTime: moment().add(1, "h").format("HH") + ":00",
+        orderActionTimeSlot: null,
+      };
     default:
       return state;
   }

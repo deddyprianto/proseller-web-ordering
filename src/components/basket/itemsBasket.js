@@ -78,7 +78,7 @@ class ItemsBasket extends Component {
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
-                ].isSelected = false;
+                ].isSelected = true;
               }
 
               if (
@@ -87,7 +87,7 @@ class ItemsBasket extends Component {
               ) {
                 product.product.productModifiers[i].modifier.details[
                   j
-                ].isSelected = true;
+                ].isSelected = false;
               }
             }
           });
@@ -222,7 +222,11 @@ class ItemsBasket extends Component {
       });
     }
 
-    if (defaultOutlet && defaultOutlet.enableOrderSpecialInstructions === true && isLoggedIn) {
+    if (
+      defaultOutlet &&
+      defaultOutlet.enableOrderSpecialInstructions === true &&
+      isLoggedIn
+    ) {
       enableNotes = true;
     }
 
@@ -235,8 +239,8 @@ class ItemsBasket extends Component {
             this.props.handleSetState(field, value)
           }
         />
-        <AddNotes 
-          dataBasket={dataBasket} 
+        <AddNotes
+          dataBasket={dataBasket}
           updateCartInfo={this.props.updateCartInfo}
         />
         {dataBasket && dataBasket.details && dataBasket.details.length > 0 && (
@@ -344,58 +348,21 @@ class ItemsBasket extends Component {
                 />
               </div>
             )}
-            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && enableNotes && (dataBasket.remark === undefined || dataBasket.remark === '' || dataBasket.remark === null) && (
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    fontSize: 14,
-                    marginTop: 5,
-                  }}
-                >
-                  <button
-                    className="background-theme"
-                    data-toggle="modal"
-                    data-target="#add-notes-modal"
+            {!isEmptyObject(dataBasket) &&
+              dataBasket.status === "PENDING" &&
+              enableNotes &&
+              (dataBasket.remark === undefined ||
+                dataBasket.remark === "" ||
+                dataBasket.remark === null) && (
+                <div>
+                  <div
                     style={{
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      color: this.props.color.primary,
-                      border: `1px solid ${this.props.color.primary}`,
-                      borderRadius: 5,
-                      width: 100,
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                      justifyContent: "flex-end",
+                      fontSize: 14,
+                      marginTop: 5,
                     }}
                   >
-                    <i className="fa fa-sticky-note-o" style={{marginRight: 5}} /> Notes
-                  </button>
-                </div>
-                <div
-                  style={{
-                    backgroundColor: "#DCDCDC",
-                    height: 1,
-                    marginBottom: 10,
-                    marginTop: 10,
-                  }}
-                />
-              </div>
-            )}
-            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && enableNotes && dataBasket.remark !== undefined && dataBasket.remark !== '' && dataBasket.remark !== null && (
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    fontSize: 14,
-                    marginTop: 5,
-                  }}
-                >
-                  <div>
-                    <p style={{fontSize: 14, lineHeight: 1, textAlign: 'left', fontStyle: 'italic'}}>"{dataBasket.remark}"</p>
                     <button
                       className="background-theme"
                       data-toggle="modal"
@@ -413,20 +380,84 @@ class ItemsBasket extends Component {
                         backgroundColor: this.props.roleBtnClear && "#CDCDCD",
                       }}
                     >
-                      <i className="fa fa-sticky-note-o" style={{marginRight: 5}} /> Edit Notes
+                      <i
+                        className="fa fa-sticky-note-o"
+                        style={{ marginRight: 5 }}
+                      />{" "}
+                      Notes
                     </button>
                   </div>
+                  <div
+                    style={{
+                      backgroundColor: "#DCDCDC",
+                      height: 1,
+                      marginBottom: 10,
+                      marginTop: 10,
+                    }}
+                  />
                 </div>
-                <div
-                  style={{
-                    backgroundColor: "#DCDCDC",
-                    height: 1,
-                    marginBottom: 10,
-                    marginTop: 10,
-                  }}
-                />
-              </div>
-            )}
+              )}
+            {!isEmptyObject(dataBasket) &&
+              dataBasket.status === "PENDING" &&
+              enableNotes &&
+              dataBasket.remark !== undefined &&
+              dataBasket.remark !== "" &&
+              dataBasket.remark !== null && (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      fontSize: 14,
+                      marginTop: 5,
+                    }}
+                  >
+                    <div>
+                      <p
+                        style={{
+                          fontSize: 14,
+                          lineHeight: 1,
+                          textAlign: "left",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        "{dataBasket.remark}"
+                      </p>
+                      <button
+                        className="background-theme"
+                        data-toggle="modal"
+                        data-target="#add-notes-modal"
+                        style={{
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                          color: this.props.color.primary,
+                          border: `1px solid ${this.props.color.primary}`,
+                          borderRadius: 5,
+                          width: 100,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                        }}
+                      >
+                        <i
+                          className="fa fa-sticky-note-o"
+                          style={{ marginRight: 5 }}
+                        />{" "}
+                        Edit Notes
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      backgroundColor: "#DCDCDC",
+                      height: 1,
+                      marginBottom: 10,
+                      marginTop: 10,
+                    }}
+                  />
+                </div>
+              )}
             {dataBasket.details.map((item, key) => (
               <div key={key}>
                 <div
