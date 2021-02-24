@@ -78,14 +78,14 @@ const WebOrderingCategories = ({
     >
       {!openSearch ? (
         <React.Fragment>
-          <li style={{ cursor: "pointer" }} className="nav-item category-item">
+          {/* <li style={{ cursor: "pointer" }} className="nav-item category-item">
             <Link
               to="/categories"
               style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
             >
               All Category
             </Link>
-          </li>
+          </li> */}
           {categories.map((item, i) => (
             <li
               id={`cat-${i}`}
