@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import Shimmer from "react-shimmer-effect";
 import { ProductAction } from "../redux/actions/ProductAction";
-export const AllCategory = ({ categories, dispatch, setting }) => {
+
+export const AllCategory = ({ categories, dispatch, productPlaceholder }) => {
   const [filter, setFilter] = useState("");
   const [categoryList, setCategoryList] = useState(categories);
 
@@ -36,11 +37,11 @@ export const AllCategory = ({ categories, dispatch, setting }) => {
                 <div class="card">
                   <img
                     class="card-img-top"
-                    src={category.defaultImageURL}
-                    alt="Card image cap"
+                    src={category.defaultImageURL || productPlaceholder || ""}
+                    alt="Card cap"
                   ></img>
                   <div class="card-body">
-                    <p class="card-text">{category.name}</p>
+                    <p class="card-text text-center">{category.name}</p>
                   </div>
                 </div>
               </div>
@@ -70,7 +71,7 @@ export const AllCategory = ({ categories, dispatch, setting }) => {
 
 const mapStateToProps = (state) => ({
   categories: state.product.categoryList,
-  setting: state.order.setting,
+  productPlaceholder: state.theme.color.productPlaceholder,
 });
 
 const mapDispatchToProps = (dispatch) => {
