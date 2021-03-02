@@ -118,8 +118,8 @@ export const Products = ({
                 src={selectedCategory.defaultImageURL}
                 alt={selectedCategory.name}
                 style={{
-                  width: "3rem",
-                  height: "auto",
+                  width: "auto",
+                  height: "2.5rem",
                 }}
               ></img>
             )}

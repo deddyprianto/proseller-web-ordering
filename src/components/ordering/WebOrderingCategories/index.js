@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const WebOrderingCategories = ({
   categories,
@@ -15,16 +16,22 @@ const WebOrderingCategories = ({
   let [prevSelectedCategory, setPrevSelectedCategory] = useState(
     selectedCategory
   );
+  const history = useHistory();
 
   const isItemsFinishedToLoad = (query) => {
-    try {
-      setQuerySearch(query);
-      loadingSearching(true);
-      if (finished) {
-        searchProduct(query);
-        setQuerySearch("");
-      }
-    } catch (e) {}
+    setQuerySearch(query);
+    // try {
+    //   setQuerySearch(query);
+    //   loadingSearching(true);
+    //   if (finished) {
+    //     searchProduct(query);
+    //     setQuerySearch("");
+    //   }
+    // } catch (e) {}
+  };
+
+  const search = (keyword) => {
+    history.push(`/products?q=${encodeURIComponent(keyword)}`);
   };
 
   if (finished && openSearch && querySearch !== "") {
@@ -123,14 +130,23 @@ const WebOrderingCategories = ({
           ))}
         </React.Fragment>
       ) : (
-        <input
-          onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
-          style={{ height: 35, fontSize: 14 }}
-          id="input-txt"
-          type="text"
-          autoFocus={true}
-          placeholder="Search your product here..."
-        />
+        <div
+          style={{ display: "flex", alignItems: "center", marginRight: "5rem" }}
+        >
+          <input
+            onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
+            style={{ height: 35, fontSize: 14, width: "100%" }}
+            id="input-txt"
+            type="text"
+            autoFocus={true}
+            placeholder="Search your product here..."
+          />
+          <i
+            onClick={() => search(querySearch)}
+            style={{ fontSize: 25, cursor: "pointer" }}
+            className="fa fa-search color"
+          ></i>
+        </div>
       )}
       <div
         className="search-button-absolute background-theme"
