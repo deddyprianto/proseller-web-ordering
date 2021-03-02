@@ -10,6 +10,8 @@ export const ProductAction = {
   fetchProduct,
   fetchCategoryList,
   getCollection,
+  setSelectedCategory,
+  fetchProductList,
 };
 
 function fetchCategoryProduct(outlet) {
@@ -32,6 +34,12 @@ function fetchCategoryProduct(outlet) {
       };
     }
   } catch (error) {}
+}
+
+function setSelectedCategory(category) {
+  return (dispatch) => {
+    dispatch(setData(category, "SET_SELECTED_CATEGORY"));
+  };
 }
 
 function fetchCategoryList() {
@@ -57,16 +65,51 @@ function fetchProduct(category, outlet, skip, take) {
     skip,
     take,
   };
-
   return async (dispatch) => {
+    dispatch(fetchProductStarted());
     const data = await ProductService.api(
       "POST",
       payload,
       `productpreset/loaditems/${PRESET_TYPE}/${OUTLET_ID}/${categoryID}`
     );
-    return data;
+    if (!isEmptyArray(data.data)) {
+      dispatch(fetchProductSuccess(data.data));
+      return data;
+    } else {
+      dispatch(
+        fetchProductError(data || { message: "Failed to fetch product" })
+      );
+      return [];
+    }
   };
 }
+
+function fetchProductList(filter, sort) {
+  return async (dispatch) => {
+    const payload = { ...filter, ...sort };
+    dispatch(fetchProductStarted());
+    const response = await ProductService.api("POST", payload, `product/load`);
+    if (response.statusCode >= 400 || response.StatusCode >= 400)
+      dispatch(
+        fetchProductError({
+          message: response.message || "Failed to load product",
+        })
+      );
+    else {
+      dispatch(fetchProductSuccess(response.data));
+    }
+  };
+}
+
+const fetchProductStarted = () => ({ type: "GET_PRODUCT_LIST_STARTED" });
+const fetchProductSuccess = (data) => ({
+  type: "GET_PRODUCT_LIST_SUCCESS",
+  data,
+});
+const fetchProductError = (error) => ({
+  type: "GET_PRODUCT_LIST_ERROR",
+  error,
+});
 
 function getCollection(id) {
   return async (dispatch) => {

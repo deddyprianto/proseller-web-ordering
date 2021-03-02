@@ -46,6 +46,7 @@ const EditProfile = loadable(() =>
   import("../../components/profile/EditProfile")
 );
 const Categories = loadable(() => import("../../pages/AllCategory"));
+const Products = loadable(() => import("../../pages/Products"));
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
@@ -207,11 +208,28 @@ class Layout extends Component {
               />
             )}
             <Route exact path={"/history"} component={History} />
-            <Route exact path={"/categories"} component={Categories} />
+            <Route exact path={"/category"} component={Categories} />
+            <Route
+              exact
+              path={"/category/:categoryId/products"}
+              component={Products}
+            />
             <Route exact path={"/payment"} component={Payment} />
             <Redirect from="*" to={!enableOrdering ? "/profile" : "/"} />
           </Switch>
           <div style={{ clear: "both" }}></div>
+          <span
+            data-toggle="modal"
+            data-target="#detail-product-modal"
+            id="open-modal-product"
+            style={{ color: "white" }}
+          ></span>
+          <span
+            data-toggle="modal"
+            data-target="#ordering-mode"
+            id="open-modal-ordering-mode"
+            style={{ color: "white" }}
+          ></span>
         </div>
         {isEmenu ? <FooterEmenu /> : <FooterWebOrdering />}
       </div>

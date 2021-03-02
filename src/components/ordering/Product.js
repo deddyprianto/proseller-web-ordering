@@ -6,16 +6,19 @@ import config from "../../config";
 
 class Product extends Component {
   renderImageProduct = (item) => {
-    const { productConfig } = this.props
+    const { productConfig } = this.props;
     if (
       item.product.defaultImageURL &&
       !isEmptyData(item.product.defaultImageURL)
     ) {
       return item.product.defaultImageURL;
     } else {
-
-      if (productConfig && productConfig.color && productConfig.color.productPlaceholder !== null) {
-        return productConfig.color.productPlaceholder
+      if (
+        productConfig &&
+        productConfig.color &&
+        productConfig.color.productPlaceholder !== null
+      ) {
+        return productConfig.color.productPlaceholder;
       }
       return config.image_placeholder;
     }
@@ -66,7 +69,9 @@ class Product extends Component {
     } else {
       try {
         document.getElementById("open-modal-product").click();
-      } catch (error) {}
+      } catch (error) {
+        console.log("Can't find element with id : open-modal-product");
+      }
     }
   };
 
@@ -81,7 +86,7 @@ class Product extends Component {
   };
 
   maskDescription = (description) => {
-    if(description){
+    if (description) {
       const length = description.length;
       if (length < 47) {
         return description;
@@ -94,7 +99,10 @@ class Product extends Component {
     const { item } = this.props;
     return (
       <li
-        style={{ marginBottom: 5, boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)"}}
+        style={{
+          marginBottom: 5,
+          boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+        }}
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
         <div
@@ -106,7 +114,12 @@ class Product extends Component {
         >
           <div
             // className="product-inner product-card"
-            style={{ padding: 10, display: "flex", alignItems: "center", cursor: "pointer" }}
+            style={{
+              padding: 10,
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
           >
             <div
               className="product-image-wrapper"
@@ -116,13 +129,13 @@ class Product extends Component {
                 maxWidth: 180,
                 alignItems: "center",
                 padding: 0,
-                marginRight: 5
+                marginRight: 5,
               }}
             >
               <span className="woocommerce-LoopProduct-link">
                 <img
                   src={this.renderImageProduct(item)}
-                  style={{borderRadius: 5}}
+                  style={{ borderRadius: 5 }}
                   className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
                   alt={item.product.name}
                   title={item.product.name}
@@ -132,17 +145,26 @@ class Product extends Component {
             <div className="product-content-wrapper">
               <div>
                 <h3
-                  style={{ cursor: "pointer", marginTop: 10, fontSize: 14, lineHeight: "17px" }}
+                  style={{
+                    cursor: "pointer",
+                    marginTop: 10,
+                    fontSize: 14,
+                    lineHeight: "17px",
+                  }}
                 >
                   <b className="text-muted color">
                     {this.getQuantityProduct()}{" "}
                   </b>
                   <b className="font-color-theme">{item.product.name}</b>
                 </h3>
-                <div itemProp="description" style={{marginTop: -5}}>
+                <div itemProp="description" style={{ marginTop: -5 }}>
                   <div
                     className="font-color-theme"
-                    style={{ maxHeight: 'none', whiteSpace: "pre-line", fontSize: 10 }}
+                    style={{
+                      maxHeight: "none",
+                      whiteSpace: "pre-line",
+                      fontSize: 10,
+                    }}
                   >
                     {this.maskDescription(item.product.description)}
                   </div>
@@ -159,10 +181,7 @@ class Product extends Component {
                   ) : (
                     <>
                       <div className="col-lg-12 col-md-12 col-xs-7">
-                        <b
-                          style={{ float: "left" }}
-                          className="price-product"
-                        >
+                        <b style={{ float: "left" }} className="price-product">
                           {this.getCurrency(item.product.retailPrice)}
                         </b>
                       </div>

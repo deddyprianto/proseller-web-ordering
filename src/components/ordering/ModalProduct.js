@@ -1251,6 +1251,7 @@ class ModalProduct extends Component {
   };
 
   render() {
+    console.log("modal product is rendering");
     return (
       <div>
         <span

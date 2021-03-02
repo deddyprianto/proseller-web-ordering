@@ -5,13 +5,15 @@ import Product from "./Product";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
-import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import LoaderCircle from "../loading/LoaderCircle";
 import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
 import WebOrderingCategories from "./WebOrderingCategories";
 import EMenuCategories from "./EMenuCategories";
+
+import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
+import { getInitialProductValue } from "../../helpers/ProductHelper";
 // const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Ordering extends Component {
@@ -205,54 +207,7 @@ class Ordering extends Component {
   };
 
   selectProduct = async (productSelected, mode) => {
-    let product = JSON.stringify(productSelected);
-    product = JSON.parse(product);
-    console.log("calling select product");
-
-    try {
-      await product.product.productModifiers.forEach((group, i) => {
-        if (!isEmptyArray(group.modifier.details))
-          group.modifier.details.forEach((detail, j) => {
-            delete detail.quantity;
-
-            if (group.modifier.min !== 0 && group.modifier.min !== undefined) {
-              product.product.productModifiers[i].modifier.show = true;
-            } else {
-              product.product.productModifiers[i].modifier.show = false;
-            }
-
-            if (
-              group.modifier.isYesNo === true &&
-              detail.orderingStatus === "AVAILABLE"
-            ) {
-              if (
-                group.modifier.yesNoDefaultValue === true &&
-                detail.yesNoValue === "no"
-              ) {
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].isSelected = true;
-              }
-
-              if (
-                group.modifier.yesNoDefaultValue === false &&
-                detail.yesNoValue === "yes"
-              ) {
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].isSelected = false;
-                product.product.productModifiers[i].modifier.details[
-                  j
-                ].quantity = 1;
-              }
-            }
-          });
-      });
-    } catch (e) {}
-
-    product.quantity = 1;
-    product.remark = "";
-    product.mode = mode;
+    const product = getInitialProductValue(productSelected, mode);
     this.setState({ selectedItem: product });
   };
 
@@ -568,18 +523,6 @@ class Ordering extends Component {
             </div>
           </div>
         </div>
-        <span
-          data-toggle="modal"
-          data-target="#detail-product-modal"
-          id="open-modal-product"
-          style={{ color: "white" }}
-        ></span>
-        <span
-          data-toggle="modal"
-          data-target="#ordering-mode"
-          id="open-modal-ordering-mode"
-          style={{ color: "white" }}
-        ></span>
       </div>
     );
   }
