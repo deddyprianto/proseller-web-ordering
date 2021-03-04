@@ -13,6 +13,7 @@ import { OrderAction } from "./redux/actions/OrderAction";
 import { CustomerAction } from "./redux/actions/CustomerAction";
 import { PaymentAction } from "./redux/actions/PaymentAction";
 import { ReferralAction } from "./redux/actions/ReferralAction";
+import LoaderCircle from "./components/loading";
 
 import locale_en from "react-intl/locale-data/en";
 import locale_id from "react-intl/locale-data/id";
@@ -28,12 +29,12 @@ import jss from "jss";
 import preset from "jss-preset-default";
 
 import styles from "./styles/theme";
+import NotFound from "./pages/NotFound";
 
 const Layout = loadable(() => import("./components/template/Layout"));
 // import Layout from "./components/template/Layout";
 const base64 = require("base-64");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 const messages = {
   ID: messages_id,
@@ -54,9 +55,15 @@ const App = (props) => {
     deliveryAddress,
     setting,
     defaultOutlet,
+    dispatch,
   } = props;
+  let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
   const [enableOrdering, setEnableOrdering] = useState(false);
+  const domainNameExist = props.domainName && props.domainName.length > 0;
+  const [initialDomainNameExists, setInitialDomainNameExists] = useState(
+    domainNameExist
+  );
 
   try {
     if (window.location.hash === "#/") {
@@ -240,18 +247,40 @@ const App = (props) => {
   }, [deliveryAddress, deliveryProviders, setting]);
 
   useEffect(() => {
-    checkUser();
-  }, []);
+    if (domainNameExist) {
+      checkUser();
+    } else {
+      props.getDomainName();
+    }
+  }, [domainNameExist]);
 
-  return (
-    <IntlProvider locale={lang} messages={messages[lang]}>
-      <HashRouter>
-        <Switch>
-          <Route component={Layout} />
-          <Redirect from="*" to="/" />
-        </Switch>
-      </HashRouter>
-    </IntlProvider>
+  useEffect(() => {
+    if (
+      !initialDomainNameExists &&
+      props.domainName &&
+      props.domainName.length > 0
+    ) {
+      window.location.reload();
+    }
+  }, [props.domainName]);
+
+  return domainNameExist ? (
+    props.domainName !== "NOT_FOUND" ? (
+      <IntlProvider locale={lang} messages={messages[lang]}>
+        <HashRouter>
+          <Switch>
+            <Route component={Layout} />
+            <Redirect from="*" to="/" />
+          </Switch>
+        </HashRouter>
+      </IntlProvider>
+    ) : (
+      <NotFound></NotFound>
+    )
+  ) : (
+    <div>
+      <LoaderCircle></LoaderCircle>
+    </div>
   );
 };
 
@@ -269,6 +298,7 @@ const mapStateToProps = (state, ownProps) => {
     outletSelection: state.order.outletSelection,
     defaultEmail: state.customer.defaultEmail,
     defaultPhoneNumber: state.customer.defaultPhoneNumber,
+    domainName: state.masterdata.domainName,
   };
 };
 
@@ -277,6 +307,9 @@ const mapDispatchToProps = (dispatch) => {
     dispatch,
     onLogin: (username, password) => {
       dispatch(AuthActions.auth(username, password));
+    },
+    getDomainName: () => {
+      dispatch(MasterdataAction.getDomainName());
     },
   };
 };
