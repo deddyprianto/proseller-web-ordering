@@ -9,11 +9,15 @@ let endPoint = `https://${companyHost}${
 }.proseller.io`;
 // let endPoint = `https://${companyHost}.proseller-${stage}.com`;
 
-const storedDomainName = localStorage.getItem(`apiDomainName`);
+let storedDomainName = "";
+try {
+  storedDomainName = localStorage.getItem(`apiDomainName`);
+} catch (error) {
+  console.log(error);
+  storedDomainName = "";
+}
 
 config.remoteDomainName = storedDomainName || "";
-
-console.log("config.remoteDomainName : ", config.remoteDomainName);
 
 if (process.env.REACT_APP_STAGE === "local") {
   config = {
@@ -217,5 +221,68 @@ function isNotFalse(nickname) {
   if (!nickname || (nickname && nickname === "")) nickname = false;
   return nickname;
 }
+
+config.getUrlMasterData = () => {
+  let storedDomainName = "";
+  try {
+    storedDomainName = localStorage.getItem(`apiDomainName`);
+  } catch (error) {
+    console.log(error);
+    window.location.reload();
+  }
+
+  const remoteDomainName = storedDomainName || "";
+  console.log("masterdata remote domain name: ", remoteDomainName);
+  return `https://${remoteDomainName}/masterdata/api/`;
+};
+config.getUrlCrm = () => {
+  let storedDomainName = "";
+  try {
+    storedDomainName = localStorage.getItem(`apiDomainName`);
+  } catch (error) {
+    console.log(error);
+    window.location.reload();
+  }
+
+  const remoteDomainName = storedDomainName || "";
+  return `https://${remoteDomainName}/crm/api/`;
+};
+
+config.getUrlAppointment = () => {
+  let storedDomainName = "";
+  try {
+    storedDomainName = localStorage.getItem(`apiDomainName`);
+  } catch (error) {
+    console.log(error);
+    window.location.reload();
+  }
+
+  const remoteDomainName = storedDomainName || "";
+  return `https://${remoteDomainName}/appointment/api/`;
+};
+config.getUrlOrdering = () => {
+  let storedDomainName = "";
+  try {
+    storedDomainName = localStorage.getItem(`apiDomainName`);
+  } catch (error) {
+    console.log(error);
+    window.location.reload();
+  }
+
+  const remoteDomainName = storedDomainName || "";
+  return `https://${remoteDomainName}/ordering/api/`;
+};
+config.getUrlProduct = () => {
+  let storedDomainName = "";
+  try {
+    storedDomainName = localStorage.getItem(`apiDomainName`);
+  } catch (error) {
+    console.log(error);
+    window.location.reload();
+  }
+
+  const remoteDomainName = storedDomainName || "";
+  return `https://${remoteDomainName}/product/api/`;
+};
 
 export default config;

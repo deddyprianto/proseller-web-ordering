@@ -247,14 +247,21 @@ const App = (props) => {
   }, [deliveryAddress, deliveryProviders, setting]);
 
   useEffect(() => {
-    if (domainNameExist) {
+    if (
+      domainNameExist &&
+      props.domainName &&
+      props.domainName.length > 0 &&
+      props.domainName !== "NOT_FOUND"
+    ) {
       checkUser();
     } else {
       props.getDomainName();
     }
-  }, [domainNameExist]);
+  }, [domainNameExist, props.domainName]);
 
   useEffect(() => {
+    console.log("initialDomainNameExists ", initialDomainNameExists);
+    console.log("domainNameExist", domainNameExist);
     if (
       !initialDomainNameExists &&
       props.domainName &&
