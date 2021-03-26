@@ -101,7 +101,7 @@ function getDomainName() {
     const domainName =
       window.location.hostname !== "localhost"
         ? window.location.hostname
-        : "webordering-edgeworks.proseller-demo.com";
+        : "qiji-demo.proseller.io";
     try {
       fetch(process.env.REACT_APP_DOMAIN_MAPPING_URL, {
         method: "POST",
@@ -121,6 +121,7 @@ function getDomainName() {
         })
         .catch(function (e) {
           console.log(e);
+          dispatch({ type: "SET_DOMAIN_NAME", payload: "NOT_FOUND" });
           return { ResultCode: 400, message: "fetch api error" };
         });
     } catch (error) {
