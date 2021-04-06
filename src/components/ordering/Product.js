@@ -97,6 +97,7 @@ class Product extends Component {
 
   render() {
     const { item } = this.props;
+    if (!item.product) return null;
     return (
       <li
         style={{

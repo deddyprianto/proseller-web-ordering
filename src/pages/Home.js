@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
+import OrderingRetail from "../components/ordering/indexRetail";
 import OutletSelection from "./OutletSelection";
 import { OrderAction } from "../redux/actions/OrderAction";
 import { PromotionAction } from "../redux/actions/PromotionAction";
@@ -61,6 +62,7 @@ class Home extends Component {
 
   render() {
     const { isEmenu } = this.state;
+    const { defaultOutlet } = this.props;
     return (
       <div className="col-full">
         <div
@@ -76,7 +78,7 @@ class Home extends Component {
               :
               <main id="main" className="site-main">
                 {!isEmenu && <Promotion />}
-                <Ordering />
+                { defaultOutlet && defaultOutlet.outletType === 'RETAIL' ? <OrderingRetail history={this.props.history} /> : <Ordering /> }
               </main>
             }
           </div>

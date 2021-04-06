@@ -14,20 +14,24 @@ export const ProductAction = {
   fetchProductList,
 };
 
-function fetchCategoryProduct(outlet) {
+function fetchCategoryProduct(outlet, payload) {
   try {
     if (outlet.id) {
       const OUTLET_ID = outlet.id;
 
+      if (!payload) {
+        payload = { take: 500, skip: 0 }
+      }
+
       return async (dispatch) => {
         const data = await ProductService.api(
           "POST",
-          { take: 500, skip: 0 },
+          payload,
           `productpreset/loadcategory/${PRESET_TYPE}/${OUTLET_ID}`
         );
         if (!isEmptyArray(data.data)) {
           dispatch(setData(data.data, CONSTANT.LIST_CATEGORY));
-          return data.data;
+          return data;
         } else {
           return [];
         }
@@ -42,11 +46,14 @@ function setSelectedCategory(category) {
   };
 }
 
-function fetchCategoryList() {
+function fetchCategoryList(payload) {
   return async (dispatch) => {
+    if (!payload) {
+      payload = { take: 500, skip: 0 }
+    }
     const data = await ProductService.api(
       "POST",
-      { take: 500, skip: 0 },
+      payload,
       `category/load`
     );
     if (!isEmptyArray(data.data)) {
@@ -75,7 +82,7 @@ function fetchProduct(category, outlet, skip, take) {
     if (!isEmptyArray(data.data)) {
       dispatch(fetchProductSuccess(data.data));
       return data;
-    } else {
+    } else if (data.resultCode !== 200) {
       dispatch(
         fetchProductError(data || { message: "Failed to fetch product" })
       );
@@ -87,7 +94,8 @@ function fetchProduct(category, outlet, skip, take) {
 function fetchProductList(filter, sort) {
   return async (dispatch) => {
     const payload = { ...filter, ...sort };
-    dispatch(fetchProductStarted());
+    dispatch(fetchProductCategoryStarted());
+    dispatch(clearCategoryProducts());
     const response = await ProductService.api("POST", payload, `product/load`);
     if (response.statusCode >= 400 || response.StatusCode >= 400)
       dispatch(
@@ -96,12 +104,18 @@ function fetchProductList(filter, sort) {
         })
       );
     else {
-      dispatch(fetchProductSuccess(response.data));
+      dispatch(fetchProductCategorySuccess(response.data));
     }
   };
 }
 
+const clearCategoryProducts = () => ({ type: "CLEAR_CATEGORY_PRODUCTS" });
 const fetchProductStarted = () => ({ type: "GET_PRODUCT_LIST_STARTED" });
+const fetchProductCategoryStarted = () => ({ type: "GET_PRODUCT_CATEGORY_STARTED" });
+const fetchProductCategorySuccess = (data) => ({
+  type: "GET_PRODUCT_CATEGORY_SUCCESS",
+  data,
+});
 const fetchProductSuccess = (data) => ({
   type: "GET_PRODUCT_LIST_SUCCESS",
   data,

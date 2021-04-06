@@ -11,7 +11,9 @@ const defaultState = {
   selectedCategory: null,
   categoryList: null,
   productList: null,
+  productCategory: null,
   loading: false,
+  loadingProductCategory: false,
   error: null,
 };
 
@@ -40,12 +42,31 @@ export default function reducer(state = defaultState, action) {
         ...state,
         loading: true,
       };
+    case "GET_PRODUCT_CATEGORY_STARTED":
+      return {
+        ...state,
+        loadingProductCategory: true,
+      };
     case "GET_PRODUCT_LIST_SUCCESS":
       return {
         ...state,
         loading: false,
         error: null,
         productList: action.data,
+      };
+    case "CLEAR_CATEGORY_PRODUCTS":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        productList: [],
+      };
+    case "GET_PRODUCT_CATEGORY_SUCCESS":
+      return {
+        ...state,
+        loadingProductCategory: false,
+        error: null,
+        productCategory: action.data,
       };
     case "GET_PRODUCT_LIST_ERROR":
       return {
