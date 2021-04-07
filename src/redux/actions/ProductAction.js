@@ -12,6 +12,8 @@ export const ProductAction = {
   getCollection,
   setSelectedCategory,
   fetchProductList,
+  setProductList,
+  isParentCategory
 };
 
 function fetchCategoryProduct(outlet, payload) {
@@ -46,11 +48,34 @@ function setSelectedCategory(category) {
   };
 }
 
-function fetchCategoryList(payload) {
+function isParentCategory(parentCategoryID) {
+  return async (dispatch) => {
+    let payload = { take: 1, skip: 0 }
+    payload.parentCategoryID = parentCategoryID;
+
+    const data = await ProductService.api(
+      "POST",
+      payload,
+      `category/load`
+    );
+    if (isEmptyArray(data.data)) {
+      return false
+    } else {
+      return true
+    }
+  };
+}
+
+function fetchCategoryList(payload, parentCategoryID = null) {
   return async (dispatch) => {
     if (!payload) {
       payload = { take: 500, skip: 0 }
     }
+
+    if (parentCategoryID !== undefined) {
+      payload.parentCategoryID = parentCategoryID;
+    }
+  
     const data = await ProductService.api(
       "POST",
       payload,
@@ -108,6 +133,12 @@ function fetchProductList(filter, sort) {
     else {
       dispatch(fetchProductCategorySuccess(response.data));
     }
+  };
+}
+
+function setProductList(data) {
+  return async (dispatch) => {
+    dispatch(fetchProductCategorySuccess(data));
   };
 }
 

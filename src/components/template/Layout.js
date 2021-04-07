@@ -212,6 +212,7 @@ class Layout extends Component {
             )}
             <Route exact path={"/history"} component={History} />
             <Route exact path={"/category"} component={Categories} />
+            <Route exact path={"/category/:childId"} component={Categories} />
             <Route
               exact
               path={"/category/:categoryId/products"}

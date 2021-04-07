@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Shimmer from "react-shimmer-effect";
 import { ProductAction } from "../redux/actions/ProductAction";
 import Cards from "../components/Cards";
+import { useParams } from "react-router-dom";
 
 export const AllCategory = ({
   categories,
@@ -10,15 +11,24 @@ export const AllCategory = ({
   productPlaceholder,
   history,
 }) => {
+  let { childId } = useParams();
+
   const [filter, setFilter] = useState("");
   const [categoryList, setCategoryList] = useState(categories);
   const handleCategoryClick = async (category) => {
-    dispatch(ProductAction.setSelectedCategory(category));
-    history.push(`category/${category.id}/products`);
+    const isParent = await dispatch(ProductAction.isParentCategory(category.sortKey));
+
+    if (isParent === true) {
+      dispatch(ProductAction.setSelectedCategory(category));
+      history.push(`category/${category.id}`);
+    } else {
+      dispatch(ProductAction.setSelectedCategory(category));
+      history.push(`category/${category.id}/products`);
+    }
   };
 
   useEffect(() => {
-    dispatch(ProductAction.fetchCategoryList());
+    dispatch(ProductAction.fetchCategoryList(null, childId));
   }, []);
 
   useEffect(() => {

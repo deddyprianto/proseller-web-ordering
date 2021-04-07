@@ -57,7 +57,7 @@ class Ordering extends Component {
 
     // await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
-    this.props.dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 20 }));
+    this.props.dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 20 }, null));
     await this.fetchCategories(defaultOutlet);
   };
 
@@ -504,6 +504,7 @@ class Ordering extends Component {
                             <Product
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
+                              history={this.props.history}
                               selectProduct={this.selectProduct}
                               productConfig={this.props.theme}
                               showUpdateModal={(item) =>

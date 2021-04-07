@@ -252,7 +252,12 @@ const mapDispatchToProps = (dispatch) => {
           sortDirection: "asc"
         }
       }
-      dispatch(ProductAction.fetchProductList(bodyPayload))
+      
+      if (category.items === undefined) {
+        dispatch(ProductAction.fetchProductList(bodyPayload))
+      } else {
+        dispatch(ProductAction.setProductList(category.items))
+      }
     },
     fetchCategoryList: () => dispatch(ProductAction.fetchCategoryList()),
     setCategory: (category) =>

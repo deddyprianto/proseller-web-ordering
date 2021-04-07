@@ -3,7 +3,7 @@ import { isEmptyData } from "../../helpers/CheckEmpty";
 import { connect } from "react-redux";
 import { isEmptyObject } from "jquery";
 import config from "../../config";
-
+import { ProductAction } from "../../redux/actions/ProductAction";
 class Product extends Component {
   renderImageProduct = (item) => {
     const { productConfig } = this.props;
@@ -96,6 +96,12 @@ class Product extends Component {
       return description.substring(0, 47) + "...";
     }
   };
+
+  goToDetailItem = (data) => {
+    console.log(data)
+    this.props.dispatch(ProductAction.setSelectedCategory(data));
+    this.props.history.push(`category/${data.id}/products`);
+  }
 
   render() {
     const { item } = this.props;
@@ -218,7 +224,7 @@ class Product extends Component {
             </div>
           </div>
         ) : (
-          <div className={"product-outer"}>
+          <div className={"product-outer"} onClick={() => this.goToDetailItem(item)}>
             <div
               style={{
                 padding: 10,
