@@ -14,6 +14,7 @@ const Product = React.lazy(() => import("./Product"));
 const ModalProduct = React.lazy(() => import("./ModalProduct"));
 const UpdateProductModal = React.lazy(() => import("./UpdateProductModal"));
 const RetailHeaderCategory = React.lazy(() => import("./RetailHeaderCategory"));
+const SearchBox = React.lazy(() => import("./SearchBox"));
 const LoaderCircle = React.lazy(() => import("../loading/LoaderCircle"));
 
 class Ordering extends Component {
@@ -351,7 +352,6 @@ class Ordering extends Component {
       categories,
       loading,
       finished,
-      loadingSearching,
       offlineMessage,
       isEmenu,
       categoryLength,
@@ -449,6 +449,7 @@ class Ordering extends Component {
         <br /> <br /> <br />
         <div id="offset-header" />
         <Suspense fallback={<p>....</p>}>
+          <SearchBox />
           <RetailHeaderCategory
             categoryRefs={categoryRefs}
             loadingSearching={(status) =>
@@ -523,7 +524,11 @@ class Ordering extends Component {
                   ))}
                 </InfiniteScroll>
               </ul>
-              {loading && <Suspense fallback={<p>Loading...</p>}><LoaderCircle /></Suspense>}
+              {loading && (
+                <Suspense fallback={<p>Loading...</p>}>
+                  <LoaderCircle />
+                </Suspense>
+              )}
             </div>
           </div>
         </div>

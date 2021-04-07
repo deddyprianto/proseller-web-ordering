@@ -7,8 +7,6 @@ import config from "../../config";
 const WebOrderingCategories = ({
   categories,
   finished,
-  loadingSearching,
-  searchProduct,
   selectedCategory,
   setSelectedCategory,
 }) => {
@@ -151,3 +149,4 @@ WebOrderingCategories.propTypes = {
 };
 
 export default WebOrderingCategories;
+

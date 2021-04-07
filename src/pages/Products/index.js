@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useParams } from "react-router-dom";
 import _ from "lodash";
-
+import { Link } from "react-router-dom";
 import Shimmer from "react-shimmer-effect";
 
 import { ProductAction } from "../../redux/actions/ProductAction";
 
 import Product from "../../components/ordering/Product";
+import SearchBox from "../../components/ordering/SearchBox";
 import UpdateProductModal from "../../components/ordering/UpdateProductModal";
 import ModalProduct from "../../components/ordering/ModalProduct";
 
@@ -109,33 +110,41 @@ export const Products = ({
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-start",
+              justifyContent: "space-between",
               margin: "1rem",
             }}
           >
-            {selectedCategory && selectedCategory.defaultImageURL && (
-              <img
-                src={selectedCategory.defaultImageURL}
-                alt={selectedCategory.name}
-                style={{
-                  width: "auto",
-                  height: "2.5rem",
-                }}
-              ></img>
-            )}
-            <h4 style={{ margin: 0, marginLeft: "1rem" }}>
-              {selectedCategory && selectedCategory.name}
-            </h4>
+            <Link to={'/menu'}>
+              <div>
+                <i className="fa fa-arrow-left" /> Back
+              </div>
+            </Link>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {selectedCategory && selectedCategory.defaultImageURL && (
+                <img
+                  src={selectedCategory.defaultImageURL}
+                  alt={selectedCategory.name}
+                  style={{
+                    width: "auto",
+                    height: "2.2rem",
+                  }}
+                ></img>
+              )}
+              <h5 style={{ margin: 0, marginLeft: "1rem" }} className="customer-group-name">
+                {selectedCategory && (selectedCategory.name || selectedCategory.term)}
+              </h5>
+            </div>
           </div>
-          <div style={{ margin: "1rem" }}>
+          <div style={{ margin: "1rem" }}><SearchBox /></div>
+          {/* <div style={{ margin: "1rem" }}>
             <input
               onChange={handleFilterKeywordChange}
               className={`form-control ${classes.searchBox}`}
               placeholder="Search"
               style={{ fontSize: "1.5rem" }}
             ></input>
-          </div>
-          <div>
+          </div> */}
+          <div style={{ marginTop: "1rem" }}>
             {isLoading ? (
               <div>
                 {SHIMMER_ARRAY.map((no) => (
@@ -217,18 +226,34 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchProducts: (category, outlet, skip, take) =>
-      dispatch(
-        ProductAction.fetchProductList(
-          {
-            skip,
-            take,
-            outletID: `outlet::${outlet.id}`,
-            categoryID: `category::${category.id}`,
-          },
-          { sortBy: "name", sortDirection: "asc" }
-        )
-      ),
+    fetchProducts: (category, outlet, skip, take) => {
+      let bodyPayload = {};
+      if (category.isSearch === true) {
+        bodyPayload = {
+          skip,
+          take,
+          outletID: `outlet::${outlet.id}`,
+          sortBy: "name", 
+          sortDirection: "asc",
+          filters: [
+            {
+              id: 'search',
+              value: category.term,
+            },
+          ],
+        }
+      } else {
+        bodyPayload = {
+          skip,
+          take,
+          outletID: `outlet::${outlet.id}`,
+          categoryID: `category::${category.id}`,
+          sortBy: "name", 
+          sortDirection: "asc"
+        }
+      }
+      dispatch(ProductAction.fetchProductList(bodyPayload))
+    },
     fetchCategoryList: () => dispatch(ProductAction.fetchCategoryList()),
     setCategory: (category) =>
       dispatch(ProductAction.setSelectedCategory(category)),

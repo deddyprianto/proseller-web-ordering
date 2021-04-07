@@ -47,6 +47,7 @@ const EditProfile = loadable(() =>
 );
 const Categories = loadable(() => import("../../pages/AllCategory"));
 const Products = loadable(() => import("../../pages/Products"));
+const Search = loadable(() => import("../../pages/Search"));
 const ProductSearchResult = loadable(() => import("../../pages/ProductSearch"));
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -216,6 +217,7 @@ class Layout extends Component {
               component={Products}
             />
             <Route exact path={"/products"} component={ProductSearchResult} />
+            <Route exact path={"/search"} component={Search} />
             <Route exact path={"/payment"} component={Payment} />
             <Redirect from="*" to={!enableOrdering ? "/profile" : "/"} />
           </Switch>
