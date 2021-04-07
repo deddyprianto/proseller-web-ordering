@@ -19,8 +19,7 @@ export const AllCategory = ({
     const isParent = await dispatch(ProductAction.isParentCategory(category.sortKey));
 
     if (isParent === true) {
-      dispatch(ProductAction.setSelectedCategory(category));
-      history.push(`category/${category.id}`);
+      dispatch(ProductAction.fetchCategoryList(null, category.sortKey));
     } else {
       dispatch(ProductAction.setSelectedCategory(category));
       history.push(`category/${category.id}/products`);
@@ -28,7 +27,7 @@ export const AllCategory = ({
   };
 
   useEffect(() => {
-    dispatch(ProductAction.fetchCategoryList(null, childId));
+    dispatch(ProductAction.fetchCategoryList());
   }, []);
 
   useEffect(() => {
