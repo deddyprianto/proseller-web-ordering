@@ -87,6 +87,8 @@ function fetchProduct(category, outlet, skip, take) {
         fetchProductError(data || { message: "Failed to fetch product" })
       );
       return [];
+    } else {
+      return data;
     }
   };
 }

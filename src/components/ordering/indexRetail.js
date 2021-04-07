@@ -1,19 +1,20 @@
-import React, { Component } from "react";
+import React, { Component, Suspense } from "react";
 import { connect } from "react-redux";
-import Product from "./Product";
 // import { OutletAction } from "../../redux/actions/OutletAction";
-import { OrderAction } from "../../redux/actions/OrderAction";
+// import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
-import ModalProduct from "./ModalProduct";
-import LoaderCircle from "../loading/LoaderCircle";
 import config from "../../config";
-import UpdateProductModal from "./UpdateProductModal";
-import RetailHeaderCategory from "./RetailHeaderCategory";
 
-import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
+import { isEmptyObject } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
 import { getInitialProductValue } from "../../helpers/ProductHelper";
 import InfiniteScroll from "react-infinite-scroll-component";
+
+const Product = React.lazy(() => import("./Product"));
+const ModalProduct = React.lazy(() => import("./ModalProduct"));
+const UpdateProductModal = React.lazy(() => import("./UpdateProductModal"));
+const RetailHeaderCategory = React.lazy(() => import("./RetailHeaderCategory"));
+const LoaderCircle = React.lazy(() => import("../loading/LoaderCircle"));
 
 class Ordering extends Component {
   constructor(props) {
@@ -47,10 +48,6 @@ class Ordering extends Component {
     localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    window.addEventListener(
-      "scroll",
-      isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
-    );
 
     let defaultOutlet = this.props.defaultOutlet;
     if (defaultOutlet && defaultOutlet.id) {
@@ -129,12 +126,12 @@ class Ordering extends Component {
     try {
       await this.setState({ loading: true });
       const categories = await this.props.dispatch(
-        ProductAction.fetchCategoryProduct(outlet, { skip: 0, take: 1000 })
+        ProductAction.fetchCategoryProduct(outlet, { skip: 0, take: 50 })
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({
         categories: categories.data,
-        categoryLength: categories.dataLength,
+        categoryLength: categories.data.length,
         processing: true,
       });
       await this.getProductPreset(categories.data, outlet);
@@ -328,7 +325,7 @@ class Ordering extends Component {
     let data = await this.props.dispatch(
       ProductAction.fetchProduct(category, defaultOutlet, 0, 100)
     );
-    
+
     if (!data) return;
 
     await products.push({
@@ -342,6 +339,11 @@ class Ordering extends Component {
     });
 
     await this.setState({ indexLoaded: this.state.indexLoaded + 1 });
+
+    if (data.data.length === 0) {
+      console.log("called again");
+      this.fetchMoreData();
+    }
   };
 
   render() {
@@ -413,8 +415,7 @@ class Ordering extends Component {
         </div>
       );
     }
-    console.log(products.length, "productsproducts");
-    // console.log(categoryLength, 'productsproducts')
+
     return (
       <div
         className="section-tabs container-product"
@@ -439,27 +440,31 @@ class Ordering extends Component {
               getCurrency={(price) => this.getCurrency(price)}
             ></UpdateProductModal>
           )}
-        <ModalProduct
-          addNew={this.state.addNew}
-          selectedItem={this.state.selectedItem}
-        />
+        <Suspense fallback={<p>...</p>}>
+          <ModalProduct
+            addNew={this.state.addNew}
+            selectedItem={this.state.selectedItem}
+          />
+        </Suspense>
         <br /> <br /> <br />
         <div id="offset-header" />
-        <RetailHeaderCategory
-          categoryRefs={categoryRefs}
-          loadingSearching={(status) =>
-            this.setState({ loadingSearching: status })
-          }
-          finished={finished}
-          setLoading={(status) => this.setState({ loading: status })}
-          searchProduct={(query) => this.searchProduct(query)}
-          categories={this.props.categories || []}
-          selectedCategory={this.state.selectedCategory}
-          setSelectedCategory={(category) => {
-            this.props.dispatch(ProductAction.setSelectedCategory(category));
-            this.props.history.push(`category/${category.id}/products`);
-          }}
-        />
+        <Suspense fallback={<p>....</p>}>
+          <RetailHeaderCategory
+            categoryRefs={categoryRefs}
+            loadingSearching={(status) =>
+              this.setState({ loadingSearching: status })
+            }
+            finished={finished}
+            setLoading={(status) => this.setState({ loading: status })}
+            searchProduct={(query) => this.searchProduct(query)}
+            categories={this.props.categories || []}
+            selectedCategory={this.state.selectedCategory}
+            setSelectedCategory={(category) => {
+              this.props.dispatch(ProductAction.setSelectedCategory(category));
+              this.props.history.push(`category/${category.id}/products`);
+            }}
+          />
+        </Suspense>
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
@@ -467,67 +472,58 @@ class Ordering extends Component {
           <div className="tab-content">
             <div className="tab-pane active" id="h1-tab-products-2">
               <ul className="products">
-              <InfiniteScroll
-                dataLength={products.length}
-                next={this.fetchMoreData}
-                hasMore={categoryLength === products.length ? false : true}
-                loader={
-                  <p>has more</p>
-                }
-              >
-                {products.map((cat, i) => (
-                  <>
-                    <h3
-                      id={i}
-                      className="title font-color-theme"
-                      style={{
-                        fontSize: 14,
-                        marginLeft: 15,
-                        marginBottom: 10,
-                        paddingTop: 10,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {cat.category.name}
-                    </h3>
-                    {cat.items.map((item, j) => {
-                      return (
-                        item.product && (
-                          <Product
-                            labelButton={this.getLabelButton(item)}
-                            quantity={this.getQuantityProduct(item)}
-                            selectProduct={this.selectProduct}
-                            productConfig={this.props.theme}
-                            showUpdateModal={(item) =>
-                              this.setState({
-                                showUpdateModal: true,
-                                selectedProduct: item,
-                              })
-                            }
-                            key={j}
-                            item={item}
-                          />
-                        )
-                      );
-                    })}
-                  </>
-                ))}
-              </InfiniteScroll>
-
-                {/* {!loadingSearching && !loading && products.length === 0 && (
-                  <div>
-                    <img
-                      src={config.url_emptyImage}
-                      alt="is empty"
-                      style={{ marginTop: 30 }}
-                    />
-                    <h3 className="color text-center" style={{ fontSize: 16 }}>
-                      Oppss.. Item Not Found.
-                    </h3>
-                  </div>
-                )} */}
+                <InfiniteScroll
+                  dataLength={products.length}
+                  next={this.fetchMoreData}
+                  hasMore={categoryLength === products.length ? false : true}
+                  loader={
+                    <p className="font-color-theme text-center">
+                      Fetching more products...
+                    </p>
+                  }
+                >
+                  {products.map((cat, i) => (
+                    <>
+                      <h3
+                        id={i}
+                        className="title font-color-theme"
+                        style={{
+                          fontSize: 14,
+                          marginLeft: 15,
+                          marginBottom: 10,
+                          paddingTop: 10,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {cat.category.name}
+                      </h3>
+                      {cat.items.map((item, j) => {
+                        return (
+                          item.product && (
+                            <Suspense fallback={<p>...</p>}>
+                              <Product
+                                labelButton={this.getLabelButton(item)}
+                                quantity={this.getQuantityProduct(item)}
+                                selectProduct={this.selectProduct}
+                                productConfig={this.props.theme}
+                                showUpdateModal={(item) =>
+                                  this.setState({
+                                    showUpdateModal: true,
+                                    selectedProduct: item,
+                                  })
+                                }
+                                key={j}
+                                item={item}
+                              />
+                            </Suspense>
+                          )
+                        );
+                      })}
+                    </>
+                  ))}
+                </InfiniteScroll>
               </ul>
-              {/* {loading && <LoaderCircle />} */}
+              {loading && <Suspense fallback={<p>Loading...</p>}><LoaderCircle /></Suspense>}
             </div>
           </div>
         </div>
