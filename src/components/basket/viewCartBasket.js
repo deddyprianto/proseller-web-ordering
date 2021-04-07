@@ -314,7 +314,7 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              TOTAL
+              GRAND TOTAL
             </div>
             <div
               style={{
@@ -326,6 +326,23 @@ const ViewCartBasket = ({
               {getCurrency(basket.totalNettAmount)}
             </div>
           </div>
+
+          {
+              basket && basket.inclusiveTax > 0 &&
+              <div
+                style={{
+                  marginTop: -6,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+              >
+                <div style={{ opacity: 0.6, fontSize: 12, }} > Inclusive Tax {basket.outlet.taxPercentage}% </div>
+                <div style={{ opacity: 0.6, fontSize: 12, }} > {getCurrency(basket.inclusiveTax)} </div>
+              </div>
+            }
 
           {!(
             basket.outlet.outletType === "RESTO" &&
