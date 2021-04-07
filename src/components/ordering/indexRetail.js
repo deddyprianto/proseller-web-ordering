@@ -57,7 +57,7 @@ class Ordering extends Component {
 
     // await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
-    this.props.dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 10 }));
+    this.props.dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 20 }));
     await this.fetchCategories(defaultOutlet);
   };
 
@@ -135,8 +135,8 @@ class Ordering extends Component {
         categoryLength: categories.data.length,
         processing: true,
       });
-      await this.getProductPreset(categories.data, outlet);
       await this.setState({ loading: false });
+      await this.getProductPreset(categories.data, outlet);
     } catch (error) {}
   };
 
@@ -500,24 +500,22 @@ class Ordering extends Component {
                       </h3>
                       {cat.items.map((item, j) => {
                         return (
-                          item.product && (
-                            <Suspense fallback={<p>...</p>}>
-                              <Product
-                                labelButton={this.getLabelButton(item)}
-                                quantity={this.getQuantityProduct(item)}
-                                selectProduct={this.selectProduct}
-                                productConfig={this.props.theme}
-                                showUpdateModal={(item) =>
-                                  this.setState({
-                                    showUpdateModal: true,
-                                    selectedProduct: item,
-                                  })
-                                }
-                                key={j}
-                                item={item}
-                              />
-                            </Suspense>
-                          )
+                          <Suspense fallback={<p>...</p>}>
+                            <Product
+                              labelButton={this.getLabelButton(item)}
+                              quantity={this.getQuantityProduct(item)}
+                              selectProduct={this.selectProduct}
+                              productConfig={this.props.theme}
+                              showUpdateModal={(item) =>
+                                this.setState({
+                                  showUpdateModal: true,
+                                  selectedProduct: item,
+                                })
+                              }
+                              key={j}
+                              item={item}
+                            />
+                          </Suspense>
                         );
                       })}
                     </>

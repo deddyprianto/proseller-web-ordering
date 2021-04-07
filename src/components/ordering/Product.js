@@ -8,11 +8,13 @@ class Product extends Component {
   renderImageProduct = (item) => {
     const { productConfig } = this.props;
     if (
+      item.product &&
       item.product.defaultImageURL &&
       !isEmptyData(item.product.defaultImageURL)
     ) {
       return item.product.defaultImageURL;
     } else {
+      if (item.defaultImageURL) return item.defaultImageURL;
       if (
         productConfig &&
         productConfig.color &&
@@ -97,7 +99,7 @@ class Product extends Component {
 
   render() {
     const { item } = this.props;
-    if (!item.product) return null;
+    if (!item.product && item.itemType === "PRODUCT") return null;
     return (
       <li
         style={{
@@ -106,111 +108,163 @@ class Product extends Component {
         }}
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
-        <div
-          className={
-            item.product.orderingStatus === "UNAVAILABLE"
-              ? "product-unavailable"
-              : "product-outer"
-          }
-        >
+        {item.itemType === "PRODUCT" ? (
           <div
-            // className="product-inner product-card"
-            style={{
-              padding: 10,
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
+            className={
+              item.product.orderingStatus === "UNAVAILABLE"
+                ? "product-unavailable"
+                : "product-outer"
+            }
           >
             <div
-              className="product-image-wrapper"
+              // className="product-inner product-card"
               style={{
+                padding: 10,
                 display: "flex",
-                justifyContent: "center",
-                maxWidth: 180,
                 alignItems: "center",
-                padding: 0,
-                marginRight: 5,
+                cursor: "pointer",
               }}
             >
-              <span className="woocommerce-LoopProduct-link">
-                <img
-                  src={this.renderImageProduct(item)}
-                  style={{ borderRadius: 5 }}
-                  className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
-                  alt={item.product.name}
-                  title={item.product.name}
-                />
-              </span>
-            </div>
-            <div className="product-content-wrapper">
-              <div>
-                <h3
-                  style={{
-                    cursor: "pointer",
-                    marginTop: 10,
-                    fontSize: 14,
-                    lineHeight: "17px",
-                  }}
-                >
-                  <b className="text-muted color">
-                    {this.getQuantityProduct()}{" "}
-                  </b>
-                  <b className="font-color-theme">{item.product.name}</b>
-                </h3>
-                <div itemProp="description" style={{ marginTop: -5 }}>
-                  <div
-                    className="font-color-theme"
+              <div
+                className="product-image-wrapper"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  maxWidth: 180,
+                  alignItems: "center",
+                  padding: 0,
+                  marginRight: 5,
+                }}
+              >
+                <span className="woocommerce-LoopProduct-link">
+                  <img
+                    src={this.renderImageProduct(item)}
+                    style={{ borderRadius: 5 }}
+                    className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
+                    alt={item.product.name}
+                    title={item.product.name}
+                  />
+                </span>
+              </div>
+              <div className="product-content-wrapper">
+                <div>
+                  <h3
                     style={{
-                      maxHeight: "none",
-                      whiteSpace: "pre-line",
-                      fontSize: 10,
+                      cursor: "pointer",
+                      marginTop: 10,
+                      fontSize: 14,
+                      lineHeight: "17px",
                     }}
                   >
-                    {this.maskDescription(item.product.description)}
+                    <b className="text-muted color">
+                      {this.getQuantityProduct()}{" "}
+                    </b>
+                    <b className="font-color-theme">{item.product.name}</b>
+                  </h3>
+                  <div itemProp="description" style={{ marginTop: -5 }}>
+                    <div
+                      className="font-color-theme"
+                      style={{
+                        maxHeight: "none",
+                        whiteSpace: "pre-line",
+                        fontSize: 10,
+                      }}
+                    >
+                      {this.maskDescription(item.product.description)}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="yith_wapo_groups_container">
-                <div className="row" style={{ marginTop: 10 }}>
-                  {item.product.orderingStatus === "UNAVAILABLE" ? (
-                    <div className="col-lg-12 col-md-12 col-xs-12">
-                      <h3 className="text text-muted">
-                        <b>UNAVAILABLE</b>
-                      </h3>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="col-lg-12 col-md-12 col-xs-7">
-                        <b style={{ float: "left" }} className="price-product">
-                          {this.getCurrency(item.product.retailPrice)}
-                        </b>
+                <div className="yith_wapo_groups_container">
+                  <div className="row" style={{ marginTop: 10 }}>
+                    {item.product.orderingStatus === "UNAVAILABLE" ? (
+                      <div className="col-lg-12 col-md-12 col-xs-12">
+                        <h3 className="text text-muted">
+                          <b>UNAVAILABLE</b>
+                        </h3>
                       </div>
-                      <div
-                        onClick={() => this.validateOutlet()}
-                        className="col-lg-12 col-md-12 col-xs-4"
-                      >
-                        <div
-                          style={{
-                            float: "left",
-                            borderRadius: 5,
-                            width: 90,
-                            paddingLeft: 5,
-                            paddingRight: 5,
-                          }}
-                          rel="nofollow"
-                          className="button product_type_simple add_to_cart_button ajax_add_to_cart text-btn-theme"
-                        >
-                          {this.props.labelButton}
+                    ) : (
+                      <>
+                        <div className="col-lg-12 col-md-12 col-xs-7">
+                          <b
+                            style={{ float: "left" }}
+                            className="price-product"
+                          >
+                            {this.getCurrency(item.product.retailPrice)}
+                          </b>
                         </div>
-                      </div>
-                    </>
-                  )}
+                        <div
+                          onClick={() => this.validateOutlet()}
+                          className="col-lg-12 col-md-12 col-xs-4"
+                        >
+                          <div
+                            style={{
+                              float: "left",
+                              borderRadius: 5,
+                              width: 90,
+                              paddingLeft: 5,
+                              paddingRight: 5,
+                            }}
+                            rel="nofollow"
+                            className="button product_type_simple add_to_cart_button ajax_add_to_cart text-btn-theme"
+                          >
+                            {this.props.labelButton}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className={"product-outer"}>
+            <div
+              style={{
+                padding: 10,
+                display: "flex",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                className="product-image-wrapper"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  maxWidth: 180,
+                  alignItems: "center",
+                  padding: 0,
+                  marginRight: 5,
+                }}
+              >
+                <span className="woocommerce-LoopProduct-link">
+                  <img
+                    src={this.renderImageProduct(item)}
+                    style={{ borderRadius: 5 }}
+                    className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
+                    alt={item.name}
+                    title={item.name}
+                  />
+                </span>
+              </div>
+              <div className="product-content-wrapper">
+                <div>
+                  <h3
+                    style={{
+                      cursor: "pointer",
+                      fontSize: 16,
+                      marginTop: 10,
+                      color: this.props.color.primary,
+                      lineHeight: "17px",
+                    }}
+                  >
+                    <b>{item.name}</b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </li>
     );
   }
@@ -219,6 +273,7 @@ class Product extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     basket: state.order.basket,
+    color: state.theme.color,
     defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
   };

@@ -4,7 +4,6 @@ import Shimmer from "react-shimmer-effect";
 import config from "../../config";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import { OrderAction } from "../../redux/actions/OrderAction";
 import { connect } from "react-redux";
 import ModalDeliveryAddress from "./ModalDeliveryAddress";
 // import { findKey } from "lodash";
@@ -31,11 +30,10 @@ class DeliveryAddress extends Component {
         { value: "Other", label: "Other" },
       ],
       deliveryAddress: {},
-      backupDeliveryAddress: [],
       indexEdit: 0,
       isNew: false,
       getDeliveryAddress: false,
-      postalCodeIsValid: true,
+      postalCodeIsValid: true
     };
   }
 
@@ -44,8 +42,34 @@ class DeliveryAddress extends Component {
       localStorage.getItem(`${config.prefix}_getDeliveryAddress`) || false
     );
     this.setState({ getDeliveryAddress });
-    this.getDataDeliveryAddress();
+    await this.getDataDeliveryAddress();
+
+    await this.getLocationPinned()
   };
+
+  getLocationPinned = async () => {
+    let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
+    let backupAddress = localStorage.getItem(`${config.prefix}_backupAddress`);
+    console.log(backupAddress, 'backupAddress')
+    try {
+      if (coordinate !== null && coordinate !== "") {
+        coordinate = JSON.parse(coordinate)
+        if (backupAddress === "" || backupAddress === null || backupAddress === undefined) {
+          setTimeout(() => {
+            document.getElementById('modal-delivery-address').click()
+          }, 300)
+        } else {
+          let item = localStorage.getItem(`${config.prefix}_backupAddress`);
+          item = JSON.parse(item);
+          this.setState({isNew: false})
+          this.handleEdit(item.indexEdit, item, coordinate)
+          setTimeout(() => {
+            document.getElementById('modal-edit-address').click()
+          }, 300)
+        }
+      }
+    } catch(e) {}
+  }
 
   getDataDeliveryAddress = async () => {
     let deliveryAddress = encryptor.decrypt(
@@ -69,17 +93,7 @@ class DeliveryAddress extends Component {
           });
       }
 
-      await this.setState({
-        addressDelivery: addressDelivery.Data
-      });
-      
-      if (addressDelivery && addressDelivery.Data && addressDelivery.Data.length > 0) {
-        await this.setState({
-          backupDeliveryAddress: addressDelivery.Data.map((item) => ({
-            ...item,
-          }))
-        });
-      }
+      this.setState({ addressDelivery: addressDelivery.Data });
     }
     await this.handleGetProvider();
     this.setState({ loadingShow: false, countryCode: infoCompany.countryCode });
@@ -123,11 +137,72 @@ class DeliveryAddress extends Component {
   };
 
   handleAdd = async () => {
-    this.setState({ deliveryAddress: { address: {} }, isNew: true });
+    let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
+    let addressName = localStorage.getItem(`${config.prefix}_addressName`);
+    try {
+      let deliveryAddress = {}
+      coordinate = JSON.parse(coordinate)
+      if (coordinate && coordinate.detailAddress !== '') {
+        deliveryAddress.coordinate = coordinate;
+        deliveryAddress.addressName = addressName;
+        try {
+          const streetName = `${coordinate.userLocation}`;
+          deliveryAddress.street = streetName;
+        } catch (e) {}
+
+        try {
+          const postalCode = `${
+            coordinate.detailAddress.address_components.find(
+              item => item.types[0] === 'postal_code',
+            ).long_name
+          }`;
+          deliveryAddress.postalCode = postalCode;
+        } catch (e) {}
+        await this.setState({ deliveryAddress, isNew: true });
+      } else {
+        this.setState({ deliveryAddress: { address: {} }, isNew: true });
+      }
+    } catch(e) {
+      this.setState({ deliveryAddress: { address: {} }, isNew: true });
+    }
+
+    localStorage.removeItem(`${config.prefix}_backupAddress`);
+
   };
 
-  handleEdit = async (indexEdit, item) => {
-    item.setAddress = false;
+  handleEdit = async (indexEdit, item, setCoordinate = false) => {
+    item.setAddress = false
+
+    item.indexEdit = indexEdit;
+    localStorage.setItem(`${config.prefix}_backupAddress`, JSON.stringify(item));
+
+    if (item.coordinate !== undefined && !setCoordinate) {
+      localStorage.setItem(`${config.prefix}_locationPinned`, JSON.stringify(item.coordinate));
+    }
+
+    if (setCoordinate) {
+      let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
+      coordinate = JSON.parse(coordinate)
+      item.coordinate = coordinate
+      if (coordinate && coordinate.detailAddress !== '') {
+        try {
+          const streetName = `${coordinate.userLocation}`;
+          item.street = streetName;
+        } catch (e) {}
+
+        try {
+          const postalCode = `${
+            coordinate.detailAddress.address_components.find(
+              item => item.types[0] === 'postal_code',
+            ).long_name
+          }`;
+          item.postalCode = postalCode;
+        } catch (e) {}
+      }
+    }
+
+    localStorage.setItem(`${config.prefix}_addressName`, item.addressName);
+
     let countryCode = this.state.countryCode;
     let optionsProvince = this.state.optionsProvince;
     let province = optionsProvince.find((items) => {
@@ -150,19 +225,7 @@ class DeliveryAddress extends Component {
       // console.log(optionsCity)
       this.setState({ optionsCity, isLoading: false });
     }
-    this.setState({
-      deliveryAddress: item,
-      isNew: false,
-      indexEdit,
-    });
-  };
-
-  resetDeliveryAddress = () => {
-    const backup = this.state.backupDeliveryAddress;
-    this.setState({
-      addressDelivery: backup.map((item) => ({ ...item })),
-      postalCodeIsValid: true,
-    });
+    this.setState({ deliveryAddress: item, isNew: false, indexEdit });
   };
 
   handleDelete = async (data) => {
@@ -178,7 +241,7 @@ class DeliveryAddress extends Component {
       if (result.value) {
         this.setState({ isLoading: true });
         let addressDelivery = this.state.addressDelivery;
-
+        
         if (
           this.props.deliveryAddress &&
           this.props.deliveryAddress.address === data.address
@@ -222,20 +285,7 @@ class DeliveryAddress extends Component {
   };
 
   handleSelected = async (items) => {
-    localStorage.setItem(
-      `${config.prefix}_deliveryAddress`,
-      JSON.stringify(encryptor.encrypt(items))
-    );
-    
-    
-    // Save address info to server
-    if (items !== undefined) {
-      const payload = {
-        deliveryAddress: items
-      }
-      this.props.dispatch(OrderAction.updateCartInfo(payload))
-    }
-
+    localStorage.setItem(`${config.prefix}_deliveryAddress`, JSON.stringify(encryptor.encrypt(items)));
     await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
     this.props.dispatch({ type: "SET_DELIVERY_ADDRESS", payload: items });
     localStorage.removeItem(`${config.prefix}_getDeliveryAddress`);
@@ -245,41 +295,36 @@ class DeliveryAddress extends Component {
   handleChange = (field, value) => {
     let { deliveryAddress } = this.state;
     deliveryAddress[field] = value;
-    if (field !== "address") {
-      deliveryAddress.address = `${deliveryAddress.street || ""}, ${
-        deliveryAddress.unitNo || ""
-      }, ${deliveryAddress.postalCode || ""}`;
+    if(field !== "address"){
+      deliveryAddress.address = `${deliveryAddress.street || ""}, ${deliveryAddress.unitNo || ""}, ${deliveryAddress.postalCode || ""}`;
     } else {
       deliveryAddress.setAddress = true;
-    }
-    if (field === "street") {
+    } 
+    if(field === "street") {
       deliveryAddress.setAddress = false;
-      if (deliveryAddress.postalCode) {
-        this.validationPostalCode(
-          deliveryAddress.postalCode,
-          deliveryAddress.codePostal
-        );
+      if(deliveryAddress.postalCode){
+        this.validationPostalCode(deliveryAddress.postalCode, deliveryAddress.codePostal)
       }
     }
-    if (field === "postalCode") {
-      this.validationPostalCode(value, deliveryAddress.codePostal);
+    if(field === "postalCode"){
+      this.validationPostalCode(value, deliveryAddress.codePostal)
     }
     this.setState({ deliveryAddress });
   };
 
-  validationPostalCode(postalCode, codePostal) {
-    console.log(codePostal);
-    let check = true;
-    if (codePostal && Number(codePostal)) {
+  validationPostalCode(postalCode, codePostal){
+    console.log(codePostal)
+    let check = true
+    if(codePostal && Number(codePostal)){
       // if(postalCode.toString().substr(0,2) !== codePostal.toString().substr(0,2)) check = false
       // if(postalCode.toString().length !== codePostal.toString().length) check = false
-      if (postalCode.toString().length < 6) check = false;
-      if (postalCode.toString().length > 6) check = false;
+      if(postalCode.toString().length < 6) check = false
+      if(postalCode.toString().length > 6) check = false
     } else {
-      if (postalCode.toString().length !== 6) check = false;
+      if(postalCode.toString().length !== 6) check = false
     }
-    this.setState({ postalCodeIsValid: check });
-    return check;
+    this.setState({postalCodeIsValid: check})
+    return check
   }
 
   render() {
@@ -309,7 +354,6 @@ class DeliveryAddress extends Component {
           getDataDeliveryAddress={() => this.getDataDeliveryAddress()}
           handleChange={(field, value) => this.handleChange(field, value)}
           handleSelected={(update) => this.handleSelected(update)}
-          resetDeliveryAddress={() => this.resetDeliveryAddress()}
           getDeliveryAddress={getDeliveryAddress}
           addressDelivery={addressDelivery}
           deliveryAddress={deliveryAddress}
@@ -366,6 +410,7 @@ class DeliveryAddress extends Component {
                     Delivery Address
                   </div>
                   <Button
+                    id="modal-delivery-address"
                     className="button"
                     data-toggle="modal"
                     data-target="#delivery-address-modal"
@@ -378,8 +423,7 @@ class DeliveryAddress extends Component {
                     }}
                     onClick={() => this.handleAdd()}
                   >
-                    <i className="fa fa-plus" aria-hidden="true" /> Add New
-                    Address
+                    <i className="fa fa-plus" aria-hidden="true" /> Add New Address
                   </Button>
                 </div>
 
@@ -467,7 +511,7 @@ class DeliveryAddress extends Component {
                                   paddingRight: 5,
                                   borderRadius: 5,
                                   height: 40,
-                                  fontWeight: "bold",
+                                  fontWeight: "bold"
                                 }}
                                 onClick={() => this.handleEdit(key, items)}
                               >
@@ -479,12 +523,13 @@ class DeliveryAddress extends Component {
                                   disabled={
                                     (this.props.deliveryAddress &&
                                       items.address ===
-                                        this.props.deliveryAddress.address) ||
+                                        this.props.deliveryAddress
+                                          .address) ||
                                     false
                                   }
                                   style={{
                                     width: 150,
-                                    fontWeight: "bold",
+                                    fontWeight: "bold"
                                   }}
                                   onClick={() => this.handleSelected(items)}
                                 >
@@ -495,7 +540,7 @@ class DeliveryAddress extends Component {
                                   className="border-theme background-theme"
                                   style={{
                                     width: 150,
-                                    fontWeight: "bold",
+                                    fontWeight: "bold"
                                   }}
                                   onClick={() => this.handleDelete(items)}
                                 >
@@ -513,6 +558,7 @@ class DeliveryAddress extends Component {
           </div>
         </div>
         {this.state.isLoading ? Swal.showLoading() : Swal.close()}
+        <div data-toggle="modal" id="modal-edit-address" data-target="#delivery-address-modal"></div>
       </div>
     );
   }

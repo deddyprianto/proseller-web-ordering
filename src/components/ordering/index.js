@@ -137,8 +137,8 @@ class Ordering extends Component {
         ProductAction.fetchCategoryProduct(outlet)
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
-      await this.setState({ categories, processing: true });
-      await this.getProductPreset(categories, outlet);
+      await this.setState({ categories: categories.data, processing: true });
+      await this.getProductPreset(categories.data, outlet);
       await this.setState({ loading: false });
     } catch (error) {}
   };
@@ -319,6 +319,7 @@ class Ordering extends Component {
       isEmenu,
     } = this.state;
     let products = [];
+    
     const categoryRefs = categories.map(() => {
       const ref = React.createRef();
       return ref;
