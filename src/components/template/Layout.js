@@ -21,6 +21,7 @@ const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
 const Map = loadable(() => import("../../pages/Map/Map"));
+const ScanBarcode = loadable(() => import("../../pages/ScanBarcode"));
 const OutletSelection = loadable(() => import("../../pages/OutletSelection"));
 const StoreValueCard = loadable(() => import("../../pages/StoreValueCard"));
 const BuyStoreValueCard = loadable(() => import("../../components/svc/BuySVC"));
@@ -222,6 +223,7 @@ class Layout extends Component {
             <Route exact path={"/search"} component={Search} />
             <Route exact path={"/payment"} component={Payment} />
             <Route exact path={"/map"} component={Map} />
+            <Route exact path={"/scan-barcode"} component={ScanBarcode} />
             <Redirect from="*" to={!enableOrdering ? "/profile" : "/"} />
           </Switch>
           <div style={{ clear: "both" }}></div>
