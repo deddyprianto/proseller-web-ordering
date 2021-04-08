@@ -98,7 +98,6 @@ class Product extends Component {
   };
 
   goToDetailItem = (data) => {
-    console.log(data)
     this.props.dispatch(ProductAction.setSelectedCategory(data));
     this.props.history.push(`category/${data.id}/products`);
   }

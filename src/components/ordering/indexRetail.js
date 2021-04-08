@@ -347,6 +347,20 @@ class Ordering extends Component {
     }
   };
 
+  goToCategory = async (category) => {
+    const isParent = await this.props.dispatch(ProductAction.isParentCategory(category.sortKey));
+
+    if (isParent === true) {
+      this.props.history.push({
+        pathname: `category/${category.id}`,
+        state: category
+      });
+    } else {
+      this.props.dispatch(ProductAction.setSelectedCategory(category));
+      this.props.history.push(`category/${category.id}/products`);
+    }
+  }
+
   render() {
     let {
       categories,
@@ -460,10 +474,7 @@ class Ordering extends Component {
             searchProduct={(query) => this.searchProduct(query)}
             categories={this.props.categories || []}
             selectedCategory={this.state.selectedCategory}
-            setSelectedCategory={(category) => {
-              this.props.dispatch(ProductAction.setSelectedCategory(category));
-              this.props.history.push(`category/${category.id}/products`);
-            }}
+            setSelectedCategory={(category) => this.goToCategory(category)}
           />
         </Suspense>
         <div

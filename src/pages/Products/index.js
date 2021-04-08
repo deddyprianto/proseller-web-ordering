@@ -75,7 +75,7 @@ export const Products = ({
       }
     }
   }, [categories, selectedCategory, selectedOutlet]);
-
+  console.log(filteredProducts, 'filteredProducts')
   return (
     <div className={classes.container}>
       {showUpdateModal && (
@@ -201,6 +201,11 @@ export const Products = ({
                           );
                         })}
                     </ul>
+                    {
+                      filteredProducts === null || filteredProducts.length === 0 ? <h4 style={{ textAlign: 'center' }} className="customer-group-name">Sorry, products not found :(</h4>
+                      :
+                      null
+                    }
                   </div>
                 </div>
               </div>

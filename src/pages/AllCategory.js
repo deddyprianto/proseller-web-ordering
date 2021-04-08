@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Shimmer from "react-shimmer-effect";
 import { ProductAction } from "../redux/actions/ProductAction";
 import Cards from "../components/Cards";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 export const AllCategory = ({
   categories,
@@ -12,22 +12,41 @@ export const AllCategory = ({
   history,
 }) => {
   let { childId } = useParams();
+  const location = useLocation();
 
   const [filter, setFilter] = useState("");
+  const [isSubCategory, setSubCategory] = useState(false);
+  const [selectedCategory, setCategory] = useState(null);
   const [categoryList, setCategoryList] = useState(categories);
   const handleCategoryClick = async (category) => {
     const isParent = await dispatch(ProductAction.isParentCategory(category.sortKey));
 
     if (isParent === true) {
       dispatch(ProductAction.fetchCategoryList(null, category.sortKey));
+      setCategory(category)
+      setSubCategory(true)
     } else {
       dispatch(ProductAction.setSelectedCategory(category));
       history.push(`category/${category.id}/products`);
     }
   };
 
-  useEffect(() => {
+  const fetchAllCategory = () => {
     dispatch(ProductAction.fetchCategoryList());
+    setSubCategory(false)
+    setSubCategory(null)
+  }
+
+  useEffect(() => {
+    if (childId) {
+      if (location && location.state) {
+        setCategory(location.state)
+        setSubCategory(true)
+      }
+      dispatch(ProductAction.fetchCategoryList(null, `category::${childId}`));
+    } else {
+      dispatch(ProductAction.fetchCategoryList());
+    }
   }, []);
 
   useEffect(() => {
@@ -42,7 +61,12 @@ export const AllCategory = ({
 
   return (
     <div style={{ margin: "100px 3rem" }}>
-      <h2>Categories</h2>
+      <div style={{ display: 'flex' }}>
+        { isSubCategory && <i onClick={fetchAllCategory} style={{ marginRight: 10, fontSize: 23, marginRight: 15 }} className="fa fa-arrow-left" /> }
+        {
+           isSubCategory ? <h3>{selectedCategory.name}</h3> : <h3>Categories</h3>
+        }
+      </div>
       <input
         onChange={(e) => setFilter(e.target.value)}
         className="form-control"
