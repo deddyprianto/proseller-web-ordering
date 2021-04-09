@@ -101,7 +101,7 @@ function getDomainName() {
     const domainName =
       window.location.hostname !== "localhost"
         ? window.location.hostname
-        : "qiji-demo.proseller.io";
+        : "ordering-edgeworks-demo.proseller.io";
     try {
       fetch(process.env.REACT_APP_DOMAIN_MAPPING_URL, {
         method: "POST",

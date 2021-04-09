@@ -2,7 +2,7 @@ import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
 
 let config = {};
-let stage = "dev";
+let stage = "demo";
 let companyHost = "qiji";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""
@@ -56,10 +56,10 @@ if (process.env.REACT_APP_STAGE === "prod") {
   process.env.REACT_APP_STAGE === "dev" ||
   process.env.REACT_APP_STAGE === "demo"
 ) {
-  // config.url_payment = `https://payment${
-  //   stage !== "" ? "-" + stage : ""
-  // }.proseller.io/api/`;
-  config.url_payment = `https://payment.proseller-${stage}.com/api/`;
+  config.url_payment = `https://payment${
+    stage !== "" ? "-" + stage : ""
+  }.proseller.io/api/`;
+  // config.url_payment = `https://payment.proseller-${stage}.com/api/`;
 } else {
   config.url_payment = process.env.REACT_APP_URLPAYMENT;
 }
