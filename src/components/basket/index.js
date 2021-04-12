@@ -9,7 +9,8 @@ import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
+import { isEmptyArray, isEmptyObject, isEmptyData } from "../../helpers/CheckEmpty";
+import { StraightDistance } from "../../helpers/CalculateDistance";
 import loadable from "@loadable/component";
 import config from "../../config";
 
@@ -75,6 +76,8 @@ class Basket extends Component {
       nextDayIsAvailable: null,
       isEditDate: false,
       timeSlot: [],
+      latitude: 0,
+      longitude: 0
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -117,6 +120,23 @@ class Basket extends Component {
       } catch (error) {}
     }, 0);
     await this.getDataBasket();
+  };
+
+  getGeolocation = async (storeDetail) => {
+    let from = storeDetail.address || '-';
+    from += '&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4'
+    let url = `https://maps.google.com/maps/api/geocode/json?address=${from}`;
+    url = encodeURI(url)
+    
+    let response = await fetch(url);
+    response = await response.json();
+
+    try {
+      await this.setState({
+        latitude: response.results[0].geometry.location.lat,
+        longitude: response.results[0].geometry.location.lng,
+      });
+    } catch(e) {}
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -354,6 +374,8 @@ class Basket extends Component {
         btnBasketOrder: checkOperationalHours.status,
         countryCode: infoCompany.countryCode,
       });
+
+      this.getGeolocation(storeDetail)
 
       // check validate pick date time
       if (orderingMode !== "DINEIN") {
@@ -1074,6 +1096,48 @@ class Basket extends Component {
       orderActionTime,
     } = this.state;
     if (!storeDetail) return;
+
+    /*
+      Validate delivery provider mode & maximum distance
+    */ 
+    if (orderingMode === 'DELIVERY') {
+      if (this.state.provaiderDelivery) {
+        if (this.state.provaiderDelivery.calculationMode === 'DISTANCE') {
+          if (
+            isEmptyObject(this.props.deliveryAddress.coordinate) ||
+            isEmptyData(this.props.deliveryAddress.coordinate.latitude)
+          ) {
+            Swal.fire({
+              title: "Delivery Address Coordinate",
+              text: "Please pick the coordinate of your delivery address.",
+              icon: "warning",
+              confirmButtonText: `Got it`,
+            }).then(() => {
+              this.props.history.push("/delivery-address");
+            })
+            return false;
+          }
+
+          // calculate distance to outlet
+          const coordinate = {
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+          }
+          const distance = await StraightDistance(storeDetail, this.props.deliveryAddress.coordinate, coordinate);
+          console.log(distance, 'distance')
+          if (distance > Number(this.state.provaiderDelivery.maximumCoverage)) {
+            Swal.fire({
+              title: `Maximum delivery coverage is ${this.state.provaiderDelivery.maximumCoverage} km`,
+              text: "Your delivery address exceeds our maximum shipping limits.",
+              icon: "warning",
+              confirmButtonText: `Got it`,
+            });
+            return false;
+          }
+        }
+      }
+    }
+
 
     let orderingModeField =
       orderingMode === "DINEIN"

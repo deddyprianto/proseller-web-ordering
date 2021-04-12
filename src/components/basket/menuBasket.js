@@ -237,11 +237,32 @@ class MenuBasket extends Component {
             </div>
           }
 
+          {props.dataBasket.totalDiscountAmount > 0 && (
+            <React.Fragment>
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                  <div style={{ fontWeight: "bold" }}> Subtotal b/f Disc</div>
+                  <div style={{ fontWeight: "bold" }} >
+                    {`${this.props.getCurrency(props.dataBasket.totalGrossAmount)}`}
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                  <div style={{ fontWeight: "bold", color: 'red' }}> Discount</div>
+                  <div style={{ fontWeight: "bold", color: 'red' }} >
+                    {`- ${this.props.getCurrency(props.dataBasket.totalDiscountAmount)}`}
+                  </div>
+                </div>
+              </div>
+            </React.Fragment>
+          )}
+
           <div style={{ marginLeft: 10, marginRight: 10 }}>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
               <div style={{ fontWeight: "bold" }}> Subtotal </div>
               <div style={{ fontWeight: "bold" }} >
-                {`${this.props.getCurrency(props.dataBasket.totalGrossAmount)}`}
+                {`${this.props.getCurrency(props.dataBasket.totalGrossAmount - props.dataBasket.totalDiscountAmount)}`}
               </div>
             </div>
           </div>
@@ -255,6 +276,7 @@ class MenuBasket extends Component {
 
           {
             props.provaiderDelivery &&
+            props.provaiderDelivery.taxRuleID === 'EXC-TAX' &&
             props.orderingMode &&
             props.orderingMode === "DELIVERY" && (
             <div style={{ marginLeft: 10, marginRight: 10 }}>
@@ -292,40 +314,55 @@ class MenuBasket extends Component {
           )}
 
           {
-            props.dataBasket.totalDiscountAmount > 0 &&
-            <div style={{ marginLeft: 10, marginRight: 10 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
-                <div style={{ fontWeight: "bold" }}> Discount </div>
-                <div style={{ fontWeight: "bold" }} >
-                  {`${this.props.getCurrency(props.dataBasket.totalDiscountAmount)}`}
-                </div>
-              </div>
-            </div>
-          }
-
-          {
-            props.dataBasket.inclusiveTax > 0 &&
-            <div style={{ marginLeft: 10, marginRight: 10 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
-                <div style={{ fontWeight: "bold" }}> Tax Amount </div>
-                <div style={{ fontWeight: "bold" }} >
-                  {`${this.props.getCurrency(props.dataBasket.inclusiveTax)}`}
-                </div>
-              </div>
-            </div>
-          }
-
-          {
             props.dataBasket.exclusiveTax > 0 &&
             <div style={{ marginLeft: 10, marginRight: 10 }}>
               <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
-                <div style={{ fontWeight: "bold" }}> Tax Amount </div>
+                <div style={{ fontWeight: "bold" }}> Tax {props.dataBasket.outlet.taxPercentage}% </div>
                 <div style={{ fontWeight: "bold" }} >
                   {`${this.props.getCurrency(props.dataBasket.exclusiveTax)}`}
                 </div>
               </div>
             </div>
           }
+
+{
+            props.provaiderDelivery &&
+            props.provaiderDelivery.taxRuleID !== 'EXC-TAX' &&
+            props.orderingMode &&
+            props.orderingMode === "DELIVERY" && (
+            <div style={{ marginLeft: 10, marginRight: 10 }}>
+              {
+                props.provaiderDelivery ? (
+                  props.provaiderDelivery.deliveryFeeFloat < 0 ? (
+                  <div className="small text-left text-warning-theme" style={{ 
+                    lineHeight: "17px", textAlign: "center", marginTop: 10 
+                  }}>
+                    Delivery is not available in your area.
+                  </div>
+                  ) : props.provaiderDelivery.deliveryFee ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div style={{ fontWeight: "bold" }}>
+                        Delivery Fee
+                      </div>
+                      <div
+                        style={{ fontWeight: "bold" }}
+                      >{`${props.provaiderDelivery.deliveryFee}`}</div>
+                    </div>
+                  ) : (
+                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                      Checking delivery availability...
+                    </div>
+                  )
+                ) : null
+              }
+            </div>
+          )}
         </div>
 
         {
@@ -340,7 +377,7 @@ class MenuBasket extends Component {
                   marginRight: 10,
                 }}
               >
-                <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} > TOTAL </div>
+                <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} > GRAND TOTAL </div>
                 <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} >
                   {
                     this.props.getCurrency(
@@ -349,6 +386,29 @@ class MenuBasket extends Component {
                   }
                 </div>
               </div>
+              {
+                props.dataBasket && props.dataBasket.inclusiveTax > 0 &&
+                <div
+                  style={{
+                    marginTop: -6,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginLeft: 10,
+                    marginRight: 10,
+                  }}
+                >
+                  <div style={{ opacity: 0.6, fontSize: 12, }} > Inclusive Tax {props.dataBasket.outlet.taxPercentage}% </div>
+                  <div style={{ opacity: 0.6, fontSize: 12, }} >
+                    {
+                      this.props.getCurrency(
+                        props.dataBasket.inclusiveTax
+                      )
+                    }
+                  </div>
+                </div>
+              }
+              
               {props.dataBasket.status === "PROCESSING" ||
               props.dataBasket.status === "READY_FOR_COLLECTION" ||
               props.dataBasket.status === "READY_FOR_DELIVERY" ||

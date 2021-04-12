@@ -20,6 +20,8 @@ const DetailMembership = loadable(() => import("../../pages/DetailMembership"));
 const History = loadable(() => import("../../pages/History"));
 const Inbox = loadable(() => import("../../pages/Inbox"));
 const Voucher = loadable(() => import("../../pages/Voucher"));
+const Map = loadable(() => import("../../pages/Map/Map"));
+const ScanBarcode = loadable(() => import("../../pages/ScanBarcode"));
 const OutletSelection = loadable(() => import("../../pages/OutletSelection"));
 const StoreValueCard = loadable(() => import("../../pages/StoreValueCard"));
 const BuyStoreValueCard = loadable(() => import("../../components/svc/BuySVC"));
@@ -46,6 +48,9 @@ const EditProfile = loadable(() =>
   import("../../components/profile/EditProfile")
 );
 const Categories = loadable(() => import("../../pages/AllCategory"));
+const Products = loadable(() => import("../../pages/Products"));
+const Search = loadable(() => import("../../pages/Search"));
+const ProductSearchResult = loadable(() => import("../../pages/ProductSearch"));
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
@@ -207,11 +212,33 @@ class Layout extends Component {
               />
             )}
             <Route exact path={"/history"} component={History} />
-            <Route exact path={"/categories"} component={Categories} />
+            <Route exact path={"/category"} component={Categories} />
+            <Route exact path={"/category/:childId"} component={Categories} />
+            <Route
+              exact
+              path={"/category/:categoryId/products"}
+              component={Products}
+            />
+            <Route exact path={"/products"} component={ProductSearchResult} />
+            <Route exact path={"/search"} component={Search} />
             <Route exact path={"/payment"} component={Payment} />
+            <Route exact path={"/map"} component={Map} />
+            <Route exact path={"/scan-barcode"} component={ScanBarcode} />
             <Redirect from="*" to={!enableOrdering ? "/profile" : "/"} />
           </Switch>
           <div style={{ clear: "both" }}></div>
+          <span
+            data-toggle="modal"
+            data-target="#detail-product-modal"
+            id="open-modal-product"
+            style={{ color: "white" }}
+          ></span>
+          <span
+            data-toggle="modal"
+            data-target="#ordering-mode"
+            id="open-modal-ordering-mode"
+            style={{ color: "white" }}
+          ></span>
         </div>
         {isEmenu ? <FooterEmenu /> : <FooterWebOrdering />}
       </div>

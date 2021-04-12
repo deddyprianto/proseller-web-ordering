@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import config from "../../config";
 
 const WebOrderingCategories = ({
   categories,
   finished,
-  loadingSearching,
-  searchProduct,
   selectedCategory,
   setSelectedCategory,
 }) => {
@@ -76,97 +75,65 @@ const WebOrderingCategories = ({
 
   return (
     <ul
-      id="header-categories"
       className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position background-theme"
       style={{
+        marginTop: 20,
         marginBottom: 0,
         borderBottom: "0px solid #DCDCDC",
       }}
     >
-      {!openSearch ? (
-        <React.Fragment>
-          {categories.map((item, i) => (
-            <li
-              id={`cat-${i}`}
-              style={{ cursor: "pointer" }}
-              key={i}
-              onClick={() => setSelectedCategory(i)}
-              className={
-                i === selectedCategory
-                  ? "nav-item category-item active color"
-                  : "nav-item category-item"
-              }
-            >
+      <React.Fragment>
+        <li style={{ cursor: "pointer", marginRight: 15, width: 80, maxWidth: 80 }} className="nav-item category-item">
+          <div className={"color-active"}>
+            <Link to="/category">
               <div
-                className={
-                  i === selectedCategory ? "color-active" : "color-nonactive"
-                }
-                style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
+                style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6 }}
+              >
+                <i className="fa fa-th-large font-color-theme" style={{ fontSize: '6rem', marginTop: 5 }} />
+              </div>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  marginTop: 5,
+                  display: 'block',
+                  lineHeight: 1.8
+                }}
+              >
+                All Category
+              </span>
+            </Link>
+          </div>
+        </li>
+        {categories.map((item, i) => (
+          <li
+            id={`cat-${i}`}
+            lassName="nav-item category-item"
+            style={{ cursor: "pointer", marginRight: 15, width: 80, maxWidth: 80, }}
+            key={i}
+            onClick={() => {setSelectedCategory(item)}}
+          >
+            <div className={"color-active"}>
+              <div
+                style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <img style={{ maxHeight: 75, }} src={item.defaultImageURL || config.image_placeholder} />
+              </div>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  marginTop: 5,
+                  display: 'block',
+                  lineHeight: 1.8
+                }}
               >
                 {item.name}
-              </div>
-              {i === selectedCategory && (
-                <div
-                  className="profile-dashboard"
-                  style={{
-                    height: 4,
-                    marginLeft: -10,
-                    position: "absolute",
-                    bottom: -6,
-                    zIndex: 10,
-                    width: "100%",
-                  }}
-                />
-              )}
-            </li>
-          ))}
-        </React.Fragment>
-      ) : (
-        <div
-          style={{ display: "flex", alignItems: "center", marginRight: "5rem" }}
-        >
-          <input
-            onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
-            style={{ height: 35, fontSize: 14, width: "100%" }}
-            id="input-txt"
-            type="text"
-            autoFocus={true}
-            placeholder="Search your product here..."
-          />
-          <i
-            onClick={() => search(querySearch)}
-            style={{ fontSize: 25, cursor: "pointer" }}
-            className="fa fa-search color"
-          ></i>
-        </div>
-      )}
-      <div
-        className="search-button-absolute background-theme"
-        id="search-button-category"
-        style={{ height: 40, marginTop: -11, width: 40 }}
-      >
-        {openSearch ? (
-          <i
-            className="search_icon fa fa-close color"
-            onClick={() => {
-              setOpenSearch(false);
-              searchProduct("");
-            }}
-            style={{ fontSize: 25, cursor: "pointer", marginTop: 5 }}
-          ></i>
-        ) : (
-          <i
-            onClick={() => {
-              setOpenSearch(true);
-              setTimeout(() => {
-                document.getElementById("input-txt").classList.add("active");
-              }, 100);
-            }}
-            style={{ fontSize: 25, cursor: "pointer" }}
-            className="fa fa-search color"
-          ></i>
-        )}
-      </div>
+              </span>
+            </div>
+          </li>
+        ))}
+      </React.Fragment>
     </ul>
   );
 };
@@ -182,3 +149,4 @@ WebOrderingCategories.propTypes = {
 };
 
 export default WebOrderingCategories;
+

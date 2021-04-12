@@ -1,20 +1,21 @@
-import React, { Component } from "react";
+import React, { Component, Suspense } from "react";
 import { connect } from "react-redux";
-import Product from "./Product";
 // import { OutletAction } from "../../redux/actions/OutletAction";
-import { OrderAction } from "../../redux/actions/OrderAction";
+// import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
-import ModalProduct from "./ModalProduct";
-import LoaderCircle from "../loading/LoaderCircle";
 import config from "../../config";
-import UpdateProductModal from "./UpdateProductModal";
-import WebOrderingCategories from "./WebOrderingCategories";
-import EMenuCategories from "./EMenuCategories";
 
-import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
+import { isEmptyObject } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
 import { getInitialProductValue } from "../../helpers/ProductHelper";
-// const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import InfiniteScroll from "react-infinite-scroll-component";
+
+const Product = React.lazy(() => import("./Product"));
+const ModalProduct = React.lazy(() => import("./ModalProduct"));
+const UpdateProductModal = React.lazy(() => import("./UpdateProductModal"));
+const RetailHeaderCategory = React.lazy(() => import("./RetailHeaderCategory"));
+const SearchBox = React.lazy(() => import("./SearchBox"));
+const LoaderCircle = React.lazy(() => import("../loading/LoaderCircle"));
 
 class Ordering extends Component {
   constructor(props) {
@@ -34,9 +35,11 @@ class Ordering extends Component {
       loadingSearching: false,
       offlineMessage: "",
       isEmenu: window.location.pathname.includes("emenu"),
-
       showUpdateModal: false,
       addNew: false,
+      categoryLength: 0,
+      indexLoaded: 0,
+      isFetching: false,
     };
   }
 
@@ -46,18 +49,15 @@ class Ordering extends Component {
     localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    window.addEventListener(
-      "scroll",
-      isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
-    );
 
     let defaultOutlet = this.props.defaultOutlet;
     if (defaultOutlet && defaultOutlet.id) {
       defaultOutlet = config.getValidation(defaultOutlet);
     }
 
-    await this.props.dispatch(OrderAction.getCart());
+    // await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
+    this.props.dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 20 }, null));
     await this.fetchCategories(defaultOutlet);
   };
 
@@ -94,23 +94,16 @@ class Ordering extends Component {
   }
 
   handleScrollWebOrdering = (e) => {
-    var header = document.getElementById("header-categories");
-    var headerCWO = document.getElementById("masthead");
-    var headerOffset = document.getElementById("offset-header");
-    try {
-      if (headerOffset !== undefined && headerOffset.offsetTop !== null) {
-        var sticky = headerOffset.offsetTop;
-        if (window.pageYOffset > sticky) {
-          header.classList.remove("relative-position");
-          header.classList.add("sticky");
-          header.style.top = `${headerCWO.offsetHeight - 5}px`;
-        } else {
-          header.classList.remove("sticky");
-          header.classList.add("relative-position");
-          header.style.top = 0;
-        }
-      }
-    } catch (e) {}
+    if (
+      Math.ceil(window.innerHeight + document.documentElement.scrollTop) !==
+        document.documentElement.offsetHeight ||
+      this.state.isFetching
+    ) {
+      return;
+    }
+    this.setState({ isFetching: true });
+    this.fetchMoreData();
+    console.log(this.state.isFetching, "this.state.isFetching");
   };
 
   handleScrollEmenu = (e) => {
@@ -134,12 +127,16 @@ class Ordering extends Component {
     try {
       await this.setState({ loading: true });
       const categories = await this.props.dispatch(
-        ProductAction.fetchCategoryProduct(outlet)
+        ProductAction.fetchCategoryProduct(outlet, { skip: 0, take: 50 })
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
-      await this.setState({ categories: categories.data, processing: true });
-      await this.getProductPreset(categories.data, outlet);
+      await this.setState({
+        categories: categories.data,
+        categoryLength: categories.data.length,
+        processing: true,
+      });
       await this.setState({ loading: false });
+      await this.getProductPreset(categories.data, outlet);
     } catch (error) {}
   };
 
@@ -149,25 +146,35 @@ class Ordering extends Component {
 
   getProductPreset = async (categories, outlet) => {
     await this.setState({ products: [] });
-
     let products = [];
     let i = 0;
 
-    const productListWithCategory = categories.map((category) => ({
-      category,
-      items: [],
-    }));
+    // const productListWithCategory = categories.map((category) => ({
+    //   category,
+    //   items: [],
+    // }));
+    const productListWithCategory = [
+      {
+        category: categories[0],
+        items: [],
+      },
+    ];
 
+    categories[0].isLoaded = true;
     this.setState({
+      categories,
+      indexLoaded: 0,
       products: productListWithCategory,
       productsBackup: productListWithCategory,
     });
 
     products = productListWithCategory;
 
-    while (i < categories.length && this.state.processing) {
-      let data = await this.props.dispatch(
-        ProductAction.fetchProduct(categories[i], outlet, 0, 10)
+    let data = {};
+    do {
+      data = {};
+      data = await this.props.dispatch(
+        ProductAction.fetchProduct(categories[i], outlet, 0, 100)
       );
 
       products[i] = {
@@ -180,19 +187,8 @@ class Ordering extends Component {
         productsBackup: products,
       });
 
-      if (data.dataLength > 0) {
-        let j = 10;
-        while (j <= data.dataLength && this.state.processing) {
-          let product = await this.props.dispatch(
-            ProductAction.fetchProduct(categories[i], outlet, j, 10)
-          );
-          products[i].items = [...products[i].items, ...product.data];
-          await this.setState({ products, productsBackup: products });
-          j += 10;
-        }
-      }
       i++;
-    }
+    } while (data.dataLength < 20);
 
     this.props.dispatch({
       type: CONSTANT.LIST_CATEGORY,
@@ -309,17 +305,72 @@ class Ordering extends Component {
     }
   };
 
+  fetchMoreData = async () => {
+    const { defaultOutlet, products } = this.state;
+    let { categories, indexLoaded } = this.state;
+
+    indexLoaded = categories.findIndex((item) => item.isLoaded === undefined);
+    const category = categories[indexLoaded];
+
+    if (!category) return;
+
+    const find = await products.find(
+      (item) => item.category.id === category.id
+    );
+
+    if (find !== undefined) return;
+
+    categories[indexLoaded].isLoaded = true;
+    await this.setState({ categories });
+
+    let data = await this.props.dispatch(
+      ProductAction.fetchProduct(category, defaultOutlet, 0, 100)
+    );
+
+    if (!data) return;
+
+    await products.push({
+      category: category,
+      items: data.data,
+    });
+
+    await this.setState({
+      products,
+      productsBackup: products,
+    });
+
+    await this.setState({ indexLoaded: this.state.indexLoaded + 1 });
+
+    if (data.data.length === 0) {
+      console.log("called again");
+      this.fetchMoreData();
+    }
+  };
+
+  goToCategory = async (category) => {
+    const isParent = await this.props.dispatch(ProductAction.isParentCategory(category.sortKey));
+
+    if (isParent === true) {
+      this.props.history.push({
+        pathname: `category/${category.id}`,
+        state: category
+      });
+    } else {
+      this.props.dispatch(ProductAction.setSelectedCategory(category));
+      this.props.history.push(`category/${category.id}/products`);
+    }
+  }
+
   render() {
     let {
       categories,
       loading,
       finished,
-      loadingSearching,
       offlineMessage,
       isEmenu,
+      categoryLength,
     } = this.state;
     let products = [];
-    
     const categoryRefs = categories.map(() => {
       const ref = React.createRef();
       return ref;
@@ -403,22 +454,17 @@ class Ordering extends Component {
               getCurrency={(price) => this.getCurrency(price)}
             ></UpdateProductModal>
           )}
-        <ModalProduct
-          addNew={this.state.addNew}
-          selectedItem={this.state.selectedItem}
-        />
+        <Suspense fallback={<p>...</p>}>
+          <ModalProduct
+            addNew={this.state.addNew}
+            selectedItem={this.state.selectedItem}
+          />
+        </Suspense>
         <br /> <br /> <br />
         <div id="offset-header" />
-        {isEmenu ? (
-          <EMenuCategories
-            categories={categories}
-            selectedCategory={this.state.selectedCategory}
-            setSelectedCategory={(category) =>
-              this.setState({ selectedCategory: category })
-            }
-          ></EMenuCategories>
-        ) : (
-          <WebOrderingCategories
+        <Suspense fallback={<p>....</p>}>
+          <SearchBox />
+          <RetailHeaderCategory
             categoryRefs={categoryRefs}
             loadingSearching={(status) =>
               this.setState({ loadingSearching: status })
@@ -426,13 +472,11 @@ class Ordering extends Component {
             finished={finished}
             setLoading={(status) => this.setState({ loading: status })}
             searchProduct={(query) => this.searchProduct(query)}
-            categories={categories}
+            categories={this.props.categories || []}
             selectedCategory={this.state.selectedCategory}
-            setSelectedCategory={(category) =>
-              this.setState({ selectedCategory: category })
-            }
-          ></WebOrderingCategories>
-        )}
+            setSelectedCategory={(category) => this.goToCategory(category)}
+          />
+        </Suspense>
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           style={{ marginTop: isEmenu ? 35 : 5 }}
@@ -440,12 +484,20 @@ class Ordering extends Component {
           <div className="tab-content">
             <div className="tab-pane active" id="h1-tab-products-2">
               <ul className="products">
-                {!loadingSearching &&
-                  products.map((cat, i) => (
+                <InfiniteScroll
+                  dataLength={products.length}
+                  next={this.fetchMoreData}
+                  hasMore={categoryLength === products.length ? false : true}
+                  loader={
+                    <p className="font-color-theme text-center">
+                      Fetching more products...
+                    </p>
+                  }
+                >
+                  {products.map((cat, i) => (
                     <>
                       <h3
                         id={i}
-                        ref={categoryRefs[i]}
                         className="title font-color-theme"
                         style={{
                           fontSize: 14,
@@ -458,38 +510,12 @@ class Ordering extends Component {
                         {cat.category.name}
                       </h3>
                       {cat.items.map((item, j) => {
-                        const { salesPeriods, restricSalesPeriod } = item;
-                        if (restricSalesPeriod) {
-                          console.log("restrictingSales period");
-                          const isEnabled = salesPeriods.find((period) => {
-                            const timeArray = period.value.split("-");
-                            const startTime = timeArray[0];
-                            const endTime = timeArray[1];
-                            const startHour = parseInt(startTime.split(":")[0]);
-                            const startMinute = parseInt(
-                              startTime.split(":")[1]
-                            );
-                            const endHour = parseInt(endTime.split(":")[0]);
-                            const endMinute = parseInt(endTime.split(":")[1]);
-                            const start = startHour * 60 + startMinute;
-                            const end =
-                              startHour > endHour
-                                ? endHour * 60 + endMinute + 24 * 60
-                                : endHour * 60 + endMinute;
-                            const date = new Date();
-                            const now =
-                              date.getHours() * 60 + date.getMinutes();
-                            return now <= end && now >= start;
-                          });
-                          if (!isEnabled) {
-                            return null;
-                          }
-                        }
                         return (
-                          item.product && (
+                          <Suspense fallback={<p>...</p>}>
                             <Product
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
+                              history={this.props.history}
                               selectProduct={this.selectProduct}
                               productConfig={this.props.theme}
                               showUpdateModal={(item) =>
@@ -501,26 +527,18 @@ class Ordering extends Component {
                               key={j}
                               item={item}
                             />
-                          )
+                          </Suspense>
                         );
                       })}
                     </>
                   ))}
-
-                {!loadingSearching && !loading && products.length === 0 && (
-                  <div>
-                    <img
-                      src={config.url_emptyImage}
-                      alt="is empty"
-                      style={{ marginTop: 30 }}
-                    />
-                    <h3 className="color text-center" style={{ fontSize: 16 }}>
-                      Oppss.. Item Not Found.
-                    </h3>
-                  </div>
-                )}
+                </InfiniteScroll>
               </ul>
-              {loading && <LoaderCircle />}
+              {loading && (
+                <Suspense fallback={<p>Loading...</p>}>
+                  <LoaderCircle />
+                </Suspense>
+              )}
             </div>
           </div>
         </div>
@@ -537,6 +555,7 @@ const mapStateToProps = (state, ownProps) => {
     theme: state.theme,
     productsSearch: state.order.productsSearch,
     companyInfo: state.masterdata.companyInfo.data,
+    categories: state.product.categoryList,
   };
 };
 
