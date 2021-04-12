@@ -93,14 +93,14 @@ class Product extends Component {
       if (length < 47) {
         return description;
       }
-      return description.substring(0, 47) + "...";
+      return description;
     }
   };
 
   goToDetailItem = (data) => {
     this.props.dispatch(ProductAction.setSelectedCategory(data));
     this.props.history.push(`category/${data.id}/products`);
-  }
+  };
 
   render() {
     const { item } = this.props;
@@ -113,7 +113,57 @@ class Product extends Component {
         }}
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
-        {item.itemType === "PRODUCT" ? (
+        {item.itemType !== "PRODUCT" ? (
+          <div
+            className={"product-outer"}
+            onClick={() => this.goToDetailItem(item)}
+          >
+            <div
+              style={{
+                padding: 10,
+                display: "flex",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                className="product-image-wrapper"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  maxWidth: 180,
+                  alignItems: "center",
+                  padding: 0,
+                  marginRight: 5,
+                }}
+              >
+                <span className="woocommerce-LoopProduct-link">
+                  <img
+                    src={this.renderImageProduct(item)}
+                    style={{ borderRadius: 5 }}
+                    className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
+                    alt={item.name}
+                    title={item.name}
+                  />
+                </span>
+              </div>
+              <div className="product-content-wrapper">
+                <div>
+                  <h3
+                    style={{
+                      cursor: "pointer",
+                      fontSize: 16,
+                      marginTop: 10,
+                      color: this.props.color.primary,
+                      lineHeight: "17px",
+                    }}
+                  >
+                    <b>{item.name}</b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
           <div
             className={
               item.product.orderingStatus === "UNAVAILABLE"
@@ -166,7 +216,10 @@ class Product extends Component {
                     </b>
                     <b className="font-color-theme">{item.product.name}</b>
                   </h3>
-                  <div itemProp="description" style={{ marginTop: -5 }}>
+                  <div
+                    itemProp="description"
+                    style={{ marginTop: -5, height: "auto" }}
+                  >
                     <div
                       className="font-color-theme"
                       style={{
@@ -218,53 +271,6 @@ class Product extends Component {
                       </>
                     )}
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className={"product-outer"} onClick={() => this.goToDetailItem(item)}>
-            <div
-              style={{
-                padding: 10,
-                display: "flex",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                className="product-image-wrapper"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  maxWidth: 180,
-                  alignItems: "center",
-                  padding: 0,
-                  marginRight: 5,
-                }}
-              >
-                <span className="woocommerce-LoopProduct-link">
-                  <img
-                    src={this.renderImageProduct(item)}
-                    style={{ borderRadius: 5 }}
-                    className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
-                    alt={item.name}
-                    title={item.name}
-                  />
-                </span>
-              </div>
-              <div className="product-content-wrapper">
-                <div>
-                  <h3
-                    style={{
-                      cursor: "pointer",
-                      fontSize: 16,
-                      marginTop: 10,
-                      color: this.props.color.primary,
-                      lineHeight: "17px",
-                    }}
-                  >
-                    <b>{item.name}</b>
-                  </h3>
                 </div>
               </div>
             </div>

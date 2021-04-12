@@ -1,5 +1,5 @@
 import { Header, jsonToQueryString } from "../helpers";
-import config from '../config'
+import config from "../config";
 import { lsLoad } from "../helpers/localStorage";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -12,7 +12,7 @@ function api(method, params, path, token) {
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
   const header = new Header(params);
-  let url = `${config.url_product}${path}`;
+  let url = `${config.getUrlProduct()}${path}`;
   let configuration = {
     headers: header,
     method: method,

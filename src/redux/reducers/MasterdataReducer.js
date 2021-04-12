@@ -9,6 +9,7 @@ const defaultState = {
     isFetching: false,
     errors: false,
   },
+  domainName: localStorage.getItem(`apiDomainName`) || null,
 };
 
 export default function reducer(state = defaultState, action) {
@@ -25,6 +26,12 @@ export default function reducer(state = defaultState, action) {
           data: null,
           isFetching: true,
         },
+      };
+    case "SET_DOMAIN_NAME":
+      localStorage.setItem(`apiDomainName`, action.payload);
+      return {
+        ...state,
+        domainName: action.payload,
       };
     case "GET_COMPANY_INFO_SUCCESS":
       return {
@@ -45,7 +52,10 @@ export default function reducer(state = defaultState, action) {
         },
       };
     case CONSTANT.DEFAULT_OUTLET:
-      localStorage.setItem(`${config.prefix}_defaultOutlet`,JSON.stringify(encryptor.encrypt(action.data)));
+      localStorage.setItem(
+        `${config.prefix}_defaultOutlet`,
+        JSON.stringify(encryptor.encrypt(action.data))
+      );
       return {
         ...state,
         defaultOutlet: action.data,

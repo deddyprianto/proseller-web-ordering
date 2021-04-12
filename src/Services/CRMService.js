@@ -13,7 +13,7 @@ async function api(method, params, path, token = null) {
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
   let header = new Header(params);
-  let url = `${config.url_crm}${path}`;
+  let url = `${config.getUrlCrm()}${path}`;
   let configuration = {
     headers: header,
     method: method,
