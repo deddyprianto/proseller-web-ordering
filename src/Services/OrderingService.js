@@ -13,7 +13,7 @@ function api(method, params, path, token = null) {
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
   const header = new Header(params);
-  let url = `${config.url_ordering}${path}`;
+  let url = `${config.getUrlOrdering()}${path}`;
   let configuration = {
     headers: header,
     method: method,
@@ -28,10 +28,10 @@ function api(method, params, path, token = null) {
 
   try {
     return fetch(url, configuration)
-    .then((response) => response.json())
-    .catch(function () {
-      return { ResultCode: 400, message: "fetch api error" };
-    });
+      .then((response) => response.json())
+      .catch(function () {
+        return { ResultCode: 400, message: "fetch api error" };
+      });
   } catch (error) {
     return { ResultCode: 400, message: error };
   }

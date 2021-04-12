@@ -1,7 +1,7 @@
 {
   "name": "web-ordering-crm",
   "version": "1.0.0",
-  "homepage": "/emenu",
+  "homepage": "/",
   "private": true,
   "dependencies": {
     "@loadable/component": "^5.13.1",
@@ -57,10 +57,12 @@
     "start": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e local react-scripts start",
     "build": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e local react-scripts build",
     "webordering-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://prod-web-ordering-1-0 --acl public-read",
-    "webordering-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync build/ s3://demo-web-ordering-1-0 --acl public-read",
+    "webordering-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync --profile demo build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
+    "webordering-demo-cf": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync --profile prod build/ s3://ew-demo-web-ordering-1-2 --acl public-read",
     "webordering-dev": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e dev react-scripts build && aws s3 sync --profile dev build/ s3://ew-dev-web-ordering-1-0 --acl public-read",
     "emenu-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://emenu-1-0 --acl public-read",
     "emenu-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync build/ s3://demo-emenu-1-0 --acl public-read",
+    "emenu-demo-cf": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync --profile prod build/ s3://ew-demo-emenu-1-2 --acl public-read",
     "emenu-dev": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e dev react-scripts build && aws s3 sync build/ s3://ew-dev-emenu-1-0 --acl public-read",
     "order-demo.auntieannesg.com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e order-demo.auntieannesg.com react-scripts build && aws s3 sync build/ s3://order-demo.auntieannesg.com --acl public-read",
     "member.pantry-magic.id": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e member.pantry-magic.id react-scripts build && aws s3 sync build/ s3://member.pantry-magic.id --acl public-read",
