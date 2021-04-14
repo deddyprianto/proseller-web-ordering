@@ -180,8 +180,8 @@ const ViewCartBasket = ({
       (productQuantity > maxQty && maxQty > 0) ||
       (data.dataBasket.orderingMode === "DELIVERY" && !deliveryProvider) ||
       (deliveryProvider && deliveryProvider.deliveryFeeFloat < 0) ||
-      (outlet.timeSlots &&
-        outlet.timeSlots.length > 0 &&
+      (props.timeslotData &&
+        props.timeslotData.length > 0 &&
         !props.orderActionTimeSlot &&
         data.dataBasket.orderingMode !== "DINEIN"));
   return (
@@ -234,6 +234,7 @@ const ViewCartBasket = ({
             handleOpenLogin={() => handleOpenLogin()}
             btnSattleStatusDisable={btnSattleStatusDisable}
             handleSetState={(field, value) => handleSetState(field, value)}
+            timeslotData={props.timeslotData}
           />
         </Col>
       </Row>

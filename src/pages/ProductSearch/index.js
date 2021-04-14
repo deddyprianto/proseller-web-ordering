@@ -20,7 +20,7 @@ import useQuery from "../../hooks/useQuery";
 import useStyles from "./styles";
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.pathname.includes("emenu");
+const IS_EMENU = window.location.hostname.includes('emenu');
 
 export const ProductSearch = ({
   selectedOutlet,

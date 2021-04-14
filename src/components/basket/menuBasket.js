@@ -23,20 +23,20 @@ class MenuBasket extends Component {
     minAmount = minAmount || 0
     maxAmount = maxAmount || 0
 
-    let deficiencyAmount = minAmount - basket.totalNettAmount
-    let deficiencyAmountPercent = (basket.totalNettAmount/minAmount) * 100
+    let deficiencyAmount = minAmount - basket.totalGrossAmount
+    let deficiencyAmountPercent = (basket.totalGrossAmount/minAmount) * 100
     if(deficiencyAmount < 0) deficiencyAmount = 0
     if(deficiencyAmountPercent > 100) deficiencyAmountPercent = 100
 
     let deficiencyFreeDelivery = 0
     let deficiencyFreeDeliveryPercent = 0
     if(props.provaiderDelivery && props.provaiderDelivery.minPurchaseForFreeDelivery){
-      deficiencyFreeDelivery = props.provaiderDelivery.minPurchaseForFreeDelivery - basket.totalNettAmount
-      deficiencyFreeDeliveryPercent = (basket.totalNettAmount/props.provaiderDelivery.minPurchaseForFreeDelivery) * 100
+      deficiencyFreeDelivery = props.provaiderDelivery.minPurchaseForFreeDelivery - basket.totalGrossAmount
+      deficiencyFreeDeliveryPercent = (basket.totalGrossAmount/props.provaiderDelivery.minPurchaseForFreeDelivery) * 100
       if(deficiencyFreeDelivery < 0) deficiencyFreeDelivery = 0
       if(deficiencyFreeDeliveryPercent > 100) deficiencyFreeDeliveryPercent = 100
     }
-    
+
     return (
       <div style={{ marginTop: -8 }}>
         <div
@@ -178,7 +178,7 @@ class MenuBasket extends Component {
             }
             {
               props.deliveryProvaider &&
-              props.deliveryProvaider.length > 1 && (
+              props.deliveryProvaider.length > 0 && (
                 <ProviderDeliveryBasket
                   data={props}
                   roleBtnClear={this.props.roleBtnClear}
@@ -211,8 +211,8 @@ class MenuBasket extends Component {
 
         {
           props.orderingMode && 
-          props.storeDetail.timeSlots && 
-          props.storeDetail.timeSlots.length > 0 && 
+          this.props.timeslotData && 
+          this.props.timeslotData.length > 0 && 
           props.orderingMode !== 'DINEIN' &&
           <PickupDateTime
             data={props}

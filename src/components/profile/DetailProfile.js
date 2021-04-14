@@ -23,7 +23,7 @@ class DetailProfile extends Component {
     this.state = {
       loadingShow: true,
       referall: "0/0",
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       dataCustomer: {},
       memberships: [],
       svc: [],

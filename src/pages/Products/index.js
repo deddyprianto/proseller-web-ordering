@@ -21,7 +21,7 @@ import useFilter from "../../hooks/useFilter";
 import useStyles from "./styles";
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.pathname.includes("emenu");
+const IS_EMENU = window.location.hostname.includes('emenu');
 
 export const Products = ({
   categories,
@@ -75,7 +75,7 @@ export const Products = ({
       }
     }
   }, [categories, selectedCategory, selectedOutlet]);
-  console.log(filteredProducts, 'filteredProducts')
+  // console.log(filteredProducts, 'filteredProducts')
   return (
     <div className={classes.container}>
       {showUpdateModal && (
@@ -202,7 +202,7 @@ export const Products = ({
                         })}
                     </ul>
                     {
-                      filteredProducts === null || filteredProducts.length === 0 ? <h4 style={{ textAlign: 'center' }} className="customer-group-name">Sorry, products not found :(</h4>
+                      filteredProducts === null ? <h4 style={{ textAlign: 'center' }} className="customer-group-name">Sorry, products not found :(</h4>
                       :
                       null
                     }

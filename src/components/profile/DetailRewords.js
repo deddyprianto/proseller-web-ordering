@@ -28,7 +28,7 @@ class DetailRewords extends Component {
       campaignPointAnnouncement: false,
       detailPoint: null,
       pointIcon: "",
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
     }
   }
 

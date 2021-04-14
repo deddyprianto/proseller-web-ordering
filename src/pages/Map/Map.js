@@ -219,7 +219,7 @@ export class MapContainer extends Component {
             Move map to change coordinate.
           </h5>
           <div style={{ marginLeft: 20, maxWidth: "90%", width: "90%" }}>
-            <i style={{ fontSize: 12 }}>
+            <i style={{ fontSize: 12, color: '#2d3436' }}>
               {!regionChangeProgress
                 ? userLocation
                 : "Identifying Location ...."}

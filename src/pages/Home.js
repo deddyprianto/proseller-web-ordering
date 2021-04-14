@@ -18,7 +18,7 @@ class Home extends Component {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.pathname.includes("emenu")
+      isEmenu: window.location.hostname.includes('emenu')
     };
   }
 
@@ -63,7 +63,7 @@ class Home extends Component {
   render() {
     const { isEmenu } = this.state;
     const { defaultOutlet } = this.props;
-    console.log(defaultOutlet, 'defaultOutlet')
+    // console.log(defaultOutlet, 'defaultOutlet')
     return (
       <div className="col-full">
         <div

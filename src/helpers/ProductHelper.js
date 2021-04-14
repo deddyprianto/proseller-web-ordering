@@ -38,6 +38,11 @@ const getInitialProductValue = (productSelected, mode) => {
               ].isSelected = false;
             }
           }
+          if (group.modifier.min === 1 && group.modifier.max === 1) {
+            product.product.productModifiers[i].modifier.details[
+              j
+            ].isSelected = false;
+          }
         });
     });
   } catch (e) {}

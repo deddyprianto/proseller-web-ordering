@@ -5,7 +5,7 @@ class ModalOrderingMode extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       orderingModeStatus: {
         DINEIN: "enableDineIn",
         TAKEAWAY: "enableTakeAway",

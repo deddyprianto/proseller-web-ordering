@@ -3,7 +3,7 @@ import emptyImage from "./assets/images/empty.png";
 
 let config = {};
 let stage = "demo";
-let companyHost = "acemart";
+let companyHost = "tomahawkking";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""
 }.proseller.io`;
@@ -68,7 +68,7 @@ config.url_logo = logo;
 config.url_emptyImage = emptyImage;
 config.image_placeholder =
   "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
-config.prefix = window.location.pathname.includes("emenu")
+config.prefix = window.location.hostname.includes('emenu')
   ? "emenu"
   : "webordering";
 
@@ -232,7 +232,7 @@ config.getUrlMasterData = () => {
   }
 
   const remoteDomainName = storedDomainName || "";
-  console.log("masterdata remote domain name: ", remoteDomainName);
+  // console.log("masterdata remote domain name: ", remoteDomainName);
   return `https://${remoteDomainName}/masterdata/api/`;
 };
 config.getUrlCrm = () => {

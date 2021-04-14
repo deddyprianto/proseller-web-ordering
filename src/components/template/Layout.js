@@ -58,7 +58,7 @@ class Layout extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       enableOrdering: true,
       logoCompany: config.url_logo,
       infoCompany: {},
