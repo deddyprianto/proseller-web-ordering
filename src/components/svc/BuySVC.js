@@ -7,6 +7,8 @@ import voucherIcon from '../../assets/images/voucher-icon.png'
 import ModalDetailSVC from './ModalDetailSVC';
 import config from "../../config"
 import calculateTAX from "../../helpers/TaxCalculation";
+import { OutletAction } from "../../redux/actions/OutletAction";
+
 class BuySVC extends Component {
   constructor(props) {
     super(props);
@@ -15,13 +17,23 @@ class BuySVC extends Component {
       loadingShow: true,
       dataDetail: null,
       svc: [],
-      detailPurchase: {}
+      detailPurchase: {},
+      backupOutlet: {}
     }
   }
 
   componentDidMount = async () => {
     const svc = await this.props.dispatch(SVCAction.loadSVC())
     if (svc && svc.resultCode === 200) await this.setState({svc: svc.data})
+
+    try {
+      let backupOutlet = await this.props.dispatch(
+        OutletAction.getBackupOutlet()
+      );
+      if (backupOutlet.resultCode === 200)
+        this.setState({ backupOutlet: backupOutlet.data });
+    } catch (e) {}
+
     this.setState({ loadingShow: false })
   }
 
@@ -51,8 +63,15 @@ class BuySVC extends Component {
   };
 
   findTax = async (dataDetail) => {
+    const { backupOutlet } = this.state;
+    const { defaultOutlet } = this.props;
+    let outlet = defaultOutlet
+    if (outlet === undefined || outlet.id === undefined) {
+      outlet = backupOutlet
+    }
+
     let returnData = {
-      outlet: this.props.defaultOutlet,
+      outlet,
       details: [],
     };
     let product = {};
@@ -70,7 +89,7 @@ class BuySVC extends Component {
     let { loadingShow, svc, dataDetail, detailPurchase } = this.state
     return (
       <div style={{ marginTop: 80, }}>
-        <ModalDetailSVC detailPurchase={detailPurchase} history={this.props.history} dataDetail={dataDetail} getCurrency={(price) => this.getCurrency(price)} />
+        <ModalDetailSVC backupOutlet={this.state.backupOutlet} detailPurchase={detailPurchase} history={this.props.history} dataDetail={dataDetail} getCurrency={(price) => this.getCurrency(price)} />
         <div
           style={{
             flexDirection: "row",

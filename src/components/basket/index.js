@@ -4,12 +4,13 @@ import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import { CampaignAction } from "../../redux/actions/CampaignAction";
+// import { CustomerAction } from "../../redux/actions/CustomerAction";
+// import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
-import _ from "lodash";
+import _, { times } from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
+import { isEmptyArray, isEmptyObject, isEmptyData } from "../../helpers/CheckEmpty";
+import { StraightDistance } from "../../helpers/CalculateDistance";
 import loadable from "@loadable/component";
 import config from "../../config";
 
@@ -59,7 +60,7 @@ class Basket extends Component {
       play: false,
       deliveryProvaider: [],
       dataCVV: "",
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       orderActionDate: this.props.orderActionDate,
       orderActionTime: this.props.orderActionTime,
       orderActionTimeSlot: this.props.orderActionTimeSlot,
@@ -75,6 +76,9 @@ class Basket extends Component {
       nextDayIsAvailable: null,
       isEditDate: false,
       timeSlot: [],
+      latitude: 0,
+      longitude: 0,
+      timeslotData: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -117,6 +121,23 @@ class Basket extends Component {
       } catch (error) {}
     }, 0);
     await this.getDataBasket();
+  };
+
+  getGeolocation = async (storeDetail) => {
+    let from = storeDetail.address || '-';
+    from += '&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4'
+    let url = `https://maps.google.com/maps/api/geocode/json?address=${from}`;
+    url = encodeURI(url)
+    
+    let response = await fetch(url);
+    response = await response.json();
+
+    try {
+      await this.setState({
+        latitude: response.results[0].geometry.location.lat,
+        longitude: response.results[0].geometry.location.lng,
+      });
+    } catch(e) {}
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -209,6 +230,7 @@ class Basket extends Component {
 
     // if databasket is empty
     if (!dataBasket) dataBasket = await this.getDataBasket_();
+    // dataBasket = await this.getDataBasket_();
 
     return {
       locationCustomer,
@@ -223,8 +245,9 @@ class Basket extends Component {
 
   getDataBasket = async (isChangeMode = false, orderingMode = null) => {
     let { isLoggedIn } = this.props;
+    await this.setState({ loadingShow: true });
     let {
-      selectedVoucher,
+      // selectedVoucher,
       selectedPoint,
       scanTable,
       infoCompany,
@@ -234,13 +257,13 @@ class Basket extends Component {
     let deliveryAddress = this.props.deliveryAddress;
 
     if (isLoggedIn) {
-      this.props.dispatch(CustomerAction.getVoucher());
-      this.props.dispatch(
-        CampaignAction.getCampaignPoints(
-          { history: "false" },
-          infoCompany && infoCompany.companyId
-        )
-      );
+      // this.props.dispatch(CustomerAction.getVoucher());
+      // this.props.dispatch(
+      //   CampaignAction.getCampaignPoints(
+      //     { history: "false" },
+      //     infoCompany && infoCompany.companyId
+      //   )
+      // );
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode;
       let response = await this.props.dispatch(
@@ -250,59 +273,70 @@ class Basket extends Component {
     }
 
     if (dataBasket && dataBasket.outlet !== undefined) {
-      if (dataBasket.isPaymentComplete !== undefined) {
-        dataBasket = await this.getDataBasketPending(dataBasket);
-      }
+      // if (dataBasket.isPaymentComplete !== undefined) {
+      //   dataBasket = await this.getDataBasketPending(dataBasket);
+      // }
 
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
       const isOutletChanged = await localStorage.getItem(
         `${config.prefix}_isOutletChanged`
       );
-      // move cart based on delivery address
-      console.log(this.props.outlets.length);
-      if (
-        deliveryAddress &&
-        orderingMode === "DELIVERY" &&
-        isOutletChanged !== "true" &&
-        this.props.outlets &&
-        this.props.outlets.length > 1 &&
-        dataBasket.provider &&
-        dataBasket.provider.calculationMode !== "FIX"
-      ) {
-        let payloadMoveCart = {
-          orderBy: "provider",
-          cart: dataBasket,
-          deliveryAddress,
-        };
-        const result = await this.props.dispatch(
-          OrderAction.moveCart(payloadMoveCart)
-        );
-        if (!result.message) {
-          dataBasket = result;
-        } else {
-          Swal.fire(
-            "Oppss!",
-            "Cannot find an outlet with available product(s) and delivery provider",
-            "error"
+      // move cart based on delivery address if ordering setting is nearest outlet
+      if (this.props.outletSelection === "NEAREST") {
+        if (
+          deliveryAddress &&
+          orderingMode === "DELIVERY" &&
+          isOutletChanged !== "true" &&
+          this.props.outlets &&
+          this.props.outlets.length > 1 &&
+          dataBasket.provider &&
+          dataBasket.provider.calculationMode !== "FIX"
+        ) {
+          let payloadMoveCart = {
+            orderBy: "provider",
+            cart: dataBasket,
+            deliveryAddress,
+          };
+          const result = await this.props.dispatch(
+            OrderAction.moveCart(payloadMoveCart)
           );
+          if (!result.message) {
+            dataBasket = result;
+          } else {
+            Swal.fire(
+              "Oppss!",
+              "Cannot find an outlet with available product(s) and delivery provider",
+              "error"
+            );
+          }
         }
       }
 
       // set delivery provider
-      await this.setDeliveryProvider(deliveryAddress, orderingMode, dataBasket);
+      if (
+        orderingMode === "DELIVERY" ||
+        dataBasket.orderingMode === "DELIVERY"
+      ) {
+        await this.setDeliveryProvider(
+          deliveryAddress,
+          orderingMode,
+          dataBasket
+        );
+        dataBasket = await this.getDataBasket_();
+      }
 
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket);
 
       // set voucher
-      await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
+      // await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
 
-      let discount = (selectedPoint || 0) + this.state.discountVoucher;
-      let totalPrice =
-        dataBasket.totalNettAmount - discount < 0
-          ? 0
-          : dataBasket.totalNettAmount - discount;
+      // let discount = (selectedPoint || 0) + this.state.discountVoucher;
+      // let totalPrice =
+      //   dataBasket.totalNettAmount - discount < 0
+      //     ? 0
+      //     : dataBasket.totalNettAmount - discount;
 
       if (dataBasket.orderingMode) {
         dataBasket.orderingMode = orderingMode;
@@ -314,33 +348,35 @@ class Basket extends Component {
         };
       }
 
-      if (
-        (isChangeMode || dataBasket.totalSurchargeAmount === 0) &&
-        dataBasket.isPaymentComplete === undefined
-      ) {
+      // (isChangeMode || dataBasket.totalSurchargeAmount === 0) &&
+      //   dataBasket.isPaymentComplete === undefined
+      if (isChangeMode) {
         let surcharge = await this.props.dispatch(
           OrderAction.changeOrderingMode({ orderingMode })
         );
         if (surcharge.resultCode === 200) {
           dataBasket = surcharge.data;
-          localStorage.setItem(
+          await localStorage.setItem(
             `${config.prefix}_dataBasket`,
             JSON.stringify(encryptor.encrypt(dataBasket))
           );
+          dataBasket = await this.getDataBasket_();
         }
       }
 
       let checkOperationalHours = this.checkOperationalHours(storeDetail);
 
-      this.setState({
+      await this.setState({
         dataBasket,
         storeDetail,
         scanTable,
-        totalPrice,
+        // totalPrice,
         checkOperationalHours,
         btnBasketOrder: checkOperationalHours.status,
         countryCode: infoCompany.countryCode,
       });
+
+      this.getGeolocation(storeDetail)
 
       // check validate pick date time
       if (orderingMode !== "DINEIN") {
@@ -366,8 +402,8 @@ class Basket extends Component {
       });
     }
 
+    await this.setState({ loadingShow: false });
     this.setState({
-      loadingShow: false,
       // isLoading: false,
       selectedPoint,
       discountPoint: selectedPoint || 0,
@@ -394,7 +430,7 @@ class Basket extends Component {
 
   setDefaultOutlet = async (dataBasket) => {
     let storeDetail = await this.props.dispatch(
-      MasterdataAction.getOutletByID(dataBasket.outlet.id)
+      MasterdataAction.getOutletByID(dataBasket.outlet.id, false)
     );
     if (storeDetail && storeDetail.id) {
       storeDetail = config.getValidation(storeDetail);
@@ -505,7 +541,6 @@ class Basket extends Component {
     if (!maxDays) maxDays = 90;
 
     let dateTime = new Date();
-
     let payload = {
       outletID: storeDetail.sortKey,
       clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
@@ -514,20 +549,12 @@ class Basket extends Component {
       orderingMode,
     };
 
-    const isOutletChanged = await localStorage.getItem(
-      `${config.prefix}_isOutletChanged`
-    );
-    const newOutletID = await localStorage.getItem(
-      `${config.prefix}_outletChangedFromHeader`
-    );
-    if (isOutletChanged === "true") {
-      if (newOutletID !== undefined && newOutletID !== null)
-        payload.outletID = `outlet::${newOutletID}`;
-    }
-
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
+      
       if (timeSlot.resultCode === 200) {
+        this.setState({timeslotData: timeSlot.data})
+        if (timeSlot.data.length === 0) return;
         timeSlot = timeSlot.data.filter((items) => {
           return items.timeSlot.filter((item) => {
             return item.isAvailable;
@@ -553,17 +580,37 @@ class Basket extends Component {
         const firstAvailableDate = newTimeslot
           .flat(2)
           .find((slot) => slot.timeSlot.length > 0);
-        console.log(firstAvailableDate);
+        // console.log("newTimeslot :", newTimeslot.flat(2));
         if (firstAvailableDate)
           this.setState({ nextDayIsAvailable: firstAvailableDate.date });
         this.setState({ timeSlot: newTimeslot.flat(2) });
+        timeSlot = newTimeslot.flat(2);
+        if (
+          !newTimeslot.flat(2).find((dateSlot) => {
+            const dateTimeSlot = dateSlot.timeSlot.find(
+              (slot) =>
+                slot.time === this.state.orderActionTimeSlot && slot.isAvailable
+            );
+            if (dateSlot.date === this.state.orderActionDate && dateTimeSlot) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          this.setState({
+            orderActionDate: moment().format("YYYY-MM-DD"),
+            orderActionTime: moment().add(1, "h").format("HH") + ":00",
+            orderActionTimeSlot: null,
+          });
+          this.props.dispatch({ type: "DELETE_ORDER_ACTION_TIME_SLOT" });
+        }
       } else {
+        this.setState({timeslotData: timeSlot.data})
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
       }
     }
-
-    if (isEditDate) {
+    if (date) {
       timeSlot = timeSlot.find((items) => {
         return items.date === date;
       });
@@ -603,8 +650,8 @@ class Basket extends Component {
       } else {
         if (maxLoopingSetTimeSlot > 0) {
           this.setState({ maxLoopingSetTimeSlot: maxLoopingSetTimeSlot - 1 });
-          date = moment(date).add(1, "d").format("YYYY-MM-DD");
-          this.checkPickUpDateTime(checkOperationalHours, date, check);
+          // date = moment(date).add(1, "d").format("YYYY-MM-DD");
+          // this.checkPickUpDateTime(checkOperationalHours, date, check);
         } else {
           console.log("Set orderACtionTime...");
           this.setState({
@@ -895,7 +942,7 @@ class Basket extends Component {
 
   setOrderingMode = async (orderingMode) => {
     const oldOrderingMode = this.state.orderingMode;
-
+    await this.setState({ loadingShow: true });
     if (oldOrderingMode !== orderingMode) {
       await this.setState({ orderActionTimeSlot: null });
     }
@@ -904,6 +951,17 @@ class Basket extends Component {
       type: "SET_ORDERING_MODE",
       payload: orderingMode,
     });
+
+    if (
+      orderingMode !== "" &&
+      orderingMode !== undefined &&
+      orderingMode !== null
+    ) {
+      const payload = {
+        orderingMode: orderingMode,
+      };
+      await this.props.dispatch(OrderAction.updateCartInfo(payload));
+    }
 
     await this.setState({
       orderingMode,
@@ -995,7 +1053,7 @@ class Basket extends Component {
           await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
           await this.props.dispatch(OrderAction.deleteCart());
         }
-        Swal.close()
+        Swal.close();
         await this.getDataBasket();
       }
     });
@@ -1012,7 +1070,13 @@ class Basket extends Component {
 
   handleSettle = async () => {
     let { selectedCard } = this.state;
-
+    const { defaultOutlet } = this.props;
+    const orderPreparationTime =
+      defaultOutlet.timeSlots &&
+      defaultOutlet.timeSlots[0] &&
+      defaultOutlet.timeSlots[0].defaultPreparationTime
+        ? defaultOutlet.timeSlots[0].defaultPreparationTime
+        : 0;
     if (!this.handleOpenLogin()) return;
 
     if (selectedCard) {
@@ -1026,6 +1090,108 @@ class Basket extends Component {
           console.log("need cvv");
           return;
         }
+      }
+    }
+
+    let {
+      storeDetail,
+      orderingMode,
+      timeSlot,
+      orderActionDate,
+      orderActionTime,
+    } = this.state;
+    if (!storeDetail) return;
+
+    /*
+      Validate delivery provider mode & maximum distance
+    */ 
+    if (orderingMode === 'DELIVERY') {
+      if (this.state.provaiderDelivery) {
+        if (this.state.provaiderDelivery.calculationMode === 'DISTANCE') {
+          if (
+            isEmptyObject(this.props.deliveryAddress.coordinate) ||
+            isEmptyData(this.props.deliveryAddress.coordinate.latitude)
+          ) {
+            Swal.fire({
+              title: "Delivery Address Coordinate",
+              text: "Please pick the coordinate of your delivery address.",
+              icon: "warning",
+              confirmButtonText: `Got it`,
+            }).then(() => {
+              this.props.history.push("/delivery-address");
+            })
+            return false;
+          }
+
+          // calculate distance to outlet
+          const coordinate = {
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+          }
+          const distance = await StraightDistance(storeDetail, this.props.deliveryAddress.coordinate, coordinate);
+          console.log(distance, 'distance')
+          if (distance > Number(this.state.provaiderDelivery.maximumCoverage)) {
+            Swal.fire({
+              title: `Maximum delivery coverage is ${this.state.provaiderDelivery.maximumCoverage} km`,
+              text: "Your delivery address exceeds our maximum shipping limits.",
+              icon: "warning",
+              confirmButtonText: `Got it`,
+            });
+            return false;
+          }
+        }
+      }
+    }
+
+
+    let orderingModeField =
+      orderingMode === "DINEIN"
+        ? "dineIn"
+        : orderingMode === "DELIVERY"
+        ? "delivery"
+        : "takeAway";
+    let { maxDays } = storeDetail.orderValidation[orderingModeField];
+    if (!maxDays) maxDays = 90;
+
+    let dateTime = new Date();
+    let payload = {
+      outletID: storeDetail.sortKey,
+      clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+      date: moment(dateTime).format("YYYY-MM-DD"),
+      maxDays,
+      orderingMode,
+    };
+    const nowDateObj = new Date(
+      `${moment(dateTime).format("YYYY-MM-DD")} 00:00`
+    );
+    const orderActionDateObj = new Date(`${orderActionDate} 00:00`);
+
+    timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
+    if (timeSlot.resultCode === 200) {
+      timeSlot = timeSlot.data.filter((items) => {
+        return items.timeSlot.filter((item) => {
+          return item.isAvailable;
+        });
+      });
+      const selectedTimeSlot = timeSlot.find(
+        (slot) => slot.date === orderActionDate
+      );
+      if (selectedTimeSlot) {
+        const minutesNow = new Date().getHours() * 60 + new Date().getMinutes();
+        const minutesTimeSlot =
+          new Date(`1970-01-01 ${orderActionTime}`).getHours() * 60 +
+          new Date(`1970-01-01 ${orderActionTime}`).getMinutes();
+        const difference = minutesTimeSlot - minutesNow;
+        if (
+          nowDateObj.getTime() === orderActionDateObj.getTime() &&
+          difference < orderPreparationTime
+        ) {
+          Swal.fire("Oppss!", "Time Slot is not available", "error");
+          return;
+        }
+      } else {
+        Swal.fire("Oppss!", "Time Slot date is not available", "error");
+        return;
       }
     }
 
@@ -1156,6 +1322,19 @@ class Basket extends Component {
         console.log(dataBasket);
         if (dataBasket.status === "SUBMITTED") {
           this.props.history.push("/history");
+        } else if (
+          dataBasket.outlet.outletType === "RESTO" &&
+          dataBasket.orderingMode === "DINEIN"
+        ) {
+          Swal.fire(
+            "Order Submitted",
+            "Your order has been submitted",
+            "success"
+          ).then((result) => {
+            if (result.isConfirmed || result.isDismissed) {
+              this.props.history.push("/history");
+            }
+          });
         } else {
           this.props.history.push("/payment");
         }
@@ -1321,6 +1500,14 @@ class Basket extends Component {
     }
   };
 
+  updateCartInfo = async (remark) => {
+    const payload = {
+      remark,
+    };
+    await this.props.dispatch(OrderAction.updateCartInfo(payload));
+    await this.getDataBasket();
+  };
+
   render() {
     let {
       loadingShow,
@@ -1334,7 +1521,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-    
+
     return (
       <div
         className="col-full"
@@ -1367,50 +1554,55 @@ class Basket extends Component {
                 </div>
               )}
 
-              {!loadingShow && (!isEmptyObject(dataBasket) || this.props.basket.details) && (
-                <div style={{ marginBottom: 250 }}>
-                  {viewCart && (
-                    <ViewCartBasket
-                      data={this.state}
-                      dataBasket={dataBasket}
-                      countryCode={countryCode}
-                      isLoggedIn={isLoggedIn}
-                      cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                      cancelSelectPoint={() => this.cancelSelectPoint()}
-                      handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                      handleRedeemPoint={() => this.handleRedeemPoint()}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      handleClear={(dataBasket) => this.handleClear(dataBasket)}
-                      scrollPoint={(data) => this.scrollPoint(data)}
-                      setPoint={(point) => this.setPoint(point)}
-                      handleSettle={() => this.handleSettle()}
-                      handleSubmit={() => this.handleSubmit()}
-                      setOrderingMode={(mode) => this.setOrderingMode(mode)}
-                      handleSetProvaider={(item) =>
-                        this.handleSetProvaider(item)
-                      }
-                      setViewCart={(status) => this.setViewCart(status)}
-                      handleSetState={(field, value) =>
-                        this.handleSetState(field, value)
-                      }
-                      handleOpenLogin={() => this.handleOpenLogin()}
-                    />
-                  )}
-                  {!viewCart && (
-                    <ViewProsessBasket
-                      data={this.state}
-                      dataBasket={dataBasket}
-                      countryCode={countryCode}
-                      isLoggedIn={isLoggedIn}
-                      getCurrency={(price) => this.getCurrency(price)}
-                      setViewCart={(status) => this.setViewCart(status)}
-                      handleCompletedOrdering={(status) =>
-                        this.handleCompletedOrdering(status)
-                      }
-                    />
-                  )}
-                </div>
-              )}
+              {!loadingShow &&
+                (!isEmptyObject(dataBasket) || this.props.basket.details) && (
+                  <div style={{ marginBottom: 250 }}>
+                    {viewCart && (
+                      <ViewCartBasket
+                        data={this.state}
+                        dataBasket={dataBasket}
+                        countryCode={countryCode}
+                        isLoggedIn={isLoggedIn}
+                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                        cancelSelectPoint={() => this.cancelSelectPoint()}
+                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                        handleRedeemPoint={() => this.handleRedeemPoint()}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        handleClear={(dataBasket) =>
+                          this.handleClear(dataBasket)
+                        }
+                        scrollPoint={(data) => this.scrollPoint(data)}
+                        setPoint={(point) => this.setPoint(point)}
+                        handleSettle={() => this.handleSettle()}
+                        handleSubmit={() => this.handleSubmit()}
+                        setOrderingMode={(mode) => this.setOrderingMode(mode)}
+                        handleSetProvaider={(item) =>
+                          this.handleSetProvaider(item)
+                        }
+                        setViewCart={(status) => this.setViewCart(status)}
+                        handleSetState={(field, value) =>
+                          this.handleSetState(field, value)
+                        }
+                        handleOpenLogin={() => this.handleOpenLogin()}
+                        updateCartInfo={this.updateCartInfo}
+                        timeslotData={this.state.timeslotData}
+                      />
+                    )}
+                    {!viewCart && (
+                      <ViewProsessBasket
+                        data={this.state}
+                        dataBasket={dataBasket}
+                        countryCode={countryCode}
+                        isLoggedIn={isLoggedIn}
+                        getCurrency={(price) => this.getCurrency(price)}
+                        setViewCart={(status) => this.setViewCart(status)}
+                        handleCompletedOrdering={(status) =>
+                          this.handleCompletedOrdering(status)
+                        }
+                      />
+                    )}
+                  </div>
+                )}
             </main>
           </div>
         </div>
@@ -1429,6 +1621,7 @@ class Basket extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     account: state.auth.account && state.auth.account.idToken.payload,
+    outletSelection: state.order.outletSelection,
     isLoggedIn: state.auth.isLoggedIn,
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,

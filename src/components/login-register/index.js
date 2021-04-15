@@ -239,6 +239,11 @@ class LoginRegister extends Component {
         }
       }
     }
+
+    if (this.state.isLoading !== prevState.isLoading) {
+      if (this.state.isLoading) Swal.showLoading();
+      else Swal.close();
+    }
   }
 
   handleInput = (jenis, data) => {
@@ -461,7 +466,7 @@ class LoginRegister extends Component {
 
   handleMobileLogin = async (withOtp) => {
     let payloadResponse = this.state.payloadResponse;
-    this.setState({ isLoading: true });
+    Swal.showLoading();
     try {
       let payload = { phoneNumber: payloadResponse.phoneNumber };
 
@@ -474,7 +479,15 @@ class LoginRegister extends Component {
       if (response.status === false) throw response;
       response.isLogin = true;
       const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
-      localStorage.clear();
+      const lsKeyList = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.includes(`${config.prefix}_`)) {
+          lsKeyList.push(key);
+        }
+      }
+      lsKeyList.forEach((key) => localStorage.removeItem(key));
       lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
       lsStore(config.prefix + "_offlineCart", offlineCart, true);
       const url = window.location.href.split("?")[0];
@@ -487,7 +500,6 @@ class LoginRegister extends Component {
         error = err.message;
       }
       Swal.fire("Oppss!", error, "error");
-      this.setState({ isLoading: false });
     }
   };
 
@@ -804,7 +816,7 @@ class LoginRegister extends Component {
 
   handleEmailLogin = async (withOtp) => {
     let payloadResponse = this.state.payloadResponse;
-    this.setState({ isLoading: true });
+    Swal.showLoading();
     try {
       let payload = { email: payloadResponse.email };
 
@@ -817,7 +829,15 @@ class LoginRegister extends Component {
       if (response.status === false) throw response;
       response.isLogin = true;
       const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
-      localStorage.clear();
+      const lsKeyList = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.includes(`${config.prefix}_`)) {
+          lsKeyList.push(key);
+        }
+      }
+      lsKeyList.forEach((key) => localStorage.removeItem(key));
       lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
       if (offlineCart !== null) {
         lsStore(config.prefix + "_offlineCart", offlineCart, true);
@@ -827,12 +847,12 @@ class LoginRegister extends Component {
       window.location.reload();
     } catch (err) {
       console.log(err);
+      Swal.close();
       let error = "Account not exist";
       if (err.message) {
         error = err.message;
       }
       Swal.fire("Oppss!", error, "error");
-      this.setState({ isLoading: false });
     }
   };
 
@@ -1025,7 +1045,7 @@ class LoginRegister extends Component {
 
   render() {
     let {
-      isLoading,
+      // isLoading,
       userStatus,
       method,
       email,
@@ -1039,7 +1059,7 @@ class LoginRegister extends Component {
     } = this.state;
     return (
       <div>
-        {isLoading ? Swal.showLoading() : Swal.close()}
+        {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
         <div
           className="modal fade"
           id="login-register-modal"

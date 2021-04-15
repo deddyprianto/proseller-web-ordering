@@ -20,9 +20,15 @@ class ModalDetailSVC extends Component {
   handlePurchaseSVC = async () => {
     let { dataDetail } = this.props;
     let { detailPurchase, count } = this.state;
+    const { backupOutlet, defaultOutlet } = this.props;
+
+    let outlet = defaultOutlet
+    if (outlet === undefined || outlet.id === undefined) {
+      outlet = backupOutlet
+    }
 
     const payload = {
-      outletDetail: this.props.defaultOutlet,
+      outletDetail: outlet,
       detailPurchase,
       storeValueCard: dataDetail,
       detailPoint: this.props.campaignPoint,
@@ -56,9 +62,15 @@ class ModalDetailSVC extends Component {
 
   findTax = async (dataDetail) => {
     const { count } = this.state;
+    const { backupOutlet, defaultOutlet } = this.props;
+
+    let outlet = defaultOutlet
+    if (outlet === undefined || outlet.id === undefined) {
+      outlet = backupOutlet
+    }
 
     let returnData = {
-      outlet: this.props.defaultOutlet,
+      outlet,
       details: [],
     };
     let product = {};

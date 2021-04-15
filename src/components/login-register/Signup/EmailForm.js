@@ -31,6 +31,10 @@ const EmailForm = ({
     handleChange("phoneNumber", phoneCountryCode + phone);
   }, [phone, phoneCountryCode]);
 
+  if (termsAndConditions === undefined || termsAndConditions === null || termsAndConditions === '') {
+    isTCAvailable = false;
+  }
+
   return (
     <div className="modal-body">
       <p className="text-muted">{`Register for ${email || "-"}`}</p>
@@ -173,7 +177,8 @@ const EmailForm = ({
         </>
       )}
       <Button
-        disabled={isSubmitting || agreeTC || !isTCAvailable}
+        // disabled={isSubmitting || agreeTC || !isTCAvailable}
+        disabled={isSubmitting}
         className="button"
         style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}

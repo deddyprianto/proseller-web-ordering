@@ -301,7 +301,8 @@ class SettleSuccess extends Component {
                             }}
                           >
                             {settleSuccess.outletName ||
-                              settleSuccess.outlet.name}
+                              (settleSuccess.outlet &&
+                                settleSuccess.outlet.name)}
                           </div>
                         </div>
                       </div>

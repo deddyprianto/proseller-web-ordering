@@ -39,8 +39,9 @@ const UpdateProductModal = ({
 
     const flatModifier = modifiersList.flat();
 
-    const newProductModifiers = product.product.productModifiers.map(
-      (modifierGroup) => {
+    const newProductModifiers =
+      product.product.productModifiers &&
+      product.product.productModifiers.map((modifierGroup) => {
         return {
           ...modifierGroup,
           modifier: {
@@ -60,8 +61,7 @@ const UpdateProductModal = ({
             }),
           },
         };
-      }
-    );
+      });
     setAddNew(false);
     setSelectedItem(
       {

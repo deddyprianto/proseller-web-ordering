@@ -11,7 +11,7 @@ import config from "../../config";
 import { lsLoad } from "../../helpers/localStorage";
 import { CRMService } from "../../Services/CRMService";
 
-const Swal = require("sweetalert2");
+// const Swal = require("sweetalert2");
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
@@ -40,6 +40,7 @@ export const OrderAction = {
   moveCart,
   getTimeSlot,
   submitMembership,
+  updateCartInfo,
 };
 
 function shareURL(tableNo, outletID, orderMode) {
@@ -110,6 +111,29 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === "TextWarningColor";
         });
+      let outletSelection =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === "OutletSelection";
+        });
+      let ProductPlaceholder =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === "ProductPlaceholder";
+        });
+
+      if (outletSelection === undefined) {
+        outletSelection = "DEFAULT";
+      } else {
+        outletSelection = outletSelection.settingValue;
+      }
+
+      if (ProductPlaceholder === undefined) {
+        ProductPlaceholder = null;
+      } else {
+        ProductPlaceholder = ProductPlaceholder.settingValue;
+      }
+
       let payload = {
         primary: primaryColor.settingValue || "#C00A27",
         secondary: secondaryColor.settingValue || "#C00A27",
@@ -118,18 +142,22 @@ function getSettingOrdering() {
         navigation: navigation.settingValue || "#C00A27",
         textButtonColor: textButtonColor.settingValue || "#FFFFFF",
         textWarningColor: textWarningColor.settingValue || "red",
+        productPlaceholder: ProductPlaceholder || null,
       };
       dispatch({ type: "SET_THEME", payload });
       dispatch({
         type: "DATA_SETTING_ORDERING",
         payload: data && data.settings,
       });
+      dispatch(setData(outletSelection, "OUTLET_SELECTION"));
     }
+    return data;
   };
 }
 
 function processAddCart(defaultOutlet, selectedItem) {
   return async (dispatch) => {
+    console.log(selectedItem);
     if (isEmptyData(selectedItem.product.retailPrice)) {
       selectedItem.product.retailPrice = 0;
     }
@@ -151,9 +179,6 @@ function processAddCart(defaultOutlet, selectedItem) {
       );
       let productModifiers = JSON.parse(productModifierClone);
 
-      productModifiers = productModifiers.filter(
-        (item) => item.postToServer === true
-      );
       product.modifiers = productModifiers;
 
       let tempDetails = [];
@@ -215,12 +240,18 @@ function processUpdateCart(basket, products) {
     let payload = [];
     for (let index = 0; index < products.length; index++) {
       let product = products[index];
+      console.log("product:", product);
       let find = await basket.details.find((data) => data.id === product.id);
+      const quantity =
+        product.originalQuantity && product.promoQuantity
+          ? product.originalQuantity +
+            (product.quantity - product.promoQuantity)
+          : product.quantity;
       let dataproduct = {
         id: find.id,
         productID: product.productID,
         unitPrice: product.product.retailPrice,
-        quantity: product.quantity,
+        quantity,
       };
 
       if (product.remark !== "" && product.remark !== undefined)
@@ -351,6 +382,21 @@ function addCart(payload) {
       "Bearer"
     );
 
+    // IF First time add cart, then call change Ordering mode
+    try {
+      const orderingMode = localStorage.getItem(
+        `${config.prefix}_ordering_mode`
+      );
+      if (response.data) {
+        if (response.data.details.length === 1) {
+          const payload = {
+            orderingMode: orderingMode,
+          };
+          dispatch(changeOrderingMode(payload));
+        }
+      }
+    } catch (e) {}
+
     try {
       document.getElementById("close-modal").click();
     } catch (e) {}
@@ -367,7 +413,7 @@ function buildCart(payload = {}) {
     try {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (window.location.pathname.includes("emenu") ? "DINEIN" : "DELIVERY");
+        (window.location.hostname.includes('emenu') ? "DINEIN" : "DELIVERY");
     } catch (error) {}
     const response = await OrderingService.api(
       "POST",
@@ -411,6 +457,20 @@ function updateCart(payload) {
     try {
       document.getElementById("close-modal").click();
     } catch (e) {}
+
+    if (window.location.hash === "#/basket") {
+      await localStorage.removeItem(`${config.prefix}_dataBasket`);
+      window.location.reload() 
+    }
+    return dispatch(getCart());
+  };
+}
+
+function updateCartInfo(payload) {
+  return async (dispatch) => {
+    await OrderingService.api("POST", payload, `cart/updateCartInfo`, "Bearer");
+    try {
+    } catch (e) {}
     return dispatch(getCart());
   };
 }
@@ -435,11 +495,13 @@ function getCart(isSetData = true) {
       `cart/getcart`,
       "Bearer"
     );
+
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== "No details data") {
-      if (isSetData)
+      if (isSetData) {
         return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+      }
       return response.data;
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
@@ -447,6 +509,7 @@ function getCart(isSetData = true) {
     } else if (response.data === null) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
+    return response;
   };
 }
 

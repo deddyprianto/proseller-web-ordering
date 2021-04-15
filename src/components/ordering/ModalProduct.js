@@ -4,7 +4,6 @@ import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
-import { isNull } from "lodash";
 
 class ModalProduct extends Component {
   constructor(props) {
@@ -20,7 +19,7 @@ class ModalProduct extends Component {
         title: "",
         message: "",
       },
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       orderingModeStatus: {
         DINEIN: "enableDineIn",
         TAKEAWAY: "enableTakeAway",
@@ -97,6 +96,8 @@ class ModalProduct extends Component {
   }
 
   renderImageProduct = (item) => {
+    const { color } = this.props;
+
     if (
       item.product &&
       item.product.defaultImageURL &&
@@ -104,6 +105,9 @@ class ModalProduct extends Component {
     ) {
       return item.product.defaultImageURL;
     } else {
+      if (color && color.productPlaceholder !== null) {
+        return color.productPlaceholder;
+      }
       return config.image_placeholder;
     }
   };
@@ -250,7 +254,8 @@ class ModalProduct extends Component {
           let response = await this.props.dispatch(
             OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
           );
-          this.props.handleSetState("dataBasket", response.data);
+          // this.props.handleSetState("dataBasket", response.data);
+          console.log(selectedItem);
           document.getElementById("detail-product-modal").click();
         }
       } else {
@@ -276,27 +281,27 @@ class ModalProduct extends Component {
     }
   };
 
-  addItemIsYesNo = async (item, type) => {
-    let { selectedItem } = this.state;
+  addItemIsYesNo = async (item, type, groupId) => {
+    const { selectedItem } = this.state;
 
     if (item.orderingStatus === "UNAVAILABLE") return;
 
-    selectedItem = JSON.stringify(selectedItem);
-    selectedItem = JSON.parse(selectedItem);
-
+    let itemCopy = { ...selectedItem };
     if (type !== "checkbox") {
-      for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
-        let modifierData = selectedItem.product.productModifiers[i].modifier;
-        if (modifierData.max === 1) {
-          for (let j = 0; j < modifierData.details.length; j++) {
-            modifierData.details[j].quantity = 0;
-            modifierData.details[j].isSelected = false;
+      for (let i = 0; i < itemCopy.product.productModifiers.length; i++) {
+        if (itemCopy.product.productModifiers[i].modifierID === groupId) {
+          let modifierData = itemCopy.product.productModifiers[i].modifier;
+          if (modifierData.max === 1) {
+            for (let j = 0; j < modifierData.details.length; j++) {
+              modifierData.details[j].quantity = 0;
+              modifierData.details[j].isSelected = false;
+            }
           }
         }
       }
     }
 
-    await this.setState({ selectedItem });
+    await this.setState({ selectedItem: itemCopy });
 
     for (let i = 0; i < selectedItem.product.productModifiers.length; i++) {
       let modifierDetail =
@@ -307,14 +312,15 @@ class ModalProduct extends Component {
             selectedItem.product.productModifiers[i].modifier.details[j]
               .isSelected;
           if (
-            modifierDetail[j].quantity === undefined ||
-            modifierDetail[j].quantity === 0
+            (modifierDetail[j].quantity === undefined ||
+              modifierDetail[j].quantity === 0) &&
+            isSelected === false
           ) {
             modifierDetail[j].quantity = 1;
             modifierDetail[j].isSelected = !isSelected;
             selectedItem.product.productModifiers[i].postToServer = true;
           } else {
-            modifierDetail[j].quantity = undefined;
+            modifierDetail[j].quantity = 0;
             modifierDetail[j].isSelected = !isSelected;
 
             if (type === undefined)
@@ -348,7 +354,7 @@ class ModalProduct extends Component {
 
   renderItemIsYesNo = (item) => {
     return (
-      <div className="card card-modifier">
+      <div className="renderItemIsYesNo card card-modifier">
         <div style={{ marginLeft: 5, marginRight: 10 }}>
           {item.modifier.details.map((data) => (
             <div
@@ -362,13 +368,14 @@ class ModalProduct extends Component {
               <div
                 style={{ display: "flex", alignItems: "center" }}
                 className="title-modifier"
-                onClick={() => this.addItemIsYesNo(data)}
+                onClick={() =>
+                  this.addItemIsYesNo(data, "yesOrNo", item.modifierID)
+                }
               >
                 <input
                   type="checkbox"
                   checked={data.isSelected}
                   className="scaled-checkbox form-check-input checkbox-modifier"
-                  onClick={() => this.addItemIsYesNo(data)}
                 />
                 <div
                   className="subtitle-modifier"
@@ -387,7 +394,7 @@ class ModalProduct extends Component {
 
   renderItemCheckbox = (item, i) => {
     return (
-      <div className="card card-modifier">
+      <div className="renderItemCheckbox card card-modifier">
         <div
           onClick={() => this.toggleModifier(i)}
           className="card-header header-modifier"
@@ -427,7 +434,9 @@ class ModalProduct extends Component {
                         : false
                     }
                     className="scaled-checkbox form-check-input checkbox-modifier"
-                    onClick={() => this.addItemIsYesNo(data, "checkbox")}
+                    onClick={() =>
+                      this.addItemIsYesNo(data, "checkbox", item.modifierID)
+                    }
                   />
                   <div
                     className="subtitle-modifier"
@@ -438,7 +447,11 @@ class ModalProduct extends Component {
                         ? `${data.quantity}x `
                         : null}
                     </span>
-                    <span onClick={() => this.addItemIsYesNo(data, "checkbox")}>
+                    <span
+                      onClick={() =>
+                        this.addItemIsYesNo(data, "checkbox", item.modifierID)
+                      }
+                    >
                       {data.name}
                     </span>
                     {data.quantity !== undefined && data.quantity !== 0 ? (
@@ -547,14 +560,51 @@ class ModalProduct extends Component {
                 <div
                   style={{ display: "flex", alignItems: "center" }}
                   className="title-modifier"
-                  onClick={() => this.addItemIsYesNo(data)}
+                  onClick={() =>
+                    this.addItemIsYesNo(data, "radio", item.modifierID)
+                  }
                 >
-                  <input
-                    type="radio"
-                    checked={data.isSelected ? true : false}
-                    class="scaled-checkbox form-check-input checkbox-modifier"
-                    onClick={() => this.addItemIsYesNo(data)}
-                  />
+                  <div>
+                    {data.isSelected ? (
+                      <div
+                        style={{
+                          border: "1px solid gray",
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                          marginLeft: 3,
+                          padding: 2,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          display: "flex",
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundColor: "#3498db",
+                            width: 10,
+                            height: 10,
+                            borderRadius: 50,
+                          }}
+                        ></div>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          border: "1px solid gray",
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                          marginLeft: 3,
+                        }}
+                      ></div>
+                    )}
+                    {/* <input
+                      type="radio"
+                      checked={data.isSelected ? true : false}
+                      class="scaled-checkbox form-check-input checkbox-modifier"
+                    /> */}
+                  </div>
 
                   <div
                     className="subtitle-modifier"
@@ -793,9 +843,18 @@ class ModalProduct extends Component {
     );
   };
 
-  setOrderingMode = (mode) => {
-    this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
+  setOrderingMode = async (mode) => {
+    await this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
+    await this.setState({ disableButton: true });
     this.processCart(null, mode);
+    if (mode !== "" && mode !== undefined && mode === null) {
+      setTimeout(() => {
+        const payload = {
+          orderingMode: mode,
+        };
+        this.props.dispatch(OrderAction.updateCartInfo(payload));
+      }, 1000);
+    }
     try {
       document.getElementById("dismiss-ordering-mode").click();
     } catch (error) {}
@@ -841,7 +900,9 @@ class ModalProduct extends Component {
               style={{ display: "flex", justifyContent: "center", padding: 7 }}
             >
               <h5 style={{ fontSize: 16, marginTop: 10 }} className="color">
-                Select your dining preference
+                {defaultOutlet && defaultOutlet.outletType === "RETAIL"
+                  ? "Ordering Mode"
+                  : "Select your dining preference"}
               </h5>
             </div>
             <div className="modal-body">
@@ -1190,6 +1251,7 @@ class ModalProduct extends Component {
   };
 
   render() {
+    console.log("modal product is rendering");
     return (
       <div>
         <span

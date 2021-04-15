@@ -6,12 +6,16 @@ import config from "../../config";
 
 class CardItemBasket extends Component {
   renderImageProduct = (item) => {
+    const { color } = this.props;
     if (
       item.product.defaultImageURL &&
       !isEmptyData(item.product.defaultImageURL)
     ) {
       return item.product.defaultImageURL;
     } else {
+      if (color && color.productPlaceholder !== null) {
+        return color.productPlaceholder
+      }
       return config.image_placeholder;
     }
   };
@@ -49,16 +53,19 @@ class CardItemBasket extends Component {
               >
                 {`${item.quantity}x`}
               </span>
-              <span style={{ fontSize: 12, fontWeight: "bold" }} >
-                {`${item.product.name} (${this.props.getCurrency(Number(item.product.retailPrice))})`}
+              <span style={{ fontSize: 12, fontWeight: "bold" }}>
+                {`${item.product.name} (${this.props.getCurrency(
+                  Number(item.product.retailPrice)
+                )})`}
               </span>
             </Typography>
           </div>
           {item.modifiers && item.modifiers.length > 0 && (
-            <div className="font-color-theme" style={{ textAlign: "left", marginTop: -10 }}>
-              <div style={{ fontSize: 10, fontStyle: "italic" }}>
-                Add On:
-              </div>
+            <div
+              className="font-color-theme"
+              style={{ textAlign: "left", marginTop: -10 }}
+            >
+              <div style={{ fontSize: 10, fontStyle: "italic" }}>Add On:</div>
               <div style={{ marginLeft: -23, marginTop: -5 }}>
                 {item.modifiers.map((modifier, keyModifier) => (
                   <div key={keyModifier} style={{ marginLeft: 30 }}>
@@ -72,18 +79,30 @@ class CardItemBasket extends Component {
                             <dev key={keyItem}>
                               <Typography
                                 style={{
-                                  lineHeight: "15px", textAlign: "left", marginLeft: -5,
+                                  lineHeight: "15px",
+                                  textAlign: "left",
+                                  marginLeft: -5,
                                   paddingTop: -50,
                                 }}
                               >
                                 <span
                                   className="color-active"
-                                  style={{ marginRight: 3, fontStyle: "italic", fontSize: 10, }}
+                                  style={{
+                                    marginRight: 3,
+                                    fontStyle: "italic",
+                                    fontSize: 10,
+                                  }}
                                 >
                                   {`${itemModifier.quantity}x`}
                                 </span>
-                                <span style={{ fontSize: 10, fontStyle: "italic", }} >
-                                  {`${itemModifier.name} (${this.props.getCurrency(Number(itemModifier.price))})`}
+                                <span
+                                  style={{ fontSize: 10, fontStyle: "italic" }}
+                                >
+                                  {`${
+                                    itemModifier.name
+                                  } (${this.props.getCurrency(
+                                    Number(itemModifier.price)
+                                  )})`}
                                 </span>
                               </Typography>
                             </dev>
@@ -94,19 +113,54 @@ class CardItemBasket extends Component {
               </div>
             </div>
           )}
+
+          {/* POSSIBLE PROMOTION INFO */}
+          {
+            item.promotions && item.promotions.length > 0 &&
+            item.promotions.map(promo =>
+              <div style={{ marginTop: 10 }}>
+                <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
+                  <p
+                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
+                    style={{ marginRight: 5, fontSize: 12, width: 5, float: 'left' }}
+                  >
+                    - 
+                  </p>
+                  <p
+                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
+                    style={{ marginRight: 5, fontSize: 12, fontStyle: 'italic' }}
+                  >
+                    {promo.name}
+                  </p>
+                </Typography>
+              </div>
+            )
+          }
+          {/* POSSIBLE PROMOTION INFO */}
+
           {item.remark && item.remark !== "-" && (
-            <div className="font-color-theme" style={{ 
-              display: "flex", marginLeft: -5, marginTop: -5, marginBottom: -10 
-            }}>
+            <div
+              className="font-color-theme"
+              style={{
+                display: "flex",
+                marginLeft: -5,
+                marginTop: -5,
+                marginBottom: -10,
+              }}
+            >
               <div
                 style={{
-                  fontStyle: "italic", fontSize: 10, textAlign: "justify",
+                  fontStyle: "italic",
+                  fontSize: 10,
+                  textAlign: "justify",
                   marginLeft: 5,
                 }}
               >{`Note:`}</div>
               <div
                 style={{
-                  fontStyle: "italic", fontSize: 10, textAlign: "justify",
+                  fontStyle: "italic",
+                  fontSize: 10,
+                  textAlign: "justify",
                   marginLeft: 5,
                 }}
               >
@@ -115,26 +169,44 @@ class CardItemBasket extends Component {
             </div>
           )}
 
-          <div style={{
-            display: "flex", justifyContent: "space-between",
-          }}>
-            <div 
-              className="customer-group-name" 
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              className="customer-group-name"
               style={{
-                textAlign: "left", fontSize: 12, fontWeight: "bold"
+                textAlign: "left",
+                fontSize: 12,
+                fontWeight: "bold",
               }}
             >
-              {this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}
+              {
+                item.grossAmount !== item.nettAmount && item.grossAmount > item.nettAmount ?
+                <div>
+                  <span>{this.props.getCurrency(Number(item.nettAmount.toFixed(2)))}</span>
+                  <span style={{ textDecoration: 'line-through', marginLeft: 8 }}>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+                </div>
+                :
+                <span>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+              }
             </div>
-
-            <button
-              className="customer-group-name" 
-              style={{ 
-                fontSize: 12, padding: 0, margin: 0, backgroundColor: "transparent"
-              }}
-            >
-              <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
-            </button>
+            {
+              this.props.dataBasket && this.props.dataBasket.status === 'PENDING' && 
+              <button
+                className="customer-group-name"
+                style={{
+                  fontSize: 12,
+                  padding: 0,
+                  margin: 0,
+                  backgroundColor: "transparent",
+                }}
+              >
+                <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
+              </button>
+            }
           </div>
         </div>
       </div>

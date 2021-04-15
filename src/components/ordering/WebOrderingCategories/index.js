@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const WebOrderingCategories = ({
   categories,
@@ -11,23 +13,31 @@ const WebOrderingCategories = ({
 }) => {
   let [querySearch, setQuerySearch] = useState("");
   let [openSearch, setOpenSearch] = useState(false);
-  let [prevSelectedCategory, setPrevSelectedCategory] = useState( selectedCategory );
+  let [prevSelectedCategory, setPrevSelectedCategory] = useState(
+    selectedCategory
+  );
+  const history = useHistory();
 
   const isItemsFinishedToLoad = (query) => {
-    try {
-      setQuerySearch(query)
-      loadingSearching(true);
-      if (finished) {
-        searchProduct(query);
-        setQuerySearch("")
-      }
-    } catch (e) {}
+    setQuerySearch(query);
+    // try {
+    //   setQuerySearch(query);
+    //   loadingSearching(true);
+    //   if (finished) {
+    //     searchProduct(query);
+    //     setQuerySearch("");
+    //   }
+    // } catch (e) {}
   };
 
-  if(finished && openSearch && querySearch !== ""){
-    isItemsFinishedToLoad(querySearch)
+  const search = (keyword) => {
+    history.push(`/products?q=${encodeURIComponent(keyword)}`);
+  };
+
+  if (finished && openSearch && querySearch !== "") {
+    isItemsFinishedToLoad(querySearch);
   }
-  
+
   useEffect(() => {
     const scrollEventListener = document.addEventListener("scroll", () => {
       categories.forEach((i) => {
@@ -47,10 +57,12 @@ const WebOrderingCategories = ({
 
   useEffect(() => {
     try {
-      let clientHeightHead = document.getElementById("masthead").clientHeight
-      let clientHeightCategory= document.getElementById("header-categories").clientHeight
+      let clientHeightHead = document.getElementById("masthead").clientHeight;
+      let clientHeightCategory = document.getElementById("header-categories")
+        .clientHeight;
       let headerHeight = clientHeightHead + clientHeightCategory;
-      if(prevSelectedCategory === 0) headerHeight = clientHeightHead + clientHeightCategory * 2
+      if (prevSelectedCategory === 0)
+        headerHeight = clientHeightHead + clientHeightCategory * 2;
 
       window.scrollTo({
         top: document.getElementById(selectedCategory).offsetTop - headerHeight,
@@ -72,48 +84,61 @@ const WebOrderingCategories = ({
       }}
     >
       {!openSearch ? (
-        categories.map((item, i) => (
-          <li
-            id={`cat-${i}`}
-            style={{ cursor: "pointer" }}
-            key={i}
-            onClick={() => setSelectedCategory(i)}
-            className={
-              i === selectedCategory
-                ? "nav-item category-item active color"
-                : "nav-item category-item"
-            }
-          >
-            <div
-              className={ i === selectedCategory ? "color-active" : "color-nonactive" }
-              style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
+        <React.Fragment>
+          {categories.map((item, i) => (
+            <li
+              id={`cat-${i}`}
+              style={{ cursor: "pointer" }}
+              key={i}
+              onClick={() => setSelectedCategory(i)}
+              className={
+                i === selectedCategory
+                  ? "nav-item category-item active color"
+                  : "nav-item category-item"
+              }
             >
-              {item.name}
-            </div>
-            {i === selectedCategory && (
               <div
-                className="profile-dashboard"
-                style={{
-                  height: 4,
-                  marginLeft: -10,
-                  position: "absolute",
-                  bottom: -6,
-                  zIndex: 10,
-                  width: "100%",
-                }}
-              />
-            )}
-          </li>
-        ))
+                className={
+                  i === selectedCategory ? "color-active" : "color-nonactive"
+                }
+                style={{ fontSize: 14, marginRight: 20, fontWeight: "bold" }}
+              >
+                {item.name}
+              </div>
+              {i === selectedCategory && (
+                <div
+                  className="profile-dashboard"
+                  style={{
+                    height: 4,
+                    marginLeft: -10,
+                    position: "absolute",
+                    bottom: -6,
+                    zIndex: 10,
+                    width: "100%",
+                  }}
+                />
+              )}
+            </li>
+          ))}
+        </React.Fragment>
       ) : (
-        <input
-          onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
-          style={{ height: 35, fontSize: 14 }}
-          id="input-txt"
-          type="text"
-          autoFocus={true}
-          placeholder="Search your product here..."
-        />
+        <div
+          style={{ display: "flex", alignItems: "center", marginRight: "5rem" }}
+        >
+          <input
+            onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
+            style={{ height: 35, fontSize: 14, width: "100%" }}
+            id="input-txt"
+            type="text"
+            autoFocus={true}
+            placeholder="Search your product here..."
+          />
+          <i
+            onClick={() => search(querySearch)}
+            style={{ fontSize: 25, cursor: "pointer" }}
+            className="fa fa-search color"
+          ></i>
+        </div>
       )}
       <div
         className="search-button-absolute background-theme"

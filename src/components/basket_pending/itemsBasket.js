@@ -38,7 +38,6 @@ class ItemsBasket extends Component {
   render() {
     let { data } = this.props;
     let { dataBasket } = this.state;
-    
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>
         <ModalProduct
@@ -61,6 +60,10 @@ class ItemsBasket extends Component {
                 {data.storeDetail.name}
               </div>
             </div>
+            {
+              dataBasket.remark !== undefined && dataBasket.remark !== null && dataBasket.remark !== '' && 
+              <p style={{fontSize: 13, lineHeight: 1, textAlign: 'left', fontStyle: 'italic'}}>Notes : "{dataBasket.remark}"</p>
+            }
             <div
               style={{
                 backgroundColor: "#DCDCDC",

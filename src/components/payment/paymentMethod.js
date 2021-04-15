@@ -9,6 +9,7 @@ import { PaymentAction } from "../../redux/actions/PaymentAction";
 import { connect } from "react-redux";
 import CreditCard from "@material-ui/icons/CreditCard";
 import ModalPaymentMethod from "./ModalPaymentMethod";
+import ModalPaymentPermission from "./ModalRegisterPermission";
 import _ from "lodash";
 import { uuid } from "uuidv4";
 import styles from "./styles.module.css";
@@ -29,6 +30,8 @@ class PaymentMethod extends Component {
       getPaymentMethod: false,
       showAddPaymentForm: false,
       addPaymentFormUrl: "",
+      latestCardRegistered: null,
+      CreditCardSelected: null
     };
   }
 
@@ -38,7 +41,51 @@ class PaymentMethod extends Component {
     );
     this.setState({ getPaymentMethod });
     this.getDataPaymentCard();
+    
+    window.addEventListener("focus", this.onFocus)
+
   };
+
+  componentWillUnmount() {
+    window.removeEventListener("focus", this.onFocus)
+  }
+
+  onFocus = async () => {
+    try{
+      if (this.state.latestCardRegistered === null) return
+      let accountID = this.state.latestCardRegistered.accountID;
+      const response = await this.props.dispatch(
+        PaymentAction.checkPaymentCard(accountID)
+      );
+      if (response.data.registrationStatus === "completed") {
+        localStorage.setItem(
+          `${config.prefix}_paymentCardAccountDefault`,
+          JSON.stringify(encryptor.encrypt(response.data))
+        );
+        
+        await this.getDataPaymentCard();
+        this.setState({ showAddPaymentForm: false });
+        this.handleSelectCard(response.data);
+        Swal.fire({
+          icon: "success",
+          timer: 1500,
+          title: "Your Credit Card has been added.",
+          showConfirmButton: false,
+        });
+      } else if (
+        response.data &&
+        response.data.registrationStatus === "failed"
+      ) {
+        this.setState({ showAddPaymentForm: false });
+        Swal.fire({
+          icon: "error",
+          timer: 1500,
+          showConfirmButton: false,
+          title: "Failed to add Credit Card!",
+        });
+      }
+    }catch(e) {}
+  }
 
   getDataPaymentCard = async () => {
     let infoCompany = await this.props.dispatch(
@@ -48,11 +95,11 @@ class PaymentMethod extends Component {
     let paymentCardAccount = await this.props.dispatch(
       PaymentAction.getPaymentCard()
     );
-    
+
     let selectedCard = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
-    
+
     if (infoCompany.paymentTypes && paymentCardAccount.resultCode === 200) {
       let paymentTypes = infoCompany.paymentTypes;
       paymentTypes.forEach((elements) => {
@@ -60,25 +107,22 @@ class PaymentMethod extends Component {
           paymentID: elements.paymentID,
         });
         elements.data.forEach((element) => {
-          element.minimumPayment = elements.minimumPayment
-          if(element.isDefault){
+          element.minimumPayment = elements.minimumPayment;
+          if (element.isDefault) {
             element.default = true;
             localStorage.setItem(
               `${config.prefix}_paymentCardAccountDefault`,
               JSON.stringify(encryptor.encrypt(element))
             );
           }
-          if (
-            selectedCard &&
-            selectedCard.accountID === element.accountID
-          ) {
+          if (selectedCard && selectedCard.accountID === element.accountID) {
             element.selected = true;
           } else {
             delete element.selected;
           }
         });
       });
-      
+
       this.setState({ paymentTypes });
     }
     this.setState({ loadingShow: false, infoCompany });
@@ -150,6 +194,13 @@ class PaymentMethod extends Component {
     this.setState({ detailCard: null, isLoading: false });
   };
 
+  removeDetailDataCard = () => {
+    this.setState({
+      latestCardRegistered: null,
+      CreditCardSelected: null
+    });
+  }
+
   handleAddMethod = async (data) => {
     let payload = {
       companyID: this.props.account.companyId,
@@ -157,6 +208,24 @@ class PaymentMethod extends Component {
       referenceNo: uuid(),
       paymentID: data.paymentID,
     };
+    // CHECK IF PAYMENT PROVIDER NEED TO OPEN NEW TAB, THEN REGISTER NOW
+    if (data.forceNewTab === true || data.paymentID === "MASTERCARD_PAYMENT_GATEWAY") {
+      await this.setState({ isLoading: true });
+      let response = await this.props.dispatch(
+        PaymentAction.registerPaymentCard(payload)
+      );
+      await this.setState({
+        isLoading: false,
+        addPaymentFormUrl: response.data.url,
+        latestCardRegistered: response.data,
+        CreditCardSelected: data
+      });
+      try {
+        document.getElementById('register-card-on-new-tab').click()
+      }catch(e){}
+      return;
+    }
+    
 
     Swal.fire({
       title: "Add a Card",
@@ -176,46 +245,67 @@ class PaymentMethod extends Component {
         let response = await this.props.dispatch(
           PaymentAction.registerPaymentCard(payload)
         );
+        let win = null;
         if (response.resultCode === 200) {
           this.setState({
             isLoading: false,
-            showAddPaymentForm: true,
             addPaymentFormUrl: response.data.url,
+            latestCardRegistered: response.data
           });
-
+          if (
+            data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
+            data.forceNewTab
+          ) {
+            win = window.open(response.data.url, "_blank");
+            win.focus();
+          } else {
+            this.setState({
+              showAddPaymentForm: true,
+            });
+          }
           let accountID = response.data.accountID;
-          response = await this.props.dispatch( PaymentAction.checkPaymentCard(accountID) );
-          
-          let timeInterval = setInterval(async () => {
-            response = await this.props.dispatch( PaymentAction.checkPaymentCard(accountID) );
-            if(response.data.registrationStatus === "completed"){
-              localStorage.setItem(
-                `${config.prefix}_paymentCardAccountDefault`,
-                JSON.stringify(encryptor.encrypt(response.data))
+          response = await this.props.dispatch(
+            PaymentAction.checkPaymentCard(accountID)
+          );
+
+          if (data.forceNewTab !== true) {
+            let timeInterval = setInterval(async () => {
+              response = await this.props.dispatch(
+                PaymentAction.checkPaymentCard(accountID)
               );
-              await this.getDataPaymentCard();
-              this.setState({ showAddPaymentForm: false });
-              this.handleSelectCard(response.data);
-              Swal.fire({ icon: "success",
-                timer: 1500,
-                title: "Your Credit Card has been added.",
-                showConfirmButton: false,
-              });
-              return clearInterval(timeInterval);
-            } else if (
-              response.data &&
-              response.data.registrationStatus === "failed"
-            ) {
-              this.setState({ showAddPaymentForm: false });
-              Swal.fire({
-                icon: "error",
-                timer: 1500,
-                showConfirmButton: false,
-                title: "Failed to add Credit Card!",
-              });
-              return clearInterval(timeInterval);
-            }
-          }, 5000);
+              if (response.data.registrationStatus === "completed") {
+                localStorage.setItem(
+                  `${config.prefix}_paymentCardAccountDefault`,
+                  JSON.stringify(encryptor.encrypt(response.data))
+                );
+                if (win) {
+                  win.close();
+                }
+                await this.getDataPaymentCard();
+                this.setState({ showAddPaymentForm: false });
+                this.handleSelectCard(response.data);
+                Swal.fire({
+                  icon: "success",
+                  timer: 1500,
+                  title: "Your Credit Card has been added.",
+                  showConfirmButton: false,
+                });
+                return clearInterval(timeInterval);
+              } else if (
+                response.data &&
+                response.data.registrationStatus === "failed"
+              ) {
+                this.setState({ showAddPaymentForm: false });
+                Swal.fire({
+                  icon: "error",
+                  timer: 1500,
+                  showConfirmButton: false,
+                  title: "Failed to add Credit Card!",
+                });
+                return clearInterval(timeInterval);
+              }
+            }, 8000);
+          }
         }
       }
     });
@@ -241,7 +331,7 @@ class PaymentMethod extends Component {
       isLoading,
       paymentTypes,
       detailCard,
-      getPaymentMethod
+      getPaymentMethod,
     } = this.state;
     return (
       <div
@@ -256,6 +346,12 @@ class PaymentMethod extends Component {
           handleSetDefault={() => this.handleSetDefault()}
           handleRemoveCard={() => this.handleRemoveCard()}
         />
+        <ModalPaymentPermission
+          latestCardRegistered={this.state.latestCardRegistered}
+          CreditCardSelected={this.state.CreditCardSelected}
+          removeDetailDataCard={this.removeDetailDataCard}
+        />
+        <a id="register-card-on-new-tab" data-toggle="modal" data-target='#payment-method-permission'></a>
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div
@@ -331,8 +427,6 @@ class PaymentMethod extends Component {
                             item.data.length === 0) && (
                             <Button
                               className="button"
-                              data-toggle="modal"
-                              data-target="#delivery-address-modal"
                               style={{
                                 width: 100,
                                 paddingLeft: 5,
@@ -342,7 +436,8 @@ class PaymentMethod extends Component {
                               }}
                               onClick={() => this.handleAddMethod(item)}
                             >
-                              <i className="fa fa-plus" aria-hidden="true" /> Add Card
+                              <i className="fa fa-plus" aria-hidden="true" />{" "}
+                              Add Card
                             </Button>
                           )}
                         </div>
@@ -357,7 +452,7 @@ class PaymentMethod extends Component {
                                   color: "#FFF",
                                   cursor: "pointer",
                                   backgroundColor: "#1d282e",
-                                  border: "1 solid #FFF"
+                                  border: "1 solid #FFF",
                                 }}
                                 data-toggle="modal"
                                 data-target={
@@ -376,7 +471,9 @@ class PaymentMethod extends Component {
                                   <div
                                     style={{ fontSize: 16, fontWeight: "bold" }}
                                   >
-                                    {card.details.cardIssuer.toUpperCase()}
+                                    {card.details.cardIssuer
+                                      ? card.details.cardIssuer.toUpperCase()
+                                      : "-"}
                                   </div>
                                   {card.default === true && (
                                     <div
@@ -445,14 +542,18 @@ class PaymentMethod extends Component {
                         </Row>
                       </div>
                     ))}
-                    
+
                     {paymentTypes.length === 0 && (
                       <div>
                         {/* <Lottie
                           options={{ animationData: emptyGif }}
                           style={{ height: 250 }}
                         /> */}
-                        <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
+                        <img
+                          src={config.url_emptyImage}
+                          alt="is empty"
+                          style={{ marginTop: 30 }}
+                        />
                         <div>Data is empty</div>
                       </div>
                     )}

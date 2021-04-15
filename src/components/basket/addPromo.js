@@ -7,23 +7,35 @@ import RedeemIcon from '@material-ui/icons/Redeem';
 class AddPromo extends Component {
   render() {
     let props = this.props.data
+    let enableRedeemPoint = false;
+    if (props.pointsToRebateRatio === undefined || props.pointsToRebateRatio === null) {
+      enableRedeemPoint = true
+    } else {
+      if (props.pointsToRebateRatio === '1:0') {
+        enableRedeemPoint = false;
+      } else {
+        enableRedeemPoint = true;
+      }
+    }
     let selectedVoucher = this.props.selectedVoucher
     let colorText = this.props.disabledBtn ? "#DCDCDC" : (this.props.color.primary || "#c00a27") 
-    // console.log(props) 
 
     return (
       <div>
-        <RedeemPointBasket
-          data={props}
-          campaignPoint={this.props.campaignPoint}
-          balanceSVC={this.props.balanceSVC || 0}
-          defaultBalance={this.props.defaultBalance || 0}
-          handleRedeemPoint={() => this.props.handleRedeemPoint()}
-          cancelSelectPoint={() => this.props.cancelSelectPoint()}
-          getCurrency={(price) => this.props.getCurrency(price)}
-          scrollPoint={(data) => this.props.scrollPoint(data)}
-          setPoint={(point, discountPoint) => this.props.setPoint(point, discountPoint)}
-        />
+        {
+          props.detailPoint !== undefined && props.detailPoint !== null && props.detailPoint.point !== null &&
+          <RedeemPointBasket
+            data={props}
+            campaignPoint={this.props.campaignPoint}
+            balanceSVC={this.props.balanceSVC || 0}
+            defaultBalance={this.props.defaultBalance || 0}
+            handleRedeemPoint={() => this.props.handleRedeemPoint()}
+            cancelSelectPoint={() => this.props.cancelSelectPoint()}
+            getCurrency={(price) => this.props.getCurrency(price)}
+            scrollPoint={(data) => this.props.scrollPoint(data)}
+            setPoint={(point, discountPoint) => this.props.setPoint(point, discountPoint)}
+          />
+        }
         <div style={{ width: "100%", }}>
           {
             props.myVoucher && props.myVoucher.length > 0 &&
@@ -66,12 +78,12 @@ class AddPromo extends Component {
             </div>
           }
           {
-            props.totalPoint > 0 && props.storeDetail.enableRedeemPoint === true &&
+            props.totalPoint > 0 && enableRedeemPoint === true &&
             <div style={{ 
               border: "1px solid #DCDCDC", padding: 10, borderRadius: 5, width: "100%",
               marginTop: 10, display: "flex", alignItems: "center"
             }}>
-              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn || props.totalPrice === 0}
+              <Button className="background-theme" disabled={this.props.roleBtnClear || this.props.disabledBtn || props.totalPrice === 0 || this.props.campaignPoint.pointsToRebateRatio === "1:0"}
                 data-toggle="modal" data-target="#redeem-point-modal"
                 onClick={() => this.props.handleRedeemPoint()}
                 style={{

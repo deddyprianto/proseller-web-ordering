@@ -31,7 +31,8 @@ function getCampaignStamps(payload = null) {
           stampsSubTitle: response.Data.stamps.stampsSubTitle,
           maxStampsItemPerVisit: response.Data.stamps.maxStampsItemPerVisit,
           todayStampsCount: response.Data.stamps.todayStampsCount,
-          maxStampsPerDay: response.Data.stamps.maxStampsPerDay
+          maxStampsPerDay: response.Data.stamps.maxStampsPerDay,
+          expiryDate: response.Data.expiryDate
         }
         stampsTrueItem = _.filter(response.Data.stamps.stampsItem, _.iteratee(['stampsStatus', true]));
 

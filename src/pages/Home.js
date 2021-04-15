@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
+import OrderingRetail from "../components/ordering/indexRetail";
+import OutletSelection from "./OutletSelection";
 import { OrderAction } from "../redux/actions/OrderAction";
 import { PromotionAction } from "../redux/actions/PromotionAction";
 import LoadingAddCart from "../components/loading/LoadingAddCart";
@@ -16,7 +18,7 @@ class Home extends Component {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu')
     };
   }
 
@@ -60,6 +62,8 @@ class Home extends Component {
 
   render() {
     const { isEmenu } = this.state;
+    const { defaultOutlet } = this.props;
+    // console.log(defaultOutlet, 'defaultOutlet')
     return (
       <div className="col-full">
         <div
@@ -69,10 +73,15 @@ class Home extends Component {
         >
           {this.state.loading ? <LoadingAddCart /> : null}
           <div className="stretch-full-width">
-            <main id="main" className="site-main">
-              {!isEmenu && <Promotion />}
-              <Ordering />
-            </main>
+            {
+              this.props.setting.outletSelection === 'MANUAL' && isEmptyObject(this.props.defaultOutlet) && !isEmenu ?
+              <OutletSelection />
+              :
+              <main id="main" className="site-main">
+                {!isEmenu && <Promotion />}
+                { defaultOutlet && defaultOutlet.outletType === 'RETAIL' ? <OrderingRetail history={this.props.history} /> : <Ordering /> }
+              </main>
+            }
           </div>
         </div>
       </div>
@@ -80,7 +89,10 @@ class Home extends Component {
   }
 }
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    setting: state.order,
+    defaultOutlet: state.outlet.defaultOutlet,
+  };
 };
 
 export default connect(mapStateToProps)(Home);

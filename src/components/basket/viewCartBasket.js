@@ -29,13 +29,15 @@ const ViewCartBasket = ({
   handleOpenLogin,
   isLoggedIn,
   basket,
-  handleSetState
+  handleSetState,
+  dataBasket,
+  updateCartInfo
 }) => {
-  if(!basket.details && data.dataBasket) basket = data.dataBasket
-  
+  // if (!basket.details && data.dataBasket) basket = data.dataBasket;
+  if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
   if (!outlet.orderValidation) {
-    outlet = data.storeDetail
-    if (!outlet.orderValidation) outlet = config.getValidation(outlet)
+    outlet = data.storeDetail;
+    if (!outlet.orderValidation) outlet = config.getValidation(outlet);
   }
 
   let props = data;
@@ -43,11 +45,9 @@ const ViewCartBasket = ({
     return (basket &&
       basket.status === "SUBMITTED" &&
       props.orderingMode &&
-      (
-        props.orderingMode === "TAKEAWAY" ||
+      (props.orderingMode === "TAKEAWAY" ||
         props.orderingMode === "STOREPICKUP" ||
-        props.orderingMode === "STORECHECKOUT"
-      )) ||
+        props.orderingMode === "STORECHECKOUT")) ||
       (basket &&
         basket.status !== "PENDING" &&
         basket.orderingMode === "DINEIN" &&
@@ -69,7 +69,7 @@ const ViewCartBasket = ({
   const roleBtnSettle = () => {
     return !props.btnBasketOrder ||
       (props.storeDetail &&
-      props.storeDetail.orderingStatus === "UNAVAILABLE") ||
+        props.storeDetail.orderingStatus === "UNAVAILABLE") ||
       (basket && basket.status === "PROCESSING") ||
       (basket && basket.status === "READY_FOR_COLLECTION") ||
       (basket &&
@@ -79,12 +79,9 @@ const ViewCartBasket = ({
       (((basket && basket.status === "SUBMITTED") ||
         basket.status === "CONFIRMED") &&
         props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
+        (props.orderingMode === "TAKEAWAY" ||
           props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT"
-        )
-      ) ||
+          props.orderingMode === "STORECHECKOUT")) ||
       (basket &&
         basket.status !== "PENDING" &&
         basket.status !== "PENDING_PAYMENT" &&
@@ -106,13 +103,10 @@ const ViewCartBasket = ({
     return (
       props.settle ||
       (props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
+        (props.orderingMode === "TAKEAWAY" ||
           props.orderingMode === "STOREPICKUP" ||
           props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        )
-      ) ||
+          props.orderingMode === "DELIVERY")) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
         basket &&
@@ -126,13 +120,10 @@ const ViewCartBasket = ({
     return (
       props.settle ||
       (props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
+        (props.orderingMode === "TAKEAWAY" ||
           props.orderingMode === "STOREPICKUP" ||
           props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        )
-      ) ||
+          props.orderingMode === "DELIVERY")) ||
       (props.orderingMode &&
         props.orderingMode === "DINEIN" &&
         basket &&
@@ -143,12 +134,10 @@ const ViewCartBasket = ({
       (props.storeDetail &&
         props.storeDetail.enableTableScan !== false &&
         props.scanTable &&
-        props.scanTable.table
-      ) ||
-      (
-        props.scanTable &&
-        props.scanTable.table
-      )
+        props.scanTable.table) ||
+      (props.scanTable &&
+        props.scanTable.table &&
+        basket.outlet.outletType !== "RESTO")
     );
   };
 
@@ -156,37 +145,45 @@ const ViewCartBasket = ({
     return roleIconSettle();
   };
 
-  const orderingModeField = data.dataBasket.orderingMode === "DINEIN" ? "dineIn" : data.dataBasket.orderingMode === "DELIVERY" ? "delivery" : "takeAway";
+  const orderingModeField =
+    data.dataBasket.orderingMode === "DINEIN"
+      ? "dineIn"
+      : data.dataBasket.orderingMode === "DELIVERY"
+      ? "delivery"
+      : "takeAway";
 
   const productQuantity =
     basket &&
     basket.details &&
-    basket.details.reduce((acc, item) => ({ quantity: acc.quantity + item.quantity })).quantity;
+    basket.details.reduce((acc, item) => ({
+      quantity: acc.quantity + item.quantity,
+    })).quantity;
 
-  let { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[orderingModeField];
-  minQty = minQty || 0
-  maxQty = maxQty || 0
-  minAmount = minAmount || 0
-  maxAmount = maxAmount || 0
+  let { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[
+    orderingModeField
+  ];
+  minQty = minQty || 0;
+  maxQty = maxQty || 0;
+  minAmount = minAmount || 0;
+  maxAmount = maxAmount || 0;
 
-  const btnSattleStatusDisable = (
-    roleBtnSettle() ||
-    basket.totalGrossAmount < minAmount ||
-    (basket &&
-      basket.totalGrossAmount > maxAmount &&
-      maxAmount > 0) ||
-    productQuantity < minQty ||
-    (productQuantity > maxQty && maxQty > 0) ||
-    (data.dataBasket.orderingMode === "DELIVERY" &&
-    !deliveryProvider) ||
-    (deliveryProvider &&
-    deliveryProvider.deliveryFeeFloat < 0) ||
-    (outlet.timeSlots &&
-    outlet.timeSlots.length > 0 &&
-    !props.orderActionTimeSlot &&
-    data.dataBasket.orderingMode !== "DINEIN")
-  )
-
+  const btnSattleStatusDisable =
+    !(
+      basket.outlet.outletType === "RESTO" &&
+      basket.orderingMode === "DINEIN" &&
+      basket.isPaymentComplete === false
+    ) &&
+    (roleBtnSettle() ||
+      basket.totalGrossAmount < minAmount ||
+      (basket && basket.totalGrossAmount > maxAmount && maxAmount > 0) ||
+      productQuantity < minQty ||
+      (productQuantity > maxQty && maxQty > 0) ||
+      (data.dataBasket.orderingMode === "DELIVERY" && !deliveryProvider) ||
+      (deliveryProvider && deliveryProvider.deliveryFeeFloat < 0) ||
+      (props.timeslotData &&
+        props.timeslotData.length > 0 &&
+        !props.orderActionTimeSlot &&
+        data.dataBasket.orderingMode !== "DINEIN"));
   return (
     <div
       style={{
@@ -201,11 +198,10 @@ const ViewCartBasket = ({
             dataBasket={basket}
             countryCode={props.countryCode}
             getCurrency={(price) => getCurrency(price)}
-            handleSetState={(field, value) =>
-              handleSetState(field, value)
-            }
+            handleSetState={(field, value) => handleSetState(field, value)}
             handleClear={(dataBasket) => handleClear(dataBasket)}
             roleBtnClear={roleBtnClear()}
+            updateCartInfo={updateCartInfo}
           />
         </Col>
         <Col xs="12" sm="6">
@@ -237,9 +233,8 @@ const ViewCartBasket = ({
             handleSetProvaider={(item) => handleSetProvaider(item)}
             handleOpenLogin={() => handleOpenLogin()}
             btnSattleStatusDisable={btnSattleStatusDisable}
-            handleSetState={(field, value) =>
-              handleSetState(field, value)
-            }
+            handleSetState={(field, value) => handleSetState(field, value)}
+            timeslotData={props.timeslotData}
           />
         </Col>
       </Row>
@@ -261,34 +256,48 @@ const ViewCartBasket = ({
             justifyContent: "center",
           }}
         >
-          {
-            deliveryProvider &&
+          {deliveryProvider &&
             deliveryProvider.minPurchaseForFreeDelivery &&
             deliveryProvider.deliveryFeeFloat !== 0 &&
-            props.orderingMode === "DELIVERY" &&
-            <div>
-              <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center" }}>
-                {`Enjoy free delivery when your order amount is more than ${getCurrency(Number(deliveryProvider.minPurchaseForFreeDelivery))}`}
+            props.orderingMode === "DELIVERY" && (
+              <div>
+                <div
+                  className="small text-left color-active"
+                  style={{ lineHeight: "17px", textAlign: "center" }}
+                >
+                  {`Enjoy free delivery when your order amount is more than ${getCurrency(
+                    Number(deliveryProvider.minPurchaseForFreeDelivery)
+                  )}`}
+                </div>
+                <div
+                  style={{
+                    height: 1,
+                    backgroundColor: "#CDCDCD",
+                    width: "100%",
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                />
               </div>
-              <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-            </div>
-          }
+            )}
 
-          {
-            isLoggedIn &&
+          {isLoggedIn &&
             deliveryProvider &&
             props.orderingMode &&
-            props.orderingMode === "DELIVERY" && 
-            <div style={{ marginLeft: 10, marginRight: 10 }}>
-              {deliveryProvider ? (
-                deliveryProvider.deliveryFeeFloat < 0 ? (
-                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
-                    Delivery is not available in your area.
-                  </div>
-                ) : null
-              ) : null}
-            </div>
-          }
+            props.orderingMode === "DELIVERY" && (
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                {deliveryProvider ? (
+                  deliveryProvider.deliveryFeeFloat < 0 ? (
+                    <div
+                      className="small text-left text-warning-theme"
+                      style={{ lineHeight: "17px", textAlign: "center" }}
+                    >
+                      Delivery is not available in your area.
+                    </div>
+                  ) : null
+                ) : null}
+              </div>
+            )}
 
           <div
             style={{
@@ -306,7 +315,7 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              TOTAL
+              GRAND TOTAL
             </div>
             <div
               style={{
@@ -315,54 +324,75 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              {
-                getCurrency(
-                  data.dataBasket.totalNettAmount
-                )
-              }
+              {getCurrency(basket.totalNettAmount)}
             </div>
           </div>
 
-          {basket.status === "PROCESSING" ||
+          {
+              basket && basket.inclusiveTax > 0 &&
+              <div
+                style={{
+                  marginTop: -6,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+              >
+                <div style={{ opacity: 0.6, fontSize: 12, }} > Inclusive Tax {basket.outlet.taxPercentage}% </div>
+                <div style={{ opacity: 0.6, fontSize: 12, }} > {getCurrency(basket.inclusiveTax)} </div>
+              </div>
+            }
+
+          {!(
+            basket.outlet.outletType === "RESTO" &&
+            basket.orderingMode === "DINEIN"
+          ) &&
+          (basket.status === "PROCESSING" ||
             basket.status === "READY_FOR_COLLECTION" ||
             basket.status === "READY_FOR_DELIVERY" ||
-            basket.status === "ON_THE_WAY" ? (
-              <div
+            basket.status === "ON_THE_WAY") ? (
+            <div
+              style={{
+                padding: 10,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Button
+                className="button"
                 style={{
-                  padding: 10,
+                  width: "100%",
+                  fontWeight: "bold",
                   display: "flex",
-                  flexDirection: "row",
+                  justifyContent: "center",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  height: 50,
                 }}
+                onClick={() => setViewCart(false)}
               >
-                <Button
-                  className="button"
-                  style={{
-                    width: "100%",
-                    fontWeight: "bold",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 50
-                  }}
-                  onClick={() => setViewCart(false)}
-                >
-                  <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
-                  Waiting Order
+                <i
+                  className="fa fa-shopping-cart"
+                  aria-hidden="true"
+                  style={{ fontSize: 20, marginRight: 10 }}
+                />
+                Waiting Order
               </Button>
-              </div>
-            ) : (
-              <div
-                style={{
-                  padding: 10,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                {/* <Button
+            </div>
+          ) : (
+            <div
+              style={{
+                padding: 10,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* <Button
                     disabled={roleBtnClear()}
                     onClick={() => props.handleClear()} style={{
                       boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", width: "45%", backgroundColor: "#c00a27",
@@ -370,31 +400,38 @@ const ViewCartBasket = ({
                     }} >
                     <DeleteIcon style={{ fontSize: 20, marginRight: 5 }} /> Clear
                   </Button> */}
-                <Button
-                  disabled={btnSattleStatusDisable}
-                  onClick={() => {
-                    roleOnClickSettle() ? handleSettle() : handleSubmit();
-                  }}
-                  className="button"
-                  style={{
-                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                    width: "100%",
-                    display: "flex",
-                    fontWeight: "bold",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: 50,
-                  }}
-                >
-                  {
-                    roleIconSettle() ? 
-                    <MonetizationOnIcon style={{ fontSize: 20, marginRight: 5 }} /> :
-                    <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  }
-                  {roleTitleSettle() ? "Confirm & Pay" : "Submit"}
-                </Button>
-              </div>
-            )}
+              <Button
+                disabled={btnSattleStatusDisable}
+                onClick={() => {
+                  roleOnClickSettle() ? handleSettle() : handleSubmit();
+                }}
+                className="button"
+                style={{
+                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                  width: "100%",
+                  display: "flex",
+                  fontWeight: "bold",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 50,
+                }}
+              >
+                {roleIconSettle() ? (
+                  <MonetizationOnIcon
+                    style={{ fontSize: 20, marginRight: 5 }}
+                  />
+                ) : (
+                  <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
+                )}
+                {roleTitleSettle()
+                  ? basket.outlet.outletType === "RESTO" &&
+                    basket.orderingMode === "DINEIN"
+                    ? "Settle"
+                    : "Confirm & Pay"
+                  : "Submit"}
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

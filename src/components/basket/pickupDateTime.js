@@ -5,6 +5,9 @@ import SelectPicupDateTime from "./selectPicupDateTime";
 import moment from "moment";
 
 class PickupDateTime extends Component {
+  state = {
+    showModal: false,
+  };
   render() {
     let props = this.props.data;
     var textTitle = props.orderingMode;
@@ -21,12 +24,16 @@ class PickupDateTime extends Component {
           padding: 10,
         }}
       >
-        <SelectPicupDateTime
-          data={props}
-          handleSetState={(field, value) =>
-            this.props.handleSetState(field, value)
-          }
-        />
+        {this.state.showModal && (
+          <SelectPicupDateTime
+            data={props}
+            handleSetState={(field, value) =>
+              this.props.handleSetState(field, value)
+            }
+            showModal={this.state.showModal}
+            handleClose={() => this.setState({ showModal: false })}
+          />
+        )}
         <div
           style={{
             display: "flex",
@@ -43,8 +50,7 @@ class PickupDateTime extends Component {
               disabled={
                 this.props.roleBtnClear || !props.btnBasketOrder ? true : false
               }
-              data-toggle="modal"
-              data-target="#pickup-date-modal"
+              onClick={() => this.setState({ showModal: true })}
               style={{
                 fontWeight: "bold",
                 cursor: "pointer",

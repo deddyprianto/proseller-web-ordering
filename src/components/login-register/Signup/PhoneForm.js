@@ -20,6 +20,10 @@ const PhoneForm = ({
 }) => {
   const [agreeTC, setAgreeTC] = useState(true);
 
+  if (termsAndConditions === undefined || termsAndConditions === null || termsAndConditions === '') {
+    isTCAvailable = false;
+  }
+
   return (
     <div className="modal-body">
       <p className="text-muted">{`Register for ${phoneNumber || "-"}`}</p>
@@ -133,7 +137,8 @@ const PhoneForm = ({
         </>
       )}
       <Button
-        disabled={isSubmitting || agreeTC || !isTCAvailable}
+        // disabled={isSubmitting || agreeTC || !isTCAvailable}
+        disabled={isSubmitting}
         className="button"
         style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
         onClick={() => handleSubmit()}

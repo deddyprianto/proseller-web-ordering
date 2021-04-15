@@ -10,7 +10,8 @@ export const OutletAction = {
   fetchAllOutlet,
   fetchSingleOutlet,
   getCoordinates,
-  setData
+  setData,
+  getBackupOutlet
 };
 
 function fetchDefaultOutlet(defaultOutlet = {}) {
@@ -44,9 +45,30 @@ function getCoordinates() {
 }
 
 function getNearsesOutlet(position = null) {
-  return async (dispatch) => {
-    let data = await MasterDataService.api( "POST", position, "outlets/nearestoutlet" );
-    if(data.ResultCode === 400) data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+  return async (dispatch, getState) => {
+    const state = getState();
+    
+    // FIND ORDER SELECTION TYPE ( MANUAL / NEAREST / DEFAULT )
+    let orderModeType = "DEFAULT"
+    try{
+      if (state.order.setting.length > 0) {
+        const find = state.order.setting.find(
+          (item) => item.settingKey === "OutletSelection"
+        );
+        if (find !== undefined) {
+          orderModeType = find.settingValue;
+        }
+        console.log(orderModeType, 'orderModeType')
+      }
+    }catch(e){}
+
+    let data = {}
+    if (orderModeType === 'NEAREST') {
+      data = await MasterDataService.api( "POST", position, "outlets/nearestoutlet" );
+      if(data.ResultCode === 400) data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+    } else {
+      data = await MasterDataService.api( "GET", null, "outlets/defaultoutlet" );
+    }
 
     if (!isEmptyObject(data.data)) {
       if (data.data && data.data.id) data.data = config.getValidation(data.data)
@@ -54,6 +76,13 @@ function getNearsesOutlet(position = null) {
       return data.data
     }
   }
+}
+
+function getBackupOutlet() {
+  return async (dispatch) => {
+    const data = await MasterDataService.api( "GET", null, `outlets/defaultoutlet` );
+    return data;
+  };
 }
 
 function fetchSingleOutlet(outlet) {
@@ -81,6 +110,7 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
           let getDistance = (geolib.getDistance(locationCustomer, element) / 1000).toFixed(2)
           element.distance = Number(getDistance)
         }
+        element.outletStatus = config.getOutletStatus(element)
         outletData.push(element)
       });
 

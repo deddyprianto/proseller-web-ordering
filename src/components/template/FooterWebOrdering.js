@@ -55,6 +55,20 @@ class Footer extends Component {
       document.getElementById('login-register-btn').click()
     }
   }
+
+  renderLabel = () => {
+    try{
+      const { setting } = this.props;
+      if (setting && setting.length > 0) {
+        const find = setting.find(item => item.settingKey === 'MenuLabel');
+        if (find !== undefined) return find.settingValue;
+      }
+      return 'Menu'
+    } catch(e) {
+      return 'Menu'
+    }
+  }
+
   render() {
     let { isLoggedIn, broadcast, dataPendingLength } = this.props
     let { enableOrdering } = this.state
@@ -65,7 +79,7 @@ class Footer extends Component {
             enableOrdering &&
             <Link onClick={() => this.removeDataPayment()} to="/" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
               <i className={`fa fa-th ${this.activeRoute({ path: "/", name: "Home" })}`} aria-hidden="true" style={{ fontSize: 22, margin: 15 }}></i>
-              <div className={`${this.activeRoute({ path: "/", name: "Home" })}`} style={{ marginTop: -22, fontSize: 12 }}>Menu</div>
+              <div className={`${this.activeRoute({ path: "/", name: "Home" })}`} style={{ marginTop: -22, fontSize: 12 }}>{this.renderLabel()}</div>
             </Link>
           }
           <Link onClick={() => this.removeDataPayment(true)} to="/history" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>

@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { CONSTANT } from "../../../helpers";
 
 import config from "../../../config";
 import { OutletAction } from "../../../redux/actions/OutletAction";
 import { OrderAction } from "../../../redux/actions/OrderAction";
-
+import { isEmptyObject } from "../../../helpers/CheckEmpty";
 import LoginRegister from "../../login-register";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -15,6 +15,7 @@ import styles from "./styles.module.css";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
+const routeWithOutletSelect = ["/", "/basket"];
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -25,6 +26,7 @@ class Header extends Component {
       outletsRefs: {},
       enableOrdering: true,
       logoCompany: config.url_logo,
+      showOutletSelection: false,
     };
   }
 
@@ -32,6 +34,15 @@ class Header extends Component {
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
+    if (
+      routeWithOutletSelect.find(
+        (route) => route === this.props.location.pathname
+      )
+    ) {
+      this.setState({ showOutletSelection: true });
+    } else {
+      this.setState({ showOutletSelection: false });
+    }
     this.setState({ infoCompany: infoCompany || {} });
     this.props.dispatch(OutletAction.fetchAllOutlet(true));
   };
@@ -58,31 +69,44 @@ class Header extends Component {
       }
     }
 
-    if (prevProps.outlets !== this.props.outlets) {
-      this.props.outlets.forEach((outlet) => {
-        this.setState((prevState) => ({
-          outletsRefs: {
-            ...prevState.outletsRefs,
-            [outlet.id]: React.createRef(),
-          },
-        }));
-      });
-    }
-    if (
-      prevProps.defaultOutlet !== this.props.defaultOutlet &&
-      prevProps.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
-      this.props.outlets &&
-      this.props.outlets.length > 1
-    ) {
-      const firstAvailableOutlet = this.props.outlets.find(
-        (outlet) => outlet.orderingStatus === "AVAILABLE"
-      );
-      console.log(firstAvailableOutlet);
-      if (firstAvailableOutlet) {
-        this.props.dispatch({
-          type: CONSTANT.DEFAULT_OUTLET,
-          data: firstAvailableOutlet,
+    if (this.props.outletSelection !== "MANUAL") {
+      if (prevProps.outlets !== this.props.outlets) {
+        this.props.outlets.forEach((outlet) => {
+          this.setState((prevState) => ({
+            outletsRefs: {
+              ...prevState.outletsRefs,
+              [outlet.id]: React.createRef(),
+            },
+          }));
         });
+      }
+      if (
+        prevProps.defaultOutlet !== this.props.defaultOutlet &&
+        prevProps.defaultOutlet.orderingStatus === "UNAVAILABLE" &&
+        this.props.outlets &&
+        this.props.outlets.length > 1
+      ) {
+        const firstAvailableOutlet = this.props.outlets.find(
+          (outlet) => outlet.orderingStatus === "AVAILABLE"
+        );
+        console.log(firstAvailableOutlet);
+        if (firstAvailableOutlet) {
+          this.props.dispatch({
+            type: CONSTANT.DEFAULT_OUTLET,
+            data: firstAvailableOutlet,
+          });
+        }
+      }
+    }
+    if (prevProps.location !== this.props.location) {
+      if (
+        routeWithOutletSelect.find(
+          (route) => route === this.props.location.pathname
+        )
+      ) {
+        this.setState({ showOutletSelection: true });
+      } else {
+        this.setState({ showOutletSelection: false });
       }
     }
   };
@@ -110,7 +134,15 @@ class Header extends Component {
   };
 
   handleLogout() {
-    localStorage.clear();
+    const lsKeyList = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.includes(`${config.prefix}_`)) {
+        lsKeyList.push(key);
+      }
+    }
+    lsKeyList.forEach((key) => localStorage.removeItem(key));
     window.location.reload();
   }
 
@@ -148,6 +180,83 @@ class Header extends Component {
           outlet: this.props.defaultOutlet,
         })
       );
+    }
+  }
+
+  displayOutletInfo = (outlets, defaultOutlet) => {
+    if (this.props.outletSelection === "MANUAL") {
+      if (isEmptyObject(this.props.defaultOutlet)) {
+        return (
+          <div className={styles.outlet}>
+            <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+              Choose Outlets
+            </h4>
+          </div>
+        );
+      } else {
+        return (
+          <div className={styles.outlet}>
+            <Link to="/outlets">
+              <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+                {this.props.defaultOutlet.name}{" "}
+                <i
+                  style={{ marginLeft: 6, fontSize: 10 }}
+                  className="fa fa-chevron-right"
+                />
+              </h4>
+            </Link>
+          </div>
+        );
+      }
+    } else if (this.props.outletSelection === "DEFAULT") {
+      return (
+        <div className={styles.outlet}>
+          <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+            {this.props.defaultOutlet.name}
+          </h4>
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.outlet}>
+          <LocationOnIcon
+            className="color"
+            style={{ fontSize: 22, marginBottom: -5 }}
+          />
+          <span className="color" style={{ fontSize: 15 }}>
+            <select
+              className={`${styles.outletNameSelect} color`}
+              onChange={(e) => this.handleOutletChange(e)}
+              value={defaultOutlet.id}
+            >
+              {outlets &&
+                outlets.map((outlet, key) => (
+                  <option
+                    key={key}
+                    ref={this.state.outletsRefs[outlet.id]}
+                    value={outlet.id}
+                    // selected={outlet.id === defaultOutlet.id}
+                  >
+                    {outlet.name}
+                  </option>
+                ))}
+            </select>
+          </span>
+        </div>
+      );
+    }
+  };
+
+  renderLabel = () => {
+    try{
+      const { setting } = this.props;
+      if (setting && setting.length > 0) {
+        const find = setting.find(item => item.settingKey === 'MenuLabel');
+        if (find !== undefined) return find.settingValue;
+      }
+      return 'Menu'
+    } catch(e) {
+      return 'Menu'
     }
   }
 
@@ -200,31 +309,8 @@ class Header extends Component {
                   src={infoCompany.imageURL || logoCompany}
                 />
               </Link>
-              <div className={styles.outlet}>
-                <LocationOnIcon
-                  className="color"
-                  style={{ fontSize: 22, marginBottom: -5 }}
-                />
-                <span className="color" style={{ fontSize: 15 }}>
-                  <select
-                    className={`${styles.outletNameSelect} color`}
-                    onChange={(e) => this.handleOutletChange(e)}
-                    value={defaultOutlet.id}
-                  >
-                    {outlets &&
-                      outlets.map((outlet, key) => (
-                        <option
-                          key={key}
-                          ref={this.state.outletsRefs[outlet.id]}
-                          value={outlet.id}
-                          // selected={outlet.id === defaultOutlet.id}
-                        >
-                          {outlet.name}
-                        </option>
-                      ))}
-                  </select>
-                </span>
-              </div>
+              {this.state.showOutletSelection &&
+                this.displayOutletInfo(outlets, defaultOutlet)}
             </div>
             <nav
               id="site-navigation"
@@ -400,7 +486,7 @@ class Header extends Component {
                     <li className="menu-item menu-hide">
                       <Link to="/">
                         <i className="fa fa-book" />
-                        Menu
+                        {this.renderLabel()}
                       </Link>
                     </li>
                   )}
@@ -537,10 +623,11 @@ const mapStateToProps = (state, ownProps) => {
     color: state.theme.color,
     outlets: state.outlet.outlets,
     setting: state.order.setting,
+    outletSelection: state.order.outletSelection,
     orderingMode: state.order.orderingMode,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return { dispatch };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Header));

@@ -206,8 +206,6 @@ class Basket extends Component {
       );
     }
 
-    console.log(dataBasket)
-
     let storeDetail = null;
     if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.product) {
       storeDetail = this.props.defaultOutlet;
@@ -330,10 +328,13 @@ class Basket extends Component {
   };
 
   checkOperationalHours = (storeDetail) => {
-    let operationalHours = storeDetail.operationalHours.filter(function (a) {
-      return a.nameOfDay === moment().format("dddd");
-    })[0];
-
+    let operationalHours = {}
+    if (storeDetail.operationalHours !== undefined) {
+      operationalHours = storeDetail.operationalHours.filter(function (a) {
+        return a.nameOfDay === moment().format("dddd");
+      })[0];
+    }
+    
     let status = moment(moment().format("HH:mm"), "HH:mm");
     let beforeTime = moment(operationalHours.open, "HH:mm");
     let afterTime = moment(operationalHours.close, "HH:mm");
