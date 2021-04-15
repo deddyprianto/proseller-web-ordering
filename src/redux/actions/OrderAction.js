@@ -413,7 +413,7 @@ function buildCart(payload = {}) {
     try {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (window.location.pathname.includes("emenu") ? "DINEIN" : "DELIVERY");
+        (window.location.hostname.includes('emenu') ? "DINEIN" : "DELIVERY");
     } catch (error) {}
     const response = await OrderingService.api(
       "POST",

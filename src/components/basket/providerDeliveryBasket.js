@@ -27,8 +27,8 @@ class ProviderDeliveryBasket extends Component {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ fontWeight: "bold", color: "gray", fontSize: 14 }}>
-            Provider *
+          <div style={{ fontWeight: "bold", fontSize: 14 }}>
+            Delivery Provider *
           </div>
           <div>
             <Button
@@ -39,7 +39,6 @@ class ProviderDeliveryBasket extends Component {
               data-target="#provider-delivery-modal"
               style={{
                 fontWeight: "bold",
-                color: "#FFF",
                 cursor: "pointer",
                 backgroundColor: this.props.color.primary,
                 width: 140,

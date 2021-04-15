@@ -1102,6 +1102,11 @@ class Payment extends Component {
     // console.log(payload)
     // return
 
+    try {
+      let dateTime = new Date();
+      payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset())
+    } catch(e){}
+
     let response;
     if (
       orderingMode === "TAKEAWAY" ||

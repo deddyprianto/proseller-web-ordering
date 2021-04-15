@@ -34,7 +34,7 @@ class Ordering extends Component {
       loading: true,
       loadingSearching: false,
       offlineMessage: "",
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       showUpdateModal: false,
       addNew: false,
       categoryLength: 0,

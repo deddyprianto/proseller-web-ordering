@@ -27,7 +27,8 @@ export const AllCategory = ({
       setSubCategory(true)
     } else {
       dispatch(ProductAction.setSelectedCategory(category));
-      history.push(`category/${category.id}/products`);
+      // console.log(`category/${category.id}/products`);
+      history.push(`/category/${category.id}/products`);
     }
   };
 
@@ -53,7 +54,7 @@ export const AllCategory = ({
     const filteredCategories =
       categories && categories.length > 0
         ? categories.filter((category) =>
-            category.name.toLowerCase().includes(filter.toLowerCase())
+          category.name && category.name.toLowerCase().includes(filter.toLowerCase())
           )
         : [];
     setCategoryList(filteredCategories);

@@ -3,6 +3,7 @@ import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 import { connect } from "react-redux";
 import { OutletAction } from "../redux/actions/OutletAction";
+import { OrderAction } from "../redux/actions/OrderAction";
 import { MasterdataAction } from "../redux/actions/MaterdataAction";
 import config from "../config";
 
@@ -14,6 +15,7 @@ class OutletSelection extends Component {
       loadingShow: true,
       isLoading: false,
       outlets: [],
+      cart: {}
     };
   }
 
@@ -35,9 +37,39 @@ class OutletSelection extends Component {
 
   componentDidMount = async () => {
     let response = await this.props.dispatch(OutletAction.fetchAllOutlet(true));
+    try {
+      let cart = await this.props.dispatch(OrderAction.getCart());
+      if (cart && cart.data) {
+        await this.setState({cart: cart.data});
+      }
+    } catch(e) {}
     await this.setState({outlets: response});
     await this.setState({ loadingShow: false });
   };
+
+  checkCartExist = async (outlet) => {
+    try {
+      if (this.state.cart && this.state.cart.outlet && this.state.cart.outlet.id !== outlet.id) {
+        Swal.fire({
+          title: `Change Outlet ?`,
+          text: "You will delete your cart at the previous outlet.",
+          icon: "warning",
+          confirmButtonText: `Sure`,
+          showCancelButton: true,
+        }).then( async (data) => {
+          if (data.isConfirmed) {
+            await this.props.dispatch(OrderAction.deleteCart());
+            this.handleSelectOutlet(outlet)
+          }
+        })
+        return false;
+      } else {
+        this.handleSelectOutlet(outlet)
+      }
+    } catch(e) {
+
+    }
+  }
 
   handleSelectOutlet = async (outlet) => {
     await this.setState({ loadingShow: true });
@@ -70,7 +102,7 @@ class OutletSelection extends Component {
                     <Col
                       key={keys}
                       sm={6}
-                      onClick={() => items.orderingStatus !== 'UNAVAILABLE' ? this.handleSelectOutlet(items) : false}
+                      onClick={() => items.orderingStatus !== 'UNAVAILABLE' ? this.checkCartExist(items) : false}
                     >
                       <div style={{
                           backgroundColor: items.orderingStatus !== 'UNAVAILABLE' ? null : '#ecf0f1',
@@ -129,6 +161,7 @@ class OutletSelection extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    basket: state.order.basket,
   };
 };
 

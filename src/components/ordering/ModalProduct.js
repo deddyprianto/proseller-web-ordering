@@ -19,7 +19,7 @@ class ModalProduct extends Component {
         title: "",
         message: "",
       },
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       orderingModeStatus: {
         DINEIN: "enableDineIn",
         TAKEAWAY: "enableTakeAway",

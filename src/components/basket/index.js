@@ -7,7 +7,7 @@ import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 // import { CustomerAction } from "../../redux/actions/CustomerAction";
 // import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
-import _ from "lodash";
+import _, { times } from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject, isEmptyData } from "../../helpers/CheckEmpty";
 import { StraightDistance } from "../../helpers/CalculateDistance";
@@ -60,7 +60,7 @@ class Basket extends Component {
       play: false,
       deliveryProvaider: [],
       dataCVV: "",
-      isEmenu: window.location.pathname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       orderActionDate: this.props.orderActionDate,
       orderActionTime: this.props.orderActionTime,
       orderActionTimeSlot: this.props.orderActionTimeSlot,
@@ -77,7 +77,8 @@ class Basket extends Component {
       isEditDate: false,
       timeSlot: [],
       latitude: 0,
-      longitude: 0
+      longitude: 0,
+      timeslotData: []
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -550,7 +551,10 @@ class Basket extends Component {
 
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
+      
       if (timeSlot.resultCode === 200) {
+        this.setState({timeslotData: timeSlot.data})
+        if (timeSlot.data.length === 0) return;
         timeSlot = timeSlot.data.filter((items) => {
           return items.timeSlot.filter((item) => {
             return item.isAvailable;
@@ -576,7 +580,7 @@ class Basket extends Component {
         const firstAvailableDate = newTimeslot
           .flat(2)
           .find((slot) => slot.timeSlot.length > 0);
-        console.log("newTimeslot :", newTimeslot.flat(2));
+        // console.log("newTimeslot :", newTimeslot.flat(2));
         if (firstAvailableDate)
           this.setState({ nextDayIsAvailable: firstAvailableDate.date });
         this.setState({ timeSlot: newTimeslot.flat(2) });
@@ -601,6 +605,7 @@ class Basket extends Component {
           this.props.dispatch({ type: "DELETE_ORDER_ACTION_TIME_SLOT" });
         }
       } else {
+        this.setState({timeslotData: timeSlot.data})
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
       }
@@ -1580,6 +1585,7 @@ class Basket extends Component {
                         }
                         handleOpenLogin={() => this.handleOpenLogin()}
                         updateCartInfo={this.updateCartInfo}
+                        timeslotData={this.state.timeslotData}
                       />
                     )}
                     {!viewCart && (
