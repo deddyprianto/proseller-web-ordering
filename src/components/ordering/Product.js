@@ -104,6 +104,7 @@ class Product extends Component {
 
   render() {
     const { item } = this.props;
+    
     if (!item.product && item.itemType === "PRODUCT") return null;
     return (
       <li
@@ -113,7 +114,7 @@ class Product extends Component {
         }}
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
-        {item.itemType !== "PRODUCT" ? (
+        {item.itemType === "GROUP" || item.itemType === "CATEGORY" ? (
           <div
             className={"product-outer"}
             onClick={() => this.goToDetailItem(item)}
