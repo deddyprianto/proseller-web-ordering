@@ -68,7 +68,7 @@ config.url_logo = logo;
 config.url_emptyImage = emptyImage;
 config.image_placeholder =
   "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
-config.prefix = window.location.hostname.includes('emenu')
+config.prefix = window.location.hostname.includes("emenu")
   ? "emenu"
   : "webordering";
 
@@ -214,6 +214,10 @@ config.checkNickName = function checkNickName(mode, storeDetail) {
   if (mode === "TAKEAWAY") return isNotFalse(storeDetail.takeAwayName) || mode;
   if (mode === "DINEIN") return isNotFalse(storeDetail.dineInName) || mode;
   if (mode === "DELIVERY") return isNotFalse(storeDetail.deliveryName) || mode;
+  if (mode === "STOREPICKUP")
+    return isNotFalse(storeDetail.storePickUpName) || mode;
+  if (mode === "STORECHECKOUT")
+    return isNotFalse(storeDetail.storeCheckOutName) || mode;
   return mode;
 };
 

@@ -19,7 +19,7 @@ class ModalProduct extends Component {
         title: "",
         message: "",
       },
-      isEmenu: window.location.hostname.includes('emenu'),
+      isEmenu: window.location.hostname.includes("emenu"),
       orderingModeStatus: {
         DINEIN: "enableDineIn",
         TAKEAWAY: "enableTakeAway",
@@ -926,13 +926,15 @@ class ModalProduct extends Component {
                     this.viewCartOrderingMode(
                       "STOREPICKUP",
                       defaultOutlet.orderValidation.storepickup,
-                      "fa-shopping-basket"
+                      "fa-shopping-basket",
+                      defaultOutlet.storePickUpName
                     )}
                   {defaultOutlet.enableStoreCheckOut === true &&
                     this.viewCartOrderingMode(
                       "STORECHECKOUT",
                       defaultOutlet.orderValidation.storecheckout,
-                      "fa-shopping-basket"
+                      "fa-shopping-basket",
+                      defaultOutlet.storeCheckOutName
                     )}
                   {defaultOutlet.enableDelivery === true &&
                     this.viewCartOrderingMode(
