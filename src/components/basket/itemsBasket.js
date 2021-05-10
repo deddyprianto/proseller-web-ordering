@@ -210,7 +210,8 @@ class ItemsBasket extends Component {
 
   render() {
     let { data, defaultOutlet, isLoggedIn } = this.props;
-    let dataBasket = this.props.basket;
+    let dataBasket = this.props.dataBasket;
+    // let dataBasket = this.props.basket;
     let enableNotes = false;
     if (isEmptyObject(this.props.basket)) {
       dataBasket = data.dataBasket;
@@ -230,7 +231,7 @@ class ItemsBasket extends Component {
       enableNotes = true;
     }
 
-    console.log(dataBasket, 'dataBasketdataBasket')
+    // console.log(dataBasket, 'dataBasketdataBasket')
 
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>

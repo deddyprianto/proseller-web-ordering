@@ -34,7 +34,11 @@ const ViewCartBasket = ({
   updateCartInfo
 }) => {
   // if (!basket.details && data.dataBasket) basket = data.dataBasket;
-  if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
+  // if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
+  if (dataBasket && dataBasket.details) {
+    basket = data.dataBasket;
+    data.basket = dataBasket;
+  }
   if (!outlet.orderValidation) {
     outlet = data.storeDetail;
     if (!outlet.orderValidation) outlet = config.getValidation(outlet);
