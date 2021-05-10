@@ -4,6 +4,9 @@ import Typography from "@material-ui/core/Typography";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import config from "../../config";
 
+const activeCard = { width: "100%", display: "flex", cursor: "pointer" }
+const inactiveCard = { width: "100%", display: "flex", cursor: "pointer", opacity: 0.5 }
+
 class CardItemBasket extends Component {
   renderImageProduct = (item) => {
     const { color } = this.props;
@@ -20,11 +23,22 @@ class CardItemBasket extends Component {
     }
   };
 
+  isAvailableToOrder = (item) => {
+    try {
+      if (item && item.orderingStatus === 'UNAVAILABLE') {
+        return <i style={{ fontSize: 11, color: 'red' }}>Unavailable on {item.orderModeName} Order</i>
+      }
+      return null;
+    } catch(e) {
+      return null;
+    }
+  }
+
   render() {
     let item = this.props.data;
     return (
       <div
-        style={{ width: "100%", display: "flex", cursor: "pointer" }}
+        style={item.orderingStatus === 'UNAVAILABLE' ? inactiveCard : activeCard}
         onClick={() => !this.props.roleBtnClear && this.props.openModal(item)}
       >
         <img
@@ -208,6 +222,7 @@ class CardItemBasket extends Component {
               </button>
             }
           </div>
+          {this.isAvailableToOrder(item)}
         </div>
       </div>
     );

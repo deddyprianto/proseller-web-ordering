@@ -123,6 +123,68 @@ class Basket extends Component {
     await this.getDataBasket();
   };
 
+  checkOrderingAvailibility = async (orderMode) => {
+    try {
+      let { dataBasket, orderingMode, storeDetail } = this.state;
+
+      if (orderMode) orderingMode = orderMode;
+
+      if (dataBasket && dataBasket.details) {
+        for (let i = 0; i < dataBasket.details.length; i++) {
+          let detail = dataBasket.details[i];
+          let isAvailable = true;
+          let text = config.checkNickName(orderingMode, storeDetail);
+          if (
+            orderingMode === "DINEIN" &&
+            detail.product &&
+            detail.product.orderingAvaibility &&
+            detail.product.orderingAvaibility.dineIn === false
+          ) {
+            isAvailable = false;
+          }
+          if (
+            orderingMode === "TAKEAWAY" &&
+            detail.product &&
+            detail.product.orderingAvaibility &&
+            detail.product.orderingAvaibility.takeAway === false
+          ) {
+            isAvailable = false;
+          }
+          if (
+            orderingMode === "DELIVERY" &&
+            detail.product &&
+            detail.product.orderingAvaibility &&
+            detail.product.orderingAvaibility.delivery === false
+          ) {
+            isAvailable = false;
+          }
+          if (
+            orderingMode === "STORECHECKOUT" &&
+            detail.product &&
+            detail.product.orderingAvaibility &&
+            detail.product.orderingAvaibility.storeCheckOut === false
+          ) {
+            isAvailable = false;
+          }
+          if (
+            orderingMode === "STOREPICKUP" &&
+            detail.product &&
+            detail.product.orderingAvaibility &&
+            detail.product.orderingAvaibility.storePickUp === false
+          ) {
+            isAvailable = false;
+          }
+
+          if (!isAvailable) {
+            dataBasket.details[i].orderingStatus = "UNAVAILABLE";
+            dataBasket.details[i].orderModeName = text;
+          }
+        }
+      }
+      await this.setState({ dataBasket });
+    } catch (e) {}
+  };
+
   getGeolocation = async (storeDetail) => {
     let from = storeDetail.address || '-';
     from += '&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4'
@@ -411,6 +473,7 @@ class Basket extends Component {
       selectedCard,
       deliveryAddress,
     });
+    await this.checkOrderingAvailibility();
   };
 
   getDataBasketPending = async (dataBasket) => {
@@ -982,6 +1045,7 @@ class Basket extends Component {
       true,
       true
     );
+    await this.checkOrderingAvailibility(orderingMode);
   };
 
   setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
@@ -1069,7 +1133,7 @@ class Basket extends Component {
   }
 
   handleSettle = async () => {
-    let { selectedCard } = this.state;
+    let { selectedCard, dataBasket } = this.state;
     const { defaultOutlet } = this.props;
     const orderPreparationTime =
       defaultOutlet.timeSlots &&
@@ -1078,6 +1142,22 @@ class Basket extends Component {
         ? defaultOutlet.timeSlots[0].defaultPreparationTime
         : 0;
     if (!this.handleOpenLogin()) return;
+
+    // check if there are unavailable product on the cart
+    if (dataBasket) {
+      const find = dataBasket.details.find(
+        (item) => item.orderingStatus === "UNAVAILABLE"
+      );
+
+      if (find) {
+        Swal.fire({
+          title: "Sorry",
+          text: "There are items that are not available to order on your cart.",
+          icon: "warning",
+        });
+        return false;
+      }
+    }
 
     if (selectedCard) {
       let userInput = selectedCard.details.userInput;

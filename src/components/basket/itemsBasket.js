@@ -230,6 +230,8 @@ class ItemsBasket extends Component {
       enableNotes = true;
     }
 
+    console.log(dataBasket, 'dataBasketdataBasket')
+
     return (
       <div style={{ marginBottom: 20, marginTop: 5 }}>
         <ModalProduct
