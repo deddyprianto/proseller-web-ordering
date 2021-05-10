@@ -176,7 +176,7 @@ const App = (props) => {
         defaultOutlet = config.getValidation(defaultOutlet);
       await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
     } else {
-      localStorage.removeItem(`${config.prefix}_scanTable`);
+      // localStorage.removeItem(`${config.prefix}_scanTable`);
       let outletSelectionMode = "DEFAULT";
       if (responseSettings && responseSettings.settings !== undefined) {
         const find = responseSettings.settings.find(

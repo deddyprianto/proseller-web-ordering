@@ -43,7 +43,7 @@ class Ordering extends Component {
   componentDidMount = async () => {
     const { isEmenu } = this.state;
     localStorage.removeItem(`${config.prefix}_dataBasket`);
-    localStorage.removeItem(`${config.prefix}_scanTable`);
+    // localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
     window.addEventListener(

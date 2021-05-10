@@ -30,7 +30,7 @@ class History extends Component {
 
   componentDidMount = async () => {
     localStorage.removeItem(`${config.prefix}_dataBasket`);
-    localStorage.removeItem(`${config.prefix}_scanTable`);
+    // localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
     try {

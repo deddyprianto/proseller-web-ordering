@@ -483,7 +483,7 @@ class LoginRegister extends Component {
 
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key.includes(`${config.prefix}_`)) {
+        if (key.includes(`${config.prefix}_`) && !key.includes(`${config.prefix}_scanTable`)) {
           lsKeyList.push(key);
         }
       }
@@ -833,7 +833,7 @@ class LoginRegister extends Component {
 
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key.includes(`${config.prefix}_`)) {
+        if (key.includes(`${config.prefix}_`) && !key.includes(`${config.prefix}_scanTable`)) {
           lsKeyList.push(key);
         }
       }

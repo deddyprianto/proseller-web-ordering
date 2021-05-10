@@ -91,7 +91,7 @@ class Basket extends Component {
         JSON.stringify(encryptor.encrypt(param))
       );
     } else {
-      localStorage.removeItem(`${config.prefix}_scanTable`);
+      // localStorage.removeItem(`${config.prefix}_scanTable`);
     }
 
     setInterval(() => {

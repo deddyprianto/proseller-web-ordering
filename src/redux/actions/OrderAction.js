@@ -517,7 +517,7 @@ function deleteCart(isDeleteServer = false) {
   return async (dispatch) => {
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    localStorage.removeItem(`${config.prefix}_scanTable`);
+    // localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_dataBasket`);
 
     // IF CUSTOMER NOT LOGIN
