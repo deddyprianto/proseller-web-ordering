@@ -9,10 +9,10 @@ import { isEmptyObject } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
 import { getInitialProductValue } from "../../helpers/ProductHelper";
 import InfiniteScroll from "react-infinite-scroll-component";
+import ModalProduct from "./ModalProduct";
+import UpdateProductModal from "./UpdateProductModal";
 
 const Product = React.lazy(() => import("./Product"));
-const ModalProduct = React.lazy(() => import("./ModalProduct"));
-const UpdateProductModal = React.lazy(() => import("./UpdateProductModal"));
 const RetailHeaderCategory = React.lazy(() => import("./RetailHeaderCategory"));
 const SearchBox = React.lazy(() => import("./SearchBox"));
 const LoaderCircle = React.lazy(() => import("../loading/LoaderCircle"));
@@ -454,12 +454,10 @@ class Ordering extends Component {
               getCurrency={(price) => this.getCurrency(price)}
             ></UpdateProductModal>
           )}
-        <Suspense fallback={<p>...</p>}>
-          <ModalProduct
-            addNew={this.state.addNew}
-            selectedItem={this.state.selectedItem}
-          />
-        </Suspense>
+        <ModalProduct
+          addNew={this.state.addNew}
+          selectedItem={this.state.selectedItem}
+        />
         <br /> <br /> <br />
         <div id="offset-header" />
         <Suspense fallback={<p>....</p>}>
