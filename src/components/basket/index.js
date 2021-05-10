@@ -450,7 +450,7 @@ class Basket extends Component {
           check
         );
       }
-      await this.submitOtomatis(dataBasket, scanTable);
+      // await this.submitOtomatis(dataBasket, scanTable);
       if (!checkOperationalHours.status) {
         let message = "Sorry, we're closed today!";
         Swal.fire("Oppss!", message, "error");

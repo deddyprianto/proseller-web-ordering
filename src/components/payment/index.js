@@ -82,9 +82,9 @@ class Payment extends Component {
   }
 
   componentDidMount = async () => {
+    this.setState({ loadingShow: true });
     await this.props.dispatch(SVCAction.summarySVC());
     await this.getDataBasket();
-    this.setState({ loadingShow: true });
     if (this.props.isLoggedIn) {
       let response = this.props.dispatch(CustomerAction.getVoucher());
       if (response.ResultCode === 200)
