@@ -58,6 +58,9 @@ class Ordering extends Component {
 
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
+    if (this.props.orderingMode) {
+      await this.fetchCategories(defaultOutlet);
+    }
   };
 
   componentDidUpdate = async (prevProps) => {
@@ -171,10 +174,12 @@ class Ordering extends Component {
     let products = [];
     let i = 0;
 
-    const productListWithCategory = categories.map((category) => ({
-      category,
-      items: [],
-    }));
+    const productListWithCategory =
+      categories &&
+      categories.map((category) => ({
+        category,
+        items: [],
+      }));
 
     this.setState({
       products: productListWithCategory,
@@ -338,10 +343,12 @@ class Ordering extends Component {
     } = this.state;
     let products = [];
 
-    const categoryRefs = categories.map(() => {
-      const ref = React.createRef();
-      return ref;
-    });
+    const categoryRefs =
+      categories &&
+      categories.map(() => {
+        const ref = React.createRef();
+        return ref;
+      });
 
     if (this.props.productsSearch) products = this.props.productsSearch;
     else products = this.state.products;
@@ -459,6 +466,7 @@ class Ordering extends Component {
             <div className="tab-pane active" id="h1-tab-products-2">
               <ul className="products">
                 {!loadingSearching &&
+                  products &&
                   products.map((cat, i) => (
                     <>
                       <h3

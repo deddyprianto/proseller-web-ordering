@@ -4,6 +4,7 @@ import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
+import Variant from "./Variant";
 
 class ModalProduct extends Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class ModalProduct extends Component {
         DELIVERY: "enableDelivery",
       },
       showOrderingModeCloseButton: true,
+      selectedVariant: null,
     };
   }
 
@@ -46,6 +48,32 @@ class ModalProduct extends Component {
         this.setState({ showOrderingModeCloseButton: false });
       }
     }
+  };
+
+  setSelectedVariantProduct = (variant) => {
+    this.setState((prevState) => {
+      return {
+        selectedVariant: variant,
+        selectedItem: {
+          ...prevState,
+          name: variant.name,
+          id: variant.id,
+          productID: `product::${variant.id}`,
+          product: {
+            barcode: variant.barcode,
+            categoryName: prevState.selectedItem.product.categoryName,
+            code: variant.barcode,
+            id: variant.id,
+            name: variant.name,
+            orderingAvaibility:
+              prevState.selectedItem.product.orderingAvaibility,
+            orderingStatus: prevState.selectedItem.product.orderingStatus,
+            productModifiers: prevState.selectedItem.product.productModifiers,
+            retailPrice: variant.retailPrice,
+          },
+        },
+      };
+    });
   };
 
   ruleModifierNotPassed = () => {
@@ -726,6 +754,18 @@ class ModalProduct extends Component {
                     {selectedItem.product.description}
                   </p>
                 </center>
+              </div>
+              <div className="col-md-12">
+                {this.props.selectedItem &&
+                  this.props.selectedItem.product &&
+                  this.props.selectedItem.product.variants &&
+                  this.props.selectedItem.product.variantOptions && (
+                    <Variant
+                      options={this.props.selectedItem.product.variantOptions}
+                      variants={this.props.selectedItem.product.variants}
+                      setVariantProduct={this.setSelectedVariantProduct}
+                    ></Variant>
+                  )}
               </div>
               <div className="col-md-12" style={{ textAlign: "left" }}>
                 {selectedItem.product.productModifiers &&

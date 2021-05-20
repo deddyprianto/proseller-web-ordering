@@ -15,7 +15,7 @@ import styles from "./styles.module.css";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
-const routeWithOutletSelect = ["/", "/basket"];
+const routeWithOutletSelect = [];
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -248,17 +248,17 @@ class Header extends Component {
   };
 
   renderLabel = () => {
-    try{
+    try {
       const { setting } = this.props;
       if (setting && setting.length > 0) {
-        const find = setting.find(item => item.settingKey === 'MenuLabel');
+        const find = setting.find((item) => item.settingKey === "MenuLabel");
         if (find !== undefined) return find.settingValue;
       }
-      return 'Menu'
-    } catch(e) {
-      return 'Menu'
+      return "Menu";
+    } catch (e) {
+      return "Menu";
     }
-  }
+  };
 
   render() {
     let { isLoggedIn, basket, defaultOutlet } = this.props;

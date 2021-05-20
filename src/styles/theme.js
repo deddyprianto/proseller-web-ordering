@@ -170,7 +170,7 @@ const styles = {
       color: "white",
     },
     ".menu-category .menu-item.active": {
-      backgroundColor: (e) => e.theme.color.secondary,
+      backgroundColor: (e) => e.theme.color.primary,
       color: "white",
     },
     ".nav-buttons-page": {
@@ -184,6 +184,11 @@ const styles = {
         height: 40,
         fontSize: "2rem",
       },
+    },
+    ".pizzaro-handheld-footer-bar": {
+      backgroundColor: (e) => e.theme.color.secondary,
+      color: (e) => e.theme.color.textButtonColor,
+      zIndex: 102,
     },
     "@media (max-width: 750px)": {
       ".menu-category": {

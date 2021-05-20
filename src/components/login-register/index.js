@@ -12,7 +12,8 @@ import { lsLoad, lsStore } from "../../helpers/localStorage";
 
 import config from "../../config";
 
-const regEmail = /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const regEmail =
+  /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
 
@@ -483,7 +484,11 @@ class LoginRegister extends Component {
 
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key.includes(`${config.prefix}_`) && !key.includes(`${config.prefix}_scanTable`)) {
+        if (
+          key.includes(`${config.prefix}_`) &&
+          !key.includes(`${config.prefix}_scanTable`) &&
+          !key.includes(`${config.prefix}_ordering_mode`)
+        ) {
           lsKeyList.push(key);
         }
       }
@@ -833,7 +838,11 @@ class LoginRegister extends Component {
 
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key.includes(`${config.prefix}_`) && !key.includes(`${config.prefix}_scanTable`)) {
+        if (
+          key.includes(`${config.prefix}_`) &&
+          !key.includes(`${config.prefix}_scanTable`) &&
+          !key.includes(`${config.prefix}_ordering_mode`)
+        ) {
           lsKeyList.push(key);
         }
       }

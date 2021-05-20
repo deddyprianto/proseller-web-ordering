@@ -76,6 +76,7 @@ const WebOrderingCategories = ({
     >
       <div className="categories">
         {!openSearch ? (
+          categories &&
           categories.map((item, i) => (
             <div
               id={`cat-${i}`}

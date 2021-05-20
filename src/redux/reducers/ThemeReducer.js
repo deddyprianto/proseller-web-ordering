@@ -3,6 +3,39 @@ const initialState = {
     primary: "#c00a27",
     secondary: "#c00a27",
   },
+  menu: {
+    navBar: [
+      {
+        text: "Menu",
+        path: "/",
+        showOnOrderingEnabled: true,
+        icon: "fa fa-th",
+      },
+      {
+        text: "History",
+        path: "/history",
+        icon: "fa fa-history",
+      },
+      {
+        text: "Profile",
+        path: "/profile",
+        loggedInOnly: true,
+        icon: "fa fa-user",
+      },
+      {
+        text: "Rewards",
+        path: "/rewards",
+        loggedInOnly: true,
+        icon: "fa fa-gift",
+      },
+      {
+        text: "Inbox",
+        path: "/inbox",
+        loggedInOnly: true,
+        icon: "fa fa-envelope",
+      },
+    ],
+  },
 };
 
 export default function reducer(state = initialState, action) {
