@@ -27,8 +27,26 @@ class ModalProduct extends Component {
         STORECHECKOUT: "enableStoreCheckOut",
         DELIVERY: "enableDelivery",
       },
+      showOrderingModeCloseButton: true,
     };
   }
+
+  componentDidUpdate = async (prevProps) => {
+    if (
+      prevProps.setting !== this.props.setting &&
+      this.props.setting.length > 0
+    ) {
+      const showOrderingModeModalFirst = this.props.setting.find((setting) => {
+        return setting.settingKey === "ShowOrderingModeModalFirst";
+      });
+      if (
+        showOrderingModeModalFirst &&
+        showOrderingModeModalFirst.settingValue === true
+      ) {
+        this.setState({ showOrderingModeCloseButton: false });
+      }
+    }
+  };
 
   ruleModifierNotPassed = () => {
     try {
@@ -201,8 +219,8 @@ class ModalProduct extends Component {
 
           // check name and quantity modifier that hasnt been success passed min & max
           try {
-            let productModifiers = this.state.selectedItem.product
-              .productModifiers;
+            let productModifiers =
+              this.state.selectedItem.product.productModifiers;
             for (let i = 0; i < productModifiers.length; i++) {
               let lengthDetail = 0;
               let modifierDetail = productModifiers[i].modifier.details;
@@ -944,6 +962,7 @@ class ModalProduct extends Component {
                       defaultOutlet.deliveryName
                     )}
                 </div>
+
                 <p
                   id="dismiss-ordering-mode"
                   data-dismiss="modal"
@@ -953,6 +972,9 @@ class ModalProduct extends Component {
                     textAlign: "center",
                     marginTop: 30,
                     marginBottom: 20,
+                    display: this.state.showOrderingModeCloseButton
+                      ? "block"
+                      : "none",
                   }}
                 >
                   I'm just browsing

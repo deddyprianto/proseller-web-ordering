@@ -33,7 +33,7 @@ class Ordering extends Component {
       loading: true,
       loadingSearching: false,
       offlineMessage: "",
-      isEmenu: window.location.hostname.includes('emenu'),
+      isEmenu: window.location.hostname.includes("emenu"),
 
       showUpdateModal: false,
       addNew: false,
@@ -58,14 +58,32 @@ class Ordering extends Component {
 
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
-    await this.fetchCategories(defaultOutlet);
   };
 
   componentDidUpdate = async (prevProps) => {
-    if (prevProps.defaultOutlet.id !== this.props.defaultOutlet.id) {
-      console.log("defaultOutlet Changed");
-      this.setState({ processing: false });
-      this.fetchCategories(this.props.defaultOutlet);
+    if (
+      this.props.setting.length > 0 &&
+      (prevProps.orderingMode !== this.props.orderingMode ||
+        prevProps.defaultOutlet.id !== this.props.defaultOutlet.id)
+    ) {
+      const showOrderingModeModalFirst = this.props.setting.find((setting) => {
+        return setting.settingKey === "ShowOrderingModeModalFirst";
+      });
+      if (
+        showOrderingModeModalFirst &&
+        showOrderingModeModalFirst.settingValue === true &&
+        !this.props.orderingMode
+      ) {
+        //Pop ordering moda modal
+        document.getElementById("open-modal-ordering-mode").click();
+      } else {
+        let defaultOutlet = this.props.defaultOutlet;
+        if (defaultOutlet && defaultOutlet.id) {
+          defaultOutlet = config.getValidation(defaultOutlet);
+        }
+        this.setState({ processing: false });
+        await this.fetchCategories(defaultOutlet);
+      }
     }
   };
 
@@ -103,11 +121,11 @@ class Ordering extends Component {
         if (window.pageYOffset > sticky) {
           header.classList.remove("relative-position");
           header.classList.add("sticky");
-          header.style.top = `${headerCWO.offsetHeight - 5}px`;
+          // header.style.top = `${headerCWO.offsetHeight - 5}px`;
         } else {
           header.classList.remove("sticky");
           header.classList.add("relative-position");
-          header.style.top = 0;
+          // header.style.top = 0;
         }
       }
     } catch (e) {}
@@ -319,7 +337,7 @@ class Ordering extends Component {
       isEmenu,
     } = this.state;
     let products = [];
-    
+
     const categoryRefs = categories.map(() => {
       const ref = React.createRef();
       return ref;
@@ -491,7 +509,6 @@ class Ordering extends Component {
                               labelButton={this.getLabelButton(item)}
                               quantity={this.getQuantityProduct(item)}
                               selectProduct={this.selectProduct}
-                              productConfig={this.props.theme}
                               showUpdateModal={(item) =>
                                 this.setState({
                                   showUpdateModal: true,
@@ -520,10 +537,22 @@ class Ordering extends Component {
                   </div>
                 )}
               </ul>
-              {loading && <LoaderCircle />}
+              {/* {loading && <LoaderCircle />} */}
             </div>
           </div>
         </div>
+        <span
+          data-toggle="modal"
+          data-target="#detail-product-modal"
+          id="open-modal-product"
+          style={{ color: "white" }}
+        ></span>
+        <span
+          data-toggle="modal"
+          data-target="#ordering-mode"
+          id="open-modal-ordering-mode"
+          style={{ color: "white" }}
+        ></span>
       </div>
     );
   }
@@ -537,6 +566,8 @@ const mapStateToProps = (state, ownProps) => {
     theme: state.theme,
     productsSearch: state.order.productsSearch,
     companyInfo: state.masterdata.companyInfo.data,
+    setting: state.order.setting,
+    orderingMode: state.order.orderingMode,
   };
 };
 

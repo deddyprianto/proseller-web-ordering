@@ -18,7 +18,7 @@ class Home extends Component {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.hostname.includes('emenu')
+      isEmenu: window.location.hostname.includes("emenu"),
     };
   }
 
@@ -73,15 +73,16 @@ class Home extends Component {
         >
           {this.state.loading ? <LoadingAddCart /> : null}
           <div className="stretch-full-width">
-            {
-              this.props.setting.outletSelection === 'MANUAL' && isEmptyObject(this.props.defaultOutlet) && !isEmenu ?
+            {this.props.setting.outletSelection === "MANUAL" &&
+            isEmptyObject(this.props.defaultOutlet) &&
+            !isEmenu ? (
               <OutletSelection />
-              :
+            ) : (
               <main id="main" className="site-main">
                 {!isEmenu && <Promotion />}
-                { defaultOutlet && defaultOutlet.outletType === 'RETAIL' ? <OrderingRetail history={this.props.history} /> : <Ordering /> }
+                <Ordering />
               </main>
-            }
+            )}
           </div>
         </div>
       </div>
