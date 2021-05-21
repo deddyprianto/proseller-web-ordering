@@ -51,7 +51,7 @@ class DeliveryAddressBasket extends Component {
                 <ContactMailIcon style={{ fontSize: 16 }} />
                 {!props.deliveryAddress
                   ? "Select Address"
-                  : `${props.deliveryAddress.addressName.substring(0, 15)}`}
+                  : `${props.deliveryAddress && props.deliveryAddress.addressName ? props.deliveryAddress.addressName.substring(0, 15) : 'Address'}`}
               </Button>
             </Link>
           </div>
