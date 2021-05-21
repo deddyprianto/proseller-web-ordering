@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import _ from "lodash";
 
-export const Variant = ({ options, variants }) => {
-  const [selectedVariant, setSelectedVariant] = useState({});
+export const Variant = ({ options, variants, setVariantProduct }) => {
+  const initialVariant = options.reduce((acc, option) => {
+    return {
+      ...acc,
+      [option.optionName]: option.options[0],
+    };
+  }, {});
+  const [selectedVariant, setSelectedVariant] = useState(initialVariant);
 
   const setVariant = (name, value) => {
     setSelectedVariant({
@@ -10,11 +17,24 @@ export const Variant = ({ options, variants }) => {
       [name]: value,
     });
   };
+
+  useEffect(() => {
+    const variantProduct = variants.find((variant) => {
+      return _.isMatch(variant, selectedVariant);
+    });
+    if (variantProduct) {
+      const variantName = variantProduct.attributes.reduce((acc, attribute) => {
+        return " " + acc + attribute.value;
+      }, "");
+      setVariantProduct({ ...variantProduct, variantName });
+    }
+  }, [selectedVariant]);
+
   return (
     <div>
       {options.map((option) => {
         return (
-          <div className="card card-modifier">
+          <div className="card card-modifier" key={option.optionName}>
             <div
               onClick={() => {}}
               className="card-header header-modifier"
@@ -23,10 +43,10 @@ export const Variant = ({ options, variants }) => {
               <p className="color" style={{ margin: 0 }}>
                 <b>{option.optionName} </b>
               </p>
-              <i
+              {/* <i
                 className="fa fa-chevron-up color"
                 style={{ fontSize: 16 }}
-              ></i>
+              ></i> */}
             </div>
             {true ? (
               <div style={{ marginLeft: 5, marginRight: 10 }}>
@@ -38,6 +58,7 @@ export const Variant = ({ options, variants }) => {
                       alignItems: "center",
                       paddingBottom: 15,
                     }}
+                    key={item}
                   >
                     <div
                       style={{ display: "flex", alignItems: "center" }}
