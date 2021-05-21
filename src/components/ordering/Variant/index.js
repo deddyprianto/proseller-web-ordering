@@ -3,7 +3,13 @@ import { connect } from "react-redux";
 import _ from "lodash";
 
 export const Variant = ({ options, variants, setVariantProduct }) => {
-  const [selectedVariant, setSelectedVariant] = useState({});
+  const initialVariant = options.reduce((acc, option) => {
+    return {
+      ...acc,
+      [option.optionName]: option.options[0],
+    };
+  }, {});
+  const [selectedVariant, setSelectedVariant] = useState(initialVariant);
 
   const setVariant = (name, value) => {
     setSelectedVariant({
