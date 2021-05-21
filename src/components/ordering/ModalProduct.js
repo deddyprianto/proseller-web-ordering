@@ -55,8 +55,8 @@ class ModalProduct extends Component {
       return {
         selectedVariant: variant,
         selectedItem: {
-          ...prevState,
-          name: variant.name,
+          ...prevState.selectedItem,
+          name: this.props.selectedItem.name + variant.variantName,
           id: variant.id,
           productID: `product::${variant.id}`,
           product: {
@@ -64,7 +64,7 @@ class ModalProduct extends Component {
             categoryName: prevState.selectedItem.product.categoryName,
             code: variant.barcode,
             id: variant.id,
-            name: variant.name,
+            name: this.props.selectedItem.name + variant.variantName,
             orderingAvaibility:
               prevState.selectedItem.product.orderingAvaibility,
             orderingStatus: prevState.selectedItem.product.orderingStatus,
