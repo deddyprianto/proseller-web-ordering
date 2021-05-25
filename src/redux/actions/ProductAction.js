@@ -84,7 +84,7 @@ function fetchCategoryList(payload, parentCategoryID = null) {
   };
 }
 
-function fetchProduct(category, outlet, skip, take) {
+function fetchProduct(category, outlet, skip, take, orderingMode) {
   const OUTLET_ID = outlet.id;
   const categoryID = category.id;
   const payload = {
@@ -96,7 +96,9 @@ function fetchProduct(category, outlet, skip, take) {
     const data = await ProductService.api(
       "POST",
       payload,
-      `productpreset/loaditems/${PRESET_TYPE}/${OUTLET_ID}/${categoryID}`
+      `productpreset/loaditems/${PRESET_TYPE}/${OUTLET_ID}/${categoryID}${
+        orderingMode ? "/" + orderingMode : ""
+      }`
     );
     if (!isEmptyArray(data.data)) {
       dispatch(fetchProductSuccess(data.data));

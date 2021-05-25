@@ -21,7 +21,7 @@ import useFilter from "../../hooks/useFilter";
 import useStyles from "./styles";
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.hostname.includes('emenu');
+const IS_EMENU = window.location.hostname.includes("emenu");
 
 export const Products = ({
   categories,
@@ -114,7 +114,7 @@ export const Products = ({
               margin: "1rem",
             }}
           >
-            <Link to={'/menu'}>
+            <Link to={"/menu"}>
               <div>
                 <i className="fa fa-arrow-left" /> Back
               </div>
@@ -130,12 +130,18 @@ export const Products = ({
                   }}
                 ></img>
               )}
-              <h5 style={{ margin: 0, marginLeft: "1rem" }} className="customer-group-name">
-                {selectedCategory && (selectedCategory.name || selectedCategory.term)}
+              <h5
+                style={{ margin: 0, marginLeft: "1rem" }}
+                className="customer-group-name"
+              >
+                {selectedCategory &&
+                  (selectedCategory.name || selectedCategory.term)}
               </h5>
             </div>
           </div>
-          <div style={{ margin: "1rem" }}><SearchBox /></div>
+          <div style={{ margin: "1rem" }}>
+            <SearchBox />
+          </div>
           {/* <div style={{ margin: "1rem" }}>
             <input
               onChange={handleFilterKeywordChange}
@@ -201,11 +207,14 @@ export const Products = ({
                           );
                         })}
                     </ul>
-                    {
-                      filteredProducts === null ? <h4 style={{ textAlign: 'center' }} className="customer-group-name">Sorry, products not found :(</h4>
-                      :
-                      null
-                    }
+                    {filteredProducts === null ? (
+                      <h4
+                        style={{ textAlign: "center" }}
+                        className="customer-group-name"
+                      >
+                        Sorry, products not found :(
+                      </h4>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -227,6 +236,7 @@ const mapStateToProps = (state) => ({
   basket: state.order.basket,
   theme: state.theme,
   companyInfo: state.masterdata.companyInfo.data,
+  orderingMode: state.order.orderingMode,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -238,30 +248,30 @@ const mapDispatchToProps = (dispatch) => {
           skip,
           take,
           outletID: `outlet::${outlet.id}`,
-          sortBy: "name", 
+          sortBy: "name",
           sortDirection: "asc",
           filters: [
             {
-              id: 'search',
+              id: "search",
               value: category.term,
             },
           ],
-        }
+        };
       } else {
         bodyPayload = {
           skip,
           take,
           outletID: `outlet::${outlet.id}`,
           categoryID: `category::${category.id}`,
-          sortBy: "name", 
-          sortDirection: "asc"
-        }
+          sortBy: "name",
+          sortDirection: "asc",
+        };
       }
-      
+
       if (category.items === undefined) {
-        dispatch(ProductAction.fetchProductList(bodyPayload))
+        dispatch(ProductAction.fetchProductList(bodyPayload));
       } else {
-        dispatch(ProductAction.setProductList(category.items))
+        dispatch(ProductAction.setProductList(category.items));
       }
     },
     fetchCategoryList: () => dispatch(ProductAction.fetchCategoryList()),
