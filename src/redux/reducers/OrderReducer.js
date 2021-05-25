@@ -6,7 +6,7 @@ import config from "../../config";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
-  outletSelection: 'DEFAULT',
+  outletSelection: "DEFAULT",
   basket:
     JSON.parse(localStorage.getItem(`${config.prefix}_offlineCart`)) || {},
   productsSearch: undefined,
@@ -29,6 +29,7 @@ const defaultState = {
     moment().add(1, "h").format("HH") + ":00",
   orderActionTimeSlot:
     localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
+  orderingSetting: {},
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -38,14 +39,19 @@ export default function reducer(state = defaultState, action) {
         basket: action.data,
       };
     case "OUTLET_SELECTION":
-        return {
-          ...state,
-          outletSelection: action.data,
-        };
+      return {
+        ...state,
+        outletSelection: action.data,
+      };
     case "SEARCH":
       return {
         ...state,
         productsSearch: action.data,
+      };
+    case "SET_ORDERING_SETTINGS":
+      return {
+        ...state,
+        orderingSetting: action.data,
       };
     case "SET_DELIVERY_PROVIDERS":
       return {

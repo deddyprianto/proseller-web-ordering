@@ -37,6 +37,8 @@ export const Products = ({
   setCategory,
   history,
   companyInfo,
+  orderingMode,
+  setting,
 }) => {
   const classes = useStyles({ color: theme.color });
 
@@ -58,7 +60,11 @@ export const Products = ({
       if (_.isEmpty(selectedOutlet)) {
         history.push("/outlets");
       } else {
-        fetchProducts(selectedCategory, selectedOutlet, 0, 100);
+        if (setting.ShowOrderingModeModalFirst) {
+          fetchProducts(selectedCategory, selectedOutlet, 0, 100, orderingMode);
+        } else {
+          fetchProducts(selectedCategory, selectedOutlet, 0, 100);
+        }
       }
     } else {
       if (!categories || categories.length < 0) {
@@ -237,6 +243,7 @@ const mapStateToProps = (state) => ({
   theme: state.theme,
   companyInfo: state.masterdata.companyInfo.data,
   orderingMode: state.order.orderingMode,
+  setting: state.order.orderingSetting,
 });
 
 const mapDispatchToProps = (dispatch) => {

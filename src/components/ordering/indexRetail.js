@@ -34,7 +34,7 @@ class Ordering extends Component {
       loading: true,
       loadingSearching: false,
       offlineMessage: "",
-      isEmenu: window.location.hostname.includes('emenu'),
+      isEmenu: window.location.hostname.includes("emenu"),
       showUpdateModal: false,
       addNew: false,
       categoryLength: 0,
@@ -57,7 +57,9 @@ class Ordering extends Component {
 
     // await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
-    this.props.dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 20 }, null));
+    this.props.dispatch(
+      ProductAction.fetchCategoryList({ skip: 0, take: 20 }, null)
+    );
     await this.fetchCategories(defaultOutlet);
   };
 
@@ -173,9 +175,24 @@ class Ordering extends Component {
     let data = {};
     do {
       data = {};
-      data = await this.props.dispatch(
-        ProductAction.fetchProduct(categories[i], outlet, 0, 100)
-      );
+      if (
+        this.props.orderingSetting &&
+        this.props.orderingSetting.ShowOrderingModeModalFirst
+      ) {
+        data = await this.props.dispatch(
+          ProductAction.fetchProduct(
+            categories[i],
+            outlet,
+            0,
+            100,
+            this.props.orderingMode
+          )
+        );
+      } else {
+        data = await this.props.dispatch(
+          ProductAction.fetchProduct(categories[i], outlet, 0, 100)
+        );
+      }
 
       products[i] = {
         category: products[i].category,
@@ -323,9 +340,25 @@ class Ordering extends Component {
     categories[indexLoaded].isLoaded = true;
     await this.setState({ categories });
 
-    let data = await this.props.dispatch(
-      ProductAction.fetchProduct(category, defaultOutlet, 0, 100)
-    );
+    let data = null;
+    if (
+      this.props.orderingSetting &&
+      this.props.orderingSetting.ShowOrderingModeModalFirst
+    ) {
+      data = await this.props.dispatch(
+        ProductAction.fetchProduct(
+          category,
+          defaultOutlet,
+          0,
+          100,
+          this.props.orderingMode
+        )
+      );
+    } else {
+      data = await this.props.dispatch(
+        ProductAction.fetchProduct(category, defaultOutlet, 0, 100)
+      );
+    }
 
     if (!data) return;
 
@@ -348,18 +381,20 @@ class Ordering extends Component {
   };
 
   goToCategory = async (category) => {
-    const isParent = await this.props.dispatch(ProductAction.isParentCategory(category.sortKey));
+    const isParent = await this.props.dispatch(
+      ProductAction.isParentCategory(category.sortKey)
+    );
 
     if (isParent === true) {
       this.props.history.push({
         pathname: `category/${category.id}`,
-        state: category
+        state: category,
       });
     } else {
       this.props.dispatch(ProductAction.setSelectedCategory(category));
       this.props.history.push(`category/${category.id}/products`);
     }
-  }
+  };
 
   render() {
     let {
@@ -554,6 +589,8 @@ const mapStateToProps = (state, ownProps) => {
     productsSearch: state.order.productsSearch,
     companyInfo: state.masterdata.companyInfo.data,
     categories: state.product.categoryList,
+    setting: state.order.orderingSetting,
+    orderingMode: state.order.orderingMode,
   };
 };
 

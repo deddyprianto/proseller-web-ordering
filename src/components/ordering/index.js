@@ -196,9 +196,29 @@ class Ordering extends Component {
     products = productListWithCategory;
 
     while (i < categories.length && this.state.processing) {
-      let data = await this.props.dispatch(
-        ProductAction.fetchProduct(categories[i], outlet, 0, 10)
+      let data = null;
+      console.log(
+        "this.props.orderingSetting",
+        this.props.orderingSetting.ShowOrderingModeModalFirst
       );
+      if (
+        this.props.orderingSetting &&
+        this.props.orderingSetting.ShowOrderingModeModalFirst
+      ) {
+        data = await this.props.dispatch(
+          ProductAction.fetchProduct(
+            categories[i],
+            outlet,
+            0,
+            10,
+            this.props.orderingMode
+          )
+        );
+      } else {
+        data = await this.props.dispatch(
+          ProductAction.fetchProduct(categories[i], outlet, 0, 10)
+        );
+      }
 
       products[i] = {
         category: products[i].category,
@@ -213,9 +233,25 @@ class Ordering extends Component {
       if (data.dataLength > 0) {
         let j = 10;
         while (j <= data.dataLength && this.state.processing) {
-          let product = await this.props.dispatch(
-            ProductAction.fetchProduct(categories[i], outlet, j, 10)
-          );
+          let product = null;
+          if (
+            this.props.orderingSetting &&
+            this.props.orderingSetting.ShowOrderingModeModalFirst
+          ) {
+            product = await this.props.dispatch(
+              ProductAction.fetchProduct(
+                categories[i],
+                outlet,
+                j,
+                10,
+                this.props.orderingMode
+              )
+            );
+          } else {
+            product = await this.props.dispatch(
+              ProductAction.fetchProduct(categories[i], outlet, j, 10)
+            );
+          }
           products[i].items = [...products[i].items, ...product.data];
           await this.setState({ products, productsBackup: products });
           j += 10;
@@ -583,6 +619,7 @@ const mapStateToProps = (state, ownProps) => {
     companyInfo: state.masterdata.companyInfo.data,
     setting: state.order.setting,
     orderingMode: state.order.orderingMode,
+    orderingSetting: state.order.orderingSetting,
   };
 };
 

@@ -73,6 +73,16 @@ function getSettingOrdering() {
       `orderingsetting/${appType}`
     );
     let data = await response.data;
+    const settingObj = data.settings.reduce((acc, setting) => {
+      return {
+        ...acc,
+        [setting.settingKey]: setting.settingValue,
+      };
+    }, {});
+    dispatch({
+      type: "SET_ORDERING_SETTINGS",
+      data: settingObj,
+    });
     if (data) {
       data = config.getSettingOrdering(data);
 
@@ -413,7 +423,7 @@ function buildCart(payload = {}) {
     try {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (window.location.hostname.includes('emenu') ? "DINEIN" : "DELIVERY");
+        (window.location.hostname.includes("emenu") ? "DINEIN" : "DELIVERY");
     } catch (error) {}
     const response = await OrderingService.api(
       "POST",
@@ -460,7 +470,7 @@ function updateCart(payload) {
 
     if (window.location.hash === "#/basket") {
       await localStorage.removeItem(`${config.prefix}_dataBasket`);
-      window.location.reload() 
+      window.location.reload();
     }
     return dispatch(getCart());
   };
