@@ -85,7 +85,14 @@ class Ordering extends Component {
           defaultOutlet = config.getValidation(defaultOutlet);
         }
         this.setState({ processing: false });
-        await this.fetchCategories(defaultOutlet);
+        if (
+          showOrderingModeModalFirst &&
+          showOrderingModeModalFirst.settingValue === true
+        ) {
+          await this.fetchCategories(defaultOutlet, this.props.orderingMode);
+        } else {
+          await this.fetchCategories(defaultOutlet);
+        }
       }
     }
   };
@@ -151,11 +158,11 @@ class Ordering extends Component {
     } catch (e) {}
   };
 
-  fetchCategories = async (outlet) => {
+  fetchCategories = async (outlet, orderingMode) => {
     try {
       await this.setState({ loading: true });
       const categories = await this.props.dispatch(
-        ProductAction.fetchCategoryProduct(outlet)
+        ProductAction.fetchCategoryProduct(outlet, null, orderingMode)
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({ categories: categories.data, processing: true });

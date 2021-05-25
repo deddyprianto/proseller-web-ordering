@@ -12,6 +12,7 @@ import LoginRegister from "../../login-register";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import styles from "./styles.module.css";
+import OrderingMode from "./OrderingMode";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
@@ -300,6 +301,8 @@ class Header extends Component {
               style={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-around",
+                flexDirection: "column",
               }}
             >
               <Link to="/">
@@ -311,6 +314,43 @@ class Header extends Component {
               </Link>
               {this.state.showOutletSelection &&
                 this.displayOutletInfo(outlets, defaultOutlet)}
+              <div className={styles.outlet}>
+                {this.props.orderingMode === "DINEIN" && (
+                  <OrderingMode
+                    mode="DINEIN"
+                    alias={defaultOutlet.dineInName}
+                    icon="fa-cutlery"
+                  ></OrderingMode>
+                )}
+                {this.props.orderingMode === "TAKEAWAY" && (
+                  <OrderingMode
+                    mode="TAKEAWAY"
+                    alias={defaultOutlet.takeAwayName}
+                    icon="fa-shopping-basket"
+                  ></OrderingMode>
+                )}
+                {this.props.orderingMode === "STOREPICKUP" && (
+                  <OrderingMode
+                    mode="STOREPICKUP"
+                    alias={defaultOutlet.storePickUpName}
+                    icon="fa-shopping-basket"
+                  ></OrderingMode>
+                )}
+                {this.props.orderingMode === "STORECHECKOUT" && (
+                  <OrderingMode
+                    mode="STORECHECKOUT"
+                    alias={defaultOutlet.storeCheckOutName}
+                    icon="fa-shopping-basket"
+                  ></OrderingMode>
+                )}
+                {this.props.orderingMode === "DELIVERY" && (
+                  <OrderingMode
+                    mode="DELIVERY"
+                    alias={defaultOutlet.deliveryName}
+                    icon="fa-car"
+                  ></OrderingMode>
+                )}
+              </div>
             </div>
             <nav
               id="site-navigation"

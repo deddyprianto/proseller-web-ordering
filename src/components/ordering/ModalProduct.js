@@ -950,7 +950,12 @@ class ModalProduct extends Component {
         <div
           className="modal-dialog modal-dialog-product modal-dialog-centered modal-full"
           role="document"
-          style={{ justifyContent: "center", width: "50%" }}
+          style={{
+            justifyContent: "center",
+            width: "100vw",
+            height: "100vh",
+            paddingBottom: "20vh",
+          }}
         >
           <div className="modal-content modal-ordering-mode">
             <div
@@ -1082,6 +1087,7 @@ class ModalProduct extends Component {
           alignItems: "center",
           justifyContent: "center",
           padding: 5,
+          cursor: "pointer",
         }}
       >
         <div

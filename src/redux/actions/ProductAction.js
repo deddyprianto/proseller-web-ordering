@@ -13,23 +13,25 @@ export const ProductAction = {
   setSelectedCategory,
   fetchProductList,
   setProductList,
-  isParentCategory
+  isParentCategory,
 };
 
-function fetchCategoryProduct(outlet, payload) {
+function fetchCategoryProduct(outlet, payload, orderingMode) {
   try {
     if (outlet.id) {
       const OUTLET_ID = outlet.id;
 
       if (!payload) {
-        payload = { take: 500, skip: 0 }
+        payload = { take: 500, skip: 0 };
       }
 
       return async (dispatch) => {
         const data = await ProductService.api(
           "POST",
           payload,
-          `productpreset/loadcategory/${PRESET_TYPE}/${OUTLET_ID}`
+          `productpreset/loadcategory/${PRESET_TYPE}/${OUTLET_ID}${
+            orderingMode ? "/" + orderingMode : ""
+          }`
         );
         if (!isEmptyArray(data.data)) {
           dispatch(setData(data.data, CONSTANT.LIST_CATEGORY));
@@ -50,18 +52,14 @@ function setSelectedCategory(category) {
 
 function isParentCategory(parentCategoryID) {
   return async (dispatch) => {
-    let payload = { take: 1, skip: 0 }
+    let payload = { take: 1, skip: 0 };
     payload.parentCategoryID = parentCategoryID;
 
-    const data = await ProductService.api(
-      "POST",
-      payload,
-      `category/load`
-    );
+    const data = await ProductService.api("POST", payload, `category/load`);
     if (isEmptyArray(data.data)) {
-      return false
+      return false;
     } else {
-      return true
+      return true;
     }
   };
 }
@@ -69,18 +67,14 @@ function isParentCategory(parentCategoryID) {
 function fetchCategoryList(payload, parentCategoryID = null) {
   return async (dispatch) => {
     if (!payload) {
-      payload = { take: 500, skip: 0 }
+      payload = { take: 500, skip: 0 };
     }
 
     if (parentCategoryID !== undefined) {
       payload.parentCategoryID = parentCategoryID;
     }
-  
-    const data = await ProductService.api(
-      "POST",
-      payload,
-      `category/load`
-    );
+
+    const data = await ProductService.api("POST", payload, `category/load`);
     if (!isEmptyArray(data.data)) {
       dispatch(setData(data.data, "SET_CATEGORY_LIST"));
       return data.data;
@@ -145,7 +139,9 @@ function setProductList(data) {
 
 const clearCategoryProducts = () => ({ type: "CLEAR_CATEGORY_PRODUCTS" });
 const fetchProductStarted = () => ({ type: "GET_PRODUCT_LIST_STARTED" });
-const fetchProductCategoryStarted = () => ({ type: "GET_PRODUCT_CATEGORY_STARTED" });
+const fetchProductCategoryStarted = () => ({
+  type: "GET_PRODUCT_CATEGORY_STARTED",
+});
 const fetchProductCategorySuccess = (data) => ({
   type: "GET_PRODUCT_CATEGORY_SUCCESS",
   data,
