@@ -14,27 +14,36 @@ import config from "../../config";
 
 class MenuBasket extends Component {
   render() {
-    let {colorTheme, data, basket, productQuantity} = this.props
-    
+    let { colorTheme, data, basket, productQuantity } = this.props;
+
     let props = data;
     let { minQty, maxQty, minAmount, maxAmount } = this.props.orderValidation;
-    minQty = minQty || 0
-    maxQty = maxQty || 0
-    minAmount = minAmount || 0
-    maxAmount = maxAmount || 0
+    minQty = minQty || 0;
+    maxQty = maxQty || 0;
+    minAmount = minAmount || 0;
+    maxAmount = maxAmount || 0;
 
-    let deficiencyAmount = minAmount - basket.totalGrossAmount
-    let deficiencyAmountPercent = (basket.totalGrossAmount/minAmount) * 100
-    if(deficiencyAmount < 0) deficiencyAmount = 0
-    if(deficiencyAmountPercent > 100) deficiencyAmountPercent = 100
+    let deficiencyAmount = minAmount - basket.totalGrossAmount;
+    let deficiencyAmountPercent = (basket.totalGrossAmount / minAmount) * 100;
+    if (deficiencyAmount < 0) deficiencyAmount = 0;
+    if (deficiencyAmountPercent > 100) deficiencyAmountPercent = 100;
 
-    let deficiencyFreeDelivery = 0
-    let deficiencyFreeDeliveryPercent = 0
-    if(props.provaiderDelivery && props.provaiderDelivery.minPurchaseForFreeDelivery){
-      deficiencyFreeDelivery = props.provaiderDelivery.minPurchaseForFreeDelivery - basket.totalGrossAmount
-      deficiencyFreeDeliveryPercent = (basket.totalGrossAmount/props.provaiderDelivery.minPurchaseForFreeDelivery) * 100
-      if(deficiencyFreeDelivery < 0) deficiencyFreeDelivery = 0
-      if(deficiencyFreeDeliveryPercent > 100) deficiencyFreeDeliveryPercent = 100
+    let deficiencyFreeDelivery = 0;
+    let deficiencyFreeDeliveryPercent = 0;
+    if (
+      props.provaiderDelivery &&
+      props.provaiderDelivery.minPurchaseForFreeDelivery
+    ) {
+      deficiencyFreeDelivery =
+        props.provaiderDelivery.minPurchaseForFreeDelivery -
+        basket.totalGrossAmount;
+      deficiencyFreeDeliveryPercent =
+        (basket.totalGrossAmount /
+          props.provaiderDelivery.minPurchaseForFreeDelivery) *
+        100;
+      if (deficiencyFreeDelivery < 0) deficiencyFreeDelivery = 0;
+      if (deficiencyFreeDeliveryPercent > 100)
+        deficiencyFreeDeliveryPercent = 100;
     }
 
     return (
@@ -51,89 +60,136 @@ class MenuBasket extends Component {
               productQuantity >= minQty ? (
                 productQuantity <= maxQty || maxQty === 0 ? null : (
                   <div>
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                      {
-                        `Your order has exceeded maximum quantity for
-                        ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum quantity ${maxQty}). 
-                        Please remove some item from your order.`
-                      }
+                    <div
+                      className="small text-left text-warning-theme"
+                      style={{
+                        lineHeight: "17px",
+                        textAlign: "center",
+                        padding: 5,
+                      }}
+                    >
+                      {`Your order has exceeded maximum quantity for
+                        ${config.checkNickName(
+                          props.dataBasket.orderingMode,
+                          props.storeDetail
+                        )} (maximum quantity ${maxQty}). 
+                        Please remove some item from your order.`}
                     </div>
                   </div>
                 )
               ) : (
-                  <div>
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                      {
-                        `Your order hasn't reached minimum quantity for
-                        ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum quantity ${minQty}). 
-                        Please add more item to your order.`
-                      }
-                    </div>
-                  </div>
-                )
-            ) : (
                 <div>
-                  <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                    {
-                      `Your order has exceeded maximum amount for
-                      ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (maximum amount ${this.props.getCurrency(maxAmount)}). 
-                      Please remove some item from your order.`
-                    }
+                  <div
+                    className="small text-left text-warning-theme"
+                    style={{
+                      lineHeight: "17px",
+                      textAlign: "center",
+                      padding: 5,
+                    }}
+                  >
+                    {`Your order hasn't reached minimum quantity for
+                        ${config.checkNickName(
+                          props.dataBasket.orderingMode,
+                          props.storeDetail
+                        )} (minimum quantity ${minQty}). 
+                        Please add more item to your order.`}
                   </div>
                 </div>
               )
-          ) : (
+            ) : (
               <div>
-                <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                  {
-                    `Your order hasn't reached minimum amount for
-                    ${config.checkNickName(props.dataBasket.orderingMode, props.storeDetail)} (minimum amount ${this.props.getCurrency(minAmount)}). 
-                    Please add more item to your order.`
-                  }
+                <div
+                  className="small text-left text-warning-theme"
+                  style={{
+                    lineHeight: "17px",
+                    textAlign: "center",
+                    padding: 5,
+                  }}
+                >
+                  {`Your order has exceeded maximum amount for
+                      ${config.checkNickName(
+                        props.dataBasket.orderingMode,
+                        props.storeDetail
+                      )} (maximum amount ${this.props.getCurrency(maxAmount)}). 
+                      Please remove some item from your order.`}
+                </div>
+              </div>
+            )
+          ) : (
+            <div>
+              <div
+                className="small text-left text-warning-theme"
+                style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}
+              >
+                {`Your order hasn't reached minimum amount for
+                    ${config.checkNickName(
+                      props.dataBasket.orderingMode,
+                      props.storeDetail
+                    )} (minimum amount ${this.props.getCurrency(minAmount)}). 
+                    Please add more item to your order.`}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div
+          style={
+            {
+              // border: "1px solid #DCDCDC",
+              // borderRadius: 5,
+              // marginTop: 10,
+            }
+          }
+        >
+          {minAmount > 0 && (
+            <div style={{ textAlign: "left", padding: 10, fontSize: 12 }}>
+              {`${this.props.getCurrency(
+                deficiencyAmount
+              )} more to min order of ${this.props.getCurrency(minAmount)}`}
+              <div style={{ backgroundColor: "gray", borderRadius: 5 }}>
+                <div
+                  style={{
+                    height: 5,
+                    width: `${deficiencyAmountPercent}%`,
+                    backgroundColor:
+                      deficiencyAmountPercent === 100
+                        ? "#067E30"
+                        : colorTheme.primary,
+                    borderRadius: 5,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          {props.provaiderDelivery &&
+            props.provaiderDelivery.minPurchaseForFreeDelivery &&
+            props.dataBasket.orderingMode === "DELIVERY" && (
+              <div style={{ textAlign: "left", padding: 10, fontSize: 12 }}>
+                {`${this.props.getCurrency(
+                  Number(deficiencyFreeDelivery)
+                )} more to free delivery`}
+                <div style={{ backgroundColor: "gray", borderRadius: 5 }}>
+                  <div
+                    style={{
+                      height: 5,
+                      width: `${deficiencyFreeDeliveryPercent}%`,
+                      backgroundColor:
+                        deficiencyFreeDeliveryPercent === 100
+                          ? "#067E30"
+                          : colorTheme.primary,
+                      borderRadius: 5,
+                    }}
+                  />
                 </div>
               </div>
             )}
         </div>
 
-        <div
-          style={{
-            // border: "1px solid #DCDCDC",
-            // borderRadius: 5,
-            // marginTop: 10,
-          }}
-        >
-          {
-            minAmount > 0 &&
-            <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
-              {`${this.props.getCurrency(deficiencyAmount)} more to min order of ${this.props.getCurrency(minAmount)}`}
-              <div style={{ backgroundColor: "gray", borderRadius: 5}} >
-                <div style={{
-                  height: 5, width: `${deficiencyAmountPercent}%`, 
-                  backgroundColor: deficiencyAmountPercent === 100 ? "#067E30" : colorTheme.primary, 
-                  borderRadius: 5
-                }}/>
-              </div>
-            </div>
-          }
-          {
-            props.provaiderDelivery &&
-            props.provaiderDelivery.minPurchaseForFreeDelivery &&
-            props.dataBasket.orderingMode === "DELIVERY" &&
-            <div style={{textAlign: "left", padding: 10, fontSize: 12}}>
-              {`${this.props.getCurrency(Number(deficiencyFreeDelivery))} more to free delivery`}
-              <div style={{ backgroundColor: "gray", borderRadius: 5}} >
-                <div style={{
-                  height: 5, width: `${deficiencyFreeDeliveryPercent}%`, 
-                  backgroundColor: deficiencyFreeDeliveryPercent === 100 ? "#067E30" : colorTheme.primary, 
-                  borderRadius: 5
-                }}/>
-              </div>
-            </div>
-          }
-        </div>
-
         {props.dataBasket &&
-          (props.dataBasket.queueNo !== undefined || ((props.scanTable && (props.scanTable.table || props.scanTable.tableNo)) || props.dataBasket.tableNo)) &&
+          (props.dataBasket.queueNo !== undefined ||
+            (props.scanTable &&
+              (props.scanTable.table || props.scanTable.tableNo)) ||
+            props.dataBasket.tableNo) &&
           (props.dataBasket.tableNo || props.scanTable) &&
           props.dataBasket.orderingMode !== "DELIVERY" &&
           props.dataBasket.orderingMode !== "TAKEAWAY" &&
@@ -148,16 +204,19 @@ class MenuBasket extends Component {
           </div>
         )}
 
-        <div style={{ textAlign: "left" }}>
-          <OrderingMode
-            data={props}
-            basket={basket}
-            roleDisableNotPending={this.props.roleDisableNotPending}
-            setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
-            getCurrency={(price) => this.props.getCurrency(price)}
-            isLoggedIn={this.props.isLoggedIn}
-          />
-        </div>
+        {(!this.props.setting ||
+          !this.props.setting.ShowOrderingModeModalFirst) && (
+          <div style={{ textAlign: "left" }}>
+            <OrderingMode
+              data={props}
+              basket={basket}
+              roleDisableNotPending={this.props.roleDisableNotPending}
+              setOrderingMode={(mode) => this.props.setOrderingMode(mode)}
+              getCurrency={(price) => this.props.getCurrency(price)}
+              isLoggedIn={this.props.isLoggedIn}
+            />
+          </div>
+        )}
 
         {/* {props.dataBasket.totalTaxAmount > 0 && (
           <TaxAmount
@@ -176,82 +235,128 @@ class MenuBasket extends Component {
                 isLoggedIn={this.props.isLoggedIn}
               />
             }
-            {
-              props.deliveryProvaider &&
-              props.deliveryProvaider.length > 0 && (
-                <ProviderDeliveryBasket
-                  data={props}
-                  roleBtnClear={this.props.roleBtnClear}
-                  handleSetProvaider={(item) =>
-                    this.props.handleSetProvaider(item)
+            {props.deliveryProvaider && props.deliveryProvaider.length > 0 && (
+              <ProviderDeliveryBasket
+                data={props}
+                roleBtnClear={this.props.roleBtnClear}
+                handleSetProvaider={(item) =>
+                  this.props.handleSetProvaider(item)
+                }
+              />
+            )}
+
+            {!props.deliveryProvaider &&
+              props.dataBasket.orderingMode === "DELIVERY" && (
+                <div
+                  style={
+                    {
+                      // border: "1px solid #DCDCDC",
+                      // borderRadius: 5,
+                      // marginTop: 10,
+                    }
                   }
-                />
-              )
-            }
-
-            {
-              !props.deliveryProvaider &&
-              props.dataBasket.orderingMode === "DELIVERY" &&
-              <div
-                style={{
-                  // border: "1px solid #DCDCDC",
-                  // borderRadius: 5,
-                  // marginTop: 10,
-                }}
-              >
-                <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                  The delivery provider has not set it. 
-                  Please confirm with the service provider.
+                >
+                  <div
+                    className="small text-left color-active"
+                    style={{
+                      lineHeight: "17px",
+                      textAlign: "center",
+                      padding: 5,
+                    }}
+                  >
+                    The delivery provider has not set it. Please confirm with
+                    the service provider.
+                  </div>
                 </div>
-              </div>
-            }
-
+              )}
           </div>
         )}
 
-        {
-          props.orderingMode && 
-          this.props.timeslotData && 
-          this.props.timeslotData.length > 0 && 
-          props.orderingMode !== 'DINEIN' &&
-          <PickupDateTime
-            data={props}
-            roleBtnClear={this.props.roleBtnClear}
-            isLoggedIn={this.props.isLoggedIn}
-            handleSetState={(field, value) =>
-              this.props.handleSetState(field, value)
-            }
-          />
-        }
+        {props.orderingMode &&
+          this.props.timeslotData &&
+          this.props.timeslotData.length > 0 &&
+          props.orderingMode !== "DINEIN" && (
+            <PickupDateTime
+              data={props}
+              roleBtnClear={this.props.roleBtnClear}
+              isLoggedIn={this.props.isLoggedIn}
+              handleSetState={(field, value) =>
+                this.props.handleSetState(field, value)
+              }
+            />
+          )}
 
-        <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingTop: 5, paddingBottom: 5 }}> 
-          {
-            props.provaiderDelivery &&
+        <div
+          style={{
+            border: "1px solid #DCDCDC",
+            borderRadius: 5,
+            marginTop: 10,
+            paddingTop: 5,
+            paddingBottom: 5,
+          }}
+        >
+          {props.provaiderDelivery &&
             props.provaiderDelivery.minPurchaseForFreeDelivery &&
-            props.orderingMode === "DELIVERY" &&
-            <div>
-              <div className="small text-left color-active" style={{ lineHeight: "17px", textAlign: "center", padding: 5 }}>
-                {`Enjoy free delivery when your order amount is more than ${this.props.getCurrency(Number(props.provaiderDelivery.minPurchaseForFreeDelivery))}`}
+            props.orderingMode === "DELIVERY" && (
+              <div>
+                <div
+                  className="small text-left color-active"
+                  style={{
+                    lineHeight: "17px",
+                    textAlign: "center",
+                    padding: 5,
+                  }}
+                >
+                  {`Enjoy free delivery when your order amount is more than ${this.props.getCurrency(
+                    Number(props.provaiderDelivery.minPurchaseForFreeDelivery)
+                  )}`}
+                </div>
+                <div
+                  style={{
+                    height: 1,
+                    backgroundColor: "#CDCDCD",
+                    width: "100%",
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                />
               </div>
-              <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%", marginTop: 10, marginBottom: 10 }} />
-            </div>
-          }
+            )}
 
           {props.dataBasket.totalDiscountAmount > 0 && (
             <React.Fragment>
               <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <div style={{ fontWeight: "bold" }}> Subtotal b/f Disc</div>
-                  <div style={{ fontWeight: "bold" }} >
-                    {`${this.props.getCurrency(props.dataBasket.totalGrossAmount)}`}
+                  <div style={{ fontWeight: "bold" }}>
+                    {`${this.props.getCurrency(
+                      props.dataBasket.totalGrossAmount
+                    )}`}
                   </div>
                 </div>
               </div>
               <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
-                  <div style={{ fontWeight: "bold", color: 'red' }}> Discount</div>
-                  <div style={{ fontWeight: "bold", color: 'red' }} >
-                    {`- ${this.props.getCurrency(props.dataBasket.totalDiscountAmount)}`}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div style={{ fontWeight: "bold", color: "red" }}>
+                    {" "}
+                    Discount
+                  </div>
+                  <div style={{ fontWeight: "bold", color: "red" }}>
+                    {`- ${this.props.getCurrency(
+                      props.dataBasket.totalDiscountAmount
+                    )}`}
                   </div>
                 </div>
               </div>
@@ -259,10 +364,19 @@ class MenuBasket extends Component {
           )}
 
           <div style={{ marginLeft: 10, marginRight: 10 }}>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
               <div style={{ fontWeight: "bold" }}> Subtotal </div>
-              <div style={{ fontWeight: "bold" }} >
-                {`${this.props.getCurrency(props.dataBasket.totalGrossAmount - props.dataBasket.totalDiscountAmount)}`}
+              <div style={{ fontWeight: "bold" }}>
+                {`${this.props.getCurrency(
+                  props.dataBasket.totalGrossAmount -
+                    props.dataBasket.totalDiscountAmount
+                )}`}
               </div>
             </div>
           </div>
@@ -274,20 +388,23 @@ class MenuBasket extends Component {
             />
           )}
 
-          {
-            props.provaiderDelivery &&
-            props.provaiderDelivery.taxRuleID === 'EXC-TAX' &&
+          {props.provaiderDelivery &&
+            props.provaiderDelivery.taxRuleID === "EXC-TAX" &&
             props.orderingMode &&
             props.orderingMode === "DELIVERY" && (
-            <div style={{ marginLeft: 10, marginRight: 10 }}>
-              {
-                props.provaiderDelivery ? (
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                {props.provaiderDelivery ? (
                   props.provaiderDelivery.deliveryFeeFloat < 0 ? (
-                  <div className="small text-left text-warning-theme" style={{ 
-                    lineHeight: "17px", textAlign: "center", marginTop: 10 
-                  }}>
-                    Delivery is not available in your area.
-                  </div>
+                    <div
+                      className="small text-left text-warning-theme"
+                      style={{
+                        lineHeight: "17px",
+                        textAlign: "center",
+                        marginTop: 10,
+                      }}
+                    >
+                      Delivery is not available in your area.
+                    </div>
                   ) : props.provaiderDelivery.deliveryFee ? (
                     <div
                       style={{
@@ -296,49 +413,60 @@ class MenuBasket extends Component {
                         justifyContent: "space-between",
                       }}
                     >
-                      <div style={{ fontWeight: "bold" }}>
-                        Delivery Fee
-                      </div>
+                      <div style={{ fontWeight: "bold" }}>Delivery Fee</div>
                       <div
                         style={{ fontWeight: "bold" }}
                       >{`${props.provaiderDelivery.deliveryFee}`}</div>
                     </div>
                   ) : (
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    <div
+                      className="small text-left text-warning-theme"
+                      style={{ lineHeight: "17px", textAlign: "center" }}
+                    >
                       Checking delivery availability...
                     </div>
                   )
-                ) : null
-              }
-            </div>
-          )}
+                ) : null}
+              </div>
+            )}
 
-          {
-            props.dataBasket.exclusiveTax > 0 &&
+          {props.dataBasket.exclusiveTax > 0 && (
             <div style={{ marginLeft: 10, marginRight: 10 }}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
-                <div style={{ fontWeight: "bold" }}> Tax {props.dataBasket.outlet.taxPercentage}% </div>
-                <div style={{ fontWeight: "bold" }} >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ fontWeight: "bold" }}>
+                  {" "}
+                  Tax {props.dataBasket.outlet.taxPercentage}%{" "}
+                </div>
+                <div style={{ fontWeight: "bold" }}>
                   {`${this.props.getCurrency(props.dataBasket.exclusiveTax)}`}
                 </div>
               </div>
             </div>
-          }
+          )}
 
-{
-            props.provaiderDelivery &&
-            props.provaiderDelivery.taxRuleID !== 'EXC-TAX' &&
+          {props.provaiderDelivery &&
+            props.provaiderDelivery.taxRuleID !== "EXC-TAX" &&
             props.orderingMode &&
             props.orderingMode === "DELIVERY" && (
-            <div style={{ marginLeft: 10, marginRight: 10 }}>
-              {
-                props.provaiderDelivery ? (
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                {props.provaiderDelivery ? (
                   props.provaiderDelivery.deliveryFeeFloat < 0 ? (
-                  <div className="small text-left text-warning-theme" style={{ 
-                    lineHeight: "17px", textAlign: "center", marginTop: 10 
-                  }}>
-                    Delivery is not available in your area.
-                  </div>
+                    <div
+                      className="small text-left text-warning-theme"
+                      style={{
+                        lineHeight: "17px",
+                        textAlign: "center",
+                        marginTop: 10,
+                      }}
+                    >
+                      Delivery is not available in your area.
+                    </div>
                   ) : props.provaiderDelivery.deliveryFee ? (
                     <div
                       style={{
@@ -347,29 +475,65 @@ class MenuBasket extends Component {
                         justifyContent: "space-between",
                       }}
                     >
-                      <div style={{ fontWeight: "bold" }}>
-                        Delivery Fee
-                      </div>
+                      <div style={{ fontWeight: "bold" }}>Delivery Fee</div>
                       <div
                         style={{ fontWeight: "bold" }}
                       >{`${props.provaiderDelivery.deliveryFee}`}</div>
                     </div>
                   ) : (
-                    <div className="small text-left text-warning-theme" style={{ lineHeight: "17px", textAlign: "center" }}>
+                    <div
+                      className="small text-left text-warning-theme"
+                      style={{ lineHeight: "17px", textAlign: "center" }}
+                    >
                       Checking delivery availability...
                     </div>
                   )
-                ) : null
-              }
-            </div>
-          )}
+                ) : null}
+              </div>
+            )}
         </div>
 
-        {
-          props.widthSelected >= 1200 && 
-          <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, }}> 
+        {props.widthSelected >= 1200 && (
+          <div
+            style={{
+              border: "1px solid #DCDCDC",
+              borderRadius: 5,
+              marginTop: 10,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+            >
               <div
                 style={{
+                  fontWeight: "bold",
+                  color: this.props.color.primary,
+                  fontSize: 16,
+                }}
+              >
+                {" "}
+                GRAND TOTAL{" "}
+              </div>
+              <div
+                style={{
+                  fontWeight: "bold",
+                  color: this.props.color.primary,
+                  fontSize: 16,
+                }}
+              >
+                {this.props.getCurrency(props.dataBasket.totalNettAmount)}
+              </div>
+            </div>
+            {props.dataBasket && props.dataBasket.inclusiveTax > 0 && (
+              <div
+                style={{
+                  marginTop: -6,
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
@@ -377,105 +541,88 @@ class MenuBasket extends Component {
                   marginRight: 10,
                 }}
               >
-                <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} > GRAND TOTAL </div>
-                <div style={{ fontWeight: "bold", color: this.props.color.primary, fontSize: 16, }} >
-                  {
-                    this.props.getCurrency(
-                      props.dataBasket.totalNettAmount
-                    )
-                  }
+                <div style={{ opacity: 0.6, fontSize: 12 }}>
+                  {" "}
+                  Inclusive Tax {props.dataBasket.outlet.taxPercentage}%{" "}
+                </div>
+                <div style={{ opacity: 0.6, fontSize: 12 }}>
+                  {this.props.getCurrency(props.dataBasket.inclusiveTax)}
                 </div>
               </div>
-              {
-                props.dataBasket && props.dataBasket.inclusiveTax > 0 &&
-                <div
+            )}
+
+            {props.dataBasket.status === "PROCESSING" ||
+            props.dataBasket.status === "READY_FOR_COLLECTION" ||
+            props.dataBasket.status === "READY_FOR_DELIVERY" ||
+            props.dataBasket.status === "ON_THE_WAY" ? (
+              <div
+                style={{
+                  padding: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Button
                   style={{
-                    marginTop: -6,
+                    width: "100%",
+                    fontWeight: "bold",
                     display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginLeft: 10,
-                    marginRight: 10,
-                  }}
-                >
-                  <div style={{ opacity: 0.6, fontSize: 12, }} > Inclusive Tax {props.dataBasket.outlet.taxPercentage}% </div>
-                  <div style={{ opacity: 0.6, fontSize: 12, }} >
-                    {
-                      this.props.getCurrency(
-                        props.dataBasket.inclusiveTax
-                      )
-                    }
-                  </div>
-                </div>
-              }
-              
-              {props.dataBasket.status === "PROCESSING" ||
-              props.dataBasket.status === "READY_FOR_COLLECTION" ||
-              props.dataBasket.status === "READY_FOR_DELIVERY" ||
-              props.dataBasket.status === "ON_THE_WAY" ? (
-                <div
-                  style={{
-                    padding: 10,
-                    display: "flex",
-                    flexDirection: "row",
+                    justifyContent: "center",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    height: 50,
                   }}
+                  onClick={() => this.props.setViewCart(false)}
                 >
-                  <Button
-                    style={{
-                      width: "100%",
-                      fontWeight: "bold",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center", height: 50
-                    }}
-                    onClick={() => this.props.setViewCart(false)}
-                  >
-                    <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
-                    Waiting Order
-                  </Button>
-                </div>
-              ) : (
-                <div
+                  <i
+                    className="fa fa-shopping-cart"
+                    aria-hidden="true"
+                    style={{ fontSize: 20, marginRight: 10 }}
+                  />
+                  Waiting Order
+                </Button>
+              </div>
+            ) : (
+              <div
+                style={{
+                  padding: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Button
+                  disabled={this.props.btnSattleStatusDisable}
+                  onClick={() => {
+                    this.props.roleTitleSettle
+                      ? this.props.handleSettle()
+                      : this.props.handleSubmit();
+                  }}
                   style={{
-                    padding: 10,
+                    boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                    width: "100%",
                     display: "flex",
-                    flexDirection: "row",
+                    fontWeight: "bold",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    justifyContent: "center",
+                    height: 50,
                   }}
                 >
-                  <Button
-                    disabled={this.props.btnSattleStatusDisable}
-                    onClick={() => {
-                      this.props.roleTitleSettle
-                        ? this.props.handleSettle()
-                        : this.props.handleSubmit();
-                    }}
-                    style={{
-                      boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                      width: "100%",
-                      display: "flex",
-                      fontWeight: "bold",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: 50,
-                    }}
-                  >
-                    {this.props.roleIconSettle ? (
-                      <MonetizationOnIcon
-                        style={{ fontSize: 20, marginRight: 5 }}
-                      />
-                    ) : (
-                        <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
-                      )}
-                    {this.props.roleTitleSettle ? "Confirm & Pay" : "Submit"}
-                  </Button>
-                </div>
-              )}
+                  {this.props.roleIconSettle ? (
+                    <MonetizationOnIcon
+                      style={{ fontSize: 20, marginRight: 5 }}
+                    />
+                  ) : (
+                    <CheckCircleIcon style={{ fontSize: 20, marginRight: 5 }} />
+                  )}
+                  {this.props.roleTitleSettle ? "Confirm & Pay" : "Submit"}
+                </Button>
+              </div>
+            )}
           </div>
-        }
+        )}
       </div>
     );
   }
@@ -484,7 +631,8 @@ class MenuBasket extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     deliveryProviders: state.order.deliveryProviders,
-    colorTheme: state.theme.color
+    colorTheme: state.theme.color,
+    setting: state.order.orderingSetting,
   };
 };
 const mapDispatchToProps = (dispatch) => {
