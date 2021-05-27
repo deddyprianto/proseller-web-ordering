@@ -21,6 +21,7 @@ const defaultState = {
       JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`))
     ) || null,
   orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`) || null,
+  orderingModes: [],
   orderActionDate:
     localStorage.getItem(`${config.prefix}_order_action_date`) ||
     moment().format("YYYY-MM-DD"),
@@ -87,6 +88,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         orderingMode: action.payload,
+      };
+    case "SET_ORDERING_MODES":
+      return {
+        ...state,
+        orderingModes: action.payload,
       };
     case "SET_ORDER_ACTION_DATE":
       localStorage.setItem(

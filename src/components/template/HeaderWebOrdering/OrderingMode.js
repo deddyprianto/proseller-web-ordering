@@ -1,6 +1,7 @@
 import React from "react";
+import { connect } from "react-redux";
 
-function OrderingMode({ mode, alias, icon }) {
+function OrderingMode({ mode, alias, icon, dispatch }) {
   const showOrderingModeModal = () => {
     document.getElementById("open-modal-ordering-mode").click();
   };
@@ -19,5 +20,7 @@ function OrderingMode({ mode, alias, icon }) {
     </div>
   );
 }
-
-export default OrderingMode;
+const mapDispatchToProps = (dispatch) => {
+  return { dispatch };
+};
+export default connect(() => ({}), mapDispatchToProps)(OrderingMode);

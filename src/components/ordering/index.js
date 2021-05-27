@@ -58,8 +58,11 @@ class Ordering extends Component {
 
     await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
-    if (this.props.orderingMode) {
-      await this.fetchCategories(defaultOutlet);
+    if (
+      this.props.orderingSetting &&
+      this.props.orderingSetting.ShowOrderingModeModalFirst
+    ) {
+      await this.fetchCategories(defaultOutlet, this.props.orderingMode);
     }
   };
 
@@ -67,7 +70,8 @@ class Ordering extends Component {
     if (
       this.props.setting.length > 0 &&
       (prevProps.orderingMode !== this.props.orderingMode ||
-        prevProps.defaultOutlet.id !== this.props.defaultOutlet.id)
+        prevProps.defaultOutlet.id !== this.props.defaultOutlet.id ||
+        prevProps.orderingModes !== this.props.orderingModes)
     ) {
       const showOrderingModeModalFirst = this.props.setting.find((setting) => {
         return setting.settingKey === "ShowOrderingModeModalFirst";
@@ -77,8 +81,15 @@ class Ordering extends Component {
         showOrderingModeModalFirst.settingValue === true &&
         !this.props.orderingMode
       ) {
-        //Pop ordering moda modal
-        document.getElementById("open-modal-ordering-mode").click();
+        console.log(this.props.orderingModes);
+        if (this.props.orderingModes.length === 1) {
+          await this.props.dispatch({
+            type: "SET_ORDERING_MODE",
+            payload: this.props.orderingModes[0],
+          });
+        } else if (this.props.orderingModes.length > 1) {
+          document.getElementById("open-modal-ordering-mode").click();
+        }
       } else {
         let defaultOutlet = this.props.defaultOutlet;
         if (defaultOutlet && defaultOutlet.id) {
@@ -112,7 +123,7 @@ class Ordering extends Component {
   };
 
   componentWillUnmount() {
-    this.setState({ processing: false });
+    this.setState({ processing: false, selectedItem: {} });
     clearInterval(this.timeWhith);
     const { isEmenu } = this.state;
     window.removeEventListener(
@@ -620,6 +631,7 @@ const mapStateToProps = (state, ownProps) => {
     setting: state.order.setting,
     orderingMode: state.order.orderingMode,
     orderingSetting: state.order.orderingSetting,
+    orderingModes: state.order.orderingModes,
   };
 };
 

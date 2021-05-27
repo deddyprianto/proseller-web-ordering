@@ -413,6 +413,10 @@ function addCart(payload) {
 
     // console.log(response)
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
+      console.log(
+        "Dispatching CONSTANT.DATA_BASKET from OrderAction.addCart ",
+        response.data
+      );
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
   };

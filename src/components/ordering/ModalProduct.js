@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import _ from "lodash";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
 import Variant from "./Variant";
+import Swal from "sweetalert2";
 
 class ModalProduct extends Component {
   constructor(props) {
@@ -231,6 +233,7 @@ class ModalProduct extends Component {
   };
 
   processCart = async (e, manualOrderingMode = "") => {
+    console.log("Calling process cart...");
     const orderMode = this.props.orderingMode;
     console.log(manualOrderingMode);
     try {
@@ -292,15 +295,21 @@ class ModalProduct extends Component {
         }
 
         await this.setState({ disableButton: true });
-        if (selectedItem.mode === "Add" || this.props.addNew) {
+        if (
+          (selectedItem.mode === "Add" || this.props.addNew) &&
+          !_.isEmpty(this.state.selectedItem)
+        ) {
+          console.log("Dispatching processAddCart");
           this.props.dispatch(
             OrderAction.processAddCart(defaultOutlet, selectedItem)
           );
+          this.setState({ selectedItem: {} });
         } else {
           let response = await this.props.dispatch(
             OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
           );
           // this.props.handleSetState("dataBasket", response.data);
+          this.setState({ selectedItem: {} });
           console.log(selectedItem);
           document.getElementById("detail-product-modal").click();
         }
@@ -715,6 +724,9 @@ class ModalProduct extends Component {
               width: 35,
               height: 35,
             }}
+            onClick={() => {
+              this.setState({ selectedItem: {} });
+            }}
           >
             <i
               id="close-product-modal"
@@ -902,24 +914,61 @@ class ModalProduct extends Component {
   };
 
   setOrderingMode = async (mode) => {
-    await this.props.dispatch({ type: "SET_ORDERING_MODE", payload: mode });
-    await this.setState({ disableButton: true });
-    this.processCart(null, mode);
-    if (mode !== "" && mode !== undefined && mode === null) {
-      setTimeout(() => {
-        const payload = {
-          orderingMode: mode,
-        };
-        this.props.dispatch(OrderAction.updateCartInfo(payload));
-      }, 1000);
+    console.log("Calling setOrderingMode...");
+    if (
+      this.props.orderingSetting &&
+      this.props.orderingSetting.ShowOrderingModeModalFirst
+    ) {
+      if (this.props.orderingMode && _.isEmpty(this.props.basket)) {
+        Swal.fire({
+          title: "Change ordering mode?",
+          text: "Changing ordering mode will remove item(s) in your cart",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes",
+        }).then(async (result) => {
+          if (result.value) {
+            this.props.dispatch(OrderAction.deleteCart(true));
+            await this.props.dispatch({
+              type: "SET_ORDERING_MODE",
+              payload: mode,
+            });
+            try {
+              document.getElementById("dismiss-ordering-mode").click();
+            } catch (error) {}
+          }
+        });
+      } else {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: mode,
+        });
+        try {
+          document.getElementById("dismiss-ordering-mode").click();
+        } catch (error) {}
+      }
+    } else {
+      await this.props.dispatch({
+        type: "SET_ORDERING_MODE",
+        payload: mode,
+      });
+      await this.setState({ disableButton: true });
+      console.log("Calling set ordeirng mode");
+      this.processCart(null, mode);
+      if (mode !== "" && mode !== undefined && mode === null) {
+        setTimeout(() => {
+          const payload = {
+            orderingMode: mode,
+          };
+          this.props.dispatch(OrderAction.updateCartInfo(payload));
+        }, 1000);
+      }
+      try {
+        document.getElementById("dismiss-ordering-mode").click();
+      } catch (error) {}
     }
-    try {
-      document.getElementById("dismiss-ordering-mode").click();
-    } catch (error) {}
-
-    // try {
-    //   document.getElementById("add-product-modal").click();
-    // } catch (error) {}
   };
 
   modalOrderingMode = () => {
@@ -1360,6 +1409,7 @@ const mapStateToProps = (state) => {
     companyInfo: state.masterdata.companyInfo.data,
     setting: state.order.setting,
     orderingMode: state.order.orderingMode,
+    orderingSetting: state.order.orderingSetting,
   };
 };
 
