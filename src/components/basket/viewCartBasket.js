@@ -31,7 +31,7 @@ const ViewCartBasket = ({
   basket,
   handleSetState,
   dataBasket,
-  updateCartInfo
+  updateCartInfo,
 }) => {
   // if (!basket.details && data.dataBasket) basket = data.dataBasket;
   // if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
@@ -163,9 +163,8 @@ const ViewCartBasket = ({
       quantity: acc.quantity + item.quantity,
     })).quantity;
 
-  let { minQty, maxQty, minAmount, maxAmount } = outlet.orderValidation[
-    orderingModeField
-  ];
+  let { minQty, maxQty, minAmount, maxAmount } =
+    outlet.orderValidation[orderingModeField];
   minQty = minQty || 0;
   maxQty = maxQty || 0;
   minAmount = minAmount || 0;
@@ -250,7 +249,7 @@ const ViewCartBasket = ({
             padding: 10,
             width: "101%",
             marginLeft: props.widthSelected >= 750 ? -65 : -15,
-            marginBottom: props.widthSelected >= 1200 ? 0 : 45,
+            marginBottom: props.widthSelected >= 1200 ? 0 : 70,
             display: "flex",
             flexDirection: "column",
             alignItems: "left",
@@ -332,22 +331,27 @@ const ViewCartBasket = ({
             </div>
           </div>
 
-          {
-              basket && basket.inclusiveTax > 0 &&
-              <div
-                style={{
-                  marginTop: -6,
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginLeft: 10,
-                  marginRight: 10,
-                }}
-              >
-                <div style={{ opacity: 0.6, fontSize: 12, }} > Inclusive Tax {basket.outlet.taxPercentage}% </div>
-                <div style={{ opacity: 0.6, fontSize: 12, }} > {getCurrency(basket.inclusiveTax)} </div>
+          {basket && basket.inclusiveTax > 0 && (
+            <div
+              style={{
+                marginTop: -6,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+            >
+              <div style={{ opacity: 0.6, fontSize: 12 }}>
+                {" "}
+                Inclusive Tax {basket.outlet.taxPercentage}%{" "}
               </div>
-            }
+              <div style={{ opacity: 0.6, fontSize: 12 }}>
+                {" "}
+                {getCurrency(basket.inclusiveTax)}{" "}
+              </div>
+            </div>
+          )}
 
           {!(
             basket.outlet.outletType === "RESTO" &&

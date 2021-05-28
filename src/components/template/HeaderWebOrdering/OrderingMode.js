@@ -1,9 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 
-function OrderingMode({ mode, alias, icon, dispatch }) {
+function OrderingMode({ mode, alias, icon, orderingModes }) {
   const showOrderingModeModal = () => {
-    document.getElementById("open-modal-ordering-mode").click();
+    if (orderingModes.length !== 1) {
+      document.getElementById("open-modal-ordering-mode").click();
+    }
   };
   return (
     <div
@@ -13,14 +15,23 @@ function OrderingMode({ mode, alias, icon, dispatch }) {
     >
       <i className={`fa ${icon}`}></i>
       {alias || mode}{" "}
-      <i
-        style={{ marginLeft: 6, fontSize: 10 }}
-        className="fa fa-chevron-right"
-      />
+      {orderingModes.length !== 1 && (
+        <i
+          style={{ marginLeft: 6, fontSize: 10 }}
+          className="fa fa-chevron-right"
+        />
+      )}
     </div>
   );
 }
+const mapStateToProps = (state) => {
+  return {
+    orderingModes: state.order.orderingModes,
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return { dispatch };
 };
-export default connect(() => ({}), mapDispatchToProps)(OrderingMode);
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderingMode);

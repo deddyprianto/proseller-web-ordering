@@ -17,6 +17,7 @@ import OrderingMode from "./OrderingMode";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const routeWithOutletSelect = [];
+const routeWithOrderingMode = ["/"];
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +29,7 @@ class Header extends Component {
       enableOrdering: true,
       logoCompany: config.url_logo,
       showOutletSelection: false,
+      showOrderingMode: false,
     };
   }
 
@@ -43,6 +45,15 @@ class Header extends Component {
       this.setState({ showOutletSelection: true });
     } else {
       this.setState({ showOutletSelection: false });
+    }
+    if (
+      routeWithOrderingMode.find(
+        (route) => route === this.props.location.pathname
+      )
+    ) {
+      this.setState({ showOrderingMode: true });
+    } else {
+      this.setState({ showOrderingMode: false });
     }
     this.setState({ infoCompany: infoCompany || {} });
     this.props.dispatch(OutletAction.fetchAllOutlet(true));
@@ -108,6 +119,15 @@ class Header extends Component {
         this.setState({ showOutletSelection: true });
       } else {
         this.setState({ showOutletSelection: false });
+      }
+      if (
+        routeWithOrderingMode.find(
+          (route) => route === this.props.location.pathname
+        )
+      ) {
+        this.setState({ showOrderingMode: true });
+      } else {
+        this.setState({ showOrderingMode: false });
       }
     }
   };
@@ -314,43 +334,45 @@ class Header extends Component {
               </Link>
               {this.state.showOutletSelection &&
                 this.displayOutletInfo(outlets, defaultOutlet)}
-              <div className={styles.outlet}>
-                {this.props.orderingMode === "DINEIN" && (
-                  <OrderingMode
-                    mode="DINEIN"
-                    alias={defaultOutlet.dineInName}
-                    icon="fa-cutlery"
-                  ></OrderingMode>
-                )}
-                {this.props.orderingMode === "TAKEAWAY" && (
-                  <OrderingMode
-                    mode="TAKEAWAY"
-                    alias={defaultOutlet.takeAwayName}
-                    icon="fa-shopping-basket"
-                  ></OrderingMode>
-                )}
-                {this.props.orderingMode === "STOREPICKUP" && (
-                  <OrderingMode
-                    mode="STOREPICKUP"
-                    alias={defaultOutlet.storePickUpName}
-                    icon="fa-shopping-basket"
-                  ></OrderingMode>
-                )}
-                {this.props.orderingMode === "STORECHECKOUT" && (
-                  <OrderingMode
-                    mode="STORECHECKOUT"
-                    alias={defaultOutlet.storeCheckOutName}
-                    icon="fa-shopping-basket"
-                  ></OrderingMode>
-                )}
-                {this.props.orderingMode === "DELIVERY" && (
-                  <OrderingMode
-                    mode="DELIVERY"
-                    alias={defaultOutlet.deliveryName}
-                    icon="fa-car"
-                  ></OrderingMode>
-                )}
-              </div>
+              {this.state.showOrderingMode && (
+                <div className={styles.outlet}>
+                  {this.props.orderingMode === "DINEIN" && (
+                    <OrderingMode
+                      mode="DINEIN"
+                      alias={defaultOutlet.dineInName}
+                      icon="fa-cutlery"
+                    ></OrderingMode>
+                  )}
+                  {this.props.orderingMode === "TAKEAWAY" && (
+                    <OrderingMode
+                      mode="TAKEAWAY"
+                      alias={defaultOutlet.takeAwayName}
+                      icon="fa-shopping-basket"
+                    ></OrderingMode>
+                  )}
+                  {this.props.orderingMode === "STOREPICKUP" && (
+                    <OrderingMode
+                      mode="STOREPICKUP"
+                      alias={defaultOutlet.storePickUpName}
+                      icon="fa-shopping-basket"
+                    ></OrderingMode>
+                  )}
+                  {this.props.orderingMode === "STORECHECKOUT" && (
+                    <OrderingMode
+                      mode="STORECHECKOUT"
+                      alias={defaultOutlet.storeCheckOutName}
+                      icon="fa-shopping-basket"
+                    ></OrderingMode>
+                  )}
+                  {this.props.orderingMode === "DELIVERY" && (
+                    <OrderingMode
+                      mode="DELIVERY"
+                      alias={defaultOutlet.deliveryName}
+                      icon="fa-car"
+                    ></OrderingMode>
+                  )}
+                </div>
+              )}
             </div>
             <nav
               id="site-navigation"

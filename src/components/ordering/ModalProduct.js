@@ -919,7 +919,7 @@ class ModalProduct extends Component {
       this.props.orderingSetting &&
       this.props.orderingSetting.ShowOrderingModeModalFirst
     ) {
-      if (this.props.orderingMode && _.isEmpty(this.props.basket)) {
+      if (this.props.orderingMode && !_.isEmpty(this.props.basket)) {
         Swal.fire({
           title: "Change ordering mode?",
           text: "Changing ordering mode will remove item(s) in your cart",
@@ -930,7 +930,11 @@ class ModalProduct extends Component {
           confirmButtonText: "Yes",
         }).then(async (result) => {
           if (result.value) {
-            this.props.dispatch(OrderAction.deleteCart(true));
+            if (this.props.account) {
+              this.props.dispatch(OrderAction.deleteCart(true));
+            } else {
+              this.props.dispatch(OrderAction.deleteCart());
+            }
             await this.props.dispatch({
               type: "SET_ORDERING_MODE",
               payload: mode,
@@ -1066,9 +1070,11 @@ class ModalProduct extends Component {
                     textAlign: "center",
                     marginTop: 30,
                     marginBottom: 20,
-                    display: this.state.showOrderingModeCloseButton
-                      ? "block"
-                      : "none",
+                    display:
+                      this.props.orderingSetting.ShowOrderingModeModalFirst &&
+                      !this.props.orderingMode
+                        ? "none"
+                        : "block",
                   }}
                 >
                   I'm just browsing
@@ -1403,6 +1409,7 @@ class ModalProduct extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    account: state.auth.account && state.auth.account.idToken.payload,
     basket: state.order.basket,
     defaultOutlet: state.outlet.defaultOutlet,
     color: state.theme.color,
