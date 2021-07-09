@@ -53,6 +53,7 @@ class ModalProduct extends Component {
   };
 
   setSelectedVariantProduct = (variant) => {
+    console.log(variant);
     this.setState((prevState) => {
       return {
         selectedVariant: variant,
@@ -72,6 +73,9 @@ class ModalProduct extends Component {
             orderingStatus: prevState.selectedItem.product.orderingStatus,
             productModifiers: prevState.selectedItem.product.productModifiers,
             retailPrice: variant.retailPrice,
+            defaultImageURL:
+              variant.defaultImageURL ||
+              prevState.selectedItem.product.defaultImageURL,
           },
         },
       };

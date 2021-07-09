@@ -98,7 +98,7 @@ function setDefaultOutlet(outlet) {
 
 function getDomainName() {
   return async (dispatch) => {
-    const domainName = "ordering-cutbutchery.proseller.io";
+    const domainName = "ordering-cutbutchery-demo.proseller.io";
     try {
       fetch(process.env.REACT_APP_DOMAIN_MAPPING_URL, {
         method: "POST",
