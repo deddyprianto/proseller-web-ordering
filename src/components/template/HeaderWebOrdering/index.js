@@ -15,9 +15,6 @@ import styles from "./styles.module.css";
 import OrderingMode from "./OrderingMode";
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-
-const routeWithOutletSelect = [];
-const routeWithOrderingMode = ["/"];
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -30,6 +27,8 @@ class Header extends Component {
       logoCompany: config.url_logo,
       showOutletSelection: false,
       showOrderingMode: false,
+      routeWithOutletSelect: [],
+      routeWithOrderingMode: [],
     };
   }
 
@@ -38,7 +37,7 @@ class Header extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
     if (
-      routeWithOutletSelect.find(
+      this.state.routeWithOutletSelect.find(
         (route) => route === this.props.location.pathname
       )
     ) {
@@ -47,7 +46,7 @@ class Header extends Component {
       this.setState({ showOutletSelection: false });
     }
     if (
-      routeWithOrderingMode.find(
+      this.state.routeWithOrderingMode.find(
         (route) => route === this.props.location.pathname
       )
     ) {
@@ -59,7 +58,7 @@ class Header extends Component {
     this.props.dispatch(OutletAction.fetchAllOutlet(true));
   };
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = (prevProps, prevState) => {
     if (this.props !== prevProps) {
       let enableOrdering = this.props.setting.find((items) => {
         return items.settingKey === "EnableOrdering";
@@ -110,9 +109,13 @@ class Header extends Component {
         }
       }
     }
-    if (prevProps.location !== this.props.location) {
+    if (
+      prevProps.location !== this.props.location ||
+      prevState.routeWithOutletSelect !== this.state.routeWithOutletSelect ||
+      prevState.routeWithOrderingMode !== this.state.routeWithOrderingMode
+    ) {
       if (
-        routeWithOutletSelect.find(
+        this.state.routeWithOutletSelect.find(
           (route) => route === this.props.location.pathname
         )
       ) {
@@ -121,13 +124,27 @@ class Header extends Component {
         this.setState({ showOutletSelection: false });
       }
       if (
-        routeWithOrderingMode.find(
+        this.state.routeWithOrderingMode.find(
           (route) => route === this.props.location.pathname
         )
       ) {
         this.setState({ showOrderingMode: true });
       } else {
         this.setState({ showOrderingMode: false });
+      }
+    }
+
+    if (prevProps.orderingSetting !== this.props.orderingSetting) {
+      if (this.props.orderingSetting) {
+        if (this.props.orderingSetting.ShowOrderingModeModalFirst === true) {
+          this.setState((prevState) => ({
+            routeWithOrderingMode: [...prevState.routeWithOrderingMode, "/"],
+          }));
+        } else {
+          this.setState((prevState) => ({
+            routeWithOutletSelect: [...prevState.routeWithOutletSelect, "/"],
+          }));
+        }
       }
     }
   };
@@ -687,6 +704,7 @@ const mapStateToProps = (state, ownProps) => {
     setting: state.order.setting,
     outletSelection: state.order.outletSelection,
     orderingMode: state.order.orderingMode,
+    orderingSetting: state.order.orderingSetting,
   };
 };
 const mapDispatchToProps = (dispatch) => {

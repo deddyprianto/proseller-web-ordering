@@ -63,6 +63,8 @@ class Ordering extends Component {
       this.props.orderingSetting.ShowOrderingModeModalFirst
     ) {
       await this.fetchCategories(defaultOutlet, this.props.orderingMode);
+    } else {
+      await this.fetchCategories(defaultOutlet);
     }
   };
 

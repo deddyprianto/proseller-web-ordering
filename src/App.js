@@ -281,9 +281,14 @@ const App = (props) => {
         };
         const interval = setInterval(() => {
           const now = new Date();
+          console.log(
+            props.orderingModeSelectedOn.getTime() +
+              orderingModeExpiredIn * 60000
+          );
+          console.log(now.getTime());
           if (
             props.orderingModeSelectedOn.getTime() +
-              orderingModeExpiredIn * 60000 >=
+              orderingModeExpiredIn * 60000 <=
             now.getTime()
           ) {
             console.log(
