@@ -76,12 +76,12 @@ class Ordering extends Component {
       const showOrderingModeModalFirst = this.props.setting.find((setting) => {
         return setting.settingKey === "ShowOrderingModeModalFirst";
       });
+      console.log("showOrderingModeModalFirst", showOrderingModeModalFirst);
       if (
         showOrderingModeModalFirst &&
         showOrderingModeModalFirst.settingValue === true &&
         !this.props.orderingMode
       ) {
-        console.log(this.props.orderingModes);
         if (this.props.orderingModes.length === 1) {
           await this.props.dispatch({
             type: "SET_ORDERING_MODE",

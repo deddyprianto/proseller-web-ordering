@@ -21,6 +21,13 @@ const defaultState = {
       JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`))
     ) || null,
   orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`) || null,
+  orderingModeSelectedOn: localStorage.getItem(
+    `${config.prefix}_ordering_mode_selected_on`
+  )
+    ? new Date(
+        localStorage.getItem(`${config.prefix}_ordering_mode_selected_on`)
+      )
+    : null,
   orderingModes: [],
   orderActionDate:
     localStorage.getItem(`${config.prefix}_order_action_date`) ||
@@ -84,10 +91,21 @@ export default function reducer(state = defaultState, action) {
         dataPendingLength: action.payload,
       };
     case "SET_ORDERING_MODE":
+      const selectedOn = new Date();
       localStorage.setItem(`${config.prefix}_ordering_mode`, action.payload);
+      localStorage.setItem(`${config.prefix}_ordering_selected_on`, selectedOn);
       return {
         ...state,
         orderingMode: action.payload,
+        orderingModeSelectedOn: selectedOn,
+      };
+    case "REMOVE_ORDERING_MODE":
+      localStorage.removeItem(`${config.prefix}_ordering_mode`);
+      localStorage.removeItem(`${config.prefix}_ordering_selected_on`);
+      return {
+        ...state,
+        orderingMode: null,
+        orderingModeSelectedOn: null,
       };
     case "SET_ORDERING_MODES":
       return {

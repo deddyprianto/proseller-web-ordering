@@ -61,9 +61,8 @@ const App = (props) => {
 
   const [enableOrdering, setEnableOrdering] = useState(false);
   const domainNameExist = props.domainName && props.domainName.length > 0;
-  const [initialDomainNameExists, setInitialDomainNameExists] = useState(
-    domainNameExist
-  );
+  const [initialDomainNameExists, setInitialDomainNameExists] =
+    useState(domainNameExist);
 
   try {
     if (window.location.hash === "#/") {
@@ -115,9 +114,8 @@ const App = (props) => {
         }
 
         // get modal backdrops
-        const modalsBackdrops = document.getElementsByClassName(
-          "modal-backdrop"
-        );
+        const modalsBackdrops =
+          document.getElementsByClassName("modal-backdrop");
 
         // remove every modal backdrop
         for (let i = 0; i < modalsBackdrops.length; i++) {
@@ -271,6 +269,35 @@ const App = (props) => {
     }
   }, [props.domainName]);
 
+  useEffect(() => {
+    if (props.orderingModeSelectedOn && props.orderingSetting) {
+      const orderingModeExpiredIn = parseInt(
+        props.orderingSetting.OrderingModeExpiredIn
+      );
+      console.log(orderingModeExpiredIn);
+      if (orderingModeExpiredIn && orderingModeExpiredIn > 0) {
+        const stopInterval = (intervalObj) => {
+          clearInterval(intervalObj);
+        };
+        const interval = setInterval(() => {
+          const now = new Date();
+          if (
+            props.orderingModeSelectedOn.getTime() +
+              orderingModeExpiredIn * 60000 >=
+            now.getTime()
+          ) {
+            console.log(
+              "checking ordering mode expiry interval stopped at",
+              now
+            );
+            stopInterval(interval);
+            dispatch({ type: "REMOVE_ORDERING_MODE" });
+          }
+        }, 60000);
+      }
+    }
+  }, [props.orderingModeSelectedOn, props.orderingSetting]);
+
   return domainNameExist ? (
     props.domainName !== "NOT_FOUND" ? (
       <IntlProvider locale={lang} messages={messages[lang]}>
@@ -306,6 +333,8 @@ const mapStateToProps = (state, ownProps) => {
     defaultEmail: state.customer.defaultEmail,
     defaultPhoneNumber: state.customer.defaultPhoneNumber,
     domainName: state.masterdata.domainName,
+    orderingModeSelectedOn: state.order.orderingModeSelectedOn,
+    orderingSetting: state.order.orderingSetting,
   };
 };
 

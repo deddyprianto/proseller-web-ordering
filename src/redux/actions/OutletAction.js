@@ -12,6 +12,7 @@ export const OutletAction = {
   getCoordinates,
   setData,
   getBackupOutlet,
+  setDefaultOutlet,
 };
 
 const orderingModesField = [
@@ -63,6 +64,19 @@ function getCoordinates() {
     return new Promise(function (resolve, reject) {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
+  };
+}
+
+function setDefaultOutlet(outlet) {
+  return async (dispatch) => {
+    const orderingModesFieldFiltered = orderingModesField.filter(
+      (mode) => outlet[mode.isEnabledFieldName]
+    );
+    const orderingModesMapped = orderingModesFieldFiltered.map(
+      (mode) => mode.name
+    );
+    dispatch({ type: "SET_ORDERING_MODES", payload: orderingModesMapped });
+    dispatch(setData(outlet, CONSTANT.DEFAULT_OUTLET));
   };
 }
 
