@@ -56,6 +56,17 @@ class Header extends Component {
     }
     this.setState({ infoCompany: infoCompany || {} });
     this.props.dispatch(OutletAction.fetchAllOutlet(true));
+    if (this.props.orderingSetting) {
+      if (this.props.orderingSetting.ShowOrderingModeModalFirst === true) {
+        this.setState((prevState) => ({
+          routeWithOrderingMode: [...prevState.routeWithOrderingMode, "/"],
+        }));
+      } else {
+        this.setState((prevState) => ({
+          routeWithOutletSelect: [...prevState.routeWithOutletSelect, "/"],
+        }));
+      }
+    }
   };
 
   componentDidUpdate = (prevProps, prevState) => {
