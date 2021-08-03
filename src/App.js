@@ -258,8 +258,6 @@ const App = (props) => {
   }, [domainNameExist, props.domainName]);
 
   useEffect(() => {
-    console.log("initialDomainNameExists ", initialDomainNameExists);
-    console.log("domainNameExist", domainNameExist);
     if (
       !initialDomainNameExists &&
       props.domainName &&
