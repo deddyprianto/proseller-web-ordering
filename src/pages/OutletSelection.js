@@ -88,6 +88,10 @@ class OutletSelection extends Component {
         } else if (this.props.orderingModes.length > 1) {
           document.getElementById("open-modal-ordering-mode").click();
         }
+      } else {
+        this.props.dispatch({
+          type: "REMOVE_ORDERING_MODE",
+        });
       }
     }
     await this.setState({ loadingShow: false });
