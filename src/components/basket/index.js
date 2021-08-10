@@ -3,13 +3,17 @@ import { connect } from "react-redux";
 import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 import { OrderAction } from "../../redux/actions/OrderAction";
-import { MasterdataAction } from "../../redux/actions/MaterdataAction";
+import { OutletAction } from "../../redux/actions/OutletAction";
 // import { CustomerAction } from "../../redux/actions/CustomerAction";
 // import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyArray, isEmptyObject, isEmptyData } from "../../helpers/CheckEmpty";
+import {
+  isEmptyArray,
+  isEmptyObject,
+  isEmptyData,
+} from "../../helpers/CheckEmpty";
 import { StraightDistance } from "../../helpers/CalculateDistance";
 import loadable from "@loadable/component";
 import config from "../../config";
@@ -60,7 +64,7 @@ class Basket extends Component {
       play: false,
       deliveryProvaider: [],
       dataCVV: "",
-      isEmenu: window.location.hostname.includes('emenu'),
+      isEmenu: window.location.hostname.includes("emenu"),
       orderActionDate: this.props.orderActionDate,
       orderActionTime: this.props.orderActionTime,
       orderActionTimeSlot: this.props.orderActionTimeSlot,
@@ -78,7 +82,7 @@ class Basket extends Component {
       timeSlot: [],
       latitude: 0,
       longitude: 0,
-      timeslotData: []
+      timeslotData: [],
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -186,11 +190,11 @@ class Basket extends Component {
   };
 
   getGeolocation = async (storeDetail) => {
-    let from = storeDetail.address || '-';
-    from += '&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4'
+    let from = storeDetail.address || "-";
+    from += "&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4";
     let url = `https://maps.google.com/maps/api/geocode/json?address=${from}`;
-    url = encodeURI(url)
-    
+    url = encodeURI(url);
+
     let response = await fetch(url);
     response = await response.json();
 
@@ -199,7 +203,7 @@ class Basket extends Component {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
       });
-    } catch(e) {}
+    } catch (e) {}
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -438,7 +442,7 @@ class Basket extends Component {
         countryCode: infoCompany.countryCode,
       });
 
-      this.getGeolocation(storeDetail)
+      this.getGeolocation(storeDetail);
 
       // check validate pick date time
       if (orderingMode !== "DINEIN") {
@@ -493,7 +497,7 @@ class Basket extends Component {
 
   setDefaultOutlet = async (dataBasket) => {
     let storeDetail = await this.props.dispatch(
-      MasterdataAction.getOutletByID(dataBasket.outlet.id, false)
+      OutletAction.fetchSingleOutlet(dataBasket.outlet)
     );
     if (storeDetail && storeDetail.id) {
       storeDetail = config.getValidation(storeDetail);
@@ -614,9 +618,9 @@ class Basket extends Component {
 
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
-      
+
       if (timeSlot.resultCode === 200) {
-        this.setState({timeslotData: timeSlot.data})
+        this.setState({ timeslotData: timeSlot.data });
         if (timeSlot.data.length === 0) return;
         timeSlot = timeSlot.data.filter((items) => {
           return items.timeSlot.filter((item) => {
@@ -668,7 +672,7 @@ class Basket extends Component {
           this.props.dispatch({ type: "DELETE_ORDER_ACTION_TIME_SLOT" });
         }
       } else {
-        this.setState({timeslotData: timeSlot.data})
+        this.setState({ timeslotData: timeSlot.data });
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
       }
@@ -1184,10 +1188,10 @@ class Basket extends Component {
 
     /*
       Validate delivery provider mode & maximum distance
-    */ 
-    if (orderingMode === 'DELIVERY') {
+    */
+    if (orderingMode === "DELIVERY") {
       if (this.state.provaiderDelivery) {
-        if (this.state.provaiderDelivery.calculationMode === 'DISTANCE') {
+        if (this.state.provaiderDelivery.calculationMode === "DISTANCE") {
           if (
             isEmptyObject(this.props.deliveryAddress.coordinate) ||
             isEmptyData(this.props.deliveryAddress.coordinate.latitude)
@@ -1199,7 +1203,7 @@ class Basket extends Component {
               confirmButtonText: `Got it`,
             }).then(() => {
               this.props.history.push("/delivery-address");
-            })
+            });
             return false;
           }
 
@@ -1207,9 +1211,13 @@ class Basket extends Component {
           const coordinate = {
             latitude: this.state.latitude,
             longitude: this.state.longitude,
-          }
-          const distance = await StraightDistance(storeDetail, this.props.deliveryAddress.coordinate, coordinate);
-          console.log(distance, 'distance')
+          };
+          const distance = await StraightDistance(
+            storeDetail,
+            this.props.deliveryAddress.coordinate,
+            coordinate
+          );
+          console.log(distance, "distance");
           if (distance > Number(this.state.provaiderDelivery.maximumCoverage)) {
             Swal.fire({
               title: `Maximum delivery coverage is ${this.state.provaiderDelivery.maximumCoverage} km`,
@@ -1222,7 +1230,6 @@ class Basket extends Component {
         }
       }
     }
-
 
     let orderingModeField =
       orderingMode === "DINEIN"
@@ -1287,13 +1294,8 @@ class Basket extends Component {
   };
 
   handleSubmit = async () => {
-    let {
-      orderingMode,
-      storeDetail,
-      scanTable,
-      dataBasket,
-      orderingSetting,
-    } = this.state;
+    let { orderingMode, storeDetail, scanTable, dataBasket, orderingSetting } =
+      this.state;
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
       document.getElementById("login-register-btn").click();
@@ -1589,13 +1591,8 @@ class Basket extends Component {
   };
 
   render() {
-    let {
-      loadingShow,
-      dataBasket,
-      countryCode,
-      viewCart,
-      storeDetail,
-    } = this.state;
+    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } =
+      this.state;
     let { isLoggedIn, product } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;

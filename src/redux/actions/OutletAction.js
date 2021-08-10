@@ -154,6 +154,13 @@ function fetchSingleOutlet(outlet) {
       if (data.data && data.data.id)
         data.data = config.getValidation(data.data);
       dispatch(setData(data.data, CONSTANT.DEFAULT_OUTLET));
+      const orderingModesFieldFiltered = orderingModesField.filter(
+        (mode) => data.data[mode.isEnabledFieldName]
+      );
+      const orderingModesMapped = orderingModesFieldFiltered.map(
+        (mode) => mode.name
+      );
+      dispatch({ type: "SET_ORDERING_MODES", payload: orderingModesMapped });
       return data.data;
     }
   };

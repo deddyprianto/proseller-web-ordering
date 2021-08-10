@@ -79,17 +79,18 @@ class Ordering extends Component {
         return setting.settingKey === "ShowOrderingModeModalFirst";
       });
       console.log("showOrderingModeModalFirst", showOrderingModeModalFirst);
+      if (this.props.orderingModes.length === 1) {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: this.props.orderingModes[0],
+        });
+      }
       if (
         showOrderingModeModalFirst &&
         showOrderingModeModalFirst.settingValue === true &&
         !this.props.orderingMode
       ) {
-        if (this.props.orderingModes.length === 1) {
-          await this.props.dispatch({
-            type: "SET_ORDERING_MODE",
-            payload: this.props.orderingModes[0],
-          });
-        } else if (this.props.orderingModes.length > 1) {
+        if (this.props.orderingModes.length > 1) {
           document.getElementById("open-modal-ordering-mode").click();
         }
       } else {

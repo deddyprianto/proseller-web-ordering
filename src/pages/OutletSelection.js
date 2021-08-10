@@ -79,15 +79,16 @@ class OutletSelection extends Component {
     await this.props.dispatch(OutletAction.setDefaultOutlet(outlet));
     if (!_.isEmpty(this.props.setting)) {
       const { ShowOrderingModeModalFirst } = this.props.setting;
-      if (ShowOrderingModeModalFirst) {
-        if (this.props.orderingModes.length === 1) {
-          await this.props.dispatch({
-            type: "SET_ORDERING_MODE",
-            payload: this.props.orderingModes[0],
-          });
-        } else if (this.props.orderingModes.length > 1) {
-          document.getElementById("open-modal-ordering-mode").click();
-        }
+      if (this.props.orderingModes.length === 1) {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: this.props.orderingModes[0],
+        });
+      } else if (
+        ShowOrderingModeModalFirst &&
+        this.props.orderingModes.length > 1
+      ) {
+        document.getElementById("open-modal-ordering-mode").click();
       } else {
         this.props.dispatch({
           type: "REMOVE_ORDERING_MODE",

@@ -268,12 +268,16 @@ const App = (props) => {
   }, [props.domainName]);
 
   useEffect(() => {
-    if (props.orderingModeSelectedOn && props.orderingSetting) {
+    if (
+      props.orderingModeSelectedOn &&
+      props.orderingSetting &&
+      props.orderingModes.length > 1
+    ) {
       const orderingModeExpiredIn = parseInt(
         props.orderingSetting.OrderingModeExpiredIn
       );
-      console.log(orderingModeExpiredIn);
       if (orderingModeExpiredIn && orderingModeExpiredIn > 0) {
+        console.log("Running check ordering mode interval...");
         const stopInterval = (intervalObj) => {
           clearInterval(intervalObj);
         };
@@ -299,7 +303,11 @@ const App = (props) => {
         }, 60000);
       }
     }
-  }, [props.orderingModeSelectedOn, props.orderingSetting]);
+  }, [
+    props.orderingModeSelectedOn,
+    props.orderingSetting,
+    props.orderingModes,
+  ]);
 
   return domainNameExist ? (
     props.domainName !== "NOT_FOUND" ? (
