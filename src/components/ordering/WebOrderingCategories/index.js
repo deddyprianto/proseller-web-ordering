@@ -59,9 +59,7 @@ const WebOrderingCategories = ({
         top: document.getElementById(selectedCategory).offsetTop - headerHeight,
         behavior: "smooth",
       });
-    } catch (error) {
-      console.log("fetching categories");
-    }
+    } catch (error) {}
     setPrevSelectedCategory(selectedCategory);
   }, [selectedCategory]);
 
