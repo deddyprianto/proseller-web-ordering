@@ -79,13 +79,6 @@ const App = (props) => {
     return newColor.toString(16);
   };
 
-  const hoverColor = `#${lightenDarkenColor(
-    (props.theme.color.primary || "#c00a27").substring(1),
-    -10
-  )}`;
-
-  sheet.update({ theme: { ...props.theme, hoverColor } });
-
   const getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
     if (pageParamString) {
@@ -310,6 +303,23 @@ const App = (props) => {
     props.orderingModes,
   ]);
 
+  useEffect(() => {
+    if (props.theme && props.banners) {
+      const hoverColor = `#${lightenDarkenColor(
+        (props.theme.color.primary || "#c00a27").substring(1),
+        -10
+      )}`;
+
+      sheet.update({
+        theme: {
+          ...props.theme,
+          hoverColor,
+          withBanners: props.banners.length > 0,
+        },
+      });
+    }
+  }, [props.banners, props.theme]);
+
   return domainNameExist ? (
     props.domainName !== "NOT_FOUND" ? (
       <IntlProvider locale={lang} messages={messages[lang]}>
@@ -348,6 +358,7 @@ const mapStateToProps = (state, ownProps) => {
     orderingModeSelectedOn: state.order.orderingModeSelectedOn,
     orderingSetting: state.order.orderingSetting,
     orderingModes: state.order.orderingModes,
+    banners: state.promotion.banners,
   };
 };
 
