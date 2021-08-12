@@ -271,6 +271,7 @@ const App = (props) => {
     if (
       props.orderingModeSelectedOn &&
       props.orderingSetting &&
+      props.orderingModes &&
       props.orderingModes.length > 1
     ) {
       const orderingModeExpiredIn = parseInt(
@@ -346,6 +347,7 @@ const mapStateToProps = (state, ownProps) => {
     domainName: state.masterdata.domainName,
     orderingModeSelectedOn: state.order.orderingModeSelectedOn,
     orderingSetting: state.order.orderingSetting,
+    orderingModes: state.order.orderingModes,
   };
 };
 
