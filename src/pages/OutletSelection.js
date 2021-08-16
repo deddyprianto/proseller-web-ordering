@@ -246,7 +246,7 @@ class OutletSelection extends Component {
                               )}
                             </div>
                             {items.remark && (
-                              <div>
+                              <div style={{ fontSize: "80%" }}>
                                 <span
                                   onClick={() =>
                                     items.orderingStatus !== "UNAVAILABLE"
