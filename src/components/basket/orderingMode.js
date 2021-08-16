@@ -36,6 +36,27 @@ class OrderingMode extends Component {
     }
   };
 
+  mapOrderingModeName = (outlet, orderingMode) => {
+    if (!outlet) {
+      return orderingMode;
+    }
+    switch (orderingMode) {
+      case "DELIVERY":
+        return outlet.deliveryName || orderingMode;
+      case "TAKEAWAY":
+        return outlet.takeAwayName || orderingMode;
+      case "DINEIN":
+        return outlet.dineInName || orderingMode;
+      case "STOREPICKUP":
+        return outlet.storePickUpName || orderingMode;
+      case "STORECHECKOUT":
+        return outlet.storeCheckOutName || orderingMode;
+
+      default:
+        return orderingMode;
+    }
+  };
+
   render() {
     let props = this.props.data;
 
@@ -82,7 +103,10 @@ class OrderingMode extends Component {
           >
             <SendIcon style={{ fontSize: 16 }} />
             {/* {config.checkNickName(props.orderingMode, props.storeDetail)} */}
-            {this.props.basket.orderingMode}
+            {this.mapOrderingModeName(
+              this.props.outlet,
+              this.props.basket.orderingMode
+            )}
           </Button>
         </div>
       </div>
