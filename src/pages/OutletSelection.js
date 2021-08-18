@@ -189,7 +189,8 @@ class OutletSelection extends Component {
                               }
                             >
                               <div>
-                                {items.outletStatus === true ? (
+                                {items.outletStatus === true &&
+                                items.orderingStatus === "AVAILABLE" ? (
                                   <div
                                     style={{
                                       backgroundColor: "#2ecc71",
