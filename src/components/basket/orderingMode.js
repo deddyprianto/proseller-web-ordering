@@ -7,7 +7,6 @@ import ModalOrderingMode from "./ModalOrderingMode";
 
 class OrderingMode extends Component {
   componentDidMount = async () => {
-    console.log(this.props.outlet);
     if (!this.props.basket.orderingMode) {
       console.log("Ordering Modes");
       if (this.props.orderingModes.length === 1) {

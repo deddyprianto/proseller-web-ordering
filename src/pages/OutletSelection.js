@@ -1,3 +1,6 @@
+// CaseID   Name    date        description
+// 0001     Troy    18/08/2021  Remove Show Link|show all description
+
 import React, { Component } from "react";
 import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
@@ -255,12 +258,16 @@ class OutletSelection extends Component {
                                       : false
                                   }
                                 >
-                                  {items.remark.length > 100 &&
+                                  {/* start 0001 */}
+                                  {items.remark}
+                                  {/* end 0001 */}
+
+                                  {/* {items.remark.length > 100 &&
                                   !this.state.showMoreDescription[items.id]
                                     ? items.remark.slice(0, 100) + "..."
-                                    : items.remark}
+                                    : items.remark} */}
                                 </span>
-                                {items.remark.length > 100 && (
+                                {/* {items.remark.length > 100 && (
                                   <button
                                     onClick={() =>
                                       this.handleShowMoreClick(items.id)
@@ -274,7 +281,7 @@ class OutletSelection extends Component {
                                         : "less"}
                                     </strong>
                                   </button>
-                                )}
+                                )} */}
                               </div>
                             )}
                           </div>
