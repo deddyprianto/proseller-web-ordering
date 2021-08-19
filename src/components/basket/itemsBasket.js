@@ -1,7 +1,6 @@
 // CaseID   Name    date        description
 // 0001     Troy    18/08/2021  remove checkbox | add button delete
 
-
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
@@ -40,7 +39,7 @@ class ItemsBasket extends Component {
 
     try {
       storeDetail.product = productBackup;
-    } catch (e) { }
+    } catch (e) {}
 
     if (storeDetail && storeDetail.product) {
       storeDetail.product.forEach((group) => {
@@ -96,7 +95,7 @@ class ItemsBasket extends Component {
             }
           });
       });
-    } catch (e) { }
+    } catch (e) {}
 
     if (isEmptyObject(dataBasket)) {
       product.quantity = 1;
@@ -214,7 +213,7 @@ class ItemsBasket extends Component {
     dataBasket.details[key] = items;
     this.setState({ dataBasket: await dataBasket });
     this.props.handleClear(this.state.dataBasket);
-  }
+  };
 
   componentDidMount = () => {
     this.setState({ dataBasket: this.props.dataBasket });
@@ -520,7 +519,7 @@ class ItemsBasket extends Component {
                         }}
                         onClick={(status) => this.handleRemoveItem(key, item)}
                       >
-                        <DeleteIcon />
+                        <DeleteIcon fontSize="large" />
                       </button>
                     </div>
                   )}
