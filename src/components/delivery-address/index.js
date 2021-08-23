@@ -5,6 +5,7 @@ import config from "../../config";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import ModalDeliveryAddress from "./ModalDeliveryAddress";
 // import { findKey } from "lodash";
 // import GoogleMaps from "./GoogleMaps";
@@ -50,10 +51,11 @@ class DeliveryAddress extends Component {
   getLocationPinned = async () => {
     let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
     let backupAddress = localStorage.getItem(`${config.prefix}_backupAddress`);
-    console.log(backupAddress, 'backupAddress')
+    // console.log(JSON.parse(coordinate), 'coordinate')
     try {
       if (coordinate !== null && coordinate !== "") {
         coordinate = JSON.parse(coordinate)
+
         if (backupAddress === "" || backupAddress === null || backupAddress === undefined) {
           setTimeout(() => {
             document.getElementById('modal-delivery-address').click()
@@ -145,19 +147,34 @@ class DeliveryAddress extends Component {
       if (coordinate && coordinate.detailAddress !== '') {
         deliveryAddress.coordinate = coordinate;
         deliveryAddress.addressName = addressName;
-        try {
-          const streetName = `${coordinate.userLocation}`;
-          deliveryAddress.street = streetName;
-        } catch (e) {}
 
+        let formattedStreet = ''
         try {
-          const postalCode = `${
-            coordinate.detailAddress.address_components.find(
-              item => item.types[0] === 'postal_code',
-            ).long_name
-          }`;
-          deliveryAddress.postalCode = postalCode;
-        } catch (e) {}
+          let route = coordinate.detailAddress.address_components.find(item => item.types.includes('route')).long_name;
+          let street_number = coordinate.detailAddress.address_components.find(item => item.types.includes('street_number')).long_name;
+          let premise = coordinate.detailAddress.address_components.find(item => item.types.includes("premise") || item.types.includes("neighborhood") || item.types.includes("political")).long_name;
+
+          formattedStreet = `${street_number} ${route}, ${premise}`;
+        } catch(e){
+          formattedStreet = coordinate.userLocation
+        }
+
+        let postalCode = '';
+        try {
+          postalCode = coordinate.detailAddress.address_components.find(item => item.types[0] === 'postal_code').long_name;
+
+        } catch(e){}
+
+        deliveryAddress.street = formattedStreet
+        deliveryAddress.streetName = formattedStreet
+        deliveryAddress.postalCode = postalCode
+
+        if (postalCode === '' || !postalCode) {
+          deliveryAddress.isDisabledPostalCode = false;
+        } else {
+          deliveryAddress.isDisabledPostalCode = true;
+        }
+        
         await this.setState({ deliveryAddress, isNew: true });
       } else {
         this.setState({ deliveryAddress: { address: {} }, isNew: true });
@@ -168,9 +185,15 @@ class DeliveryAddress extends Component {
 
     localStorage.removeItem(`${config.prefix}_backupAddress`);
 
+    if (!coordinate) {
+      this.props.history.push("/map");
+    }
   };
 
   handleEdit = async (indexEdit, item, setCoordinate = false) => {
+    item = JSON.stringify(item);
+    item = JSON.parse(item);
+
     item.setAddress = false
 
     item.indexEdit = indexEdit;
@@ -180,25 +203,44 @@ class DeliveryAddress extends Component {
       localStorage.setItem(`${config.prefix}_locationPinned`, JSON.stringify(item.coordinate));
     }
 
+    if (item.postalCode === '' || !item.postalCode) {
+      item.isDisabledPostalCode = false;
+    } else {
+      item.isDisabledPostalCode = true;
+    }
+
     if (setCoordinate) {
       let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
       coordinate = JSON.parse(coordinate)
       item.coordinate = coordinate
-      if (coordinate && coordinate.detailAddress !== '') {
-        try {
-          const streetName = `${coordinate.userLocation}`;
-          item.street = streetName;
-        } catch (e) {}
 
+      let formattedStreet = ''
         try {
-          const postalCode = `${
-            coordinate.detailAddress.address_components.find(
-              item => item.types[0] === 'postal_code',
-            ).long_name
-          }`;
-          item.postalCode = postalCode;
-        } catch (e) {}
-      }
+          let route = coordinate.detailAddress.address_components.find(item => item.types.includes('route')).long_name;
+          let street_number = coordinate.detailAddress.address_components.find(item => item.types.includes('street_number')).long_name;
+          let premise = coordinate.detailAddress.address_components.find(item => item.types.includes("premise") || item.types.includes("neighborhood") || item.types.includes("political")).long_name;
+
+          formattedStreet = `${street_number} ${route}, ${premise}`;
+        } catch(e){
+          formattedStreet = coordinate.userLocation
+        }
+
+        let postalCode = '';
+        try {
+          postalCode = coordinate.detailAddress.address_components.find(item => item.types[0] === 'postal_code').long_name;
+
+        } catch(e){}
+
+        item.street = formattedStreet
+        item.streetName = formattedStreet
+        item.postalCode = postalCode
+        
+        if (item.postalCode === '' || !item.postalCode) {
+          item.isDisabledPostalCode = false;
+        } else {
+          item.isDisabledPostalCode = true;
+        }
+
     }
 
     localStorage.setItem(`${config.prefix}_addressName`, item.addressName);
@@ -225,6 +267,14 @@ class DeliveryAddress extends Component {
       // console.log(optionsCity)
       this.setState({ optionsCity, isLoading: false });
     }
+
+    item.streetName = item.street
+
+    if (item.phoneNumber) {
+      item.phoneCountryCode = item.phoneNumber.substr(0, 3); 
+      item.phoneNumber = item.phoneNumber.substr(3);
+    }
+
     this.setState({ deliveryAddress: item, isNew: false, indexEdit });
   };
 
@@ -342,6 +392,8 @@ class DeliveryAddress extends Component {
       postalCodeIsValid,
     } = this.state;
 
+    const { color } = this.props;
+
     return (
       <div
         className="col-full"
@@ -365,6 +417,8 @@ class DeliveryAddress extends Component {
           indexEdit={indexEdit}
           hidden={countryCode === undefined || countryCode === "SG"}
           postalCodeIsValid={postalCodeIsValid}
+          color={this.props.color}
+          companyInfo={this.props.companyInfo}
         />
 
         <div id="primary" className="content-area">
@@ -448,6 +502,7 @@ class DeliveryAddress extends Component {
                               borderRadius: 5,
                               textAlign: "left",
                               padding: 10,
+                              border: getDeliveryAddress && this.props.deliveryAddress && items.address === this.props.deliveryAddress.address ? `2px solid ${color.primary}` : 'none'
                             }}
                           >
                             <div
@@ -464,7 +519,7 @@ class DeliveryAddress extends Component {
                               >
                                 {items.addressName}
                               </div>
-                              {getDeliveryAddress &&
+                              {/* {getDeliveryAddress &&
                                 this.props.deliveryAddress &&
                                 items.address ===
                                   this.props.deliveryAddress.address && (
@@ -482,18 +537,68 @@ class DeliveryAddress extends Component {
                                   >
                                     SELECTED
                                   </div>
-                                )}
+                                )} */}
                             </div>
-                            <div style={{ fontSize: 14 }}>
-                              {typeof items.address === "string"
-                                ? items.address
-                                : `${items.address.street}, ${items.address.unitNo}`}
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                {
+                                  items.recipient && 
+                                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                                    {items.recipient}
+                                  </div>
+                                }
+
+                                {
+                                  items.phoneNumber && 
+                                  <div style={{ fontSize: 12, lineHeight: 2 }}>
+                                    {items.phoneNumber}
+                                  </div>
+                                }
+
+                                <div style={{ fontSize: 12, lineHeight: 2 }}>
+                                  {items.street || items.streetName}
+                                </div>
+
+                                <div style={{ fontSize: 12, lineHeight: 2 }}>
+                                  {items.unitNo}
+                                </div>
+
+                                <div style={{ fontSize: 12, lineHeight: 2 }}>
+                                  {items.city}
+                                </div>
+
+                                <div style={{ fontSize: 12, lineHeight: 2 }}>
+                                  {items.postalCode}
+                                </div>
+
+                                {
+                                  items.coordinate ?
+                                  <div>
+                                    <i style={{ fontSize: 14, color: this.props.color.primary || "#c00a27" }} className="fa fa-map-pin" /> <span style={{ fontSize: 13, fontWeight: 'bold' }} className="customer-group-name">Location Already Pinned</span>
+                                  </div>
+                                  :
+                                  <div>
+                                    <i style={{ fontSize: 14 }} className="fa fa-map-pin" /> <span style={{ fontSize: 13, fontWeight: 'bold' }}>Location Not Pinned</span>
+                                  </div>
+                                }
+                              </div>
+                              <div>
+                              {getDeliveryAddress &&
+                                this.props.deliveryAddress &&
+                                items.address ===
+                                  this.props.deliveryAddress.address ?
+                                  <div style={{ borderRadius: 50, height: 25, width: 25, backgroundColor: color.primary, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <div style={{ borderRadius: 50, height: 15, width: 15, backgroundColor: color.background }} />
+                                  </div>
+                                  :
+                                  <div style={{ borderRadius: 50, height: 25, width: 25, backgroundColor: 'gray', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <div style={{ borderRadius: 50, height: 15, width: 15, backgroundColor: color.background }} />
+                                  </div>
+                                }
+                              </div>
                             </div>
-                            <div style={{ fontSize: 12 }}>
-                              {`${items.province ? items.province + ", " : ""}${
-                                items.city
-                              }, ${items.postalCode}`}
-                            </div>
+                            
                             <div
                               style={{
                                 display: "flex",
@@ -566,6 +671,8 @@ class DeliveryAddress extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    color: state.theme.color,
+    companyInfo: state.masterdata.companyInfo.data,
     account: state.auth.account && state.auth.account.idToken.payload,
     deliveryAddress: state.order.deliveryAddress,
   };

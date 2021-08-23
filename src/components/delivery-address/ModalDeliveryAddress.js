@@ -3,19 +3,31 @@ import { Input, Button } from "reactstrap";
 import config from "../../config";
 import { connect } from "react-redux";
 import Select from "react-select";
+import MapAtom from "../../pages/Map/MapAtom";
 import { MasterdataAction } from "../../redux/actions/MaterdataAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 // import GoogleMaps from "./GoogleMaps";
 import { Link } from "react-router-dom";
-
+import styles from "../login-register/Portal/styles.module.css";
+import PhoneInput from "react-phone-input-2";
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
 
 class ModalDeliveryAdderss extends Component {
   constructor(props) {
     super(props);
+
+    const { deliveryAddress } = this.props;
+    let countryCode = (this.props.companyInfo && this.props.companyInfo.countryCode) || "SG";
+
+    if (deliveryAddress.phoneNumber && deliveryAddress.phoneNumber.includes('+6')) {
+      countryCode = deliveryAddress.phoneNumber.substr(0,3)
+    }
+
     this.state = {
       isLoading: false,
+      countryCode,
+      phoneCountryCode: (this.props.companyInfo && this.props.companyInfo.countryCode) === "SG" ? "+65" : "+62",
       optionsCity: [],
     };
   }
@@ -80,8 +92,19 @@ class ModalDeliveryAdderss extends Component {
         deliveryAddress.city = province.data[0].name;
     }
 
+    if (deliveryAddress.phoneNumber) {
+
+      if (deliveryAddress.phoneNumber.includes('+6')) {
+        deliveryAddress.phoneNumber = deliveryAddress.phoneNumber.substr(3)
+      }
+
+      deliveryAddress.phoneNumber = this.state.phoneCountryCode + deliveryAddress.phoneNumber
+    }
+
     delete deliveryAddress.setAddress
     delete deliveryAddress.selected
+
+    deliveryAddress.streetName = deliveryAddress.street
 
     console.log(deliveryAddress)
     deliveryAddress.address = `${deliveryAddress.street || ""}, ${deliveryAddress.unitNo || ""}, ${deliveryAddress.postalCode || ""}`;
@@ -149,6 +172,19 @@ class ModalDeliveryAdderss extends Component {
     this.props.history.push("/map");
   }
 
+  setAddressName = (val) => {
+    this.props.handleChange("addressName", val)
+    localStorage.setItem(`${config.prefix}_addressName`, val);
+  }
+
+  componentDidUpdate = async (prevProps) => {
+    if (this.props.deliveryAddress.addressName && prevProps.deliveryAddress.addressName !== this.props.deliveryAddress.addressName) {
+      if (this.props.deliveryAddress.phoneNumber) {
+        this.setState({ phoneCountryCode:  this.props.deliveryAddress.phoneCountryCode.substr(0, 3)});
+      }
+    }
+  };
+
   render() {
     let {
       hidden,
@@ -156,10 +192,12 @@ class ModalDeliveryAdderss extends Component {
       optionsAddressName,
       optionsProvince,
       optionsCity,
-      postalCodeIsValid
+      postalCodeIsValid,
+      color,
     } = this.props;
+    const { phoneCountryCode, newPhoneNumber } = this.state;
     if (this.state.optionsCity.length !== 0) optionsCity = this.state.optionsCity;
-
+    console.log(deliveryAddress, 'deliveryAddress')
     return (
       <div>
         <div
@@ -173,7 +211,7 @@ class ModalDeliveryAdderss extends Component {
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div
               className="modal-content"
-              style={{ width: "100%", marginTop: 100, marginBottom: 100 }}
+              style={{ width: "100%", marginTop: 5 }}
             >
               <div
                 className="modal-header"
@@ -214,24 +252,21 @@ class ModalDeliveryAdderss extends Component {
                     <label style={{fontSize: 12}}>
                       Address Name <span className="required">*</span>
                     </label>
-                    <Select
-                      value={
-                        optionsAddressName.find((items) => {
-                          return items.value === deliveryAddress.addressName;
-                        }) || ""
-                      }
-                      styles={{
-                        option: (provided, state) => ({
-                          ...provided,
-                          color: state.isSelected ? '#000' : '#808080'
-                        })
-                      }}
-                      options={optionsAddressName}
+                    <Input
+                      type="text"
+                      style={{ height: 40, borderRadius: 5 }}
+                      value={deliveryAddress.addressName || ""}
                       onChange={(e) => {
-                        this.props.handleChange("addressName", e.value)
-                        localStorage.setItem(`${config.prefix}_addressName`, e.value);
+                        this.props.handleChange("addressName", e.target.value)
+                        localStorage.setItem(`${config.prefix}_addressName`, e.target.value);
                       }}
                     />
+                    <div style={{ marginTop: 10 }}>
+                      <button onClick={() => this.setAddressName("Home")} className="button" style={{ marginRight: 15 }}><span style={{ fontSize: 11, padding: '0px 5px' }}>Home</span></button>
+                      <button onClick={() => this.setAddressName("Work")} className="button" style={{ marginRight: 15 }}><span style={{ fontSize: 11, padding: '0px 5px' }}>Work</span></button>
+                      <button onClick={() => this.setAddressName("School")} className="button" style={{ marginRight: 15 }}><span style={{ fontSize: 11, padding: '0px 5px' }}>School</span></button>
+                      <button onClick={() => this.setAddressName("Office")} className="button" style={{ marginRight: 15 }}><span style={{ fontSize: 11, padding: '0px 5px' }}>Office</span></button>
+                    </div>
                   </div>
 
                   {!hidden && (
@@ -276,6 +311,70 @@ class ModalDeliveryAdderss extends Component {
                     </div>
                   )}
 
+                  {/* <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label style={{fontSize: 12}}>
+                      Recipient <span className="required">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      style={{ height: 40, borderRadius: 5 }}
+                      value={deliveryAddress.recipient || ""}
+                      onChange={(e) =>
+                        this.props.handleChange("recipient", e.target.value)
+                      }
+                    />
+                  </div> */}
+
+                  {/* <div
+                    className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
+                    style={{ marginTop: 10 }}
+                  >
+                    <label style={{fontSize: 12}}>
+                      Phone Number <span className="required">*</span>
+                    </label>
+                    <div className={styles.fieldGroup}>
+                      <div className={styles.phoneCountryCodeGroup}>
+                        <PhoneInput
+                          country={this.state.countryCode}
+                          value={phoneCountryCode}
+                          enableSearch={true}
+                          autoFormat={false}
+                          onChange={(e) => {
+                            this.setState({phoneCountryCode: `+${e}`})
+                          }}
+                          onKeyDown={() =>
+                            document.getElementById("phoneInputEdit").focus()
+                          }
+                          disableSearchIcon
+                          inputStyle={{
+                            width: 0,
+                            border: `1px solid ${color.background}`,
+                            backgroundColor: color.background,
+                            height: 40,
+                            outline: 'none',
+                            boxShadow: 'none'
+                          }}
+                          dropdownStyle={{
+                            color: "#808080",
+                          }}
+                        ></PhoneInput>
+                        <div className={styles.phoneCountryCode}>
+                          {phoneCountryCode}
+                        </div>
+                      </div>
+                      <Input
+                        type="number"
+                        id="phoneInputEdit"
+                        value={deliveryAddress.phoneNumber || ""}
+                        className={styles.phoneField}
+                        onChange={(e) => this.props.handleChange("phoneNumber", e.target.value)}
+                      />
+                    </div>
+                  </div> */}
+
                   <div
                     className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
                     style={{ marginTop: 10 }}
@@ -318,6 +417,7 @@ class ModalDeliveryAdderss extends Component {
                       Postal Code <span className="required">*</span>
                     </label>
                     <Input
+                      disabled={deliveryAddress && deliveryAddress.isDisabledPostalCode ? true : false}
                       type="number"
                       style={{ height: 40 }}
                       value={deliveryAddress.postalCode || ""}
@@ -343,9 +443,9 @@ class ModalDeliveryAdderss extends Component {
                     </label>
                     <Link to="/map">
                       {
-                        deliveryAddress.coordinate ? <button className="btn btn-success btn-block">Location Already Pinned</button>
+                        deliveryAddress.coordinate ? <MapAtom coordinate={deliveryAddress.coordinate} alreadyPinned={true} color={color} />
                         :
-                        <button className="btn btn-danger btn-block">Location has not been pinned</button>
+                        <MapAtom coordinate={{latitude: 1.29027, longitude: 103.851959}} alreadyPinned={false} color={color} />
                       }
                     </Link>
                   </div>
@@ -377,7 +477,7 @@ class ModalDeliveryAdderss extends Component {
                     className="button"
                     style={{
                       width: "100%",
-                      marginTop: 20,
+                      marginTop: 80,
                       borderRadius: 5,
                       height: 50,
                     }}
