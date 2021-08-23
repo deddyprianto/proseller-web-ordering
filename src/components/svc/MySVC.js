@@ -1,3 +1,7 @@
+// CaseID   Name    date        description
+// 0001     Troy    18/08/2021  change buy svc to top up
+
+
 import React, { Component } from "react";
 import { SVCAction } from "../../redux/actions/SVCAction";
 import { connect } from "react-redux";
@@ -102,7 +106,7 @@ class MySVC extends Component {
           <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', marginTop: 20,  }}>
             <Link to={'/buy-svc'} style={{ display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>
               <div>
-                <i style={{ marginRight: 5 }} className="fa fa-plus customer-group-name"></i> <b className="customer-group-name">Buy SVC</b>
+                <i style={{ marginRight: 5 }} className="fa fa-plus customer-group-name"></i> <b className="customer-group-name">Top Up</b>
               </div>
             </Link>
             <div onClick={() => this.setState({showGiftModal: true})} style={{ padding: 5, display: 'flex', flexDirection: 'row', borderRadius: 7, backgroundColor: 'white', width: '40%', justifyContent: 'center', alignItems: 'center' }}>

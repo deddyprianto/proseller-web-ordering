@@ -7,7 +7,6 @@ import ModalOrderingMode from "./ModalOrderingMode";
 
 class OrderingMode extends Component {
   componentDidMount = async () => {
-    console.log(this.props.outlet);
     if (!this.props.basket.orderingMode) {
       console.log("Ordering Modes");
       if (this.props.orderingModes.length === 1) {
@@ -33,6 +32,27 @@ class OrderingMode extends Component {
       } else {
         document.getElementById("ordering-mode-basket-btn").click();
       }
+    }
+  };
+
+  mapOrderingModeName = (outlet, orderingMode) => {
+    if (!outlet) {
+      return orderingMode;
+    }
+    switch (orderingMode) {
+      case "DELIVERY":
+        return outlet.deliveryName || orderingMode;
+      case "TAKEAWAY":
+        return outlet.takeAwayName || orderingMode;
+      case "DINEIN":
+        return outlet.dineInName || orderingMode;
+      case "STOREPICKUP":
+        return outlet.storePickUpName || orderingMode;
+      case "STORECHECKOUT":
+        return outlet.storeCheckOutName || orderingMode;
+
+      default:
+        return orderingMode;
     }
   };
 
@@ -82,7 +102,10 @@ class OrderingMode extends Component {
           >
             <SendIcon style={{ fontSize: 16 }} />
             {/* {config.checkNickName(props.orderingMode, props.storeDetail)} */}
-            {this.props.basket.orderingMode}
+            {this.mapOrderingModeName(
+              this.props.outlet,
+              this.props.basket.orderingMode
+            )}
           </Button>
         </div>
       </div>
