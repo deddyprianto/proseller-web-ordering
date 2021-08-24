@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Map, GoogleApiWrapper, InfoWindow, Marker } from "google-maps-react";
 import config from "../../config";
 import { Input, Button } from "reactstrap";
+import { Col, Row } from "reactstrap";
+import Shimmer from "react-shimmer-effect";
 
 const mapStyles = {
   width: "100%",
@@ -50,8 +52,25 @@ export class MapContainer extends Component {
       regionChangeProgress: false,
       edit,
       searchLocation: "",
+      loaded: true
     };
   }
+
+  viewShimmer = (isHeight = 500) => {
+    return (
+      <Shimmer>
+        <div
+          style={{
+            width: "100%",
+            height: isHeight,
+            alignSelf: "center",
+            borderRadius: "8px",
+            marginBottom: 10,
+          }}
+        />
+      </Shimmer>
+    );
+  };
 
   componentDidMount = () => {
     this.fetchAddress();
@@ -76,11 +95,11 @@ export class MapContainer extends Component {
   fetchAddress = () => {
     fetch(
       "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-        this.state.initialCenter.lat +
-        "," +
-        this.state.initialCenter.lng +
-        "&key=" +
-        "AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4"
+      this.state.initialCenter.lat +
+      "," +
+      this.state.initialCenter.lng +
+      "&key=" +
+      "AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4"
     )
       .then((response) => response.json())
       .then((responseJson) => {
@@ -110,6 +129,7 @@ export class MapContainer extends Component {
   };
 
   getGeolocation = async () => {
+    this.setState({ loaded: false })
     const { searchLocation } = this.state;
     let url = `https://maps.google.com/maps/api/geocode/json?address=${searchLocation}&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4`;
     let response = await fetch(url);
@@ -119,15 +139,15 @@ export class MapContainer extends Component {
         lat: response.results[0].geometry.location.lat,
         lng: response.results[0].geometry.location.lng,
       };
-      
+      let userLocation = response.results[0].formatted_address
       let center = initialCenter
 
-      await this.setState({ initialCenter, center });
-    } catch (e) {}
+      await this.setState({ initialCenter, center, userLocation, loaded: true });
+    } catch (e) { }
   };
 
   render() {
-    const { initialCenter, userLocation, regionChangeProgress, center } = this.state;
+    const { initialCenter, userLocation, regionChangeProgress, center, loaded } = this.state;
     return (
       <div>
         <div
@@ -141,7 +161,7 @@ export class MapContainer extends Component {
         >
           <Input
             type="text"
-            placeholder="Search your address here...."
+            placeholder="Enter your postal code...."
             style={{
               height: 40,
               borderRadius: 5,
@@ -157,50 +177,59 @@ export class MapContainer extends Component {
             onClick={this.getGeolocation}
           >
             <span aria-hidden="true" style={{ fontSize: 12 }}>
-              Search
+              Find
             </span>
           </button>
         </div>
-        <Map
-          google={this.props.google}
-          zoom={17}
-          style={mapStyles}
-          center={center}
-          onDragend={(e, coord) => {
-            try {
-              const { center } = coord;
-              const lat = center.lat();
-              const lng = center.lng();
+        {
+          loaded ?
+            <Map
+              google={this.props.google}
+              zoom={17}
+              style={mapStyles}
+              center={center}
+              onDragend={(e, coord) => {
+                try {
+                  const { center } = coord;
+                  const lat = center.lat();
+                  const lng = center.lng();
 
-              this.setState(
-                {
-                  initialCenter: {
-                    lat,
-                    lng,
-                  },
-                  regionChangeProgress: true,
-                },
-                () => this.fetchAddress()
-              );
-            } catch (e) {}
-          }}
-          initialCenter={initialCenter}
-        >
-          <Marker
-            position={initialCenter}
-            // onClick={this.onMarkerClick}
-            name={"You Are Here"}
-          />
-          <InfoWindow
-            marker={this.state.activeMarker}
-            visible={this.state.showingInfoWindow}
-            onClose={this.onClose}
-          >
-            <div>
-              <h4>{this.state.selectedPlace.name}</h4>
-            </div>
-          </InfoWindow>
-        </Map>
+                  this.setState(
+                    {
+                      initialCenter: {
+                        lat,
+                        lng,
+                      },
+                      regionChangeProgress: true,
+                    },
+                    () => this.fetchAddress()
+                  );
+                } catch (e) { }
+              }}
+              initialCenter={initialCenter}
+            >
+              <Marker
+                position={initialCenter}
+                // onClick={this.onMarkerClick}
+                name={"You Are Here"}
+              />
+              <InfoWindow
+                marker={this.state.activeMarker}
+                visible={this.state.showingInfoWindow}
+                onClose={this.onClose}
+              >
+                <div>
+                  {/* <h4>{this.state.selectedPlace.name}</h4> */}
+                </div>
+              </InfoWindow>
+            </Map>
+            :
+            <Row>
+              <Col sm={12}>{this.viewShimmer(500)}</Col>
+            </Row>
+
+        }
+
         <div
           style={{
             backgroundColor: "white",
@@ -218,8 +247,8 @@ export class MapContainer extends Component {
           >
             Move map to change coordinate.
           </h5>
-          <div style={{ marginLeft: 20, maxWidth: "90%", width: "90%" }}>
-            <i style={{ fontSize: 12, color: '#2d3436' }}>
+          <div style={{ maxWidth: "100%", width: "100%", textAlign: 'center',  }}>
+            <i style={{ fontSize: '1.5rem', color: '#2d3436', fontWeight: 'bold' }}>
               {!regionChangeProgress
                 ? userLocation
                 : "Identifying Location ...."}
