@@ -248,13 +248,12 @@ class Payment extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
     
-    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
+    // if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
 
     if (!selectedCard) {
       let paymentCardAccount = await this.props.dispatch(
         PaymentAction.getPaymentCard()
       );
-      console.log(selectedCard)
 
       let paymentTypes = this.props.companyInfo.paymentTypes;
       if (paymentTypes && paymentCardAccount.resultCode === 200) {
@@ -270,7 +269,7 @@ class Payment extends Component {
                 `${config.prefix}_paymentCardAccountDefault`,
                 JSON.stringify(encryptor.encrypt(element))
               );
-              selectedCard = element;
+              // selectedCard = element;
             }
           });
         });
@@ -278,6 +277,7 @@ class Payment extends Component {
     }
 
     if (dataSettle === null || !dataSettle.dataBasket) return;
+    console.log(selectedCard)
 
     this.setState({ dataSettle });
 
@@ -1223,6 +1223,7 @@ class Payment extends Component {
     }
 
     let nameCreditCard = `Pay ${this.getCurrency(totalPrice)}`;
+    console.log(selectedCard)
     if (selectedCard) {
       let lengthNumber = selectedCard.details.maskedAccountNumber.toString()
         .length;
