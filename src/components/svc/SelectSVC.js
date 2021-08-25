@@ -56,6 +56,7 @@ class SelectSVC extends Component {
           setAmountSVC={this.props.setAmountSVC}
           cancelAmountSVC={this.props.cancelAmountSVC}
           getDataBasket={this.props.getDataBasket}
+          handleSettle={this.props.handleSettle}
           getCurrency={(price) => this.props.getCurrency(price)}
           balance={this.props.balance}
           history={this.props.history}

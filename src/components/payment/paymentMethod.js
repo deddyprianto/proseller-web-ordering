@@ -283,7 +283,7 @@ class PaymentMethod extends Component {
                 }
                 await this.getDataPaymentCard();
                 this.setState({ showAddPaymentForm: false });
-                this.handleSelectCard(response.data);
+                // this.handleSelectCard(response.data);
                 Swal.fire({
                   icon: "success",
                   timer: 1500,

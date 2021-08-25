@@ -113,6 +113,7 @@ export class MapContainer extends Component {
   };
 
   setCoordinate = () => {
+    console.log(this.state.detailAddress)
     let coordinate = {
       detailAddress: this.state.detailAddress,
       latitude: this.state.initialCenter.lat,
@@ -139,10 +140,11 @@ export class MapContainer extends Component {
         lat: response.results[0].geometry.location.lat,
         lng: response.results[0].geometry.location.lng,
       };
+      let detailAddress = response.results[0]
       let userLocation = response.results[0].formatted_address
       let center = initialCenter
 
-      await this.setState({ initialCenter, center, userLocation, loaded: true });
+      await this.setState({ initialCenter, center, userLocation, loaded: true, detailAddress });
     } catch (e) { }
   };
 

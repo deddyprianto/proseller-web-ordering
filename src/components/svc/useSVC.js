@@ -2,9 +2,19 @@ import React, { Component } from "react";
 import { Button, Input } from "reactstrap";
 
 export default class RedeemPointBasket extends Component {
+  handlePaySvc = async () => {
+    let props = this.props.data;
+    if (props.amountSVC === props.totalPrice) {
+      await this.props.getDataBasket();
+      await this.props.handleSettle();
+    } else {
+      await this.props.getDataBasket();
+    }
+  }
+
   render() {
     let props = this.props.data;
-    
+    console.log(this.props)
     return (
       <div>
         <div
@@ -122,10 +132,10 @@ export default class RedeemPointBasket extends Component {
                   ></div>
 
                   <Button
-                    onClick={this.props.getDataBasket}
+                    onClick={() => this.handlePaySvc()}
                     className="button"
                     data-dismiss="modal"
-                    disabled={!((Number(props.amountSVC) <= Number(this.props.balance)) && Number(props.amountSVC) <= Number(this.props.data.totalPrice) && props.amountSVC > 0 && props.amountSVC !== "")}
+                    // disabled={!((Number(props.amountSVC) <= Number(this.props.balance)) && Number(props.amountSVC) <= Number(this.props.data.totalPrice) && props.amountSVC > 0 && props.amountSVC !== "")}
                     style={{
                       width: "100%",
                       marginTop: 10,
