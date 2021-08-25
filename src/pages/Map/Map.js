@@ -163,7 +163,7 @@ export class MapContainer extends Component {
         >
           <Input
             type="text"
-            placeholder="Enter your postal code...."
+            placeholder="Enter your address here...."
             style={{
               height: 40,
               borderRadius: 5,
