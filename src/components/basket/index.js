@@ -3,13 +3,17 @@ import { connect } from "react-redux";
 import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
 import { OrderAction } from "../../redux/actions/OrderAction";
-import { MasterdataAction } from "../../redux/actions/MaterdataAction";
+import { OutletAction } from "../../redux/actions/OutletAction";
 // import { CustomerAction } from "../../redux/actions/CustomerAction";
 // import { CampaignAction } from "../../redux/actions/CampaignAction";
 import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyArray, isEmptyObject, isEmptyData } from "../../helpers/CheckEmpty";
+import {
+  isEmptyArray,
+  isEmptyObject,
+  isEmptyData,
+} from "../../helpers/CheckEmpty";
 import { StraightDistance } from "../../helpers/CalculateDistance";
 import loadable from "@loadable/component";
 import config from "../../config";
@@ -60,7 +64,7 @@ class Basket extends Component {
       play: false,
       deliveryProvaider: [],
       dataCVV: "",
-      isEmenu: window.location.hostname.includes('emenu'),
+      isEmenu: window.location.hostname.includes("emenu"),
       orderActionDate: this.props.orderActionDate,
       orderActionTime: this.props.orderActionTime,
       orderActionTimeSlot: this.props.orderActionTimeSlot,
@@ -78,7 +82,7 @@ class Basket extends Component {
       timeSlot: [],
       latitude: 0,
       longitude: 0,
-      timeslotData: []
+      timeslotData: [],
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -118,7 +122,7 @@ class Basket extends Component {
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) {}
+      } catch (error) { }
     }, 0);
     await this.getDataBasket();
   };
@@ -182,15 +186,15 @@ class Basket extends Component {
         }
       }
       await this.setState({ dataBasket });
-    } catch (e) {}
+    } catch (e) { }
   };
 
   getGeolocation = async (storeDetail) => {
-    let from = storeDetail.address || '-';
-    from += '&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4'
+    let from = storeDetail.address || "-";
+    from += "&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4";
     let url = `https://maps.google.com/maps/api/geocode/json?address=${from}`;
-    url = encodeURI(url)
-    
+    url = encodeURI(url);
+
     let response = await fetch(url);
     response = await response.json();
 
@@ -199,7 +203,7 @@ class Basket extends Component {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
       });
-    } catch(e) {}
+    } catch (e) { }
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -252,7 +256,7 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   loadLocalStorage = async () => {
@@ -438,7 +442,7 @@ class Basket extends Component {
         countryCode: infoCompany.countryCode,
       });
 
-      this.getGeolocation(storeDetail)
+      this.getGeolocation(storeDetail);
 
       // check validate pick date time
       if (orderingMode !== "DINEIN") {
@@ -493,7 +497,7 @@ class Basket extends Component {
 
   setDefaultOutlet = async (dataBasket) => {
     let storeDetail = await this.props.dispatch(
-      MasterdataAction.getOutletByID(dataBasket.outlet.id, false)
+      OutletAction.fetchSingleOutlet(dataBasket.outlet)
     );
     if (storeDetail && storeDetail.id) {
       storeDetail = config.getValidation(storeDetail);
@@ -598,8 +602,8 @@ class Basket extends Component {
       orderingMode === "DINEIN"
         ? "dineIn"
         : orderingMode === "DELIVERY"
-        ? "delivery"
-        : "takeAway";
+          ? "delivery"
+          : "takeAway";
     let { maxDays } = storeDetail.orderValidation[orderingModeField];
     if (!maxDays) maxDays = 90;
 
@@ -614,9 +618,9 @@ class Basket extends Component {
 
     if (timeSlot.length === 0 || changeOrderingMode) {
       timeSlot = await this.props.dispatch(OrderAction.getTimeSlot(payload));
-      
+
       if (timeSlot.resultCode === 200) {
-        this.setState({timeslotData: timeSlot.data})
+        this.setState({ timeslotData: timeSlot.data });
         if (timeSlot.data.length === 0) return;
         timeSlot = timeSlot.data.filter((items) => {
           return items.timeSlot.filter((item) => {
@@ -668,7 +672,7 @@ class Basket extends Component {
           this.props.dispatch({ type: "DELETE_ORDER_ACTION_TIME_SLOT" });
         }
       } else {
-        this.setState({timeslotData: timeSlot.data})
+        this.setState({ timeslotData: timeSlot.data });
         maxLoopingSetTimeSlot = 0;
         timeSlot = [];
       }
@@ -743,7 +747,7 @@ class Basket extends Component {
         return { dateDay, status: true };
       }
       return { dateDay, status: false };
-    } catch (error) {}
+    } catch (error) { }
   };
 
   componentDidUpdate() {
@@ -966,11 +970,10 @@ class Basket extends Component {
       selectedPoint = 0;
     }
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -1090,9 +1093,8 @@ class Basket extends Component {
         });
         if (dataBasket) {
           let selected = _.filter(dataBasket.details, (items) => {
-            return items.selected !== false;
-          });
-          if (dataBasket.details.length === selected.length) {
+            return items.selected;
+          });          if (dataBasket.details.length === selected.length) {
             await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
             await localStorage.removeItem(
               `${config.prefix}_outletChangedFromHeader`
@@ -1105,6 +1107,7 @@ class Basket extends Component {
               if (items.selected !== false) {
                 items.quantity = 0;
               }
+              console.log(items);
               payload.push(items);
             }
             await this.props.dispatch(
@@ -1137,8 +1140,8 @@ class Basket extends Component {
     const { defaultOutlet } = this.props;
     const orderPreparationTime =
       defaultOutlet.timeSlots &&
-      defaultOutlet.timeSlots[0] &&
-      defaultOutlet.timeSlots[0].defaultPreparationTime
+        defaultOutlet.timeSlots[0] &&
+        defaultOutlet.timeSlots[0].defaultPreparationTime
         ? defaultOutlet.timeSlots[0].defaultPreparationTime
         : 0;
     if (!this.handleOpenLogin()) return;
@@ -1184,10 +1187,10 @@ class Basket extends Component {
 
     /*
       Validate delivery provider mode & maximum distance
-    */ 
-    if (orderingMode === 'DELIVERY') {
+    */
+    if (orderingMode === "DELIVERY") {
       if (this.state.provaiderDelivery) {
-        if (this.state.provaiderDelivery.calculationMode === 'DISTANCE') {
+        if (this.state.provaiderDelivery.calculationMode === "DISTANCE") {
           if (
             isEmptyObject(this.props.deliveryAddress.coordinate) ||
             isEmptyData(this.props.deliveryAddress.coordinate.latitude)
@@ -1199,7 +1202,7 @@ class Basket extends Component {
               confirmButtonText: `Got it`,
             }).then(() => {
               this.props.history.push("/delivery-address");
-            })
+            });
             return false;
           }
 
@@ -1207,9 +1210,13 @@ class Basket extends Component {
           const coordinate = {
             latitude: this.state.latitude,
             longitude: this.state.longitude,
-          }
-          const distance = await StraightDistance(storeDetail, this.props.deliveryAddress.coordinate, coordinate);
-          console.log(distance, 'distance')
+          };
+          const distance = await StraightDistance(
+            storeDetail,
+            this.props.deliveryAddress.coordinate,
+            coordinate
+          );
+          console.log(distance, "distance");
           if (distance > Number(this.state.provaiderDelivery.maximumCoverage)) {
             Swal.fire({
               title: `Maximum delivery coverage is ${this.state.provaiderDelivery.maximumCoverage} km`,
@@ -1223,13 +1230,12 @@ class Basket extends Component {
       }
     }
 
-
     let orderingModeField =
       orderingMode === "DINEIN"
         ? "dineIn"
         : orderingMode === "DELIVERY"
-        ? "delivery"
-        : "takeAway";
+          ? "delivery"
+          : "takeAway";
     let { maxDays } = storeDetail.orderValidation[orderingModeField];
     if (!maxDays) maxDays = 90;
 
@@ -1287,13 +1293,8 @@ class Basket extends Component {
   };
 
   handleSubmit = async () => {
-    let {
-      orderingMode,
-      storeDetail,
-      scanTable,
-      dataBasket,
-      orderingSetting,
-    } = this.state;
+    let { orderingMode, storeDetail, scanTable, dataBasket, orderingSetting } =
+      this.state;
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
       document.getElementById("login-register-btn").click();
@@ -1563,9 +1564,8 @@ class Basket extends Component {
       let orderingTimeHours = this.state.orderingTimeHours;
       orderingTimeHours.forEach((item, index) => {
         if (Number(item) === Number(value)) {
-          let orderActionTimeSlot = `${item}:00 - ${
-            orderingTimeHours[index + 1] || item + 1
-          }:00`;
+          let orderActionTimeSlot = `${item}:00 - ${orderingTimeHours[index + 1] || item + 1
+            }:00`;
           this.setState({ orderActionTimeSlot });
           return;
         }
@@ -1589,13 +1589,8 @@ class Basket extends Component {
   };
 
   render() {
-    let {
-      loadingShow,
-      dataBasket,
-      countryCode,
-      viewCart,
-      storeDetail,
-    } = this.state;
+    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } =
+      this.state;
     let { isLoggedIn, product } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;
@@ -1651,6 +1646,9 @@ class Basket extends Component {
                         handleClear={(dataBasket) =>
                           this.handleClear(dataBasket)
                         }
+                        handleRemoveItem={(dataBasket, key) =>
+                          this.handleRemoveItem(dataBasket, key)
+                        }                        
                         scrollPoint={(data) => this.scrollPoint(data)}
                         setPoint={(point) => this.setPoint(point)}
                         handleSettle={() => this.handleSettle()}

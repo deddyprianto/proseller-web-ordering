@@ -6,15 +6,59 @@ import { Button } from "reactstrap";
 import ModalOrderingMode from "./ModalOrderingMode";
 
 class OrderingMode extends Component {
-  componentDidMount = () => {
-    if (this.props.basket.orderingMode === undefined || this.props.basket.orderingMode === "" || this.props.basket.orderingMode === null) {
-      document.getElementById("ordering-mode-basket-btn").click();
+  componentDidMount = async () => {
+    if (!this.props.basket.orderingMode) {
+      console.log("Ordering Modes");
+      if (this.props.orderingModes.length === 1) {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: this.props.orderingModes[0],
+        });
+        this.props.setOrderingMode(this.props.orderingModes[0]);
+      } else {
+        document.getElementById("ordering-mode-basket-btn").click();
+      }
+    }
+  };
+
+  componentDidUpdate = async () => {
+    if (!this.props.orderingMode) {
+      if (this.props.orderingModes.length === 1) {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: this.props.orderingModes[0],
+        });
+        this.props.setOrderingMode(this.props.orderingModes[0]);
+      } else {
+        document.getElementById("ordering-mode-basket-btn").click();
+      }
+    }
+  };
+
+  mapOrderingModeName = (outlet, orderingMode) => {
+    if (!outlet) {
+      return orderingMode;
+    }
+    switch (orderingMode) {
+      case "DELIVERY":
+        return outlet.deliveryName || orderingMode;
+      case "TAKEAWAY":
+        return outlet.takeAwayName || orderingMode;
+      case "DINEIN":
+        return outlet.dineInName || orderingMode;
+      case "STOREPICKUP":
+        return outlet.storePickUpName || orderingMode;
+      case "STORECHECKOUT":
+        return outlet.storeCheckOutName || orderingMode;
+
+      default:
+        return orderingMode;
     }
   };
 
   render() {
     let props = this.props.data;
-    
+
     return (
       <div
         style={{
@@ -38,9 +82,7 @@ class OrderingMode extends Component {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ fontWeight: "bold", fontSize: 14 }}>
-            Ordering Mode
-          </div>
+          <div style={{ fontWeight: "bold", fontSize: 14 }}>Ordering Mode</div>
           <Button
             disabled={this.props.roleDisableNotPending}
             id="ordering-mode-basket-btn"
@@ -60,7 +102,10 @@ class OrderingMode extends Component {
           >
             <SendIcon style={{ fontSize: 16 }} />
             {/* {config.checkNickName(props.orderingMode, props.storeDetail)} */}
-            {this.props.basket.orderingMode}
+            {this.mapOrderingModeName(
+              this.props.outlet,
+              this.props.basket.orderingMode
+            )}
           </Button>
         </div>
       </div>
@@ -71,6 +116,9 @@ class OrderingMode extends Component {
 const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
+    orderingModes: state.order.orderingModes,
+    outlet: state.outlet.defaultOutlet,
+    orderingMode: state.order.orderingMode,
   };
 };
 

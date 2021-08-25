@@ -16,7 +16,7 @@ function hexToRGB(h, o = null) {
   return "rgb(" + +r + "," + +g + "," + +b + ")";
 }
 
-const menuCategoriesTop = "75px";
+const menuCategoriesTop = "0px";
 
 const styles = {
   "@global": {
@@ -145,6 +145,12 @@ const styles = {
       zIndex: 50,
       left: 0,
       right: 0,
+      marginTop: (e) => {
+        if (e.theme.withBanners) {
+          return 0;
+        }
+        return 100;
+      },
     },
     ".menu-category > .categories": {
       overflowX: "hidden",
@@ -160,6 +166,12 @@ const styles = {
       position: "fixed",
       left: "130px",
       right: "130px",
+      top: (e) => {
+        if (e.theme.withBanners) {
+          return 80;
+        }
+        return -20;
+      },
     },
     "ul.menu-category .menu-item": {
       whiteSpace: "nowrap",
@@ -190,22 +202,39 @@ const styles = {
       color: (e) => e.theme.color.textButtonColor,
       zIndex: 102,
     },
+    "#product-catalog": {
+      paddingTop: 0,
+    },
     "@media (max-width: 750px)": {
       ".menu-category": {
         width: "100vw",
+        marginTop: 100,
       },
       ".menu-category > .categories": {
         overflowX: "scroll",
       },
       "ul.menu-category.relative-position": {
         position: "absolute",
-        top: menuCategoriesTop,
+        top: (e) => {
+          if (e.theme.withBanners) {
+            return 20;
+          }
+          return -20;
+        },
       },
       "ul.menu-category.sticky": {
         width: "auto",
         right: 0,
         left: 0,
-        top: menuCategoriesTop,
+        top: -20,
+      },
+      "#product-catalog": {
+        paddingTop: (e) => {
+          if (e.theme.withBanners) {
+            return 60;
+          }
+          return 140;
+        },
       },
     },
   },

@@ -1,3 +1,6 @@
+// CaseID   Name    date        description
+// 0001     Troy    18/08/2021  Remove Show Link|show all description
+
 import React, { Component } from "react";
 import { Col, Row } from "reactstrap";
 import Shimmer from "react-shimmer-effect";
@@ -17,6 +20,7 @@ class OutletSelection extends Component {
       isLoading: false,
       outlets: [],
       cart: {},
+      showMoreDescription: {},
     };
   }
 
@@ -45,6 +49,13 @@ class OutletSelection extends Component {
       }
     } catch (e) {}
     await this.setState({ outlets: response });
+    const showMore = response.reduce((acc, outlet) => {
+      return {
+        ...acc,
+        [outlet.id]: false,
+      };
+    }, {});
+    this.setState({ showMoreDescription: showMore });
     await this.setState({ loadingShow: false });
   };
 
@@ -79,15 +90,16 @@ class OutletSelection extends Component {
     await this.props.dispatch(OutletAction.setDefaultOutlet(outlet));
     if (!_.isEmpty(this.props.setting)) {
       const { ShowOrderingModeModalFirst } = this.props.setting;
-      if (ShowOrderingModeModalFirst) {
-        if (this.props.orderingModes.length === 1) {
-          await this.props.dispatch({
-            type: "SET_ORDERING_MODE",
-            payload: this.props.orderingModes[0],
-          });
-        } else if (this.props.orderingModes.length > 1) {
-          document.getElementById("open-modal-ordering-mode").click();
-        }
+      if (this.props.orderingModes.length === 1) {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: this.props.orderingModes[0],
+        });
+      } else if (
+        ShowOrderingModeModalFirst &&
+        this.props.orderingModes.length > 1
+      ) {
+        document.getElementById("open-modal-ordering-mode").click();
       } else {
         this.props.dispatch({
           type: "REMOVE_ORDERING_MODE",
@@ -98,6 +110,17 @@ class OutletSelection extends Component {
     try {
       this.props.history.goBack();
     } catch (e) {}
+  };
+
+  handleShowMoreClick = async (id) => {
+    this.setState((prevState) => {
+      return {
+        showMoreDescription: {
+          ...prevState.showMoreDescription,
+          [id]: !prevState.showMoreDescription[id],
+        },
+      };
+    });
   };
 
   render() {
@@ -119,15 +142,7 @@ class OutletSelection extends Component {
               ) : (
                 <Row>
                   {outlets.map((items, keys) => (
-                    <Col
-                      key={keys}
-                      sm={6}
-                      onClick={() =>
-                        items.orderingStatus !== "UNAVAILABLE"
-                          ? this.checkCartExist(items)
-                          : false
-                      }
-                    >
+                    <Col key={keys} sm={6}>
                       <div
                         style={{
                           backgroundColor:
@@ -170,8 +185,57 @@ class OutletSelection extends Component {
                                 flexDirection: "row",
                                 justifyContent: "space-between",
                               }}
+                              onClick={() =>
+                                items.orderingStatus !== "UNAVAILABLE"
+                                  ? this.checkCartExist(items)
+                                  : false
+                              }
                             >
-                              <span style={{ fontSize: 17 }}>{items.name}</span>
+                              <div>
+                                {items.outletStatus === true &&
+                                items.orderingStatus === "AVAILABLE" ? (
+                                  <div
+                                    style={{
+                                      backgroundColor: "#2ecc71",
+                                      display: "inline-block",
+                                      borderRadius: 7,
+                                    }}
+                                  >
+                                    <p
+                                      style={{
+                                        padding: 4,
+                                        marginBottom: -4,
+                                        marginTop: -4,
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      <b style={{ color: "white" }}>Open</b>
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{
+                                      backgroundColor: "#e74c3c",
+                                      display: "inline-block",
+                                      borderRadius: 7,
+                                    }}
+                                  >
+                                    <p
+                                      style={{
+                                        padding: 4,
+                                        marginBottom: -4,
+                                        marginTop: -4,
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      <b style={{ color: "white" }}>Closed</b>
+                                    </p>
+                                  </div>
+                                )}
+                                <span style={{ fontSize: 17, marginLeft: 10 }}>
+                                  {items.name}
+                                </span>
+                              </div>
                               {items.distance && (
                                 <div>
                                   <i className="fa fa-map-marker"></i>
@@ -185,43 +249,39 @@ class OutletSelection extends Component {
                                 </div>
                               )}
                             </div>
-                            {items.outletStatus === true ? (
-                              <div
-                                style={{
-                                  backgroundColor: "#2ecc71",
-                                  display: "inline-block",
-                                  borderRadius: 7,
-                                }}
-                              >
-                                <p
-                                  style={{
-                                    padding: 4,
-                                    marginBottom: -4,
-                                    marginTop: -4,
-                                    fontSize: 12,
-                                  }}
+                            {items.remark && (
+                              <div style={{ fontSize: "80%" }}>
+                                <span
+                                  onClick={() =>
+                                    items.orderingStatus !== "UNAVAILABLE"
+                                      ? this.checkCartExist(items)
+                                      : false
+                                  }
                                 >
-                                  <b style={{ color: "white" }}>Open</b>
-                                </p>
-                              </div>
-                            ) : (
-                              <div
-                                style={{
-                                  backgroundColor: "#e74c3c",
-                                  display: "inline-block",
-                                  borderRadius: 7,
-                                }}
-                              >
-                                <p
-                                  style={{
-                                    padding: 4,
-                                    marginBottom: -4,
-                                    marginTop: -4,
-                                    fontSize: 12,
-                                  }}
-                                >
-                                  <b style={{ color: "white" }}>Closed</b>
-                                </p>
+                                  {/* start 0001 */}
+                                  {items.remark}
+                                  {/* end 0001 */}
+
+                                  {/* {items.remark.length > 100 &&
+                                  !this.state.showMoreDescription[items.id]
+                                    ? items.remark.slice(0, 100) + "..."
+                                    : items.remark} */}
+                                </span>
+                                {/* {items.remark.length > 100 && (
+                                  <button
+                                    onClick={() =>
+                                      this.handleShowMoreClick(items.id)
+                                    }
+                                    className="btn btn-link"
+                                  >
+                                    <strong>
+                                      Show{" "}
+                                      {!this.state.showMoreDescription[items.id]
+                                        ? "more"
+                                        : "less"}
+                                    </strong>
+                                  </button>
+                                )} */}
                               </div>
                             )}
                           </div>

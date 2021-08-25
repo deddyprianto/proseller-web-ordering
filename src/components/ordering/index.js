@@ -34,7 +34,7 @@ class Ordering extends Component {
       loadingSearching: false,
       offlineMessage: "",
       isEmenu: window.location.hostname.includes("emenu"),
-
+      isScrollingToCategory: false,
       showUpdateModal: false,
       addNew: false,
     };
@@ -79,17 +79,18 @@ class Ordering extends Component {
         return setting.settingKey === "ShowOrderingModeModalFirst";
       });
       console.log("showOrderingModeModalFirst", showOrderingModeModalFirst);
+      if (this.props.orderingModes.length === 1) {
+        await this.props.dispatch({
+          type: "SET_ORDERING_MODE",
+          payload: this.props.orderingModes[0],
+        });
+      }
       if (
         showOrderingModeModalFirst &&
         showOrderingModeModalFirst.settingValue === true &&
         !this.props.orderingMode
       ) {
-        if (this.props.orderingModes.length === 1) {
-          await this.props.dispatch({
-            type: "SET_ORDERING_MODE",
-            payload: this.props.orderingModes[0],
-          });
-        } else if (this.props.orderingModes.length > 1) {
+        if (this.props.orderingModes.length > 1) {
           document.getElementById("open-modal-ordering-mode").click();
         }
       } else {
@@ -135,23 +136,45 @@ class Ordering extends Component {
   }
 
   handleScrollWebOrdering = (e) => {
-    var header = document.getElementById("header-categories");
-    var headerCWO = document.getElementById("masthead");
-    var headerOffset = document.getElementById("offset-header");
     try {
-      if (headerOffset !== undefined && headerOffset.offsetTop !== null) {
-        var sticky = headerOffset.offsetTop;
-        if (window.pageYOffset > sticky) {
-          header.classList.remove("relative-position");
-          header.classList.add("sticky");
-          // header.style.top = `${headerCWO.offsetHeight - 5}px`;
-        } else {
-          header.classList.remove("sticky");
-          header.classList.add("relative-position");
-          // header.style.top = 0;
-        }
+      const header = document.getElementById("header-categories");
+      const banners = document.getElementById("promo-banner");
+      const categoriesButton = header.firstElementChild;
+      const categoriesButtonChildren = categoriesButton.children;
+      const bannersHeight = banners ? banners.offsetHeight : 0;
+      if (window.scrollY > 60 + bannersHeight) {
+        header.classList.remove("relative-position");
+        header.classList.add("sticky");
+        // header.style.top = `${headerCWO.offsetHeight - 5}px`;
+      } else {
+        header.classList.remove("sticky");
+        header.classList.add("relative-position");
+        // header.style.top = 0;
       }
-    } catch (e) {}
+      this.state.categories.forEach((category, i) => {
+        const target = document.getElementById(`catalog-${i}`);
+        if (
+          target.offsetTop <= window.pageYOffset + 200 &&
+          target.offsetTop + 110 >= window.pageYOffset &&
+          !this.state.isScrollingToCategory
+        ) {
+          let totalLeftItemsWidth = 0;
+          for (let j = 0; j < categoriesButtonChildren.length; j++) {
+            if (j === i) {
+              break;
+            }
+            totalLeftItemsWidth += categoriesButtonChildren[j].clientWidth;
+          }
+          categoriesButton.scrollTo({
+            left: totalLeftItemsWidth,
+            behavior: "auto",
+          });
+          this.setState({ selectedCategory: i });
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   handleScrollEmenu = (e) => {
@@ -418,7 +441,7 @@ class Ordering extends Component {
         >
           <div
             className="full-width list-view columns-2 archive woocommerce-page html-change"
-            style={{ marginTop: 100 }}
+            style={{ marginTop: 80 }}
           >
             <div className="tab-content">
               =
@@ -488,8 +511,6 @@ class Ordering extends Component {
           addNew={this.state.addNew}
           selectedItem={this.state.selectedItem}
         />
-        <br /> <br /> <br />
-        <div id="offset-header" />
         {isEmenu ? (
           <EMenuCategories
             categories={categories}
@@ -512,11 +533,14 @@ class Ordering extends Component {
             setSelectedCategory={(category) =>
               this.setState({ selectedCategory: category })
             }
+            setIsScrollingToCategory={(isScrollingToCategory) =>
+              this.setState({ isScrollingToCategory })
+            }
           ></WebOrderingCategories>
         )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
-          style={{ marginTop: isEmenu ? 35 : 5 }}
+          id="product-catalog"
         >
           <div className="tab-content">
             <div className="tab-pane active" id="h1-tab-products-2">
@@ -526,7 +550,7 @@ class Ordering extends Component {
                   products.map((cat, i) => (
                     <>
                       <h3
-                        id={i}
+                        id={`catalog-${i}`}
                         ref={categoryRefs[i]}
                         className="title font-color-theme"
                         style={{

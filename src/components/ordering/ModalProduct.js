@@ -53,7 +53,6 @@ class ModalProduct extends Component {
   };
 
   setSelectedVariantProduct = (variant) => {
-    console.log(variant);
     this.setState((prevState) => {
       return {
         selectedVariant: variant,
@@ -75,7 +74,7 @@ class ModalProduct extends Component {
             retailPrice: variant.retailPrice,
             defaultImageURL:
               variant.defaultImageURL ||
-              prevState.selectedItem.product.defaultImageURL,
+              this.props.selectedItem.product.defaultImageURL,
           },
         },
       };
@@ -149,6 +148,10 @@ class ModalProduct extends Component {
 
   renderImageProduct = (item) => {
     const { color } = this.props;
+    console.log(
+      "item.product.defaultImageURL : ",
+      item.product.defaultImageURL
+    );
 
     if (
       item.product &&

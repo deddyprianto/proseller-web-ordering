@@ -1,3 +1,6 @@
+// CaseID   Name    date        description
+// 0001     Troy    18/08/2021  remove checkbox | add button delete
+
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
@@ -204,6 +207,14 @@ class ItemsBasket extends Component {
     this.setState({ dataBasket });
   };
 
+  handleRemoveItem = async (key, items) => {
+    let { dataBasket } = this.state;
+    items.selected = true;
+    dataBasket.details[key] = items;
+    this.setState({ dataBasket: await dataBasket });
+    this.props.handleClear(this.state.dataBasket);
+  };
+
   componentDidMount = () => {
     this.setState({ dataBasket: this.props.dataBasket });
   };
@@ -292,7 +303,8 @@ class ItemsBasket extends Component {
                 marginTop: 10,
               }}
             />
-            {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (
+            {/* start 0001 */}
+            {/* {!isEmptyObject(dataBasket) && dataBasket.status === "PENDING" && (
               <div>
                 <div
                   style={{
@@ -350,7 +362,8 @@ class ItemsBasket extends Component {
                   }}
                 />
               </div>
-            )}
+            )} */}
+            {/* end 0001 */}
             {!isEmptyObject(dataBasket) &&
               dataBasket.status === "PENDING" &&
               enableNotes &&
@@ -469,7 +482,8 @@ class ItemsBasket extends Component {
                     alignItems: "center",
                   }}
                 >
-                  {dataBasket.status === "PENDING" && (
+                  {/* start 0001 */}
+                  {/* {dataBasket.status === "PENDING" && (
                     <div style={{ marginRight: 8 }}>
                       <CheckBox
                         handleChange={(status) => this.handleSelect(key, item)}
@@ -478,7 +492,8 @@ class ItemsBasket extends Component {
                         setHeight={20}
                       />
                     </div>
-                  )}
+                  )} */}
+                  {/* end 0001 */}
                   <CardItemBasket
                     key={key}
                     color={this.props.color}
@@ -488,6 +503,27 @@ class ItemsBasket extends Component {
                     getCurrency={(price) => this.props.getCurrency(price)}
                     openModal={(item) => this.openModal(item)}
                   />
+                  {/* start 0001 */}
+                  {dataBasket.status === "PENDING" && (
+                    <div style={{ marginLeft: 8 }}>
+                      <button
+                        className="background-theme"
+                        style={{
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                          color: this.props.color.primary,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: this.props.roleBtnClear && "#CDCDCD",
+                        }}
+                        onClick={(status) => this.handleRemoveItem(key, item)}
+                      >
+                        <DeleteIcon fontSize="large" />
+                      </button>
+                    </div>
+                  )}
+                  {/* end 0001 */}
                 </div>
                 <div
                   style={{

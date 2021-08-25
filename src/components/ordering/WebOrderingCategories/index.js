@@ -8,6 +8,7 @@ const WebOrderingCategories = ({
   searchProduct,
   selectedCategory,
   setSelectedCategory,
+  setIsScrollingToCategory,
 }) => {
   let [querySearch, setQuerySearch] = useState("");
   let [openSearch, setOpenSearch] = useState(false);
@@ -29,39 +30,27 @@ const WebOrderingCategories = ({
     isItemsFinishedToLoad(querySearch);
   }
 
-  useEffect(() => {
-    const scrollEventListener = document.addEventListener("scroll", () => {
-      categories.forEach((i) => {
-        try {
-          const target = document.getElementById(i);
-          if (
-            target.offsetTop <= window.pageYOffset + 200 &&
-            target.offsetTop + 110 >= window.pageYOffset
-          ) {
-            setSelectedCategory(i);
-          }
-        } catch (e) {}
-      });
-    });
-    return document.removeEventListener("scroll", scrollEventListener);
-  }, []);
-
-  useEffect(() => {
+  const handleScrollToCategory = (selectedCategory) => {
     try {
-      let clientHeightHead = document.getElementById("masthead").clientHeight;
-      let clientHeightCategory =
+      const isMobile = window.screen.width <= 750;
+      const banners = document.getElementById("promo-banner");
+      const bannersHeight = banners && isMobile ? banners.offsetHeight - 40 : 0;
+      const clientHeightHead = document.getElementById("masthead").clientHeight;
+      const clientHeightCategory =
         document.getElementById("header-categories").clientHeight;
       let headerHeight = clientHeightHead + clientHeightCategory;
-      if (prevSelectedCategory === 0)
-        headerHeight = clientHeightHead + clientHeightCategory * 2;
 
+      const categoryHeader = document.getElementById(
+        `catalog-${selectedCategory}`
+      );
       window.scrollTo({
-        top: document.getElementById(selectedCategory).offsetTop - headerHeight,
+        top: bannersHeight + categoryHeader.offsetTop - headerHeight,
         behavior: "smooth",
       });
+      setSelectedCategory(selectedCategory);
+      setIsScrollingToCategory(false);
     } catch (error) {}
-    setPrevSelectedCategory(selectedCategory);
-  }, [selectedCategory]);
+  };
 
   return (
     <ul
@@ -84,7 +73,10 @@ const WebOrderingCategories = ({
                 alignItems: "center",
               }}
               key={i}
-              onClick={() => setSelectedCategory(i)}
+              onClick={() => {
+                setIsScrollingToCategory(true);
+                handleScrollToCategory(i);
+              }}
               className={
                 i === selectedCategory ? "menu-item active" : "menu-item"
               }
@@ -95,7 +87,12 @@ const WebOrderingCategories = ({
         ) : (
           <input
             onKeyUp={(e) => isItemsFinishedToLoad(e.target.value)}
-            style={{ height: 35, marginTop: 11, fontSize: 14 }}
+            style={{
+              marginTop: "auto",
+              marginBottom: "auto",
+              fontSize: 14,
+              width: "100%",
+            }}
             id="input-txt"
             type="text"
             autoFocus={true}
@@ -107,7 +104,6 @@ const WebOrderingCategories = ({
           id="search-button-category"
           style={{
             height: 50,
-            marginTop: 5,
             width: 40,
             backgroundColor: "#D0D0D0",
           }}
@@ -119,7 +115,12 @@ const WebOrderingCategories = ({
                 setOpenSearch(false);
                 searchProduct("");
               }}
-              style={{ fontSize: 25, cursor: "pointer", marginTop: 5 }}
+              style={{
+                fontSize: 25,
+                cursor: "pointer",
+                marginTop: "auto",
+                marginBottom: "auto",
+              }}
             ></i>
           ) : (
             <i
@@ -129,7 +130,12 @@ const WebOrderingCategories = ({
                   document.getElementById("input-txt").classList.add("active");
                 }, 100);
               }}
-              style={{ fontSize: 25, cursor: "pointer" }}
+              style={{
+                fontSize: 25,
+                cursor: "pointer",
+                marginTop: "auto",
+                marginBottom: "auto",
+              }}
               className="fa fa-search color"
             ></i>
           )}

@@ -24,7 +24,7 @@ export const Variant = ({ options, variants, setVariantProduct }) => {
     });
     if (variantProduct) {
       const variantName = variantProduct.attributes.reduce((acc, attribute) => {
-        return " " + acc + attribute.value;
+        return acc + " " + attribute.value;
       }, "");
       setVariantProduct({ ...variantProduct, variantName });
     }

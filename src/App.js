@@ -79,13 +79,6 @@ const App = (props) => {
     return newColor.toString(16);
   };
 
-  const hoverColor = `#${lightenDarkenColor(
-    (props.theme.color.primary || "#c00a27").substring(1),
-    -10
-  )}`;
-
-  sheet.update({ theme: { ...props.theme, hoverColor } });
-
   const getUrlParameters = (pageParamString = null) => {
     if (!pageParamString) pageParamString = window.location.href.split("?")[1];
     if (pageParamString) {
@@ -268,12 +261,17 @@ const App = (props) => {
   }, [props.domainName]);
 
   useEffect(() => {
-    if (props.orderingModeSelectedOn && props.orderingSetting) {
+    if (
+      props.orderingModeSelectedOn &&
+      props.orderingSetting &&
+      props.orderingModes &&
+      props.orderingModes.length > 1
+    ) {
       const orderingModeExpiredIn = parseInt(
         props.orderingSetting.OrderingModeExpiredIn
       );
-      console.log(orderingModeExpiredIn);
       if (orderingModeExpiredIn && orderingModeExpiredIn > 0) {
+        console.log("Running check ordering mode interval...");
         const stopInterval = (intervalObj) => {
           clearInterval(intervalObj);
         };
@@ -299,7 +297,28 @@ const App = (props) => {
         }, 60000);
       }
     }
-  }, [props.orderingModeSelectedOn, props.orderingSetting]);
+  }, [
+    props.orderingModeSelectedOn,
+    props.orderingSetting,
+    props.orderingModes,
+  ]);
+
+  useEffect(() => {
+    if (props.theme && props.banners) {
+      const hoverColor = `#${lightenDarkenColor(
+        (props.theme.color.primary || "#c00a27").substring(1),
+        -10
+      )}`;
+
+      sheet.update({
+        theme: {
+          ...props.theme,
+          hoverColor,
+          withBanners: props.banners.length > 0,
+        },
+      });
+    }
+  }, [props.banners, props.theme]);
 
   return domainNameExist ? (
     props.domainName !== "NOT_FOUND" ? (
@@ -338,6 +357,8 @@ const mapStateToProps = (state, ownProps) => {
     domainName: state.masterdata.domainName,
     orderingModeSelectedOn: state.order.orderingModeSelectedOn,
     orderingSetting: state.order.orderingSetting,
+    orderingModes: state.order.orderingModes,
+    banners: state.promotion.banners,
   };
 };
 
