@@ -64,6 +64,7 @@ class Home extends Component {
     const { isEmenu } = this.state;
     const { defaultOutlet } = this.props;
     // console.log(defaultOutlet, 'defaultOutlet')
+    console.log(this.props.setting);
     return (
       <div className="col-full">
         <div
@@ -80,7 +81,14 @@ class Home extends Component {
             ) : (
               <main id="main" className="site-main">
                 {!isEmenu && <Promotion />}
-                <Ordering />
+                {this.props.orderingSetting &&
+                this.props.orderingSetting.CategoryHeaderType &&
+                this.props.orderingSetting.CategoryHeaderType ===
+                  "WITH_CATEGORY_PAGE" ? (
+                  <OrderingRetail history={this.props.history}></OrderingRetail>
+                ) : (
+                  <Ordering></Ordering>
+                )}
               </main>
             )}
           </div>
@@ -92,6 +100,7 @@ class Home extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     setting: state.order,
+    orderingSetting: state.order.orderingSetting,
     defaultOutlet: state.outlet.defaultOutlet,
   };
 };

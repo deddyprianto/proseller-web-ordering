@@ -96,7 +96,6 @@ class Payment extends Component {
           companyInfo && companyInfo.companyId
         )
       );
-      console.log(response, "response");
       if (response.ResultCode === 200) this.setState(response.Data);
     }
     const svc = await this.props.dispatch(SVCAction.loadSVC());
@@ -248,7 +247,8 @@ class Payment extends Component {
     let selectedCard = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
-    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
+    
+    // if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
 
     if (!selectedCard) {
       let paymentCardAccount = await this.props.dispatch(
@@ -269,7 +269,7 @@ class Payment extends Component {
                 `${config.prefix}_paymentCardAccountDefault`,
                 JSON.stringify(encryptor.encrypt(element))
               );
-              selectedCard = element;
+              // selectedCard = element;
             }
           });
         });
@@ -277,6 +277,7 @@ class Payment extends Component {
     }
 
     if (dataSettle === null || !dataSettle.dataBasket) return;
+    console.log(selectedCard)
 
     this.setState({ dataSettle });
 
@@ -674,11 +675,10 @@ class Payment extends Component {
 
     if (needPoint > totalPoint) needPoint = totalPoint;
 
-    let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
-    } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
-    )}`;
+    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
+      } point to ${this.getCurrency(
+        parseInt(pointsToRebateRatio.split(":")[1])
+      )}`;
 
     this.setState({ textRasio, selectedPoint, needPoint });
   };
@@ -841,8 +841,8 @@ class Payment extends Component {
       Swal.fire(
         "Oppss!",
         response.message ||
-          (response.data && response.data.message) ||
-          "Payment Failed!",
+        (response.data && response.data.message) ||
+        "Payment Failed!",
         "error"
       );
     } else {
@@ -933,7 +933,7 @@ class Payment extends Component {
         dataSettle.detailPurchase.details[0].totalDiscAmount;
       payload.dataPay.paidMembershipPlan.totalNettAmount =
         dataSettle.dataBasket.totalNettAmount;
-    } catch (e) {}
+    } catch (e) { }
 
     if (selectedVoucher !== null) {
       payload.payments = payload.payments.concat(voucherDiscountList);
@@ -978,8 +978,8 @@ class Payment extends Component {
       Swal.fire(
         "Oppss!",
         response.message ||
-          (response.data && response.data.message) ||
-          "Payment Failed!",
+        (response.data && response.data.message) ||
+        "Payment Failed!",
         "error"
       );
     } else {
@@ -1105,7 +1105,7 @@ class Payment extends Component {
     try {
       let dateTime = new Date();
       payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset())
-    } catch(e){}
+    } catch (e) { }
 
     let response;
     if (
@@ -1128,8 +1128,8 @@ class Payment extends Component {
       Swal.fire(
         "Oppss!",
         response.message ||
-          (response.data && response.data.message) ||
-          "Payment Failed!",
+        (response.data && response.data.message) ||
+        "Payment Failed!",
         "error"
       );
     } else {
@@ -1223,6 +1223,7 @@ class Payment extends Component {
     }
 
     let nameCreditCard = `Pay ${this.getCurrency(totalPrice)}`;
+    console.log(selectedCard)
     if (selectedCard) {
       let lengthNumber = selectedCard.details.maskedAccountNumber.toString()
         .length;
@@ -1435,9 +1436,8 @@ class Payment extends Component {
                           fontSize: 22,
                           padding: 7,
                           borderRadius: 45,
-                          border: `1px solid ${
-                            this.props.color.primary || "#c00a27"
-                          }`,
+                          border: `1px solid ${this.props.color.primary || "#c00a27"
+                            }`,
                         }}
                       />
                       <div
@@ -1499,6 +1499,7 @@ class Payment extends Component {
                           setAmountSVC={this.setAmountSVC}
                           cancelAmountSVC={this.cancelAmountSVC}
                           getDataBasket={this.getDataBasket}
+                          handleSettle={this.handleSettle}
                           getCurrency={(price) => this.getCurrency(price)}
                           disabledBtn={totalPrice === 0}
                         />

@@ -423,7 +423,7 @@ class Ordering extends Component {
         >
           <div
             className="full-width list-view columns-2 archive woocommerce-page html-change"
-            style={{ marginTop: 100 }}
+            style={{ marginTop: 80 }}
           >
             <div className="tab-content">
               =
@@ -493,8 +493,6 @@ class Ordering extends Component {
           addNew={this.state.addNew}
           selectedItem={this.state.selectedItem}
         />
-        <br /> <br /> <br />
-        <div id="offset-header" />
         <Suspense fallback={<p>....</p>}>
           <SearchBox />
           <RetailHeaderCategory

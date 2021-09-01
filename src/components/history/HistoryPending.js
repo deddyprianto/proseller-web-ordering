@@ -46,7 +46,7 @@ class HistoryPending extends Component {
       `${config.prefix}_dataBasket`,
       JSON.stringify(encryptor.encrypt(items))
     );
-    this.props.dispatch({ type: CONSTANT.DATA_BASKET, data: items });
+    // this.props.dispatch({ type: CONSTANT.DATA_BASKET, data: items });
   };
 
   render() {
