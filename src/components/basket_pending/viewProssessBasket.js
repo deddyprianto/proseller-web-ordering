@@ -16,6 +16,19 @@ export default class ViewProsessBasket extends Component {
     if (props.dataBasket && props.dataBasket.outlet && props.dataBasket.outlet.outletType === 'RETAIL') {
       text = 'Please wait, We are preparing your order.';
     }
+
+    const { setting } = this.props;
+
+    let GIFreadyForCollection = readyCollection;
+
+    try {
+      const findGif = setting.find(it => it.settingKey === "CustomGIFReadyForCollection");
+      if (findGif && findGif.settingValue !== '') {
+        GIFreadyForCollection = JSON.parse(findGif.settingValue);
+      } 
+    } catch(e){}
+       
+
     return (
       <div>
         <ModalQRCode qrcode={props.dataBasket.cartID} field={"cartID"} title="Order QRCode" />
@@ -23,11 +36,12 @@ export default class ViewProsessBasket extends Component {
           <Col xs="12" sm="6">
             <div>
               <Lottie
+                height={300}
                 options={{
                   animationData: (
                     (props.dataBasket.status === "PROCESSING" && props.dataBasket.outlet.outletType !== 'RETAIL' && processingCollection) ||
                     (props.dataBasket.status === "PROCESSING" && props.dataBasket.outlet.outletType === 'RETAIL' && processingCollectionResto) ||
-                    (props.dataBasket.status === "READY_FOR_COLLECTION" && readyCollection) ||
+                    (props.dataBasket.status === "READY_FOR_COLLECTION" && GIFreadyForCollection) ||
                     (props.dataBasket.status === "READY_FOR_DELIVERY" && readyCollection) ||
                     (props.dataBasket.status === "ON_THE_WAY" && onTheWay)
                   )
