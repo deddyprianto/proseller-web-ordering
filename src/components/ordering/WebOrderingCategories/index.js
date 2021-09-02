@@ -11,7 +11,8 @@ const WebOrderingCategories = ({
   setIsScrollingToCategory,
   expanded,
   itemToShow,
-  handleShowMore
+  handleShowMore,
+  showMoreButton,
 }) => {
   let [querySearch, setQuerySearch] = useState("");
   let [openSearch, setOpenSearch] = useState(false);
@@ -28,7 +29,7 @@ const WebOrderingCategories = ({
         searchProduct(query);
         setQuerySearch("");
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   if (finished && openSearch && querySearch !== "") {
@@ -54,7 +55,7 @@ const WebOrderingCategories = ({
       });
       setSelectedCategory(selectedCategory);
       setIsScrollingToCategory(false);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
@@ -104,19 +105,15 @@ const WebOrderingCategories = ({
             placeholder="Search your product here..."
           />
         )}
-        <a
-          className="btn btn-primary"
-          onClick={handleShowMore}
-          style={{ alignSelf: 'center'}}
-        >
-          {
-            expanded ? (
-              <span>Show less</span>
-            ) : (
-              <span>Show more</span>
-            )
-          }
-        </a>
+        {showMoreButton && (
+          <a
+            className="btn btn-primary"
+            onClick={handleShowMore}
+            style={{ alignSelf: "center" }}
+          >
+            {expanded ? <span>Show less</span> : <span>Show more</span>}
+          </a>
+        )}
 
         <div
           className="search-button-absolute"

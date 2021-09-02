@@ -38,7 +38,7 @@ class Ordering extends Component {
       showUpdateModal: false,
       addNew: false,
       itemToShow: 8,
-      expanded: false
+      expanded: false,
     };
   }
 
@@ -193,15 +193,18 @@ class Ordering extends Component {
           searchButton.classList.add("search-button-absolute");
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   handleShowMore() {
-    console.log('sini')
+    console.log("sini");
     if (this.state.itemToShow === 8) {
-      this.setState({ itemToShow: this.state.categories.length, expanded: true })
+      this.setState({
+        itemToShow: this.state.categories.length,
+        expanded: true,
+      });
     } else {
-      this.setState({ itemToShow: 8, expanded: false })
+      this.setState({ itemToShow: 8, expanded: false });
     }
   }
 
@@ -215,7 +218,7 @@ class Ordering extends Component {
       await this.setState({ categories: categories.data, processing: true });
       await this.getProductPreset(categories.data, outlet);
       await this.setState({ loading: false });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   stopProcessing = async () => {
@@ -388,7 +391,7 @@ class Ordering extends Component {
               items.push(productsBackup[i].items[j]);
             }
           }
-        } catch (e) { }
+        } catch (e) {}
 
         if (items.length !== 0) {
           if (productsSearch === undefined) {
@@ -406,7 +409,7 @@ class Ordering extends Component {
 
       await this.setState({ products: productsSearch });
       await this.setState({ loading: false, loadingSearching: false });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getCurrency = (price) => {
@@ -550,6 +553,7 @@ class Ordering extends Component {
             setIsScrollingToCategory={(isScrollingToCategory) =>
               this.setState({ isScrollingToCategory })
             }
+            showMoreButton={this.props.orderingSetting.ShowAllCategory}
           ></WebOrderingCategories>
         )}
         <div
