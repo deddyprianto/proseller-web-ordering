@@ -329,7 +329,7 @@ class Header extends Component {
         {!isLoggedIn && <LoginRegister />}
         <header
           id="masthead"
-          className="site-header header-v4 background-theme"
+          className="site-header header-v4 background-theme site-main"
           style={{
             position: "fixed",
             width: "100%",

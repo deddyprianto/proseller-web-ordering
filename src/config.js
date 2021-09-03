@@ -191,6 +191,7 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       { settingKey: "NavigationColor", settingValue: primary || "#C00A27" },
       { settingKey: "TextButtonColor", settingValue: "#FFF" },
       { settingKey: "TextWarningColor", settingValue: "red" },
+      { settingKey: "CategoryHeaderType", settingValue: "CATEGORY_ONLY" },
     ],
   };
 
@@ -207,6 +208,7 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
   }
   if (orderingSetting && !orderingSetting.theme)
     orderingSetting.theme = defaultSetting.theme;
+
   return orderingSetting;
 };
 

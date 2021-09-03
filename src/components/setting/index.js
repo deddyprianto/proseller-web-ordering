@@ -78,7 +78,7 @@ class Setting extends Component {
             <div style={{
               flexDirection: "row", position: "fixed", zIndex: 10, width: "100%", marginTop: -60,
               boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)", display: "flex",
-              height: 40
+              height: 40, left: 0, right: 0
             }} className="background-theme">
               <div style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}>

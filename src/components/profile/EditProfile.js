@@ -626,7 +626,7 @@ class EditProfile extends Component {
         <ModalEditAccount title={titleEditAccount} />
         <div id="primary" className="content-area">
           <div
-            className="stretch-full-width"
+            // className="stretch-full-width"
             style={{ display: "flex", justifyContent: "center" }}
           >
             <div
@@ -639,6 +639,8 @@ class EditProfile extends Component {
                 boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                 display: "flex",
                 height: 40,
+                left: 0,
+                right: 0
               }}
               className="background-theme"
             >

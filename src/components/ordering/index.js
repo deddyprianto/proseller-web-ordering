@@ -8,12 +8,13 @@ import ModalProduct from "./ModalProduct";
 import LoaderCircle from "../loading/LoaderCircle";
 import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
-import WebOrderingCategories from "./WebOrderingCategories";
+import Menu1 from "./WebOrderingCategories/Menu1";
 import EMenuCategories from "./EMenuCategories";
 
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
 import { getInitialProductValue } from "../../helpers/ProductHelper";
+import _ from "lodash";
 // const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Ordering extends Component {
@@ -175,7 +176,7 @@ class Ordering extends Component {
         }
       });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 
@@ -216,16 +217,56 @@ class Ordering extends Component {
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({ categories: categories.data, processing: true });
-      await this.getProductPreset(categories.data, outlet);
+      if (this.props.orderingSetting.CategoryHeaderType === 'CATEGORY_ONLY') {
+        await this.getProductPresetSingle(categories.data[0], outlet);
+      } else {
+        await this.getProductPresetAll(categories.data, outlet)
+      }
       await this.setState({ loading: false });
     } catch (error) {}
+  };
+
+  getProductPresetSingle = async (category, outlet) => {
+    await this.setState({ products: [], loading: true });
+    
+    if (!outlet) {
+      outlet = this.props.defaultOutlet;
+      if (outlet && outlet.id) {
+        outlet = config.getValidation(outlet);
+      }
+    }
+
+    let products = [];
+    
+    let data = await this.props.dispatch(
+      ProductAction.fetchProduct(category, outlet, 0, 200)
+    );
+
+    console.log(data, 'xxxx')
+
+    products.push({
+      category: category,
+      items: data.data,
+    });
+
+    await this.setState({
+      products,
+      productsBackup: _.cloneDeep(products),
+    });
+    
+    this.props.dispatch({
+      type: CONSTANT.LIST_CATEGORY,
+      data: products,
+    });
+
+    await this.setState({ finished: true, loading: false });
   };
 
   stopProcessing = async () => {
     await this.setState({ categories: [], products: [], processing: false });
   };
 
-  getProductPreset = async (categories, outlet) => {
+  getProductPresetAll = async (categories, outlet) => {
     await this.setState({ products: [] });
 
     let products = [];
@@ -454,7 +495,7 @@ class Ordering extends Component {
           data-target="#modal-product"
         >
           <div
-            className="full-width list-view columns-2 archive woocommerce-page html-change"
+            className="full-width list-view archive woocommerce-page html-change"
             style={{ marginTop: 80 }}
           >
             <div className="tab-content">
@@ -534,7 +575,7 @@ class Ordering extends Component {
             }
           ></EMenuCategories>
         ) : (
-          <WebOrderingCategories
+          <Menu1
             categoryRefs={categoryRefs}
             loadingSearching={(status) =>
               this.setState({ loadingSearching: status })
@@ -554,32 +595,35 @@ class Ordering extends Component {
               this.setState({ isScrollingToCategory })
             }
             showMoreButton={this.props.orderingSetting.ShowAllCategory}
-          ></WebOrderingCategories>
+            theme={this.props.theme}
+            getProductPreset={this.getProductPresetSingle}
+          />
         )}
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           id="product-catalog"
+          style={{ paddingTop: 30 }}
         >
           <div className="tab-content">
             <div className="tab-pane active" id="h1-tab-products-2">
-              <ul className="products">
+              <ul className="products" style={{ marginLeft: 0, marginRight: 0 }}>
                 {!loadingSearching &&
                   products &&
                   products.map((cat, i) => (
                     <>
                       <h3
-                        id={`catalog-${i}`}
+                        id={i}
                         ref={categoryRefs[i]}
-                        className="title font-color-theme"
                         style={{
-                          fontSize: 14,
-                          marginLeft: 15,
-                          marginBottom: 10,
+                          color: this.props.theme.color.primary,
+                          fontSize: 16,
+                          marginBottom: 20,
                           paddingTop: 10,
-                          fontWeight: "bold",
+                          fontWeight: 800,
+                          textAlign: 'center'
                         }}
                       >
-                        {cat.category.name}
+                        {cat.category.name.toUpperCase()}
                       </h3>
                       {cat.items.map((item, j) => {
                         const { salesPeriods, restricSalesPeriod } = item;
@@ -643,7 +687,7 @@ class Ordering extends Component {
                   </div>
                 )}
               </ul>
-              {/* {loading && <LoaderCircle />} */}
+              {loading && <LoaderCircle />}
             </div>
           </div>
         </div>
