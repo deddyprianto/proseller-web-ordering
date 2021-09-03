@@ -81,7 +81,7 @@ class Ordering extends Component {
       const showOrderingModeModalFirst = this.props.setting.find((setting) => {
         return setting.settingKey === "ShowOrderingModeModalFirst";
       });
-      console.log("showOrderingModeModalFirst", showOrderingModeModalFirst);
+      
       if (this.props.orderingModes.length === 1) {
         await this.props.dispatch({
           type: "SET_ORDERING_MODE",
@@ -198,7 +198,6 @@ class Ordering extends Component {
   };
 
   handleShowMore() {
-    console.log("sini");
     if (this.state.itemToShow === 8) {
       this.setState({
         itemToShow: this.state.categories.length,
@@ -242,8 +241,6 @@ class Ordering extends Component {
     let data = await this.props.dispatch(
       ProductAction.fetchProduct(category, outlet, 0, 200)
     );
-
-    console.log(data, 'xxxx')
 
     products.push({
       category: category,
@@ -289,10 +286,7 @@ class Ordering extends Component {
 
     while (i < categories.length && this.state.processing) {
       let data = null;
-      console.log(
-        "this.props.orderingSetting",
-        this.props.orderingSetting.ShowOrderingModeModalFirst
-      );
+      
       if (
         this.props.orderingSetting &&
         this.props.orderingSetting.ShowOrderingModeModalFirst

@@ -63,8 +63,7 @@ class Home extends Component {
   render() {
     const { isEmenu } = this.state;
     const { defaultOutlet } = this.props;
-    // console.log(defaultOutlet, 'defaultOutlet')
-    console.log(this.props.setting);
+    
     return (
       <div className="col-full">
         <div

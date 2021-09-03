@@ -110,17 +110,15 @@ const WebOrderingCategories = ({
   width -= 30;
   let widthMoreMenu = 91;
   let diff = 0;
-  // let diffwidthMoreMenu = widthMoreMenu;
 
   let limit = 3;
+  // if (width > 600) {
+  //   limit = 5;
+  // }
   if (width > 750) {
-    // widthMoreMenu = (width/limit) - (widthMoreMenu/limit)
-    // diffwidthMoreMenu = (widthMoreMenu*2)
     limit = 5;
   }
   if (width >= 1000) {
-    // widthMoreMenu = (width/limit) - (widthMoreMenu/limit)
-    // diffwidthMoreMenu = (widthMoreMenu * 2 ) + 130
     limit = 6;
   }
 
@@ -171,6 +169,20 @@ const WebOrderingCategories = ({
               newIndexHighligh.push(idx);
             }
           }
+
+          /* Check if header highlighted categories less then limit */
+          try {
+            if (newArray.length < limit) {
+              const diffArray = limit - newArray.length;
+              for (let q = 0; q < diffArray; q++) {
+                newArray.push(backupCategories[q])
+                let idx = backupCategories.findIndex(x => x.id === backupCategories[q].id);
+                newIndexHighligh.push(idx);
+              }
+            }
+          } catch(e){}
+          /* Check if header highlighted categories less then limit */
+
           setHighlightedCategories(newArray);
           setIndexHighlight(newIndexHighligh);
           // setStartIndex(idx+limit)
@@ -197,6 +209,8 @@ const WebOrderingCategories = ({
       </li>
     )
   }
+
+  console.log(highlightedCategories, 'highlightedCategories')
 
   return (
     <div id="header-category" style={{ width: '100%', maxWidth: '100%', zIndex: 999 }}>
