@@ -31,7 +31,7 @@ class PaymentMethod extends Component {
       showAddPaymentForm: false,
       addPaymentFormUrl: "",
       latestCardRegistered: null,
-      CreditCardSelected: null
+      CreditCardSelected: null,
     };
   }
 
@@ -41,18 +41,17 @@ class PaymentMethod extends Component {
     );
     this.setState({ getPaymentMethod });
     this.getDataPaymentCard();
-    
-    window.addEventListener("focus", this.onFocus)
 
+    window.addEventListener("focus", this.onFocus);
   };
 
   componentWillUnmount() {
-    window.removeEventListener("focus", this.onFocus)
+    window.removeEventListener("focus", this.onFocus);
   }
 
   onFocus = async () => {
-    try{
-      if (this.state.latestCardRegistered === null) return
+    try {
+      if (this.state.latestCardRegistered === null) return;
       let accountID = this.state.latestCardRegistered.accountID;
       const response = await this.props.dispatch(
         PaymentAction.checkPaymentCard(accountID)
@@ -62,7 +61,7 @@ class PaymentMethod extends Component {
           `${config.prefix}_paymentCardAccountDefault`,
           JSON.stringify(encryptor.encrypt(response.data))
         );
-        
+
         await this.getDataPaymentCard();
         this.setState({ showAddPaymentForm: false });
         this.handleSelectCard(response.data);
@@ -84,8 +83,8 @@ class PaymentMethod extends Component {
           title: "Failed to add Credit Card!",
         });
       }
-    }catch(e) {}
-  }
+    } catch (e) {}
+  };
 
   getDataPaymentCard = async () => {
     let infoCompany = await this.props.dispatch(
@@ -197,9 +196,9 @@ class PaymentMethod extends Component {
   removeDetailDataCard = () => {
     this.setState({
       latestCardRegistered: null,
-      CreditCardSelected: null
+      CreditCardSelected: null,
     });
-  }
+  };
 
   handleAddMethod = async (data) => {
     let payload = {
@@ -209,7 +208,10 @@ class PaymentMethod extends Component {
       paymentID: data.paymentID,
     };
     // CHECK IF PAYMENT PROVIDER NEED TO OPEN NEW TAB, THEN REGISTER NOW
-    if (data.forceNewTab === true || data.paymentID === "MASTERCARD_PAYMENT_GATEWAY") {
+    if (
+      data.forceNewTab === true ||
+      data.paymentID === "MASTERCARD_PAYMENT_GATEWAY"
+    ) {
       await this.setState({ isLoading: true });
       let response = await this.props.dispatch(
         PaymentAction.registerPaymentCard(payload)
@@ -218,14 +220,13 @@ class PaymentMethod extends Component {
         isLoading: false,
         addPaymentFormUrl: response.data.url,
         latestCardRegistered: response.data,
-        CreditCardSelected: data
+        CreditCardSelected: data,
       });
       try {
-        document.getElementById('register-card-on-new-tab').click()
-      }catch(e){}
+        document.getElementById("register-card-on-new-tab").click();
+      } catch (e) {}
       return;
     }
-    
 
     Swal.fire({
       title: "Add a Card",
@@ -250,7 +251,7 @@ class PaymentMethod extends Component {
           this.setState({
             isLoading: false,
             addPaymentFormUrl: response.data.url,
-            latestCardRegistered: response.data
+            latestCardRegistered: response.data,
           });
           if (
             data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
@@ -283,7 +284,7 @@ class PaymentMethod extends Component {
                 }
                 await this.getDataPaymentCard();
                 this.setState({ showAddPaymentForm: false });
-                // this.handleSelectCard(response.data);
+                this.handleSelectCard(response.data);
                 Swal.fire({
                   icon: "success",
                   timer: 1500,
@@ -326,13 +327,8 @@ class PaymentMethod extends Component {
   };
 
   render() {
-    let {
-      loadingShow,
-      isLoading,
-      paymentTypes,
-      detailCard,
-      getPaymentMethod,
-    } = this.state;
+    let { loadingShow, isLoading, paymentTypes, detailCard, getPaymentMethod } =
+      this.state;
     return (
       <div
         className="col-full"
@@ -342,7 +338,7 @@ class PaymentMethod extends Component {
         }}
       >
         <ModalPaymentMethod
-          detailCard={detailCard}
+          detailCard={detailCard && detailCard.isAccountRequired ? detailCard : null}
           handleSetDefault={() => this.handleSetDefault()}
           handleRemoveCard={() => this.handleRemoveCard()}
         />
@@ -351,7 +347,11 @@ class PaymentMethod extends Component {
           CreditCardSelected={this.state.CreditCardSelected}
           removeDetailDataCard={this.removeDetailDataCard}
         />
-        <a id="register-card-on-new-tab" data-toggle="modal" data-target='#payment-method-permission'></a>
+        <a
+          id="register-card-on-new-tab"
+          data-toggle="modal"
+          data-target="#payment-method-permission"
+        ></a>
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div
@@ -385,7 +385,7 @@ class PaymentMethod extends Component {
                   style={{
                     fontWeight: "bold",
                     textAlign: "center",
-                    marginBottom: 10,
+                    marginBottom: 20,
                   }}
                 >
                   Payment Method
@@ -398,150 +398,194 @@ class PaymentMethod extends Component {
                   </Row>
                 ) : (
                   <div>
-                    {paymentTypes.map((item, key) => (
-                      <div key={key} style={{ marginBottom: 10 }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginBottom: 10,
-                            alignItems: "center",
-                          }}
-                        >
+                    {paymentTypes.map((item, key) =>
+                      !item.isAccountRequired ? (
+                        <div key={key} style={{ marginBottom: 10 }}>
                           <div
-                            className="customer-group-name"
-                            style={{ display: "flex", alignItems: "center" }}
+                            onClick={() => this.handleSelectCard(item)}
+                            className="button"
+                            style={{
+                              marginBottom: 30,
+                              alignItems: "center",
+                              width: "100%",
+                            }}
                           >
-                            <CreditCard style={{ fontSize: 20 }} />
                             <div
+                              className="customer-group-name"
                               style={{
-                                marginLeft: 5,
-                                fontWeight: "bold",
-                                fontSize: 12,
+                                display: "flex",
+                                justifyContent: "center",
+                                paddingTop: 11,
+                                paddingBottom: 11,
                               }}
                             >
-                              {item.paymentName}
+                              <CreditCard
+                                style={{
+                                  fontSize: 20,
+                                  color: "white",
+                                  marginRight: 10,
+                                }}
+                              />
+                              <h3
+                                style={{
+                                  fontWeight: "bold",
+                                  fontSize: 15,
+                                  color: 'white'
+                                }}
+                              >
+                                {item.paymentName}
+                              </h3>
                             </div>
                           </div>
-                          {(item.allowMultipleAccount ||
-                            item.data.length === 0) && (
-                            <Button
-                              className="button"
-                              style={{
-                                width: 100,
-                                paddingLeft: 5,
-                                paddingRight: 5,
-                                borderRadius: 5,
-                                height: 40,
-                              }}
-                              onClick={() => this.handleAddMethod(item)}
-                            >
-                              <i className="fa fa-plus" aria-hidden="true" />{" "}
-                              Add Card
-                            </Button>
-                          )}
                         </div>
-                        <Row>
-                          {item.data.map((card, keyCard) => (
-                            <Col key={keyCard} sm={6}>
+                      ) : (
+                        <div key={key} style={{ marginBottom: 10 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: 10,
+                              alignItems: "center",
+                            }}
+                          >
+                            <div
+                              className="customer-group-name"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <CreditCard style={{ fontSize: 20 }} />
                               <div
                                 style={{
-                                  padding: 10,
-                                  borderRadius: 5,
-                                  marginBottom: 5,
-                                  color: "#FFF",
-                                  cursor: "pointer",
-                                  backgroundColor: "#1d282e",
-                                  border: "1 solid #FFF",
+                                  marginLeft: 5,
+                                  fontWeight: "bold",
+                                  fontSize: 12,
                                 }}
-                                data-toggle="modal"
-                                data-target={
-                                  !getPaymentMethod && "#payment-method-modal"
-                                }
-                                onClick={() => this.handleSelectCard(card)}
                               >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                  }}
-                                >
-                                  <div
-                                    style={{ fontSize: 16, fontWeight: "bold" }}
-                                  >
-                                    {card.details.cardIssuer
-                                      ? card.details.cardIssuer.toUpperCase()
-                                      : "-"}
-                                  </div>
-                                  {card.default === true && (
-                                    <div
-                                      className="profile-dashboard"
-                                      style={{
-                                        paddingLeft: 10,
-                                        paddingRight: 10,
-                                        borderBottomLeftRadius: 5,
-                                        marginTop: -20,
-                                        marginRight: -10,
-                                        fontSize: 12,
-                                        fontWeight: "bold",
-                                      }}
-                                    >
-                                      DEFAULT
-                                    </div>
-                                  )}
-                                  {card.selected === true && (
-                                    <div
-                                      className="profile-dashboard"
-                                      style={{
-                                        paddingLeft: 10,
-                                        paddingRight: 10,
-                                        borderBottomLeftRadius: 5,
-                                        marginTop: -20,
-                                        marginRight: -10,
-                                        fontSize: 12,
-                                        fontWeight: "bold",
-                                      }}
-                                    >
-                                      SELECTED
-                                    </div>
-                                  )}
-                                  {!card.default && !card.selected && (
-                                    <CreditCard style={{ fontSize: 20 }} />
-                                  )}
-                                </div>
-                                <div
-                                  style={{
-                                    textAlign: "center",
-                                    fontSize: 18,
-                                    marginTop: 15,
-                                    marginBottom: 15,
-                                  }}
-                                >
-                                  {card.details.maskedAccountNumber}
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                  }}
-                                >
-                                  <div style={{ fontSize: 12 }}>{`${
-                                    card.details.firstName || ""
-                                  } ${card.details.lastName || ""}`}</div>
-                                  <div
-                                    style={{ fontSize: 12 }}
-                                  >{`VALID THRU ${card.details.cardExpiryMonth} / ${card.details.cardExpiryYear}`}</div>
-                                </div>
+                                {item.paymentName}
                               </div>
-                            </Col>
-                          ))}
-                        </Row>
-                      </div>
-                    ))}
+                            </div>
+                            {(item.allowMultipleAccount ||
+                              item.data.length === 0) && (
+                              <Button
+                                className="button"
+                                style={{
+                                  width: 100,
+                                  paddingLeft: 5,
+                                  paddingRight: 5,
+                                  borderRadius: 5,
+                                  height: 40,
+                                }}
+                                onClick={() => this.handleAddMethod(item)}
+                              >
+                                <i className="fa fa-plus" aria-hidden="true" />{" "}
+                                Add Card
+                              </Button>
+                            )}
+                          </div>
+                          <Row>
+                            {item.data.map((card, keyCard) => (
+                              <Col key={keyCard} sm={6}>
+                                <div
+                                  style={{
+                                    padding: 10,
+                                    borderRadius: 5,
+                                    marginBottom: 5,
+                                    color: "#FFF",
+                                    cursor: "pointer",
+                                    backgroundColor: "#1d282e",
+                                    border: "1 solid #FFF",
+                                  }}
+                                  data-toggle="modal"
+                                  data-target={
+                                    !getPaymentMethod && "#payment-method-modal"
+                                  }
+                                  onClick={() => this.handleSelectCard(card)}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize: 16,
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {card.details.cardIssuer
+                                        ? card.details.cardIssuer.toUpperCase()
+                                        : "-"}
+                                    </div>
+                                    {card.default === true && (
+                                      <div
+                                        className="profile-dashboard"
+                                        style={{
+                                          paddingLeft: 10,
+                                          paddingRight: 10,
+                                          borderBottomLeftRadius: 5,
+                                          marginTop: -20,
+                                          marginRight: -10,
+                                          fontSize: 12,
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        DEFAULT
+                                      </div>
+                                    )}
+                                    {card.selected === true && (
+                                      <div
+                                        className="profile-dashboard"
+                                        style={{
+                                          paddingLeft: 10,
+                                          paddingRight: 10,
+                                          borderBottomLeftRadius: 5,
+                                          marginTop: -20,
+                                          marginRight: -10,
+                                          fontSize: 12,
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        SELECTED
+                                      </div>
+                                    )}
+                                    {!card.default && !card.selected && (
+                                      <CreditCard style={{ fontSize: 20 }} />
+                                    )}
+                                  </div>
+                                  <div
+                                    style={{
+                                      textAlign: "center",
+                                      fontSize: 18,
+                                      marginTop: 15,
+                                      marginBottom: 15,
+                                    }}
+                                  >
+                                    {card.details.maskedAccountNumber}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <div style={{ fontSize: 12 }}>{`${
+                                      card.details.firstName || ""
+                                    } ${card.details.lastName || ""}`}</div>
+                                    <div
+                                      style={{ fontSize: 12 }}
+                                    >{`VALID THRU ${card.details.cardExpiryMonth} / ${card.details.cardExpiryYear}`}</div>
+                                  </div>
+                                </div>
+                              </Col>
+                            ))}
+                          </Row>
+                        </div>
+                      )
+                    )}
 
                     {paymentTypes.length === 0 && (
                       <div>

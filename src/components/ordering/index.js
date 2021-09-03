@@ -211,12 +211,13 @@ class Ordering extends Component {
 
   fetchCategories = async (outlet, orderingMode) => {
     try {
-      await this.setState({ loading: true });
+      // await this.setState({ loading: true });
       const categories = await this.props.dispatch(
         ProductAction.fetchCategoryProduct(outlet, null, orderingMode)
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({ categories: categories.data, processing: true });
+      
       if (this.props.orderingSetting.CategoryHeaderType === 'CATEGORY_ONLY') {
         await this.getProductPresetSingle(categories.data[0], outlet);
       } else {

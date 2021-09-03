@@ -108,13 +108,24 @@ const WebOrderingCategories = ({
   let [width, height] = useWindowSize();
 
   width -= 30;
+  let widthMoreMenu = 91;
+  let diff = 0;
+  // let diffwidthMoreMenu = widthMoreMenu;
 
   let limit = 3;
-  if (width > 600) {
+  if (width > 750) {
+    // widthMoreMenu = (width/limit) - (widthMoreMenu/limit)
+    // diffwidthMoreMenu = (widthMoreMenu*2)
     limit = 5;
   }
   if (width >= 1000) {
-    limit = 7;
+    // widthMoreMenu = (width/limit) - (widthMoreMenu/limit)
+    // diffwidthMoreMenu = (widthMoreMenu * 2 ) + 130
+    limit = 6;
+  }
+
+  if (width >= 1200) {
+    diff = 65
   }
 
   let backupCategories = JSON.stringify(categories);
@@ -206,7 +217,7 @@ const WebOrderingCategories = ({
                     id={`cat-${i}`}
                     style={{
                       cursor: "pointer",
-                      width: (width/limit) - (91/limit),
+                      width: (width/limit) - (widthMoreMenu/limit) - diff,
                       overflow: "hidden",
                       height: 50,
                     }}
@@ -269,7 +280,7 @@ const WebOrderingCategories = ({
                         display: "flex",
                         alignItems: "center",
                         height: 50,
-                        width: 90,
+                        width: widthMoreMenu-1,
                         fontSize: 12,
                         fontWeight: 900,
                         padding: 7,
