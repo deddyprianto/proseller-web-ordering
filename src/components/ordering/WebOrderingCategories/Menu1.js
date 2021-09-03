@@ -111,10 +111,10 @@ const WebOrderingCategories = ({
 
   let limit = 3;
   if (width > 600) {
-    limit = 6;
+    limit = 5;
   }
   if (width >= 1000) {
-    limit = 10;
+    limit = 7;
   }
 
   let backupCategories = JSON.stringify(categories);
