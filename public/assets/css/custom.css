@@ -29,8 +29,8 @@
         clear: none;
         width: 47%;
         float: left;
-        height: 255px;
-        max-height: 255px;
+        height: 210px;
+        max-height: 210px;
         margin-bottom: 20px !important;
     }
     ul.products li.product:nth-child(odd) {

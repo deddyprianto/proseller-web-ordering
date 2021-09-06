@@ -226,7 +226,7 @@ class Product extends Component {
                     <div
                       className="font-color-theme"
                       style={{
-                        maxHeight: "none",
+                        maxHeight: 80,
                         whiteSpace: "pre-line",
                         fontSize: 10,
                       }}
