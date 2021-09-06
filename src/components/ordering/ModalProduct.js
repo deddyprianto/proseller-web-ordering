@@ -64,6 +64,7 @@ class ModalProduct extends Component {
           product: {
             barcode: variant.barcode,
             categoryName: prevState.selectedItem.product.categoryName,
+            description: variant.description || prevState.selectedItem.product.description,
             code: variant.barcode,
             id: variant.id,
             name: this.props.selectedItem.name + variant.variantName,

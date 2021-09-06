@@ -210,8 +210,6 @@ const WebOrderingCategories = ({
     )
   }
 
-  console.log(highlightedCategories, 'highlightedCategories')
-
   return (
     <div id="header-category" style={{ width: '100%', maxWidth: '100%', zIndex: 999 }}>
       <div style={{ width: '100%', maxWidth: '100%', zIndex: 999 }}>
