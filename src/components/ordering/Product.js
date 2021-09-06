@@ -199,12 +199,14 @@ class Product extends Component {
                     className="attachment-pizzaro-product-list-fw-col-1 size-pizzaro-product-list-fw-col-1 image-product"
                     alt={item.product.name}
                     title={item.product.name}
+                    onClick={() => this.validateOutlet()}
                   />
                 </span>
               </div>
               <div className="product-content-wrapper">
                 <div>
                   <h3
+                    onClick={() => this.validateOutlet()}
                     style={{
                       cursor: "pointer",
                       marginTop: 10,

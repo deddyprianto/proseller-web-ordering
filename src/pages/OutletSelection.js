@@ -126,9 +126,9 @@ class OutletSelection extends Component {
   render() {
     let { loadingShow, outlets } = this.state;
     return (
-      <div className="col-full" style={{ marginTop: 90, marginBottom: 50 }}>
+      <div className="" style={{ marginTop: 90, marginBottom: 50 }}>
         <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+          <div className="">
             <main
               id="main"
               className="site-main"

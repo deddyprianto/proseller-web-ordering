@@ -1,3 +1,32 @@
 .menu-category > .categories {
     flex-wrap: wrap !important;
 }
+
+.container-product {
+    margin: 0 !important;
+}
+
+
+@media (min-width: 1200px) {
+    ul.products li.product {
+        clear: none;
+        width: 47%;
+        float: left;
+        margin-bottom: 20px !important;
+    }
+    ul.products li.product:nth-child(odd) {
+        margin-left: 6%;
+    }
+    .logo {
+        height: auto !important;
+        width: 150px !important;
+    }
+}
+
+ul.products li.product .product-content-wrapper, .products .owl-item>.product .product-content-wrapper {
+    border: none !important;
+}
+
+ul.products li.product .product-image-wrapper, ul.products li.product .product-content-wrapper, .products .owl-item>.product .product-image-wrapper, .products .owl-item>.product .product-content-wrapper {
+    border: none !important;
+}

@@ -422,17 +422,19 @@ class DeliveryAddress extends Component {
         />
 
         <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+          {/* <div className="stretch-full-width"> */}
             <div
               style={{
                 flexDirection: "row",
                 position: "fixed",
                 zIndex: 10,
-                width: "100%",
+                width: "auto",
                 marginTop: -60,
                 boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                 display: "flex",
                 height: 40,
+                left: 0,
+                right: 0
               }}
               className="background-theme"
             >
@@ -660,7 +662,7 @@ class DeliveryAddress extends Component {
                 )}
               </div>
             </main>
-          </div>
+          {/* </div> */}
         </div>
         {this.state.isLoading ? Swal.showLoading() : Swal.close()}
         <div data-toggle="modal" id="modal-edit-address" data-target="#delivery-address-modal"></div>

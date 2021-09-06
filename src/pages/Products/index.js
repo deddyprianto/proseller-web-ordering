@@ -83,151 +83,160 @@ export const Products = ({
   }, [categories, selectedCategory, selectedOutlet]);
   // console.log(filteredProducts, 'filteredProducts')
   return (
-    <div className={classes.container}>
-      {showUpdateModal && (
-        <UpdateProductModal
-          color={theme.color.primary}
-          product={selectedProduct}
-          productInCart={
-            basket &&
-            basket.details.filter((item) => {
-              return item.productID === selectedProduct.productID;
-            })
-          }
-          onClose={() => setShowUpdateModal(false)}
-          setAddNew={(addNew) => setIsAddNewExistingProduct(addNew)}
-          setSelectedItem={(item) => setSelectedProduct(item)}
-          getCurrency={(price) =>
-            companyInfo &&
-            companyInfo.currency &&
-            getFormattedPrice(price, companyInfo.currency)
-          }
-        ></UpdateProductModal>
-      )}
-      <ModalProduct
-        addNew={isAddNewExistingProduct}
-        selectedItem={selectedProduct}
-      />
-      {categoryNotFound ? (
-        <div>Category not found</div>
-      ) : (
-        <div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              margin: "1rem",
-            }}
-          >
-            <Link to={"/menu"}>
-              <div>
-                <i className="fa fa-arrow-left" /> Back
-              </div>
-            </Link>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              {selectedCategory && selectedCategory.defaultImageURL && (
-                <img
-                  src={selectedCategory.defaultImageURL}
-                  alt={selectedCategory.name}
-                  style={{
-                    width: "auto",
-                    height: "2.2rem",
-                  }}
-                ></img>
-              )}
-              <h5
-                style={{ margin: 0, marginLeft: "1rem" }}
-                className="customer-group-name"
-              >
-                {selectedCategory &&
-                  (selectedCategory.name || selectedCategory.term)}
-              </h5>
-            </div>
-          </div>
-          <div style={{ margin: "1rem" }}>
-            <SearchBox />
-          </div>
-          {/* <div style={{ margin: "1rem" }}>
-            <input
-              onChange={handleFilterKeywordChange}
-              className={`form-control ${classes.searchBox}`}
-              placeholder="Search"
-              style={{ fontSize: "1.5rem" }}
-            ></input>
-          </div> */}
-          <div style={{ marginTop: "1rem" }}>
-            {isLoading ? (
-              <div>
-                {SHIMMER_ARRAY.map((no) => (
-                  <Shimmer key={no}>
-                    <div
-                      style={{
-                        width: "100%",
-                        height: 100,
-                        alignSelf: "center",
-                        borderRadius: "8px",
-                        marginBottom: 10,
-                      }}
-                    />
-                  </Shimmer>
-                ))}
-              </div>
-            ) : error ? (
-              <div>{error.message}</div>
-            ) : (
+    <div className="col-full" style={{ marginTop: '5rem', width: '100%' }}>
+      <div
+        id="primary"
+        className="content-area"
+        style={{ paddingBottom: 100 }}
+      >
+        <main id="main" className="site-main">
+          {showUpdateModal && (
+            <UpdateProductModal
+              color={theme.color.primary}
+              product={selectedProduct}
+              productInCart={
+                basket &&
+                basket.details.filter((item) => {
+                  return item.productID === selectedProduct.productID;
+                })
+              }
+              onClose={() => setShowUpdateModal(false)}
+              setAddNew={(addNew) => setIsAddNewExistingProduct(addNew)}
+              setSelectedItem={(item) => setSelectedProduct(item)}
+              getCurrency={(price) =>
+                companyInfo &&
+                companyInfo.currency &&
+                getFormattedPrice(price, companyInfo.currency)
+              }
+            ></UpdateProductModal>
+          )}
+          <ModalProduct
+            addNew={isAddNewExistingProduct}
+            selectedItem={selectedProduct}
+          />
+          {categoryNotFound ? (
+            <div>Category not found</div>
+          ) : (
+            <div>
               <div
-                className="full-width list-view columns-2 archive woocommerce-page html-change"
-                style={{ marginTop: IS_EMENU ? 35 : 5 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  margin: "1rem",
+                }}
               >
-                <div className="tab-content">
-                  <div className="tab-pane active" id="h1-tab-products-2">
-                    <ul className="products">
-                      {filteredProducts &&
-                        filteredProducts.map((product) => {
-                          const productInBasket =
-                            basket &&
-                            basket.details &&
-                            basket.details.find(
-                              (item) => item.product.id === product.id
-                            );
-                          const label = productInBasket ? "Update" : "Add";
-                          const quantity =
-                            productInBasket && productInBasket.quantity
-                              ? productInBasket.quantity
-                              : 0;
-                          return (
-                            <Product
-                              labelButton={label}
-                              quantity={quantity}
-                              selectProduct={selectProduct}
-                              productConfig={theme}
-                              showUpdateModal={(item) => {
-                                setSelectedProduct(item);
-                                setProductIsExistInBasket(label === "Update");
-                                setShowUpdateModal(true);
-                              }}
-                              key={product.id}
-                              item={product}
-                            />
-                          );
-                        })}
-                    </ul>
-                    {filteredProducts === null ? (
-                      <h4
-                        style={{ textAlign: "center" }}
-                        className="customer-group-name"
-                      >
-                        Sorry, products not found :(
-                      </h4>
-                    ) : null}
+                <Link to={"/menu"}>
+                  <div>
+                    <i className="fa fa-arrow-left" /> Back
                   </div>
+                </Link>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  {selectedCategory && selectedCategory.defaultImageURL && (
+                    <img
+                      src={selectedCategory.defaultImageURL}
+                      alt={selectedCategory.name}
+                      style={{
+                        width: "auto",
+                        height: "2.2rem",
+                      }}
+                    ></img>
+                  )}
+                  <h5
+                    style={{ margin: 0, marginLeft: "1rem" }}
+                    className="customer-group-name"
+                  >
+                    {selectedCategory &&
+                      (selectedCategory.name || selectedCategory.term)}
+                  </h5>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+              <div style={{ margin: "1rem", marginBottom: 20 }}>
+                <SearchBox />
+              </div>
+              {/* <div style={{ margin: "1rem" }}>
+                <input
+                  onChange={handleFilterKeywordChange}
+                  className={`form-control ${classes.searchBox}`}
+                  placeholder="Search"
+                  style={{ fontSize: "1.5rem" }}
+                ></input>
+              </div> */}
+              <div style={{ marginTop: "1rem" }}>
+                {isLoading ? (
+                  <div>
+                    {SHIMMER_ARRAY.map((no) => (
+                      <Shimmer key={no}>
+                        <div
+                          style={{
+                            width: "100%",
+                            height: 100,
+                            alignSelf: "center",
+                            borderRadius: "8px",
+                            marginBottom: 10,
+                          }}
+                        />
+                      </Shimmer>
+                    ))}
+                  </div>
+                ) : error ? (
+                  <div>{error.message}</div>
+                ) : (
+                  <div
+                    className="full-width list-view columns-2 archive woocommerce-page html-change"
+                    id="product-catalog"
+                    style={{ paddingTop: 30 }}
+                  >
+                    <div className="tab-content">
+                      <div className="tab-pane active" id="h1-tab-products-2">
+                        <ul className="products">
+                          {filteredProducts &&
+                            filteredProducts.map((product) => {
+                              const productInBasket =
+                                basket &&
+                                basket.details &&
+                                basket.details.find(
+                                  (item) => item.product.id === product.id
+                                );
+                              const label = productInBasket ? "Update" : "Add";
+                              const quantity =
+                                productInBasket && productInBasket.quantity
+                                  ? productInBasket.quantity
+                                  : 0;
+                              return (
+                                <Product
+                                  labelButton={label}
+                                  quantity={quantity}
+                                  selectProduct={selectProduct}
+                                  productConfig={theme}
+                                  showUpdateModal={(item) => {
+                                    setSelectedProduct(item);
+                                    setProductIsExistInBasket(label === "Update");
+                                    setShowUpdateModal(true);
+                                  }}
+                                  key={product.id}
+                                  item={product}
+                                />
+                              );
+                            })}
+                        </ul>
+                        {filteredProducts === null ? (
+                          <h4
+                            style={{ textAlign: "center" }}
+                            className="customer-group-name"
+                          >
+                            Sorry, products not found :(
+                          </h4>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 };

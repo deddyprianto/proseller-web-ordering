@@ -174,7 +174,7 @@ export class MapContainer extends Component {
           />
           <button
             type="button"
-            className="btn btn-primary btn-block"
+            className="button btn-block"
             style={{ width: "15%" }}
             onClick={this.getGeolocation}
           >
@@ -250,7 +250,7 @@ export class MapContainer extends Component {
             Move map to change coordinate.
           </h5>
           <div style={{ maxWidth: "100%", width: "100%", textAlign: 'center',  }}>
-            <i style={{ fontSize: '1.5rem', color: '#2d3436', fontWeight: 'bold' }}>
+            <i style={{ fontSize: '1.3rem', color: '#2d3436', fontWeight: 'bold' }}>
               {!regionChangeProgress
                 ? userLocation
                 : "Identifying Location ...."}
@@ -260,7 +260,7 @@ export class MapContainer extends Component {
           <button
             type="button"
             onClick={this.setCoordinate}
-            className="btn btn-primary btn-block"
+            className="button btn-block"
             style={{ position: "absolute", zIndex: 3, bottom: 0, padding: 10 }}
           >
             <b>Use This Location</b>

@@ -11,7 +11,7 @@ class Promotion extends Component {
     return (
       <div
         className="home-v1-slider"
-        style={{ marginBottom: 0 }}
+        style={{ marginBottom: 10 }}
         id="promo-banner"
       >
         <div
