@@ -338,12 +338,8 @@ class Header extends Component {
           }}
         >
           <div
+            id="full-website"
             className="col-full"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              position: "relative",
-            }}
           >
             <div
               style={{
@@ -528,20 +524,7 @@ class Header extends Component {
                   )}
                   {isLoggedIn && (
                     <li data-toggle="modal" onClick={() => this.handleLogout()}>
-                      <input
-                        type="submit"
-                        className="woocommerce-Button button"
-                        name="login"
-                        value="Log Out"
-                        style={{
-                          width: 160,
-                          padding: 0,
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                          height: 40,
-                          borderRadius: 10,
-                        }}
-                      />
+                      <a style={{ color: 'red' }} href="#">Logout</a>
                     </li>
                   )}
                   {!isLoggedIn && (
@@ -653,7 +636,7 @@ class Header extends Component {
                 className="site-header-cart menu"
                 style={{ textAlign: "right" }}
               >
-                <Link to="/basket">
+                <Link id="cart-icon" to="/basket">
                   <li className="mini-cart">
                     <div
                       style={{

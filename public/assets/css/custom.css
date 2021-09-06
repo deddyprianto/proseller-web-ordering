@@ -6,12 +6,31 @@
     margin: 0 !important;
 }
 
+@media (min-width: 1200px) {
+    #masthead {
+        width: 85%;
+        max-width: 85%;
+    }
+    #cart-icon {
+        float: left !important;
+    }
+}
+
+@media (max-width: 800px) {
+    #full-website {
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+}
 
 @media (min-width: 1200px) {
     ul.products li.product {
         clear: none;
         width: 47%;
         float: left;
+        height: 255px;
+        max-height: 255px;
         margin-bottom: 20px !important;
     }
     ul.products li.product:nth-child(odd) {
