@@ -633,6 +633,7 @@ class Header extends Component {
             {/* #site-navigation */}
             {enableOrdering && (
               <ul
+                id="basket-icon-menu"
                 className="site-header-cart menu"
                 style={{ textAlign: "right" }}
               >

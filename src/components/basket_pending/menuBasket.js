@@ -102,12 +102,12 @@ export default class MenuBasket extends Component {
           }
           
           {
-            props.dataBasket.deliveryFee && props.dataBasket.orderingMode && 
+            props.dataBasket.provider && props.dataBasket.orderingMode && 
             props.dataBasket.orderingMode === "DELIVERY" &&
             <div style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
               <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                 <div>Delivery Fee</div>
-                <div style={{ fontWeight: "bold" }}>{`+ ${this.props.getCurrency(props.dataBasket.deliveryFee)}`}</div>
+                <div style={{ fontWeight: "bold" }}>{`+ ${this.props.getCurrency(props.dataBasket.provider.deliveryFee)}`}</div>
               </div>
             </div>
           }
@@ -117,7 +117,7 @@ export default class MenuBasket extends Component {
             <TaxAmount data={props} getCurrency={(price) => this.props.getCurrency(price)} />
           }
 
-          {
+          {/* {
             props.dataBasket.payments && 
             props.dataBasket.payments.map((items, key) => (
               (items.paymentType === "voucher" || items.paymentType === "point") &&
@@ -132,7 +132,7 @@ export default class MenuBasket extends Component {
                 </div>
               </div>
             ))
-          }
+          } */}
         </div>
 
         <div style={{ border: "1px solid #DCDCDC", borderRadius: 5, marginTop: 10, paddingTop: 10, paddingBottom: 10 }}>

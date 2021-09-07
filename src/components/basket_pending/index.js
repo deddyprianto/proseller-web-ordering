@@ -248,7 +248,7 @@ class Basket extends Component {
       countryCode: infoCompany.countryCode,
     });
 
-    if (dataBasket.id) dataBasket = await this.getDataBasketPending(dataBasket.id, dataBasket.status);
+    // if (dataBasket.id) dataBasket = await this.getDataBasketPending(dataBasket.id, dataBasket.status);
     if (
       deliveryProvaider &&
       deliveryProvaider.length > 0 &&

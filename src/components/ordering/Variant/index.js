@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import _ from "lodash";
 
-export const Variant = ({ options, variants, setVariantProduct }) => {
+export const Variant = ({ options, variants, setVariantProduct, product }) => {
   const initialVariant = options.reduce((acc, option) => {
     return {
       ...acc,
@@ -17,6 +17,10 @@ export const Variant = ({ options, variants, setVariantProduct }) => {
       [name]: value,
     });
   };
+
+  useEffect(() => {
+    setSelectedVariant(initialVariant);
+  }, [product]);
 
   useEffect(() => {
     const variantProduct = variants.find((variant) => {

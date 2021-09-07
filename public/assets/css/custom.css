@@ -8,11 +8,29 @@
 
 @media (min-width: 1200px) {
     #masthead {
-        width: 85%;
-        max-width: 85%;
+        width: 72%;
+        max-width: 72%;
+        font-size: 14px !important;
+    }
+    #menu-home-5-and-7-main-menu {
+        margin-left: 20px;
+    }
+    #basket-icon-menu {
+        float: right !important;
+    } 
+    #site-navigation {
+        width: 100%;
     }
     #cart-icon {
-        float: left !important;
+        float: right !important;
+    }
+}
+
+@media (max-width: 900px) {
+    #masthead {
+        margin-left: -5%;
+        width: 105% !important;
+        max-width: 105% !important;
     }
 }
 
