@@ -1618,6 +1618,7 @@ class Payment extends Component {
                           setAmountSVC={this.setAmountSVC}
                           cancelAmountSVC={this.cancelAmountSVC}
                           getDataBasket={this.getDataBasket}
+                          handleSettle={this.handleSettle}
                           getCurrency={(price) => this.getCurrency(price)}
                           disabledBtn={totalPrice === 0}
                         />
