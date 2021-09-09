@@ -504,7 +504,7 @@ class LoginRegister extends Component {
       if (err.message) {
         error = err.message;
       }
-      Swal.fire("Oppss!", error, "error");
+      Swal.fire("Oppss!", err.toString(), "error");
     }
   };
 
