@@ -127,6 +127,8 @@ class Footer extends Component {
                   }}
                 ></i>
                 <div
+                  data-toggle={menu.text === 'Login' ? "modal" : null}
+                  data-target={menu.text === 'Login' ? "#login-register-modal" : null}
                   className={`${this.activeRoute({
                     path: menu.path,
                     name: menu.text,

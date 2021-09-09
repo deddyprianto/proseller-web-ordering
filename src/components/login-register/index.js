@@ -500,7 +500,7 @@ class LoginRegister extends Component {
       window.location.reload();
     } catch (err) {
       console.log(err);
-      let error = "Account not exist";
+      let error = "Please try again.";
       if (err.message) {
         error = err.message;
       }
@@ -697,7 +697,7 @@ class LoginRegister extends Component {
       }
     } catch (err) {
       console.log(err);
-      let error = "Account not exist";
+      let error = "Please try again.";
       if (
         err.response &&
         err.response.data &&
@@ -857,7 +857,7 @@ class LoginRegister extends Component {
     } catch (err) {
       console.log(err);
       Swal.close();
-      let error = "Account not exist";
+      let error = "Please try again.";
       if (err.message) {
         error = err.message;
       }
@@ -1038,7 +1038,7 @@ class LoginRegister extends Component {
       }
     } catch (err) {
       console.log(err);
-      let error = "Account not exist";
+      let error = "Please try again.";
       if (
         err.response &&
         err.response.data &&
