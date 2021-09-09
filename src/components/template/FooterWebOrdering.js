@@ -73,6 +73,7 @@ class Footer extends Component {
             if (!isLoggedIn && menu.loggedInOnly) {
               return null;
             }
+            if (isLoggedIn && menu.loggedInOnly === false) return null;
             return (
               <Link
                 onClick={() => this.removeDataPayment()}

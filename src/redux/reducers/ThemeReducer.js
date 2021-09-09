@@ -37,6 +37,7 @@ const initialState = {
       },
       {
         text: "Login",
+        loggedInOnly: false,
         path: "/history",
         icon: "fa fa-sign-in",
       },
