@@ -1,5 +1,6 @@
 import logo from "./assets/images/logo_placeholder.png";
 import emptyImage from "./assets/images/empty.png";
+import loginImage from "./assets/images/login.svg";
 
 let config = {};
 let stage = "demo";
@@ -66,6 +67,7 @@ if (process.env.REACT_APP_STAGE === "prod") {
 
 config.url_logo = logo;
 config.url_emptyImage = emptyImage;
+config.url_loginImage = loginImage;
 config.image_placeholder =
   "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
 config.prefix = window.location.hostname.includes("emenu")

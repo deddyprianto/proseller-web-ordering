@@ -87,8 +87,14 @@ class History extends Component {
             >
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 <div>
-                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
-                  <div style={{ textAlign: "center" }}>No History Payment</div>
+                  <center>
+                    <img width="500" src={config.url_loginImage} alt="is empty" style={{marginTop: 30}}/>
+                    <button 
+                      data-toggle={"modal"}
+                      data-target={"#login-register-modal"} type="button" style={{ padding: 10, marginTop: 40 }}>
+                        Login
+                    </button>
+                  </center>
                 </div>
               </main>
             </div>
