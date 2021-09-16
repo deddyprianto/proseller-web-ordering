@@ -12,8 +12,11 @@ class PaymentMethodBasket extends Component {
       this.props.disabledBtn || props.selectedCard
         ? "#DCDCDC"
         : this.props.color.primary || "#c00a27";
-    let nameCreditCard = "Select Credit Card";
-    if (props.selectedCard) {
+        
+    let nameCreditCard = "Select Payment Method";
+    if (props.selectedCard && props.selectedCard.isAccountRequired === false) {
+      nameCreditCard = props.selectedCard.paymentName
+    } else if (props.selectedCard) {
       let lengthNumber = props.selectedCard.details.maskedAccountNumber.toString()
         .length;
       nameCreditCard = props.selectedCard.details.cardIssuer

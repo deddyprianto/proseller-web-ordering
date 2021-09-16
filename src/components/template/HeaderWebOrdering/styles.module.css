@@ -5,21 +5,18 @@
 
 .logo {
   height: 30px;
-  object-fit: "contain";
+  object-fit: contain;
   margin-top: -10px;
   margin-bottom: -10px;
   z-index: 100;
 }
 
-/* @media only screen and (min-width: 768px) {
+@media only screen and (min-width: 768px) {
   .logo {
-    height: 30px;
-    object-fit: "contain";
-    position: absolute;
-    top: 0;
-    left: calc(50vw - 15px);
+    height: auto !important;
+    max-width: 4.5rem !important;
   }
-} */
+}
 
 @media only screen and (min-width: 1201px) {
   .outlet {

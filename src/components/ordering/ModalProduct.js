@@ -32,10 +32,17 @@ class ModalProduct extends Component {
       },
       showOrderingModeCloseButton: true,
       selectedVariant: null,
+      isVariantSelected: false,
     };
   }
 
   componentDidUpdate = async (prevProps) => {
+    try {
+      if (prevProps.selectedItem.id!== this.props.selectedItem.id) {
+        this.setState({ isVariantSelected: false });
+      }
+    } catch(e){}
+
     if (
       prevProps.setting !== this.props.setting &&
       this.props.setting.length > 0
@@ -53,6 +60,7 @@ class ModalProduct extends Component {
   };
 
   setSelectedVariantProduct = (variant) => {
+    this.setState({ isVariantSelected: true });
     this.setState((prevState) => {
       return {
         selectedVariant: variant,
@@ -64,6 +72,7 @@ class ModalProduct extends Component {
           product: {
             barcode: variant.barcode,
             categoryName: prevState.selectedItem.product.categoryName,
+            description: variant.description || prevState.selectedItem.product.description,
             code: variant.barcode,
             id: variant.id,
             name: this.props.selectedItem.name + variant.variantName,
@@ -148,10 +157,6 @@ class ModalProduct extends Component {
 
   renderImageProduct = (item) => {
     const { color } = this.props;
-    console.log(
-      "item.product.defaultImageURL : ",
-      item.product.defaultImageURL
-    );
 
     if (
       item.product &&
@@ -240,9 +245,20 @@ class ModalProduct extends Component {
   };
 
   processCart = async (e, manualOrderingMode = "") => {
-    console.log("Calling process cart...");
+    console.log("Calling process cart... => ", this.state.isVariantSelected);
     const orderMode = this.props.orderingMode;
     console.log(manualOrderingMode);
+
+    try {
+      if (this.props.selectedItem && this.props.selectedItem.product.variants && this.props.selectedItem.product.variants.length > 0) {
+        if (!this.state.isVariantSelected) {
+          this.setState({ message: {title: "Info", message: "Please choose product variants."} });
+          document.getElementById("btn-mesage-modifier").click();
+          return;
+        }
+      }
+    } catch(e){}
+
     try {
       if (orderMode || manualOrderingMode !== "") {
         const { defaultOutlet } = this.props;
@@ -324,6 +340,7 @@ class ModalProduct extends Component {
         document.getElementById("open-modal-ordering-mode").click();
       }
     } catch (e) {}
+    this.setState({ isVariantSelected: false });
   };
 
   isItemExist = (item) => {
@@ -696,6 +713,7 @@ class ModalProduct extends Component {
     try {
       document.getElementById("dismiss-ordering-mode").click();
     } catch (e) {}
+    this.setState({ isVariantSelected: false });
   };
 
   detailProduct = () => {
@@ -783,6 +801,7 @@ class ModalProduct extends Component {
                       options={this.props.selectedItem.product.variantOptions}
                       variants={this.props.selectedItem.product.variants}
                       setVariantProduct={this.setSelectedVariantProduct}
+                      product={this.props.selectedItem}
                     ></Variant>
                   )}
               </div>

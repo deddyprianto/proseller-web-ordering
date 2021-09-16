@@ -11,7 +11,7 @@ import moment from "moment";
 import _ from "lodash";
 import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
 import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
-
+import ModalInfoTransfer from '../payment/ModalInfoTransfer'
 const Swal = require("sweetalert2");
 const base64 = require("base-64");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
@@ -248,7 +248,7 @@ class Basket extends Component {
       countryCode: infoCompany.countryCode,
     });
 
-    if (dataBasket.id) dataBasket = await this.getDataBasketPending(dataBasket.id, dataBasket.status);
+    // if (dataBasket.id) dataBasket = await this.getDataBasketPending(dataBasket.id, dataBasket.status);
     if (
       deliveryProvaider &&
       deliveryProvaider.length > 0 &&
@@ -536,6 +536,16 @@ class Basket extends Component {
     }
   };
 
+  isManualTransfer = (dataBasket) => {
+    try {
+      const data = dataBasket.payments.find(x => x.paymentID === 'MANUAL_TRANSFER');
+      if (data) return true;
+      return false;
+    } catch(e) {
+      return false;
+    }
+  }
+
   render() {
     let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } = this.state;
     let { isLoggedIn, product } = this.props;
@@ -543,6 +553,19 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
+
+    let selectedCard = {};
+    let paymentAmount = 0;
+    try {
+      let desc = dataBasket.payments.find(x => x.paymentID === 'MANUAL_TRANSFER');
+      const paymentAmountFromCart = dataBasket.payments.find(x => x.description).paymentAmount;
+      if (desc) {
+        paymentAmount = paymentAmountFromCart;
+        selectedCard = desc;
+      }
+    } catch(e) {
+    }
+
     return (
       <div
         className="col-full"
@@ -550,6 +573,7 @@ class Basket extends Component {
         id="cardItem"
       >
         <div id="close-modal" />
+        <ModalInfoTransfer isPendingCart={true} totalAmount={paymentAmount} selectedCard={selectedCard} handleSettle={this.handleSettle} />
         <div id="primary" className="content-area">
           <div className="stretch-full-width">
             <div
@@ -630,6 +654,19 @@ class Basket extends Component {
                       }
                     />
                   )}
+                  <br />
+                  {
+                    this.isManualTransfer(dataBasket) !== false ?
+                      <>
+                      <div style={{ marginTop: -15 }}>
+                        <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                          <div data-toggle="modal" data-target="#modal-info-transfer"style={{ fontSize: 13 }} className="customer-group-name"><b><i>How to transfer ?</i></b></div>
+                        </a>
+                      </div>
+                    </>
+                  :
+                  null
+                  }
                 </div>
               )}
             </main>

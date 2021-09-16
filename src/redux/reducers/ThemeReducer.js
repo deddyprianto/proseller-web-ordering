@@ -14,6 +14,7 @@ const initialState = {
       {
         text: "History",
         path: "/history",
+        loggedInOnly: true,
         icon: "fa fa-history",
       },
       {
@@ -33,6 +34,12 @@ const initialState = {
         path: "/inbox",
         loggedInOnly: true,
         icon: "fa fa-envelope",
+      },
+      {
+        text: "Login",
+        loggedInOnly: false,
+        path: "/history",
+        icon: "fa fa-sign-in",
       },
     ],
   },

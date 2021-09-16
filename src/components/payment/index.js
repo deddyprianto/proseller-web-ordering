@@ -21,6 +21,7 @@ import { ProductAction } from "../../redux/actions/ProductAction";
 import styles from "./styles.module.css";
 import { uuid } from "uuidv4";
 import { SVCAction } from "../../redux/actions/SVCAction";
+import ModalInfoTransfer from "./ModalInfoTransfer";
 const Swal = require("sweetalert2");
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const companyInfo = encryptor.decrypt(
@@ -77,12 +78,25 @@ class Payment extends Component {
       amountSVC: 0,
       svc: [],
       percentageUseSVC: 0,
+      isSubmitting: false,
     };
     this.audio = new Audio(Sound_Effect);
   }
 
+  componentDidUnmount() {
+    window.onbeforeunload = null;
+  }
+
   componentDidMount = async () => {
     this.setState({ loadingShow: true });
+
+    window.onbeforeunload = function () {
+      try {
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+      } catch (e) {}
+      return true;
+    };
+
     await this.props.dispatch(SVCAction.summarySVC());
     await this.getDataBasket();
     if (this.props.isLoggedIn) {
@@ -96,10 +110,24 @@ class Payment extends Component {
           companyInfo && companyInfo.companyId
         )
       );
+      console.log(response, "response");
       if (response.ResultCode === 200) this.setState(response.Data);
     }
     const svc = await this.props.dispatch(SVCAction.loadSVC());
     if (svc && svc.resultCode === 200) await this.setState({ svc: svc.data });
+
+    const paymentTypes = this.props.companyInfo.paymentTypes;
+    if (paymentTypes.length === 1) {
+      try {
+        if (paymentTypes[0].paymentID === "MANUAL_TRANSFER") {
+          this.setState({
+            paymentCard: this.props.paymentCard,
+            selectedCard: paymentTypes[0],
+          });
+        }
+      } catch (e) {}
+    }
+
     this.setState({ loadingShow: false });
   };
 
@@ -137,6 +165,8 @@ class Payment extends Component {
       showPaymentPage: true,
       paymentUrl: payment.action.url,
     });
+
+    Swal.close();
 
     for (let i = 0; i < 1000; i++) {
       const response = await this.props.dispatch(OrderAction.getCart());
@@ -212,13 +242,18 @@ class Payment extends Component {
       this.state.paymentCard.length === 0 &&
       totalPrice > 0
     ) {
-      if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
+      if (
+        paymentCardAccountDefault &&
+        selectedCard &&
+        selectedCard.isAccountRequired !== false
+      )
+        selectedCard = paymentCardAccountDefault;
       if (selectedCard) {
         let check = false;
         this.props.paymentCard.forEach((element) => {
           if (element.id === selectedCard.id) check = true;
         });
-        if (!check) {
+        if (!check && selectedCard.isAccountRequired !== false) {
           selectedCard = null;
           localStorage.removeItem(`${config.prefix}_selectedCard`);
           localStorage.removeItem(`${config.prefix}_paymentCardAccountDefault`);
@@ -232,6 +267,7 @@ class Payment extends Component {
     let dataSettle = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataSettle`))
     );
+    console.log(dataSettle, "dataSettle");
     let selectedVoucher = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
     );
@@ -247,8 +283,7 @@ class Payment extends Component {
     let selectedCard = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
     );
-    
-    // if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
+    if (paymentCardAccountDefault) selectedCard = paymentCardAccountDefault;
 
     if (!selectedCard) {
       let paymentCardAccount = await this.props.dispatch(
@@ -269,7 +304,7 @@ class Payment extends Component {
                 `${config.prefix}_paymentCardAccountDefault`,
                 JSON.stringify(encryptor.encrypt(element))
               );
-              // selectedCard = element;
+              selectedCard = element;
             }
           });
         });
@@ -277,7 +312,6 @@ class Payment extends Component {
     }
 
     if (dataSettle === null || !dataSettle.dataBasket) return;
-    console.log(selectedCard)
 
     this.setState({ dataSettle });
 
@@ -525,7 +559,13 @@ class Payment extends Component {
             );
           }
         } else {
-          let totalAmount = dataBasket.totalNettAmount;
+          // minus service charge
+          let totalAmount =
+            dataBasket.totalNettAmount - dataBasket.totalSurchargeAmount;
+          // minus delivery fee if exist
+          if (dataBasket.provider) {
+            totalAmount -= dataBasket.provider.deliveryFee;
+          }
 
           if (voucherType === "discPercentage") {
             // discount = Number(totalAmount - voucherDiscount) * (Number(voucherValue) / 100);
@@ -675,10 +715,11 @@ class Payment extends Component {
 
     if (needPoint > totalPoint) needPoint = totalPoint;
 
-    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
-      } point to ${this.getCurrency(
-        parseInt(pointsToRebateRatio.split(":")[1])
-      )}`;
+    let textRasio = `Redeem ${
+      pointsToRebateRatio.split(":")[0]
+    } point to ${this.getCurrency(
+      parseInt(pointsToRebateRatio.split(":")[1])
+    )}`;
 
     this.setState({ textRasio, selectedPoint, needPoint });
   };
@@ -689,12 +730,8 @@ class Payment extends Component {
   };
 
   calculateSelectedPoint = (selectedPoint, type = null) => {
-    let {
-      pointsToRebateRatio,
-      detailPoint,
-      totalPrice,
-      discountPoint,
-    } = this.state;
+    let { pointsToRebateRatio, detailPoint, totalPrice, discountPoint } =
+      this.state;
     totalPrice = totalPrice + discountPoint;
 
     if (type === "selectedPoint") {
@@ -728,7 +765,7 @@ class Payment extends Component {
   handleSettle = async (payAtPOS) => {
     let { selectedCard, dataSettle } = this.state;
 
-    if (selectedCard) {
+    if (selectedCard && selectedCard.isAccountRequired !== false) {
       let userInput = selectedCard.details.userInput;
       if (userInput.length > 0) {
         let needCVV = userInput.find((items) => {
@@ -753,9 +790,14 @@ class Payment extends Component {
 
   paySVC = async (need = null, payAtPOS = false) => {
     Swal.fire({
+      allowOutsideClick: false,
       onOpen: () => {
         Swal.showLoading();
       },
+    });
+
+    this.setState({
+      isSubmitting: true,
     });
 
     const customerInfo = encryptor.decrypt(
@@ -835,14 +877,17 @@ class Payment extends Component {
 
     let response;
     response = await this.props.dispatch(OrderAction.submitMembership(payload));
+    this.setState({
+      isSubmitting: false,
+    });
     console.log(response);
 
     if (response && response.ResultCode === 400) {
       Swal.fire(
         "Oppss!",
         response.message ||
-        (response.data && response.data.message) ||
-        "Payment Failed!",
+          (response.data && response.data.message) ||
+          "Payment Failed!",
         "error"
       );
     } else {
@@ -878,9 +923,14 @@ class Payment extends Component {
 
   payMembership = async (need = null, payAtPOS = false) => {
     Swal.fire({
+      allowOutsideClick: false,
       onOpen: () => {
         Swal.showLoading();
       },
+    });
+
+    this.setState({
+      isSubmitting: true,
     });
 
     const customerInfo = encryptor.decrypt(
@@ -933,7 +983,7 @@ class Payment extends Component {
         dataSettle.detailPurchase.details[0].totalDiscAmount;
       payload.dataPay.paidMembershipPlan.totalNettAmount =
         dataSettle.dataBasket.totalNettAmount;
-    } catch (e) { }
+    } catch (e) {}
 
     if (selectedVoucher !== null) {
       payload.payments = payload.payments.concat(voucherDiscountList);
@@ -972,14 +1022,17 @@ class Payment extends Component {
 
     let response;
     response = await this.props.dispatch(OrderAction.submitMembership(payload));
+    this.setState({
+      isSubmitting: false,
+    });
     console.log(response);
 
     if (response && response.ResultCode === 400) {
       Swal.fire(
         "Oppss!",
         response.message ||
-        (response.data && response.data.message) ||
-        "Payment Failed!",
+          (response.data && response.data.message) ||
+          "Payment Failed!",
         "error"
       );
     } else {
@@ -1015,9 +1068,14 @@ class Payment extends Component {
 
   submitSettle = async (need = null, payAtPOS = false) => {
     Swal.fire({
+      allowOutsideClick: false,
       onOpen: () => {
         Swal.showLoading();
       },
+    });
+
+    this.setState({
+      isSubmitting: true,
     });
 
     let isNeedConfirmation = false;
@@ -1043,6 +1101,7 @@ class Payment extends Component {
       storeDetail,
       discountPoint,
       orderActionTimeSlot,
+      dataSettle,
     } = this.state;
 
     let payload = {
@@ -1080,7 +1139,20 @@ class Payment extends Component {
       });
     }
 
-    if (selectedCard) {
+    if (selectedCard && selectedCard.isAccountRequired === false) {
+      payload.payments.push({
+        paymentType: selectedCard.paymentID,
+        paymentID: selectedCard.paymentID,
+        paymentName: selectedCard.paymentName,
+        paymentAmount: totalPrice,
+        description: selectedCard.configurations.find(
+          (x) => x.name === "payment_description"
+        ).value,
+        manual_transfer_image: selectedCard.configurations.find(
+          (x) => x.name === "manual_transfer_image"
+        ).value,
+      });
+    } else if (selectedCard) {
       payload.payments.push({
         paymentType: selectedCard.paymentID,
         paymentID: selectedCard.paymentID,
@@ -1104,32 +1176,74 @@ class Payment extends Component {
 
     try {
       let dateTime = new Date();
-      payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset())
-    } catch (e) { }
+      payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset());
+    } catch (e) {}
 
     let response;
-    if (
-      orderingMode === "TAKEAWAY" ||
-      orderingMode === "STOREPICKUP" ||
-      orderingMode === "STORECHECKOUT" ||
-      orderingMode === "DELIVERY" ||
-      storeDetail.outletType === "QUICKSERVICE"
-    ) {
-      payload.orderActionDate = orderActionDate;
-      payload.orderActionTime = orderActionTime;
-      payload.orderActionTimeSlot = orderActionTimeSlot;
-      response = await this.props.dispatch(OrderAction.submitTakeAway(payload));
+
+    if (dataSettle.qrPayment === true) {
+      const customerInfo = encryptor.decrypt(
+        JSON.parse(localStorage.getItem(`${config.prefix}_account`))
+      );
+
+      payload.customerDetails = {
+        id: customerInfo.idToken.payload.sortKey,
+      };
+
+      payload.customerId = customerInfo.idToken.payload.sortKey;
+      payload.customerID = customerInfo.idToken.payload.sortKey;
+
+      payload.transactionRefNo = dataBasket.transactionRefNo;
+      payload.outletId = dataBasket.outletId;
+      payload.outletID = dataBasket.outletID;
+      payload.id = dataBasket.id;
+      payload.status = "COMPLETED";
+
+      // embed other payment method if exist
+      if (dataBasket.payments && dataBasket.payments.length > 0) {
+        for (let i = 0; i < dataBasket.payments.length; i++) {
+          if (
+            !dataBasket.payments[i].isPoint &&
+            !dataBasket.payments[i].isVoucher &&
+            !dataBasket.payments[i].isSVC
+          ) {
+            payload.payments.push(dataBasket.payments[i]);
+          }
+        }
+      }
+
+      response = await this.props.dispatch(PaymentAction.sendPayment(payload));
+      response.resultCode = response.ResultCode;
+      response.data = response.Data;
     } else {
-      response = await this.props.dispatch(OrderAction.submitSettle(payload));
+      if (
+        orderingMode === "TAKEAWAY" ||
+        orderingMode === "STOREPICKUP" ||
+        orderingMode === "STORECHECKOUT" ||
+        orderingMode === "DELIVERY" ||
+        storeDetail.outletType === "QUICKSERVICE"
+      ) {
+        payload.orderActionDate = orderActionDate;
+        payload.orderActionTime = orderActionTime;
+        payload.orderActionTimeSlot = orderActionTimeSlot;
+        response = await this.props.dispatch(
+          OrderAction.submitTakeAway(payload)
+        );
+      } else {
+        response = await this.props.dispatch(OrderAction.submitSettle(payload));
+      }
     }
-    console.log(response);
+
+    this.setState({
+      isSubmitting: false,
+    });
 
     if (response && response.resultCode >= 400) {
       Swal.fire(
         "Oppss!",
         response.message ||
-        (response.data && response.data.message) ||
-        "Payment Failed!",
+          (response.data && response.data.message) ||
+          "Payment Failed!",
         "error"
       );
     } else {
@@ -1223,10 +1337,9 @@ class Payment extends Component {
     }
 
     let nameCreditCard = `Pay ${this.getCurrency(totalPrice)}`;
-    console.log(selectedCard)
-    if (selectedCard) {
-      let lengthNumber = selectedCard.details.maskedAccountNumber.toString()
-        .length;
+    if (selectedCard && selectedCard.isAccountRequired) {
+      let lengthNumber =
+        selectedCard.details.maskedAccountNumber.toString().length;
       nameCreditCard = "Pay " + this.getCurrency(totalPrice) + " with ";
       nameCreditCard += selectedCard.details.cardIssuer
         ? selectedCard.details.cardIssuer.toUpperCase() + " "
@@ -1325,6 +1438,11 @@ class Payment extends Component {
 
     return (
       <div>
+        <ModalInfoTransfer
+          totalAmount={totalAmount}
+          selectedCard={selectedCard}
+          handleSettle={this.handleSettle}
+        />
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}
         <div
           className="col-full"
@@ -1436,8 +1554,9 @@ class Payment extends Component {
                           fontSize: 22,
                           padding: 7,
                           borderRadius: 45,
-                          border: `1px solid ${this.props.color.primary || "#c00a27"
-                            }`,
+                          border: `1px solid ${
+                            this.props.color.primary || "#c00a27"
+                          }`,
                         }}
                       />
                       <div
@@ -1530,9 +1649,21 @@ class Payment extends Component {
                           (!selectedCard && totalPrice > 0) ||
                           (selectedCard &&
                             selectedCard.minimumPayment &&
-                            totalPrice < selectedCard.minimumPayment)
+                            totalPrice < selectedCard.minimumPayment) ||
+                          this.state.isSubmitting
                         }
-                        onClick={() => this.handleSettle()}
+                        onClick={() => {
+                          if (
+                            selectedCard &&
+                            selectedCard.paymentID === "MANUAL_TRANSFER"
+                          ) {
+                            document
+                              .getElementById("open-modal-info-transfer")
+                              .click();
+                          } else {
+                            this.handleSettle();
+                          }
+                        }}
                         className="customer-group button"
                         style={{
                           marginBottom: 10,
@@ -1547,33 +1678,34 @@ class Payment extends Component {
                       </Button>
                     </div>
 
-                    {storeDetail.enablePayAtPOS === true && (
-                      <div>
-                        <p style={{ textAlign: "center" }}>OR</p>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            marginTop: 10,
-                          }}
-                        >
-                          <Button
-                            onClick={() => this.handleSettle(true)}
-                            className="customer-group button"
+                    {storeDetail.enablePayAtPOS === true &&
+                      this.state.orderingMode !== "DELIVERY" && (
+                        <div>
+                          <p style={{ textAlign: "center" }}>OR</p>
+                          <div
                             style={{
-                              marginBottom: 10,
-                              width: "100%",
-                              backgroundColor: "#34495e",
-                              fontWeight: "bold",
-                              marginLeft: 10,
-                              marginRight: 10,
-                              height: 40,
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              marginTop: 10,
                             }}
-                          >{`Pay at Store`}</Button>
+                          >
+                            <Button
+                              onClick={() => this.handleSettle(true)}
+                              className="customer-group button"
+                              style={{
+                                marginBottom: 10,
+                                width: "100%",
+                                backgroundColor: "#34495e",
+                                fontWeight: "bold",
+                                marginLeft: 10,
+                                marginRight: 10,
+                                height: 40,
+                              }}
+                            >{`Pay at Store`}</Button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 )}
               </main>
@@ -1581,6 +1713,11 @@ class Payment extends Component {
                 data-toggle="modal"
                 data-target="#status-ordering-modal"
                 id="open-modal-status"
+              />
+              <span
+                data-toggle="modal"
+                data-target="#modal-info-transfer"
+                id="open-modal-info-transfer"
               />
             </div>
           </div>

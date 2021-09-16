@@ -95,7 +95,9 @@ const OtpField = ({
       </label>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <input
-          type="password"
+          type="text"
+          pattern="[0-9]*" 
+          inputmode="numeric"
           className="woocommerce-Input woocommerce-Input--text input-text"
           style={{ height: 50, width: "100%", borderRadius: 5, textAlign: "center" }}
           onChange={(e) => handleChange("txtOtp", e.target.value)}

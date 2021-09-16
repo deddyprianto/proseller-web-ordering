@@ -73,10 +73,11 @@ class Footer extends Component {
             if (!isLoggedIn && menu.loggedInOnly) {
               return null;
             }
+            if (isLoggedIn && menu.loggedInOnly === false) return null;
             return (
               <Link
                 onClick={() => this.removeDataPayment()}
-                to={menu.path}
+                to={menu.text === 'Login' ? '#' : menu.path}
                 style={{
                   display: "flex",
                   flexDirection: "column",
@@ -111,35 +112,74 @@ class Footer extends Component {
                       {broadcast.broadcastUnreadLength}
                     </div>
                   )}
-                <i
-                  className={`footbar-icon ${menu.icon} ${this.activeRoute({
-                    path: menu.path,
-                    name: menu.text,
-                  })}`}
-                  aria-hidden="true"
-                  style={{
-                    fontSize: 22,
-                    margin: 15,
-                    color: this.activeRoute({
-                      path: menu.path,
-                      name: menu.text,
-                    }),
-                  }}
-                ></i>
-                <div
-                  className={`${this.activeRoute({
-                    path: menu.path,
-                    name: menu.text,
-                  })}`}
-                  style={{
-                    marginTop: -17,
-                    fontSize: 16,
-                    marginBottom: 10,
-                    color: "white",
-                  }}
-                >
-                  {menu.text}
-                </div>
+                  {
+                    menu.text === 'Login' ? 
+                    <div 
+                      data-toggle="modal"
+                      data-target="#login-register-modal">
+                    <i
+                      className={`footbar-icon ${menu.icon} ${this.activeRoute({
+                        path: menu.path,
+                        name: menu.text,
+                      })}`}
+                      aria-hidden="true"
+                      style={{
+                        fontSize: 22,
+                        margin: 15,
+                        color: this.activeRoute({
+                          path: menu.path,
+                          name: menu.text,
+                        }),
+                      }}
+                    ></i>
+                    <div
+                      className={`${this.activeRoute({
+                        path: menu.path,
+                        name: menu.text,
+                      })}`}
+                      style={{
+                        marginTop: -17,
+                        fontSize: 16,
+                        marginBottom: 10,
+                        color: "white",
+                      }}
+                    >
+                      {menu.text}
+                    </div>
+                    </div>
+                  :
+                    <>
+                      <i
+                        className={`footbar-icon ${menu.icon} ${this.activeRoute({
+                          path: menu.path,
+                          name: menu.text,
+                        })}`}
+                        aria-hidden="true"
+                        style={{
+                          fontSize: 22,
+                          margin: 15,
+                          color: this.activeRoute({
+                            path: menu.path,
+                            name: menu.text,
+                          }),
+                        }}
+                      ></i>
+                      <div
+                        className={`${this.activeRoute({
+                          path: menu.path,
+                          name: menu.text,
+                        })}`}
+                        style={{
+                          marginTop: -17,
+                          fontSize: 16,
+                          marginBottom: 10,
+                          color: "white",
+                        }}
+                      >
+                        {menu.text}
+                      </div>
+                    </>
+                  }
               </Link>
             );
           })}

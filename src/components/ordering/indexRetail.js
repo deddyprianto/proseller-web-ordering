@@ -422,7 +422,7 @@ class Ordering extends Component {
           data-target="#modal-product"
         >
           <div
-            className="full-width list-view columns-2 archive woocommerce-page html-change"
+            className="full-width list-view archive woocommerce-page html-change"
             style={{ marginTop: 80 }}
           >
             <div className="tab-content">
