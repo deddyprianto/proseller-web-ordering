@@ -253,7 +253,7 @@ const WebOrderingCategories = ({
                           ? theme.color.primary
                           : 'rgb(208, 208, 208)',
                         padding: 7,
-                        color: "black",
+                        color: isSelectedCategory(item.id) ? 'white' : 'black',
                         textAlign: 'center'
                       }}
                     >

@@ -413,7 +413,7 @@ const ViewCartBasket = ({
                 onClick={() => {
                   roleOnClickSettle() ? handleSettle() : handleSubmit();
                 }}
-                className="button"
+                className="button btn-ordering"
                 style={{
                   boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                   width: "100%",

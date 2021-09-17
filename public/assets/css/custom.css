@@ -67,3 +67,16 @@ ul.products li.product .product-content-wrapper, .products .owl-item>.product .p
 ul.products li.product .product-image-wrapper, ul.products li.product .product-content-wrapper, .products .owl-item>.product .product-image-wrapper, .products .owl-item>.product .product-content-wrapper {
     border: none !important;
 }
+
+.header-v4 .col-full {
+    padding: 0 !important;
+}
+
+.color-active {
+    color: #fff !important;
+}
+
+.btn-ordering:hover {
+    background-color: rgba(93, 0, 171, 0.8) !important;
+    color: #fff !important;
+}

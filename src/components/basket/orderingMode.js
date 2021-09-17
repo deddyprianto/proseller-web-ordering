@@ -88,6 +88,7 @@ class OrderingMode extends Component {
             id="ordering-mode-basket-btn"
             data-toggle="modal"
             data-target="#ordering-mode-basket-modal"
+            className="btn-ordering"
             style={{
               fontWeight: "bold",
               cursor: "pointer",

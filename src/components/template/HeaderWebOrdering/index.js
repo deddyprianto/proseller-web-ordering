@@ -260,7 +260,7 @@ class Header extends Component {
     } else if (this.props.outletSelection === "DEFAULT") {
       return (
         <div className={styles.outlet}>
-          <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+          <h4 className="color" style={{ fontSize: 12, marginTop: 10 }}>
             {this.props.defaultOutlet.name}
           </h4>
         </div>
@@ -272,7 +272,7 @@ class Header extends Component {
             className="color"
             style={{ fontSize: 22, marginBottom: -5 }}
           />
-          <span className="color" style={{ fontSize: 15 }}>
+          <span className="color" style={{ fontSize: 12 }}>
             <select
               className={`${styles.outletNameSelect} color`}
               onChange={(e) => this.handleOutletChange(e)}
@@ -334,7 +334,7 @@ class Header extends Component {
             position: "fixed",
             width: "100%",
             // borderBottom: "1px solid #DADADA",
-            height: "8rem",
+            height: "9.5rem",
           }}
         >
           <div
@@ -659,15 +659,15 @@ class Header extends Component {
                           style={{
                             position: "absolute",
                             backgroundColor: this.props.color.primary,
-                            fontSize: 8,
-                            width: 15,
+                            fontSize: 10,
+                            width: 20,
                             borderRadius: 15,
-                            height: 15,
+                            height: 20,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             top: 0,
-                            left: 25,
+                            right: -5,
                             fontWeight: "bold",
                           }}
                         >

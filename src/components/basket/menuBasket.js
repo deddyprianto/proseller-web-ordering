@@ -600,6 +600,7 @@ class MenuBasket extends Component {
                       ? this.props.handleSettle()
                       : this.props.handleSubmit();
                   }}
+                  className="btn-ordering"
                   style={{
                     boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                     width: "100%",

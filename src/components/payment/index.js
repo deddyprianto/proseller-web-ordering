@@ -1657,6 +1657,7 @@ class Payment extends Component {
                             selectedCard &&
                             selectedCard.paymentID === "MANUAL_TRANSFER"
                           ) {
+                            this.handleSettle();
                             document
                               .getElementById("open-modal-info-transfer")
                               .click();

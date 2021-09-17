@@ -51,6 +51,7 @@ class PickupDateTime extends Component {
                 this.props.roleBtnClear || !props.btnBasketOrder ? true : false
               }
               onClick={() => this.setState({ showModal: true })}
+              className="btn-ordering"
               style={{
                 fontWeight: "bold",
                 cursor: "pointer",
