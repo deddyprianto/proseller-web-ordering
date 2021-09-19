@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import { Button } from "reactstrap";
+import { Link, withRouter } from "react-router-dom";
 import parse from 'html-react-parser';
 
 export default class ModalInfoTransfer extends Component {
+  constructor(props) {
+    super(props);
+  }
 
   getDesc = () => {
     let { selectedCard, totalAmount, isPendingCart } = this.props;
@@ -111,11 +115,14 @@ export default class ModalInfoTransfer extends Component {
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                  onClick={() => {
-                    try {
-                      this.props.handleSettle()
-                    } catch (e) {}
-                  }}
+                  href="/#/history"
+                  // onClick={() => {
+                  //   try {
+                  //     // this.props.handleSettle()
+                  //     console.log(this.props);
+                  //     this.props.history.push("/history");
+                  //   } catch (e) {}
+                  // }}
                 >
                   Continue
                 </a>

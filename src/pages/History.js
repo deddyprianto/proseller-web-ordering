@@ -106,7 +106,7 @@ class History extends Component {
       <div
         className="col-full"
         style={{
-          marginTop: config.prefix === "emenu" ? 100 : 120,
+          marginTop: config.prefix === "emenu" ? 100 : 135,
           marginBottom: 50,
         }}
       >
