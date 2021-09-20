@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import { Link, withRouter } from "react-router-dom";
 import parse from 'html-react-parser';
+import { connect } from "react-redux";
 
 export default class ModalInfoTransfer extends Component {
   constructor(props) {
@@ -10,7 +11,7 @@ export default class ModalInfoTransfer extends Component {
 
   getDesc = () => {
     let { selectedCard, totalAmount, isPendingCart } = this.props;
-    
+
     if (selectedCard && selectedCard.description && isPendingCart) {
       let paymentDesc = selectedCard.description.replace('{amount}', `SGD ${totalAmount}`);
       paymentDesc = parse(paymentDesc);
@@ -25,14 +26,14 @@ export default class ModalInfoTransfer extends Component {
         return desc;
       }
       return ''
-    } catch(e) {
+    } catch (e) {
       return null;
     }
   }
 
   getImage = () => {
     let { selectedCard, totalAmount, isPendingCart } = this.props;
-    
+
     if (selectedCard && selectedCard.manual_transfer_image && isPendingCart) {
       return selectedCard.manual_transfer_image;
     }
@@ -43,7 +44,7 @@ export default class ModalInfoTransfer extends Component {
         return image;
       }
       return ''
-    } catch(e) {
+    } catch (e) {
       return null;
     }
   }
@@ -99,8 +100,8 @@ export default class ModalInfoTransfer extends Component {
                 <img className="img-thumbnail" src={this.getImage()} style={{ width: '80%' }} />
                 <br />
                 <br />
-               <div style={{ width: '80%' }}><h5 style={{ textAlign: 'left', whiteSpace: 'pre', fontSize: 17, lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>{this.getDesc()}</h5></div>
-               <br />
+                <div style={{ width: '80%' }}><h5 style={{ textAlign: 'left', whiteSpace: 'pre', fontSize: 17, lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>{this.getDesc()}</h5></div>
+                <br />
               </center>
               {
                 !isPendingCart &&
@@ -115,14 +116,19 @@ export default class ModalInfoTransfer extends Component {
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                  href="/#/history"
-                  // onClick={() => {
-                  //   try {
-                  //     // this.props.handleSettle()
-                  //     console.log(this.props);
-                  //     this.props.history.push("/history");
-                  //   } catch (e) {}
-                  // }}
+                  // data-dismiss="modal"
+                  // href="/#/history"
+                  onClick={() => {
+                    try {
+                      document
+                        .getElementById("close-modal-permission-payment")
+                        .click();
+                      this.props.history.push("/history");
+                      // // this.props.handleSettle()
+                      // console.log(this.props);
+                      // this.props.history.push("/history");
+                    } catch (e) { }
+                  }}
                 >
                   Continue
                 </a>

@@ -25,9 +25,8 @@ export default class ViewProsessBasket extends Component {
       const findGif = setting.find(it => it.settingKey === "CustomGIFReadyForCollection");
       if (findGif && findGif.settingValue !== '') {
         GIFreadyForCollection = JSON.parse(findGif.settingValue);
-      } 
-    } catch(e){}
-       
+      }
+    } catch (e) { }
 
     return (
       <div>
@@ -78,17 +77,17 @@ export default class ViewProsessBasket extends Component {
               }
               {
                 props.dataBasket.status === "READY_FOR_COLLECTION" &&
-                <div style={{ marginBottom: 20}}>
+                <div style={{ marginBottom: 20 }}>
                   <div className="color-active" style={{ fontSize: 18, textAlign: "center" }}>Yeay, your order is ready.</div>
                   <div style={{ fontSize: 18, textAlign: "center" }}>Please come to the cashier and tap the QR Code botton below.</div>
                   <div className="color-active" style={{ marginTop: 10, marginBottom: 10, fontWeight: "bold", textAlign: "center" }}>
                     {
                       !props.dataBasket.transactionRefNo ?
-                      (
-                        props.dataBasket.queueNo ||
-                        (props.storeDetail.enableTableScan === false && props.dataBasket.orderingMode === "DINEIN")
-                      ) ? ("Queue No : " + props.dataBasket.queueNo) : ("Table No : " + props.scanTable.tableNo) :
-                      ("Ref No : " + props.dataBasket.transactionRefNo)
+                        (
+                          props.dataBasket.queueNo ||
+                          (props.storeDetail.enableTableScan === false && props.dataBasket.orderingMode === "DINEIN")
+                        ) ? ("Queue No : " + props.dataBasket.queueNo) : ("Table No : " + props.scanTable.tableNo) :
+                        ("Ref No : " + props.dataBasket.transactionRefNo)
                     }
                   </div>
                 </div>
@@ -112,9 +111,9 @@ export default class ViewProsessBasket extends Component {
                   }
                   <div className="color-active" style={{ marginTop: 10, marginBottom: 10, fontWeight: "bold", textAlign: "center" }}>
                     {
-                      `${props.dataBasket.transactionRefNo ? 
-                      `Ref No : ${props.dataBasket.transactionRefNo}` : 
-                      `Queue No : ${props.dataBasket.queueNo}`}`
+                      `${props.dataBasket.transactionRefNo ?
+                        `Ref No : ${props.dataBasket.transactionRefNo}` :
+                        `Queue No : ${props.dataBasket.queueNo}`}`
                     }
                   </div>
                   {
@@ -147,14 +146,14 @@ export default class ViewProsessBasket extends Component {
         }}>
 
           <div style={{
-            padding: 10, display: "flex", flexDirection: "row", 
+            padding: 10, display: "flex", flexDirection: "row",
             alignItems: 'center', justifyContent: "space-between",
           }}>
             <Button onClick={() => this.props.setViewCart(true)} style={{
-              width: "45%", fontWeight: "bold", display: 'flex', 
+              width: "45%", fontWeight: "bold", display: 'flex',
               justifyContent: "center", alignItems: "center", height: 50
             }}>
-              <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
+              <i className="fa fa-shopping-cart" aria-hidden="true" style={{ fontSize: 20, marginRight: 10 }} />
               Detail Order
             </Button>
             {

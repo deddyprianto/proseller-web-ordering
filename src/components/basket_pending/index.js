@@ -644,6 +644,7 @@ class Basket extends Component {
                   {!viewCart && (
                     <ViewProsessBasket
                       data={this.state}
+                      setting={this.props.setting || []}
                       dataBasket={dataBasket}
                       countryCode={countryCode}
                       isLoggedIn={isLoggedIn}
@@ -690,6 +691,7 @@ const mapStateToProps = (state, ownProps) => {
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
+    setting: state.order.setting,
   };
 };
 

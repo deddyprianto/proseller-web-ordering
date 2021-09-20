@@ -1446,6 +1446,7 @@ class Payment extends Component {
           totalAmount={totalAmount}
           selectedCard={selectedCard}
           handleSettle={this.handleSettle}
+          history={this.props.history}
         />
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}
         <div
