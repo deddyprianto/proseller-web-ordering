@@ -154,7 +154,7 @@ export class MapContainer extends Component {
       <div>
         <div
           style={{
-            marginTop: 100,
+            marginTop: 90,
             marginLeft: 10,
             marginRight: 10,
             display: "flex",
