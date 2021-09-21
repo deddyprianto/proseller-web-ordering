@@ -292,7 +292,7 @@ const WebOrderingCategories = ({
                         display: "flex",
                         alignItems: "center",
                         height: 50,
-                        width: widthMoreMenu-1,
+                        width: widthMoreMenu+19,
                         fontSize: 12,
                         fontWeight: 900,
                         padding: 7,
@@ -301,7 +301,7 @@ const WebOrderingCategories = ({
                         textAlign: 'center'
                       }}
                     >
-                      <span style={{ marginLeft: 8 }}>{text}</span>
+                      <span style={{ marginLeft: 20 }}>{text}</span>
                       {
                         text === 'More' ?
                         <i style={{ marginLeft: 10, fontSize: 13, marginTop: -4 }} className="fa fa-chevron-down" />
