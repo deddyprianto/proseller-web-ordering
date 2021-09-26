@@ -9,7 +9,7 @@
 @media (min-width: 1200px) {
     #masthead {
         width: 72%;
-        max-width: 78.6%;
+        max-width: 72%;
         font-size: 14px !important;
     }
     #menu-home-5-and-7-main-menu {
@@ -39,6 +39,14 @@
         display: flex;
         justify-content: center;
         position: relative;
+    }
+}
+
+@media (min-width: 2800px) {
+    #masthead {
+        width: 100%;
+        max-width: 85.5%;
+        font-size: 14px !important;
     }
 }
 
