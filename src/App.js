@@ -68,7 +68,7 @@ const App = (props) => {
     if (window.location.hash === "#/") {
       localStorage.removeItem(`${config.prefix}_defaultOutlet`);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -114,7 +114,7 @@ const App = (props) => {
         for (let i = 0; i < modalsBackdrops.length; i++) {
           document.body.removeChild(modalsBackdrops[i]);
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     const responseSettings = await props.dispatch(
@@ -122,15 +122,22 @@ const App = (props) => {
     );
 
     try {
-      let position = await props.dispatch(OutletAction.getCoordinates());
-      let location = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      };
-      localStorage.setItem(
-        `${config.prefix}_locationCustomer`,
-        JSON.stringify(location)
+      let position = JSON.parse(
+        localStorage.getItem(`${config.prefix}_locationCustomer`)
       );
+      let location = {}
+
+      if (!position) {
+        position = await props.disxpatch(OutletAction.getCoordinates());
+        location = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+        localStorage.setItem(
+          `${config.prefix}_locationCustomer`,
+          JSON.stringify(location)
+        );
+      }
     } catch (error) {
       console.log("Get location false");
     }
@@ -279,12 +286,12 @@ const App = (props) => {
           const now = new Date();
           console.log(
             props.orderingModeSelectedOn.getTime() +
-              orderingModeExpiredIn * 60000
+            orderingModeExpiredIn * 60000
           );
           console.log(now.getTime());
           if (
             props.orderingModeSelectedOn.getTime() +
-              orderingModeExpiredIn * 60000 <=
+            orderingModeExpiredIn * 60000 <=
             now.getTime()
           ) {
             console.log(

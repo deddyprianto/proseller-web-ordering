@@ -39,9 +39,14 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
       return defaultOutlet;
     } else {
       try {
-        const position = await dispatch(getCoordinates());
-        if (position) {
-          let location = {
+        let position = JSON.parse(
+          localStorage.getItem(`${config.prefix}_locationCustomer`)
+        );
+        let location = {};
+
+        if (!position) {
+          position = await dispatch(getCoordinates());
+          location = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           };
@@ -50,8 +55,26 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
             JSON.stringify(location)
           );
           return dispatch(getNearsesOutlet(location));
+        } else {
+          location = {
+            latitude: position.latitude,
+            longitude: position.longitude,
+          };
         }
-        return dispatch(getNearsesOutlet());
+        return dispatch(getNearsesOutlet(location));
+        // const position = await dispatch(getCoordinates());
+        // if (position) {
+        //   let location = {
+        //     latitude: position.coords.latitude,
+        //     longitude: position.coords.longitude,
+        //   };
+        //   localStorage.setItem(
+        //     `${config.prefix}_locationCustomer`,
+        //     JSON.stringify(location)
+        //   );
+        //   return dispatch(getNearsesOutlet(location));
+        // }
+        // return dispatch(getNearsesOutlet());
       } catch (error) {
         return dispatch(getNearsesOutlet());
       }
@@ -96,7 +119,7 @@ function getNearsesOutlet(position = null) {
         }
         console.log(orderModeType, "orderModeType");
       }
-    } catch (e) {}
+    } catch (e) { }
 
     let data = {};
     if (orderModeType === "NEAREST") {
