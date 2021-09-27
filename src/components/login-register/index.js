@@ -3,7 +3,7 @@ import "react-phone-input-2/lib/style.css";
 import { connect } from "react-redux";
 import generate from "password-generation";
 import { AuthActions } from "../../redux/actions/AuthAction";
-
+import { CustomerAction } from "../../redux/actions/CustomerAction";
 import Login from "./Login";
 import Portal from "./Portal";
 import SignUp from "./Signup";
@@ -328,6 +328,7 @@ class LoginRegister extends Component {
     if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
 
     this.setState({ isLoading: true });
+
     if (phoneNumber === "" || phoneNumber.length <= 4) {
       if (phoneNumber === "")
         this.setState({ errorPhone: "Phone number is empty" });
@@ -341,8 +342,11 @@ class LoginRegister extends Component {
       response = response.Data;
       // console.log(response)
       if (response && response.status === false) {
-        this.setState({
+        // Fetch Custom & Mandatory Fields
+        await this.props.dispatch(CustomerAction.mandatoryField());
+        await this.setState({
           userStatus: "NOT_REGISTERED",
+          method: 'phone',
           payloadResponse: { phoneNumber },
           btnSubmit: false,
         });
@@ -725,7 +729,10 @@ class LoginRegister extends Component {
         response = response.Data;
         // console.log(response)
         if (response.status === false) {
-          this.setState({
+          // Fetch Custom & Mandatory Fields
+          await this.props.dispatch(CustomerAction.mandatoryField());
+          await this.setState({
+            method: 'email',
             userStatus: "NOT_REGISTERED",
             payloadResponse: { email },
             btnSubmit: false,

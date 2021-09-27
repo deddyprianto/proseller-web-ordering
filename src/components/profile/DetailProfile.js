@@ -31,6 +31,9 @@ class DetailProfile extends Component {
   }
 
   componentDidMount = async () => {
+    // Fetch Custom fields
+    await this.props.dispatch(CustomerAction.mandatoryField());
+    
     let response = await this.props.dispatch(
       ReferralAction.getReferral({ customerId: this.props.account.signAs })
     );

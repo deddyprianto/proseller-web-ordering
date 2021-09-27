@@ -10,7 +10,6 @@ import { IntlProvider, addLocaleData } from "react-intl";
 import { OutletAction } from "./redux/actions/OutletAction";
 import { MasterdataAction } from "./redux/actions/MaterdataAction";
 import { OrderAction } from "./redux/actions/OrderAction";
-import { CustomerAction } from "./redux/actions/CustomerAction";
 import { PaymentAction } from "./redux/actions/PaymentAction";
 import { ReferralAction } from "./redux/actions/ReferralAction";
 import LoaderCircle from "./components/loading";
@@ -210,8 +209,9 @@ const App = (props) => {
       }
       props.dispatch(OrderAction.getCart());
     }
-
-    props.dispatch(CustomerAction.mandatoryField());
+    
+    // Moved to login-register/index.js
+    /* props.dispatch(CustomerAction.mandatoryField()); */
   };
 
   const handleRelogin = async (account) => {
