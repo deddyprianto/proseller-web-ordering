@@ -533,7 +533,7 @@ class LoginRegister extends Component {
       let password = this.state.password;
       let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
       let email = this.state.email.toLowerCase().trim();
-      const fields = this.props.fields;
+      const fields = this.props.fields || [];
       let mandatory = [];
       mandatory = fields.filter((items) => {
         return items.signUpField === true && items.mandatory === true;
@@ -882,7 +882,7 @@ class LoginRegister extends Component {
 
     try {
       let errorPhone = "";
-      const fields = this.props.fields;
+      const fields = this.props.fields || [];
       let mandatory = [];
       mandatory = fields.filter((items) => {
         return items.signUpField === true && items.mandatory === true;
