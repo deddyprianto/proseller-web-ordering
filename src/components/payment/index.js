@@ -1452,7 +1452,7 @@ class Payment extends Component {
         <div
           className="col-full"
           style={{
-            marginTop: config.prefix === "emenu" ? 120 : 140,
+            marginTop: config.prefix === "emenu" ? 120 : 155,
             marginBottom: 50,
             padding: 0,
           }}

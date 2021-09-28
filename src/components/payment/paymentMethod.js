@@ -360,7 +360,7 @@ class PaymentMethod extends Component {
                 position: "fixed",
                 zIndex: 10,
                 width: "100%",
-                marginTop: -60,
+                marginTop: -40,
                 boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                 display: "flex",
                 height: 40,

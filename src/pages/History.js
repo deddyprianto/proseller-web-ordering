@@ -14,6 +14,7 @@ const HistoryTransaction = loadable(() =>
 const HistoryPending = loadable(() =>
   import("../components/history/HistoryPending")
 );
+const Swal = require("sweetalert2");
 
 class History extends Component {
   constructor(props) {
@@ -29,6 +30,13 @@ class History extends Component {
   }
 
   componentDidMount = async () => {
+    Swal.fire({
+      allowOutsideClick: false,
+      onOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     localStorage.removeItem(`${config.prefix}_dataBasket`);
     // localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
@@ -41,21 +49,26 @@ class History extends Component {
 
     await this.getDataBasketPending();
 
-    if (this.state.dataPending.length > 0)
-      this.setState({ isTransaction: false });
-
     // this.timeGetBasket = setInterval(async () => {
-    await this.getDataBasketPending();
+    // await this.getDataBasketPending();
     // }, 5000);
     let infoCompany = await this.props.dispatch(
       MasterdataAction.getInfoCompany()
     );
     this.setState({ countryCode: infoCompany.countryCode, loadingShow: false });
+    Swal.close();
   };
 
   getDataBasketPending = async () => {
     let response = await this.props.dispatch(HistoryAction.getBasketPending());
-    if (response.resultCode === 200) this.setState(response.data);
+    if (response.resultCode === 200) {
+      console.log(response.data)
+      this.setState(response.data);
+      this.setState({loadingShow: false})
+      if (response.data.dataPendingLength > 0) {
+        this.setState({isTransaction: false})
+      }
+    }
   };
 
   componentWillUnmount = () => {
@@ -88,11 +101,11 @@ class History extends Component {
               <main id="main" className="site-main" style={{ width: "100%" }}>
                 <div>
                   <center>
-                    <img width="500" src={config.url_loginImage} alt="is empty" style={{marginTop: 30}}/>
-                    <button 
+                    <img width="500" src={config.url_loginImage} alt="is empty" style={{ marginTop: 30 }} />
+                    <button
                       data-toggle={"modal"}
                       data-target={"#login-register-modal"} type="button" style={{ padding: 10, marginTop: 40 }}>
-                        Login
+                      Login
                     </button>
                   </center>
                 </div>
@@ -133,7 +146,7 @@ class History extends Component {
                 style={{ height: 50, fontWeight: "bold" }}
                 onClick={() => this.setState({ isTransaction: false })}
               >
-                {`Pending Orders ${dataPendingLength > 0 ? `(${dataPendingLength})` : "" }`}
+                {`Pending Orders ${dataPendingLength > 0 ? `(${dataPendingLength})` : ""}`}
               </Button>
             </div>
             <main
@@ -142,17 +155,21 @@ class History extends Component {
               style={{ textAlign: "center", paddingBottom: 40 }}
             >
               <div style={{ marginTop: 20 }}>
-                {isTransaction && (
-                  <HistoryTransaction countryCode={countryCode} />
-                )}
-                {!isTransaction && (
-                  <HistoryPending
-                    dataPending={dataPending}
-                    dataPendingLength={dataPendingLength}
-                    countryCode={countryCode}
-                    loadingShow={loadingShow}
-                  />
-                )}
+                {
+                  !loadingShow &&
+                  isTransaction && (
+                    <HistoryTransaction countryCode={countryCode} />
+                  )}
+                {
+                  !loadingShow &&
+                  !isTransaction && (
+                    <HistoryPending
+                      dataPending={dataPending}
+                      dataPendingLength={dataPendingLength}
+                      countryCode={countryCode}
+                      loadingShow={loadingShow}
+                    />
+                  )}
               </div>
             </main>
           </div>
