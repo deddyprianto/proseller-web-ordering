@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import { withStyles } from "@mui/styles";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
+import AppBar from "@material-ui/core/AppBar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,8 +26,6 @@ import OrderingMode from "./OrderingMode";
 
 const useStyles = (theme) => ({
   header: {
-    minHeight: "6vw",
-    boxShadow: "none",
     paddingTop: 5,
     paddingBottom: 5,
   },
@@ -53,6 +51,7 @@ const useStyles = (theme) => ({
     "&:hover": {
       backgroundColor: "transparent",
     },
+
     position: "fixed",
     backgroundColor: "transparent",
     direction: "column",
@@ -439,7 +438,11 @@ class Header extends Component {
         <AppBar
           color="white"
           className={clsx(classes.header, "site-main")}
-          style={{ width: "-webkit-fill-available", marginBottom: "1rem" }}
+          style={{
+            width: "-webkit-fill-available",
+            marginBottom: "1rem",
+            boxShadow: "none",
+          }}
         >
           <Grid container spacing={2} className={classes.container}>
             {/* logo & outlet */}
@@ -453,14 +456,18 @@ class Header extends Component {
               container
               spacing={0}
               direction="column"
-              alignItems="center"
               justifyContent="center"
             >
               <Grid
                 container
                 direction="column"
                 justifyContent="center"
-                alignItems="center"
+                alignItems={{
+                  xs: "center ",
+                  sm: "center",
+                  md: "center",
+                  lg: "flex-start",
+                }}
               >
                 <Grid item>
                   <Link to="/">
@@ -527,16 +534,22 @@ class Header extends Component {
               container
               spacing={0}
               direction="column"
-              alignItems="center"
+              alignItems={{
+                xs: "flex-start ",
+                sm: "center",
+                md: "center",
+                lg: "flex-start",
+              }}
               justifyContent="center"
             >
-              <nav
+              <Box
                 id="site-navigation"
+                component="nav"
                 className="main-navigation"
                 aria-label="Primary Navigation"
                 style={{
-                  direction: "column",
-                  alignItems: "center",
+                  direction: "row",
+                  alignItems: "left",
                 }}
               >
                 <Box
@@ -554,7 +567,7 @@ class Header extends Component {
                   aria-expanded="false"
                   onClick={() => this.handleNavigation()}
                 >
-                  <FontAwesomeIcon icon={faBars} />
+                  <FontAwesomeIcon icon={faBars} size="25x" />
                 </Box>
 
                 <div
@@ -738,7 +751,7 @@ class Header extends Component {
                     )}
                   </ul>
                 </div>
-              </nav>
+              </Box>
             </Grid>
             {/* cart */}
             <Grid
@@ -751,7 +764,12 @@ class Header extends Component {
               container
               spacing={0}
               direction="column"
-              alignItems="center"
+              alignItems={{
+                xs: "flex-end ",
+                sm: "center",
+                md: "center",
+                lg: "flex-end",
+              }}
               justifyContent="center"
             >
               {enableOrdering && (
