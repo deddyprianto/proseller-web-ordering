@@ -548,7 +548,7 @@ class Basket extends Component {
 
   render() {
     let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } = this.state;
-    let { isLoggedIn, product } = this.props;
+    let { isLoggedIn, product, setting } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;
       this.setState({ storeDetail });
@@ -647,6 +647,7 @@ class Basket extends Component {
                       dataBasket={dataBasket}
                       countryCode={countryCode}
                       isLoggedIn={isLoggedIn}
+                      setting={setting}
                       getCurrency={(price) => this.getCurrency(price)}
                       setViewCart={(status) => this.setViewCart(status)}
                       handleCompletedOrdering={(status) =>
@@ -690,6 +691,7 @@ const mapStateToProps = (state, ownProps) => {
     product: state.masterdata.product,
     defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
+    setting: state.order.setting,
   };
 };
 
