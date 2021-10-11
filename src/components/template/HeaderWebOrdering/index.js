@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import { withStyles } from "@mui/styles";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
-import AppBar from '@mui/material/AppBar';
+import AppBar from "@mui/material/AppBar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -295,10 +295,7 @@ class Header extends Component {
             <Link to="/outlets">
               <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
                 {this.props.defaultOutlet.name}{" "}
-                <i
-                  style={{ marginLeft: 6, fontSize: 10 }}
-                  // className="fa fa-chevron-right"
-                />
+                <i style={{ marginLeft: 6, fontSize: 10 }} />
               </h4>
             </Link>
           </div>
