@@ -238,76 +238,74 @@ class PaymentMethod extends Component {
       confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
-        Swal.fire({
-          onOpen: () => {
-            Swal.showLoading();
-          },
-        });
-        let response = await this.props.dispatch(
-          PaymentAction.registerPaymentCard(payload)
-        );
-        let win = null;
-        if (response.resultCode === 200) {
-          this.setState({
-            isLoading: false,
-            addPaymentFormUrl: response.data.url,
-            latestCardRegistered: response.data,
-          });
-          if (
-            data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
-            data.forceNewTab
-          ) {
-            win = window.open(response.data.url, "_blank");
-            win.focus();
-          } else {
-            this.setState({
-              showAddPaymentForm: true,
-            });
-          }
-          let accountID = response.data.accountID;
-          response = await this.props.dispatch(
-            PaymentAction.checkPaymentCard(accountID)
+        setTimeout(async () => {
+          await Swal.showLoading();
+          let response = await this.props.dispatch(
+            PaymentAction.registerPaymentCard(payload)
           );
+          let win = null;
+          if (response.resultCode === 200) {
+            this.setState({
+              isLoading: false,
+              addPaymentFormUrl: response.data.url,
+              latestCardRegistered: response.data,
+            });
+            if (
+              data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
+              data.forceNewTab
+            ) {
+              win = window.open(response.data.url, "_blank");
+              win.focus();
+            } else {
+              this.setState({
+                showAddPaymentForm: true,
+              });
+            }
+            let accountID = response.data.accountID;
+            response = await this.props.dispatch(
+              PaymentAction.checkPaymentCard(accountID)
+            );
 
-          if (data.forceNewTab !== true) {
-            let timeInterval = setInterval(async () => {
-              response = await this.props.dispatch(
-                PaymentAction.checkPaymentCard(accountID)
-              );
-              if (response.data.registrationStatus === "completed") {
-                localStorage.setItem(
-                  `${config.prefix}_paymentCardAccountDefault`,
-                  JSON.stringify(encryptor.encrypt(response.data))
+            if (data.forceNewTab !== true) {
+              let timeInterval = setInterval(async () => {
+                response = await this.props.dispatch(
+                  PaymentAction.checkPaymentCard(accountID)
                 );
-                if (win) {
-                  win.close();
+                if (response.data.registrationStatus === "completed") {
+                  localStorage.setItem(
+                    `${config.prefix}_paymentCardAccountDefault`,
+                    JSON.stringify(encryptor.encrypt(response.data))
+                  );
+                  if (win) {
+                    win.close();
+                  }
+                  await this.getDataPaymentCard();
+                  this.setState({ showAddPaymentForm: false });
+                  this.handleSelectCard(response.data);
+                  Swal.fire({
+                    icon: "success",
+                    timer: 1500,
+                    title: "Your Credit Card has been added.",
+                    showConfirmButton: false,
+                  });
+                  return clearInterval(timeInterval);
+                } else if (
+                  response.data &&
+                  response.data.registrationStatus === "failed"
+                ) {
+                  this.setState({ showAddPaymentForm: false });
+                  Swal.fire({
+                    icon: "error",
+                    timer: 1500,
+                    showConfirmButton: false,
+                    title: "Failed to add Credit Card!",
+                  });
+                  return clearInterval(timeInterval);
                 }
-                await this.getDataPaymentCard();
-                this.setState({ showAddPaymentForm: false });
-                this.handleSelectCard(response.data);
-                Swal.fire({
-                  icon: "success",
-                  timer: 1500,
-                  title: "Your Credit Card has been added.",
-                  showConfirmButton: false,
-                });
-                return clearInterval(timeInterval);
-              } else if (
-                response.data &&
-                response.data.registrationStatus === "failed"
-              ) {
-                this.setState({ showAddPaymentForm: false });
-                Swal.fire({
-                  icon: "error",
-                  timer: 1500,
-                  showConfirmButton: false,
-                  title: "Failed to add Credit Card!",
-                });
-                return clearInterval(timeInterval);
-              }
-            }, 8000);
+              }, 8000);
+            }
           }
-        }
+        }, 300);
       }
     });
   };
@@ -338,7 +336,11 @@ class PaymentMethod extends Component {
         }}
       >
         <ModalPaymentMethod
-          detailCard={detailCard && detailCard.isAccountRequired ? detailCard : null}
+          detailCard={
+            detailCard && detailCard.isAccountRequired !== false
+              ? detailCard
+              : null
+          }
           handleSetDefault={() => this.handleSetDefault()}
           handleRemoveCard={() => this.handleRemoveCard()}
         />
@@ -430,7 +432,7 @@ class PaymentMethod extends Component {
                                 style={{
                                   fontWeight: "bold",
                                   fontSize: 15,
-                                  color: 'white'
+                                  color: "white",
                                 }}
                               >
                                 {item.paymentName}

@@ -17,6 +17,8 @@ const regEmail =
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const Swal = require("sweetalert2");
 
+let max_retries = 0;
+
 class LoginRegister extends Component {
   constructor(props) {
     super(props);
@@ -327,7 +329,7 @@ class LoginRegister extends Component {
     let phoneNumber = this.state.phoneNumber;
     if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
 
-    this.setState({ isLoading: true });
+    await Swal.showLoading()
 
     if (phoneNumber === "" || phoneNumber.length <= 4) {
       if (phoneNumber === "")
@@ -350,35 +352,59 @@ class LoginRegister extends Component {
           payloadResponse: { phoneNumber },
           btnSubmit: false,
         });
+        await Swal.close()
       } else if (response) {
-        if (response.data.status === "SUSPENDED") {
+        if (response.status === "SUSPENDED") {
           Swal.fire(
             "Suspended!",
             "Your account has been suspended. Please contact administrator.",
             "error"
           );
-        } else if (response.data.confirmation) {
+          await Swal.close()
+        } else if (response.confirmation) {
           if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP("SMSOTP");
           if (!enableSMSOTP && enableWhatsappOTP)
             this.handleSendOTP("WhatsappOTP");
           this.setState({
             userStatus: "REGISTERED",
+            method: 'phone',
             payloadResponse: response.data,
             btnSubmit: false,
           });
+          await Swal.close()
         } else {
           if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP("SMSOTP");
           if (!enableSMSOTP && enableWhatsappOTP)
             this.handleSendOTP("WhatsappOTP");
-          this.setState({
-            userStatus: "REGISTERED",
-            payloadResponse: response.data,
-            btnSubmit: false,
-          });
+            this.setState({
+              userStatus: "REGISTERED",
+              method: 'phone',
+              payloadResponse: response.data,
+              btnSubmit: false,
+            });
+            await Swal.close()
+        }
+      } else if (!response) {
+        if (max_retries < 5) {
+          max_retries += 1;
+          setTimeout(() => {
+            this.handleMobileCheck()
+          }, 2000)
+        } else {
+          Swal.fire({
+            title: 'Sorry...',
+            allowOutsideClick: false,
+            icon: 'info',
+            text: 'We need to refresh your app, then you can continue to register.',
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload() 
+            }
+          })
         }
       }
     }
-    this.setState({ isLoading: false });
   };
 
   handleSendOTP = async (sendBy = "SMSOTP") => {
