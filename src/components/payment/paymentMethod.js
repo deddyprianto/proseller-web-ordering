@@ -338,7 +338,7 @@ class PaymentMethod extends Component {
         }}
       >
         <ModalPaymentMethod
-          detailCard={detailCard && detailCard.isAccountRequired ? detailCard : null}
+          detailCard={detailCard && detailCard.isAccountRequired !== false ? detailCard : null}
           handleSetDefault={() => this.handleSetDefault()}
           handleRemoveCard={() => this.handleRemoveCard()}
         />
