@@ -29,11 +29,8 @@ const useStyles = (theme) => ({
     paddingTop: 5,
     paddingBottom: 5,
   },
-  container: {
-    display: "flex",
-  },
   logo: {
-    maxWidth: "3.5em",
+    maxWidth: "9.5em",
     objectFit: "contain",
     zIndex: 1000,
   },
@@ -441,10 +438,20 @@ class Header extends Component {
           style={{
             width: "-webkit-fill-available",
             marginBottom: "1rem",
+            paddingTop: "1rem",
             boxShadow: "none",
           }}
         >
-          <Grid container spacing={2} className={classes.container}>
+          <Grid
+            container
+            spacing={2}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            style={{
+              display: "flex",
+            }}
+          >
             {/* logo & outlet */}
             <Grid
               item
@@ -479,8 +486,9 @@ class Header extends Component {
                   </Link>
                 </Grid>
                 <Grid item>
-                  {this.state.showOutletSelection &&
-                    displayOutletInfo(outlets, defaultOutlet)}
+                  {this.state.showOutletSelection && defaultOutlet.name !== "-"
+                    ? displayOutletInfo(outlets, defaultOutlet)
+                    : null}
                   {this.state.showOrderingMode && (
                     <div className={styles.outlet}>
                       {this.props.orderingMode === "DINEIN" && (
@@ -577,12 +585,16 @@ class Header extends Component {
                     alignItems: "center",
                     justifyContent: "center",
                     textAlign: "center",
+                    marginBottom: 0,
                   }}
                 >
                   <ul
                     id="menu-home-5-and-7-main-menu"
                     className="menu nav-menu"
                     aria-expanded="false"
+                    style={{
+                      paddingTop: "1rem",
+                    }}
                   >
                     {enableOrdering && (
                       <li
@@ -667,7 +679,6 @@ class Header extends Component {
                             paddingRight: 5,
                             height: 40,
                             borderRadius: 10,
-                            marginTop: 15,
                           }}
                         />
                       </li>
@@ -693,49 +704,43 @@ class Header extends Component {
                         </Link>
                       </li>
                     )}
-                    {isLoggedIn && (
-                      <li className="menu-item menu-hide">
-                        <Link to="/history">
-                          <i className="fa fa-history" />
-                          History
-                        </Link>
-                      </li>
-                    )}
-                    {isLoggedIn && (
-                      <li className="menu-item menu-hide">
-                        <Link to="/inbox">
-                          <i className="fa fa-envelope-o" />
-                          Inbox
-                        </Link>
-                      </li>
-                    )}
-                    {isLoggedIn && (
-                      <li className="menu-item menu-hide">
-                        <Link to="/voucher">
-                          <i className="fa fa-tags" />
-                          Voucher
-                        </Link>
-                      </li>
-                    )}
-                    {isLoggedIn && (
-                      <li className="menu-item menu-hide">
-                        <Link to="/setting">
-                          <i className="fa fa-gear" />
-                          Setting
-                        </Link>
-                      </li>
-                    )}
-                    {isLoggedIn && (
-                      <li
-                        className="menu-item"
-                        onClick={() => this.handleLogout()}
-                      >
-                        <Link to="/">
-                          <i className="fa fa-sign-out" />
-                          Log Out
-                        </Link>
-                      </li>
-                    )}
+                    {isLoggedIn ? (
+                      <>
+                        <li className="menu-item menu-hide">
+                          <Link to="/history">
+                            <i className="fa fa-history" />
+                            History
+                          </Link>
+                        </li>
+                        <li className="menu-item menu-hide">
+                          <Link to="/inbox">
+                            <i className="fa fa-envelope-o" />
+                            Inbox
+                          </Link>
+                        </li>
+                        <li className="menu-item menu-hide">
+                          <Link to="/voucher">
+                            <i className="fa fa-tags" />
+                            Voucher
+                          </Link>
+                        </li>
+                        <li className="menu-item menu-hide">
+                          <Link to="/setting">
+                            <i className="fa fa-gear" />
+                            Setting
+                          </Link>
+                        </li>
+                        <li
+                          className="menu-item"
+                          onClick={() => this.handleLogout()}
+                        >
+                          <Link to="/">
+                            <i className="fa fa-sign-out" />
+                            Log Out
+                          </Link>
+                        </li>
+                      </>
+                    ) : null}
                     {!isLoggedIn && (
                       <li
                         className="menu-item menu-hide"
