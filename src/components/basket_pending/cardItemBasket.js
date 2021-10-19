@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import config from "../../config";
 
@@ -19,7 +19,7 @@ class CardItemBasket extends Component {
   render() {
     let item = this.props.data;
     return (
-      <div style={{ width: "100%", display: "flex", cursor: "pointer" }} >
+      <div style={{ width: "100%", display: "flex", cursor: "pointer" }}>
         <img
           src={this.renderImageProduct(item)}
           style={{
@@ -31,7 +31,7 @@ class CardItemBasket extends Component {
           title={item.product.name}
         />
         <div style={{ width: "100%" }}>
-        <div
+          <div
             style={{
               display: "flex",
               flexDirection: "row",
@@ -46,16 +46,19 @@ class CardItemBasket extends Component {
               >
                 {`${item.quantity}x`}
               </span>
-              <span style={{ fontSize: 12, fontWeight: "bold" }} >
-                {`${item.product.name} (${this.props.getCurrency(Number(item.product.retailPrice))})`}
+              <span style={{ fontSize: 12, fontWeight: "bold" }}>
+                {`${item.product.name} (${this.props.getCurrency(
+                  Number(item.product.retailPrice)
+                )})`}
               </span>
             </Typography>
           </div>
           {item.modifiers && item.modifiers.length > 0 && (
-            <div className="font-color-theme" style={{ textAlign: "left", marginTop: -10 }}>
-              <div style={{ fontSize: 10, fontStyle: "italic" }}>
-                Add On:
-              </div>
+            <div
+              className="font-color-theme"
+              style={{ textAlign: "left", marginTop: -10 }}
+            >
+              <div style={{ fontSize: 10, fontStyle: "italic" }}>Add On:</div>
               <div style={{ marginLeft: -23, marginTop: -5 }}>
                 {item.modifiers.map((modifier, keyModifier) => (
                   <div key={keyModifier} style={{ marginLeft: 30 }}>
@@ -69,18 +72,30 @@ class CardItemBasket extends Component {
                             <dev key={keyItem}>
                               <Typography
                                 style={{
-                                  lineHeight: "15px", textAlign: "left", marginLeft: -5,
+                                  lineHeight: "15px",
+                                  textAlign: "left",
+                                  marginLeft: -5,
                                   paddingTop: -50,
                                 }}
                               >
                                 <span
                                   className="color-active"
-                                  style={{ marginRight: 3, fontStyle: "italic", fontSize: 10, }}
+                                  style={{
+                                    marginRight: 3,
+                                    fontStyle: "italic",
+                                    fontSize: 10,
+                                  }}
                                 >
                                   {`${itemModifier.quantity}x`}
                                 </span>
-                                <span style={{ fontSize: 10, fontStyle: "italic", }} >
-                                  {`${itemModifier.name} (${this.props.getCurrency(Number(itemModifier.price))})`}
+                                <span
+                                  style={{ fontSize: 10, fontStyle: "italic" }}
+                                >
+                                  {`${
+                                    itemModifier.name
+                                  } (${this.props.getCurrency(
+                                    Number(itemModifier.price)
+                                  )})`}
                                 </span>
                               </Typography>
                             </dev>
@@ -92,18 +107,28 @@ class CardItemBasket extends Component {
             </div>
           )}
           {item.remark && item.remark !== "-" && (
-            <div className="font-color-theme" style={{ 
-              display: "flex", marginLeft: -5, marginTop: -5, marginBottom: -10 
-            }}>
+            <div
+              className="font-color-theme"
+              style={{
+                display: "flex",
+                marginLeft: -5,
+                marginTop: -5,
+                marginBottom: -10,
+              }}
+            >
               <div
                 style={{
-                  fontStyle: "italic", fontSize: 10, textAlign: "justify",
+                  fontStyle: "italic",
+                  fontSize: 10,
+                  textAlign: "justify",
                   marginLeft: 5,
                 }}
               >{`Note:`}</div>
               <div
                 style={{
-                  fontStyle: "italic", fontSize: 10, textAlign: "justify",
+                  fontStyle: "italic",
+                  fontSize: 10,
+                  textAlign: "justify",
                   marginLeft: 5,
                 }}
               >
@@ -112,13 +137,18 @@ class CardItemBasket extends Component {
             </div>
           )}
 
-          <div style={{
-            display: "flex", justifyContent: "space-between",
-          }}>
-            <div 
-              className="customer-group-name" 
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              className="customer-group-name"
               style={{
-                textAlign: "left", fontSize: 12, fontWeight: "bold"
+                textAlign: "left",
+                fontSize: 12,
+                fontWeight: "bold",
               }}
             >
               {this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}
