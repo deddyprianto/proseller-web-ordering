@@ -5,8 +5,8 @@ import generate from "password-generation";
 import { AuthActions } from "../../redux/actions/AuthAction";
 import { CustomerAction } from "../../redux/actions/CustomerAction";
 import Login from "./Login";
-import Portal from "./Portal/Portal";
-import SignUp from "./Signup/Signup";
+import Portal from "./Portal";
+import SignUp from "./Signup";
 
 import { lsLoad, lsStore } from "../../helpers/localStorage";
 
@@ -81,6 +81,8 @@ const LoginRegister = (props) => {
   const [inputs, setInputs] = useState({});
 
   useEffect(() => {
+    setErrorPhone("");
+    setErrorEmail("");
     const otpData = lsLoad(config.prefix + "_otp") || null;
     if (otpData) {
       const waitTime = method === "phone" ? 60 : 300;
@@ -827,7 +829,7 @@ const LoginRegister = (props) => {
       let secondsTimer = counterOtp;
       let minutesTimer = minutesOtp;
 
-      var timerCOBAINs = setInterval(() => {
+      var timer = setInterval(() => {
         secondsTimer = secondsTimer - 1;
         let counterTimer =
           secondsTimer.toString().length < 2
@@ -836,6 +838,7 @@ const LoginRegister = (props) => {
 
         setSeconds(secondsTimer);
         setCounter(counterTimer);
+
         if (secondsTimer === 0) {
           minutesTimer = minutesTimer - 1;
           let counterMinutesTimer =
@@ -850,7 +853,7 @@ const LoginRegister = (props) => {
 
           if (minutesTimer < 0 && secondsTimer === 0) {
             setBtnSend(true);
-            clearInterval(timerCOBAINs);
+            clearInterval(timer);
           }
         }
       }, 1000);
@@ -1096,7 +1099,6 @@ const LoginRegister = (props) => {
               }
               handleBackButtonClick={() => {
                 setUserStatus("NOT_CHECKED");
-                window.location.reload();
               }}
               handleChange={handleInput}
               sendOtpToPhone={(sendBy) => handleSendOTP(sendBy)}
