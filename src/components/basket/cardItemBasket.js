@@ -1,11 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import config from "../../config";
 
-const activeCard = { width: "100%", display: "flex", cursor: "pointer" }
-const inactiveCard = { width: "100%", display: "flex", cursor: "pointer", opacity: 0.5 }
+const activeCard = { width: "100%", display: "flex", cursor: "pointer" };
+const inactiveCard = {
+  width: "100%",
+  display: "flex",
+  cursor: "pointer",
+  opacity: 0.5,
+};
 
 class CardItemBasket extends Component {
   renderImageProduct = (item) => {
@@ -17,7 +22,7 @@ class CardItemBasket extends Component {
       return item.product.defaultImageURL;
     } else {
       if (color && color.productPlaceholder !== null) {
-        return color.productPlaceholder
+        return color.productPlaceholder;
       }
       return config.image_placeholder;
     }
@@ -25,20 +30,26 @@ class CardItemBasket extends Component {
 
   isAvailableToOrder = (item) => {
     try {
-      if (item && item.orderingStatus === 'UNAVAILABLE') {
-        return <i style={{ fontSize: 11, color: 'red' }}>Unavailable on {item.orderModeName} Order</i>
+      if (item && item.orderingStatus === "UNAVAILABLE") {
+        return (
+          <i style={{ fontSize: 11, color: "red" }}>
+            Unavailable on {item.orderModeName} Order
+          </i>
+        );
       }
       return null;
-    } catch(e) {
+    } catch (e) {
       return null;
     }
-  }
+  };
 
   render() {
     let item = this.props.data;
     return (
       <div
-        style={item.orderingStatus === 'UNAVAILABLE' ? inactiveCard : activeCard}
+        style={
+          item.orderingStatus === "UNAVAILABLE" ? inactiveCard : activeCard
+        }
         onClick={() => !this.props.roleBtnClear && this.props.openModal(item)}
       >
         <img
@@ -129,27 +140,43 @@ class CardItemBasket extends Component {
           )}
 
           {/* POSSIBLE PROMOTION INFO */}
-          {
-            item.promotions && item.promotions.length > 0 &&
-            item.promotions.map(promo =>
+          {item.promotions &&
+            item.promotions.length > 0 &&
+            item.promotions.map((promo) => (
               <div style={{ marginTop: 10 }}>
                 <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
                   <p
-                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
-                    style={{ marginRight: 5, fontSize: 12, width: 5, float: 'left' }}
+                    className={
+                      item.grossAmount !== item.nettAmount
+                        ? `customer-group-name`
+                        : `font-color-theme`
+                    }
+                    style={{
+                      marginRight: 5,
+                      fontSize: 12,
+                      width: 5,
+                      float: "left",
+                    }}
                   >
-                    - 
+                    -
                   </p>
                   <p
-                    className={item.grossAmount !== item.nettAmount ? `customer-group-name` : `font-color-theme`} 
-                    style={{ marginRight: 5, fontSize: 12, fontStyle: 'italic' }}
+                    className={
+                      item.grossAmount !== item.nettAmount
+                        ? `customer-group-name`
+                        : `font-color-theme`
+                    }
+                    style={{
+                      marginRight: 5,
+                      fontSize: 12,
+                      fontStyle: "italic",
+                    }}
                   >
                     {promo.name}
                   </p>
                 </Typography>
               </div>
-            )
-          }
+            ))}
           {/* POSSIBLE PROMOTION INFO */}
 
           {item.remark && item.remark !== "-" && (
@@ -197,30 +224,41 @@ class CardItemBasket extends Component {
                 fontWeight: "bold",
               }}
             >
-              {
-                item.grossAmount !== item.nettAmount && item.grossAmount > item.nettAmount ?
+              {item.grossAmount !== item.nettAmount &&
+              item.grossAmount > item.nettAmount ? (
                 <div>
-                  <span>{this.props.getCurrency(Number(item.nettAmount.toFixed(2)))}</span>
-                  <span style={{ textDecoration: 'line-through', marginLeft: 8 }}>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
+                  <span>
+                    {this.props.getCurrency(Number(item.nettAmount.toFixed(2)))}
+                  </span>
+                  <span
+                    style={{ textDecoration: "line-through", marginLeft: 8 }}
+                  >
+                    {this.props.getCurrency(
+                      Number(item.grossAmount.toFixed(2))
+                    )}
+                  </span>
                 </div>
-                :
-                <span>{this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}</span>
-              }
+              ) : (
+                <span>
+                  {this.props.getCurrency(Number(item.grossAmount.toFixed(2)))}
+                </span>
+              )}
             </div>
-            {
-              this.props.dataBasket && this.props.dataBasket.status === 'PENDING' && 
-              <button
-                className="customer-group-name"
-                style={{
-                  fontSize: 12,
-                  padding: 0,
-                  margin: 0,
-                  backgroundColor: "transparent",
-                }}
-              >
-                <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
-              </button>
-            }
+            {this.props.dataBasket &&
+              this.props.dataBasket.status === "PENDING" && (
+                <button
+                  className="customer-group-name"
+                  style={{
+                    fontSize: 12,
+                    padding: 0,
+                    margin: 0,
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  <i className="fa fa-pencil-square-o" aria-hidden="true" />{" "}
+                  Edit
+                </button>
+              )}
           </div>
           {this.isAvailableToOrder(item)}
         </div>
