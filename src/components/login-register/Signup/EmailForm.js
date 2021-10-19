@@ -31,7 +31,11 @@ const EmailForm = ({
     handleChange("phoneNumber", phoneCountryCode + phone);
   }, [phone, phoneCountryCode]);
 
-  if (termsAndConditions === undefined || termsAndConditions === null || termsAndConditions === '') {
+  if (
+    termsAndConditions === undefined ||
+    termsAndConditions === null ||
+    termsAndConditions === ""
+  ) {
     isTCAvailable = false;
   }
 
@@ -93,11 +97,10 @@ const EmailForm = ({
             <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
           </div>
           <Input
-            type="number"
             id="phoneInput"
             className={styles.phoneField}
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
           />
         </div>
       </div>
