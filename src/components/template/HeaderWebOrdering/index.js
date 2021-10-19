@@ -23,6 +23,7 @@ import clsx from "clsx";
 
 import styles from "./styles.module.css";
 import OrderingMode from "./OrderingMode";
+import { color } from "@material-ui/system";
 
 const useStyles = (theme) => ({
   header: {
@@ -428,18 +429,19 @@ class Header extends Component {
         );
       }
     };
-
+    console.log(this.props.color, 'color')
     return (
       <div>
         {!isLoggedIn && <LoginRegister />}
         <AppBar
-          color="white"
           className={clsx(classes.header, "site-main")}
           style={{
             width: "-webkit-fill-available",
             marginBottom: "1rem",
             paddingTop: "1rem",
             boxShadow: "none",
+            zIndex: 100,
+            backgroundColor: this.props.color.background,
           }}
         >
           <Grid
@@ -781,7 +783,7 @@ class Header extends Component {
                 <Link id="cart-icon" to="/basket">
                   <div
                     style={{
-                      border: "1px solid gray",
+                      border: `1px solid ${this.props.color.font}`,
                       borderRadius: 40,
                       height: 40,
                       width: 40,
@@ -789,11 +791,12 @@ class Header extends Component {
                       alignItems: "center",
                       justifyContent: "center",
                       cursor: "pointer",
+                      color: this.props.color.font,
                     }}
                     data-toggle="modal"
                     data-target="#basket-modal"
                   >
-                    <Badge color="secondary" badgeContent={basketLength}>
+                    <Badge color="info" badgeContent={basketLength}>
                       <FontAwesomeIcon icon={faShoppingBasket} />
                     </Badge>
                   </div>
