@@ -85,7 +85,8 @@
     "cutbutchery-demo-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 --profile prod sync build/ s3://cutbutchery-demo-webordering --acl public-read",
     "popejai-demo-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 --profile prod sync build/ s3://popejai-demo --acl public-read",
     "cutbutchery-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://cutbutchery-webordering --acl public-read",
-    "popejaithai-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://popejaithai-webordering --acl public-read"
+    "popejaithai-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://popejaithai-webordering --acl public-read",
+    "staple-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://staple-webordering --acl public-read"
   },
   "eslintConfig": {
     "extends": "react-app"
