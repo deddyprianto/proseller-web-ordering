@@ -198,11 +198,11 @@ class MenuBasket extends Component {
               <TableNo data={props} />
             </div>
           )}
-        {props.dataBasket && (
+        {/* {props.dataBasket && (
           <div style={{ textAlign: "left" }}>
             <StatusOrder data={props} />
           </div>
-        )}
+        )} */}
 
         {(!this.props.setting ||
           !this.props.setting.ShowOrderingModeModalFirst) && (

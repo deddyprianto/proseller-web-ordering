@@ -390,13 +390,7 @@ class Header extends Component {
           );
         }
       } else if (this.props.outletSelection === "DEFAULT") {
-        return (
-          <div className={classes.outletStyle}>
-            <h4 className="color" style={{ fontSize: 12, marginTop: 10 }}>
-              {this.props.defaultOutlet.name}
-            </h4>
-          </div>
-        );
+        return null;
       } else {
         return (
           <Grid container direction="row" alignItems="center">
