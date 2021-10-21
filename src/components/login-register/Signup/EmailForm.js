@@ -28,7 +28,9 @@ const EmailForm = ({
   const [agreeTC, setAgreeTC] = useState(true);
 
   useEffect(() => {
-    handleChange("phoneNumber", phoneCountryCode + phone);
+    if (phone) {
+      handleChange("phoneNumber", phoneCountryCode + phone);
+    }
   }, [phone, phoneCountryCode]);
 
   if (

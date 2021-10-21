@@ -38,7 +38,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const LoginRegister = (props) => {
-  //
   const [method, setMethod] = useState(props.defaultEmail || "phone");
   const [userStatus, setUserStatus] = useState("NOT_CHECKED");
   const [payloadResponse, setPayloadResponse] = useState({});
@@ -77,7 +76,6 @@ const LoginRegister = (props) => {
   const [errorEmail, setErrorEmail] = useState("");
   //   const [errorBirthdate, setErrorBirthDate] = useState("");
   const [errorPhone, setErrorPhone] = useState("");
-
   const [inputs, setInputs] = useState({});
 
   useEffect(() => {
@@ -208,8 +206,8 @@ const LoginRegister = (props) => {
   const handleInput = (jenis, data) => {
     switch (jenis) {
       case "phoneNumber":
-        setPhoneNumber(data);
-        if (phoneNumber.trim() && phoneNumber.trim().length > 7) {
+        if (data.trim() && data.trim().length > 7) {
+          setPhoneNumber(data);
           setErrorPhone("");
           setBtnSubmit(true);
         } else {
@@ -292,13 +290,12 @@ const LoginRegister = (props) => {
         break;
 
       case "phoneNumber":
-        if (phoneNumber.trim() && phoneNumber.trim().length > 5) {
+        if (data.trim() && data.trim().length > 7) {
           setInputs({ ...inputs, [jenis]: data });
           setPhoneNumber(data);
           setErrorPhone("");
           setBtnSubmit(true);
         } else {
-          setInputs({ ...inputs, [jenis]: "" });
           setErrorPhone("PhoneNumber not valid");
           setBtnSubmit(false);
         }
@@ -544,23 +541,24 @@ const LoginRegister = (props) => {
 
   const handleMobileLogin = async (withOtp) => {
     Swal.showLoading();
+
     try {
       let payload = { phoneNumber: payloadResponse.phoneNumber };
 
       if (withOtp) {
-        payload.push({ codeOTP: txtOtp });
+        payload.codeOTP = txtOtp;
       } else {
-        payload.push({ password });
+        payload.password = password;
       }
 
       const response = await props.dispatch(AuthActions.login(payload));
-      let responseData = response.Data;
+      const responseData = response.Data;
 
-      if (response.status !== "SUCCESS") {
+      if (responseData.status === false) {
         throw responseData;
       }
 
-      responseData.push({ isLogin: true });
+      responseData.isLogin = true;
 
       const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
       const lsKeyList = [];
@@ -587,13 +585,8 @@ const LoginRegister = (props) => {
       window.location.reload();
     } catch (err) {
       let error = "Please try again.";
-      if (
-        err.response &&
-        err.response.data &&
-        err.response.data.Data &&
-        err.response.data.Data.message
-      ) {
-        error = err.response.data.Data.message;
+      if (err.message) {
+        error = err.message;
       }
       Swal.fire("Oppss!", error, "error");
     }
@@ -884,13 +877,13 @@ const LoginRegister = (props) => {
         payload.password = password;
       }
 
-      let response = await props.dispatch(AuthActions.login(payload));
-      response = response.Data;
+      const response = await props.dispatch(AuthActions.login(payload));
+      const responseData = response.Data;
 
-      if (response.status === false) {
-        throw response;
+      if (responseData.status === false) {
+        throw responseData;
       }
-      response.isLogin = true;
+      responseData.isLogin = true;
 
       const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
       const lsKeyList = [];
@@ -1069,11 +1062,11 @@ const LoginRegister = (props) => {
     }
   };
 
-  const handleMethodChange = (value) => {
-    setMethod(value);
+  const handleClear = () => {
     setPhoneNumber("");
     setEmail("");
     setErrorPhone("");
+    console.log("MASUK");
     setErrorEmail("");
     setBtnSubmit(false);
   };
@@ -1099,6 +1092,7 @@ const LoginRegister = (props) => {
               }
               handleBackButtonClick={() => {
                 setUserStatus("NOT_CHECKED");
+                handleClear();
               }}
               handleChange={handleInput}
               sendOtpToPhone={(sendBy) => handleSendOTP(sendBy)}
@@ -1118,7 +1112,10 @@ const LoginRegister = (props) => {
             <SignUp
               method={method}
               initialUserData={payloadResponse}
-              handleBackButtonClick={() => setUserStatus("NOT_CHECKED")}
+              handleBackButtonClick={() => {
+                setUserStatus("NOT_CHECKED");
+                handleClear();
+              }}
               handleChange={handleInputRegister}
               handleEmailSubmit={handleEmailRegister}
               handlePhoneSubmit={handleMobileRegister}
@@ -1149,12 +1146,13 @@ const LoginRegister = (props) => {
               color={props.color.background}
               method={method}
               handleMethodChange={(value) => {
-                handleMethodChange(value);
+                setMethod(value);
+                handleClear();
               }}
               handlePhoneCheck={handleMobileCheck}
+              handleEmailCheck={handleEmailCheck}
               handleChange={handleInput}
               isSubmitting={!btnSubmit}
-              handleEmailCheck={handleEmailCheck}
               error={errorPhone || errorEmail}
               loginByEmail={loginByEmail}
               loginByMobile={loginByMobile}
