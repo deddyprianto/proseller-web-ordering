@@ -204,12 +204,19 @@ const LoginRegister = (props) => {
   }, [props]);
 
   const handleInput = (jenis, data) => {
+    if (jenis) {
+      setInputs({ ...inputs, [jenis]: data });
+    }
     switch (jenis) {
       case "phoneNumber":
-        if (data.trim() && data.trim().length > 7) {
-          setPhoneNumber(data);
+        const number = data.trim();
+        setPhoneNumber(data);
+        if (number && number.length > 7) {
           setErrorPhone("");
           setBtnSubmit(true);
+        } else if (number.length === 3) {
+          setErrorPhone("");
+          setBtnSubmit(false);
         } else {
           setErrorPhone("PhoneNumber not valid");
           setBtnSubmit(false);
@@ -252,6 +259,8 @@ const LoginRegister = (props) => {
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
+        setInputs({ ...inputs, [jenis]: email });
+        setEmail(email);
         if (email === "") {
           //   setErrorEmail("Email is required");
           setBtnSubmit(false);
@@ -260,27 +269,32 @@ const LoginRegister = (props) => {
           setErrorEmail("Email not valid");
           setBtnSubmit(false);
         } else {
-          setInputs({ ...inputs, [jenis]: email });
-          setEmail(email);
           setErrorEmail("");
           setBtnSubmit(true);
         }
         break;
 
       default:
+        if (data) {
+          setBtnSubmit(true);
+        } else {
+          setBtnSubmit(false);
+        }
         return;
     }
   };
 
   const handleInputRegister = (jenis, data) => {
+    if (jenis) {
+      setInputs({ ...inputs, [jenis]: data });
+    }
     switch (jenis) {
       case "name":
+        setName(data);
         if (data === "") {
           setErrorName("Name is required");
           setBtnSubmit(false);
         } else if (/^[A-Za-z\s]+$/.test(data)) {
-          setInputs({ ...inputs, [jenis]: data });
-          setName(data);
           setErrorName("");
           setBtnSubmit(true);
         } else {
@@ -290,11 +304,14 @@ const LoginRegister = (props) => {
         break;
 
       case "phoneNumber":
-        if (data.trim() && data.trim().length > 7) {
-          setInputs({ ...inputs, [jenis]: data });
-          setPhoneNumber(data);
+        const number = data.trim();
+        setPhoneNumber(data);
+        if (number && number.length > 7) {
           setErrorPhone("");
           setBtnSubmit(true);
+        } else if (number.length === 3) {
+          setErrorPhone("");
+          setBtnSubmit(false);
         } else {
           setErrorPhone("PhoneNumber not valid");
           setBtnSubmit(false);
@@ -302,9 +319,8 @@ const LoginRegister = (props) => {
         break;
 
       case "txtOtp":
+        setTxtOtp(data);
         if (data.length === 4) {
-          setInputs({ ...inputs, [jenis]: data });
-          setTxtOtp(data);
           setBtnSubmit(true);
         } else {
           setBtnSubmit(false);
@@ -312,6 +328,7 @@ const LoginRegister = (props) => {
         break;
 
       case "passwords":
+        setPassword(data);
         if (data === "") {
           setErrorPassword("Password is required");
           setBtnSubmit(false);
@@ -324,8 +341,6 @@ const LoginRegister = (props) => {
           );
           setBtnSubmit(false);
         } else {
-          setInputs({ ...inputs, [jenis]: data });
-          setPassword(data);
           setErrorPassword("");
           setBtnSubmit(true);
         }
@@ -335,6 +350,9 @@ const LoginRegister = (props) => {
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
+        setInputs({ ...inputs, [jenis]: email });
+        setEmail(email);
+
         if (email === "") {
           setErrorEmail("Email is required");
           setBtnSubmit(false);
@@ -343,28 +361,22 @@ const LoginRegister = (props) => {
           setErrorEmail("Email not valid");
           setBtnSubmit(false);
         } else {
-          setInputs({ ...inputs, [jenis]: email });
-          setEmail(email);
           setErrorEmail("");
           setBtnSubmit(true);
         }
         break;
 
       case "birthDate":
+        setBirthDate(data);
         if (data) {
-          setInputs({ ...inputs, [jenis]: data });
-          setBirthDate(data);
-          //   setErrorBirthDate("");
           setBtnSubmit(true);
         } else {
-          //   setErrorBirthDate("Birthdate is required");
           setBtnSubmit(false);
         }
         break;
 
       default:
         if (data) {
-          setInputs({ ...inputs, [jenis]: data });
           setBtnSubmit(true);
         } else {
           setBtnSubmit(false);
@@ -1066,7 +1078,6 @@ const LoginRegister = (props) => {
     setPhoneNumber("");
     setEmail("");
     setErrorPhone("");
-    console.log("MASUK");
     setErrorEmail("");
     setBtnSubmit(false);
   };
