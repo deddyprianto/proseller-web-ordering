@@ -911,10 +911,15 @@ const LoginRegister = (props) => {
         }
       }
       lsKeyList.forEach((key) => localStorage.removeItem(key));
-      lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
+      lsStore(
+        config.prefix + "_account",
+        encryptor.encrypt(responseData),
+        true
+      );
       if (offlineCart !== null) {
         lsStore(config.prefix + "_offlineCart", offlineCart, true);
       }
+
       const url = window.location.href.split("?")[0];
       window.location.replace(url);
       window.location.reload();
