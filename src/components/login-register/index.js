@@ -395,7 +395,6 @@ const LoginRegister = (props) => {
     if (response && response.status === false) {
       // Fetch Custom & Mandatory Fields
       await props.dispatch(CustomerAction.mandatoryField());
-
       setUserStatus("NOT_REGISTERED");
       setMethod("phone");
       setPayloadResponse({ phoneNumber });
@@ -1084,6 +1083,7 @@ const LoginRegister = (props) => {
     setEmail("");
     setErrorPhone("");
     setErrorEmail("");
+    setSignUpSuccess(false);
     setBtnSubmit(false);
   };
 
