@@ -43,7 +43,7 @@ const Portal = ({
       <>
         <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
           <label htmlFor="email">
-            Enter your "Mobile Number"
+            Enter your Mobile Number
             <span className="required">*</span>
           </label>
           <div className={styles.fieldGroup}>
