@@ -532,7 +532,7 @@ const LoginRegister = (props) => {
       });
 
       try {
-        const payload = { phoneNumberOtp: phoneNumber, sendBy };
+        const payload = { phoneNumber: phoneNumberOtp, sendBy };
 
         if (sendCounter > 2) {
           payload.push({ email: payloadResponseOtp.email });
