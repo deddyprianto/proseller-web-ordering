@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Button, Input } from "reactstrap";
+
 import PhoneInput from "react-phone-input-2";
 import cx from "classnames";
 
 import styles from "./styles.module.css";
 
-let Portal = ({
+const Portal = ({
   method,
   handleMethodChange,
   handlePhoneCheck,
   handleEmailCheck,
   handleChange,
   error,
-  loginByEmail,
-  loginByMobile,
+  isSubmitting,
   enableOrdering,
   companyInfo,
-  color
+  color,
 }) => {
-  let initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
-  let initialCodePhone = "+65";
+  const initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
+  const initialCodePhone = "+65";
 
-  let [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
-  let [value, setValue] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     if (initialCountry === "ID") setPhoneCountryCode("+62");
@@ -37,6 +37,115 @@ let Portal = ({
   useEffect(() => {
     setValue("");
   }, [method]);
+
+  const renderPhone = () => {
+    return (
+      <>
+        <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <label htmlFor="email">
+            Enter your Mobile Number
+            <span className="required">*</span>
+          </label>
+          <div className={styles.fieldGroup}>
+            <div className={styles.phoneCountryCodeGroup}>
+              <PhoneInput
+                country={initialCountry}
+                value={phoneCountryCode}
+                enableSearch={true}
+                autoFormat={false}
+                onChange={(e) => {
+                  setPhoneCountryCode(`+${e}`);
+                }}
+                onKeyDown={() => document.getElementById("phoneInput").focus()}
+                disableSearchIcon
+                inputStyle={{
+                  width: 0,
+                  border: `1px solid ${color}`,
+                  backgroundColor: color,
+                  height: 40,
+                  outline: "none",
+                  boxShadow: "none",
+                }}
+                dropdownStyle={{
+                  color: "#808080",
+                }}
+              ></PhoneInput>
+              <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
+            </div>
+            <Input
+              id="phoneInput"
+              value={value}
+              className={styles.phoneField}
+              onChange={(e) => {
+                setValue(e.target.value.replace(/[^0-9]/g, ""));
+              }}
+            ></Input>
+          </div>
+        </div>
+        {error && <div className={styles.errorMessage}>{error}</div>}
+        <Button
+          disabled={isSubmitting}
+          className={cx("button", styles.submitButton)}
+          onClick={() => {
+            handlePhoneCheck();
+          }}
+        >
+          Next
+        </Button>
+        <div
+          className={cx("modal-title", styles.switchMethodButton)}
+          onClick={() => handleMethodChange("email")}
+        >
+          Use Email Address to Sign In / Sign Up
+        </div>
+      </>
+    );
+  };
+
+  const renderEmail = () => {
+    return (
+      <>
+        <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <label htmlFor="email">
+            Enter your Email Address
+            <span className="required">*</span>
+          </label>
+          <div className={styles.fieldGroup}>
+            <input
+              type="email"
+              value={value}
+              className={cx(
+                "woocommerce-Input woocommerce-Input--text input-text",
+                styles.emailField
+              )}
+              onChange={(e) => setValue(e.target.value)}
+            ></input>
+          </div>
+        </div>
+        {error && <div className={styles.errorMessage}>{error}</div>}
+        <Button
+          disabled={isSubmitting}
+          className={cx("button", styles.submitButton)}
+          onClick={() => handleEmailCheck()}
+        >
+          Next
+        </Button>
+        <div
+          className={cx("modal-title", styles.switchMethodButton)}
+          onClick={() => handleMethodChange("phone")}
+        >
+          Use Mobile Number to Sign In / Sign Up
+        </div>
+      </>
+    );
+  };
+
+  const handleRenderByMethod = (key) => {
+    if (key === "phone") {
+      return renderPhone();
+    }
+    return renderEmail();
+  };
 
   return (
     <div className="modal-content" style={{ width: "100%" }}>
@@ -61,87 +170,8 @@ let Portal = ({
           </span>
         </button>
       </div>
-      <div className="modal-body">
-        <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
-          <label htmlFor="email">
-            {`Enter your ${
-              method === "phone" ? "Mobile Number" : "Email Address"
-            } `}
-            <span className="required">*</span>
-          </label>
-          <div className={styles.fieldGroup}>
-            {method === "phone" && (
-              <div className={styles.phoneCountryCodeGroup}>
-                <PhoneInput
-                  country={initialCountry}
-                  value={phoneCountryCode}
-                  enableSearch={true}
-                  autoFormat={false}
-                  onChange={(e) => {
-                    setPhoneCountryCode(`+${e}`);
-                  }}
-                  onKeyDown={() =>
-                    document.getElementById("phoneInput").focus()
-                  }
-                  disableSearchIcon
-                  inputStyle={{
-                    width: 0,
-                    border: `1px solid ${color}`,
-                    backgroundColor: color,
-                    height: 40,
-                    outline: 'none',
-                    boxShadow: 'none'
-                  }}
-                  dropdownStyle={{
-                    color: "#808080",
-                  }}
-                ></PhoneInput>
-                <div className={styles.phoneCountryCode}>
-                  {phoneCountryCode}
-                </div>
-              </div>
-            )}
-            {method === "phone" ? (
-              <Input
-                type="number"
-                id="phoneInput"
-                value={value}
-                className={styles.phoneField}
-                onChange={(e) => setValue(e.target.value)}
-              ></Input>
-            ) : (
-              <input
-                type="email"
-                value={value}
-                className={cx(
-                  "woocommerce-Input woocommerce-Input--text input-text",
-                  styles.emailField
-                )}
-                onChange={(e) => setValue(e.target.value)}
-              ></input>
-            )}
-          </div>
-        </div>
-        {error && <div className={styles.errorMessage}>{error}</div>}
-        <Button
-          className={cx("button", styles.submitButton)}
-          onClick={method === "phone" ? handlePhoneCheck : handleEmailCheck}
-        >
-          Next
-        </Button>
-        {((method === "email" && loginByMobile) ||
-          (method === "phone" && loginByEmail)) && (
-          <div
-            className={cx("modal-title", styles.switchMethodButton)}
-            onClick={() =>
-              handleMethodChange(method === "phone" ? "email" : "phone")
-            }
-          >
-            Use {method !== "phone" ? "Mobile Number" : "Email Address"} to Sign
-            In / Sign Up
-          </div>
-        )}
-      </div>
+
+      <div className="modal-body">{handleRenderByMethod(method)}</div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import "react-phone-input-2/lib/style.css";
 import { connect } from "react-redux";
 import generate from "password-generation";
@@ -19,1181 +19,6 @@ const Swal = require("sweetalert2");
 
 let max_retries = 0;
 
-class LoginRegister extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      method: this.props.defaultEmail || "phone",
-      userStatus: "NOT_CHECKED",
-      isLoading: false,
-      payloadResponse: {},
-
-      phoneNumber: this.props.defaultPhoneNumber || "",
-      modalShow: false,
-      errorPhone: "",
-      show: false,
-      errorLogin: "",
-      language: "English",
-      dictionary: {},
-      configLang: {},
-      infoCompany: null,
-
-      otpLastTry: null,
-      allowSendEmailOTP: true,
-      allowSendPhoneOTP: true,
-      otp: true,
-      box: false,
-      btnSend: true,
-      seconds: 0,
-      minutes: 0,
-      counter: "00",
-      counterMinutes: "00",
-      sendCounter: 0,
-      txtOpt: "",
-      errorOpt: "",
-      btnSubmit: false,
-      password: "",
-
-      name: "",
-      errorName: "",
-      email: this.props.defaultEmail || "",
-      errorEmail: "",
-
-      enableRegisterWithPassword: false,
-      errorPassword: "",
-      signUpSuccess: false,
-
-      loginByMobile: false,
-      loginByEmail: false,
-      enableSMSOTP: false,
-      enableWhatsappOTP: false,
-      enableOrdering: false,
-      minimumAge: null,
-    };
-  }
-
-  componentDidMount = async () => {
-    const otpData = lsLoad(config.prefix + "_otp") || null;
-    if (otpData) {
-      const waitTime = this.state.method === "phone" ? 60 : 300;
-      const countdown =
-        waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
-      if (countdown > 0) {
-        console.log("OTP cant be sent now");
-        const counterMinutes = Math.floor(countdown / 60);
-        const counter = countdown % 60;
-        this.setState({
-          allowSendEmailOTP: false,
-          allowSendPhoneOTP: false,
-          btnSend: false,
-          otpLastTry: new Date(otpData.lastTry),
-          sendCounter: otpData.counter,
-          minutes: counterMinutes,
-          counterMinutes: `${counterMinutes}`,
-          seconds: counter,
-          counter: `${counter}`,
-        });
-        let timer = setInterval(() => {
-          let seconds = this.state.seconds - 1;
-          let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-          this.setState({ counter, seconds });
-          if (seconds === 0) {
-            let minutes = this.state.minutes - 1;
-            let counterMinutes =
-              minutes.toString().length < 2 ? "0" + minutes : minutes;
-            this.setState({
-              allowSendPhoneOTP: true,
-              counterMinutes,
-              minutes,
-              seconds: 59,
-              counter: "59",
-            });
-            if (minutes < 0 && seconds === 0) {
-              clearInterval(timer);
-              this.setState({ btnSend: true, allowSendEmailOTP: true });
-            }
-          }
-        }, 1000);
-      }
-    }
-  };
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props !== prevProps) {
-      let enableRegisterWithPassword = this.props.setting.find((items) => {
-        return items.settingKey === "EnableRegisterWithPassword";
-      });
-      if (enableRegisterWithPassword) {
-        this.setState({
-          enableRegisterWithPassword: enableRegisterWithPassword.settingValue,
-        });
-      }
-
-      let loginByMobile = this.props.setting.find((items) => {
-        return items.settingKey === "LoginByMobile";
-      });
-      if (loginByMobile) {
-        this.setState({ loginByMobile: loginByMobile.settingValue || true });
-      }
-
-      let loginByEmail = this.props.setting.find((items) => {
-        return items.settingKey === "LoginByEmail";
-      });
-      if (loginByEmail) {
-        this.setState({ loginByEmail: loginByEmail.settingValue || true });
-      }
-      if (
-        loginByEmail &&
-        (loginByEmail.settingValue || true) &&
-        loginByMobile &&
-        !loginByMobile.settingValue
-      ) {
-        this.setState({ method: "email" });
-      }
-
-      let mobileOTP = this.props.setting.find((items) => {
-        return items.settingKey === "MobileOTP";
-      });
-      if (mobileOTP) {
-        let check = mobileOTP.settingValue !== "WHATSAPP";
-        this.setState({ enableSMSOTP: check, enableWhatsappOTP: !check });
-      }
-
-      let enableOrdering = this.props.setting.find((items) => {
-        return items.settingKey === "EnableOrdering";
-      });
-      if (enableOrdering) {
-        this.setState({ enableOrdering: enableOrdering.settingValue });
-      }
-
-      let minimumAge = this.props.setting.find((items) => {
-        return items.settingKey === "MinimumAge";
-      });
-      if (minimumAge) {
-        this.setState({ minimumAge: Number(minimumAge.settingValue) });
-      }
-      if (this.props.defaultEmail) {
-        this.setState({
-          email: this.props.defaultEmail,
-          method: "email",
-          userStatus: "NOT_REGISTERED",
-          payloadResponse: { email: this.props.defaultEmail },
-        });
-      }
-      if (this.props.defaultPhoneNumber) {
-        this.setState({
-          phoneNumber: this.props.defaultPhoneNumber,
-          method: "phone",
-          userStatus: "NOT_REGISTERED",
-          payloadResponse: { phoneNumber: this.props.defaultPhoneNumber },
-        });
-      }
-      if (this.props.referralCode) {
-        this.setState({
-          referralCode: this.props.referralCode,
-        });
-      }
-    }
-
-    if (this.state.method !== prevState.method) {
-      const otpData = lsLoad(config.prefix + "_otp") || null;
-      if (otpData) {
-        const waitTime = this.state.method === "phone" ? 60 : 300;
-        const countdown =
-          waitTime -
-          Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
-        if (countdown > 0) {
-          console.log("OTP cant be sent now");
-          const counterMinutes = Math.floor(countdown / 60);
-          const counter = countdown % 60;
-          this.setState({
-            allowSendEmailOTP: false,
-            allowSendPhoneOTP: false,
-            btnSend: false,
-            otpLastTry: new Date(otpData.lastTry),
-            sendCounter: otpData.counter,
-            minutes: counterMinutes,
-            counterMinutes: `${counterMinutes}`,
-            seconds: counter,
-            counter: `${counter}`,
-          });
-          let timer = setInterval(() => {
-            let seconds = this.state.seconds - 1;
-            let counter =
-              seconds.toString().length < 2 ? "0" + seconds : seconds;
-            this.setState({ counter, seconds });
-            if (seconds === 0) {
-              let minutes = this.state.minutes - 1;
-              let counterMinutes =
-                minutes.toString().length < 2 ? "0" + minutes : minutes;
-              this.setState({
-                allowSendPhoneOTP: true,
-                counterMinutes,
-                minutes,
-                seconds: 59,
-                counter: "59",
-              });
-              if (minutes < 0 && seconds === 0) {
-                clearInterval(timer);
-                this.setState({ btnSend: true, allowSendEmailOTP: true });
-              }
-            }
-          }, 1000);
-        }
-      }
-    }
-
-    if (this.state.isLoading !== prevState.isLoading) {
-      if (this.state.isLoading) Swal.showLoading();
-      else Swal.close();
-    }
-  }
-
-  handleInput = (jenis, data) => {
-    this.setState({ [jenis]: data });
-    if (jenis === "phoneNumber") {
-      this.setState({ errorPhone: "" });
-      if (
-        this.state.name !== "" &&
-        this.state.phoneNumber.trim() !== "" &&
-        this.state.phoneNumber.trim().length > 7
-      ) {
-        this.setState({ btnSubmit: true });
-      } else {
-        this.setState({ btnSubmit: false });
-      }
-    } else if (jenis === "txtOtp") {
-      if (data.length === 4) this.setState({ btnSubmit: true });
-      else this.setState({ btnSubmit: false });
-    } else if (jenis === "password") {
-      if (data.length >= 8) this.setState({ btnSubmit: true });
-      else this.setState({ btnSubmit: false });
-    } else if (jenis === "email") {
-      this.setState({ errorEmail: "" });
-      if (
-        this.state.name !== "" &&
-        this.state.email.toLowerCase().trim() !== ""
-      ) {
-        this.setState({ btnSubmit: true });
-      } else {
-        this.setState({ btnSubmit: false });
-      }
-    }
-  };
-
-  handleInputRegister = (jenis, data) => {
-    let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
-
-    this.setState({ [jenis]: data });
-    if (jenis === "name") {
-      if (/^[A-Za-z\s]+$/.test(data)) this.setState({ errorName: "" });
-      else this.setState({ errorName: "Name is alphabets only" });
-    } else if (jenis === "phoneNumber") {
-      this.setState({ errorPhone: "" });
-      if (
-        this.state.name !== "" &&
-        this.state.phoneNumber.trim() !== "" &&
-        this.state.phoneNumber.trim().length > 5 &&
-        !enableRegisterWithPassword
-      ) {
-        this.setState({ btnSubmit: true });
-      } else if (!enableRegisterWithPassword) {
-        this.setState({ btnSubmit: false });
-      } else {
-        this.setState({ btnSubmit: false });
-      }
-    } else if (jenis === "txtOtp") {
-      if (data.length === 4) this.setState({ btnSubmit: true });
-      else this.setState({ btnSubmit: false });
-    } else if (jenis === "password") {
-      this.setState({ errorPassword: "" });
-      if (data.length >= 8) this.setState({ btnSubmit: true });
-      else this.setState({ btnSubmit: false });
-    } else if (jenis === "email") {
-      this.setState({ errorEmail: "" });
-      if (
-        this.state.name !== "" &&
-        this.state.email.toLowerCase().trim() !== "" &&
-        !enableRegisterWithPassword
-      ) {
-        this.setState({ btnSubmit: true });
-      } else if (!enableRegisterWithPassword) {
-        this.setState({ btnSubmit: false });
-      }
-    }
-  };
-
-  handleMobileCheck = async () => {
-    let enableSMSOTP = this.state.enableSMSOTP;
-    let enableWhatsappOTP = this.state.enableWhatsappOTP;
-    let phoneNumber = this.state.phoneNumber;
-    if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
-
-    await Swal.showLoading()
-
-    if (phoneNumber === "" || phoneNumber.length <= 4) {
-      if (phoneNumber === "")
-        this.setState({ errorPhone: "Phone number is empty" });
-      if (phoneNumber.length <= 4)
-        this.setState({ errorPhone: "Phone number is not valid" });
-    } else {
-      this.setState({ errorPhone: "" });
-      let response = await this.props.dispatch(
-        AuthActions.check({ phoneNumber })
-      );
-      response = response.Data;
-      // console.log(response)
-      if (response && response.status === false) {
-        // Fetch Custom & Mandatory Fields
-        await this.props.dispatch(CustomerAction.mandatoryField());
-        await this.setState({
-          userStatus: "NOT_REGISTERED",
-          method: 'phone',
-          payloadResponse: { phoneNumber },
-          btnSubmit: false,
-        });
-        await Swal.close()
-      } else if (response) {
-        if (response.status === "SUSPENDED") {
-          Swal.fire(
-            "Suspended!",
-            "Your account has been suspended. Please contact administrator.",
-            "error"
-          );
-          await Swal.close()
-        } else if (response.confirmation) {
-          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP("SMSOTP");
-          if (!enableSMSOTP && enableWhatsappOTP)
-            this.handleSendOTP("WhatsappOTP");
-          this.setState({
-            userStatus: "REGISTERED",
-            method: 'phone',
-            payloadResponse: response.data,
-            btnSubmit: false,
-          });
-          await Swal.close()
-        } else {
-          if (enableSMSOTP && !enableWhatsappOTP) this.handleSendOTP("SMSOTP");
-          if (!enableSMSOTP && enableWhatsappOTP)
-            this.handleSendOTP("WhatsappOTP");
-            this.setState({
-              userStatus: "REGISTERED",
-              method: 'phone',
-              payloadResponse: response.data,
-              btnSubmit: false,
-            });
-            await Swal.close()
-        }
-      } else if (!response) {
-        if (max_retries < 5) {
-          max_retries += 1;
-          setTimeout(() => {
-            this.handleMobileCheck()
-          }, 2000)
-        } else {
-          Swal.fire({
-            title: 'Sorry...',
-            allowOutsideClick: false,
-            icon: 'info',
-            text: 'We need to refresh your app, then you can continue to register.',
-            confirmButtonText: 'Ok',
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.reload() 
-            }
-          })
-        }
-      }
-    }
-  };
-
-  handleSendOTP = async (sendBy = "SMSOTP") => {
-    if (!this.state.enableRegisterWithPassword) {
-      let payloadResponse = this.state.payloadResponse;
-      let phoneNumber = this.state.phoneNumber;
-      let sendCounter = this.state.sendCounter + 1;
-      if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
-
-      if (sendCounter <= 2) {
-        const countdown = 59;
-        const counterMinutes = Math.floor(countdown / 60);
-        const counter = countdown % 60;
-        this.setState({
-          isLoading: false,
-          sendCounter,
-          btnSend: false,
-          minutes: counterMinutes,
-          counterMinutes: `${counterMinutes}`,
-          seconds: counter,
-          counter: `${counter}`,
-        });
-        let timer = setInterval(() => {
-          let seconds = this.state.seconds - 1;
-          let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-          this.setState({ counter, seconds });
-          if (seconds === 0) {
-            clearInterval(timer);
-            this.setState({ btnSend: true });
-          }
-        }, 1000);
-      } else {
-        this.setState({
-          isLoading: false,
-          sendCounter,
-          btnSend: false,
-          minutes: 4,
-          counterMinutes: "04",
-          seconds: 59,
-          counter: "59",
-        });
-        let timer = setInterval(() => {
-          let seconds = this.state.seconds - 1;
-          let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-          this.setState({ counter, seconds });
-          if (seconds === 0) {
-            let minutes = this.state.minutes - 1;
-            let counterMinutes =
-              minutes.toString().length < 2 ? "0" + minutes : minutes;
-            this.setState({
-              counterMinutes,
-              minutes,
-              seconds: 59,
-              counter: "59",
-            });
-            if (minutes < 0 && seconds === 0) {
-              clearInterval(timer);
-              this.setState({ btnSend: true });
-            }
-          }
-        }, 1000);
-      }
-
-      const otpLastTry = new Date();
-      this.setState({ otpLastTry });
-      lsStore(config.prefix + "_otp", {
-        lastTry: otpLastTry,
-        counter: sendCounter,
-      });
-
-      try {
-        let payload = { phoneNumber: this.state.phoneNumber, sendBy };
-        if (this.state.sendCounter > 2)
-          payload = { email: payloadResponse.email };
-
-        // console.log(this.state.sendCounter)
-        console.log(payload);
-        let response = await this.props.dispatch(AuthActions.sendOtp(payload));
-        response = response.Data;
-        // console.log(response)
-
-        if (response.status === false) throw response.status;
-        this.setState({ isLoading: false, box: true });
-      } catch (error) {
-        console.log(error);
-        this.setState({ isLoading: false });
-      }
-    }
-  };
-
-  handleMobileLogin = async (withOtp) => {
-    let payloadResponse = this.state.payloadResponse;
-    Swal.showLoading();
-    try {
-      let payload = { phoneNumber: payloadResponse.phoneNumber };
-
-      if (withOtp) payload.codeOTP = this.state.txtOtp;
-      else payload.password = this.state.password;
-      // console.log(payload)
-      let response = await this.props.dispatch(AuthActions.login(payload));
-      response = response.Data;
-      // console.log(response)
-      if (response.status === false) throw response;
-      response.isLogin = true;
-      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
-      const lsKeyList = [];
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (
-          key.includes(`${config.prefix}_`) &&
-          !key.includes(`${config.prefix}_scanTable`) &&
-          !key.includes(`${config.prefix}_ordering_mode`)
-        ) {
-          lsKeyList.push(key);
-        }
-      }
-      lsKeyList.forEach((key) => localStorage.removeItem(key));
-      lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
-      lsStore(config.prefix + "_offlineCart", offlineCart, true);
-      const url = window.location.href.split("?")[0];
-      window.location.replace(url);
-      window.location.reload();
-    } catch (err) {
-      console.log(err);
-      let error = "Please try again.";
-      if (err.message) {
-        error = err.message;
-      }
-      Swal.fire("Oppss!", err.toString(), "error");
-    }
-  };
-
-  getAge = (DOB) => {
-    let today = new Date();
-    let birthDate = new Date(DOB);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    let m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age = age - 1;
-    }
-
-    return age;
-  };
-
-  handleMobileRegister = async () => {
-    let enableSMSOTP = this.state.enableSMSOTP;
-    let enableWhatsappOTP = this.state.enableWhatsappOTP;
-    let payloadResponse = this.state.payloadResponse;
-
-    try {
-      let password = this.state.password;
-      let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
-      let email = this.state.email.toLowerCase().trim();
-      const fields = this.props.fields || [];
-      let mandatory = [];
-      mandatory = fields.filter((items) => {
-        return items.signUpField === true && items.mandatory === true;
-      });
-      mandatory.push({ fieldName: "name", displayName: "Name" });
-      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
-      mandatory.push({ fieldName: "email", displayName: "Email" });
-      mandatory.push({ fieldName: "password", displayName: "Password" });
-
-      const customFields =
-        fields &&
-        fields.reduce((acc, field) => {
-          if (!field.signUpField) return { ...acc };
-          return {
-            ...acc,
-            [field.fieldName]: this.state[field.fieldName] || "",
-          };
-        });
-
-      if (customFields) {
-        delete customFields.displayName;
-        delete customFields.fieldName;
-        delete customFields.format;
-        delete customFields.mandatory;
-        delete customFields.sequence;
-        delete customFields.signUpField;
-        delete customFields.show;
-        delete customFields.type;
-      }
-
-      let errorEmail = "";
-      let cekEmail = regEmail.test(String(email).toLowerCase());
-      if (!cekEmail) errorEmail = "Email not valid";
-
-      let errorPassword = "";
-      if (password === "") errorPassword = "Password is empty";
-      if (password.length < 8)
-        errorPassword = "Password consists of 8 characters or more";
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password))
-        errorPassword = `Password must contain 1 uppercase, 1 lowercase, and 1 special character`;
-
-      if (
-        (enableRegisterWithPassword && errorPassword !== "") ||
-        errorEmail !== ""
-      ) {
-        this.setState({ errorPassword, errorEmail });
-        return;
-      }
-
-      if (!enableRegisterWithPassword)
-        password = generate([8], {
-          specials: 0,
-          nums: 2,
-          uppers: 3,
-          lowers: 3,
-        });
-
-      let payload = {
-        phoneNumber: payloadResponse.phoneNumber,
-        email: email,
-        password: password,
-        username: payloadResponse.phoneNumber,
-        ...(this.state.referralCode && {
-          referralCode: this.state.referralCode,
-        }),
-        ...customFields,
-      };
-
-      let listName = "";
-      mandatory.forEach((field) => {
-        if (
-          !payload[field.fieldName] ||
-          (payload[field.fieldName] &&
-            (payload[field.fieldName] === "" ||
-              payload[field.fieldName] === "Invalid date"))
-        ) {
-          if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== "" &&
-            this.state[field.fieldName] !== "Invalid date"
-          ) {
-            payload[field.fieldName] = this.state[field.fieldName];
-            field.check = true;
-          } else if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== "" &&
-            this.state[field.fieldName] !== "Invalid date" &&
-            field.defaultValue &&
-            field.defaultValue !== "-" &&
-            field.defaultValue !== ""
-          ) {
-            payload[field.fieldName] = field.defaultValue;
-            field.check = true;
-          } else {
-            listName += field.displayName + ", ";
-            field.check = false;
-          }
-        } else {
-          field.check = true;
-        }
-      });
-
-      mandatory = mandatory.filter((items) => {
-        return items.check === false;
-      });
-      if (mandatory.length > 0) {
-        listName = listName.substr(0, listName.length - 2);
-        Swal.fire("Oppss!", `${listName} is required`, "error");
-        return;
-      }
-
-      // Validate minimum age
-      if (this.state.minimumAge > 0) {
-        const currentAge = this.getAge(payload.birthDate);
-        if (currentAge < this.state.minimumAge) {
-          Swal.fire(
-            "Oppss!",
-            `The minimum age for registration is ${this.state.minimumAge} years old`,
-            "error"
-          );
-          return;
-        }
-      }
-
-      this.setState({ isLoading: true });
-      let response = await this.props.dispatch(
-        AuthActions.register(payload, enableRegisterWithPassword)
-      );
-      response = response.Data;
-      // console.log(response)
-      if (response.message) {
-        this.setState({ isLoading: false, errorLogin: response.message });
-        Swal.fire("Oppss!", response.message, "error");
-      } else {
-        enableRegisterWithPassword &&
-          lsStore(
-            config.prefix + "_account",
-            encryptor.encrypt({
-              phoneNumber: payloadResponse.phoneNumber,
-              email: this.state.email.toLowerCase().trim(),
-            }),
-            true
-          );
-
-        try {
-          this.setState({
-            payloadResponse: payload,
-            btnSubmit: false,
-            isLoading: false,
-            sendCounter: 0,
-            btnSend: false,
-          });
-          if (enableRegisterWithPassword) this.handleMobileLogin();
-          else {
-            this.setState({ showPage: "mobileSignUp", signUpSuccess: true });
-            if (enableSMSOTP && !enableWhatsappOTP)
-              this.handleSendOTP("SMSOTP");
-            if (!enableSMSOTP && enableWhatsappOTP)
-              this.handleSendOTP("WhatsappOTP");
-            if (enableSMSOTP && enableWhatsappOTP) this.handleSendOTP("SMSOTP");
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      let error = "Please try again.";
-      if (
-        err.response &&
-        err.response.data &&
-        err.response.data.Data &&
-        err.response.data.Data.message
-      ) {
-        error = err.response.data.Data.message;
-      }
-      Swal.fire("Oppss!", error, "error");
-      this.setState({ isLoading: false });
-    }
-  };
-
-  // Email login mode
-
-  handleEmailCheck = async () => {
-    this.setState({ isLoading: true });
-    let email = this.state.email.toLowerCase().trim();
-    if (email === "") {
-      this.setState({ errorEmail: "Email is empty", isLoading: false });
-    } else {
-      let cekEmail = regEmail.test(String(email).toLowerCase());
-      if (cekEmail) {
-        let response = await this.props.dispatch(AuthActions.check({ email }));
-        response = response.Data;
-        // console.log(response)
-        if (response.status === false) {
-          // Fetch Custom & Mandatory Fields
-          await this.props.dispatch(CustomerAction.mandatoryField());
-          await this.setState({
-            method: 'email',
-            userStatus: "NOT_REGISTERED",
-            payloadResponse: { email },
-            btnSubmit: false,
-          });
-        } else {
-          if (response.data.status === "SUSPENDED") {
-            Swal.fire(
-              "Suspended!",
-              "Your account has been suspended. Please contact administrator.",
-              "error"
-            );
-          } else if (response.data.confirmation) {
-            this.handleSendEmailOTP();
-            this.setState({
-              userStatus: "REGISTERED",
-              payloadResponse: response.data,
-              btnSubmit: false,
-            });
-          } else {
-            this.handleSendEmailOTP();
-            this.setState({
-              userStatus: "REGISTERED",
-              payloadResponse: response.data,
-              btnSubmit: false,
-            });
-          }
-        }
-      } else {
-        this.setState({ errorEmail: "Email not valid", isLoading: false });
-      }
-    }
-    this.setState({ isLoading: false });
-  };
-
-  handleSendEmailOTP = async () => {
-    if (!this.state.enableRegisterWithPassword) {
-      let sendCounter = this.state.sendCounter + 1;
-      const countdown = 299;
-      const counterMinutes = Math.floor(countdown / 60);
-      const counter = countdown % 60;
-      this.setState({
-        isLoading: false,
-        sendCounter,
-        btnSend: false,
-        minutes: 4,
-        counterMinutes,
-        seconds: counter,
-        counter: `${counter}`,
-      });
-
-      const otpLastTry = new Date();
-      this.setState({ otpLastTry });
-      lsStore(config.prefix + "_otp", {
-        lastTry: otpLastTry,
-        counter: sendCounter,
-      });
-
-      let timer = setInterval(() => {
-        let seconds = this.state.seconds - 1;
-        let counter = seconds.toString().length < 2 ? "0" + seconds : seconds;
-        this.setState({ counter, seconds });
-        if (seconds === 0) {
-          let minutes = this.state.minutes - 1;
-          let counterMinutes =
-            minutes.toString().length < 2 ? "0" + minutes : minutes;
-          this.setState({
-            counterMinutes,
-            minutes,
-            seconds: 59,
-            counter: "59",
-          });
-          if (minutes < 0 && seconds === 0) {
-            clearInterval(timer);
-            this.setState({ btnSend: true });
-          }
-        }
-      }, 1000);
-
-      try {
-        let payload = { email: this.state.email.toLowerCase() };
-        let response = await this.props.dispatch(AuthActions.sendOtp(payload));
-        response = response.Data;
-        // console.log(response)
-
-        if (response.status === false) throw response.status;
-        this.setState({ isLoading: false, box: true });
-      } catch (error) {
-        console.log(error);
-        this.setState({ isLoading: false });
-      }
-    }
-  };
-
-  handleEmailLogin = async (withOtp) => {
-    let payloadResponse = this.state.payloadResponse;
-    Swal.showLoading();
-    try {
-      let payload = { email: payloadResponse.email };
-
-      if (withOtp) payload.codeOTP = this.state.txtOtp;
-      else payload.password = this.state.password;
-      console.log(payload);
-      let response = await this.props.dispatch(AuthActions.login(payload));
-      response = response.Data;
-      console.log(response);
-      if (response.status === false) throw response;
-      response.isLogin = true;
-      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
-      const lsKeyList = [];
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (
-          key.includes(`${config.prefix}_`) &&
-          !key.includes(`${config.prefix}_scanTable`) &&
-          !key.includes(`${config.prefix}_ordering_mode`)
-        ) {
-          lsKeyList.push(key);
-        }
-      }
-      lsKeyList.forEach((key) => localStorage.removeItem(key));
-      lsStore(config.prefix + "_account", encryptor.encrypt(response), true);
-      if (offlineCart !== null) {
-        lsStore(config.prefix + "_offlineCart", offlineCart, true);
-      }
-      const url = window.location.href.split("?")[0];
-      window.location.replace(url);
-      window.location.reload();
-    } catch (err) {
-      console.log(err);
-      Swal.close();
-      let error = "Please try again.";
-      if (err.message) {
-        error = err.message;
-      }
-      Swal.fire("Oppss!", error, "error");
-    }
-  };
-
-  handleEmailRegister = async () => {
-    let phoneNumber = this.state.phoneNumber;
-    let password = this.state.password;
-    let enableRegisterWithPassword = this.state.enableRegisterWithPassword;
-    if (phoneNumber.charAt(0) !== "+") phoneNumber = "+" + phoneNumber.trim();
-
-    let payloadResponse = this.state.payloadResponse;
-
-    try {
-      let errorPhone = "";
-      const fields = this.props.fields || [];
-      let mandatory = [];
-      mandatory = fields.filter((items) => {
-        return items.signUpField === true && items.mandatory === true;
-      });
-      mandatory.push({ fieldName: "name", displayName: "Name" });
-      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
-      mandatory.push({ fieldName: "email", displayName: "Email" });
-      mandatory.push({ fieldName: "password", displayName: "Password" });
-
-      const customFields =
-        fields &&
-        fields.reduce((acc, field) => {
-          if (!field.signUpField) return { ...acc };
-          return {
-            ...acc,
-            [field.fieldName]: this.state[field.fieldName] || "",
-          };
-        });
-
-      if (customFields) {
-        delete customFields.displayName;
-        delete customFields.fieldName;
-        delete customFields.format;
-        delete customFields.mandatory;
-        delete customFields.sequence;
-        delete customFields.signUpField;
-        delete customFields.show;
-        delete customFields.type;
-      }
-
-      if (phoneNumber === "") errorPhone = "Phone number is empty";
-      if (phoneNumber.length < 6) errorPhone = "Phone number is not valid";
-
-      let errorPassword = "";
-      if (password === "") errorPassword = "Password is empty";
-      if (password.length < 8)
-        errorPassword = "Password consists of 8 characters or more";
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password))
-        errorPassword = `Password must contain 1 uppercase, 1 lowercase, and 1 special character`;
-
-      if (
-        (enableRegisterWithPassword && errorPassword !== "") ||
-        errorPhone !== ""
-      ) {
-        this.setState({ errorPassword, errorPhone });
-        return;
-      }
-
-      if (!enableRegisterWithPassword)
-        password = generate([8], {
-          specials: 0,
-          nums: 2,
-          uppers: 3,
-          lowers: 3,
-        });
-
-      let payload = {
-        phoneNumber: phoneNumber,
-        email: payloadResponse.email.toLowerCase(),
-        password: password,
-        username: payloadResponse.email.toLowerCase(),
-        ...(this.state.referralCode && {
-          referralCode: this.state.referralCode,
-        }),
-        ...customFields,
-      };
-
-      let listName = "";
-      mandatory.forEach((field) => {
-        if (
-          !payload[field.fieldName] ||
-          (payload[field.fieldName] &&
-            (payload[field.fieldName] === "" ||
-              payload[field.fieldName] === "Invalid date"))
-        ) {
-          if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== "" &&
-            this.state[field.fieldName] !== "Invalid date"
-          ) {
-            payload[field.fieldName] = this.state[field.fieldName];
-            field.check = true;
-          } else if (
-            this.state[field.fieldName] &&
-            this.state[field.fieldName] !== "" &&
-            this.state[field.fieldName] !== "Invalid date" &&
-            field.defaultValue &&
-            field.defaultValue !== "-" &&
-            field.defaultValue !== ""
-          ) {
-            payload[field.fieldName] = field.defaultValue;
-            field.check = true;
-          } else {
-            listName += field.displayName + ", ";
-            field.check = false;
-          }
-        } else {
-          field.check = true;
-        }
-      });
-
-      mandatory = mandatory.filter((items) => {
-        return items.check === false;
-      });
-      if (mandatory.length > 0) {
-        listName = listName.substr(0, listName.length - 2);
-        Swal.fire("Oppss!", `${listName} is required`, "error");
-        return;
-      }
-
-      // Validate minimum age
-      if (this.state.minimumAge > 0) {
-        const currentAge = this.getAge(payload.birthDate);
-        if (currentAge < this.state.minimumAge) {
-          Swal.fire(
-            "Oppss!",
-            `The minimum age for registration is ${this.state.minimumAge} years old`,
-            "error"
-          );
-          return;
-        }
-      }
-
-      this.setState({ isLoading: true });
-      let response = await this.props.dispatch(
-        AuthActions.register(payload, enableRegisterWithPassword)
-      );
-      response = response.Data;
-      // console.log(response)
-      if (response.message) {
-        this.setState({ isLoading: false, errorLogin: response.message });
-        Swal.fire("Oppss!", response.message, "error");
-      } else {
-        enableRegisterWithPassword &&
-          lsStore(
-            config.prefix + "_account",
-            encryptor.encrypt({
-              phoneNumber: phoneNumber,
-              email: payloadResponse.email,
-            }),
-            true
-          );
-
-        try {
-          this.setState({
-            payloadResponse: payload,
-            btnSubmit: false,
-            isLoading: false,
-            sendCounter: 2,
-            btnSend: false,
-          });
-          if (enableRegisterWithPassword) this.handleEmailLogin();
-          else {
-            this.setState({ showPage: "emailSignUp", signUpSuccess: true });
-            this.handleSendEmailOTP();
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      let error = "Please try again.";
-      if (
-        err.response &&
-        err.response.data &&
-        err.response.data.Data &&
-        err.response.data.Data.message
-      ) {
-        error = err.response.data.Data.message;
-      }
-      Swal.fire("Oppss!", error, "error");
-      this.setState({ isLoading: false });
-    }
-  };
-
-  render() {
-    let {
-      // isLoading,
-      userStatus,
-      method,
-      email,
-      phoneNumber,
-      loginByEmail,
-      loginByMobile,
-      enableSMSOTP,
-      enableWhatsappOTP,
-      enableOrdering,
-      minimumAge,
-    } = this.state;
-    return (
-      <div>
-        {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
-        <div
-          className="modal fade"
-          id="login-register-modal"
-          tabIndex={-1}
-          role="dialog"
-          aria-labelledby="exampleModalCenterTitle"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            {userStatus === "REGISTERED" ? (
-              <Login
-                method={method}
-                username={method === "email" ? email : phoneNumber}
-                enablePassword={this.state.enableRegisterWithPassword}
-                handleSubmit={
-                  method === "email"
-                    ? this.handleEmailLogin
-                    : this.handleMobileLogin
-                }
-                handleBackButtonClick={() =>
-                  this.setState({ userStatus: "NOT_CHECKED" })
-                }
-                handleChange={this.handleInput}
-                sendOtpToPhone={(sendBy) => this.handleSendOTP(sendBy)}
-                sendOtpToEmail={this.handleSendEmailOTP}
-                isSubmitting={!this.state.btnSubmit}
-                otpTimer={{
-                  isSending: !this.state.btnSend,
-                  sendCounter: this.state.sendCounter,
-                  counterMinutes: this.state.counterMinutes,
-                  counter: this.state.counter,
-                }}
-                enableSMSOTP={enableSMSOTP}
-                enableWhatsappOTP={enableWhatsappOTP}
-                enableOrdering={enableOrdering}
-              ></Login>
-            ) : userStatus === "NOT_REGISTERED" ? (
-              <SignUp
-                method={method}
-                initialUserData={this.state.payloadResponse}
-                handleBackButtonClick={() =>
-                  this.setState({ userStatus: "NOT_CHECKED" })
-                }
-                handleChange={this.handleInputRegister}
-                handleEmailSubmit={this.handleEmailRegister}
-                handlePhoneSubmit={this.handleMobileRegister}
-                sendOtpToPhone={(sendBy) => this.handleSendOTP(sendBy)}
-                sendOtpToEmail={this.handleSendEmailOTP}
-                handleEmailLogin={this.handleEmailLogin}
-                handlePhoneLogin={this.handleMobileLogin}
-                signUpSuccess={this.state.signUpSuccess}
-                isSubmitting={!this.state.btnSubmit}
-                otpTimer={{
-                  isSending: !this.state.btnSend,
-                  sendCounter: this.state.sendCounter,
-                  counterMinutes: this.state.counterMinutes,
-                  counter: this.state.counter,
-                }}
-                errorPhone={this.state.errorPhone}
-                errorEmail={this.state.errorEmail}
-                errorPassword={this.state.errorPassword}
-                errorName={this.state.errorName}
-                enablePassword={this.state.enableRegisterWithPassword}
-                enableOrdering={enableOrdering}
-                enableSMSOTP={enableSMSOTP}
-                enableWhatsappOTP={enableWhatsappOTP}
-                minimumAge={minimumAge}
-              ></SignUp>
-            ) : (
-              <Portal
-                color={this.props.color.background}
-                method={method}
-                handleMethodChange={(value) => {
-                  this.setState({ method: value });
-                }}
-                handlePhoneCheck={this.handleMobileCheck}
-                handleChange={this.handleInput}
-                handleEmailCheck={this.handleEmailCheck}
-                error={this.state.errorPhone || this.state.errorEmail}
-                loginByEmail={loginByEmail}
-                loginByMobile={loginByMobile}
-                enableOrdering={enableOrdering}
-                companyInfo={this.props.companyInfo}
-              ></Portal>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
 const reducer = "masterdata";
 
 const mapStateToProps = (state) => ({
@@ -1211,5 +36,1150 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
+
+const LoginRegister = (props) => {
+  const [method, setMethod] = useState(props.defaultEmail || "phone");
+  const [userStatus, setUserStatus] = useState("NOT_CHECKED");
+  const [payloadResponse, setPayloadResponse] = useState({});
+
+  const [btnSend, setBtnSend] = useState(true);
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [counter, setCounter] = useState("00");
+  const [counterMinutes, setCounterMinutes] = useState("00");
+  const [sendCounter, setSendCounter] = useState(0);
+  const [txtOtp, setTxtOtp] = useState("");
+  const [btnSubmit, setBtnSubmit] = useState(false);
+  const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState(props.defaultEmail || "");
+  const [birthDate, setBirthDate] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(
+    props.defaultPhoneNumber || ""
+  );
+
+  const [enableRegisterWithPassword, setEnableRegisterWithPassword] =
+    useState(false);
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
+
+  const [loginByMobile, setLoginByMobile] = useState(false);
+  const [loginByEmail, setLoginByEmail] = useState(false);
+  const [enableSMSOTP, setEnableSMSOTP] = useState(false);
+  const [enableWhatsappOTP, setEnableWhatsappOTP] = useState(false);
+  const [enableOrdering, setEnableOrdering] = useState(false);
+  const [minimumAge, setMinimumAge] = useState(null);
+
+  const [errorName, setErrorName] = useState("");
+  const [errorPassword, setErrorPassword] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  //   const [errorBirthdate, setErrorBirthDate] = useState("");
+  const [errorPhone, setErrorPhone] = useState("");
+  const [inputs, setInputs] = useState({});
+
+  useEffect(() => {
+    setErrorPhone("");
+    setErrorEmail("");
+    const otpData = lsLoad(config.prefix + "_otp") || null;
+    if (otpData) {
+      const waitTime = method === "phone" ? 60 : 300;
+      const countdown =
+        waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
+      if (countdown > 0) {
+        const counterMinutesCountdown = Math.floor(countdown / 60);
+        const counterCountdown = countdown % 60;
+
+        setBtnSend(false);
+        setSendCounter(otpData.counter || 0);
+        setMinutes(counterMinutesCountdown);
+        setCounterMinutes(`${counterMinutesCountdown}`);
+        setSeconds(counterCountdown);
+        setCounter(`${counterCountdown}`);
+
+        let secondsTimer = counterCountdown;
+        let timer = setInterval(() => {
+          secondsTimer = secondsTimer - 1;
+          let counterTimer =
+            secondsTimer.toString().length < 2
+              ? "0" + secondsTimer
+              : secondsTimer;
+
+          setCounter(counterTimer);
+          setSeconds(secondsTimer);
+
+          if (secondsTimer === 0) {
+            let minutesTimer = minutes - 1;
+            let counterMinutesTimer =
+              minutesTimer.toString().length < 2
+                ? "0" + minutesTimer
+                : minutesTimer;
+
+            setCounterMinutes(counterMinutesTimer);
+            setMinutes(minutesTimer);
+            setSeconds(59);
+            setCounter("59");
+
+            if (minutesTimer < 0 && secondsTimer === 0) {
+              clearInterval(timer);
+              setBtnSend(true);
+            }
+          }
+        }, 1000);
+      }
+    }
+  }, [method]);
+
+  useEffect(() => {
+    Swal.showLoading();
+    if (props) {
+      const enableRegisterWithPassword = props.setting.find((items) => {
+        return items.settingKey === "EnableRegisterWithPassword";
+      });
+      if (enableRegisterWithPassword) {
+        setEnableRegisterWithPassword(enableRegisterWithPassword.settingValue);
+      }
+
+      const loginByMobile = props.setting.find((items) => {
+        return (
+          items.settingKey === "LoginByMobile" && items.settingValue === true
+        );
+      });
+      if (loginByMobile) {
+        setLoginByMobile(true);
+        setMethod("phone");
+      }
+
+      const loginByEmail = props.setting.find((items) => {
+        return (
+          items.settingKey === "LoginByEmail" && items.settingValue === true
+        );
+      });
+      if (loginByEmail) {
+        setLoginByEmail(true);
+        setMethod("email");
+      }
+
+      const mobileOTP = props.setting.find((items) => {
+        return items.settingKey === "MobileOTP";
+      });
+      if (mobileOTP) {
+        const check = mobileOTP.settingValue === "WHATSAPP";
+        setEnableSMSOTP(!check);
+        setEnableWhatsappOTP(check);
+      }
+
+      const enableOrdering = props.setting.find((items) => {
+        return items.settingKey === "EnableOrdering";
+      });
+      if (enableOrdering) {
+        setEnableOrdering(enableOrdering.settingValue);
+      }
+
+      const minimumAge = props.setting.find((items) => {
+        return items.settingKey === "MinimumAge";
+      });
+      if (minimumAge) {
+        setMinimumAge(Number(minimumAge.settingValue));
+      }
+
+      if (props.defaultEmail) {
+        setEmail(props.defaultEmail);
+        setMethod("email");
+        setUserStatus("NOT_REGISTERED");
+        setPayloadResponse({ email: props.defaultEmail });
+      }
+      if (props.defaultPhoneNumber) {
+        setEmail(props.defaultPhoneNumber);
+        setMethod("phone");
+        setUserStatus("NOT_REGISTERED");
+        setPayloadResponse({ phoneNumber: props.defaultPhoneNumber });
+      }
+      if (props.referralCode) {
+        setReferralCode(props.referralCode);
+      }
+    }
+
+    Swal.close();
+  }, [props]);
+
+  const handleInput = (jenis, data) => {
+    if (jenis) {
+      setInputs({ ...inputs, [jenis]: data });
+    }
+    switch (jenis) {
+      case "phoneNumber":
+        const number = data.trim();
+        setPhoneNumber(data);
+        if (number && number.length > 7) {
+          setErrorPhone("");
+          setBtnSubmit(true);
+        } else if (number.length === 3) {
+          setErrorPhone("");
+          setBtnSubmit(false);
+        } else {
+          setErrorPhone("PhoneNumber not valid");
+          setBtnSubmit(false);
+        }
+        break;
+
+      case "txtOtp":
+        setTxtOtp(data);
+        if (data.length === 4) {
+          setBtnSubmit(true);
+        } else {
+          setBtnSubmit(false);
+        }
+        break;
+
+      case "password":
+        setPassword(data);
+        if (data === "") {
+          setBtnSubmit(false);
+          return;
+        }
+        if (data.length < 8) {
+          setBtnSubmit(false);
+          setErrorPassword("Password consists of 8 characters or more");
+          return;
+        }
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
+          setBtnSubmit(false);
+          setErrorPassword(
+            `Password must contain 1 uppercase, 1 lowercase, and 1 special character`
+          );
+          return;
+        } else {
+          setErrorPassword("");
+          setBtnSubmit(true);
+        }
+        break;
+
+      case "email":
+        const email = data.toLowerCase().trim();
+        const checkEmail = regEmail.test(String(email).toLowerCase());
+
+        setInputs({ ...inputs, [jenis]: email });
+        setEmail(email);
+        if (email === "") {
+          //   setErrorEmail("Email is required");
+          setBtnSubmit(false);
+          return;
+        } else if (!checkEmail) {
+          setErrorEmail("Email not valid");
+          setBtnSubmit(false);
+        } else {
+          setErrorEmail("");
+          setBtnSubmit(true);
+        }
+        break;
+
+      default:
+        if (data) {
+          setBtnSubmit(true);
+        } else {
+          setBtnSubmit(false);
+        }
+        return;
+    }
+  };
+
+  const handleInputRegister = (jenis, data) => {
+    if (jenis) {
+      setInputs({ ...inputs, [jenis]: data });
+    }
+    switch (jenis) {
+      case "name":
+        setName(data);
+        if (data === "") {
+          setErrorName("Name is required");
+          setBtnSubmit(false);
+        } else if (/^[A-Za-z\s]+$/.test(data)) {
+          setErrorName("");
+          setBtnSubmit(true);
+        } else {
+          setErrorName("Name is alphabets only");
+          setBtnSubmit(false);
+        }
+        break;
+
+      case "phoneNumber":
+        const number = data.trim();
+        setPhoneNumber(data);
+        if (number && number.length > 7) {
+          setErrorPhone("");
+          setBtnSubmit(true);
+        } else if (number.length === 3) {
+          setErrorPhone("");
+          setBtnSubmit(false);
+        } else {
+          setErrorPhone("PhoneNumber not valid");
+          setBtnSubmit(false);
+        }
+        break;
+
+      case "txtOtp":
+        setTxtOtp(data);
+        if (data.length === 4) {
+          setBtnSubmit(true);
+        } else {
+          setBtnSubmit(false);
+        }
+        break;
+
+      case "passwords":
+        setPassword(data);
+        if (data === "") {
+          setErrorPassword("Password is required");
+          setBtnSubmit(false);
+        } else if (data.length < 8) {
+          setErrorPassword("Password consists of 8 characters or more");
+          setBtnSubmit(false);
+        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
+          setErrorPassword(
+            `Password must contain 1 uppercase, 1 lowercase, and 1 special character`
+          );
+          setBtnSubmit(false);
+        } else {
+          setErrorPassword("");
+          setBtnSubmit(true);
+        }
+        break;
+
+      case "email":
+        const email = data.toLowerCase().trim();
+        const checkEmail = regEmail.test(String(email).toLowerCase());
+
+        setInputs({ ...inputs, [jenis]: email });
+        setEmail(email);
+
+        if (email === "") {
+          setErrorEmail("Email is required");
+          setBtnSubmit(false);
+          return;
+        } else if (!checkEmail) {
+          setErrorEmail("Email not valid");
+          setBtnSubmit(false);
+        } else {
+          setErrorEmail("");
+          setBtnSubmit(true);
+        }
+        break;
+
+      case "birthDate":
+        setBirthDate(data);
+        if (data) {
+          setBtnSubmit(true);
+        } else {
+          setBtnSubmit(false);
+        }
+        break;
+
+      default:
+        if (data) {
+          setBtnSubmit(true);
+        } else {
+          setBtnSubmit(false);
+        }
+        return;
+    }
+  };
+
+  const handleMobileCheck = async (countryCode) => {
+    await Swal.showLoading();
+
+    let response = await props.dispatch(AuthActions.check({ phoneNumber }));
+
+    response = response.Data;
+
+    if (response && response.status === false) {
+      // Fetch Custom & Mandatory Fields
+      await props.dispatch(CustomerAction.mandatoryField());
+      setUserStatus("NOT_REGISTERED");
+      setMethod("phone");
+      setPayloadResponse({ phoneNumber });
+      setBtnSubmit(false);
+    } else if (response) {
+      if (response.status === "SUSPENDED") {
+        Swal.fire(
+          "Suspended!",
+          "Your account has been suspended. Please contact administrator.",
+          "error"
+        );
+      } else {
+        if (enableSMSOTP && !enableWhatsappOTP) {
+          handleSendOTP("SMSOTP");
+        }
+        if (!enableSMSOTP && enableWhatsappOTP) {
+          handleSendOTP("whatsappOTP");
+        }
+
+        setUserStatus("REGISTERED");
+        setMethod("phone");
+        setPayloadResponse(response.data);
+        setBtnSubmit(false);
+
+        await Swal.close();
+      }
+    } else {
+      if (max_retries < 5) {
+        max_retries += 1;
+        setTimeout(() => {
+          handleMobileCheck();
+        }, 2000);
+      } else {
+        Swal.fire({
+          title: "Sorry...",
+          allowOutsideClick: false,
+          icon: "info",
+          text: "We need to refresh your app, then you can continue to register.",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      }
+    }
+
+    await Swal.close();
+  };
+
+  const handleSendOTP = async (sendBy = "SMSOTP") => {
+    if (!enableRegisterWithPassword) {
+      let payloadResponseOtp = payloadResponse;
+      let phoneNumberOtp = phoneNumber;
+      let sendCounterOtp = sendCounter + 1;
+      if (phoneNumberOtp.charAt(0) !== "+")
+        phoneNumberOtp = "+" + phoneNumberOtp.trim();
+
+      setSendCounter(sendCounterOtp);
+      setBtnSend(false);
+
+      if (sendCounter <= 2) {
+        const countdown = 59;
+        const counterMinutesCountDown = Math.floor(countdown / 60);
+        const counterCountDown = countdown % 60;
+
+        setSendCounter(sendCounterOtp);
+        setMinutes(counterMinutesCountDown);
+        setCounterMinutes(`${counterMinutesCountDown}`);
+        setSeconds(counterCountDown);
+        setCounter(`${counterCountDown}`);
+
+        let secondsTimer = counterCountDown;
+
+        let timer = setInterval(() => {
+          secondsTimer = secondsTimer - 1;
+          const counterTimer =
+            secondsTimer.toString().length < 2
+              ? "0" + secondsTimer
+              : secondsTimer;
+
+          setCounter(counterTimer);
+          setSeconds(secondsTimer);
+
+          if (secondsTimer === 0) {
+            clearInterval(timer);
+
+            setBtnSend(true);
+          }
+        }, 1000);
+      } else {
+        setSendCounter(sendCounterOtp);
+        setMinutes(4);
+        setCounterMinutes("04");
+        setSeconds(59);
+        setCounter("59");
+
+        let secondsTimer = 0;
+        let minutesTimer = 0;
+
+        let timer = setInterval(() => {
+          secondsTimer = secondsTimer - 1;
+          let counterTimer =
+            secondsTimer.toString().length < 2
+              ? "0" + secondsTimer
+              : secondsTimer;
+
+          setCounter(counterTimer);
+          setSeconds(secondsTimer);
+
+          if (secondsTimer === 0) {
+            minutesTimer = minutesTimer - 1;
+            let counterMinutesTimer =
+              minutesTimer.toString().length < 2
+                ? "0" + minutesTimer
+                : minutesTimer;
+
+            setCounterMinutes(counterMinutesTimer);
+            setMinutes(minutesTimer);
+            setCounter("59");
+            setSeconds(59);
+
+            if (minutesTimer < 0 && seconds === 0) {
+              clearInterval(timer);
+              setBtnSend(true);
+            }
+          }
+        }, 1000);
+      }
+
+      const otpLastTry = new Date();
+      lsStore(config.prefix + "_otp", {
+        lastTry: otpLastTry,
+        counterTimer: sendCounterOtp,
+      });
+
+      try {
+        const payload = { phoneNumberOtp: phoneNumber, sendBy };
+
+        if (sendCounter > 2) {
+          payload.push({ email: payloadResponseOtp.email });
+        }
+
+        let response = await props.dispatch(AuthActions.sendOtp(payload));
+        response = response.Data;
+
+        if (response.status === false) {
+          throw response.status;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const handleMobileLogin = async (withOtp) => {
+    Swal.showLoading();
+
+    try {
+      let payload = { phoneNumber: payloadResponse.phoneNumber };
+
+      if (withOtp) {
+        payload.codeOTP = txtOtp;
+      } else {
+        payload.password = password;
+      }
+
+      const response = await props.dispatch(AuthActions.login(payload));
+      const responseData = response.Data;
+
+      if (responseData.status === false) {
+        throw responseData;
+      }
+
+      responseData.isLogin = true;
+
+      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
+      const lsKeyList = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (
+          key.includes(`${config.prefix}_`) &&
+          !key.includes(`${config.prefix}_scanTable`) &&
+          !key.includes(`${config.prefix}_ordering_mode`)
+        ) {
+          lsKeyList.push(key);
+        }
+      }
+      lsKeyList.forEach((key) => localStorage.removeItem(key));
+      lsStore(
+        config.prefix + "_account",
+        encryptor.encrypt(responseData),
+        true
+      );
+      lsStore(config.prefix + "_offlineCart", offlineCart, true);
+      const url = window.location.href.split("?")[0];
+      window.location.replace(url);
+      window.location.reload();
+    } catch (err) {
+      let error = "Please try again.";
+      if (err.message) {
+        error = err.message;
+      }
+      Swal.fire("Oppss!", error, "error");
+    }
+  };
+
+  const getAge = (DOB) => {
+    let today = new Date();
+    let birthDate = new Date(DOB);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age = age - 1;
+    }
+
+    return age;
+  };
+
+  const handleMobileRegister = async () => {
+    try {
+      const fields = props.fields || [];
+
+      let mandatory =
+        fields.filter(
+          (items) => items.signUpField === true && items.mandatory === true
+        ) || [];
+
+      mandatory.push({ fieldName: "name", displayName: "Name" });
+      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
+      mandatory.push({ fieldName: "email", displayName: "Email" });
+      mandatory.push({ fieldName: "password", displayName: "Password" });
+
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) {
+            return { ...acc };
+          }
+          return {
+            ...acc,
+            [field.fieldName]: inputs[field.fieldName] || "",
+          };
+        });
+
+      if (customFields) {
+        delete customFields.displayName;
+        delete customFields.fieldName;
+        delete customFields.format;
+        delete customFields.mandatory;
+        delete customFields.sequence;
+        delete customFields.signUpField;
+        delete customFields.show;
+        delete customFields.type;
+      }
+
+      const randomPassword = generate([8], {
+        specials: 0,
+        nums: 2,
+        uppers: 3,
+        lowers: 3,
+      });
+
+      let payload = {
+        name,
+        email,
+        password: enableRegisterWithPassword ? password : randomPassword,
+        referralCode,
+        birthDate,
+        username: payloadResponse.phoneNumber,
+        phoneNumber: payloadResponse.phoneNumber,
+        ...customFields,
+      };
+
+      let listName = "";
+
+      mandatory.forEach((field) => {
+        const name = field.fieldName;
+        const defaultValue = field.defaultValue;
+
+        if (payload[name] && payload[name] !== "Invalid date") {
+          field.check = true;
+        } else if (defaultValue && defaultValue !== "-") {
+          payload[name] = defaultValue;
+          field.check = true;
+        } else if (inputs[name]) {
+          payload[name] = inputs[name];
+        } else {
+          listName += field.displayName + ", ";
+          field.check = false;
+        }
+      });
+
+      mandatory = mandatory.filter((items) => {
+        return items.check === false;
+      });
+
+      if (mandatory.length > 0) {
+        listName = listName.substr(0, listName.length - 2);
+        Swal.fire("Oppss!", `${listName} is required`, "error");
+        return;
+      }
+
+      // Validate minimum age
+      if (minimumAge > 0) {
+        const currentAge = getAge(payload.birthDate);
+        if (currentAge < minimumAge) {
+          Swal.fire(
+            "Oppss!",
+            `The minimum age for registration is ${minimumAge} years old`,
+            "error"
+          );
+          return;
+        }
+      }
+
+      Swal.showLoading();
+
+      const response = await props.dispatch(
+        AuthActions.register(payload, enableRegisterWithPassword)
+      );
+      const responseMessage = response.Data.message || "";
+
+      if (responseMessage) {
+        Swal.fire("Oppss!", responseMessage, "error");
+      } else {
+        enableRegisterWithPassword &&
+          lsStore(
+            config.prefix + "_account",
+            encryptor.encrypt({
+              phoneNumber: payloadResponse.phoneNumber,
+              email,
+            }),
+            true
+          );
+
+        try {
+          if (enableRegisterWithPassword) {
+            await handleMobileLogin();
+          } else {
+            setSignUpSuccess(true);
+            if (enableSMSOTP && !enableWhatsappOTP) {
+              await handleSendOTP("SMSOTP");
+            }
+            if (!enableSMSOTP && enableWhatsappOTP) {
+              await handleSendOTP("WhatsappOTP");
+            }
+            if (enableSMSOTP && enableWhatsappOTP) {
+              await handleSendOTP("SMSOTP");
+            }
+          }
+
+          Swal.close();
+
+          setPayloadResponse(payload);
+          setBtnSubmit(false);
+          setSendCounter(0);
+          setBtnSend(false);
+        } catch (error) {
+          Swal.close();
+        }
+      }
+    } catch (err) {
+      let error = "Please try again.";
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.Data &&
+        err.response.data.Data.message
+      ) {
+        error = err.response.data.Data.message;
+      }
+      Swal.fire("Oppss!", error, "error");
+    }
+  };
+
+  // Email login mode
+
+  const handleEmailCheck = async () => {
+    Swal.showLoading();
+
+    if (email) {
+      let response = await props.dispatch(AuthActions.check({ email }));
+      response = response.Data;
+      // //
+      if (response.status === false) {
+        // Fetch Custom & Mandatory Fields
+        await props.dispatch(CustomerAction.mandatoryField());
+        setMethod("email");
+        setUserStatus("NOT_REGISTERED");
+        setPayloadResponse({ email });
+        setBtnSubmit(false);
+        Swal.close();
+      } else {
+        if (response.data.status === "SUSPENDED") {
+          Swal.fire(
+            "Suspended!",
+            "Your account has been suspended. Please contact administrator.",
+            "error"
+          );
+          return;
+        } else {
+          Swal.close();
+          setUserStatus("REGISTERED");
+          setPayloadResponse(response.data);
+          setBtnSubmit(false);
+          handleSendEmailOTP();
+        }
+      }
+    }
+
+    Swal.close();
+  };
+
+  const handleSendEmailOTP = async () => {
+    if (!enableRegisterWithPassword) {
+      const countdown = 299;
+      const counterMinutesOtp = Math.floor(countdown / 60);
+      const minutesOtp = 4;
+      const counterOtp = countdown % 60;
+      const otpLastTry = new Date();
+
+      setBtnSend(false);
+      setMinutes(minutesOtp);
+      setCounterMinutes(counterMinutesOtp);
+      setSeconds(counter);
+      setCounter(`${counter}`);
+
+      setSendCounter(sendCounter + 1);
+      lsStore(config.prefix + "_otp", {
+        lastTry: otpLastTry,
+        counter: sendCounter + 1,
+      });
+
+      let secondsTimer = counterOtp;
+      let minutesTimer = minutesOtp;
+
+      var timer = setInterval(() => {
+        secondsTimer = secondsTimer - 1;
+        let counterTimer =
+          secondsTimer.toString().length < 2
+            ? "0" + secondsTimer
+            : secondsTimer;
+
+        setSeconds(secondsTimer);
+        setCounter(counterTimer);
+
+        if (secondsTimer === 0) {
+          minutesTimer = minutesTimer - 1;
+          let counterMinutesTimer =
+            minutesTimer.toString().length < 2
+              ? "0" + minutesTimer
+              : minutesTimer;
+
+          setCounter("59");
+          setSeconds(59);
+          setMinutes(minutesTimer);
+          setCounterMinutes(counterMinutesTimer);
+
+          if (minutesTimer < 0 && secondsTimer === 0) {
+            setBtnSend(true);
+            clearInterval(timer);
+          }
+        }
+      }, 1000);
+
+      try {
+        let payload = { email };
+        let response = await props.dispatch(AuthActions.sendOtp(payload));
+
+        response = response.Data;
+
+        if (response.status === false) {
+          throw response.status;
+        }
+      } catch (error) {
+        setBtnSend(false);
+      }
+    }
+  };
+
+  const handleEmailLogin = async (withOtp) => {
+    Swal.showLoading();
+    try {
+      let payload = { email: payloadResponse.email };
+
+      if (withOtp) {
+        payload.codeOTP = txtOtp;
+      } else {
+        payload.password = password;
+      }
+
+      const response = await props.dispatch(AuthActions.login(payload));
+      const responseData = response.Data;
+
+      if (responseData.status === false) {
+        throw responseData;
+      }
+      responseData.isLogin = true;
+
+      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
+      const lsKeyList = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (
+          key.includes(`${config.prefix}_`) &&
+          !key.includes(`${config.prefix}_scanTable`) &&
+          !key.includes(`${config.prefix}_ordering_mode`)
+        ) {
+          lsKeyList.push(key);
+        }
+      }
+      lsKeyList.forEach((key) => localStorage.removeItem(key));
+      lsStore(
+        config.prefix + "_account",
+        encryptor.encrypt(responseData),
+        true
+      );
+      if (offlineCart !== null) {
+        lsStore(config.prefix + "_offlineCart", offlineCart, true);
+      }
+
+      const url = window.location.href.split("?")[0];
+      window.location.replace(url);
+      window.location.reload();
+    } catch (err) {
+      //
+      Swal.close();
+      let error = "Please try again.";
+      if (err.message) {
+        error = err.message;
+      }
+      Swal.fire("Oppss!", error, "error");
+    }
+  };
+
+  const handleEmailRegister = async () => {
+    try {
+      const fields = props.fields || [];
+      let mandatory = [];
+      mandatory = fields.filter((items) => {
+        return items.signUpField === true && items.mandatory === true;
+      });
+      mandatory.push({ fieldName: "name", displayName: "Name" });
+      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
+      mandatory.push({ fieldName: "email", displayName: "Email" });
+      mandatory.push({ fieldName: "password", displayName: "Password" });
+
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) {
+            return { ...acc };
+          }
+          return {
+            ...acc,
+            [field.fieldName]: inputs[field.fieldName] || "",
+          };
+        });
+
+      if (customFields) {
+        delete customFields.displayName;
+        delete customFields.fieldName;
+        delete customFields.format;
+        delete customFields.mandatory;
+        delete customFields.sequence;
+        delete customFields.signUpField;
+        delete customFields.show;
+        delete customFields.type;
+      }
+
+      const randomPassword = generate([8], {
+        specials: 0,
+        nums: 2,
+        uppers: 3,
+        lowers: 3,
+      });
+
+      let payload = {
+        phoneNumber,
+        email: payloadResponse.email,
+        password: enableRegisterWithPassword ? password : randomPassword,
+        username: payloadResponse.email,
+        referralCode,
+        ...customFields,
+      };
+
+      //mark
+      let listName = "";
+      mandatory.forEach((field) => {
+        const name = field.fieldName;
+        const defaultValue = field.defaultValue;
+
+        if (payload[name] && payload[name] !== "Invalid date") {
+          field.check = true;
+        } else if (defaultValue && defaultValue !== "-") {
+          payload[name] = defaultValue;
+          field.check = true;
+        } else if (inputs[name]) {
+          payload[name] = inputs[name];
+          field.check = true;
+        } else {
+          listName += name + ", ";
+          field.check = false;
+        }
+      });
+
+      mandatory = mandatory.filter((items) => {
+        return items.check === false;
+      });
+
+      if (mandatory.length > 0) {
+        listName = listName.substr(0, listName.length - 2);
+        Swal.fire("Oppss!", `${listName} is required`, "error");
+        return;
+      }
+
+      // Validate minimum age
+      if (minimumAge > 0) {
+        const currentAge = getAge(payload.birthDate);
+        if (currentAge < minimumAge) {
+          Swal.fire(
+            "Oppss!",
+            `The minimum age for registration is ${minimumAge} years old`,
+            "error"
+          );
+          return;
+        }
+      }
+
+      Swal.showLoading();
+      let response = await props.dispatch(
+        AuthActions.register(payload, enableRegisterWithPassword)
+      );
+      response = response.Data;
+
+      if (response.message) {
+        Swal.fire("Oppss!", response.message, "error");
+      } else {
+        if (enableRegisterWithPassword) {
+          lsStore(
+            config.prefix + "_account",
+            encryptor.encrypt({
+              phoneNumber: phoneNumber,
+              email: payloadResponse.email,
+            }),
+            true
+          );
+        }
+
+        try {
+          setPayloadResponse(payload);
+          setBtnSubmit(false);
+          setSendCounter(2);
+          setBtnSend(false);
+          if (enableRegisterWithPassword) {
+            await handleEmailLogin();
+          } else {
+            setSignUpSuccess(true);
+            await handleSendEmailOTP();
+          }
+
+          Swal.close();
+        } catch (error) {
+          Swal.close();
+        }
+      }
+    } catch (err) {
+      let error = "Please try again.";
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.Data &&
+        err.response.data.Data.message
+      ) {
+        error = err.response.data.Data.message;
+      }
+      Swal.fire("Oppss!", error, "error");
+    }
+  };
+
+  const handleClear = () => {
+    setPhoneNumber("");
+    setEmail("");
+    setErrorPhone("");
+    setErrorEmail("");
+    setSignUpSuccess(false);
+    setBtnSubmit(false);
+  };
+
+  return (
+    <div>
+      <div
+        className="modal fade"
+        id="login-register-modal"
+        tabIndex={-1}
+        role="dialog"
+        aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          {userStatus === "REGISTERED" ? (
+            <Login
+              method={method}
+              username={method === "email" ? email : phoneNumber}
+              enablePassword={enableRegisterWithPassword}
+              handleSubmit={
+                method === "email" ? handleEmailLogin : handleMobileLogin
+              }
+              handleBackButtonClick={() => {
+                setUserStatus("NOT_CHECKED");
+                handleClear();
+              }}
+              handleChange={handleInput}
+              sendOtpToPhone={(sendBy) => handleSendOTP(sendBy)}
+              sendOtpToEmail={handleSendEmailOTP}
+              isSubmitting={!btnSubmit}
+              otpTimer={{
+                isSending: !btnSend,
+                sendCounter: sendCounter,
+                counterMinutes: counterMinutes,
+                counter: counter,
+              }}
+              enableSMSOTP={enableSMSOTP}
+              enableWhatsappOTP={enableWhatsappOTP}
+              enableOrdering={enableOrdering}
+            ></Login>
+          ) : userStatus === "NOT_REGISTERED" ? (
+            <SignUp
+              method={method}
+              initialUserData={payloadResponse}
+              handleBackButtonClick={() => {
+                setUserStatus("NOT_CHECKED");
+                handleClear();
+              }}
+              handleChange={handleInputRegister}
+              handleEmailSubmit={handleEmailRegister}
+              handlePhoneSubmit={handleMobileRegister}
+              sendOtpToPhone={(sendBy) => handleSendOTP(sendBy)}
+              sendOtpToEmail={handleSendEmailOTP}
+              handleEmailLogin={handleEmailLogin}
+              handlePhoneLogin={handleMobileLogin}
+              signUpSuccess={signUpSuccess}
+              isSubmitting={!btnSubmit}
+              otpTimer={{
+                isSending: !btnSend,
+                sendCounter: sendCounter,
+                counterMinutes: counterMinutes,
+                counter: counter,
+              }}
+              errorPhone={errorPhone}
+              errorEmail={errorEmail}
+              errorPassword={errorPassword}
+              errorName={errorName}
+              enablePassword={enableRegisterWithPassword}
+              enableOrdering={enableOrdering}
+              enableSMSOTP={enableSMSOTP}
+              enableWhatsappOTP={enableWhatsappOTP}
+              minimumAge={minimumAge}
+            ></SignUp>
+          ) : (
+            <Portal
+              color={props.color.background}
+              method={method}
+              handleMethodChange={(value) => {
+                setMethod(value);
+                handleClear();
+              }}
+              handlePhoneCheck={handleMobileCheck}
+              handleEmailCheck={handleEmailCheck}
+              handleChange={handleInput}
+              isSubmitting={!btnSubmit}
+              error={errorPhone || errorEmail}
+              loginByEmail={loginByEmail}
+              loginByMobile={loginByMobile}
+              enableOrdering={enableOrdering}
+              companyInfo={props.companyInfo}
+            ></Portal>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginRegister);
