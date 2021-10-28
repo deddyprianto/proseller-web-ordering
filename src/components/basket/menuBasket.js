@@ -300,7 +300,7 @@ class MenuBasket extends Component {
             props.orderingMode === "DELIVERY" && (
               <div>
                 <div
-                  className="small text-left color-active"
+                  className="small text-left"
                   style={{
                     lineHeight: "17px",
                     textAlign: "center",
