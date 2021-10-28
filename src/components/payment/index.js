@@ -1269,9 +1269,14 @@ class Payment extends Component {
         this.togglePlay();
         await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
         await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        this.props.history.push("/settleSuccess");
+        if (selectedCard.paymentID === "MANUAL_TRANSFER") {
+          document.getElementById("open-modal-info-transfer").click();
+        } else {
+          this.props.history.push("/settleSuccess");
+        }
       }
     }
+    Swal.close();
   };
 
   togglePlay = () => {
@@ -1442,12 +1447,13 @@ class Payment extends Component {
           totalAmount={totalAmount}
           selectedCard={selectedCard}
           handleSettle={this.handleSettle}
+          history={this.props.history}
         />
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}
         <div
           className="col-full"
           style={{
-            marginTop: config.prefix === "emenu" ? 120 : 140,
+            marginTop: config.prefix === "emenu" ? 120 : 155,
             marginBottom: 50,
             padding: 0,
           }}
@@ -1657,9 +1663,10 @@ class Payment extends Component {
                             selectedCard &&
                             selectedCard.paymentID === "MANUAL_TRANSFER"
                           ) {
-                            document
-                              .getElementById("open-modal-info-transfer")
-                              .click();
+                            this.handleSettle();
+                            // document
+                            //   .getElementById("open-modal-info-transfer")
+                            //   .click();
                           } else {
                             this.handleSettle();
                           }

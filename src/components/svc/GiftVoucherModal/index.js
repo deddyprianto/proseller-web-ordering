@@ -106,7 +106,7 @@ const GiftVoucherModal = ({
                 onChange={(e) => setReceiver(e.target.value)}
               ></input>
               <div
-                style={{ color: color }}
+                style={{ color: color, textDecoration: 'underline' }}
                 onClick={(e) =>
                   setMethod(method !== "email" ? "email" : "phone number")
                 }

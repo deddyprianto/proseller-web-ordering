@@ -12,6 +12,7 @@ const WebOrderingCategories = ({
   setSelectedCategory,
   theme,
   getProductPreset,
+  banners,
 }) => {
   let [querySearch, setQuerySearch] = useState("");
   let [isChanged, setIsChanged] = useState(false);
@@ -37,12 +38,12 @@ const WebOrderingCategories = ({
       function updateSize() {
         setSize([window.innerWidth, window.innerHeight]);
       }
-      window.addEventListener('resize', updateSize);
+      window.addEventListener("resize", updateSize);
       updateSize();
-      return () => window.removeEventListener('resize', updateSize);
+      return () => window.removeEventListener("resize", updateSize);
     }, []);
     return size;
-  }
+  };
 
   const isItemsFinishedToLoad = (query) => {
     setQuerySearch(query);
@@ -72,12 +73,12 @@ const WebOrderingCategories = ({
   useEffect(() => {
     const scrollEventListener = document.addEventListener("scroll", () => {
       try {
-        const target = document.getElementById('header-category');
-        const masthead = document.getElementById('masthead');
+        const target = document.getElementById("header-category");
+        const masthead = document.getElementById("masthead");
         let sticky = target.offsetTop;
         let mastheadOffset = masthead.offsetHeight;
         if (window.pageYOffset >= sticky + mastheadOffset) {
-          target.classList.add("sticky-header")
+          target.classList.add("sticky-header");
         } else {
           target.classList.remove("sticky-header");
         }
@@ -123,27 +124,39 @@ const WebOrderingCategories = ({
   }
 
   if (width >= 1200) {
-    diff = 65
+    diff = 65;
   }
 
   let backupCategories = JSON.stringify(categories);
   backupCategories = JSON.parse(backupCategories);
 
-  let dataHighligh = categories.slice(startIndex, startIndex+limit);
+  let dataHighligh = categories.slice(startIndex, startIndex + limit);
 
   useEffect(() => {
-    if (JSON.stringify(dataHighligh) !== JSON.stringify(highlightedCategories) && !isChanged) {
+    if (
+      JSON.stringify(dataHighligh) !== JSON.stringify(highlightedCategories) &&
+      !isChanged
+    ) {
       setHighlightedCategories(dataHighligh);
-      for (let i = startIndex; i < startIndex+limit; i++) {
-        indexHighlight.push(i)
+      for (let i = startIndex; i < startIndex + limit; i++) {
+        indexHighlight.push(i);
       }
     }
-  },  [highlightedCategories, dataHighligh, isChanged, indexHighlight, limit, startIndex]);
+  }, [
+    highlightedCategories,
+    dataHighligh,
+    isChanged,
+    indexHighlight,
+    limit,
+    startIndex,
+  ]);
 
   // console.log(indexHighlight, 'indexHighlight')
-  let arrayMoreCategories =  backupCategories.filter((x, y) => !indexHighlight.includes(y));
+  let arrayMoreCategories = backupCategories.filter(
+    (x, y) => !indexHighlight.includes(y)
+  );
   // console.log(arrayMoreCategories,'arrayMoreCategories')
-  let moreCategories = []
+  let moreCategories = [];
   for (let i = 0; i < arrayMoreCategories.length; i++) {
     moreCategories.push(
       <li
@@ -151,21 +164,25 @@ const WebOrderingCategories = ({
         data-target=".multi-collapse"
         aria-controls="menu-dropdown overlay-dropdown"
         onClick={() => {
-          setIsChanged(true)
-          let newArray = []
-          let newIndexHighligh = []
+          setIsChanged(true);
+          let newArray = [];
+          let newIndexHighligh = [];
           if (i + limit > arrayMoreCategories.length) {
             let max = arrayMoreCategories.length - limit;
             if (max < 0) max = 0;
             for (let z = max; z < arrayMoreCategories.length; z++) {
               newArray.push(arrayMoreCategories[z]);
-              let idx = backupCategories.findIndex(x => x.id === arrayMoreCategories[z].id);
+              let idx = backupCategories.findIndex(
+                (x) => x.id === arrayMoreCategories[z].id
+              );
               newIndexHighligh.push(idx);
             }
           } else {
-            for (let z = i; z < i+limit; z++) {
+            for (let z = i; z < i + limit; z++) {
               newArray.push(arrayMoreCategories[z]);
-              let idx = backupCategories.findIndex(x => x.id === arrayMoreCategories[z].id);
+              let idx = backupCategories.findIndex(
+                (x) => x.id === arrayMoreCategories[z].id
+              );
               newIndexHighligh.push(idx);
             }
           }
@@ -175,20 +192,22 @@ const WebOrderingCategories = ({
             if (newArray.length < limit) {
               const diffArray = limit - newArray.length;
               for (let q = 0; q < diffArray; q++) {
-                newArray.push(backupCategories[q])
-                let idx = backupCategories.findIndex(x => x.id === backupCategories[q].id);
+                newArray.push(backupCategories[q]);
+                let idx = backupCategories.findIndex(
+                  (x) => x.id === backupCategories[q].id
+                );
                 newIndexHighligh.push(idx);
               }
             }
-          } catch(e){}
+          } catch (e) {}
           /* Check if header highlighted categories less then limit */
 
           setHighlightedCategories(newArray);
           setIndexHighlight(newIndexHighligh);
           // setStartIndex(idx+limit)
-          setText('More')
-          setSelectedCategory(arrayMoreCategories[i].id)
-          getProductPreset(arrayMoreCategories[i])
+          setText("More");
+          setSelectedCategory(arrayMoreCategories[i].id);
+          getProductPreset(arrayMoreCategories[i]);
         }}
         style={{
           display: "flex",
@@ -207,81 +226,104 @@ const WebOrderingCategories = ({
       >
         {arrayMoreCategories[i].name.toUpperCase()}
       </li>
-    )
+    );
   }
 
+  const getDropdownHeight = (length) => {
+    if (length > 5) return "45vh";
+    else if (length > 3) return "20vh";
+    else return "7vh";
+  };
+
   return (
-    <div id="header-category" style={{ width: '100%', maxWidth: '100%', zIndex: 999 }}>
-      <div style={{ width: '100%', maxWidth: '100%', zIndex: 999 }}>
+    <div
+      id="header-category"
+      style={{
+        width: "100%",
+        maxWidth: "100%",
+        zIndex: 999,
+        marginTop: banners.length > 0 ? 10 : 86,
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: "100%", zIndex: 999 }}>
         <ul
           className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position background-theme"
           style={{
-            padding: '2px 0',
+            padding: "2px 0",
             marginBottom: 0,
             borderBottom: "0px solid #DCDCDC",
           }}
         >
           <React.Fragment>
-            <div style={{ display: 'flex' }}>
-              <div style={{ display: 'flex', borderBottom: 7 }} className="all-menu">
+            <div style={{ display: "flex" }}>
+              <div
+                style={{ display: "flex", borderBottom: 7 }}
+                className="all-menu"
+              >
                 {highlightedCategories.map((item, i) => (
                   <li
                     id={`cat-${i}`}
                     style={{
                       cursor: "pointer",
-                      width: (width/limit) - (widthMoreMenu/limit) - diff,
+                      width: width / limit - widthMoreMenu / limit - diff,
                       overflow: "hidden",
                       height: 50,
                     }}
                     key={i}
                     onClick={() => {
-                      setText('More')
-                      setSelectedCategory(item.id)
-                      getProductPreset(item)
+                      setText("More");
+                      setSelectedCategory(item.id);
+                      getProductPreset(item);
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: 'center',
+                        justifyContent: "center",
                         height: 50,
                         lineHeight: 1.7,
                         fontSize: isSelectedCategory(item.id) ? 11 : 11,
                         fontWeight: "bold",
                         backgroundColor: isSelectedCategory(item.id)
-                          ? theme.color.primary
-                          : 'rgb(208, 208, 208)',
+                          ? theme.color.secondary
+                          : "rgb(208, 208, 208)",
                         padding: 7,
-                        color: "black",
-                        textAlign: 'center'
+                        color: isSelectedCategory(item.id) ? "white" : "black",
+                        textAlign: "center",
                       }}
                     >
-                      <span style={{ textAlign: 'center' }}>{item.name.toUpperCase().substr(0, 19)}</span>
+                      <span style={{ textAlign: "center" }}>
+                        {item.name.toUpperCase().substr(0, 19)}
+                      </span>
                     </div>
                   </li>
                 ))}
               </div>
-              {
-                moreCategories && moreCategories.length > 0 &&
+              {moreCategories && moreCategories.length > 0 && (
                 <li
                   onClick={() => {
-                    if (text === 'More') {
+                    if (text === "More") {
                       // document.body.style.position = 'fixed';
                       // document.body.style.width = '100%';
                       // document.body.style.top = `-${window.scrollY}px`;
-                      setText('Less')
+                      setText("Less");
                     } else {
                       // const scrollY = document.body.style.top;
                       // document.body.style.width = '100%';
                       // document.body.style.position = '';
                       // document.body.style.top = '';
                       // window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                      setText('More')
+                      setText("More");
                     }
                   }}
                   className="more-menu"
-                  style={{ position: "absolute", right: 0, cursor: "pointer" }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    cursor: "pointer",
+                    width: width / limit - widthMoreMenu / limit - diff,
+                  }}
                   data-toggle="collapse"
                   data-target=".multi-collapse"
                   aria-controls="menu-dropdown overlay-dropdown"
@@ -292,26 +334,39 @@ const WebOrderingCategories = ({
                         display: "flex",
                         alignItems: "center",
                         height: 50,
-                        width: widthMoreMenu-1,
+                        width: widthMoreMenu + 19,
                         fontSize: 12,
                         fontWeight: 900,
                         padding: 7,
                         color: theme.color.primary,
-                        backgroundColor: 'rgb(208, 208, 208)',
-                        textAlign: 'center'
+                        backgroundColor: "rgb(208, 208, 208)",
+                        textAlign: "center",
                       }}
                     >
-                      <span style={{ marginLeft: 8 }}>{text}</span>
-                      {
-                        text === 'More' ?
-                        <i style={{ marginLeft: 10, fontSize: 13, marginTop: -4 }} className="fa fa-chevron-down" />
-                        :
-                        <i style={{ marginLeft: 10, fontSize: 13, marginTop: -4 }} className="fa fa-chevron-up" />
-                      }
+                      <span style={{ marginLeft: 20 }}>{text}</span>
+                      {text === "More" ? (
+                        <i
+                          style={{
+                            marginLeft: 10,
+                            fontSize: 13,
+                            marginTop: -4,
+                          }}
+                          className="fa fa-chevron-down"
+                        />
+                      ) : (
+                        <i
+                          style={{
+                            marginLeft: 10,
+                            fontSize: 13,
+                            marginTop: -4,
+                          }}
+                          className="fa fa-chevron-up"
+                        />
+                      )}
                     </div>
                   </center>
                 </li>
-              }
+              )}
             </div>
           </React.Fragment>
         </ul>
@@ -321,14 +376,21 @@ const WebOrderingCategories = ({
         className="collapse multi-collapse"
         style={{
           zIndex: 9999,
-          width: '100%',
-          backgroundColor: 'rgb(208, 208, 208)',
-          overflowY: 'scroll',
+          width: "100%",
+          backgroundColor: "rgb(208, 208, 208)",
+          overflowY: "scroll",
           // overscrollBehavior: 'contain',
-          paddingBottom: 30
+          paddingBottom: 30,
         }}
       >
-        <div className="card" style={{ padding: 5, overflowY: "scroll", height: moreCategories.length > 5 ? '45vh' : '20vh' }}>
+        <div
+          className="card"
+          style={{
+            padding: 5,
+            overflowY: "scroll",
+            height: getDropdownHeight(moreCategories.length),
+          }}
+        >
           {moreCategories}
         </div>
       </div>
@@ -345,6 +407,7 @@ WebOrderingCategories.propTypes = {
   setLoading: PropTypes.func,
   searchProduct: PropTypes.func,
   theme: PropTypes.object,
+  banners: PropTypes.array,
   getProductPreset: PropTypes.func,
 };
 

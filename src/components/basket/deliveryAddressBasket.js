@@ -47,6 +47,7 @@ class DeliveryAddressBasket extends Component {
                   alignItems: "center",
                   fontSize: 12,
                 }}
+                className="btn-ordering"
               >
                 <ContactMailIcon style={{ fontSize: 16 }} />
                 {!props.deliveryAddress

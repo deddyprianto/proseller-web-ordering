@@ -48,6 +48,7 @@ class ProviderDeliveryBasket extends Component {
                 alignItems: "center",
                 fontSize: 12,
               }}
+              className="btn-ordering"
             >
               <AssignmentIndIcon style={{ fontSize: 16 }} />
               {this.props.deliveryProvider && this.props.deliveryProvider.name

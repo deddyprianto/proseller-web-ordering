@@ -4,9 +4,17 @@
   "homepage": "/",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.15",
     "@loadable/component": "^5.13.1",
-    "@material-ui/core": "^4.11.0",
+    "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.9.1",
+    "@mui/material": "^5.0.3",
+    "@mui/styles": "^5.0.1",
+    "add": "^2.0.6",
     "axios": "^0.19.2",
     "base-64": "^0.1.0",
     "bootstrap": "^4.5.0",
@@ -76,7 +84,9 @@
     "order.auntieannesg.com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e order.auntieannesg.com react-scripts build && aws s3 sync build/ s3://order.auntieannesg.com --acl public-read",
     "cutbutchery-demo-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 --profile prod sync build/ s3://cutbutchery-demo-webordering --acl public-read",
     "popejai-demo-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 --profile prod sync build/ s3://popejai-demo --acl public-read",
-    "cutbutchery-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://cutbutchery-webordering --acl public-read"
+    "cutbutchery-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://cutbutchery-webordering --acl public-read",
+    "popejaithai-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://popejaithai-webordering --acl public-read",
+    "staple-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://staple-webordering --acl public-read"
   },
   "eslintConfig": {
     "extends": "react-app"

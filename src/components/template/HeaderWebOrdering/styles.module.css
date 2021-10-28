@@ -4,7 +4,7 @@
 }
 
 .logo {
-  height: 30px;
+  height: 55px;
   object-fit: contain;
   margin-top: -10px;
   margin-bottom: -10px;
@@ -14,7 +14,7 @@
 @media only screen and (min-width: 768px) {
   .logo {
     height: auto !important;
-    max-width: 4.5rem !important;
+    max-height: 5.5rem !important;
   }
 }
 
@@ -34,7 +34,7 @@
     margin-left: 5px;
     font-weight: bold;
     position: absolute;
-    top: 20px;
+    top: 38px;
     left: -5px;
     text-align: center;
     width: 100%;

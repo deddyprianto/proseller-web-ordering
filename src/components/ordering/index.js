@@ -592,6 +592,7 @@ class Ordering extends Component {
             showMoreButton={this.props.orderingSetting.ShowAllCategory}
             theme={this.props.theme}
             getProductPreset={this.getProductPresetSingle}
+            banners={this.props.banners}
           />
         )}
         <div
@@ -715,6 +716,7 @@ const mapStateToProps = (state, ownProps) => {
     orderingMode: state.order.orderingMode,
     orderingSetting: state.order.orderingSetting,
     orderingModes: state.order.orderingModes,
+    banners: state.promotion.banners,
   };
 };
 

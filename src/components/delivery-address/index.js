@@ -467,7 +467,7 @@ class DeliveryAddress extends Component {
                   </div>
                   <Button
                     id="modal-delivery-address"
-                    className="button"
+                    className="btn-ordering"
                     data-toggle="modal"
                     data-target="#delivery-address-modal"
                     style={{
@@ -609,7 +609,7 @@ class DeliveryAddress extends Component {
                               }}
                             >
                               <Button
-                                className="profile-dashboard"
+                                className="profile-dashboard btn-ordering"
                                 data-toggle="modal"
                                 data-target="#delivery-address-modal"
                                 style={{
@@ -640,7 +640,7 @@ class DeliveryAddress extends Component {
                                   }}
                                   onClick={() => this.handleSelected(items)}
                                 >
-                                  <div className="color-active">Select</div>
+                                  <div className="color">Select</div>
                                 </Button>
                               ) : (
                                 <Button

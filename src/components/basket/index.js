@@ -1600,7 +1600,7 @@ class Basket extends Component {
     return (
       <div
         className="col-full"
-        style={{ marginTop: config.prefix === "emenu" ? 60 : 80 }}
+        style={{ marginTop: config.prefix === "emenu" ? 60 : 100 }}
         id="cardItem"
       >
         <div id="close-modal" />

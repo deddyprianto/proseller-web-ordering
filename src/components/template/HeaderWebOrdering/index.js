@@ -9,10 +9,54 @@ import { OrderAction } from "../../../redux/actions/OrderAction";
 import { isEmptyObject } from "../../../helpers/CheckEmpty";
 import LoginRegister from "../../login-register";
 
+import Grid from "@mui/material/Grid";
+import { withStyles } from "@mui/styles";
+import Badge from "@mui/material/Badge";
+import Box from "@mui/material/Box";
+import AppBar from "@material-ui/core/AppBar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingBasket, faBars } from "@fortawesome/free-solid-svg-icons";
+
+import clsx from "clsx";
 
 import styles from "./styles.module.css";
 import OrderingMode from "./OrderingMode";
+import { color } from "@material-ui/system";
+
+const useStyles = (theme) => ({
+  header: {
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  logo: {
+    maxWidth: "9.5em",
+    objectFit: "contain",
+    zIndex: 1000,
+  },
+  logoWithBranch: {
+    alignItems: "center",
+  },
+  outletStyle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 12,
+    display: "inline-flex",
+    align: "center",
+  },
+  iconBars: {
+    "&:hover": {
+      backgroundColor: "transparent",
+    },
+
+    position: "fixed",
+    backgroundColor: "transparent",
+    direction: "column",
+    alignItems: "center",
+    textAlign: "center",
+  },
+});
 
 const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 class Header extends Component {
@@ -241,7 +285,7 @@ class Header extends Component {
     if (this.props.outletSelection === "MANUAL") {
       if (isEmptyObject(this.props.defaultOutlet)) {
         return (
-          <div className={styles.outlet}>
+          <div className={useStyles.outletStyle}>
             <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
               Choose Outlets
             </h4>
@@ -249,14 +293,11 @@ class Header extends Component {
         );
       } else {
         return (
-          <div className={styles.outlet}>
+          <div className={useStyles.outletStyle}>
             <Link to="/outlets">
               <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
                 {this.props.defaultOutlet.name}{" "}
-                <i
-                  style={{ marginLeft: 6, fontSize: 10 }}
-                  className="fa fa-chevron-right"
-                />
+                <i style={{ marginLeft: 6, fontSize: 10 }} />
               </h4>
             </Link>
           </div>
@@ -264,20 +305,20 @@ class Header extends Component {
       }
     } else if (this.props.outletSelection === "DEFAULT") {
       return (
-        <div className={styles.outlet}>
-          <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+        <div className={useStyles.outletStyle}>
+          <h4 className="color" style={{ fontSize: 12, marginTop: 10 }}>
             {this.props.defaultOutlet.name}
           </h4>
         </div>
       );
     } else {
       return (
-        <div className={styles.outlet}>
+        <div className={useStyles.outletStyle}>
           <LocationOnIcon
             className="color"
             style={{ fontSize: 22, marginBottom: -5 }}
           />
-          <span className="color" style={{ fontSize: 15 }}>
+          <span className="color" style={{ fontSize: 12 }}>
             <select
               className={`${styles.outletNameSelect} color`}
               onChange={(e) => this.handleOutletChange(e)}
@@ -316,6 +357,7 @@ class Header extends Component {
 
   render() {
     let { isLoggedIn, basket, defaultOutlet } = this.props;
+    let { classes } = this.props;
     let outlets =
       this.props.outlets &&
       this.props.outlets.filter(
@@ -329,364 +371,439 @@ class Header extends Component {
         basketLength += cart.quantity;
       });
     }
+
+    const displayOutletInfo = (outlets, defaultOutlet) => {
+      if (this.props.outletSelection === "MANUAL") {
+        if (isEmptyObject(this.props.defaultOutlet)) {
+          return (
+            <div className={classes.outletStyle}>
+              <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+                Choose Outlets
+              </h4>
+            </div>
+          );
+        } else {
+          return (
+            <div className={classes.outletStyle}>
+              <Link to="/outlets">
+                <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+                  {this.props.defaultOutlet.name}{" "}
+                  <i style={{ marginLeft: 6, fontSize: 10 }} />
+                </h4>
+              </Link>
+            </div>
+          );
+        }
+      } else if (this.props.outletSelection === "DEFAULT") {
+        return null;
+      } else {
+        return (
+          <Grid container direction="row" alignItems="center">
+            <Grid item>
+              <LocationOnIcon
+                className="color"
+                style={{ fontSize: 22, marginTop: 5 }}
+              />
+            </Grid>
+            <Grid item className={classes.outletStyle} alignItems="center">
+              <select
+                className={`${styles.outletNameSelect} color`}
+                onChange={(e) => this.handleOutletChange(e)}
+                value={defaultOutlet.id}
+              >
+                {outlets &&
+                  outlets.map((outlet, key) => (
+                    <option
+                      key={key}
+                      ref={this.state.outletsRefs[outlet.id]}
+                      value={outlet.id}
+                      selected={outlet.id === defaultOutlet.id}
+                    >
+                      {outlet.name}
+                    </option>
+                  ))}
+              </select>
+            </Grid>
+          </Grid>
+        );
+      }
+    };
+    console.log(this.props.color, 'color')
     return (
-      <div id="header-cwo">
+      <div>
         {!isLoggedIn && <LoginRegister />}
-        <header
-          id="masthead"
-          className="site-header header-v4 background-theme site-main"
+        <AppBar
+          className={clsx(classes.header, "site-main")}
           style={{
-            position: "fixed",
-            width: "100%",
-            // borderBottom: "1px solid #DADADA",
-            height: "8rem",
+            width: "-webkit-fill-available",
+            marginBottom: "1rem",
+            paddingTop: "1rem",
+            boxShadow: "none",
+            zIndex: 100,
+            backgroundColor: this.props.color.background,
           }}
         >
-          <div
-            id="full-website"
-            className="col-full"
+          <Grid
+            container
+            spacing={2}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            style={{
+              display: "flex",
+            }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-                flexDirection: "column",
-              }}
+            {/* logo & outlet */}
+            <Grid
+              item
+              xs={6}
+              sm={6}
+              md={6}
+              lg={3}
+              order={{ lg: 1, xs: 2, sm: 2, md: 2 }}
+              container
+              spacing={0}
+              direction="column"
+              justifyContent="center"
             >
-              <Link to="/">
-                <img
-                  alt="logo"
-                  className={styles.logo}
-                  src={infoCompany.imageURL || logoCompany}
-                />
-              </Link>
-              {this.state.showOutletSelection &&
-                this.displayOutletInfo(outlets, defaultOutlet)}
-              {this.state.showOrderingMode && (
-                <div className={styles.outlet}>
-                  {this.props.orderingMode === "DINEIN" && (
-                    <OrderingMode
-                      mode="DINEIN"
-                      alias={defaultOutlet.dineInName}
-                      icon="fa-cutlery"
-                    ></OrderingMode>
-                  )}
-                  {this.props.orderingMode === "TAKEAWAY" && (
-                    <OrderingMode
-                      mode="TAKEAWAY"
-                      alias={defaultOutlet.takeAwayName}
-                      icon="fa-shopping-basket"
-                    ></OrderingMode>
-                  )}
-                  {this.props.orderingMode === "STOREPICKUP" && (
-                    <OrderingMode
-                      mode="STOREPICKUP"
-                      alias={defaultOutlet.storePickUpName}
-                      icon="fa-shopping-basket"
-                    ></OrderingMode>
-                  )}
-                  {this.props.orderingMode === "STORECHECKOUT" && (
-                    <OrderingMode
-                      mode="STORECHECKOUT"
-                      alias={defaultOutlet.storeCheckOutName}
-                      icon="fa-shopping-basket"
-                    ></OrderingMode>
-                  )}
-                  {this.props.orderingMode === "DELIVERY" && (
-                    <OrderingMode
-                      mode="DELIVERY"
-                      alias={defaultOutlet.deliveryName}
-                      icon="fa-car"
-                    ></OrderingMode>
-                  )}
-                </div>
-              )}
-            </div>
-            <nav
-              id="site-navigation"
-              className="main-navigation"
-              aria-label="Primary Navigation"
-            >
-              <button
-                className="menu-toggle"
-                aria-controls="site-navigation"
-                aria-expanded="false"
-                style={{ marginTop: -10, position: "fixed", left: 20 }}
-                onClick={() => this.handleNavigation()}
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems={{
+                  xs: "center ",
+                  sm: "center",
+                  md: "center",
+                  lg: "flex-start",
+                }}
               >
-                <span className="close-icon">
-                  <i className="po po-close-delete" />
-                </span>
-                <span className="menu-icon">
-                  <i className="po po-menu-icon" />
-                </span>
-                <span className="screen-reader-text">Menu</span>
-              </button>
-
-              {enableOrdering && (
-                <Link
-                  to="/basket"
-                  className="menu-toggle"
+                <Grid item>
+                  <Link to="/">
+                    <img
+                      alt="logo"
+                      className={classes.logo}
+                      src={infoCompany.imageURL || logoCompany}
+                    />
+                  </Link>
+                </Grid>
+                <Grid item>
+                  {this.state.showOutletSelection && defaultOutlet.name !== "-"
+                    ? displayOutletInfo(outlets, defaultOutlet)
+                    : null}
+                  {this.state.showOrderingMode && (
+                    <div className={styles.outlet}>
+                      {this.props.orderingMode === "DINEIN" && (
+                        <OrderingMode
+                          mode="DINEIN"
+                          alias={defaultOutlet.dineInName}
+                          icon="fa-cutlery"
+                        ></OrderingMode>
+                      )}
+                      {this.props.orderingMode === "TAKEAWAY" && (
+                        <OrderingMode
+                          mode="TAKEAWAY"
+                          alias={defaultOutlet.takeAwayName}
+                          icon="fa-shopping-basket"
+                        ></OrderingMode>
+                      )}
+                      {this.props.orderingMode === "STOREPICKUP" && (
+                        <OrderingMode
+                          mode="STOREPICKUP"
+                          alias={defaultOutlet.storePickUpName}
+                          icon="fa-shopping-basket"
+                        ></OrderingMode>
+                      )}
+                      {this.props.orderingMode === "STORECHECKOUT" && (
+                        <OrderingMode
+                          mode="STORECHECKOUT"
+                          alias={defaultOutlet.storeCheckOutName}
+                          icon="fa-shopping-basket"
+                        ></OrderingMode>
+                      )}
+                      {this.props.orderingMode === "DELIVERY" && (
+                        <OrderingMode
+                          mode="DELIVERY"
+                          alias={defaultOutlet.deliveryName}
+                          icon="fa-car"
+                        ></OrderingMode>
+                      )}
+                    </div>
+                  )}
+                </Grid>
+              </Grid>
+            </Grid>
+            {/* nav */}
+            <Grid
+              item
+              xs={3}
+              sm={3}
+              md={3}
+              lg={6}
+              order={{ xs: 1, sm: 1, md: 1 }}
+              container
+              spacing={0}
+              direction="column"
+              alignItems={{
+                xs: "flex-start ",
+                sm: "center",
+                md: "center",
+                lg: "flex-start",
+              }}
+              justifyContent="center"
+            >
+              <Box
+                id="site-navigation"
+                component="nav"
+                className="main-navigation"
+                aria-label="Primary Navigation"
+                style={{
+                  direction: "row",
+                  alignItems: "left",
+                }}
+              >
+                <Box
+                  display={{
+                    xs: "block",
+                    sm: "block",
+                    md: "block",
+                    lg: "none",
+                    xl: "none",
+                  }}
+                  component="IconButton"
+                  aria-label="menu-bars"
+                  className={clsx("menu-toggle", classes.iconBars)}
                   aria-controls="site-navigation"
                   aria-expanded="false"
-                  style={{ marginTop: -18, position: "fixed", right: 20 }}
+                  onClick={() => this.handleNavigation()}
                 >
+                  <FontAwesomeIcon icon={faBars} size="25x" />
+                </Box>
+
+                <div
+                  className="primary-navigation"
+                  style={{
+                    direction: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    marginBottom: 0,
+                  }}
+                >
+                  <ul
+                    id="menu-home-5-and-7-main-menu"
+                    className="menu nav-menu"
+                    aria-expanded="false"
+                    style={{
+                      paddingTop: "1rem",
+                    }}
+                  >
+                    {enableOrdering && (
+                      <li
+                        className={this.activeRoute({
+                          path: "/",
+                          name: "Home",
+                        })}
+                        onClick={() => this.handelOnClick()}
+                      >
+                        <Link to="/">Menu</Link>
+                      </li>
+                    )}
+                    {(isLoggedIn || !enableOrdering) && (
+                      <li
+                        className={this.activeRoute({
+                          path: "/profile",
+                          name: "Profile",
+                        })}
+                        onClick={() => this.handelOnClick()}
+                      >
+                        <Link to="/profile">Profile</Link>
+                      </li>
+                    )}
+                    {isLoggedIn && (
+                      <li
+                        className={this.activeRoute({
+                          path: "/history",
+                          name: "History",
+                        })}
+                        onClick={() => this.handelOnClick()}
+                      >
+                        <Link to="/history">History</Link>
+                      </li>
+                    )}
+                    {isLoggedIn && (
+                      <li
+                        className={this.activeRoute({
+                          path: "/inbox",
+                          name: "Inbox",
+                        })}
+                        onClick={() => this.handelOnClick()}
+                      >
+                        <Link to="/inbox">Inbox</Link>
+                      </li>
+                    )}
+                    {isLoggedIn && (
+                      <li
+                        className={this.activeRoute({
+                          path: "/voucher",
+                          name: "Voucher",
+                        })}
+                        onClick={() => this.handelOnClick()}
+                      >
+                        <Link to="/voucher">Voucher</Link>
+                      </li>
+                    )}
+                    {isLoggedIn && (
+                      <li
+                        data-toggle="modal"
+                        onClick={() => this.handleLogout()}
+                      >
+                        <a style={{ color: "red" }} href="#">
+                          Logout
+                        </a>
+                      </li>
+                    )}
+                    {!isLoggedIn && (
+                      <li
+                        data-toggle="modal"
+                        data-target="#login-register-modal"
+                        id="login-register-btn"
+                      >
+                        <input
+                          type="submit"
+                          className="woocommerce-Button button"
+                          name="login"
+                          value="Log In / Sign Up"
+                          style={{
+                            width: 160,
+                            padding: 0,
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                            height: 40,
+                            borderRadius: 10,
+                          }}
+                        />
+                      </li>
+                    )}
+                  </ul>
+                </div>
+                <div className="handheld-navigation navigation-theme">
+                  <span className="phm-close">Close</span>
+                  <ul className="menu">
+                    {enableOrdering && (
+                      <li className="menu-item menu-hide">
+                        <Link to="/">
+                          <i className="fa fa-book" />
+                          {this.renderLabel()}
+                        </Link>
+                      </li>
+                    )}
+                    {(isLoggedIn || !enableOrdering) && (
+                      <li className="menu-item menu-hide">
+                        <Link to="/profile">
+                          <i className="fa fa-user" />
+                          Profile
+                        </Link>
+                      </li>
+                    )}
+                    {isLoggedIn ? (
+                      <>
+                        <li className="menu-item menu-hide">
+                          <Link to="/history">
+                            <i className="fa fa-history" />
+                            History
+                          </Link>
+                        </li>
+                        <li className="menu-item menu-hide">
+                          <Link to="/inbox">
+                            <i className="fa fa-envelope-o" />
+                            Inbox
+                          </Link>
+                        </li>
+                        <li className="menu-item menu-hide">
+                          <Link to="/voucher">
+                            <i className="fa fa-tags" />
+                            Voucher
+                          </Link>
+                        </li>
+                        <li className="menu-item menu-hide">
+                          <Link to="/setting">
+                            <i className="fa fa-gear" />
+                            Setting
+                          </Link>
+                        </li>
+                        <li
+                          className="menu-item"
+                          onClick={() => this.handleLogout()}
+                        >
+                          <Link to="/">
+                            <i className="fa fa-sign-out" />
+                            Log Out
+                          </Link>
+                        </li>
+                      </>
+                    ) : null}
+                    {!isLoggedIn && (
+                      <li
+                        className="menu-item menu-hide"
+                        onClick={() => this.handleNavigation()}
+                        data-toggle="modal"
+                        data-target="#login-register-modal"
+                      >
+                        <Link to="/">
+                          <i className="fa fa-sign-in" />
+                          Log In / Sign Up
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </Box>
+            </Grid>
+            {/* cart */}
+            <Grid
+              item
+              xs={3}
+              sm={3}
+              md={3}
+              lg={3}
+              order={{ xs: 3, sm: 3, md: 3 }}
+              container
+              spacing={0}
+              direction="column"
+              alignItems={{
+                xs: "flex-end ",
+                sm: "center",
+                md: "center",
+                lg: "flex-end",
+              }}
+              justifyContent="center"
+            >
+              {enableOrdering && (
+                <Link id="cart-icon" to="/basket">
                   <div
                     style={{
-                      border: "1px solid gray",
+                      border: `1px solid ${this.props.color.font}`,
                       borderRadius: 40,
                       height: 40,
                       width: 40,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      cursor: "pointer",
+                      color: this.props.color.font,
                     }}
+                    data-toggle="modal"
+                    data-target="#basket-modal"
                   >
-                    {basketLength > 0 && (
-                      <div
-                        className="text-btn-theme"
-                        style={{
-                          position: "absolute",
-                          backgroundColor: this.props.color.primary,
-                          fontSize: 8,
-                          width: 15,
-                          borderRadius: 15,
-                          height: 15,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          top: 0,
-                          right: 0,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {basketLength}
-                      </div>
-                    )}
-                    <i className="fa fa-shopping-basket font-color-theme" />
+                    <Badge color="info" badgeContent={basketLength}>
+                      <FontAwesomeIcon icon={faShoppingBasket} />
+                    </Badge>
                   </div>
                 </Link>
               )}
-
-              <div className="primary-navigation">
-                <ul
-                  id="menu-home-5-and-7-main-menu"
-                  className="menu nav-menu"
-                  aria-expanded="false"
-                >
-                  {enableOrdering && (
-                    <li
-                      className={this.activeRoute({ path: "/", name: "Home" })}
-                      onClick={() => this.handelOnClick()}
-                    >
-                      <Link to="/">Menu</Link>
-                    </li>
-                  )}
-                  {(isLoggedIn || !enableOrdering) && (
-                    <li
-                      className={this.activeRoute({
-                        path: "/profile",
-                        name: "Profile",
-                      })}
-                      onClick={() => this.handelOnClick()}
-                    >
-                      <Link to="/profile">Profile</Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li
-                      className={this.activeRoute({
-                        path: "/history",
-                        name: "History",
-                      })}
-                      onClick={() => this.handelOnClick()}
-                    >
-                      <Link to="/history">History</Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li
-                      className={this.activeRoute({
-                        path: "/inbox",
-                        name: "Inbox",
-                      })}
-                      onClick={() => this.handelOnClick()}
-                    >
-                      <Link to="/inbox">Inbox</Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li
-                      className={this.activeRoute({
-                        path: "/voucher",
-                        name: "Voucher",
-                      })}
-                      onClick={() => this.handelOnClick()}
-                    >
-                      <Link to="/voucher">Voucher</Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li data-toggle="modal" onClick={() => this.handleLogout()}>
-                      <a style={{ color: 'red' }} href="#">Logout</a>
-                    </li>
-                  )}
-                  {!isLoggedIn && (
-                    <li
-                      data-toggle="modal"
-                      data-target="#login-register-modal"
-                      id="login-register-btn"
-                    >
-                      <input
-                        type="submit"
-                        className="woocommerce-Button button"
-                        name="login"
-                        value="Log In / Sign Up"
-                        style={{
-                          width: 160,
-                          padding: 0,
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                          height: 40,
-                          borderRadius: 10,
-                          marginTop: 15,
-                        }}
-                      />
-                    </li>
-                  )}
-                </ul>
-              </div>
-              <div className="handheld-navigation navigation-theme">
-                <span className="phm-close">Close</span>
-                <ul className="menu">
-                  {enableOrdering && (
-                    <li className="menu-item menu-hide">
-                      <Link to="/">
-                        <i className="fa fa-book" />
-                        {this.renderLabel()}
-                      </Link>
-                    </li>
-                  )}
-                  {(isLoggedIn || !enableOrdering) && (
-                    <li className="menu-item menu-hide">
-                      <Link to="/profile">
-                        <i className="fa fa-user" />
-                        Profile
-                      </Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li className="menu-item menu-hide">
-                      <Link to="/history">
-                        <i className="fa fa-history" />
-                        History
-                      </Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li className="menu-item menu-hide">
-                      <Link to="/inbox">
-                        <i className="fa fa-envelope-o" />
-                        Inbox
-                      </Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li className="menu-item menu-hide">
-                      <Link to="/voucher">
-                        <i className="fa fa-tags" />
-                        Voucher
-                      </Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li className="menu-item menu-hide">
-                      <Link to="/setting">
-                        <i className="fa fa-gear" />
-                        Setting
-                      </Link>
-                    </li>
-                  )}
-                  {isLoggedIn && (
-                    <li
-                      className="menu-item"
-                      onClick={() => this.handleLogout()}
-                    >
-                      <Link to="/">
-                        <i className="fa fa-sign-out" />
-                        Log Out
-                      </Link>
-                    </li>
-                  )}
-                  {!isLoggedIn && (
-                    <li
-                      className="menu-item menu-hide"
-                      onClick={() => this.handleNavigation()}
-                      data-toggle="modal"
-                      data-target="#login-register-modal"
-                    >
-                      <Link to="/">
-                        <i className="fa fa-sign-in" />
-                        Log In / Sign Up
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            </nav>
-            {/* #site-navigation */}
-            {enableOrdering && (
-              <ul
-                id="basket-icon-menu"
-                className="site-header-cart menu"
-                style={{ textAlign: "right" }}
-              >
-                <Link id="cart-icon" to="/basket">
-                  <li className="mini-cart">
-                    <div
-                      style={{
-                        border: "1px solid gray",
-                        borderRadius: 40,
-                        height: 40,
-                        width: 40,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                      }}
-                      data-toggle="modal"
-                      data-target="#basket-modal"
-                    >
-                      {basketLength > 0 && (
-                        <div
-                          className="text-btn-theme"
-                          style={{
-                            position: "absolute",
-                            backgroundColor: this.props.color.primary,
-                            fontSize: 8,
-                            width: 15,
-                            borderRadius: 15,
-                            height: 15,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            top: 0,
-                            left: 25,
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {basketLength}
-                        </div>
-                      )}
-                      <i className="fa fa-shopping-basket font-color-theme" />
-                    </div>
-                  </li>
-                </Link>
-              </ul>
-            )}
-          </div>
-        </header>
+            </Grid>
+          </Grid>
+        </AppBar>
       </div>
     );
   }
@@ -710,4 +827,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return { dispatch };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Header));
+export default withStyles(useStyles)(
+  connect(mapStateToProps, mapDispatchToProps)(withRouter(Header))
+);
