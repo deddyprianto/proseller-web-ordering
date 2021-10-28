@@ -242,7 +242,7 @@ const WebOrderingCategories = ({
         width: "100%",
         maxWidth: "100%",
         zIndex: 999,
-        marginTop: banners.length > 0 ? 10 : 86,
+        marginTop: banners.length > 0 ? 10 : 115,
       }}
     >
       <div style={{ width: "100%", maxWidth: "100%", zIndex: 999 }}>
