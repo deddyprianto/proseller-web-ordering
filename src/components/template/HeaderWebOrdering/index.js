@@ -55,6 +55,7 @@ const useStyles = (theme) => ({
     direction: "column",
     alignItems: "center",
     textAlign: "center",
+    marginTop: -10
   },
 });
 
@@ -428,7 +429,7 @@ class Header extends Component {
         );
       }
     };
-    console.log(this.props.color, 'color')
+    
     return (
       <div>
         {!isLoggedIn && <LoginRegister />}
@@ -575,6 +576,7 @@ class Header extends Component {
                   aria-controls="site-navigation"
                   aria-expanded="false"
                   onClick={() => this.handleNavigation()}
+                  color={this.props.color.font}
                 >
                   <FontAwesomeIcon icon={faBars} size="25x" />
                 </Box>

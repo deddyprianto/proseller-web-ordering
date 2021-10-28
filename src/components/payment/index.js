@@ -1269,7 +1269,7 @@ class Payment extends Component {
         this.togglePlay();
         await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
         await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        if (selectedCard.paymentID === "MANUAL_TRANSFER") {
+        if (selectedCard && selectedCard.paymentID === "MANUAL_TRANSFER") {
           document.getElementById("open-modal-info-transfer").click();
         } else {
           this.props.history.push("/settleSuccess");

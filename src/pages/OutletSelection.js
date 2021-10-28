@@ -126,7 +126,7 @@ class OutletSelection extends Component {
   render() {
     let { loadingShow, outlets } = this.state;
     return (
-      <div className="" style={{ marginTop: 90, marginBottom: 50 }}>
+      <div className="" style={{ marginTop: 120, marginBottom: 50 }}>
         <div id="primary" className="content-area">
           <div className="">
             <main
