@@ -286,7 +286,7 @@ const WebOrderingCategories = ({
                         fontSize: isSelectedCategory(item.id) ? 11 : 11,
                         fontWeight: "bold",
                         backgroundColor: isSelectedCategory(item.id)
-                          ? theme.color.secondary
+                          ? theme.color.primary
                           : "rgb(208, 208, 208)",
                         padding: 7,
                         color: isSelectedCategory(item.id) ? "white" : "black",
