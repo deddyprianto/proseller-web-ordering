@@ -34,6 +34,7 @@ const useStyles = (theme) => ({
     maxWidth: "9.5em",
     objectFit: "contain",
     zIndex: 1000,
+    maxHeight: 68
   },
   logoWithBranch: {
     alignItems: "center",
