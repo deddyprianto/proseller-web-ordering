@@ -42,11 +42,12 @@ class Product extends Component {
   getQuantityProduct = () => {
     const { basket, defaultOutlet } = this.props;
     const { item } = this.props;
+    
     try {
       if (!isEmptyObject(basket)) {
         const products = basket.details.filter(
           (data) =>
-            data.product.id === item.product.id &&
+            data.product.id.includes(item.product.id) &&
             defaultOutlet.sortKey === basket.outletID
         );
         if (products.length > 0) {

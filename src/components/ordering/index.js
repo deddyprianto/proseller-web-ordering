@@ -368,7 +368,7 @@ class Ordering extends Component {
     try {
       if (!isEmptyObject(basket)) {
         const find = basket.details.find(
-          (data) => data.product.id === item.product.id
+          (data) => data.product.id.includes(item.product.id)
         );
         if (find !== undefined) return "Update";
         else return "Add";
@@ -548,7 +548,7 @@ class Ordering extends Component {
               productInCart={
                 this.props.basket &&
                 this.props.basket.details.filter((item) => {
-                  return item.productID === this.state.selectedItem.productID;
+                  return item.productID.includes(this.state.selectedItem.productID);
                 })
               }
               onClose={() => this.setState({ showUpdateModal: false })}

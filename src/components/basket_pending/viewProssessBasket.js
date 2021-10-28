@@ -78,9 +78,9 @@ export default class ViewProsessBasket extends Component {
               {
                 props.dataBasket.status === "READY_FOR_COLLECTION" &&
                 <div style={{ marginBottom: 20 }}>
-                  <div className="color-active" style={{ fontSize: 18, textAlign: "center" }}>Yeay, your order is ready.</div>
+                  <div style={{ fontSize: 18, textAlign: "center" }}>Yeay, your order is ready.</div>
                   <div style={{ fontSize: 18, textAlign: "center" }}>Please come to the cashier and tap the QR Code botton below.</div>
-                  <div className="color-active" style={{ marginTop: 10, marginBottom: 10, fontWeight: "bold", textAlign: "center" }}>
+                  <div style={{ marginTop: 10, marginBottom: 10, fontWeight: "bold", textAlign: "center" }}>
                     {
                       !props.dataBasket.transactionRefNo ?
                         (
