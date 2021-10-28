@@ -538,8 +538,8 @@ class Header extends Component {
               item
               xs={3}
               sm={3}
-              md={3}
-              lg={6}
+              md={2}
+              lg={7}
               order={{ xs: 1, sm: 1, md: 1 }}
               container
               spacing={0}
@@ -766,8 +766,8 @@ class Header extends Component {
               item
               xs={3}
               sm={3}
-              md={3}
-              lg={3}
+              md={2}
+              lg={2}
               order={{ xs: 3, sm: 3, md: 3 }}
               container
               spacing={0}

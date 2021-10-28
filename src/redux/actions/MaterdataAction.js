@@ -98,7 +98,10 @@ function setDefaultOutlet(outlet) {
 
 function getDomainName() {
   return async (dispatch) => {
-    const domainName = process.env.REACT_APP_COMPANY_URL;
+    const domainName =
+      window.location.hostname !== "localhost"
+        ? window.location.hostname
+        : "demo.cutbutchery.sg";
     try {
       fetch(process.env.REACT_APP_DOMAIN_MAPPING_URL, {
         method: "POST",
