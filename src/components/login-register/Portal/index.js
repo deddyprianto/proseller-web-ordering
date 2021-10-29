@@ -18,6 +18,8 @@ const Portal = ({
   enableOrdering,
   companyInfo,
   color,
+  loginByMobile,
+  loginByEmail,
 }) => {
   const initialCountry = (companyInfo && companyInfo.countryCode) || "SG";
   const initialCodePhone = "+65";
@@ -92,12 +94,14 @@ const Portal = ({
         >
           Next
         </Button>
-        <div
-          className={cx("modal-title", styles.switchMethodButton)}
-          onClick={() => handleMethodChange("email")}
-        >
-          Use Email Address to Sign In / Sign Up
-        </div>
+        {loginByEmail && (
+          <div
+            className={cx("modal-title", styles.switchMethodButton)}
+            onClick={() => handleMethodChange("email")}
+          >
+            Use Email Address to Sign In / Sign Up
+          </div>
+        )}
       </>
     );
   };
@@ -130,12 +134,14 @@ const Portal = ({
         >
           Next
         </Button>
-        <div
-          className={cx("modal-title", styles.switchMethodButton)}
-          onClick={() => handleMethodChange("phone")}
-        >
-          Use Mobile Number to Sign In / Sign Up
-        </div>
+        {loginByMobile && (
+          <div
+            className={cx("modal-title", styles.switchMethodButton)}
+            onClick={() => handleMethodChange("phone")}
+          >
+            Use Mobile Number to Sign In / Sign Up
+          </div>
+        )}
       </>
     );
   };

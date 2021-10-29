@@ -38,7 +38,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const LoginRegister = (props) => {
-  const [method, setMethod] = useState(props.defaultEmail || "phone");
+  const [method, setMethod] = useState("phone" || props.defaultEmail);
   const [userStatus, setUserStatus] = useState("NOT_CHECKED");
   const [payloadResponse, setPayloadResponse] = useState({});
 
@@ -140,16 +140,6 @@ const LoginRegister = (props) => {
         setEnableRegisterWithPassword(enableRegisterWithPassword.settingValue);
       }
 
-      const loginByMobile = props.setting.find((items) => {
-        return (
-          items.settingKey === "LoginByMobile" && items.settingValue === true
-        );
-      });
-      if (loginByMobile) {
-        setLoginByMobile(true);
-        setMethod("phone");
-      }
-
       const loginByEmail = props.setting.find((items) => {
         return (
           items.settingKey === "LoginByEmail" && items.settingValue === true
@@ -158,6 +148,16 @@ const LoginRegister = (props) => {
       if (loginByEmail) {
         setLoginByEmail(true);
         setMethod("email");
+      }
+
+      const loginByMobile = props.setting.find((items) => {
+        return (
+          items.settingKey === "LoginByMobile" && items.settingValue === true
+        );
+      });
+      if (loginByMobile) {
+        setLoginByMobile(true);
+        setMethod("phone");
       }
 
       const mobileOTP = props.setting.find((items) => {
