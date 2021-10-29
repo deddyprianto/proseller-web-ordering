@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DatePicker from 'react-mobile-datepicker';
 import PropTypes from "prop-types";
 import moment from "moment";
 import styles from "./styles.module.css";
@@ -17,6 +18,22 @@ const Field = ({
 }) => {
   const initialValue = value[field.fieldName];
   const [modalTrigger, setModalTrigger] = useState(null);
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+
+  const monthMap = {
+    '1': 'Jan',
+    '2': 'Feb',
+    '3': 'Mar',
+    '4': 'Apr',
+    '5': 'May',
+    '6': 'Jun',
+    '7': 'Jul',
+    '8': 'Aug',
+    '9': 'Sep',
+    '10': 'Oct',
+    '11': 'Nov',
+    '12': 'Dec',
+  };
 
   const handleEditClick = () => {
     titleEditAccount({ display: displayName, field: field.fieldName });
@@ -44,13 +61,17 @@ const Field = ({
   if (field.fieldName === "gender") displayName = "Gender";
   if (field.fieldName === "address") displayName = "Address";
 
-  let maxDate = "";
-  let minDate = "";
+  let maxDate = null;
+  let minDate = null;
+
   if (field.minimumAge) {
-    maxDate = moment().subtract(field.minimumAge, "years").format("YYYY-MM-DD");
+    maxDate = moment().subtract(field.minimumAge, 'years').format("YYYY-MM-DD");
+    maxDate = moment().subtract(field.minimumAge, 'years').format("YYYY");
+    maxDate = new Date(`${maxDate}-12-31`)
   }
   if (field.maximumAge) {
-    minDate = moment().subtract(field.maximumAge, "years").format("YYYY-MM-DD");
+    minDate = moment().subtract(field.maximumAge, 'years').format("YYYY-MM-DD");
+    minDate = new Date(minDate)
   }
 
   if (field.type === "radio") {
@@ -175,38 +196,48 @@ const Field = ({
               paddingRight: 50,
             }}
           ></div>
-          <input
-            type="date"
-            id={field.fieldName}
-            name={field.fieldName}
-            max={maxDate}
-            min={minDate}
-            value={value[field.fieldName]}
-            style={{
-              backgroundColor:
-                field.fieldName === "birthDate" &&
-                initialValue &&
-                field.isAutoDisable !== false
-                  ? "#DCDCDC"
-                  : "#FFF",
-            }}
-            disabled={
-              field.fieldName === "birthDate" &&
-              initialValue &&
-              field.isAutoDisable !== false
-            }
-            className={cx(styles.input, {
-              [styles.rounded]: roundedBorder,
-            })}
-            onChange={(e) =>
-              handleValueChange({
-                target: {
-                  value: moment(e.target.value).format("YYYY-MM-DD"),
-                  name: field.fieldName,
-                },
-              })
-            }
-          />
+            <div className="date" style={{ backgroundColor: 'white', borderRadius: 7 }}>
+              <div onClick={() => setOpenDatePicker(true)} style={{ borderRadius: 7, border: '1px solid #bdc3c7', padding: '8px 5px', paddingLeft: 10 }}>
+                {value[field.fieldName] ? moment(value[field.fieldName]).format("DD MMMM YYYY") : `Select ${displayName}`}
+              </div>
+              <DatePicker
+                value={value[field.fieldName] ? new Date(value[field.fieldName]) : new Date()}
+                max={maxDate ? maxDate : new Date()}
+                // min={minDate ? minDate : new Date()}
+                headerFormat={"DD / MM / YYYY"}
+                dateConfig={
+                  {
+                    'date': {
+                        format: 'DD',
+                        caption: 'Day',
+                        step: 1,
+                    },
+                    'month': {
+                        format: value => monthMap[value.getMonth() + 1],
+                        caption: 'Month',
+                        step: 1,
+                    },
+                    'year': {
+                        format: 'YYYY',
+                        caption: 'Year',
+                        step: 1,
+                    }
+                }}
+                theme={'ios'}
+                confirmText={'Select'}
+                cancelText={'Cancel'}
+                isOpen={openDatePicker}
+                onSelect={(e) => {
+                  handleValueChange({
+                    target: {
+                      value: moment(e).format("YYYY-MM-DD"),
+                      name: field.fieldName,
+                    },
+                  })
+                  setOpenDatePicker(false)
+                }}
+                onCancel={() => setOpenDatePicker(false)} />
+          </div>
         </div>
         {error && error[field.fieldName] !== "" && (
           <div className="text text-warning-theme small">
