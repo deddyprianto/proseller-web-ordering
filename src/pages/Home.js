@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
 import OrderingRetail from "../components/ordering/indexRetail";
 import OutletSelection from "./OutletSelection";
@@ -78,6 +79,7 @@ class Home extends Component {
               <OutletSelection />
             ) : (
               <main id="main" className="site-main">
+                <Promotion />
                 {orderingSetting &&
                 orderingSetting.CategoryHeaderType === "WITH_CATEGORY_PAGE" ? (
                   <OrderingRetail history={this.props.history}></OrderingRetail>
