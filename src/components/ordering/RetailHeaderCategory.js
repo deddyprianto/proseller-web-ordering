@@ -77,7 +77,7 @@ const WebOrderingCategories = ({
     <ul
       className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position background-theme"
       style={{
-        marginTop: 20,
+        marginTop: 100,
         marginBottom: 0,
         borderBottom: "0px solid #DCDCDC",
       }}

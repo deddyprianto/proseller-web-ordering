@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Promotion from "../components/promotion";
 import Ordering from "../components/ordering";
 import OrderingRetail from "../components/ordering/indexRetail";
 import OutletSelection from "./OutletSelection";
@@ -62,8 +61,8 @@ class Home extends Component {
 
   render() {
     const { isEmenu } = this.state;
-    const { defaultOutlet } = this.props;
-    
+    const { defaultOutlet, orderingSetting } = this.props;
+
     return (
       <div className="col-full">
         <div
@@ -79,11 +78,8 @@ class Home extends Component {
               <OutletSelection />
             ) : (
               <main id="main" className="site-main">
-                {!isEmenu && <Promotion />}
-                {this.props.orderingSetting &&
-                this.props.orderingSetting.CategoryHeaderType &&
-                this.props.orderingSetting.CategoryHeaderType ===
-                  "WITH_CATEGORY_PAGE" ? (
+                {orderingSetting &&
+                orderingSetting.CategoryHeaderType === "WITH_CATEGORY_PAGE" ? (
                   <OrderingRetail history={this.props.history}></OrderingRetail>
                 ) : (
                   <Ordering></Ordering>

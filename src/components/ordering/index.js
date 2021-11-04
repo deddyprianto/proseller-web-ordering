@@ -8,8 +8,9 @@ import ModalProduct from "./ModalProduct";
 import LoaderCircle from "../loading/LoaderCircle";
 import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
-import Menu1 from "./WebOrderingCategories/Menu1";
-import EMenuCategories from "./EMenuCategories";
+import CategoryOnly from "./WebOrderingCategories/CategoryOnly";
+import CategoryWithAllProducts from "./WebOrderingCategories/CategoryWithAllProducts";
+// import EMenuCategories from "./EMenuCategories";
 
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
@@ -81,7 +82,7 @@ class Ordering extends Component {
       const showOrderingModeModalFirst = this.props.setting.find((setting) => {
         return setting.settingKey === "ShowOrderingModeModalFirst";
       });
-      
+
       if (this.props.orderingModes.length === 1) {
         await this.props.dispatch({
           type: "SET_ORDERING_MODE",
@@ -216,11 +217,11 @@ class Ordering extends Component {
       );
       // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
       await this.setState({ categories: categories.data, processing: true });
-      
-      if (this.props.orderingSetting.CategoryHeaderType === 'CATEGORY_ONLY') {
+
+      if (this.props.orderingSetting.CategoryHeaderType === "CATEGORY_ONLY") {
         await this.getProductPresetSingle(categories.data[0], outlet);
       } else {
-        await this.getProductPresetAll(categories.data, outlet)
+        await this.getProductPresetAll(categories.data, outlet);
       }
       await this.setState({ loading: false });
     } catch (error) {}
@@ -228,7 +229,7 @@ class Ordering extends Component {
 
   getProductPresetSingle = async (category, outlet) => {
     await this.setState({ products: [], loading: true });
-    
+
     if (!outlet) {
       outlet = this.props.defaultOutlet;
       if (outlet && outlet.id) {
@@ -237,7 +238,7 @@ class Ordering extends Component {
     }
 
     let products = [];
-    
+
     let data = await this.props.dispatch(
       ProductAction.fetchProduct(category, outlet, 0, 200)
     );
@@ -251,7 +252,7 @@ class Ordering extends Component {
       products,
       productsBackup: _.cloneDeep(products),
     });
-    
+
     this.props.dispatch({
       type: CONSTANT.LIST_CATEGORY,
       data: products,
@@ -286,7 +287,7 @@ class Ordering extends Component {
 
     while (i < categories.length && this.state.processing) {
       let data = null;
-      
+
       if (
         this.props.orderingSetting &&
         this.props.orderingSetting.ShowOrderingModeModalFirst
@@ -367,8 +368,8 @@ class Ordering extends Component {
     const { basket } = this.props;
     try {
       if (!isEmptyObject(basket)) {
-        const find = basket.details.find(
-          (data) => data.product.id.includes(item.product.id)
+        const find = basket.details.find((data) =>
+          data.product.id.includes(item.product.id)
         );
         if (find !== undefined) return "Update";
         else return "Add";
@@ -470,6 +471,7 @@ class Ordering extends Component {
       offlineMessage,
       isEmenu,
     } = this.state;
+    const { orderingSetting } = this.props;
     let products = [];
 
     const categoryRefs =
@@ -548,7 +550,9 @@ class Ordering extends Component {
               productInCart={
                 this.props.basket &&
                 this.props.basket.details.filter((item) => {
-                  return item.productID.includes(this.state.selectedItem.productID);
+                  return item.productID.includes(
+                    this.state.selectedItem.productID
+                  );
                 })
               }
               onClose={() => this.setState({ showUpdateModal: false })}
@@ -561,16 +565,9 @@ class Ordering extends Component {
           addNew={this.state.addNew}
           selectedItem={this.state.selectedItem}
         />
-        {isEmenu ? (
-          <EMenuCategories
-            categories={categories}
-            selectedCategory={this.state.selectedCategory}
-            setSelectedCategory={(category) =>
-              this.setState({ selectedCategory: category })
-            }
-          ></EMenuCategories>
-        ) : (
-          <Menu1
+        {orderingSetting &&
+        orderingSetting.CategoryHeaderType === "CATEGORY_ONLY" ? (
+          <CategoryOnly
             categoryRefs={categoryRefs}
             loadingSearching={(status) =>
               this.setState({ loadingSearching: status })
@@ -594,7 +591,24 @@ class Ordering extends Component {
             getProductPreset={this.getProductPresetSingle}
             banners={this.props.banners}
           />
+        ) : (
+          <CategoryWithAllProducts
+            categoryRefs={categoryRefs}
+            loadingSearching={(status) =>
+              this.setState({ loadingSearching: status })
+            }
+            finished={finished}
+            setLoading={(status) => this.setState({ loading: status })}
+            searchProduct={(query) => this.searchProduct(query)}
+            categories={categories}
+            theme={this.props.theme}
+            selectedCategory={this.state.selectedCategory}
+            setSelectedCategory={(category) =>
+              this.setState({ selectedCategory: category })
+            }
+          />
         )}
+
         <div
           className="full-width list-view columns-2 archive woocommerce-page html-change"
           id="product-catalog"
@@ -602,7 +616,10 @@ class Ordering extends Component {
         >
           <div className="tab-content">
             <div className="tab-pane active" id="h1-tab-products-2">
-              <ul className="products" style={{ marginLeft: 0, marginRight: 0 }}>
+              <ul
+                className="products"
+                style={{ marginLeft: 0, marginRight: 0 }}
+              >
                 {!loadingSearching &&
                   products &&
                   products.map((cat, i) => (
@@ -616,7 +633,7 @@ class Ordering extends Component {
                           marginBottom: 20,
                           paddingTop: 10,
                           fontWeight: 800,
-                          textAlign: 'center'
+                          textAlign: "center",
                         }}
                       >
                         {cat.category.name.toUpperCase()}
