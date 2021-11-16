@@ -83,6 +83,7 @@ class Basket extends Component {
       latitude: 0,
       longitude: 0,
       timeslotData: [],
+      selectedDeliveryProvider: {}
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -323,13 +324,6 @@ class Basket extends Component {
     let deliveryAddress = this.props.deliveryAddress;
 
     if (isLoggedIn) {
-      // this.props.dispatch(CustomerAction.getVoucher());
-      // this.props.dispatch(
-      //   CampaignAction.getCampaignPoints(
-      //     { history: "false" },
-      //     infoCompany && infoCompany.companyId
-      //   )
-      // );
     } else if (!isLoggedIn && dataBasket) {
       dataBasket.orderingMode = orderingMode;
       let response = await this.props.dispatch(
@@ -339,10 +333,6 @@ class Basket extends Component {
     }
 
     if (dataBasket && dataBasket.outlet !== undefined) {
-      // if (dataBasket.isPaymentComplete !== undefined) {
-      //   dataBasket = await this.getDataBasketPending(dataBasket);
-      // }
-
       if (!orderingMode) orderingMode = this.state.orderingMode;
       dataBasket.orderingMode = orderingMode;
       const isOutletChanged = await localStorage.getItem(
@@ -390,43 +380,37 @@ class Basket extends Component {
           dataBasket
         );
         dataBasket = await this.getDataBasket_();
+        await localStorage.setItem(
+          `${config.prefix}_dataBasket`,
+          JSON.stringify(encryptor.encrypt(dataBasket))
+        );
       }
 
       // set default outlet
       let storeDetail = await this.setDefaultOutlet(dataBasket);
 
-      // set voucher
-      // await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
-
-      // let discount = (selectedPoint || 0) + this.state.discountVoucher;
-      // let totalPrice =
-      //   dataBasket.totalNettAmount - discount < 0
-      //     ? 0
-      //     : dataBasket.totalNettAmount - discount;
-
       if (dataBasket.orderingMode) {
         dataBasket.orderingMode = orderingMode;
-        scanTable = {
-          ...scanTable,
-          tableType: orderingMode,
-          tableNo: dataBasket.tableNo,
-          outlet: dataBasket.outletID,
-        };
       }
 
-      // (isChangeMode || dataBasket.totalSurchargeAmount === 0) &&
-      //   dataBasket.isPaymentComplete === undefined
+      /* Flush selected delivery provider */
+      if (orderingMode !== 'DELIVERY') {
+        await this.setState({ selectedDeliveryProvider: {} });
+      }
+
       if (isChangeMode) {
+        const { selectedDeliveryProvider } = this.state;
+        const provider = selectedDeliveryProvider;
+
         let surcharge = await this.props.dispatch(
-          OrderAction.changeOrderingMode({ orderingMode })
+          OrderAction.changeOrderingMode({ orderingMode, provider })
         );
         if (surcharge.resultCode === 200) {
-          dataBasket = surcharge.data;
+          dataBasket = await this.getDataBasket_();
           await localStorage.setItem(
             `${config.prefix}_dataBasket`,
             JSON.stringify(encryptor.encrypt(dataBasket))
           );
-          dataBasket = await this.getDataBasket_();
         }
       }
 
@@ -552,8 +536,8 @@ class Basket extends Component {
         });
       }
       console.log("calling handleSetProvider from setDeliveryProvider");
-      this.handleSetProvaider(provaiderDelivery);
-      this.setState({ deliveryProvaider });
+      await this.handleSetProvaider(provaiderDelivery);
+      await this.setState({ deliveryProvaider });
     }
 
     await this.props.dispatch({
@@ -1487,13 +1471,9 @@ class Basket extends Component {
         OrderAction.changeOrderingMode({ orderingMode, provider })
       );
       if (dataBasket.resultCode === 200) {
-        dataBasket = dataBasket.data;
-        localStorage.setItem(
-          `${config.prefix}_dataBasket`,
-          JSON.stringify(encryptor.encrypt(dataBasket))
-        );
+        await this.setState({ selectedDeliveryProvider: provider });
         console.log("Calling getDateBasket from handleSetProvaider");
-        await this.getDataBasket();
+        // await this.getDataBasket();
       }
     }
   };

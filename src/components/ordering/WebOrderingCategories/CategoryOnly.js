@@ -124,7 +124,7 @@ const WebOrderingCategories = ({
   }
 
   if (width >= 1200) {
-    diff = 65;
+    diff = 63;
   }
 
   let backupCategories = JSON.stringify(categories);
@@ -322,7 +322,7 @@ const WebOrderingCategories = ({
                     position: "absolute",
                     right: 0,
                     cursor: "pointer",
-                    width: width / limit - widthMoreMenu / limit - diff,
+                    width: (width / limit) - (widthMoreMenu / limit) - 2*diff,
                   }}
                   data-toggle="collapse"
                   data-target=".multi-collapse"
@@ -337,7 +337,6 @@ const WebOrderingCategories = ({
                         width: widthMoreMenu + 19,
                         fontSize: 12,
                         fontWeight: 900,
-                        padding: 7,
                         color: theme.color.primary,
                         backgroundColor: "rgb(208, 208, 208)",
                         textAlign: "center",
