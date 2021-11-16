@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { isEmptyArray } from "../../helpers/CheckEmpty";
-import Carousel from "nuka-carousel";
+// import Carousel from "nuka-carousel";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
 class Promotion extends Component {
   render() {
@@ -20,49 +22,21 @@ class Promotion extends Component {
           style={{ marginTop: 85 }}
         >
           <Carousel
-            autoplay
-            wrapAround={banners && banners.length > 1}
-            withoutControls={banners && banners.length === 1}
-            renderCenterLeftControls={({ previousSlide }) => (
-              <p onClick={previousSlide}>
-                <i
-                  className="fa fa-chevron-left control-promotion background-theme"
-                  style={{
-                    borderTopRightRadius: 5,
-                    borderBottomRightRadius: 5,
-                    color: colorTheme.primary,
-                  }}
-                />
-              </p>
-            )}
-            renderCenterRightControls={({ nextSlide }) => (
-              <p onClick={nextSlide}>
-                <i
-                  className="fa fa-chevron-right control-promotion background-theme"
-                  style={{
-                    borderTopLeftRadius: 5,
-                    borderBottomLeftRadius: 5,
-                    color: colorTheme.primary,
-                  }}
-                />
-              </p>
-            )}
-            defaultControlsConfig={{
-              pagingDotsStyle: {
-                fill: colorTheme.primary,
-                position: "relative",
-                padding: 3,
-                bottom: -15,
-              },
-            }}
+            showThumbs={false}
+            showIndicators={false}
+            showStatus={false}
           >
             {banners.map((item, i) => (
-              <img
-                key={i}
-                src={item.defaultImageURL}
-                style={{ borderRadius: 5 }}
-                alt="promo banner"
-              />
+              <div>
+                <picture>
+                  <source
+                    srcset={item.thumbnailURL}
+                    alt={item.name}
+                    media="(max-width: 700px)"
+                  />
+                  <img src={item.defaultImageURL} alt={item.name} />
+                </picture>
+              </div>
             ))}
           </Carousel>
         </div>
