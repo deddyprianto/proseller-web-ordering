@@ -45,15 +45,7 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
         let location = {};
 
         if (!position) {
-          position = await dispatch(getCoordinates());
-          location = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          };
-          localStorage.setItem(
-            `${config.prefix}_locationCustomer`,
-            JSON.stringify(location)
-          );
+          dispatch(getCoordinates());
           return dispatch(getNearsesOutlet(location));
         } else {
           location = {
@@ -84,9 +76,19 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
 
 function getCoordinates() {
   return async (dispatch) => {
-    return new Promise(function (resolve, reject) {
+    const position = await new Promise(function (resolve, reject) {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
+    if (position) {
+      const location = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      localStorage.setItem(
+        `${config.prefix}_locationCustomer`,
+        JSON.stringify(location)
+      );
+    }
   };
 }
 
