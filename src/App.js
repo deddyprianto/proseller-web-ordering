@@ -124,18 +124,9 @@ const App = (props) => {
       let position = JSON.parse(
         localStorage.getItem(`${config.prefix}_locationCustomer`)
       );
-      let location = {}
 
       if (!position) {
-        position = await props.disxpatch(OutletAction.getCoordinates());
-        location = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        localStorage.setItem(
-          `${config.prefix}_locationCustomer`,
-          JSON.stringify(location)
-        );
+        props.dispatch(OutletAction.getCoordinates());
       }
     } catch (error) {
       console.log("Get location false");
