@@ -243,7 +243,7 @@ class Payment extends Component {
       if (response && response.data.status === "COMPLETED") {
         clearInterval(this.pendingSalesInterval);
         let data = {
-          message: "Congratulations, payment success",
+          message: response.message,
           paymentType:
             response.data.paymentType || payment.paymentType || "CREDIT CARD",
           totalNettAmount: response.data.totalNettAmount,
@@ -280,7 +280,7 @@ class Payment extends Component {
         });
         return;
       }
-    }, 8000);
+    }, 4000);
   };
 
   componentDidUpdate() {
