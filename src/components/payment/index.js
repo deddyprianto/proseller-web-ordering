@@ -81,6 +81,7 @@ class Payment extends Component {
       isSubmitting: false,
     };
     this.audio = new Audio(Sound_Effect);
+    this.pendingSalesInterval = null;
   }
 
   componentDidUnmount() {
@@ -221,6 +222,65 @@ class Payment extends Component {
         return;
       }
     }
+  };
+
+  checkPendingSales = async (payment) => {
+    clearInterval(this.pendingSalesInterval);
+
+    if (!payment) return;
+
+    await this.setState({
+      isLoading: false,
+      showPaymentPage: true,
+      paymentUrl: payment.action.url,
+    });
+
+    Swal.close();
+    this.pendingSalesInterval = setInterval(async () => {
+      const response = await this.props.dispatch(
+        CustomerAction.getSalesByReference(payment.referenceNo)
+      );
+      if (response && response.data.status === "COMPLETED") {
+        clearInterval(this.pendingSalesInterval);
+        let data = {
+          message: "Congratulations, payment success",
+          paymentType:
+            response.data.paymentType || payment.paymentType || "CREDIT CARD",
+          totalNettAmount: response.data.totalNettAmount,
+          outletName: response.data.outlet.name,
+          orderingMode: "",
+          createdAt: response.data.createdAt,
+          payments: response.data.payments,
+        };
+
+        localStorage.setItem(
+          `${config.prefix}_settleSuccess`,
+          JSON.stringify(encryptor.encrypt(data))
+        );
+        localStorage.removeItem(`${config.prefix}_selectedPoint`);
+        localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+        localStorage.removeItem(`${config.prefix}_dataSettle`);
+        this.togglePlay();
+        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
+        await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
+        this.props.history.push("/settleSuccess");
+        this.setState({ isLoading: false, showPaymentPage: false });
+        return;
+      } else if (response.data.status === "FAILED") {
+        clearInterval(this.pendingSalesInterval);
+        Swal.fire(
+          "Payment Failed",
+          "Please try again",
+          "error"
+        );
+        this.setState({
+          isLoading: false,
+          failed: true,
+          showPaymentPage: false,
+        });
+        return;
+      }
+    }, 8000);
   };
 
   componentDidUpdate() {
@@ -894,7 +954,11 @@ class Payment extends Component {
       // if need further actions
       if (response.Data.action !== undefined) {
         if (response.Data.action.type === "url") {
-          this.getPendingPayment(response.data);
+          if (selectedCard.paymentID === "UOB") {
+            this.checkPendingSales(response.Data);
+          } else {
+            this.getPendingPayment(response.Data);
+          }
         }
       } else {
         response.Data.outlet = {
@@ -1039,7 +1103,11 @@ class Payment extends Component {
       // if need further actions
       if (response.Data.action !== undefined) {
         if (response.Data.action.type === "url") {
-          this.getPendingPayment(response.data);
+          if (selectedCard.paymentID === "UOB") {
+            this.checkPendingSales(response.Data);
+          } else {
+            this.getPendingPayment(response.Data);
+          }
         }
       } else {
         response.Data.outlet = {
@@ -1250,7 +1318,11 @@ class Payment extends Component {
       // if need further actions
       if (response.data && response.data.action !== undefined) {
         if (response.data.action.type === "url") {
-          this.getPendingPayment(response.data);
+          if (selectedCard.paymentID === "UOB") {
+            this.checkPendingSales(response.data);
+          } else {
+            this.getPendingPayment(response.data);
+          }
         }
       } else {
         localStorage.setItem(
