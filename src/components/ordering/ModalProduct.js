@@ -59,9 +59,9 @@ class ModalProduct extends Component {
     }
   };
 
-  setSelectedVariantProduct = (variant) => {
-    this.setState({ isVariantSelected: true });
-    this.setState((prevState) => {
+  setSelectedVariantProduct = async (variant) => {
+    await this.setState({ isVariantSelected: true });
+    await this.setState((prevState) => {
       return {
         selectedVariant: variant,
         selectedItem: {
@@ -260,7 +260,7 @@ class ModalProduct extends Component {
     } catch(e){}
 
     try {
-      if (orderMode || manualOrderingMode !== "") {
+      
         const { defaultOutlet } = this.props;
         const { selectedItem } = this.state;
         const { basket } = this.state;
@@ -336,9 +336,12 @@ class ModalProduct extends Component {
           console.log(selectedItem);
           document.getElementById("detail-product-modal").click();
         }
-      } else {
-        document.getElementById("open-modal-ordering-mode").click();
-      }
+
+        if (!orderMode) {
+          setTimeout(() => {
+            document.getElementById("open-modal-ordering-mode").click();
+          }, 1000)
+        }
     } catch (e) {}
     this.setState({ isVariantSelected: false });
   };
@@ -986,7 +989,7 @@ class ModalProduct extends Component {
       });
       await this.setState({ disableButton: true });
       console.log("Calling set ordeirng mode");
-      this.processCart(null, mode);
+      // this.processCart(null, mode);
       if (mode !== "" && mode !== undefined && mode === null) {
         setTimeout(() => {
           const payload = {
