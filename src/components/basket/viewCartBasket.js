@@ -33,15 +33,18 @@ const ViewCartBasket = ({
   dataBasket,
   updateCartInfo,
 }) => {
+  console.log('outlet', outlet)
   // if (!basket.details && data.dataBasket) basket = data.dataBasket;
   // if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
   if (dataBasket && dataBasket.details) {
     basket = data.dataBasket;
     data.basket = dataBasket;
   }
-  if (!outlet.orderValidation) {
-    outlet = data.storeDetail;
-    if (!outlet.orderValidation) outlet = config.getValidation(outlet);
+  if (outlet && outlet.id) {
+    if (!outlet.orderValidation) {
+      outlet = data.storeDetail;
+      if (!outlet.orderValidation) outlet = config.getValidation(outlet);
+    }
   }
 
   let props = data;
