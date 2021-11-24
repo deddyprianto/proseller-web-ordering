@@ -297,7 +297,7 @@ class Header extends Component {
         return (
           <div className={useStyles.outletStyle}>
             <Link to="/outlets">
-              <h4 className="color" style={{ fontSize: 15, marginTop: 10 }}>
+              <h4 className="color" style={{ fontSize: 14, marginTop: 10 }}>
                 {this.props.defaultOutlet.name}{" "}
                 <i style={{ marginLeft: 6, fontSize: 10 }} />
               </h4>

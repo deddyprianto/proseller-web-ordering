@@ -112,6 +112,7 @@ class Product extends Component {
         style={{
           marginBottom: 5,
           boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+          border: '1px solid rgba(128, 128, 128, 0.5)'
         }}
         className="post-82 product type-product status-publish has-post-thumbnail product_cat-pizza  instock shipping-taxable purchasable product-type-simple addon-product"
       >
