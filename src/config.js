@@ -3,7 +3,7 @@ import emptyImage from "./assets/images/empty.png";
 import loginImage from "./assets/images/login.svg";
 
 let config = {};
-let stage = "";
+let stage = "demo";
 let companyHost = "tomahawkking";
 let endPoint = `https://${companyHost}${
   stage !== "" ? "-" + stage : ""

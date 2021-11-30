@@ -1,22 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Product from "./Product";
-// import { OutletAction } from "../../redux/actions/OutletAction";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import { ProductAction } from "../../redux/actions/ProductAction";
 import ModalProduct from "./ModalProduct";
 import LoaderCircle from "../loading/LoaderCircle";
 import config from "../../config";
 import UpdateProductModal from "./UpdateProductModal";
-import CategoryOnly from "./WebOrderingCategories/CategoryOnly";
-import CategoryWithAllProducts from "./WebOrderingCategories/CategoryWithAllProducts";
-// import EMenuCategories from "./EMenuCategories";
-
+import { Link } from "react-router-dom";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { CONSTANT } from "../../helpers";
 import { getInitialProductValue } from "../../helpers/ProductHelper";
 import _ from "lodash";
-// const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Ordering extends Component {
   constructor(props) {
@@ -211,18 +206,19 @@ class Ordering extends Component {
 
   fetchCategories = async (outlet, orderingMode) => {
     try {
-      // await this.setState({ loading: true });
+      const presetType = "promotion";
       const categories = await this.props.dispatch(
-        ProductAction.fetchCategoryProduct(outlet, null, orderingMode)
+        ProductAction.fetchCategoryProduct(
+          outlet,
+          null,
+          orderingMode,
+          presetType
+        )
       );
-      // await this.props.dispatch(OutletAction.fetchSingleOutlet(outlet));
+
       await this.setState({ categories: categories.data, processing: true });
 
-      if (this.props.orderingSetting.CategoryHeaderType === "CATEGORY_ONLY") {
-        await this.getProductPresetSingle(categories.data[0], outlet);
-      } else {
-        await this.getProductPresetAll(categories.data, outlet);
-      }
+      await this.getProductPresetAll(categories.data, outlet);
       await this.setState({ loading: false });
     } catch (error) {}
   };
@@ -287,6 +283,7 @@ class Ordering extends Component {
 
     while (i < categories.length && this.state.processing) {
       let data = null;
+      categories[i].presetType = "promotion";
 
       if (
         this.props.orderingSetting &&
@@ -401,6 +398,7 @@ class Ordering extends Component {
   searchProduct = async (query) => {
     try {
       const { productsBackup } = this.state;
+      console.log("productsBackup", productsBackup);
       this.setState({ finished: true });
       if (query === "") {
         this.setState({
@@ -421,6 +419,7 @@ class Ordering extends Component {
         try {
           for (let j = 0; j < productsBackup[i].items.length; j++) {
             if (
+              productsBackup[i].items[j].product &&
               productsBackup[i].items[j].product.name
                 .toLowerCase()
                 .includes(query.toLowerCase())
@@ -463,14 +462,8 @@ class Ordering extends Component {
   };
 
   render() {
-    let {
-      categories,
-      loading,
-      finished,
-      loadingSearching,
-      offlineMessage,
-      isEmenu,
-    } = this.state;
+    let { categories, loading, finished, loadingSearching, offlineMessage } =
+      this.state;
     const { orderingSetting } = this.props;
     let products = [];
 
@@ -536,190 +529,194 @@ class Ordering extends Component {
     }
 
     return (
-      <div
-        className="section-tabs container-product"
-        data-toggle="modal"
-        data-target="#modal-product"
-      >
-        {this.getLabelButton(this.state.selectedItem).toLowerCase() ===
-          "update" &&
-          this.state.showUpdateModal && (
-            <UpdateProductModal
-              color={this.props.theme.color.primary}
-              product={this.state.selectedProduct}
-              productInCart={
-                this.props.basket &&
-                this.props.basket.details.filter((item) => {
-                  return item.productID.includes(
-                    this.state.selectedItem.productID
-                  );
-                })
-              }
-              onClose={() => this.setState({ showUpdateModal: false })}
-              setAddNew={(addNew) => this.setState({ addNew })}
-              setSelectedItem={(item) => this.setState({ selectedItem: item })}
-              getCurrency={(price) => this.getCurrency(price)}
-            ></UpdateProductModal>
-          )}
-        <ModalProduct
-          addNew={this.state.addNew}
-          selectedItem={this.state.selectedItem}
-        />
-        {orderingSetting &&
-        orderingSetting.CategoryHeaderType === "CATEGORY_ONLY" ? (
-          <CategoryOnly
-            categoryRefs={categoryRefs}
-            loadingSearching={(status) =>
-              this.setState({ loadingSearching: status })
-            }
-            finished={finished}
-            setLoading={(status) => this.setState({ loading: status })}
-            searchProduct={(query) => this.searchProduct(query)}
-            categories={categories}
-            selectedCategory={this.state.selectedCategory}
-            expanded={this.state.expanded}
-            itemToShow={this.state.itemToShow}
-            handleShowMore={() => this.handleShowMore()}
-            setSelectedCategory={(category) =>
-              this.setState({ selectedCategory: category })
-            }
-            setIsScrollingToCategory={(isScrollingToCategory) =>
-              this.setState({ isScrollingToCategory })
-            }
-            showMoreButton={this.props.orderingSetting.ShowAllCategory}
-            theme={this.props.theme}
-            getProductPreset={this.getProductPresetSingle}
-            banners={this.props.banners}
-          />
-        ) : (
-          <CategoryWithAllProducts
-            categoryRefs={categoryRefs}
-            loadingSearching={(status) =>
-              this.setState({ loadingSearching: status })
-            }
-            finished={finished}
-            setLoading={(status) => this.setState({ loading: status })}
-            searchProduct={(query) => this.searchProduct(query)}
-            categories={categories}
-            theme={this.props.theme}
-            selectedCategory={this.state.selectedCategory}
-            setSelectedCategory={(category) =>
-              this.setState({ selectedCategory: category })
-            }
-          />
-        )}
-
-        <div
-          className="full-width list-view columns-2 archive woocommerce-page html-change"
-          id="product-catalog"
-          style={{ paddingTop: 30 }}
-        >
-          <div className="tab-content">
-            <div className="tab-pane active" id="h1-tab-products-2">
-              <ul
-                className="products"
-                style={{ marginLeft: 0, marginRight: 0 }}
-              >
-                {!loadingSearching &&
-                  products &&
-                  products.map((cat, i) => (
-                    <>
-                      <h3
-                        id={i}
-                        ref={categoryRefs[i]}
-                        style={{
-                          color: this.props.theme.color.primary,
-                          fontSize: 16,
-                          marginBottom: 20,
-                          paddingTop: 10,
-                          fontWeight: 800,
-                          textAlign: "center",
-                        }}
-                      >
-                        {cat.category.name.toUpperCase()}
-                      </h3>
-                      <div className="grid-products">
-                        {cat.items.map((item, j) => {
-                          const { salesPeriods, restricSalesPeriod } = item;
-                          if (restricSalesPeriod) {
-                            console.log("restrictingSales period");
-                            const isEnabled = salesPeriods.find((period) => {
-                              const timeArray = period.value.split("-");
-                              const startTime = timeArray[0];
-                              const endTime = timeArray[1];
-                              const startHour = parseInt(
-                                startTime.split(":")[0]
-                              );
-                              const startMinute = parseInt(
-                                startTime.split(":")[1]
-                              );
-                              const endHour = parseInt(endTime.split(":")[0]);
-                              const endMinute = parseInt(endTime.split(":")[1]);
-                              const start = startHour * 60 + startMinute;
-                              const end =
-                                startHour > endHour
-                                  ? endHour * 60 + endMinute + 24 * 60
-                                  : endHour * 60 + endMinute;
-                              const date = new Date();
-                              const now =
-                                date.getHours() * 60 + date.getMinutes();
-                              return now <= end && now >= start;
-                            });
-                            if (!isEnabled) {
-                              return null;
-                            }
-                          }
-                          return (
-                            item.product && (
-                              <Product
-                                labelButton={this.getLabelButton(item)}
-                                quantity={this.getQuantityProduct(item)}
-                                selectProduct={this.selectProduct}
-                                showUpdateModal={(item) =>
-                                  this.setState({
-                                    showUpdateModal: true,
-                                    selectedProduct: item,
-                                  })
-                                }
-                                key={j}
-                                item={item}
-                              />
-                            )
-                          );
-                        })}
-                      </div>
-                    </>
-                  ))}
-
-                {!loadingSearching && !loading && products.length === 0 && (
-                  <div>
-                    <img
-                      src={config.url_emptyImage}
-                      alt="is empty"
-                      style={{ marginTop: 30 }}
-                    />
-                    <h3 className="color text-center" style={{ fontSize: 16 }}>
-                      Oppss.. Item Not Found.
-                    </h3>
-                  </div>
-                )}
-              </ul>
-              {loading && <LoaderCircle />}
+      <div className="col-full" style={{ marginTop: 130 }}>
+        <div className="row">
+          <div className="col-md-8">
+            <Link to={"/menu"}>
+              <div>
+                <i className="fa fa-arrow-left" /> Back
+              </div>
+            </Link>
+            <br />
+          </div>
+          <div className="col-md-4">
+            <div
+              style={{
+                backgroundColor: "#ecf0f1",
+                borderRadius: 4,
+                alignItems: "center",
+              }}
+            >
+              <input
+                onChange={(e) => {
+                  this.searchProduct(e.target.value);
+                }}
+                className="form-control"
+                placeholder="Search your product here..."
+                style={{ fontSize: "1.6rem" }}
+              ></input>
             </div>
           </div>
         </div>
-        <span
-          data-toggle="modal"
-          data-target="#detail-product-modal"
-          id="open-modal-product"
-          style={{ color: "white" }}
-        ></span>
-        <span
-          data-toggle="modal"
-          data-target="#ordering-mode"
-          id="open-modal-ordering-mode"
-          style={{ color: "white" }}
-        ></span>
+        <div id="primary" className="" style={{ paddingBottom: 100 }}>
+          <main id="main">
+            <div
+              className="section-tabs container-product"
+              data-toggle="modal"
+              data-target="#modal-product"
+            >
+              {this.getLabelButton(this.state.selectedItem).toLowerCase() ===
+                "update" &&
+                this.state.showUpdateModal && (
+                  <UpdateProductModal
+                    color={this.props.theme.color.primary}
+                    product={this.state.selectedProduct}
+                    productInCart={
+                      this.props.basket &&
+                      this.props.basket.details.filter((item) => {
+                        return item.productID.includes(
+                          this.state.selectedItem.productID
+                        );
+                      })
+                    }
+                    onClose={() => this.setState({ showUpdateModal: false })}
+                    setAddNew={(addNew) => this.setState({ addNew })}
+                    setSelectedItem={(item) =>
+                      this.setState({ selectedItem: item })
+                    }
+                    getCurrency={(price) => this.getCurrency(price)}
+                  ></UpdateProductModal>
+                )}
+              <ModalProduct
+                addNew={this.state.addNew}
+                selectedItem={this.state.selectedItem}
+              />
+
+              <div
+                className="full-width list-view columns-2 archive woocommerce-page html-change"
+                id="product-catalog"
+                style={{ paddingTop: 30 }}
+              >
+                <div className="tab-content">
+                  <div className="tab-pane active" id="h1-tab-products-2">
+                    <ul
+                      className="products"
+                      style={{ marginLeft: 0, marginRight: 0 }}
+                    >
+                      {!loadingSearching &&
+                        products &&
+                        products.map((cat, i) => (
+                          <>
+                            <h3
+                              id={i}
+                              ref={categoryRefs[i]}
+                              style={{
+                                color: this.props.theme.color.primary,
+                                fontSize: 17,
+                                marginBottom: 30,
+                                paddingTop: 10,
+                                fontWeight: 800,
+                              }}
+                            >
+                              {cat.category.name.toUpperCase()}
+                            </h3>
+                            <div className="grid-products">
+                              {cat.items.map((item, j) => {
+                                const { salesPeriods, restricSalesPeriod } =
+                                  item;
+                                if (restricSalesPeriod) {
+                                  console.log("restrictingSales period");
+                                  const isEnabled = salesPeriods.find(
+                                    (period) => {
+                                      const timeArray = period.value.split("-");
+                                      const startTime = timeArray[0];
+                                      const endTime = timeArray[1];
+                                      const startHour = parseInt(
+                                        startTime.split(":")[0]
+                                      );
+                                      const startMinute = parseInt(
+                                        startTime.split(":")[1]
+                                      );
+                                      const endHour = parseInt(
+                                        endTime.split(":")[0]
+                                      );
+                                      const endMinute = parseInt(
+                                        endTime.split(":")[1]
+                                      );
+                                      const start =
+                                        startHour * 60 + startMinute;
+                                      const end =
+                                        startHour > endHour
+                                          ? endHour * 60 + endMinute + 24 * 60
+                                          : endHour * 60 + endMinute;
+                                      const date = new Date();
+                                      const now =
+                                        date.getHours() * 60 +
+                                        date.getMinutes();
+                                      return now <= end && now >= start;
+                                    }
+                                  );
+                                  if (!isEnabled) {
+                                    return null;
+                                  }
+                                }
+                                return (
+                                  item.product && (
+                                    <Product
+                                      labelButton={this.getLabelButton(item)}
+                                      quantity={this.getQuantityProduct(item)}
+                                      selectProduct={this.selectProduct}
+                                      showUpdateModal={(item) =>
+                                        this.setState({
+                                          showUpdateModal: true,
+                                          selectedProduct: item,
+                                        })
+                                      }
+                                      key={j}
+                                      item={item}
+                                    />
+                                  )
+                                );
+                              })}
+                            </div>
+                          </>
+                        ))}
+
+                      {!loadingSearching && !loading && products.length === 0 && (
+                        <div>
+                          <img
+                            src={config.url_emptyImage}
+                            alt="is empty"
+                            style={{ marginTop: 30 }}
+                          />
+                          <h3
+                            className="color text-center"
+                            style={{ fontSize: 16 }}
+                          >
+                            Oppss.. Item Not Found.
+                          </h3>
+                        </div>
+                      )}
+                    </ul>
+                    {loading && <LoaderCircle />}
+                  </div>
+                </div>
+              </div>
+              <span
+                data-toggle="modal"
+                data-target="#detail-product-modal"
+                id="open-modal-product"
+                style={{ color: "white" }}
+              ></span>
+              <span
+                data-toggle="modal"
+                data-target="#ordering-mode"
+                id="open-modal-ordering-mode"
+                style={{ color: "white" }}
+              ></span>
+            </div>
+          </main>
+        </div>
       </div>
     );
   }

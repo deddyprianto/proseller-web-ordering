@@ -83,12 +83,8 @@ export const Products = ({
   }, [categories, selectedCategory, selectedOutlet]);
   // console.log(filteredProducts, 'filteredProducts')
   return (
-    <div className="col-full" style={{ marginTop: '5rem', width: '100%' }}>
-      <div
-        id="primary"
-        className="content-area"
-        style={{ paddingBottom: 100 }}
-      >
+    <div className="col-full" style={{ marginTop: "5rem", width: "100%" }}>
+      <div id="primary" className="content-area" style={{ paddingBottom: 100 }}>
         <main id="main" className="site-main">
           {showUpdateModal && (
             <UpdateProductModal
@@ -190,35 +186,41 @@ export const Products = ({
                     <div className="tab-content">
                       <div className="tab-pane active" id="h1-tab-products-2">
                         <ul className="products">
-                          {filteredProducts &&
-                            filteredProducts.map((product) => {
-                              const productInBasket =
-                                basket &&
-                                basket.details &&
-                                basket.details.find(
-                                  (item) => item.product.id === product.id
+                          <div className="grid-products">
+                            {filteredProducts &&
+                              filteredProducts.map((product) => {
+                                const productInBasket =
+                                  basket &&
+                                  basket.details &&
+                                  basket.details.find(
+                                    (item) => item.product.id === product.id
+                                  );
+                                const label = productInBasket
+                                  ? "Update"
+                                  : "Add";
+                                const quantity =
+                                  productInBasket && productInBasket.quantity
+                                    ? productInBasket.quantity
+                                    : 0;
+                                return (
+                                  <Product
+                                    labelButton={label}
+                                    quantity={quantity}
+                                    selectProduct={selectProduct}
+                                    productConfig={theme}
+                                    showUpdateModal={(item) => {
+                                      setSelectedProduct(item);
+                                      setProductIsExistInBasket(
+                                        label === "Update"
+                                      );
+                                      setShowUpdateModal(true);
+                                    }}
+                                    key={product.id}
+                                    item={product}
+                                  />
                                 );
-                              const label = productInBasket ? "Update" : "Add";
-                              const quantity =
-                                productInBasket && productInBasket.quantity
-                                  ? productInBasket.quantity
-                                  : 0;
-                              return (
-                                <Product
-                                  labelButton={label}
-                                  quantity={quantity}
-                                  selectProduct={selectProduct}
-                                  productConfig={theme}
-                                  showUpdateModal={(item) => {
-                                    setSelectedProduct(item);
-                                    setProductIsExistInBasket(label === "Update");
-                                    setShowUpdateModal(true);
-                                  }}
-                                  key={product.id}
-                                  item={product}
-                                />
-                              );
-                            })}
+                              })}
+                          </div>
                         </ul>
                         {filteredProducts === null ? (
                           <h4

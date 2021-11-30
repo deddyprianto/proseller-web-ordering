@@ -20,7 +20,7 @@ import useQuery from "../../hooks/useQuery";
 import useStyles from "./styles";
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.hostname.includes('emenu');
+const IS_EMENU = window.location.hostname.includes("emenu");
 
 export const ProductSearch = ({
   selectedOutlet,
@@ -133,34 +133,38 @@ export const ProductSearch = ({
                     <div className="tab-content">
                       <div className="tab-pane active" id="h1-tab-products-2">
                         <ul className="products">
-                          {products &&
-                            products.map((product) => {
-                              const productInBasket =
-                                basket &&
-                                basket.details &&
-                                basket.details.find(
-                                  (item) => item.product.id === product.id
+                          <div className="grid-products">
+                            {products &&
+                              products.map((product) => {
+                                const productInBasket =
+                                  basket &&
+                                  basket.details &&
+                                  basket.details.find(
+                                    (item) => item.product.id === product.id
+                                  );
+                                const label = productInBasket
+                                  ? "Update"
+                                  : "Add";
+                                const quantity =
+                                  productInBasket && productInBasket.quantity
+                                    ? productInBasket.quantity
+                                    : 0;
+                                return (
+                                  <Product
+                                    labelButton={label}
+                                    quantity={quantity}
+                                    selectProduct={selectProduct}
+                                    productConfig={theme}
+                                    showUpdateModal={(item) => {
+                                      setSelectedProduct(item);
+                                      setShowUpdateModal(true);
+                                    }}
+                                    key={product.id}
+                                    item={product}
+                                  />
                                 );
-                              const label = productInBasket ? "Update" : "Add";
-                              const quantity =
-                                productInBasket && productInBasket.quantity
-                                  ? productInBasket.quantity
-                                  : 0;
-                              return (
-                                <Product
-                                  labelButton={label}
-                                  quantity={quantity}
-                                  selectProduct={selectProduct}
-                                  productConfig={theme}
-                                  showUpdateModal={(item) => {
-                                    setSelectedProduct(item);
-                                    setShowUpdateModal(true);
-                                  }}
-                                  key={product.id}
-                                  item={product}
-                                />
-                              );
-                            })}
+                              })}
+                          </div>
                         </ul>
                       </div>
                     </div>

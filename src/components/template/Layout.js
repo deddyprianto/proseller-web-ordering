@@ -49,6 +49,7 @@ const EditProfile = loadable(() =>
 );
 const Categories = loadable(() => import("../../pages/AllCategory"));
 const Products = loadable(() => import("../../pages/Products"));
+const Promotions = loadable(() => import("../../components/ordering/Promotions"));
 const Search = loadable(() => import("../../pages/Search"));
 const ProductSearchResult = loadable(() => import("../../pages/ProductSearch"));
 
@@ -218,6 +219,11 @@ class Layout extends Component {
               exact
               path={"/category/:categoryId/products"}
               component={Products}
+            />
+            <Route
+              exact
+              path={"/promotions"}
+              component={Promotions}
             />
             <Route exact path={"/products"} component={ProductSearchResult} />
             <Route exact path={"/search"} component={Search} />

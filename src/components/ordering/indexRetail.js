@@ -58,7 +58,7 @@ class Ordering extends Component {
     // await this.props.dispatch(OrderAction.getCart());
     await this.setState({ defaultOutlet });
     this.props.dispatch(
-      ProductAction.fetchCategoryList({ skip: 0, take: 20 }, null)
+      ProductAction.fetchCategoryList({ skip: 0, take: 8 }, null)
     );
     await this.fetchCategories(defaultOutlet);
   };
@@ -531,36 +531,38 @@ class Ordering extends Component {
                         id={i}
                         className="title font-color-theme"
                         style={{
-                          fontSize: 14,
-                          marginLeft: 15,
-                          marginBottom: 10,
+                          fontSize: 20, 
+                          marginLeft: 6,
+                          marginBottom: 20,
                           paddingTop: 10,
                           fontWeight: "bold",
                         }}
                       >
                         {cat.category.name}
                       </h3>
-                      {cat.items.map((item, j) => {
-                        return (
-                          <Suspense fallback={<p>...</p>}>
-                            <Product
-                              labelButton={this.getLabelButton(item)}
-                              quantity={this.getQuantityProduct(item)}
-                              history={this.props.history}
-                              selectProduct={this.selectProduct}
-                              productConfig={this.props.theme}
-                              showUpdateModal={(item) =>
-                                this.setState({
-                                  showUpdateModal: true,
-                                  selectedProduct: item,
-                                })
-                              }
-                              key={j}
-                              item={item}
-                            />
-                          </Suspense>
-                        );
-                      })}
+                      <div className="grid-products">
+                        {cat.items.map((item, j) => {
+                          return (
+                            <Suspense fallback={<p>...</p>}>
+                              <Product
+                                labelButton={this.getLabelButton(item)}
+                                quantity={this.getQuantityProduct(item)}
+                                history={this.props.history}
+                                selectProduct={this.selectProduct}
+                                productConfig={this.props.theme}
+                                showUpdateModal={(item) =>
+                                  this.setState({
+                                    showUpdateModal: true,
+                                    selectedProduct: item,
+                                  })
+                                }
+                                key={j}
+                                item={item}
+                              />
+                            </Suspense>
+                          );
+                        })}
+                      </div>
                     </>
                   ))}
                 </InfiniteScroll>

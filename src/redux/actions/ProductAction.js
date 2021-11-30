@@ -16,7 +16,7 @@ export const ProductAction = {
   isParentCategory,
 };
 
-function fetchCategoryProduct(outlet, payload, orderingMode) {
+function fetchCategoryProduct(outlet, payload, orderingMode, presetType) {
   try {
     if (outlet.id) {
       const OUTLET_ID = outlet.id;
@@ -25,11 +25,14 @@ function fetchCategoryProduct(outlet, payload, orderingMode) {
         payload = { take: 500, skip: 0 };
       }
 
+      let preset = PRESET_TYPE;
+      if (presetType) preset = presetType;
+
       return async (dispatch) => {
         const data = await ProductService.api(
           "POST",
           payload,
-          `productpreset/loadcategory/${PRESET_TYPE}/${OUTLET_ID}${
+          `productpreset/loadcategory/${preset}/${OUTLET_ID}${
             orderingMode ? "/" + orderingMode : ""
           }`
         );
@@ -87,6 +90,8 @@ function fetchCategoryList(payload, parentCategoryID = null) {
 function fetchProduct(category, outlet, skip, take, orderingMode) {
   const OUTLET_ID = outlet.id;
   const categoryID = category.id;
+  let presetType = PRESET_TYPE;
+  if (category.presetType) presetType = category.presetType;
   const payload = {
     skip,
     take,
@@ -96,7 +101,7 @@ function fetchProduct(category, outlet, skip, take, orderingMode) {
     const data = await ProductService.api(
       "POST",
       payload,
-      `productpreset/loaditems/${PRESET_TYPE}/${OUTLET_ID}/${categoryID}${
+      `productpreset/loaditems/${presetType}/${OUTLET_ID}/${categoryID}${
         orderingMode ? "/" + orderingMode : ""
       }`
     );

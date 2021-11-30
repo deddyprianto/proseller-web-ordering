@@ -12,9 +12,8 @@ const WebOrderingCategories = ({
 }) => {
   let [querySearch, setQuerySearch] = useState("");
   let [openSearch, setOpenSearch] = useState(false);
-  let [prevSelectedCategory, setPrevSelectedCategory] = useState(
-    selectedCategory
-  );
+  let [prevSelectedCategory, setPrevSelectedCategory] =
+    useState(selectedCategory);
   const history = useHistory();
 
   const isItemsFinishedToLoad = (query) => {
@@ -57,8 +56,8 @@ const WebOrderingCategories = ({
   useEffect(() => {
     try {
       let clientHeightHead = document.getElementById("masthead").clientHeight;
-      let clientHeightCategory = document.getElementById("header-categories")
-        .clientHeight;
+      let clientHeightCategory =
+        document.getElementById("header-categories").clientHeight;
       let headerHeight = clientHeightHead + clientHeightCategory;
       if (prevSelectedCategory === 0)
         headerHeight = clientHeightHead + clientHeightCategory * 2;
@@ -83,24 +82,71 @@ const WebOrderingCategories = ({
       }}
     >
       <React.Fragment>
-        <li style={{ cursor: "pointer", marginRight: 15, width: 80, maxWidth: 80 }} className="nav-item category-item">
+        <li
+          style={{
+            cursor: "pointer",
+            marginRight: 40,
+            width: 80,
+            maxWidth: 80,
+          }}
+          className="nav-item category-item"
+        >
           <div className={"color-active"}>
             <Link to="/category">
               <div
                 style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6 }}
               >
-                <i className="fa fa-th-large font-color-theme" style={{ fontSize: '6rem', marginTop: 5 }} />
+                <i
+                  className="fa fa-th-large font-color-theme"
+                  style={{ fontSize: "6rem", marginTop: 5 }}
+                />
               </div>
               <span
+                className="font-color-theme"
                 style={{
                   fontSize: 11,
                   fontWeight: "bold",
                   marginTop: 5,
-                  display: 'block',
-                  lineHeight: 1.8
+                  display: "block",
+                  lineHeight: 1.8,
                 }}
               >
-                All Category
+                All Categories
+              </span>
+            </Link>
+          </div>
+        </li>
+        <li
+          style={{
+            cursor: "pointer",
+            marginRight: 40,
+            width: 80,
+            maxWidth: 80,
+          }}
+          className="nav-item category-item"
+        >
+          <div className={"color-active"}>
+            <Link to="/promotions">
+              <div
+                style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6 }}
+              >
+                <i
+                  className="fa fa-tag font-color-theme"
+                  style={{ fontSize: "6rem", marginTop: 5, color: '#c0392b' }}
+                />
+              </div>
+              <span
+                className="font-color-theme"
+                style={{
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  marginTop: 5,
+                  display: "block",
+                  lineHeight: 1.8,
+                  color: '#c0392b'
+                }}
+              >
+                PROMOTION
               </span>
             </Link>
           </div>
@@ -109,23 +155,44 @@ const WebOrderingCategories = ({
           <li
             id={`cat-${i}`}
             lassName="nav-item category-item"
-            style={{ cursor: "pointer", marginRight: 15, width: 80, maxWidth: 80, }}
+            style={{
+              cursor: "pointer",
+              marginRight: 40,
+              width: 80,
+              maxWidth: 80,
+            }}
             key={i}
-            onClick={() => {setSelectedCategory(item)}}
+            onClick={() => {
+              setSelectedCategory(item);
+            }}
           >
             <div className={"color-active"}>
               <div
-                style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{
+                  width: 80,
+                  maxWidth: 80,
+                  height: 70,
+                  borderRadius: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <img style={{ maxHeight: 75, }} src={item.defaultImageURL || config.image_placeholder} />
+                <img
+                  alt={item.name}
+                  style={{ maxHeight: 75 }}
+                  src={item.defaultImageURL || config.image_placeholder}
+                />
               </div>
               <span
+                className="font-color-theme"
                 style={{
                   fontSize: 11,
                   fontWeight: "bold",
                   marginTop: 5,
-                  display: 'block',
-                  lineHeight: 1.8
+                  display: "block",
+                  lineHeight: 1.8,
+                  textTransform: 'uppercase'
                 }}
               >
                 {item.name}
@@ -149,4 +216,3 @@ WebOrderingCategories.propTypes = {
 };
 
 export default WebOrderingCategories;
-
