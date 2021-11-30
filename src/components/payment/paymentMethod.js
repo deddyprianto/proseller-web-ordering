@@ -20,6 +20,7 @@ const Swal = require("sweetalert2");
 class PaymentMethod extends Component {
   constructor(props) {
     super(props);
+    this.timeInterval = null;
     this.state = {
       loadingShow: true,
       isLoading: false,
@@ -267,7 +268,8 @@ class PaymentMethod extends Component {
             );
 
             if (data.forceNewTab !== true) {
-              let timeInterval = setInterval(async () => {
+              clearInterval(this.timeInterval);
+              this.timeInterval = setInterval(async () => {
                 response = await this.props.dispatch(
                   PaymentAction.checkPaymentCard(accountID)
                 );
@@ -288,7 +290,7 @@ class PaymentMethod extends Component {
                     title: "Your Credit Card has been added.",
                     showConfirmButton: false,
                   });
-                  return clearInterval(timeInterval);
+                  return clearInterval(this.timeInterval);
                 } else if (
                   response.data &&
                   response.data.registrationStatus === "failed"
@@ -300,7 +302,7 @@ class PaymentMethod extends Component {
                     showConfirmButton: false,
                     title: "Failed to add Credit Card!",
                   });
-                  return clearInterval(timeInterval);
+                  return clearInterval(this.timeInterval);
                 }
               }, 8000);
             }
@@ -308,6 +310,45 @@ class PaymentMethod extends Component {
         }, 300);
       }
     });
+  };
+
+  getCardRegistrationStatus = async () => {
+    try {
+      const accountID = this.state.latestCardRegistered.accountID;
+      const response = await this.props.dispatch(
+        PaymentAction.checkPaymentCard(accountID)
+      );
+      if (response.data.registrationStatus === "completed") {
+        localStorage.setItem(
+          `${config.prefix}_paymentCardAccountDefault`,
+          JSON.stringify(encryptor.encrypt(response.data))
+        );
+
+        await this.getDataPaymentCard();
+        this.setState({ showAddPaymentForm: false });
+        this.handleSelectCard(response.data);
+        Swal.fire({
+          icon: "success",
+          timer: 1500,
+          title: "Your Credit Card has been added.",
+          showConfirmButton: false,
+        });
+        return;
+      } else if (
+        response.data &&
+        response.data.registrationStatus === "failed"
+      ) {
+        this.setState({ showAddPaymentForm: false });
+        Swal.fire({
+          icon: "error",
+          timer: 1500,
+          showConfirmButton: false,
+          title: "Failed to add Credit Card!",
+        });
+        return;
+      }
+    } catch (e) {}
+    return;
   };
 
   handleSelectCard = async (card) => {
@@ -335,6 +376,9 @@ class PaymentMethod extends Component {
           marginBottom: 50,
         }}
       >
+        {this.state.showAddPaymentForm && this.state.addPaymentFormUrl && (
+          <div className={styles.overlay} />
+        )}
         <ModalPaymentMethod
           detailCard={
             detailCard && detailCard.isAccountRequired !== false
@@ -611,7 +655,20 @@ class PaymentMethod extends Component {
         </div>
         {isLoading ? Swal.showLoading() : Swal.close()}
         {this.state.showAddPaymentForm && this.state.addPaymentFormUrl && (
-          <div className={styles.modalContainer}>
+          <div className={styles.iframeContainer}>
+            <button
+              className={styles.closeIframe}
+              onClick={async () => {
+                await this.getCardRegistrationStatus();
+                clearInterval(this.timeInterval);
+                await this.setState({
+                  showAddPaymentForm: false,
+                  addPaymentFormUrl: false,
+                });
+              }}
+            >
+              <i className="fa fa-close" /> Close
+            </button>
             <Iframe
               loading="auto"
               url={this.state.addPaymentFormUrl}

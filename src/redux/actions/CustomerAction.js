@@ -5,7 +5,7 @@ import _ from "lodash";
 import moment from "moment";
 import config from "../../config";
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 export const CustomerAction = {
   getCustomerProfile,
@@ -16,13 +16,32 @@ export const CustomerAction = {
   checkStatusPayment,
   updatePassword,
   updateCustomerAccount,
+  getSalesByReference,
 };
 
 function getCustomerProfile() {
   return async (dispatch) => {
-    let response = await CRMService.api( "GET", null, "customer/getProfile", "bearer" );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    let response = await CRMService.api(
+      "GET",
+      null,
+      "customer/getProfile",
+      "bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
     dispatch(setData(response, CONSTANT.KEY_GET_CUSTOMER_PROFILE));
+    return response;
+  };
+}
+
+function getSalesByReference(referenceNo) {
+  return async (dispatch) => {
+    let response = await CRMService.api(
+      "GET",
+      null,
+      `sales/status?referenceNo=${referenceNo}&ignorePendingRewards=${true}`,
+      "bearer"
+    );
     return response;
   };
 }
@@ -77,9 +96,15 @@ function getDeliferyAddress() {
 
 function updateCustomerProfile(payload = null) {
   return async (dispatch) => {
-    console.log(payload)
-    let response = await CRMService.api( "PUT", payload, "customer/updateProfile", "bearer" );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    console.log(payload);
+    let response = await CRMService.api(
+      "PUT",
+      payload,
+      "customer/updateProfile",
+      "bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
     dispatch(setData(response, CONSTANT.KEY_UPDATE_CUSTOMER_PROFILE));
     return response;
   };
@@ -87,8 +112,14 @@ function updateCustomerProfile(payload = null) {
 
 function updateCustomerAccount(payload = null) {
   return async (dispatch) => {
-    let response = await CRMService.api( "PUT", payload, "customer/updateProfile?requestOtp=true", "bearer" );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    let response = await CRMService.api(
+      "PUT",
+      payload,
+      "customer/updateProfile?requestOtp=true",
+      "bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
     return response;
   };
 }
@@ -124,79 +155,100 @@ function mandatoryField(payload = null) {
         "customfields/customer"
       );
       const customFields = await customFieldsResponse.data;
-      const fields = data.fields && data.fields.map((field) => {
-        switch (field.fieldName) {
-          case "birthDate":
-            return {
-              ...field,
-              type: "date",
-            };
-          case "gender":
-            return {
-              ...field,
-              type: "radio",
-              options: [
-                {
-                  value: "male",
-                  text: "Male",
-                },
-                {
-                  value: "female",
-                  text: "Female",
-                },
-              ],
-            };
-          case "address":
-            return {
-              ...field,
-              type: "multipleField",
-              children: [
-                {
-                  fieldName: "street",
-                  displayName: "Street",
-                  type: "text",
-                },
-                {
-                  fieldName: "unitNo",
-                  displayName: "Unit No.",
-                  type: "text",
-                },
-              ],
-            };
-          default:
-            const customField = customFields.find(
-              (item) => item.fieldName === field.fieldName
-            );
-            const type = customField
-              ? customField.dataType === "dropdown"
-                ? "select"
-                : customField.dataType
-              : "text";
-            return {
-              ...field,
-              ...customField,
-              type,
-              options: customField ? customField.items : [],
-            };
-        }
-      });
-      
-      
+      const fields =
+        data.fields &&
+        data.fields.map((field) => {
+          switch (field.fieldName) {
+            case "birthDate":
+              return {
+                ...field,
+                type: "date",
+              };
+            case "gender":
+              return {
+                ...field,
+                type: "radio",
+                options: [
+                  {
+                    value: "male",
+                    text: "Male",
+                  },
+                  {
+                    value: "female",
+                    text: "Female",
+                  },
+                ],
+              };
+            case "address":
+              return {
+                ...field,
+                type: "multipleField",
+                children: [
+                  {
+                    fieldName: "street",
+                    displayName: "Street",
+                    type: "text",
+                  },
+                  {
+                    fieldName: "unitNo",
+                    displayName: "Unit No.",
+                    type: "text",
+                  },
+                ],
+              };
+            default:
+              const customField = customFields.find(
+                (item) => item.fieldName === field.fieldName
+              );
+              const type = customField
+                ? customField.dataType === "dropdown"
+                  ? "select"
+                  : customField.dataType
+                : "text";
+              return {
+                ...field,
+                ...customField,
+                type,
+                options: customField ? customField.items : [],
+              };
+          }
+        });
+
       let mandatory = [
         {
-          dataType: "text", defaultValue: "-", displayName: "Name", fieldName: "name",
-          mandatory: true, show: true, type: "text", signUpField: false
+          dataType: "text",
+          defaultValue: "-",
+          displayName: "Name",
+          fieldName: "name",
+          mandatory: true,
+          show: true,
+          type: "text",
+          signUpField: false,
         },
         {
-          dataType: "text", defaultValue: "-", displayName: "Email", fieldName: "email",
-          mandatory: true, show: true, type: "text", signUpField: false, change: true
+          dataType: "text",
+          defaultValue: "-",
+          displayName: "Email",
+          fieldName: "email",
+          mandatory: true,
+          show: true,
+          type: "text",
+          signUpField: false,
+          change: true,
         },
         {
-          dataType: "text", defaultValue: "-", displayName: "Phone Number", fieldName: "phoneNumber",
-          mandatory: true, show: true, type: "text", signUpField: false, change: true
-        }
-      ]
-      
+          dataType: "text",
+          defaultValue: "-",
+          displayName: "Phone Number",
+          fieldName: "phoneNumber",
+          mandatory: true,
+          show: true,
+          type: "text",
+          signUpField: false,
+          change: true,
+        },
+      ];
+
       dispatch({
         type: CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER,
         data: mandatory.concat(fields),
@@ -214,28 +266,30 @@ function getVoucher() {
       "customer/vouchers",
       "bearer"
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400) console.log(response);
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
     else {
       let selectedVoucher = encryptor.decrypt(
         JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
       );
 
-      if(selectedVoucher){
-        selectedVoucher.forEach(element => {
-          response.Data = response.Data.filter(items => {
-            return items.serialNumber !== element.serialNumber
-          })
+      if (selectedVoucher) {
+        selectedVoucher.forEach((element) => {
+          response.Data = response.Data.filter((items) => {
+            return items.serialNumber !== element.serialNumber;
+          });
         });
       }
 
       response.Data = _.forEach(response.Data, function (value) {
-        if (value.expiryDate) value.expiryDate = moment(value.expiryDate).format("YYYY-MM-DD")
-        return value
+        if (value.expiryDate)
+          value.expiryDate = moment(value.expiryDate).format("YYYY-MM-DD");
+        return value;
       });
 
       let myVoucherGroup = [];
       _.forEach(_.groupBy(response.Data, "id"), function (value) {
-        let group = _.groupBy(value, "expiryDate")
+        let group = _.groupBy(value, "expiryDate");
         for (const key in group) {
           if (group.hasOwnProperty(key)) {
             group[key][0].totalRedeem = group[key].length;
@@ -245,7 +299,7 @@ function getVoucher() {
       });
       // console.log(myVoucherGroup)
 
-      response.Data = _.orderBy(myVoucherGroup, ['expiryDate'], ['asc']);
+      response.Data = _.orderBy(myVoucherGroup, ["expiryDate"], ["asc"]);
       dispatch(setData(response, CONSTANT.GET_VOUCHER));
     }
     return response;
