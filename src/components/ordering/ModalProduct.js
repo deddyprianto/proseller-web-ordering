@@ -38,10 +38,10 @@ class ModalProduct extends Component {
 
   componentDidUpdate = async (prevProps) => {
     try {
-      if (prevProps.selectedItem.id!== this.props.selectedItem.id) {
+      if (prevProps.selectedItem.id !== this.props.selectedItem.id) {
         this.setState({ isVariantSelected: false });
       }
-    } catch(e){}
+    } catch (e) {}
 
     if (
       prevProps.setting !== this.props.setting &&
@@ -72,7 +72,8 @@ class ModalProduct extends Component {
           product: {
             barcode: variant.barcode,
             categoryName: prevState.selectedItem.product.categoryName,
-            description: variant.description || prevState.selectedItem.product.description,
+            description:
+              variant.description || prevState.selectedItem.product.description,
             code: variant.barcode,
             id: variant.id,
             name: this.props.selectedItem.name + variant.variantName,
@@ -250,98 +251,106 @@ class ModalProduct extends Component {
     console.log(manualOrderingMode);
 
     try {
-      if (this.props.selectedItem && this.props.selectedItem.product.variants && this.props.selectedItem.product.variants.length > 0) {
+      if (
+        this.props.selectedItem &&
+        this.props.selectedItem.product.variants &&
+        this.props.selectedItem.product.variants.length > 0
+      ) {
         if (!this.state.isVariantSelected) {
-          this.setState({ message: {title: "Info", message: "Please choose product variants."} });
+          this.setState({
+            message: {
+              title: "Info",
+              message: "Please choose product variants.",
+            },
+          });
           document.getElementById("btn-mesage-modifier").click();
           return;
         }
       }
-    } catch(e){}
+    } catch (e) {}
 
     try {
-      
-        const { defaultOutlet } = this.props;
-        const { selectedItem } = this.state;
-        const { basket } = this.state;
+      const { defaultOutlet } = this.props;
+      const { selectedItem } = this.state;
+      const { basket } = this.state;
 
-        if (this.ruleModifierNotPassed()) {
-          // dummy variable created, so even the code below is error, then alert still showing
-          let name = "Item";
-          let qty = 1;
-          let status = "lack";
+      if (this.ruleModifierNotPassed()) {
+        // dummy variable created, so even the code below is error, then alert still showing
+        let name = "Item";
+        let qty = 1;
+        let status = "lack";
 
-          // check name and quantity modifier that hasnt been success passed min & max
-          try {
-            let productModifiers =
-              this.state.selectedItem.product.productModifiers;
-            for (let i = 0; i < productModifiers.length; i++) {
-              let lengthDetail = 0;
-              let modifierDetail = productModifiers[i].modifier.details;
-              for (let x = 0; x < modifierDetail.length; x++) {
-                if (
-                  modifierDetail[x].quantity > 0 &&
-                  modifierDetail[x].quantity !== undefined
-                ) {
-                  lengthDetail += modifierDetail[x].quantity;
-                }
-              }
-
-              if (productModifiers[i].modifier.min > lengthDetail) {
-                name = productModifiers[i].modifierName;
-                qty = productModifiers[i].modifier.min;
-                status = "lack";
-                break;
-              }
-
-              if (lengthDetail > productModifiers[i].modifier.max) {
-                name = productModifiers[i].modifierName;
-                qty = productModifiers[i].modifier.max;
-                status = "excess";
-                break;
+        // check name and quantity modifier that hasnt been success passed min & max
+        try {
+          let productModifiers =
+            this.state.selectedItem.product.productModifiers;
+          for (let i = 0; i < productModifiers.length; i++) {
+            let lengthDetail = 0;
+            let modifierDetail = productModifiers[i].modifier.details;
+            for (let x = 0; x < modifierDetail.length; x++) {
+              if (
+                modifierDetail[x].quantity > 0 &&
+                modifierDetail[x].quantity !== undefined
+              ) {
+                lengthDetail += modifierDetail[x].quantity;
               }
             }
-          } catch (e) {}
 
-          if (name !== "Item") {
-            let message = { title: "Warning", message: "" };
-            document.getElementById("btn-mesage-modifier").click();
-            if (status === "lack") {
-              message.message = `Please pick minimum ${qty} ${name}`;
-              this.setState({ message });
-            } else {
-              message.message = `The maximum ${name} that can be taken is ${qty}`;
-              this.setState({ message });
+            if (productModifiers[i].modifier.min > lengthDetail) {
+              name = productModifiers[i].modifierName;
+              qty = productModifiers[i].modifier.min;
+              status = "lack";
+              break;
+            }
+
+            if (lengthDetail > productModifiers[i].modifier.max) {
+              name = productModifiers[i].modifierName;
+              qty = productModifiers[i].modifier.max;
+              status = "excess";
+              break;
             }
           }
-          return;
-        }
+        } catch (e) {}
 
-        await this.setState({ disableButton: true });
-        if (
-          (selectedItem.mode === "Add" || this.props.addNew) &&
-          !_.isEmpty(this.state.selectedItem)
-        ) {
-          console.log("Dispatching processAddCart");
-          this.props.dispatch(
-            OrderAction.processAddCart(defaultOutlet, selectedItem)
-          );
-          this.setState({ selectedItem: {} });
-        } else {
-          let response = await this.props.dispatch(
-            OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
-          );
-          // this.props.handleSetState("dataBasket", response.data);
-          this.setState({ selectedItem: {} });
-          console.log(selectedItem);
-          document.getElementById("detail-product-modal").click();
+        if (name !== "Item") {
+          let message = { title: "Warning", message: "" };
+          document.getElementById("btn-mesage-modifier").click();
+          if (status === "lack") {
+            message.message = `Please pick minimum ${qty} ${name}`;
+            this.setState({ message });
+          } else {
+            message.message = `The maximum ${name} that can be taken is ${qty}`;
+            this.setState({ message });
+          }
         }
+        return;
+      }
 
-        if (!orderMode) {
-          setTimeout(() => {
-            document.getElementById("open-modal-ordering-mode").click();
-          }, 1000)
-        }
+      await this.setState({ disableButton: true });
+      if (
+        (selectedItem.mode === "Add" || this.props.addNew) &&
+        !_.isEmpty(this.state.selectedItem)
+      ) {
+        console.log("Dispatching processAddCart");
+        this.props.dispatch(
+          OrderAction.processAddCart(defaultOutlet, selectedItem)
+        );
+        this.setState({ selectedItem: {} });
+      } else {
+        let response = await this.props.dispatch(
+          OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
+        );
+        // this.props.handleSetState("dataBasket", response.data);
+        this.setState({ selectedItem: {} });
+        console.log(selectedItem);
+        document.getElementById("detail-product-modal").click();
+      }
+
+      if (!orderMode) {
+        setTimeout(() => {
+          document.getElementById("open-modal-ordering-mode").click();
+        }, 1000);
+      }
     } catch (e) {}
     this.setState({ isVariantSelected: false });
   };
@@ -719,6 +728,83 @@ class ModalProduct extends Component {
     this.setState({ isVariantSelected: false });
   };
 
+  renderPromotionName = (itemPromo, type) => {
+    try {
+      if (itemPromo && itemPromo.items && itemPromo.items.length === 1) {
+        if (
+          itemPromo.promoDisplayName &&
+          itemPromo.promoDisplayName !== null &&
+          itemPromo.promoDisplayName !== ""
+        ) {
+          let promoName = itemPromo.promoDisplayName;
+          promoName = promoName.replace(
+            "{ItemName}",
+            itemPromo.items[0].itemName
+          );
+          promoName = promoName.replace(
+            "{itemName}",
+            itemPromo.items[0].itemName
+          );
+          promoName = promoName.replace("{qty}", itemPromo.items[0].quantity);
+          let price = itemPromo.discValue;
+          promoName = promoName.replace("{promoPrice}", `$${price.trim()}`);
+
+          if (type === "remark" && itemPromo.remark) {
+            return promoName;
+          } else if (type === "remark" && !itemPromo.remark) {
+            return null;
+          }
+          return promoName;
+        }
+      }
+      if (type === "name") return itemPromo.name;
+      else return itemPromo.remark;
+    } catch (e) {
+      if (type === "name") return itemPromo.name;
+      else return itemPromo.remark;
+    }
+  };
+
+  renderPromotion = (promotions) => {
+    try {
+      return promotions.map((item) => (
+        <div
+          style={{
+            flexDirection: "row",
+            opacity: 0.85,
+            marginHorizontal: 8,
+            marginTop: 20,
+            paddingVertical: 10,
+            paddingHorizontal: 5,
+            textAlign: "left",
+          }}
+        >
+          {/* icon here */}
+          <div style={{ marginBottom: 10 }}>
+            <p
+              className="customer-group-name"
+              style={{
+                fontWeight: 700,
+                fontStyle: "italic",
+                position: "relative",
+                top: 6,
+              }}
+            >
+              <i
+                className="fa fa-tags"
+                style={{ marginRight: 8, marginLeft: 8 }}
+              />
+              {this.renderPromotionName(item, "name")}
+            </p>
+            {item.remark ? <p className="color">{item.remark}</p> : null}
+          </div>
+        </div>
+      ));
+    } catch (e) {
+      return null;
+    }
+  };
+
   detailProduct = () => {
     let { disableButton, selectedItem } = this.state;
     let { defaultOutlet, data } = this.props;
@@ -783,6 +869,13 @@ class ModalProduct extends Component {
                   >
                     {selectedItem.product.name}
                   </h3>
+
+                  {selectedItem &&
+                  selectedItem.product &&
+                  selectedItem.product.promotions
+                    ? this.renderPromotion(selectedItem.product.promotions)
+                    : null}
+
                   <p
                     style={{
                       marginTop: 10,

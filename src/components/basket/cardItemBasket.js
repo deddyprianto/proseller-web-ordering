@@ -144,37 +144,57 @@ class CardItemBasket extends Component {
             item.promotions.length > 0 &&
             item.promotions.map((promo) => (
               <div style={{ marginTop: 10 }}>
-                <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
-                  <p
-                    className={
-                      item.grossAmount !== item.nettAmount
-                        ? `customer-group-name`
-                        : `font-color-theme`
-                    }
-                    style={{
-                      marginRight: 5,
-                      fontSize: 12,
-                      width: 5,
-                      float: "left",
-                    }}
-                  >
-                    -
-                  </p>
-                  <p
-                    className={
-                      item.grossAmount !== item.nettAmount
-                        ? `customer-group-name`
-                        : `font-color-theme`
-                    }
-                    style={{
-                      marginRight: 5,
-                      fontSize: 12,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {promo.name}
-                  </p>
-                </Typography>
+                {promo.isPromotionApplied === true ||
+                item.amountAfterDisc < item.grossAmount ? (
+                  <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
+                    <p
+                      className={`customer-group-name`}
+                      style={{
+                        fontSize: 12,
+                        width: 5,
+                        float: "left",
+                        marginRight: 10,
+                      }}
+                    >
+                      <i className="fa fa-tags" />
+                    </p>
+                    <p
+                      className={`customer-group-name`}
+                      style={{
+                        marginRight: 5,
+                        fontSize: 12,
+                        fontStyle: "italic",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {promo.name}
+                    </p>
+                  </Typography>
+                ) : (
+                  <Typography style={{ lineHeight: "15px", textAlign: "left" }}>
+                    <p
+                      className={`font-color-theme`}
+                      style={{
+                        fontSize: 11,
+                        width: 5,
+                        float: "left",
+                        marginRight: 10,
+                      }}
+                    >
+                      <i className="fa fa-tags" />
+                    </p>
+                    <p
+                      className={`font-color-theme`}
+                      style={{
+                        marginRight: 5,
+                        fontSize: 11,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      {promo.name}
+                    </p>
+                  </Typography>
+                )}
               </div>
             ))}
           {/* POSSIBLE PROMOTION INFO */}
