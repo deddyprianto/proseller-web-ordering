@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import { Col, Row, Button } from "reactstrap";
-import ItemsBasket from "./itemsBasket";
+import ItemsBasket from "./itemsBasketMARTIN";
 import MenuBasket from "./menuBasket";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
@@ -33,7 +33,7 @@ const ViewCartBasket = ({
   dataBasket,
   updateCartInfo,
 }) => {
-  console.log('outlet', outlet)
+  console.log("outlet", outlet);
   // if (!basket.details && data.dataBasket) basket = data.dataBasket;
   // if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
   if (dataBasket && dataBasket.details) {
