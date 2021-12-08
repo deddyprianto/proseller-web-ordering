@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -372,7 +372,7 @@ const ItemsBasket = ({
             color={props.color}
             data={item}
             roleBtnClear={roleBtnClear}
-            dataasket={dataBasket}
+            dataBasket={dataBasket}
             getCurrency={(price) => getCurrency(price)}
             openModal={(item) => openModal(item)}
           />
@@ -397,7 +397,9 @@ const ItemsBasket = ({
         data={data}
         handleSetState={(field, value) => handleSetState(field, value)}
       />
+
       <AddNotes dataBasket={dataBasket} updateCartInfo={updateCartInfo} />
+
       {dataBasket && dataBasket.details && dataBasket.details.length > 0 && (
         <div>
           {renderBasketHeader()}

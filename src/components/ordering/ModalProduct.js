@@ -340,7 +340,8 @@ class ModalProduct extends Component {
         let response = await this.props.dispatch(
           OrderAction.processUpdateCart(basket, [{ ...selectedItem }])
         );
-        // this.props.handleSetState("dataBasket", response.data);
+
+        this.props.handleSetState("dataBasket", response.data);
         this.setState({ selectedItem: {} });
         console.log(selectedItem);
         document.getElementById("detail-product-modal").click();

@@ -83,7 +83,7 @@ class Basket extends Component {
       latitude: 0,
       longitude: 0,
       timeslotData: [],
-      selectedDeliveryProvider: {}
+      selectedDeliveryProvider: {},
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -105,6 +105,7 @@ class Basket extends Component {
   };
 
   componentDidMount = async () => {
+    console.log("MASUK KE SINI");
     await this.checkOfflineCart();
     this.audio.addEventListener("ended", () => this.setState({ play: false }));
 
@@ -123,7 +124,7 @@ class Basket extends Component {
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) { }
+      } catch (error) {}
     }, 0);
     await this.getDataBasket();
   };
@@ -187,7 +188,7 @@ class Basket extends Component {
         }
       }
       await this.setState({ dataBasket });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getGeolocation = async (storeDetail) => {
@@ -204,7 +205,7 @@ class Basket extends Component {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
       });
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -257,7 +258,7 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   loadLocalStorage = async () => {
@@ -394,7 +395,7 @@ class Basket extends Component {
       }
 
       /* Flush selected delivery provider */
-      if (orderingMode !== 'DELIVERY') {
+      if (orderingMode !== "DELIVERY") {
         await this.setState({ selectedDeliveryProvider: {} });
       }
 
@@ -586,8 +587,8 @@ class Basket extends Component {
       orderingMode === "DINEIN"
         ? "dineIn"
         : orderingMode === "DELIVERY"
-          ? "delivery"
-          : "takeAway";
+        ? "delivery"
+        : "takeAway";
     let { maxDays } = storeDetail.orderValidation[orderingModeField];
     if (!maxDays) maxDays = 90;
 
@@ -731,7 +732,7 @@ class Basket extends Component {
         return { dateDay, status: true };
       }
       return { dateDay, status: false };
-    } catch (error) { }
+    } catch (error) {}
   };
 
   componentDidUpdate() {
@@ -954,10 +955,11 @@ class Basket extends Component {
       selectedPoint = 0;
     }
 
-    let textRasio = `Redeem ${pointsToRebateRatio.split(":")[0]
-      } point to ${this.getCurrency(
-        parseInt(pointsToRebateRatio.split(":")[1])
-      )}`;
+    let textRasio = `Redeem ${
+      pointsToRebateRatio.split(":")[0]
+    } point to ${this.getCurrency(
+      parseInt(pointsToRebateRatio.split(":")[1])
+    )}`;
     this.setState({
       discountVoucher: 0,
       textRasio,
@@ -1078,7 +1080,8 @@ class Basket extends Component {
         if (dataBasket) {
           let selected = _.filter(dataBasket.details, (items) => {
             return items.selected;
-          });          if (dataBasket.details.length === selected.length) {
+          });
+          if (dataBasket.details.length === selected.length) {
             await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
             await localStorage.removeItem(
               `${config.prefix}_outletChangedFromHeader`
@@ -1098,7 +1101,7 @@ class Basket extends Component {
               OrderAction.processUpdateCart(dataBasket, payload)
             );
             localStorage.removeItem(`${config.prefix}_dataBasket`);
-            window.location.reload();
+            // window.location.reload();
           }
         } else {
           await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
@@ -1124,8 +1127,8 @@ class Basket extends Component {
     const { defaultOutlet } = this.props;
     const orderPreparationTime =
       defaultOutlet.timeSlots &&
-        defaultOutlet.timeSlots[0] &&
-        defaultOutlet.timeSlots[0].defaultPreparationTime
+      defaultOutlet.timeSlots[0] &&
+      defaultOutlet.timeSlots[0].defaultPreparationTime
         ? defaultOutlet.timeSlots[0].defaultPreparationTime
         : 0;
     if (!this.handleOpenLogin()) return;
@@ -1218,8 +1221,8 @@ class Basket extends Component {
       orderingMode === "DINEIN"
         ? "dineIn"
         : orderingMode === "DELIVERY"
-          ? "delivery"
-          : "takeAway";
+        ? "delivery"
+        : "takeAway";
     let { maxDays } = storeDetail.orderValidation[orderingModeField];
     if (!maxDays) maxDays = 90;
 
@@ -1512,7 +1515,7 @@ class Basket extends Component {
         `${config.prefix}_dataBasket`,
         JSON.stringify(encryptor.encrypt(value))
       );
-      window.location.reload();
+      // window.location.reload();
     } else if (field === "orderActionDate") {
       let check = value === moment().format("YYYY-MM-DD");
       this.props.dispatch({ type: "SET_ORDER_ACTION_DATE", payload: value });
@@ -1544,8 +1547,9 @@ class Basket extends Component {
       let orderingTimeHours = this.state.orderingTimeHours;
       orderingTimeHours.forEach((item, index) => {
         if (Number(item) === Number(value)) {
-          let orderActionTimeSlot = `${item}:00 - ${orderingTimeHours[index + 1] || item + 1
-            }:00`;
+          let orderActionTimeSlot = `${item}:00 - ${
+            orderingTimeHours[index + 1] || item + 1
+          }:00`;
           this.setState({ orderActionTimeSlot });
           return;
         }
@@ -1576,7 +1580,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-
+    console.log("DATA BASKET YANG BENER", dataBasket);
     return (
       <div
         className="col-full"
@@ -1628,7 +1632,7 @@ class Basket extends Component {
                         }
                         handleRemoveItem={(dataBasket, key) =>
                           this.handleRemoveItem(dataBasket, key)
-                        }                        
+                        }
                         scrollPoint={(data) => this.scrollPoint(data)}
                         setPoint={(point) => this.setPoint(point)}
                         handleSettle={() => this.handleSettle()}
@@ -1638,9 +1642,10 @@ class Basket extends Component {
                           this.handleSetProvaider(item)
                         }
                         setViewCart={(status) => this.setViewCart(status)}
-                        handleSetState={(field, value) =>
-                          this.handleSetState(field, value)
-                        }
+                        handleSetState={(field, value) => {
+                          console.log("FIELD AND VALUE", field, value);
+                          this.handleSetState(field, value);
+                        }}
                         handleOpenLogin={() => this.handleOpenLogin()}
                         updateCartInfo={this.updateCartInfo}
                         timeslotData={this.state.timeslotData}

@@ -250,13 +250,15 @@ function processUpdateCart(basket, products) {
     let payload = [];
     for (let index = 0; index < products.length; index++) {
       let product = products[index];
-      console.log("product:", product);
+
       let find = await basket.details.find((data) => data.id === product.id);
+
       const quantity =
         product.originalQuantity && product.promoQuantity
           ? product.originalQuantity +
             (product.quantity - product.promoQuantity)
           : product.quantity;
+
       let dataproduct = {
         id: find.id,
         productID: product.productID,
@@ -474,7 +476,7 @@ function updateCart(payload) {
 
     if (window.location.hash === "#/basket") {
       await localStorage.removeItem(`${config.prefix}_dataBasket`);
-      window.location.reload();
+      // window.location.reload();
     }
     return dispatch(getCart());
   };
@@ -509,7 +511,7 @@ function getCart(isSetData = true) {
       `cart/getcart`,
       "Bearer"
     );
-    
+
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== "No details data") {
@@ -521,7 +523,7 @@ function getCart(isSetData = true) {
       if (isSetData) {
         return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
       }
-      
+
       return response.data;
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
