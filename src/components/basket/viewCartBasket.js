@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import { Col, Row, Button } from "reactstrap";
-import ItemsBasket from "./itemsBasketMARTIN";
+import ItemsBasket from "./itemsBasket";
 import MenuBasket from "./menuBasket";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
