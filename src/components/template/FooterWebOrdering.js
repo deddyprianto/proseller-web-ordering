@@ -67,7 +67,7 @@ class Footer extends Component {
           style={{ display: "flex", justifyContent: "space-between" }}
         >
           {this.props.navBarMenus.map((menu) => {
-            if (!enableOrdering && menu.showWhenOrderingEnabled) {
+            if (!enableOrdering && menu.showOnOrderingEnabled) {
               return null;
             }
             if (!isLoggedIn && menu.loggedInOnly) {
