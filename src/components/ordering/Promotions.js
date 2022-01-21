@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import Product from "./Product";
-import { OrderAction } from "../../redux/actions/OrderAction";
-import { ProductAction } from "../../redux/actions/ProductAction";
-import ModalProduct from "./ModalProduct";
-import LoaderCircle from "../loading/LoaderCircle";
-import config from "../../config";
-import UpdateProductModal from "./UpdateProductModal";
-import { Link } from "react-router-dom";
-import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
-import { CONSTANT } from "../../helpers";
-import { getInitialProductValue } from "../../helpers/ProductHelper";
-import _ from "lodash";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Product from './Product';
+import { OrderAction } from '../../redux/actions/OrderAction';
+import { ProductAction } from '../../redux/actions/ProductAction';
+import ModalProduct from './ModalProduct';
+import LoaderCircle from '../loading/LoaderCircle';
+import config from '../../config';
+import UpdateProductModal from './UpdateProductModal';
+import { Link } from 'react-router-dom';
+import { isEmptyObject, isEmptyArray } from '../../helpers/CheckEmpty';
+import { CONSTANT } from '../../helpers';
+import { getInitialProductValue } from '../../helpers/ProductHelper';
+import _ from 'lodash';
 
 class Ordering extends Component {
   constructor(props) {
@@ -29,8 +29,8 @@ class Ordering extends Component {
       finished: false,
       loading: true,
       loadingSearching: false,
-      offlineMessage: "",
-      isEmenu: window.location.hostname.includes("emenu"),
+      offlineMessage: '',
+      isEmenu: window.location.hostname.includes('emenu'),
       isScrollingToCategory: false,
       showUpdateModal: false,
       addNew: false,
@@ -46,7 +46,7 @@ class Ordering extends Component {
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
     window.addEventListener(
-      "scroll",
+      'scroll',
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
 
@@ -75,12 +75,12 @@ class Ordering extends Component {
         prevProps.orderingModes !== this.props.orderingModes)
     ) {
       const showOrderingModeModalFirst = this.props.setting.find((setting) => {
-        return setting.settingKey === "ShowOrderingModeModalFirst";
+        return setting.settingKey === 'ShowOrderingModeModalFirst';
       });
 
       if (this.props.orderingModes.length === 1) {
         await this.props.dispatch({
-          type: "SET_ORDERING_MODE",
+          type: 'SET_ORDERING_MODE',
           payload: this.props.orderingModes[0],
         });
       }
@@ -90,7 +90,7 @@ class Ordering extends Component {
         !this.props.orderingMode
       ) {
         if (this.props.orderingModes.length > 1) {
-          document.getElementById("open-modal-ordering-mode").click();
+          document.getElementById('open-modal-ordering-mode').click();
         }
       } else {
         let defaultOutlet = this.props.defaultOutlet;
@@ -111,13 +111,13 @@ class Ordering extends Component {
   };
 
   getUrlParameters = (pageParamString = null) => {
-    if (!pageParamString) pageParamString = window.location.href.split("?")[1];
+    if (!pageParamString) pageParamString = window.location.href.split('?')[1];
     if (pageParamString) {
-      var paramsArray = pageParamString.split("&");
+      var paramsArray = pageParamString.split('&');
       var paramsHash = {};
 
       for (var i = 0; i < paramsArray.length; i++) {
-        var singleParam = paramsArray[i].split("=");
+        var singleParam = paramsArray[i].split('=');
         paramsHash[singleParam[0]] = singleParam[1];
       }
       return paramsHash;
@@ -129,25 +129,25 @@ class Ordering extends Component {
     clearInterval(this.timeWhith);
     const { isEmenu } = this.state;
     window.removeEventListener(
-      "scroll",
+      'scroll',
       isEmenu ? this.handleScrollEmenu() : this.handleScrollWebOrdering()
     );
   }
 
   handleScrollWebOrdering = (e) => {
     try {
-      const header = document.getElementById("header-categories");
-      const banners = document.getElementById("promo-banner");
+      const header = document.getElementById('header-categories');
+      const banners = document.getElementById('promo-banner');
       const categoriesButton = header.firstElementChild;
       const categoriesButtonChildren = categoriesButton.children;
       const bannersHeight = banners ? banners.offsetHeight : 0;
       if (window.scrollY > 60 + bannersHeight) {
-        header.classList.remove("relative-position");
-        header.classList.add("sticky");
+        header.classList.remove('relative-position');
+        header.classList.add('sticky');
         // header.style.top = `${headerCWO.offsetHeight - 5}px`;
       } else {
-        header.classList.remove("sticky");
-        header.classList.add("relative-position");
+        header.classList.remove('sticky');
+        header.classList.add('relative-position');
         // header.style.top = 0;
       }
       this.state.categories.forEach((category, i) => {
@@ -166,7 +166,7 @@ class Ordering extends Component {
           }
           categoriesButton.scrollTo({
             left: totalLeftItemsWidth,
-            behavior: "auto",
+            behavior: 'auto',
           });
           this.setState({ selectedCategory: i });
         }
@@ -177,17 +177,17 @@ class Ordering extends Component {
   };
 
   handleScrollEmenu = (e) => {
-    var searchButton = document.getElementById("search-button-category");
-    var headerOffset = document.getElementById("offset-header");
+    var searchButton = document.getElementById('search-button-category');
+    var headerOffset = document.getElementById('offset-header');
     try {
       if (headerOffset !== undefined && headerOffset.offsetTop !== null) {
         var sticky = headerOffset.offsetTop;
         if (window.pageYOffset > sticky) {
-          searchButton.classList.remove("search-button-absolute");
-          searchButton.classList.add("search-button-fixed");
+          searchButton.classList.remove('search-button-absolute');
+          searchButton.classList.add('search-button-fixed');
         } else {
-          searchButton.classList.remove("search-button-fixed");
-          searchButton.classList.add("search-button-absolute");
+          searchButton.classList.remove('search-button-fixed');
+          searchButton.classList.add('search-button-absolute');
         }
       }
     } catch (e) {}
@@ -206,14 +206,13 @@ class Ordering extends Component {
 
   fetchCategories = async (outlet, orderingMode) => {
     try {
-      const presetType = "promotion";
+      const presetType = 'promotion';
       const categories = await this.props.dispatch(
-        ProductAction.fetchCategoryProduct(
+        ProductAction.fetchCategoryProduct({
           outlet,
-          null,
           orderingMode,
-          presetType
-        )
+          presetType,
+        })
       );
 
       await this.setState({ categories: categories.data, processing: true });
@@ -283,7 +282,7 @@ class Ordering extends Component {
 
     while (i < categories.length && this.state.processing) {
       let data = null;
-      categories[i].presetType = "promotion";
+      categories[i].presetType = 'promotion';
 
       if (
         this.props.orderingSetting &&
@@ -368,13 +367,13 @@ class Ordering extends Component {
         const find = basket.details.find((data) =>
           data.product.id.includes(item.product.id)
         );
-        if (find !== undefined) return "Update";
-        else return "Add";
+        if (find !== undefined) return 'Update';
+        else return 'Add';
       } else {
-        return "Add";
+        return 'Add';
       }
     } catch (e) {
-      return "Add";
+      return 'Add';
     }
   };
 
@@ -398,9 +397,9 @@ class Ordering extends Component {
   searchProduct = async (query) => {
     try {
       const { productsBackup } = this.state;
-      console.log("productsBackup", productsBackup);
+      console.log('productsBackup', productsBackup);
       this.setState({ finished: true });
-      if (query === "") {
+      if (query === '') {
         this.setState({
           loading: false,
           loadingSearching: false,
@@ -452,9 +451,9 @@ class Ordering extends Component {
     if (this.props.companyInfo) {
       const { currency } = this.props.companyInfo;
 
-      if (!price || price === "-") price = 0;
+      if (!price || price === '-') price = 0;
       let result = price.toLocaleString(currency.locale, {
-        style: "currency",
+        style: 'currency',
         currency: currency.code,
       });
       return result;
@@ -477,47 +476,47 @@ class Ordering extends Component {
     if (this.props.productsSearch) products = this.props.productsSearch;
     else products = this.state.products;
 
-    if (offlineMessage !== "") {
+    if (offlineMessage !== '') {
       return (
         <div
-          className="section-tabs container-product"
-          data-toggle="modal"
-          data-target="#modal-product"
+          className='section-tabs container-product'
+          data-toggle='modal'
+          data-target='#modal-product'
         >
           <div
-            className="full-width list-view archive woocommerce-page html-change"
+            className='full-width list-view archive woocommerce-page html-change'
             style={{ marginTop: 80 }}
           >
-            <div className="tab-content">
+            <div className='tab-content'>
               =
               <img
                 src={config.url_emptyImage}
-                alt="is empty"
+                alt='is empty'
                 style={{ marginTop: 30 }}
               />
               <div
                 style={{
                   margin: 10,
                   padding: 10,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 16,
-                  backgroundColor: "rgba(0,0,0, 0.5)",
+                  backgroundColor: 'rgba(0,0,0, 0.5)',
                   borderRadius: 5,
-                  color: "#FFF",
+                  color: '#FFF',
                 }}
               >
                 {offlineMessage}
               </div>
               <div
-                className="profile-dashboard"
+                className='profile-dashboard'
                 style={{
                   margin: 10,
                   padding: 10,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 16,
                   borderRadius: 5,
-                  color: "#FFF",
-                  fontWeight: "bold",
+                  color: '#FFF',
+                  fontWeight: 'bold',
                 }}
               >
                 Let's find another outlet.
@@ -529,44 +528,44 @@ class Ordering extends Component {
     }
 
     return (
-      <div className="col-full" style={{ marginTop: 130 }}>
-        <div className="row">
-          <div className="col-md-8">
-            <Link to={"/menu"}>
+      <div className='col-full' style={{ marginTop: 130 }}>
+        <div className='row'>
+          <div className='col-md-8'>
+            <Link to={'/menu'}>
               <div>
-                <i className="fa fa-arrow-left" /> Back
+                <i className='fa fa-arrow-left' /> Back
               </div>
             </Link>
             <br />
           </div>
-          <div className="col-md-4">
+          <div className='col-md-4'>
             <div
               style={{
-                backgroundColor: "#ecf0f1",
+                backgroundColor: '#ecf0f1',
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
               }}
             >
               <input
                 onChange={(e) => {
                   this.searchProduct(e.target.value);
                 }}
-                className="form-control"
-                placeholder="Search your product here..."
-                style={{ fontSize: "1.6rem" }}
+                className='form-control'
+                placeholder='Search your product here...'
+                style={{ fontSize: '1.6rem' }}
               ></input>
             </div>
           </div>
         </div>
-        <div id="primary" className="" style={{ paddingBottom: 100 }}>
-          <main id="main">
+        <div id='primary' className='' style={{ paddingBottom: 100 }}>
+          <main id='main'>
             <div
-              className="section-tabs container-product"
-              data-toggle="modal"
-              data-target="#modal-product"
+              className='section-tabs container-product'
+              data-toggle='modal'
+              data-target='#modal-product'
             >
               {this.getLabelButton(this.state.selectedItem).toLowerCase() ===
-                "update" &&
+                'update' &&
                 this.state.showUpdateModal && (
                   <UpdateProductModal
                     color={this.props.theme.color.primary}
@@ -593,14 +592,14 @@ class Ordering extends Component {
               />
 
               <div
-                className="full-width list-view columns-2 archive woocommerce-page html-change"
-                id="product-catalog"
+                className='full-width list-view columns-2 archive woocommerce-page html-change'
+                id='product-catalog'
                 style={{ paddingTop: 30 }}
               >
-                <div className="tab-content">
-                  <div className="tab-pane active" id="h1-tab-products-2">
+                <div className='tab-content'>
+                  <div className='tab-pane active' id='h1-tab-products-2'>
                     <ul
-                      className="products"
+                      className='products'
                       style={{ marginLeft: 0, marginRight: 0 }}
                     >
                       {!loadingSearching &&
@@ -620,28 +619,28 @@ class Ordering extends Component {
                             >
                               {cat.category.name.toUpperCase()}
                             </h3>
-                            <div className="grid-products">
+                            <div className='grid-products'>
                               {cat.items.map((item, j) => {
                                 const { salesPeriods, restricSalesPeriod } =
                                   item;
                                 if (restricSalesPeriod) {
-                                  console.log("restrictingSales period");
+                                  console.log('restrictingSales period');
                                   const isEnabled = salesPeriods.find(
                                     (period) => {
-                                      const timeArray = period.value.split("-");
+                                      const timeArray = period.value.split('-');
                                       const startTime = timeArray[0];
                                       const endTime = timeArray[1];
                                       const startHour = parseInt(
-                                        startTime.split(":")[0]
+                                        startTime.split(':')[0]
                                       );
                                       const startMinute = parseInt(
-                                        startTime.split(":")[1]
+                                        startTime.split(':')[1]
                                       );
                                       const endHour = parseInt(
-                                        endTime.split(":")[0]
+                                        endTime.split(':')[0]
                                       );
                                       const endMinute = parseInt(
-                                        endTime.split(":")[1]
+                                        endTime.split(':')[1]
                                       );
                                       const start =
                                         startHour * 60 + startMinute;
@@ -686,11 +685,11 @@ class Ordering extends Component {
                         <div>
                           <img
                             src={config.url_emptyImage}
-                            alt="is empty"
+                            alt='is empty'
                             style={{ marginTop: 30 }}
                           />
                           <h3
-                            className="color text-center"
+                            className='color text-center'
                             style={{ fontSize: 16 }}
                           >
                             Oppss.. Item Not Found.
@@ -703,16 +702,16 @@ class Ordering extends Component {
                 </div>
               </div>
               <span
-                data-toggle="modal"
-                data-target="#detail-product-modal"
-                id="open-modal-product"
-                style={{ color: "white" }}
+                data-toggle='modal'
+                data-target='#detail-product-modal'
+                id='open-modal-product'
+                style={{ color: 'white' }}
               ></span>
               <span
-                data-toggle="modal"
-                data-target="#ordering-mode"
-                id="open-modal-ordering-mode"
-                style={{ color: "white" }}
+                data-toggle='modal'
+                data-target='#ordering-mode'
+                id='open-modal-ordering-mode'
+                style={{ color: 'white' }}
               ></span>
             </div>
           </main>

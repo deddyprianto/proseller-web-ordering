@@ -1,25 +1,27 @@
 /* eslint-disable react/prop-types */
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import Promotion from "../components/banner";
-import Ordering from "../components/ordering";
-import OrderingRetail from "../components/ordering/indexRetail";
-import OutletSelection from "./OutletSelection";
-import { OrderAction } from "../redux/actions/OrderAction";
-import { PromotionAction } from "../redux/actions/PromotionAction";
-import LoadingAddCart from "../components/loading/LoadingAddCart";
-import { isEmptyArray, isEmptyObject } from "../helpers/CheckEmpty";
-import config from "../config";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Promotion from '../components/banner';
+import Ordering from '../components/ordering';
+import OrderingRetail from '../components/ordering/indexRetail';
+import OutletSelection from './OutletSelection';
+import { OrderAction } from '../redux/actions/OrderAction';
+import { PromotionAction } from '../redux/actions/PromotionAction';
+import LoadingAddCart from '../components/loading/LoadingAddCart';
+import { isEmptyArray, isEmptyObject } from '../helpers/CheckEmpty';
+import config from '../config';
 
-import { lsLoad } from "../helpers/localStorage";
+import { lsLoad } from '../helpers/localStorage';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import ProductList from 'components/productList';
+
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.hostname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
     };
   }
 
@@ -68,26 +70,26 @@ class Home extends Component {
     const { orderingSetting } = this.props;
 
     return (
-      <div className="col-full">
+      <div className='col-full'>
         <div
-          id="primary"
-          className="content-area"
+          id='primary'
+          className='content-area'
           style={{ paddingBottom: 100 }}
         >
           {this.state.loading ? <LoadingAddCart /> : null}
-          <div className="stretch-full-width">
-            {this.props.setting.outletSelection === "MANUAL" &&
+          <div className='stretch-full-width'>
+            {this.props.setting.outletSelection === 'MANUAL' &&
             !this.props.defaultOutlet.id &&
             !isEmenu ? (
               <OutletSelection />
             ) : (
-              <main id="main" className="site-main">
+              <main id='main' className='site-main'>
                 <Promotion />
                 {orderingSetting &&
-                orderingSetting.CategoryHeaderType === "WITH_CATEGORY_PAGE" ? (
+                orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE' ? (
                   <OrderingRetail history={this.props.history}></OrderingRetail>
                 ) : (
-                  <Ordering></Ordering>
+                  <ProductList></ProductList>
                 )}
               </main>
             )}

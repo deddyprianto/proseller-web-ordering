@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import Paper from "@mui/material/Paper";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import Paper from '@mui/material/Paper';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt } from "@fortawesome/free-solid-svg-icons/faListAlt";
-import { faHistory } from "@fortawesome/free-solid-svg-icons/faHistory";
-import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
-import { faGift } from "@fortawesome/free-solid-svg-icons/faGift";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
-import { faSignInAlt } from "@fortawesome/free-solid-svg-icons/faSignInAlt";
-import { faAddressBook } from "@fortawesome/free-solid-svg-icons/faAddressBook";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faListAlt } from '@fortawesome/free-solid-svg-icons/faListAlt';
+import { faHistory } from '@fortawesome/free-solid-svg-icons/faHistory';
+import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
+import { faGift } from '@fortawesome/free-solid-svg-icons/faGift';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
+import { faAddressBook } from '@fortawesome/free-solid-svg-icons/faAddressBook';
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
-const FooterWebOrderingCopy = () => {
+const FooterWebOrdering = () => {
   const allState = useSelector((state) => state);
 
   const [value, setValue] = useState(0);
@@ -26,15 +26,15 @@ const FooterWebOrderingCopy = () => {
   const isLoggedIn = allState.auth.isLoggedIn;
 
   const iconCheck = (iconName) => {
-    if (iconName.includes("fa-th")) {
+    if (iconName.includes('fa-th')) {
       return faListAlt;
-    } else if (iconName.includes("fa-history")) {
+    } else if (iconName.includes('fa-history')) {
       return faHistory;
-    } else if (iconName.includes("fa-user")) {
+    } else if (iconName.includes('fa-user')) {
       return faUser;
-    } else if (iconName.includes("fa-gift")) {
+    } else if (iconName.includes('fa-gift')) {
       return faGift;
-    } else if (iconName.includes("fa-envelope")) {
+    } else if (iconName.includes('fa-envelope')) {
       return faEnvelope;
     } else {
       return faAddressBook;
@@ -44,26 +44,27 @@ const FooterWebOrderingCopy = () => {
   useEffect(() => {
     const enableOrderingChecker = () => {
       let enableOrderingCheck = allState.order.setting.find((items) => {
-        return items.settingKey === "EnableOrdering";
+        return items.settingKey === 'EnableOrdering';
       });
       if (enableOrderingCheck) {
         setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
       }
     };
     enableOrderingChecker();
-  }, [enableOrdering]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const matches = useMediaQuery("(max-width:768px)");
+  const matches = useMediaQuery('(max-width:768px)');
 
   if (matches) {
     return (
       <Paper
         sx={{
-          position: "fixed",
+          position: 'fixed',
           bottom: 0,
           left: 0,
           right: 0,
-          height: "4.6em",
+          height: '4.6em',
           zIndex: 10,
           backgroundColor: allState.theme.color.secondary,
         }}
@@ -73,19 +74,18 @@ const FooterWebOrderingCopy = () => {
           showLabels
           value={value}
           onChange={(event, newValue) => {
-            console.log("masuk ciy");
             setValue(newValue);
           }}
           sx={{
-            marginY: "1.2rem",
+            marginY: '1.2rem',
             backgroundColor: allState.theme.color.secondary,
-            "& .Mui-selected": {
+            '& .Mui-selected': {
               color: allState.theme.color.textButtonColor,
-              fontSize: "1.2rem",
+              fontSize: '1.2rem',
               fontWeight: 600,
             },
-            "& .MuiBottomNavigationAction-label": {
-              fontSize: "1.2rem",
+            '& .MuiBottomNavigationAction-label': {
+              fontSize: '1.2rem',
             },
           }}
         >
@@ -96,19 +96,20 @@ const FooterWebOrderingCopy = () => {
             if (!isLoggedIn && menu.loggedInOnly) {
               return null;
             }
-            if (!isLoggedIn && menu.text === "Login") {
+            if (!isLoggedIn && menu.text === 'Login') {
               return (
                 <BottomNavigationAction
+                  key={index}
                   tabIndex={index}
-                  label="Login"
+                  label='Login'
                   //use this data toggle for temporary until the login page with modal
-                  data-toggle="modal"
-                  data-target="#login-register-modal"
+                  data-toggle='modal'
+                  data-target='#login-register-modal'
                   icon={
                     <FontAwesomeIcon
                       icon={faSignInAlt}
                       color={allState.theme.color.textButtonColor}
-                      size="md"
+                      size='md'
                     />
                   }
                 />
@@ -126,7 +127,7 @@ const FooterWebOrderingCopy = () => {
                   <FontAwesomeIcon
                     icon={iconCheck(menu.icon)}
                     color={allState.theme.color.textButtonColor}
-                    size="md"
+                    size='md'
                   />
                 }
               />
@@ -140,4 +141,4 @@ const FooterWebOrderingCopy = () => {
   }
 };
 
-export default FooterWebOrderingCopy;
+export default FooterWebOrdering;

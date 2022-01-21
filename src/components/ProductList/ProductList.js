@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import config from '../../../config';
+import config from 'config';
+
+import LoadingOverlay from 'react-loading-overlay';
 
 import { styled } from '@mui/system';
 
@@ -22,14 +25,14 @@ import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-import { isEmptyObject, isEmptyArray } from '../../../helpers/CheckEmpty';
+import { isEmptyObject, isEmptyArray } from 'helpers/CheckEmpty';
 
-import { ProductAction } from '../../../redux/actions/ProductAction';
-import { OutletAction } from '../../../redux/actions/OutletAction';
+import { ProductAction } from 'redux/actions/ProductAction';
+import { OutletAction } from 'redux/actions/OutletAction';
+import { OrderAction } from 'redux/actions/OrderAction';
 
-import { CONSTANT } from '../../../helpers';
+import { CONSTANT } from 'helpers';
 import Product from './components/Product';
-import Loading from 'components/loading/Loading';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -43,31 +46,28 @@ const useWindowSize = () => {
   }, []);
   return size;
 };
+
 const mapStateToProps = (state) => {
   return {
+    theme: state.theme,
     defaultOutlet: state.outlet.defaultOutlet,
     products: state.product.products,
-    basket: state.order.basket,
-    theme: state.theme,
-    productsSearch: state.order.productsSearch,
-    companyInfo: state.masterdata.companyInfo.data,
-    setting: state.order.setting,
     orderingMode: state.order.orderingMode,
     orderingSetting: state.order.orderingSetting,
-    banners: state.promotion.banners,
   };
 };
+
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 
-const ProductList = ({ color, ...props }) => {
+const ProductList = ({ ...props }) => {
   const useStyles = makeStyles(() => ({
     appBar: {
       background: '#03aacf',
     },
     tabMore: {
-      color: color,
+      color: props?.theme?.color?.primary,
       backgroundColor: '#D0D0D0',
     },
     tabLabel: {
@@ -77,7 +77,7 @@ const ProductList = ({ color, ...props }) => {
     itemMoreHover: {
       '&:hover': {
         color: '#fff',
-        backgroundColor: color,
+        backgroundColor: props?.theme?.color?.primary,
       },
     },
     itemMore: {
@@ -86,9 +86,10 @@ const ProductList = ({ color, ...props }) => {
       borderColor: '#D0D0D0',
     },
   }));
+
   const styles = {
     tabMore: {
-      color: color,
+      color: props?.theme?.color?.primary,
       backgroundColor: '#D0D0D0',
     },
     paper: {
@@ -123,13 +124,17 @@ const ProductList = ({ color, ...props }) => {
     align-items: center;
 
     &:hover {
-      background-color: ${color ? color : 'white'};
+      background-color: ${props?.theme?.color?.primary
+        ? props.theme.color.primary
+        : 'white'};
     }
 
     &.${buttonUnstyledClasses.active} {
       color: #fff;
       outline: none;
-      background-color: ${color ? color : 'white'};
+      background-color: ${props?.theme?.color?.primary
+        ? props.theme.color.primary
+        : 'white'};
     }
 
     &.${tabUnstyledClasses.selected} {
@@ -172,6 +177,7 @@ const ProductList = ({ color, ...props }) => {
           : '',
       })
     );
+
     const results = categories?.data || [];
     return results;
   };
@@ -192,6 +198,7 @@ const ProductList = ({ color, ...props }) => {
     setIsLoading(true);
     try {
       const loadData = async () => {
+        props.dispatch(OrderAction.getCart());
         const defaultOutlet = await handleFetchDefaultOutlet();
         const categories = await handleFetchCategoryProduct({
           outlet: defaultOutlet,
@@ -223,6 +230,7 @@ const ProductList = ({ color, ...props }) => {
           const products = await props.dispatch(
             ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
           );
+
           setProducts(products.data);
 
           props.dispatch({
@@ -338,6 +346,7 @@ const ProductList = ({ color, ...props }) => {
           </Grid>
         );
       });
+
       return (
         <Grid
           paddingTop={6}
@@ -364,13 +373,16 @@ const ProductList = ({ color, ...props }) => {
     <TabsUnstyled value={`${selectedCategory.name}`}>
       {renderTabHeader()}
       {renderTabList()}
-      {/* <Loading isLoading content={renderProductList()} /> */}
-      {isLoading ? <Loading loadingType='NestedList' /> : renderProductList()}
+
+      <LoadingOverlay active={isLoading} spinner text='Loading...'>
+        {renderProductList()}
+      </LoadingOverlay>
     </TabsUnstyled>
   );
 };
 
 ProductList.defaultProps = {
+  theme: {},
   color: '',
   dispatch: null,
   orderingMode: '',
@@ -384,6 +396,7 @@ ProductList.propTypes = {
   orderingSetting: PropTypes.objectOf(
     PropTypes.shape({ ShowOrderingModeModalFirst: PropTypes.string })
   ),
+  theme: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList);
