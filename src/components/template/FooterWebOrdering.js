@@ -17,7 +17,7 @@ import { faAddressBook } from '@fortawesome/free-solid-svg-icons/faAddressBook';
 
 import { useSelector } from 'react-redux';
 
-const FooterWebOrderingCopy = () => {
+const FooterWebOrdering = () => {
   const allState = useSelector((state) => state);
 
   const [value, setValue] = useState(0);
@@ -41,17 +41,18 @@ const FooterWebOrderingCopy = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const enableOrderingChecker = () => {
-  //     let enableOrderingCheck = allState.order.setting.find((items) => {
-  //       return items.settingKey === "EnableOrdering";
-  //     });
-  //     if (enableOrderingCheck) {
-  //       setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
-  //     }
-  //   };
-  //   enableOrderingChecker();
-  // }, [enableOrdering]);
+  useEffect(() => {
+    const enableOrderingChecker = () => {
+      let enableOrderingCheck = allState.order.setting.find((items) => {
+        return items.settingKey === 'EnableOrdering';
+      });
+      if (enableOrderingCheck) {
+        setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
+      }
+    };
+    enableOrderingChecker();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const matches = useMediaQuery('(max-width:768px)');
 
@@ -73,7 +74,6 @@ const FooterWebOrderingCopy = () => {
           showLabels
           value={value}
           onChange={(event, newValue) => {
-            console.log('masuk ciy');
             setValue(newValue);
           }}
           sx={{
@@ -99,6 +99,7 @@ const FooterWebOrderingCopy = () => {
             if (!isLoggedIn && menu.text === 'Login') {
               return (
                 <BottomNavigationAction
+                  key={index}
                   tabIndex={index}
                   label='Login'
                   //use this data toggle for temporary until the login page with modal
@@ -140,4 +141,4 @@ const FooterWebOrderingCopy = () => {
   }
 };
 
-export default FooterWebOrderingCopy;
+export default FooterWebOrdering;
