@@ -1,9 +1,9 @@
-import { CONSTANT } from "../../helpers";
-import { ProductService } from "../../Services/ProductService";
-import { isEmptyArray } from "../../helpers/CheckEmpty";
-import config from "../../config";
+import { CONSTANT } from '../../helpers';
+import { ProductService } from '../../Services/ProductService';
+import { isEmptyArray } from '../../helpers/CheckEmpty';
+import config from '../../config';
 
-const PRESET_TYPE = config.prefix === "emenu" ? "eMenu" : "webOrdering";
+const PRESET_TYPE = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
 
 export const ProductAction = {
   fetchCategoryProduct,
@@ -16,7 +16,7 @@ export const ProductAction = {
   isParentCategory,
 };
 
-function fetchCategoryProduct(outlet, payload, orderingMode, presetType) {
+function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
   try {
     if (outlet.id) {
       const OUTLET_ID = outlet.id;
@@ -30,10 +30,10 @@ function fetchCategoryProduct(outlet, payload, orderingMode, presetType) {
 
       return async (dispatch) => {
         const data = await ProductService.api(
-          "POST",
+          'POST',
           payload,
           `productpreset/loadcategory/${preset}/${OUTLET_ID}${
-            orderingMode ? "/" + orderingMode : ""
+            orderingMode ? '/' + orderingMode : ''
           }`
         );
         if (!isEmptyArray(data.data)) {
@@ -49,7 +49,7 @@ function fetchCategoryProduct(outlet, payload, orderingMode, presetType) {
 
 function setSelectedCategory(category) {
   return (dispatch) => {
-    dispatch(setData(category, "SET_SELECTED_CATEGORY"));
+    dispatch(setData(category, 'SET_SELECTED_CATEGORY'));
   };
 }
 
@@ -58,7 +58,7 @@ function isParentCategory(parentCategoryID) {
     let payload = { take: 1, skip: 0 };
     payload.parentCategoryID = parentCategoryID;
 
-    const data = await ProductService.api("POST", payload, `category/load`);
+    const data = await ProductService.api('POST', payload, `category/load`);
     if (isEmptyArray(data.data)) {
       return false;
     } else {
@@ -77,9 +77,9 @@ function fetchCategoryList(payload, parentCategoryID = null) {
       payload.parentCategoryID = parentCategoryID;
     }
 
-    const data = await ProductService.api("POST", payload, `category/load`);
+    const data = await ProductService.api('POST', payload, `category/load`);
     if (!isEmptyArray(data.data)) {
-      dispatch(setData(data.data, "SET_CATEGORY_LIST"));
+      dispatch(setData(data.data, 'SET_CATEGORY_LIST'));
       return data.data;
     } else {
       return [];
@@ -99,10 +99,10 @@ function fetchProduct(category, outlet, skip, take, orderingMode) {
   return async (dispatch) => {
     dispatch(fetchProductStarted());
     const data = await ProductService.api(
-      "POST",
+      'POST',
       payload,
       `productpreset/loaditems/${presetType}/${OUTLET_ID}/${categoryID}${
-        orderingMode ? "/" + orderingMode : ""
+        orderingMode ? '/' + orderingMode : ''
       }`
     );
     if (!isEmptyArray(data.data)) {
@@ -110,7 +110,7 @@ function fetchProduct(category, outlet, skip, take, orderingMode) {
       return data;
     } else if (data.resultCode !== 200) {
       dispatch(
-        fetchProductError(data || { message: "Failed to fetch product" })
+        fetchProductError(data || { message: 'Failed to fetch product' })
       );
       return [];
     } else {
@@ -124,12 +124,12 @@ function fetchProductList(filter, sort) {
     const payload = { ...filter, ...sort };
     dispatch(fetchProductCategoryStarted());
     dispatch(clearCategoryProducts());
-    const response = await ProductService.api("POST", payload, `product/load`);
+    const response = await ProductService.api('POST', payload, `product/load`);
     // console.log(response, 'responseresponseresponse')
     if (response.statusCode >= 400 || response.StatusCode >= 400)
       dispatch(
         fetchProductError({
-          message: response.message || "Failed to load product",
+          message: response.message || 'Failed to load product',
         })
       );
     else {
@@ -144,21 +144,21 @@ function setProductList(data) {
   };
 }
 
-const clearCategoryProducts = () => ({ type: "CLEAR_CATEGORY_PRODUCTS" });
-const fetchProductStarted = () => ({ type: "GET_PRODUCT_LIST_STARTED" });
+const clearCategoryProducts = () => ({ type: 'CLEAR_CATEGORY_PRODUCTS' });
+const fetchProductStarted = () => ({ type: 'GET_PRODUCT_LIST_STARTED' });
 const fetchProductCategoryStarted = () => ({
-  type: "GET_PRODUCT_CATEGORY_STARTED",
+  type: 'GET_PRODUCT_CATEGORY_STARTED',
 });
 const fetchProductCategorySuccess = (data) => ({
-  type: "GET_PRODUCT_CATEGORY_SUCCESS",
+  type: 'GET_PRODUCT_CATEGORY_SUCCESS',
   data,
 });
 const fetchProductSuccess = (data) => ({
-  type: "GET_PRODUCT_LIST_SUCCESS",
+  type: 'GET_PRODUCT_LIST_SUCCESS',
   data,
 });
 const fetchProductError = (error) => ({
-  type: "GET_PRODUCT_LIST_ERROR",
+  type: 'GET_PRODUCT_LIST_ERROR',
   error,
 });
 
@@ -166,10 +166,10 @@ function getCollection(id) {
   return async (dispatch) => {
     try {
       let response = await ProductService.api(
-        "GET",
+        'GET',
         null,
         `collection/get/${id}`,
-        "Bearer"
+        'Bearer'
       );
       if (response.resultCode !== 200) return {};
       return response.data;

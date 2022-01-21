@@ -1,19 +1,19 @@
-import { CONSTANT } from "../../helpers";
-import { OrderingService } from "../../Services/OrderingService";
+import { CONSTANT } from '../../helpers';
+import { OrderingService } from '../../Services/OrderingService';
 import {
   isEmptyData,
   isEmptyArray,
   isEmptyObject,
-} from "../../helpers/CheckEmpty";
-import _ from "lodash";
-import config from "../../config";
+} from '../../helpers/CheckEmpty';
+import _ from 'lodash';
+import config from '../../config';
 
-import { lsLoad } from "../../helpers/localStorage";
-import { CRMService } from "../../Services/CRMService";
+import { lsLoad } from '../../helpers/localStorage';
+import { CRMService } from '../../Services/CRMService';
 
 // const Swal = require("sweetalert2");
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 export const OrderAction = {
@@ -53,10 +53,10 @@ function shareURL(tableNo, outletID, orderMode) {
     };
 
     const response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/generateshareurl/`,
-      "Bearer"
+      'Bearer'
     );
 
     if (response.data !== undefined) return response;
@@ -66,9 +66,9 @@ function shareURL(tableNo, outletID, orderMode) {
 
 function getSettingOrdering() {
   return async (dispatch) => {
-    let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
+    let appType = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
     let response = await OrderingService.api(
-      "GET",
+      'GET',
       null,
       `orderingsetting/${appType}`
     );
@@ -80,7 +80,7 @@ function getSettingOrdering() {
       };
     }, {});
     dispatch({
-      type: "SET_ORDERING_SETTINGS",
+      type: 'SET_ORDERING_SETTINGS',
       data: settingObj,
     });
     if (data) {
@@ -89,51 +89,51 @@ function getSettingOrdering() {
       let primaryColor =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "PrimaryColor";
+          return items.settingKey === 'PrimaryColor';
         });
       let secondaryColor =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "SecondaryColor";
+          return items.settingKey === 'SecondaryColor';
         });
       let font =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "FontColor";
+          return items.settingKey === 'FontColor';
         });
       let background =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "BackgroundColor";
+          return items.settingKey === 'BackgroundColor';
         });
       let navigation =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "NavigationColor";
+          return items.settingKey === 'NavigationColor';
         });
       let textButtonColor =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "TextButtonColor";
+          return items.settingKey === 'TextButtonColor';
         });
       let textWarningColor =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "TextWarningColor";
+          return items.settingKey === 'TextWarningColor';
         });
       let outletSelection =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "OutletSelection";
+          return items.settingKey === 'OutletSelection';
         });
       let ProductPlaceholder =
         data &&
         data.settings.find((items) => {
-          return items.settingKey === "ProductPlaceholder";
+          return items.settingKey === 'ProductPlaceholder';
         });
 
       if (outletSelection === undefined) {
-        outletSelection = "DEFAULT";
+        outletSelection = 'DEFAULT';
       } else {
         outletSelection = outletSelection.settingValue;
       }
@@ -145,21 +145,21 @@ function getSettingOrdering() {
       }
 
       let payload = {
-        primary: primaryColor.settingValue || "#C00A27",
-        secondary: secondaryColor.settingValue || "#C00A27",
-        font: font.settingValue || "#808080",
-        background: background.settingValue || "#FFFFFF",
-        navigation: navigation.settingValue || "#C00A27",
-        textButtonColor: textButtonColor.settingValue || "#FFFFFF",
-        textWarningColor: textWarningColor.settingValue || "red",
+        primary: primaryColor.settingValue || '#C00A27',
+        secondary: secondaryColor.settingValue || '#C00A27',
+        font: font.settingValue || '#808080',
+        background: background.settingValue || '#FFFFFF',
+        navigation: navigation.settingValue || '#C00A27',
+        textButtonColor: textButtonColor.settingValue || '#FFFFFF',
+        textWarningColor: textWarningColor.settingValue || 'red',
         productPlaceholder: ProductPlaceholder || null,
       };
-      dispatch({ type: "SET_THEME", payload });
+      dispatch({ type: 'SET_THEME', payload });
       dispatch({
-        type: "DATA_SETTING_ORDERING",
+        type: 'DATA_SETTING_ORDERING',
         payload: data && data.settings,
       });
-      dispatch(setData(outletSelection, "OUTLET_SELECTION"));
+      dispatch(setData(outletSelection, 'OUTLET_SELECTION'));
     }
     return data;
   };
@@ -167,23 +167,26 @@ function getSettingOrdering() {
 
 function processAddCart(defaultOutlet, selectedItem) {
   return async (dispatch) => {
-    console.log(selectedItem);
-    if (isEmptyData(selectedItem.product.retailPrice)) {
-      selectedItem.product.retailPrice = 0;
-    }
+    // console.log(selectedItem);
+    // if (isEmptyData(selectedItem.product.retailPrice)) {
+    //   selectedItem.product.retailPrice = 0;
+    // }
 
     // ORIGINAL PRODUCT
     let product = {
       productID: selectedItem.productID,
-      unitPrice: selectedItem.product.retailPrice,
+      unitPrice: selectedItem?.product?.retailPrice || selectedItem.retailPrice,
       quantity: selectedItem.quantity,
     };
 
-    if (selectedItem.remark !== "" || selectedItem.remark !== undefined)
+    if (selectedItem.remark !== '' || selectedItem.remark !== undefined)
       product.remark = selectedItem.remark;
 
-    // IF MODIFIER EXIST
-    if (!isEmptyArray(selectedItem.product.productModifiers)) {
+    if (!isEmptyArray(selectedItem?.modifiers)) {
+      product.modifiers = selectedItem.modifiers;
+    }
+
+    if (!isEmptyArray(selectedItem?.product?.productModifiers || [])) {
       const productModifierClone = JSON.stringify(
         selectedItem.product.productModifiers
       );
@@ -240,90 +243,99 @@ function processAddCart(defaultOutlet, selectedItem) {
 
     payload.details.push(product);
 
-    if (account) dispatch(addCart(payload));
-    else dispatch(processOfflineCart(payload, "Add"));
+    if (account) {
+      dispatch(addCart(payload));
+    } else {
+      dispatch(processOfflineCart(payload, 'Add'));
+    }
   };
 }
 
-function processUpdateCart(basket, products) {
+function processUpdateCart(basket, products, key) {
   return async (dispatch) => {
     let payload = [];
-    for (let index = 0; index < products.length; index++) {
-      let product = products[index];
-      console.log("product:", product);
-      let find = await basket.details.find((data) => data.id === product.id);
-      const quantity =
-        product.originalQuantity && product.promoQuantity
-          ? product.originalQuantity +
-            (product.quantity - product.promoQuantity)
-          : product.quantity;
-      let dataproduct = {
-        id: find.id,
-        productID: product.productID,
-        unitPrice: product.product.retailPrice,
-        quantity,
-      };
+    if (key !== 'new') {
+      for (let index = 0; index < products.length; index++) {
+        let product = products[index];
+        console.log('product:', product);
+        let find = await basket.details.find((data) => data.id === product.id);
+        const quantity =
+          product.originalQuantity && product.promoQuantity
+            ? product.originalQuantity +
+              (product.quantity - product.promoQuantity)
+            : product.quantity;
+        let dataproduct = {
+          id: find.id,
+          productID: product.productID,
+          unitPrice: product.product.retailPrice,
+          quantity,
+        };
 
-      if (product.remark !== "" && product.remark !== undefined)
-        dataproduct.remark = product.remark;
+        if (product.remark !== '' && product.remark !== undefined)
+          dataproduct.remark = product.remark;
 
-      if (!isEmptyArray(product.product.productModifiers)) {
-        console.log(product.product.productModifiers);
-        let totalModifier = 0;
-        let productModifiers = [...product.product.productModifiers];
-        dataproduct.modifiers = productModifiers;
+        if (!isEmptyArray(product.product.productModifiers)) {
+          console.log(product.product.productModifiers);
+          let totalModifier = 0;
+          let productModifiers = [...product.product.productModifiers];
+          dataproduct.modifiers = productModifiers;
 
-        let tempDetails = [];
-        for (let i = 0; i < dataproduct.modifiers.length; i++) {
-          tempDetails = [];
-          let data = dataproduct.modifiers[i];
+          let tempDetails = [];
+          for (let i = 0; i < dataproduct.modifiers.length; i++) {
+            tempDetails = [];
+            let data = dataproduct.modifiers[i];
 
-          for (let j = 0; j < data.modifier.details.length; j++) {
-            if (
-              data.modifier.details[j].quantity !== undefined &&
-              data.modifier.details[j].quantity > 0
-            ) {
-              // check if price is undefined
-              if (data.modifier.details[j].price === undefined) {
-                data.modifier.details[j].price = 0;
+            for (let j = 0; j < data.modifier.details.length; j++) {
+              if (
+                data.modifier.details[j].quantity !== undefined &&
+                data.modifier.details[j].quantity > 0
+              ) {
+                // check if price is undefined
+                if (data.modifier.details[j].price === undefined) {
+                  data.modifier.details[j].price = 0;
+                }
+                tempDetails.push(data.modifier.details[j]);
               }
-              tempDetails.push(data.modifier.details[j]);
             }
+
+            // if not null, then replace details
+            dataproduct.modifiers[i].modifier.details = tempDetails;
           }
 
-          // if not null, then replace details
-          dataproduct.modifiers[i].modifier.details = tempDetails;
-        }
-
-        //  calculate total modifier
-        await dataproduct.modifiers.forEach((group) => {
-          group.modifier.details.forEach((detail) => {
-            if (detail.quantity !== undefined && detail.quantity > 0) {
-              totalModifier += parseFloat(detail.quantity * detail.price);
-            }
+          //  calculate total modifier
+          await dataproduct.modifiers.forEach((group) => {
+            group.modifier.details.forEach((detail) => {
+              if (detail.quantity !== undefined && detail.quantity > 0) {
+                totalModifier += parseFloat(detail.quantity * detail.price);
+              }
+            });
           });
-        });
 
-        // check if item modifier was deleted, if yes, then remove array modifier
-        dataproduct.modifiers = await _.remove(
-          dataproduct.modifiers,
-          (group) => {
-            return group.modifier.details.length > 0;
-          }
-        );
+          // check if item modifier was deleted, if yes, then remove array modifier
+          dataproduct.modifiers = await _.remove(
+            dataproduct.modifiers,
+            (group) => {
+              return group.modifier.details.length > 0;
+            }
+          );
 
-        //  add total item modifier to subtotal product
-        dataproduct.unitPrice += totalModifier;
+          //  add total item modifier to subtotal product
+          dataproduct.unitPrice += totalModifier;
+        }
+        console.log(dataproduct);
+
+        payload.push(dataproduct);
       }
-      console.log(dataproduct);
-
-      payload.push(dataproduct);
+    } else {
+      payload = products;
     }
 
-    console.log(payload);
     let basketUpdate = {};
-    if (account) basketUpdate = await dispatch(updateCart(payload));
-    else basketUpdate = await dispatch(processOfflineCart(payload, "Update"));
+    if (account) {
+      basketUpdate = await dispatch(updateCart(payload));
+    } else {
+      basketUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+    }
     return basketUpdate;
   };
 }
@@ -336,7 +348,7 @@ function processOfflineCart(payload, mode) {
       if (isEmptyObject(offlineCart) || isEmptyArray(offlineCart.details)) {
         return await dispatch(buildCart(payload));
       } else {
-        if (mode === "Add") {
+        if (mode === 'Add') {
           if (offlineCart.outletID === payload.outletID) {
             offlineCart.details.push(payload.details[0]);
             return await dispatch(buildCart(offlineCart));
@@ -366,10 +378,10 @@ function moveCart(payload) {
   return async (dispatch) => {
     try {
       const response = await OrderingService.api(
-        "POST",
+        'POST',
         payload,
         `cart/moveItem`,
-        "Bearer"
+        'Bearer'
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
         return response;
@@ -386,10 +398,10 @@ function moveCart(payload) {
 function addCart(payload) {
   return async (dispatch) => {
     const response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/additem`,
-      "Bearer"
+      'Bearer'
     );
 
     // IF First time add cart, then call change Ordering mode
@@ -408,13 +420,13 @@ function addCart(payload) {
     } catch (e) {}
 
     try {
-      document.getElementById("close-modal").click();
+      document.getElementById('close-modal').click();
     } catch (e) {}
 
     // console.log(response)
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
       console.log(
-        "Dispatching CONSTANT.DATA_BASKET from OrderAction.addCart ",
+        'Dispatching CONSTANT.DATA_BASKET from OrderAction.addCart ',
         response.data
       );
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
@@ -427,22 +439,22 @@ function buildCart(payload = {}) {
     try {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (window.location.hostname.includes("emenu") ? "DINEIN" : "DELIVERY");
+        (window.location.hostname.includes('emenu') ? 'DINEIN' : 'DELIVERY');
     } catch (error) {}
     const response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/build`,
-      "Bearer"
+      'Bearer'
     );
 
     try {
-      document.getElementById("close-modal").click();
+      document.getElementById('close-modal').click();
     } catch (e) {}
 
     // console.log(response);
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log("Status is " + response.ResultCode || response.resultCode);
+      console.log('Status is ' + response.ResultCode || response.resultCode);
       localStorage.removeItem(`${config.prefix}_offlineCart`);
       return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
@@ -455,7 +467,7 @@ function buildCart(payload = {}) {
         data = null;
         basketData = {};
       }
-      console.log("Status is not 400");
+      console.log('Status is not 400');
       localStorage.setItem(
         `${config.prefix}_offlineCart`,
         JSON.stringify(data)
@@ -467,12 +479,12 @@ function buildCart(payload = {}) {
 
 function updateCart(payload) {
   return async (dispatch) => {
-    await OrderingService.api("POST", payload, `cart/updateitem`, "Bearer");
+    await OrderingService.api('POST', payload, `cart/updateitem`, 'Bearer');
     try {
-      document.getElementById("close-modal").click();
+      document.getElementById('close-modal').click();
     } catch (e) {}
 
-    if (window.location.hash === "#/basket") {
+    if (window.location.hash === '#/basket') {
       await localStorage.removeItem(`${config.prefix}_dataBasket`);
       window.location.reload();
     }
@@ -482,7 +494,7 @@ function updateCart(payload) {
 
 function updateCartInfo(payload) {
   return async (dispatch) => {
-    await OrderingService.api("POST", payload, `cart/updateCartInfo`, "Bearer");
+    await OrderingService.api('POST', payload, `cart/updateCartInfo`, 'Bearer');
     try {
     } catch (e) {}
     return dispatch(getCart());
@@ -504,24 +516,24 @@ function getCart(isSetData = true) {
     }
 
     const response = await OrderingService.api(
-      "GET",
+      'GET',
       null,
       `cart/getcart`,
-      "Bearer"
+      'Bearer'
     );
-    
+
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
-    else if (response.data && response.data.message !== "No details data") {
-      if (response.data.status === "PENDING_PAYMENT") {
-        await OrderingService.api("DELETE", null, `cart/delete`, "Bearer");
+    else if (response.data && response.data.message !== 'No details data') {
+      if (response.data.status === 'PENDING_PAYMENT') {
+        await OrderingService.api('DELETE', null, `cart/delete`, 'Bearer');
         return {};
       }
 
       if (isSetData) {
         return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
       }
-      
+
       return response.data;
     } else if (response.ResultCode === 404) {
       if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
@@ -551,10 +563,10 @@ function deleteCart(isDeleteServer = false) {
       }
     } else if (account) {
       const response = await OrderingService.api(
-        "DELETE",
+        'DELETE',
         null,
         `cart/delete`,
-        "Bearer"
+        'Bearer'
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400)
         console.log(response);
@@ -567,10 +579,10 @@ function deleteCart(isDeleteServer = false) {
 function submitBasket(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/submit`,
-      "Bearer"
+      'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -581,10 +593,10 @@ function submitBasket(payload) {
 function submitOrdering(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/settle`,
-      "Bearer"
+      'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -595,10 +607,10 @@ function submitOrdering(payload) {
 function submitTakeAway(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/submitAndPay`,
-      "Bearer"
+      'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -609,10 +621,10 @@ function submitTakeAway(payload) {
 function submitSettle(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `cart/customer/settle`,
-      "Bearer"
+      'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -623,10 +635,10 @@ function submitSettle(payload) {
 function submitMembership(payload) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      "POST",
+      'POST',
       payload,
       `sales/customer/submit`,
-      "bearer"
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -636,20 +648,20 @@ function submitMembership(payload) {
 
 function getProvider(
   payload = {
-    take: "10",
+    take: '10',
     skip: 0,
-    sortBy: "name",
-    sortDirection: "ASC",
+    sortBy: 'name',
+    sortDirection: 'ASC',
   }
 ) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `delivery/providers`,
-      "Bearer"
+      'Bearer'
     );
-    dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: response.data });
+    dispatch({ type: 'SET_DELIVERY_PROVIDERS', payload: response.data });
     return response.data;
   };
 }
@@ -657,10 +669,10 @@ function getProvider(
 function getCalculateFee(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `delivery/calculateFee`,
-      "Bearer"
+      'Bearer'
     );
     try {
       if (response.data.dataProfider !== undefined) {
@@ -674,10 +686,10 @@ function getCalculateFee(payload) {
 function getCartPending(id) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "GET",
+      'GET',
       null,
       `cart/pending/${id}`,
-      "Bearer"
+      'Bearer'
     );
     return response;
   };
@@ -686,10 +698,10 @@ function getCartPending(id) {
 function getCartCompleted(id) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "GET",
+      'GET',
       null,
       `outlet/cart/getcompleted/${id}`,
-      "Bearer"
+      'Bearer'
     );
     return response;
   };
@@ -698,10 +710,10 @@ function getCartCompleted(id) {
 function cartUpdate(payload) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      "POST",
+      'POST',
       payload,
       `outlet/cart/update`,
-      "Bearer"
+      'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -713,10 +725,10 @@ function changeOrderingMode(payload) {
   return async (dispatch) => {
     if (account && payload.orderingMode) {
       let response = await OrderingService.api(
-        "POST",
+        'POST',
         payload,
         `cart/changeOrderingMode`,
-        "Bearer"
+        'Bearer'
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400)
         console.log(response);
@@ -729,7 +741,7 @@ function changeOrderingMode(payload) {
 
 function getTimeSlot(payload) {
   return async (dispatch) => {
-    let response = await OrderingService.api("POST", payload, `timeslot`);
+    let response = await OrderingService.api('POST', payload, `timeslot`);
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     return response;

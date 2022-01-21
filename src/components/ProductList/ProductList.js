@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -176,6 +177,7 @@ const ProductList = ({ ...props }) => {
           : '',
       })
     );
+
     const results = categories?.data || [];
     return results;
   };
