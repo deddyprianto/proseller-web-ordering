@@ -157,6 +157,7 @@ const ProductList = ({ ...props }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [products, setProducts] = useState([]);
+  const [outlet, setOutlet] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
@@ -204,9 +205,9 @@ const ProductList = ({ ...props }) => {
           outlet: defaultOutlet,
         });
 
+        setOutlet(defaultOutlet);
         setCategories(categories);
         setSelectedCategory(categories[0]);
-
         setIsLoading(false);
       };
       loadData();
@@ -219,26 +220,17 @@ const ProductList = ({ ...props }) => {
     try {
       const loadData = async () => {
         setIsLoading(true);
-
-        const defaultOutlet = await props.dispatch(
-          OutletAction.fetchDefaultOutlet()
-        );
-
-        const outlet = config.getValidation(defaultOutlet);
-
         if (!isEmptyObject(selectedCategory)) {
           const products = await props.dispatch(
             ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
           );
 
           setProducts(products.data);
-
           props.dispatch({
             type: CONSTANT.LIST_CATEGORY,
             data: products,
           });
         }
-
         setIsLoading(false);
       };
       loadData();

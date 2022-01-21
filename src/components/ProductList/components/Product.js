@@ -46,6 +46,7 @@ const mapDispatchToProps = (dispatch) => ({
 const Product = ({ item, ...props }) => {
   const [width] = useWindowSize();
   const useStyles = makeStyles({
+    box: {},
     image: {
       display: 'flex',
       justifyContent: 'center',
@@ -240,7 +241,13 @@ const Product = ({ item, ...props }) => {
       );
     }
     return (
-      <div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Typography className={classes.price}>
           {handleCurrency(item?.product?.retailPrice)}
         </Typography>
@@ -303,7 +310,12 @@ const Product = ({ item, ...props }) => {
         />
       )}
 
-      <Box sx={{ border: 1 }}>
+      <Box
+        sx={{
+          boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+          border: '1px solid rgba(128, 128, 128, 0.5)',
+        }}
+      >
         {item?.itemType === 'GROUP' || item?.itemType === 'CATEGORY' ? (
           renderGroupProducts()
         ) : (
