@@ -1,209 +1,143 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import config from "../../config";
 
-class Footer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loadingShow: true,
-      isLoading: false,
-      dataBasket: null,
-      enableOrdering: true,
-    };
-  }
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import Paper from "@mui/material/Paper";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-  componentDidMount = async () => {
-    setInterval(() => {
-      let { basket } = this.props;
-      let url = window.location.hash.split("#")[1];
-      this.activeRoute({ path: url });
-      this.setState({ dataBasket: basket });
-    }, 2000);
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListAlt } from "@fortawesome/free-solid-svg-icons/faListAlt";
+import { faHistory } from "@fortawesome/free-solid-svg-icons/faHistory";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faGift } from "@fortawesome/free-solid-svg-icons/faGift";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
+import { faSignInAlt } from "@fortawesome/free-solid-svg-icons/faSignInAlt";
+import { faAddressBook } from "@fortawesome/free-solid-svg-icons/faAddressBook";
+
+import { useSelector } from "react-redux";
+
+const FooterWebOrderingCopy = () => {
+  const allState = useSelector((state) => state);
+
+  const [value, setValue] = useState(0);
+
+  const [enableOrdering, setEnableOrdering] = useState(true);
+  const isLoggedIn = allState.auth.isLoggedIn;
+
+  const iconCheck = (iconName) => {
+    if (iconName.includes("fa-th")) {
+      return faListAlt;
+    } else if (iconName.includes("fa-history")) {
+      return faHistory;
+    } else if (iconName.includes("fa-user")) {
+      return faUser;
+    } else if (iconName.includes("fa-gift")) {
+      return faGift;
+    } else if (iconName.includes("fa-envelope")) {
+      return faEnvelope;
+    } else {
+      return faAddressBook;
+    }
   };
 
-  componentDidUpdate = (prevProps, prevState) => {
-    if (this.props !== prevProps) {
-      let enableOrdering = this.props.setting.find((items) => {
+  useEffect(() => {
+    const enableOrderingChecker = () => {
+      let enableOrderingCheck = allState.order.setting.find((items) => {
         return items.settingKey === "EnableOrdering";
       });
-      if (enableOrdering) {
-        this.setState({ enableOrdering: enableOrdering.settingValue });
+      if (enableOrderingCheck) {
+        setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
       }
-    }
-  };
+    };
+    enableOrderingChecker();
+  }, [enableOrdering]);
 
-  activeRoute = (route) => {
-    // current-menu-item menu-item
-    let active = false;
-    let check = 0;
-    let url = window.location.hash.split("#")[1];
+  const matches = useMediaQuery("(max-width:768px)");
 
-    for (const key in route.path.split("/")) {
-      if (url.split("/")[key] === route.path.split("/")[key]) check += 1;
-    }
-
-    if (check === route.path.split("/").length) active = true;
-
-    return active ? "black" : "white";
-  };
-
-  removeDataPayment = (isCheck = false) => {
-    let { isLoggedIn } = this.props;
-    localStorage.removeItem(`${config.prefix}_dataSettle`);
-    localStorage.removeItem(`${config.prefix}_selectedCard`);
-    if (isCheck && !isLoggedIn) {
-      document.getElementById("login-register-btn").click();
-    }
-  };
-  render() {
-    let { isLoggedIn, broadcast, dataPendingLength } = this.props;
-    let { enableOrdering } = this.state;
+  if (matches) {
     return (
-      <div className="hidden-lg hidden-md">
-        <div
-          className="pizzaro-handheld-footer-bar"
-          style={{ display: "flex", justifyContent: "space-between" }}
+      <Paper
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "4.6em",
+          zIndex: 10,
+          backgroundColor: allState.theme.color.secondary,
+        }}
+        elevation={5}
+      >
+        <BottomNavigation
+          showLabels
+          value={value}
+          onChange={(event, newValue) => {
+            console.log("masuk ciy");
+            setValue(newValue);
+          }}
+          sx={{
+            marginY: "1.2rem",
+            backgroundColor: allState.theme.color.secondary,
+            "& .Mui-selected": {
+              color: allState.theme.color.textButtonColor,
+              fontSize: "1.2rem",
+              fontWeight: 600,
+            },
+            "& .MuiBottomNavigationAction-label": {
+              fontSize: "1.2rem",
+            },
+          }}
         >
-          {this.props.navBarMenus.map((menu) => {
-            if (!enableOrdering && menu.showOnOrderingEnabled) {
+          {allState.theme.menu.navBar.map((menu, index) => {
+            if (!enableOrdering && menu.showWhenOrderingEnabled) {
               return null;
             }
             if (!isLoggedIn && menu.loggedInOnly) {
               return null;
             }
+            if (!isLoggedIn && menu.text === "Login") {
+              return (
+                <BottomNavigationAction
+                  tabIndex={index}
+                  label="Login"
+                  //use this data toggle for temporary until the login page with modal
+                  data-toggle="modal"
+                  data-target="#login-register-modal"
+                  icon={
+                    <FontAwesomeIcon
+                      icon={faSignInAlt}
+                      color={allState.theme.color.textButtonColor}
+                      size="md"
+                    />
+                  }
+                />
+              );
+            }
             if (isLoggedIn && menu.loggedInOnly === false) return null;
             return (
-              <Link
-                onClick={() => this.removeDataPayment()}
-                to={menu.text === 'Login' ? '#' : menu.path}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                {menu.path === "/inbox" &&
-                  broadcast &&
-                  broadcast.broadcastUnreadLength > 0 && (
-                    <div
-                      className="text-btn-theme"
-                      style={{
-                        backgroundColor: this.props.color.primary,
-                        fontSize: 9,
-                        position: "absolute",
-                        marginTop: -28,
-                        minWidth: 18,
-                        borderRadius: 18,
-                        height: 18,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginRight: -25,
-                        border: `2px solid ${this.props.color.background}`,
-                        paddingLeft: 4,
-                        paddingRight: 4,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {broadcast.broadcastUnreadLength}
-                    </div>
-                  )}
-                  {
-                    menu.text === 'Login' ? 
-                    <div 
-                      data-toggle="modal"
-                      data-target="#login-register-modal">
-                    <i
-                      className={`footbar-icon ${menu.icon} ${this.activeRoute({
-                        path: menu.path,
-                        name: menu.text,
-                      })}`}
-                      aria-hidden="true"
-                      style={{
-                        fontSize: 22,
-                        margin: 15,
-                        color: this.activeRoute({
-                          path: menu.path,
-                          name: menu.text,
-                        }),
-                      }}
-                    ></i>
-                    <div
-                      className={`${this.activeRoute({
-                        path: menu.path,
-                        name: menu.text,
-                      })}`}
-                      style={{
-                        marginTop: -17,
-                        fontSize: 16,
-                        marginBottom: 10,
-                        color: "white",
-                      }}
-                    >
-                      {menu.text}
-                    </div>
-                    </div>
-                  :
-                    <>
-                      <i
-                        className={`footbar-icon ${menu.icon} ${this.activeRoute({
-                          path: menu.path,
-                          name: menu.text,
-                        })}`}
-                        aria-hidden="true"
-                        style={{
-                          fontSize: 22,
-                          margin: 15,
-                          color: this.activeRoute({
-                            path: menu.path,
-                            name: menu.text,
-                          }),
-                        }}
-                      ></i>
-                      <div
-                        className={`${this.activeRoute({
-                          path: menu.path,
-                          name: menu.text,
-                        })}`}
-                        style={{
-                          marginTop: -17,
-                          fontSize: 16,
-                          marginBottom: 10,
-                          color: "white",
-                        }}
-                      >
-                        {menu.text}
-                      </div>
-                    </>
-                  }
-              </Link>
+              <BottomNavigationAction
+                key={index}
+                tabIndex={index}
+                label={menu.text}
+                component={Link}
+                to={menu.path}
+                icon={
+                  <FontAwesomeIcon
+                    icon={iconCheck(menu.icon)}
+                    color={allState.theme.color.textButtonColor}
+                    size="md"
+                  />
+                }
+              />
             );
           })}
-        </div>
-      </div>
+        </BottomNavigation>
+      </Paper>
     );
+  } else {
+    return null;
   }
-}
+};
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    isLoggedIn: state.auth.isLoggedIn,
-    account: state,
-    basket: state.order.basket,
-    setting: state.order.setting,
-    broadcast: state.broadcast.broadcast,
-    dataPendingLength: state.order.dataPendingLength,
-    color: state.theme.color,
-    navBarMenus: state.theme.menu.navBar,
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    dispatch,
-  };
-};
-export default connect(mapStateToProps, mapDispatchToProps)(Footer);
+export default FooterWebOrderingCopy;

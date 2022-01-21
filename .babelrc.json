@@ -1,0 +1,16 @@
+{
+    "presets": ["react-app"],
+    "plugins": [
+      "lodash",
+      "@babel/plugin-proposal-optional-chaining",
+      [
+        "transform-imports",
+        {
+          "react-router": {
+            "transform": "react-router-dom/${member}",
+            "preventFullImport": true
+          }
+        }
+      ]
+    ]
+  }
