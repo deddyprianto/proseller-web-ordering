@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import loadable from "@loadable/component";
@@ -14,7 +15,6 @@ const FooterEmenu = loadable(() => import("./FooterEmenu"));
 const FooterWebOrdering = loadable(() => import("./FooterWebOrdering"));
 const Home = loadable(() => import("../../pages/Home"));
 const Profile = loadable(() => import("../../pages/Profile"));
-// const PaidMembership = loadable(() => import("../../pages/PaidMembership"));
 const ListMembership = loadable(() => import("../../pages/ListMembership"));
 const DetailMembership = loadable(() => import("../../pages/DetailMembership"));
 const History = loadable(() => import("../../pages/History"));
@@ -49,7 +49,10 @@ const EditProfile = loadable(() =>
 );
 const Categories = loadable(() => import("../../pages/AllCategory"));
 const Products = loadable(() => import("../../pages/Products"));
-const Promotions = loadable(() => import("../../components/ordering/Promotions"));
+const Promotions = loadable(() =>
+  import("../../components/ordering/Promotions")
+);
+const PromotionsDetail = loadable(() => import("../../pages/Promotions"));
 const Search = loadable(() => import("../../pages/Search"));
 const ProductSearchResult = loadable(() => import("../../pages/ProductSearch"));
 
@@ -66,7 +69,7 @@ class Layout extends Component {
     };
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     const { isLoggedIn } = this.props;
     const { isEmenu } = this.state;
     let infoCompany = await this.props.dispatch(
@@ -92,21 +95,26 @@ class Layout extends Component {
       try {
         document.getElementById("icon-theme").href =
           infoCompany.imageURL || this.state.logoCompany;
-      } catch (error) {}
+      } catch (e) {
+        console.log(e);
+      }
       this.setState({ infoCompany });
     }
 
+    // TODO: Change this with react router use useRouteMatch
     if (window.location.href.includes("/signin")) {
       try {
         console.log("SIGN IN");
         setTimeout(() => {
           document.getElementById("login-register-btn").click();
         }, 700);
-      } catch (error) {}
+      } catch (e) {
+        console.log(e);
+      }
     }
-  };
+  }
 
-  componentDidUpdate = (prevProps, prevState) => {
+  componentDidUpdate(prevProps) {
     if (this.props !== prevProps) {
       let infoCompany = this.state.infoCompany;
       let enableOrdering = this.props.setting.find((items) => {
@@ -123,113 +131,105 @@ class Layout extends Component {
         try {
           document.getElementById("icon-theme").href =
             infoCompany.imageURL || logoCompany.settingValue;
-        } catch (error) {}
+        } catch (e) {
+          console.log(e);
+        }
         this.setState({
           logoCompany: infoCompany.imageURL || logoCompany.settingValue,
         });
       }
     }
-  };
+  }
 
   render() {
     const { isLoggedIn } = this.props;
     const { isEmenu, enableOrdering } = this.state;
-    // console.log("mode emenu", isEmenu);
     return (
       <div id="page" className="hfeed site">
         {isEmenu ? <HeaderEmenu /> : <HeaderWebOrdering />}
         <div id="content" className="site-content">
           <Switch>
-            {enableOrdering && <Route exact path={"/"} component={Home} />}
+            {enableOrdering && <Route exact path="/" component={Home} />}
             {enableOrdering && (
-              <Route exact path={"/outlets"} component={OutletSelection} />
+              <Route exact path="/outlets" component={OutletSelection} />
             )}
+            {enableOrdering && <Route exact path="/signIn" component={Home} />}
             {enableOrdering && (
-              <Route exact path={"/signIn"} component={Home} />
-            )}
-            {enableOrdering && (
-              <Route exact path={"/basket"} component={Basket} />
+              <Route exact path="/basket" component={Basket} />
             )}
             {(isLoggedIn || !enableOrdering) && (
-              <Route exact path={"/profile"} component={Profile} />
+              <Route exact path="/profile" component={Profile} />
             )}
             {(isLoggedIn || !enableOrdering) && (
-              <Route exact path={"/rewards"} component={Profile} />
+              <Route exact path="/rewards" component={Profile} />
             )}
-            {isLoggedIn && <Route exact path={"/inbox"} component={Inbox} />}
+            {isLoggedIn && <Route exact path="/inbox" component={Inbox} />}
+            {isLoggedIn && <Route exact path="/voucher" component={Voucher} />}
             {isLoggedIn && (
-              <Route exact path={"/voucher"} component={Voucher} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/svc"} component={StoreValueCard} />
+              <Route exact path="/svc" component={StoreValueCard} />
             )}
             {isLoggedIn && (
-              <Route exact path={"/buy-svc"} component={BuyStoreValueCard} />
+              <Route exact path="/buy-svc" component={BuyStoreValueCard} />
             )}
-            {isLoggedIn && <Route exact path={"/use-svc"} component={UseSVC} />}
+            {isLoggedIn && <Route exact path="/use-svc" component={UseSVC} />}
+            {isLoggedIn && <Route exact path="/setting" component={Setting} />}
             {isLoggedIn && (
-              <Route exact path={"/setting"} component={Setting} />
-            )}
-            {isLoggedIn && (
-              <Route exact path={"/payment-method"} component={PaymentMethod} />
+              <Route exact path="/payment-method" component={PaymentMethod} />
             )}
             {isLoggedIn && (
               <Route
                 exact
-                path={"/delivery-address"}
+                path="/delivery-address"
                 component={DeliveryAddress}
               />
             )}
             {isLoggedIn && (
-              <Route exact path={"/referral"} component={Referral} />
+              <Route exact path="/referral" component={Referral} />
             )}
             {isLoggedIn && (
-              <Route exact path={"/edit-profile"} component={EditProfile} />
+              <Route exact path="/edit-profile" component={EditProfile} />
             )}
             {isLoggedIn && (
-              <Route exact path={"/myVoucher"} component={SelectVoucher} />
+              <Route exact path="/myVoucher" component={SelectVoucher} />
             )}
             {isLoggedIn && (
-              <Route exact path={"/scanTable"} component={ScanTable} />
+              <Route exact path="/scanTable" component={ScanTable} />
             )}
             {isLoggedIn && (
-              <Route exact path={"/settleSuccess"} component={SettleSuccess} />
+              <Route exact path="/settleSuccess" component={SettleSuccess} />
             )}
             {isLoggedIn && (
-              <Route exact path={"/history/detail"} component={PendingDetail} />
+              <Route exact path="/history/detail" component={PendingDetail} />
             )}
             {isLoggedIn && (
-              <Route
-                exact
-                path={"/paid-membership"}
-                component={ListMembership}
-              />
+              <Route exact path="/paid-membership" component={ListMembership} />
             )}
             {isLoggedIn && (
               <Route
                 exact
-                path={"/detail-membership"}
+                path="/detail-membership"
                 component={DetailMembership}
               />
             )}
-            <Route exact path={"/history"} component={History} />
-            <Route exact path={"/category"} component={Categories} />
-            <Route exact path={"/category/:childId"} component={Categories} />
+            <Route exact path="/history" component={History} />
+            <Route exact path="/category" component={Categories} />
+            <Route exact path="/category/:childId" component={Categories} />
             <Route
               exact
-              path={"/category/:categoryId/products"}
+              path="/category/:categoryId/products"
               component={Products}
             />
+            <Route exact path="/promotions" component={Promotions} />
             <Route
               exact
-              path={"/promotions"}
-              component={Promotions}
+              path="/promotions-detail/:id"
+              component={PromotionsDetail}
             />
-            <Route exact path={"/products"} component={ProductSearchResult} />
-            <Route exact path={"/search"} component={Search} />
-            <Route exact path={"/payment"} component={Payment} />
-            <Route exact path={"/map"} component={Map} />
-            <Route exact path={"/scan-barcode"} component={ScanBarcode} />
+            <Route exact path="/products" component={ProductSearchResult} />
+            <Route exact path="/search" component={Search} />
+            <Route exact path="/payment" component={Payment} />
+            <Route exact path="/map" component={Map} />
+            <Route exact path="/scan-barcode" component={ScanBarcode} />
             <Redirect from="*" to={!enableOrdering ? "/profile" : "/"} />
           </Switch>
           <div style={{ clear: "both" }}></div>
@@ -252,7 +252,7 @@ class Layout extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
     setting: state.order.setting,

@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Promotion from "../components/promotion";
+import Promotion from "../components/banner";
 import Ordering from "../components/ordering";
 import OrderingRetail from "../components/ordering/indexRetail";
 import OutletSelection from "./OutletSelection";
@@ -22,14 +23,14 @@ class Home extends Component {
     };
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     await this.props.dispatch(PromotionAction.fetchPromotion());
     await this.setState({ loading: true });
     await this.checkOfflineCart();
     await this.setState({ loading: false });
-  };
+  }
 
-  checkOfflineCart = async () => {
+  async checkOfflineCart() {
     try {
       let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
@@ -57,12 +58,14 @@ class Home extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
-  };
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   render() {
     const { isEmenu } = this.state;
-    const { defaultOutlet, orderingSetting } = this.props;
+    const { orderingSetting } = this.props;
 
     return (
       <div className="col-full">
@@ -94,7 +97,7 @@ class Home extends Component {
     );
   }
 }
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     setting: state.order,
     orderingSetting: state.order.orderingSetting,
