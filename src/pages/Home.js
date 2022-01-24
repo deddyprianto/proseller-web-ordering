@@ -13,7 +13,7 @@ import config from '../config';
 
 import { lsLoad } from '../helpers/localStorage';
 
-import ProductList from 'components/productList';
+import ProductList from '../components/ProductList/';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Home extends Component {
@@ -84,12 +84,14 @@ class Home extends Component {
               <OutletSelection />
             ) : (
               <main id='main' className='site-main'>
-                <Promotion />
                 {orderingSetting &&
                 orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE' ? (
                   <OrderingRetail history={this.props.history}></OrderingRetail>
                 ) : (
-                  <ProductList></ProductList>
+                  <>
+                    <Promotion />
+                    <ProductList />
+                  </>
                 )}
               </main>
             )}

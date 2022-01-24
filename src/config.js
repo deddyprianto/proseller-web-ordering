@@ -1,26 +1,26 @@
-import logo from "./assets/images/logo_placeholder.png";
-import emptyImage from "./assets/images/empty.png";
-import loginImage from "./assets/images/login.svg";
+import logo from './assets/images/logo_placeholder.png';
+import emptyImage from './assets/images/empty.png';
+import loginImage from './assets/images/login.svg';
 
 let config = {};
-let stage = "demo";
-let companyHost = "tomahawkking";
+let stage = 'demo';
+let companyHost = 'tomahawkking';
 let endPoint = `https://${companyHost}${
-  stage !== "" ? "-" + stage : ""
+  stage !== '' ? '-' + stage : ''
 }.proseller.io`;
 // let endPoint = `https://${companyHost}.proseller-${stage}.com`;
 
-let storedDomainName = "";
+let storedDomainName = '';
 try {
   storedDomainName = localStorage.getItem(`apiDomainName`);
 } catch (error) {
   console.log(error);
-  storedDomainName = "";
+  storedDomainName = '';
 }
 
-config.remoteDomainName = storedDomainName || "";
+config.remoteDomainName = storedDomainName || '';
 
-if (process.env.REACT_APP_STAGE === "local") {
+if (process.env.REACT_APP_STAGE === 'local') {
   config = {
     url_masterdata: `https://${config.remoteDomainName}/masterdata/api/`,
     url_crm: `https://${config.remoteDomainName}/crm/api/`,
@@ -29,9 +29,9 @@ if (process.env.REACT_APP_STAGE === "local") {
     url_product: `https://${config.remoteDomainName}/product/api/`,
   };
 } else if (
-  process.env.REACT_APP_STAGE === "dev" ||
-  process.env.REACT_APP_STAGE === "demo" ||
-  process.env.REACT_APP_STAGE === "prod"
+  process.env.REACT_APP_STAGE === 'dev' ||
+  process.env.REACT_APP_STAGE === 'demo' ||
+  process.env.REACT_APP_STAGE === 'prod'
 ) {
   config = {
     url_masterdata: `https://${config.remoteDomainName}/masterdata/api/`,
@@ -50,15 +50,15 @@ if (process.env.REACT_APP_STAGE === "local") {
   };
 }
 
-if (process.env.REACT_APP_STAGE === "prod") {
+if (process.env.REACT_APP_STAGE === 'prod') {
   config.url_payment = `https://payment.proseller.io/api/`;
 } else if (
-  process.env.REACT_APP_STAGE === "local" ||
-  process.env.REACT_APP_STAGE === "dev" ||
-  process.env.REACT_APP_STAGE === "demo"
+  process.env.REACT_APP_STAGE === 'local' ||
+  process.env.REACT_APP_STAGE === 'dev' ||
+  process.env.REACT_APP_STAGE === 'demo'
 ) {
   config.url_payment = `https://payment${
-    stage !== "" ? "-" + stage : ""
+    stage !== '' ? '-' + stage : ''
   }.proseller.io/api/`;
   // config.url_payment = `https://payment.proseller-${stage}.com/api/`;
 } else {
@@ -69,10 +69,10 @@ config.url_logo = logo;
 config.url_emptyImage = emptyImage;
 config.url_loginImage = loginImage;
 config.image_placeholder =
-  "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg";
-config.prefix = window.location.hostname.includes("emenu")
-  ? "emenu"
-  : "webordering";
+  'https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com/Upload/f97b5652-2992-4b9e-a03e-7144a42aec81/logo/b61882f3-25b2-4855-960f-166e815eacc7.jpg';
+config.prefix = window.location.hostname.includes('emenu')
+  ? 'emenu'
+  : 'webordering';
 
 config.getValidation = function getValidation(defaultOutlet) {
   let orderValidation = {
@@ -101,9 +101,9 @@ config.getOperationalHours = function getOperationalHours(data) {
     var dd = date.getDate();
     var mm = date.getMonth() + 1;
     var yyyy = date.getFullYear();
-    let currentDate = mm + "/" + dd + "/" + yyyy;
+    let currentDate = mm + '/' + dd + '/' + yyyy;
     let day = date.getDay();
-    let time = date.getHours() + ":" + date.getMinutes();
+    let time = date.getHours() + ':' + date.getMinutes();
 
     let open;
     operationalHours
@@ -163,37 +163,39 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
   let defaultSetting = {
     theme: {
       color: {
-        secondary: "#C00A27",
-        primary: "#C00A27",
-        font: "#808080",
-        background: "#FFFFFF",
-        navigation: "#C00A27",
+        secondary: '#C00A27',
+        primary: '#C00A27',
+        font: '#808080',
+        background: '#FFFFFF',
+        navigation: '#C00A27',
       },
     },
     settings: [
-      { settingKey: "LoginByEmail", settingValue: true },
-      { settingKey: "LoginByMobile", settingValue: true },
-      { settingKey: "MobileOTP", settingValue: "SMS" },
-      { settingKey: "EnableRegisterWithPassword", settingValue: false },
-      { settingKey: "EnableOrdering", settingValue: true },
-      { settingKey: "Logo", settingValue: logo },
-      { settingKey: "PrimaryColor", settingValue: primary || "#C00A27" },
-      { settingKey: "SecondaryColor", settingValue: secondary || "#C00A27" },
-      { settingKey: "PointIcon", settingValue: "" },
+      { settingKey: 'LoginByEmail', settingValue: true },
+      { settingKey: 'LoginByMobile', settingValue: true },
+      { settingKey: 'MobileOTP', settingValue: 'SMS' },
+      { settingKey: 'EnableRegisterWithPassword', settingValue: false },
+      { settingKey: 'EnableOrdering', settingValue: true },
+      { settingKey: 'Logo', settingValue: logo },
+      { settingKey: 'PrimaryColor', settingValue: primary || '#C00A27' },
+      { settingKey: 'SecondaryColor', settingValue: secondary || '#C00A27' },
+      { settingKey: 'PointIcon', settingValue: '' },
       {
-        settingKey: "TimeAndDateOrder",
+        settingKey: 'TimeAndDateOrder',
         settingValue: {
-          deliveryTime: { start: "00:00", end: "23:00" },
-          storePickupTime: { start: "00:00", end: "23:00" },
+          deliveryTime: { start: '00:00', end: '23:00' },
+          storePickupTime: { start: '00:00', end: '23:00' },
         },
       },
-      { settingKey: "TimeAndDateOrderLength", settingValue: 60 },
-      { settingKey: "FontColor", settingValue: "#808080" },
-      { settingKey: "BackgroundColor", settingValue: "#FFFFFF" },
-      { settingKey: "NavigationColor", settingValue: primary || "#C00A27" },
-      { settingKey: "TextButtonColor", settingValue: "#FFF" },
-      { settingKey: "TextWarningColor", settingValue: "red" },
-      { settingKey: "CategoryHeaderType", settingValue: "CATEGORY_ONLY" },
+      { settingKey: 'TimeAndDateOrderLength', settingValue: 60 },
+      { settingKey: 'FontColor', settingValue: '#808080' },
+      { settingKey: 'BackgroundColor', settingValue: '#FFFFFF' },
+      { settingKey: 'NavigationColor', settingValue: primary || '#C00A27' },
+      { settingKey: 'TextButtonColor', settingValue: '#FFF' },
+      { settingKey: 'TextWarningColor', settingValue: 'red' },
+      { settingKey: 'ActiveNavigationColor', settingValue: 'red' },
+      { settingKey: 'InactiveNavigationColor', settingValue: '#388383' },
+      { settingKey: 'CategoryHeaderType', settingValue: 'CATEGORY_ONLY' },
     ],
   };
 
@@ -215,23 +217,23 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
 };
 
 config.checkNickName = function checkNickName(mode, storeDetail) {
-  if (mode === "TAKEAWAY") return isNotFalse(storeDetail.takeAwayName) || mode;
-  if (mode === "DINEIN") return isNotFalse(storeDetail.dineInName) || mode;
-  if (mode === "DELIVERY") return isNotFalse(storeDetail.deliveryName) || mode;
-  if (mode === "STOREPICKUP")
+  if (mode === 'TAKEAWAY') return isNotFalse(storeDetail.takeAwayName) || mode;
+  if (mode === 'DINEIN') return isNotFalse(storeDetail.dineInName) || mode;
+  if (mode === 'DELIVERY') return isNotFalse(storeDetail.deliveryName) || mode;
+  if (mode === 'STOREPICKUP')
     return isNotFalse(storeDetail.storePickUpName) || mode;
-  if (mode === "STORECHECKOUT")
+  if (mode === 'STORECHECKOUT')
     return isNotFalse(storeDetail.storeCheckOutName) || mode;
   return mode;
 };
 
 function isNotFalse(nickname) {
-  if (!nickname || (nickname && nickname === "")) nickname = false;
+  if (!nickname || (nickname && nickname === '')) nickname = false;
   return nickname;
 }
 
 config.getUrlMasterData = () => {
-  let storedDomainName = "";
+  let storedDomainName = '';
   try {
     storedDomainName = localStorage.getItem(`apiDomainName`);
   } catch (error) {
@@ -239,12 +241,12 @@ config.getUrlMasterData = () => {
     window.location.reload();
   }
 
-  const remoteDomainName = storedDomainName || "";
+  const remoteDomainName = storedDomainName || '';
   // console.log("masterdata remote domain name: ", remoteDomainName);
   return `https://${remoteDomainName}/masterdata/api/`;
 };
 config.getUrlCrm = () => {
-  let storedDomainName = "";
+  let storedDomainName = '';
   try {
     storedDomainName = localStorage.getItem(`apiDomainName`);
   } catch (error) {
@@ -252,12 +254,12 @@ config.getUrlCrm = () => {
     window.location.reload();
   }
 
-  const remoteDomainName = storedDomainName || "";
+  const remoteDomainName = storedDomainName || '';
   return `https://${remoteDomainName}/crm/api/`;
 };
 
 config.getUrlAppointment = () => {
-  let storedDomainName = "";
+  let storedDomainName = '';
   try {
     storedDomainName = localStorage.getItem(`apiDomainName`);
   } catch (error) {
@@ -265,11 +267,11 @@ config.getUrlAppointment = () => {
     window.location.reload();
   }
 
-  const remoteDomainName = storedDomainName || "";
+  const remoteDomainName = storedDomainName || '';
   return `https://${remoteDomainName}/appointment/api/`;
 };
 config.getUrlOrdering = () => {
-  let storedDomainName = "";
+  let storedDomainName = '';
   try {
     storedDomainName = localStorage.getItem(`apiDomainName`);
   } catch (error) {
@@ -277,11 +279,11 @@ config.getUrlOrdering = () => {
     window.location.reload();
   }
 
-  const remoteDomainName = storedDomainName || "";
+  const remoteDomainName = storedDomainName || '';
   return `https://${remoteDomainName}/ordering/api/`;
 };
 config.getUrlProduct = () => {
-  let storedDomainName = "";
+  let storedDomainName = '';
   try {
     storedDomainName = localStorage.getItem(`apiDomainName`);
   } catch (error) {
@@ -289,7 +291,7 @@ config.getUrlProduct = () => {
     window.location.reload();
   }
 
-  const remoteDomainName = storedDomainName || "";
+  const remoteDomainName = storedDomainName || '';
   return `https://${remoteDomainName}/product/api/`;
 };
 
