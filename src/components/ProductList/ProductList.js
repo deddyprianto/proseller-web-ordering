@@ -351,14 +351,16 @@ const ProductList = ({ ...props }) => {
       );
     }
 
-    return (
-      <div>
-        <img src={config.url_emptyImage} alt='is empty' />
-        <Typography style={styles.typography}>
-          Oppss.. Item Not Found.
-        </Typography>
-      </div>
-    );
+    if (!isEmptyArray(categories) && isLoading) {
+      return (
+        <div>
+          <img src={config.url_emptyImage} alt='is empty' />
+          <Typography style={styles.typography}>
+            Oppss.. Item Not Found.
+          </Typography>
+        </div>
+      );
+    }
   };
 
   return (
