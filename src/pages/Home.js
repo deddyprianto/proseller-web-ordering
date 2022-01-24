@@ -1,35 +1,38 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import Promotion from "../components/promotion";
-import Ordering from "../components/ordering";
-import OrderingRetail from "../components/ordering/indexRetail";
-import OutletSelection from "./OutletSelection";
-import { OrderAction } from "../redux/actions/OrderAction";
-import { PromotionAction } from "../redux/actions/PromotionAction";
-import LoadingAddCart from "../components/loading/LoadingAddCart";
-import { isEmptyArray, isEmptyObject } from "../helpers/CheckEmpty";
-import config from "../config";
+/* eslint-disable react/prop-types */
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Promotion from '../components/banner';
+import Ordering from '../components/ordering';
+import OrderingRetail from '../components/ordering/indexRetail';
+import OutletSelection from './OutletSelection';
+import { OrderAction } from '../redux/actions/OrderAction';
+import { PromotionAction } from '../redux/actions/PromotionAction';
+import LoadingAddCart from '../components/loading/LoadingAddCart';
+import { isEmptyArray, isEmptyObject } from '../helpers/CheckEmpty';
+import config from '../config';
 
-import { lsLoad } from "../helpers/localStorage";
+import { lsLoad } from '../helpers/localStorage';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import ProductList from 'components/productList';
+
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      isEmenu: window.location.hostname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
     };
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     await this.props.dispatch(PromotionAction.fetchPromotion());
     await this.setState({ loading: true });
     await this.checkOfflineCart();
     await this.setState({ loading: false });
-  };
+  }
 
-  checkOfflineCart = async () => {
+  async checkOfflineCart() {
     try {
       let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
@@ -57,34 +60,36 @@ class Home extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) {}
-  };
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   render() {
     const { isEmenu } = this.state;
-    const { defaultOutlet, orderingSetting } = this.props;
+    const { orderingSetting } = this.props;
 
     return (
-      <div className="col-full">
+      <div className='col-full'>
         <div
-          id="primary"
-          className="content-area"
+          id='primary'
+          className='content-area'
           style={{ paddingBottom: 100 }}
         >
           {this.state.loading ? <LoadingAddCart /> : null}
-          <div className="stretch-full-width">
-            {this.props.setting.outletSelection === "MANUAL" &&
+          <div className='stretch-full-width'>
+            {this.props.setting.outletSelection === 'MANUAL' &&
             !this.props.defaultOutlet.id &&
             !isEmenu ? (
               <OutletSelection />
             ) : (
-              <main id="main" className="site-main">
+              <main id='main' className='site-main'>
                 <Promotion />
                 {orderingSetting &&
-                orderingSetting.CategoryHeaderType === "WITH_CATEGORY_PAGE" ? (
+                orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE' ? (
                   <OrderingRetail history={this.props.history}></OrderingRetail>
                 ) : (
-                  <Ordering></Ordering>
+                  <ProductList></ProductList>
                 )}
               </main>
             )}
@@ -94,7 +99,7 @@ class Home extends Component {
     );
   }
 }
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     setting: state.order,
     orderingSetting: state.order.orderingSetting,
