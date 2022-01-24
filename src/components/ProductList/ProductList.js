@@ -138,7 +138,9 @@ const ProductList = ({ ...props }) => {
     }
 
     &.${tabUnstyledClasses.selected} {
-      background-color: #03aacf;
+      background-color: ${props?.theme?.color?.primary
+        ? props.theme.color.primary
+        : 'white'};
       color: #fff;
     }
   `;
@@ -351,7 +353,7 @@ const ProductList = ({ ...props }) => {
       );
     }
 
-    if (!isEmptyArray(categories) && isLoading) {
+    if (!isEmptyArray(categories) && !isLoading) {
       return (
         <div>
           <img src={config.url_emptyImage} alt='is empty' />
