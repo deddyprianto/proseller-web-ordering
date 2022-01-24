@@ -62,6 +62,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const ProductList = ({ ...props }) => {
+  console.log('martin', props.theme.color);
   const useStyles = makeStyles(() => ({
     appBar: {
       background: '#03aacf',
@@ -138,7 +139,9 @@ const ProductList = ({ ...props }) => {
     }
 
     &.${tabUnstyledClasses.selected} {
-      background-color: #03aacf;
+      background-color: ${props?.theme?.color?.primary
+        ? props.theme.color.primary
+        : 'white'};
       color: #fff;
     }
   `;
