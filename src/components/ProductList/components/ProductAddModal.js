@@ -60,6 +60,7 @@ const ProductAddModal = ({
     imageSize: {
       height: 340,
       width: 340,
+      minWidth: width > 600 && 340,
       borderRadius: 5,
     },
     productName: {
@@ -195,6 +196,16 @@ const ProductAddModal = ({
       fontWeight: 600,
     },
     displayFlex: { display: 'flex' },
+    buttonCloseGadgetSize: {
+      position: 'absolute',
+      top: '10px',
+      right: '2px',
+    },
+    imageAndButtonCloseGadgetSize: {
+      position: 'relative',
+      left: 0,
+      top: 0,
+    },
   };
 
   const [variantName, setVariantName] = useState('');
@@ -283,13 +294,12 @@ const ProductAddModal = ({
       return item.value;
     });
 
-    const productVariantLoop = product?.variants?.forEach((variant) => {
+    product?.variants?.forEach((variant) => {
       if (JSON.stringify(variant.attributes) === JSON.stringify(items)) {
         productVariant = variant;
       }
     });
 
-    productVariantLoop();
     setVariantImageURL(productVariant?.defaultImageURL);
     setVariantName(productVariantName.join(' '));
 
@@ -817,6 +827,24 @@ const ProductAddModal = ({
     }
   };
 
+  const renderCloseButtonGadgetSize = () => {
+    if (width < 600) {
+      return (
+        <div style={styles.buttonCloseGadgetSize}>
+          <IconButton
+            style={styles.buttonIcon}
+            onClick={() => {
+              handleClear();
+              handleClose();
+            }}
+          >
+            <CloseIcon style={styles.icon} />
+          </IconButton>
+        </div>
+      );
+    }
+  };
+
   return (
     <div>
       <Dialog
@@ -832,12 +860,16 @@ const ProductAddModal = ({
         <DialogContent>
           <div>
             <div style={styles.header}>
-              <img
-                style={styles.imageSize}
-                src={renderImageProduct()}
-                alt={product.name}
-                title={product.name}
-              />
+              <div style={styles.imageAndButtonCloseGadgetSize}>
+                <img
+                  style={styles.imageSize}
+                  src={renderImageProduct()}
+                  alt={product.name}
+                  title={product.name}
+                />
+
+                {renderCloseButtonGadgetSize()}
+              </div>
 
               <div style={styles.fullWidth}>
                 <Typography style={styles.productName}>
@@ -847,6 +879,7 @@ const ProductAddModal = ({
                   {product.description}
                 </Typography>
               </div>
+
               {renderCloseButton()}
             </div>
 
@@ -902,7 +935,7 @@ ProductAddModal.defaultProps = {
   color: {},
   basket: {},
   productConfig: {},
-  dispatch: {},
+  dispatch: null,
   width: 600,
   selectedProductBasketUpdate: {},
 };
@@ -912,7 +945,7 @@ ProductAddModal.propTypes = {
   color: PropTypes.object,
   companyInfo: PropTypes.object,
   defaultOutlet: PropTypes.object,
-  dispatch: PropTypes.object,
+  dispatch: PropTypes.func,
   handleClose: PropTypes.func,
   open: PropTypes.bool,
   product: PropTypes.object,
