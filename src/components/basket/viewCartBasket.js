@@ -33,7 +33,7 @@ const ViewCartBasket = ({
   dataBasket,
   updateCartInfo,
 }) => {
-  console.log('outlet', outlet)
+  console.log("outlet", outlet);
   // if (!basket.details && data.dataBasket) basket = data.dataBasket;
   // if (data.dataBasket && data.dataBasket.details) basket = data.dataBasket;
   if (dataBasket && dataBasket.details) {
