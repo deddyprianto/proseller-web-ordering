@@ -62,7 +62,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const ProductList = ({ ...props }) => {
-  console.log('martin', props.theme.color);
   const useStyles = makeStyles(() => ({
     appBar: {
       background: '#03aacf',
