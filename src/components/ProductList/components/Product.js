@@ -1,13 +1,22 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { isEmptyObject } from 'jquery';
+import filter from 'lodash/filter';
+import indexOf from 'lodash/indexOf';
+
 import config from 'config';
+
 import { makeStyles } from '@material-ui/styles';
 import Box from '@mui/material/Box';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+
+import { isEmptyArray } from 'helpers/CheckEmpty';
+
+import ProductAddModal from './ProductAddModal';
+import ProductUpdateModal from './ProductUpdateModal';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -26,7 +35,6 @@ const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
     color: state.theme.color,
-    defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
   };
 };
@@ -42,7 +50,7 @@ const Product = ({ item, ...props }) => {
     image: {
       display: 'flex',
       justifyContent: 'center',
-      maxWidth: 180,
+      width: 180,
       height: 'auto',
       alignItems: 'center',
       padding: 0,
@@ -51,17 +59,16 @@ const Product = ({ item, ...props }) => {
     imageSize: {
       height: 600 > width ? 75 : 180,
       width: 600 > width ? 75 : 180,
+      minWidth: 600 > width ? 75 : 180,
       borderRadius: 5,
     },
     typographyProductGroup: {
       fontSize: 16,
-      marginTop: 10,
       color: props.color.primary,
       lineHeight: '17px',
       fontWeight: 600,
     },
     typography: {
-      marginTop: 10,
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
@@ -74,7 +81,6 @@ const Product = ({ item, ...props }) => {
       fontWeight: 600,
     },
     quantity: {
-      marginTop: 10,
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
@@ -87,9 +93,10 @@ const Product = ({ item, ...props }) => {
       cursor: 'pointer',
     },
     description: {
-      maxHeight: 80,
+      maxHeight: 70,
       whiteSpace: 'pre-line',
       fontSize: 10,
+      marginBottom: 0,
     },
     button: {
       float: 'left',
@@ -120,6 +127,8 @@ const Product = ({ item, ...props }) => {
       flexDirection: 'column',
       justifyContent: 'space-between',
       height: 'auto',
+      maxHeight: 180,
+      width: '100%',
     },
     bold: {
       fontWeight: 600,
@@ -136,10 +145,84 @@ const Product = ({ item, ...props }) => {
   });
   const classes = useStyles();
 
+  const [totalQty, setTotalQty] = useState(0);
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
+
+  const handleProductItemIds = (item) => {
+    let items = [];
+    if (item?.product) {
+      if (!isEmptyArray(item?.product?.variants || [])) {
+        item.product.variants.forEach((variant) => {
+          items.push(variant.id);
+        });
+      }
+      items.push(item.product.id);
+    }
+    return items;
+  };
+
+  const handleProductItemsInBasket = ({ basketDetails, item }) => {
+    const productItemIds = handleProductItemIds(item);
+    if (!isEmptyArray(productItemIds)) {
+      const result = filter(
+        basketDetails,
+        (basketDetail) =>
+          indexOf(productItemIds, basketDetail.product.id) !== -1
+      );
+      return result;
+    }
+    return [];
+  };
+
+  const handleQuantityProduct = () => {
+    let totalQty = 0;
+    const productItemInBasket = handleProductItemsInBasket({
+      basketDetails: props.basket.details,
+      item,
+    });
+
+    productItemInBasket.forEach((item) => {
+      totalQty = totalQty + item.quantity;
+    });
+
+    return totalQty;
+  };
+
+  useEffect(() => {
+    const totalQtyProductInBasket = handleQuantityProduct();
+    setTotalQty(totalQtyProductInBasket);
+  }, [item, props.basket]);
+
+  const handleOpenAddModal = () => {
+    setIsOpenAddModal(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsOpenAddModal(false);
+  };
+
+  const handleOpenUpdateModal = () => {
+    setIsOpenUpdateModal(true);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsOpenUpdateModal(false);
+  };
+
+  const handleCurrency = (price) => {
+    const result = price.toLocaleString(props.companyInfo.currency.locale, {
+      style: 'currency',
+      currency: props.companyInfo.currency.code,
+    });
+
+    return result;
+  };
+
   const renderImageProduct = (item) => {
     const productConfig = props.productConfig;
     if (item?.product?.defaultImageURL) {
-      return item?.product.defaultImageURL;
+      return item.product.defaultImageURL;
     } else {
       if (item?.defaultImageURL) {
         return item?.defaultImageURL;
@@ -151,47 +234,7 @@ const Product = ({ item, ...props }) => {
     }
   };
 
-  const getCurrency = (price) => {
-    if (props.companyInfo) {
-      const { currency } = props.companyInfo;
-
-      if (!price || price === '-') {
-        price = 0;
-      }
-
-      const result = price.toLocaleString(currency.locale, {
-        style: 'currency',
-        currency: currency.code,
-      });
-      return result;
-    }
-  };
-
-  const getQuantityProduct = () => {
-    const { basket, defaultOutlet, item } = props;
-
-    try {
-      if (!isEmptyObject(basket)) {
-        const products = basket.details.filter(
-          (data) =>
-            data.product.id.includes(item.product.id) &&
-            defaultOutlet.sortKey === basket.outletID
-        );
-        if (products.length > 0) {
-          const total = products.reduce((acc, product) => {
-            return { quantity: acc.quantity + product.quantity };
-          });
-          return `${total.quantity}x`;
-        } else return false;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
-  };
-
-  const renderPrice = () => {
+  const renderPriceAndButton = () => {
     if (item?.product?.orderingStatus === 'UNAVAILABLE') {
       return (
         <Typography className={classes.textUnavailable}>UNAVAILABLE</Typography>
@@ -206,13 +249,15 @@ const Product = ({ item, ...props }) => {
         }}
       >
         <Typography className={classes.price}>
-          {getCurrency(item?.product.retailPrice)}
+          {handleCurrency(item?.product?.retailPrice)}
         </Typography>
         <Button
           className={classes.button}
           startIcon={<CheckCircleOutlineIcon className={classes.icon} />}
         >
-          <Typography className={classes.textButton}>Update</Typography>
+          <Typography className={classes.textButton}>
+            {totalQty ? 'update' : 'Add'}
+          </Typography>
         </Button>
       </div>
     );
@@ -229,7 +274,7 @@ const Product = ({ item, ...props }) => {
             title={item.name}
           />
         </div>
-        <div>
+        <div className={classes.itemBody}>
           <Typography className={classes.typographyProductGroup}>
             {item?.name}
           </Typography>
@@ -239,51 +284,82 @@ const Product = ({ item, ...props }) => {
   };
 
   const renderQuantityProduct = () => {
-    const qty = getQuantityProduct();
-    if (qty) {
-      return <Typography className={classes.quantity}>{qty}</Typography>;
+    if (totalQty) {
+      return <Typography className={classes.quantity}>{totalQty}x</Typography>;
     }
     return;
   };
 
-  if (!item?.product && item?.itemType === 'PRODUCT') {
-    return null;
-  }
-
   return (
-    <Box
-      sx={{
-        border: '1px solid rgba(128, 128, 128, 0.5)',
-        boxShadow: 'rgb(128 128 128 / 50%) 0px 0px 5px',
-      }}
-    >
-      {item?.itemType === 'GROUP' || item?.itemType === 'CATEGORY' ? (
-        renderGroupProducts()
-      ) : (
-        <div className={classes.item}>
-          <div className={classes.image}>
-            <img
-              className={classes.imageSize}
-              src={renderImageProduct(item)}
-              alt={item?.product.name}
-              title={item?.product.name}
-            />
-          </div>
-          <div className={classes.itemBody}>
-            <div className={classes.name}>
-              {renderQuantityProduct()}
-              <Typography className={classes.typography}>
-                {item?.product.name}
-              </Typography>
-            </div>
-            <Typography className={classes.description}>
-              {item?.product?.description}
-            </Typography>
-            {renderPrice()}
-          </div>
-        </div>
+    <div>
+      {isOpenAddModal && (
+        <ProductAddModal
+          open={isOpenAddModal}
+          width={width}
+          handleClose={handleCloseAddModal}
+          product={item.product}
+        />
       )}
-    </Box>
+
+      {isOpenUpdateModal && (
+        <ProductUpdateModal
+          open={isOpenUpdateModal}
+          width={width}
+          handleClose={handleCloseUpdateModal}
+          product={item.product}
+        />
+      )}
+
+      <Box
+        sx={{
+          boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+          border: '1px solid rgba(128, 128, 128, 0.5)',
+        }}
+      >
+        {item?.itemType === 'GROUP' || item?.itemType === 'CATEGORY' ? (
+          renderGroupProducts()
+        ) : (
+          <div
+            className={classes.item}
+            onClick={() => {
+              if (totalQty) {
+                handleOpenUpdateModal();
+              } else {
+                handleOpenAddModal();
+              }
+            }}
+          >
+            <div className={classes.image}>
+              <img
+                className={classes.imageSize}
+                src={renderImageProduct(item)}
+                alt={item?.product.name || ''}
+                title={item?.product.name}
+              />
+            </div>
+            <div className={classes.itemBody}>
+              <div>
+                <div className={classes.name}>
+                  {renderQuantityProduct()}
+                  <Typography className={classes.typography}>
+                    {item?.product.name}
+                  </Typography>
+                </div>
+                <Typography
+                  paragraph
+                  noWrap
+                  gutterBottom={false}
+                  className={classes.description}
+                >
+                  {item?.product?.description}
+                </Typography>
+              </div>
+              {renderPriceAndButton()}
+            </div>
+          </div>
+        )}
+      </Box>
+    </div>
   );
 };
 
@@ -291,10 +367,8 @@ Product.defaultProps = {
   basket: {},
   color: '',
   dispatch: null,
-  defaultOutlet: {},
-  orderingMode: '',
-  companyInfo: {},
   productConfig: {},
+  companyInfo: {},
   item: {},
 };
 
@@ -302,10 +376,8 @@ Product.propTypes = {
   basket: PropTypes.object,
   color: PropTypes.string,
   companyInfo: PropTypes.object,
-  defaultOutlet: PropTypes.object,
   dispatch: PropTypes.func,
   item: PropTypes.object,
-  orderingMode: PropTypes.string,
   productConfig: PropTypes.object,
 };
 
