@@ -67,10 +67,10 @@ const Banner = () => {
       navigation
     >
       {banners.map((item, index) => {
-        if (item.promotionId) {
-          const promotionId = item.promotionId.split(':')[2];
-          return (
-            <SwiperSlide key={index}>
+        const promotionId = item.promotionId.split(':')[2];
+        return (
+          <SwiperSlide key={index}>
+            {promotionId ? (
               <Link
                 component={LinkRouter}
                 to={`/promotions-detail/${promotionId}`}
@@ -78,9 +78,11 @@ const Banner = () => {
               >
                 <img src={item.defaultImageURL} alt={item.name} width='100%' />
               </Link>
-            </SwiperSlide>
-          );
-        }
+            ) : (
+              <img src={item.defaultImageURL} alt={item.name} width='100%' />
+            )}
+          </SwiperSlide>
+        );
       })}
     </Swiper>
   );
