@@ -9,11 +9,11 @@ import { OrderAction } from '../redux/actions/OrderAction';
 import { PromotionAction } from '../redux/actions/PromotionAction';
 import LoadingAddCart from '../components/loading/LoadingAddCart';
 import { isEmptyArray, isEmptyObject } from '../helpers/CheckEmpty';
-import config from '../config';
+import config from 'config';
 
 import { lsLoad } from '../helpers/localStorage';
 
-import ProductList from '../components/ProductList/';
+import ProductList from 'components/productList';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Home extends Component {

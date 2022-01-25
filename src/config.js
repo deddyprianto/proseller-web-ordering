@@ -242,7 +242,6 @@ config.getUrlMasterData = () => {
   }
 
   const remoteDomainName = storedDomainName || '';
-  // console.log("masterdata remote domain name: ", remoteDomainName);
   return `https://${remoteDomainName}/masterdata/api/`;
 };
 config.getUrlCrm = () => {

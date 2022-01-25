@@ -44,7 +44,6 @@ const FooterWebOrdering = () => {
       '& .MuiBottomNavigationAction-label': {
         fontSize: '1.5rem',
         fontWeight: 700,
-        // color: allState.theme.color.inactiveNavigationColor,
       },
     },
   };
