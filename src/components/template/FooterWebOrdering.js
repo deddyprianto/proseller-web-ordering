@@ -20,6 +20,34 @@ import { useSelector } from 'react-redux';
 const FooterWebOrdering = () => {
   const allState = useSelector((state) => state);
 
+  const style = {
+    paper: {
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '4.6em',
+      zIndex: 10,
+      backgroundColor: allState.theme.color.navigation,
+    },
+    bottomNav: {
+      marginY: '1.2rem',
+      backgroundColor: allState.theme.color.navigation,
+      '& .Mui-selected': {
+        color: allState.theme.color.activeNavigationColor,
+        fontWeight: 700,
+      },
+      '& .MuiBottomNavigationAction-root': {
+        fontSize: '2.3rem',
+        color: allState.theme.color.inactiveNavigationColor,
+      },
+      '& .MuiBottomNavigationAction-label': {
+        fontSize: '1.5rem',
+        fontWeight: 700,
+      },
+    },
+  };
+
   const [value, setValue] = useState(0);
 
   const [enableOrdering, setEnableOrdering] = useState(true);
@@ -58,36 +86,14 @@ const FooterWebOrdering = () => {
 
   if (matches) {
     return (
-      <Paper
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: '4.6em',
-          zIndex: 10,
-          backgroundColor: allState.theme.color.secondary,
-        }}
-        elevation={5}
-      >
+      <Paper sx={style.paper} elevation={5}>
         <BottomNavigation
           showLabels
           value={value}
           onChange={(event, newValue) => {
             setValue(newValue);
           }}
-          sx={{
-            marginY: '1.2rem',
-            backgroundColor: allState.theme.color.secondary,
-            '& .Mui-selected': {
-              color: allState.theme.color.textButtonColor,
-              fontSize: '1.2rem',
-              fontWeight: 600,
-            },
-            '& .MuiBottomNavigationAction-label': {
-              fontSize: '1.2rem',
-            },
-          }}
+          sx={style.bottomNav}
         >
           {allState.theme.menu.navBar.map((menu, index) => {
             if (!enableOrdering && menu.showWhenOrderingEnabled) {
@@ -102,16 +108,9 @@ const FooterWebOrdering = () => {
                   key={index}
                   tabIndex={index}
                   label='Login'
-                  //use this data toggle for temporary until the login page with modal
                   data-toggle='modal'
                   data-target='#login-register-modal'
-                  icon={
-                    <FontAwesomeIcon
-                      icon={faSignInAlt}
-                      color={allState.theme.color.textButtonColor}
-                      size='md'
-                    />
-                  }
+                  icon={<FontAwesomeIcon icon={faSignInAlt} />}
                 />
               );
             }
@@ -126,8 +125,11 @@ const FooterWebOrdering = () => {
                 icon={
                   <FontAwesomeIcon
                     icon={iconCheck(menu.icon)}
-                    color={allState.theme.color.textButtonColor}
-                    size='md'
+                    color={
+                      value === index
+                        ? allState.theme.color.activeNavigationColor
+                        : allState.theme.color.inactiveNavigationColor
+                    }
                   />
                 }
               />

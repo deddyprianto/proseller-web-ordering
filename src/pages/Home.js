@@ -9,7 +9,7 @@ import { OrderAction } from '../redux/actions/OrderAction';
 import { PromotionAction } from '../redux/actions/PromotionAction';
 import LoadingAddCart from '../components/loading/LoadingAddCart';
 import { isEmptyArray, isEmptyObject } from '../helpers/CheckEmpty';
-import config from '../config';
+import config from 'config';
 
 import { lsLoad } from '../helpers/localStorage';
 
@@ -84,12 +84,14 @@ class Home extends Component {
               <OutletSelection />
             ) : (
               <main id='main' className='site-main'>
-                <Promotion />
                 {orderingSetting &&
                 orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE' ? (
                   <OrderingRetail history={this.props.history}></OrderingRetail>
                 ) : (
-                  <ProductList></ProductList>
+                  <>
+                    <Promotion />
+                    <ProductList />
+                  </>
                 )}
               </main>
             )}

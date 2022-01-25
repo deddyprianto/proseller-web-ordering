@@ -57,10 +57,10 @@ if (process.env.REACT_APP_STAGE === 'prod') {
   process.env.REACT_APP_STAGE === 'dev' ||
   process.env.REACT_APP_STAGE === 'demo'
 ) {
-  // config.url_payment = `https://payment${
-  //   stage !== "" ? "-" + stage : ""
-  // }.proseller.io/api/`;
-  config.url_payment = `https://payment.proseller-${stage}.com/api/`;
+  config.url_payment = `https://payment${
+    stage !== '' ? '-' + stage : ''
+  }.proseller.io/api/`;
+  // config.url_payment = `https://payment.proseller-${stage}.com/api/`;
 } else {
   config.url_payment = process.env.REACT_APP_URLPAYMENT;
 }
@@ -193,6 +193,8 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       { settingKey: 'NavigationColor', settingValue: primary || '#C00A27' },
       { settingKey: 'TextButtonColor', settingValue: '#FFF' },
       { settingKey: 'TextWarningColor', settingValue: 'red' },
+      { settingKey: 'ActiveNavigationColor', settingValue: 'red' },
+      { settingKey: 'InactiveNavigationColor', settingValue: '#388383' },
       { settingKey: 'CategoryHeaderType', settingValue: 'CATEGORY_ONLY' },
     ],
   };

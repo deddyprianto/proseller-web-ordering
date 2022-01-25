@@ -131,6 +131,16 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === 'ProductPlaceholder';
         });
+      let ActiveNavigationColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'ActiveNavigationColor';
+        });
+      let InactiveNavigationColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'InactiveNavigationColor';
+        });
 
       if (outletSelection === undefined) {
         outletSelection = 'DEFAULT';
@@ -153,6 +163,9 @@ function getSettingOrdering() {
         textButtonColor: textButtonColor.settingValue || '#FFFFFF',
         textWarningColor: textWarningColor.settingValue || 'red',
         productPlaceholder: ProductPlaceholder || null,
+        activeNavigationColor: ActiveNavigationColor.settingValue || '#FA8072',
+        inactiveNavigationColor:
+          InactiveNavigationColor.settingValue || '#FFFAFA',
       };
       dispatch({ type: 'SET_THEME', payload });
       dispatch({

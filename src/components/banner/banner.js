@@ -31,6 +31,8 @@ const Banner = () => {
         'promobanners/load'
       );
       if (result) {
+        //TODO: delete this console
+        console.log(result, 'delete this console after QA');
         setBanners(result.data);
       }
     };
