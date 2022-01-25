@@ -48,7 +48,7 @@ const Banner = () => {
         '--swiper-navigation-color': '#DCDCDC	',
         '--swiper-pagination-color': '#DCDCDC	',
         '--swiper-pagination-bullet-vertical-gap': '2em',
-        marginTop: '5.5em',
+        marginTop: '7em',
         paddingTop: '1rem',
         paddingBottom: '1rem',
         display: 'flex',
@@ -67,7 +67,12 @@ const Banner = () => {
       navigation
     >
       {banners.map((item, index) => {
-        const promotionId = item.promotionId.split(':')[2];
+        let promotionId = '';
+
+        if (item?.promotionId) {
+          promotionId = item?.promotionId?.split(':')[2];
+        }
+
         return (
           <SwiperSlide key={index}>
             {promotionId ? (
