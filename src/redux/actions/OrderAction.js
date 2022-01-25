@@ -267,6 +267,7 @@ function processAddCart(defaultOutlet, selectedItem) {
 function processUpdateCart(basket, products, key) {
   return async (dispatch) => {
     let payload = [];
+
     if (key !== 'new') {
       for (let index = 0; index < products.length; index++) {
         let product = products[index];
@@ -499,7 +500,7 @@ function updateCart(payload) {
 
     if (window.location.hash === '#/basket') {
       await localStorage.removeItem(`${config.prefix}_dataBasket`);
-      window.location.reload();
+      // window.location.reload();
     }
     return dispatch(getCart());
   };
