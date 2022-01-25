@@ -210,7 +210,6 @@ const ProductList = ({ ...props }) => {
         setOutlet(defaultOutlet);
         setCategories(categories);
         setSelectedCategory(categories[0]);
-        setIsLoading(false);
       };
       loadData();
     } catch (e) {
