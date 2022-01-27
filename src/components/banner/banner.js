@@ -48,7 +48,7 @@ const Banner = () => {
         '--swiper-navigation-color': '#DCDCDC	',
         '--swiper-pagination-color': '#DCDCDC	',
         '--swiper-pagination-bullet-vertical-gap': '2em',
-        marginTop: '7em',
+        marginTop: '6em',
         paddingTop: '1rem',
         paddingBottom: '1rem',
         display: 'flex',
