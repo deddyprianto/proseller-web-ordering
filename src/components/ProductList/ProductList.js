@@ -1,10 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
-
-import LoadingOverlay from 'react-loading-overlay';
 
 import { styled } from '@mui/system';
 
@@ -33,6 +30,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
+import Loading from 'components/loading/Loading';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -49,7 +47,7 @@ const useWindowSize = () => {
 
 const mapStateToProps = (state) => {
   return {
-    theme: state.theme,
+    color: state.theme.color,
     defaultOutlet: state.outlet.defaultOutlet,
     products: state.product.products,
     orderingMode: state.order.orderingMode,
@@ -67,7 +65,7 @@ const ProductList = ({ ...props }) => {
       background: '#03aacf',
     },
     tabMore: {
-      color: props?.theme?.color?.primary,
+      color: props?.color?.primary,
       backgroundColor: '#D0D0D0',
     },
     tabLabel: {
@@ -77,7 +75,7 @@ const ProductList = ({ ...props }) => {
     itemMoreHover: {
       '&:hover': {
         color: '#fff',
-        backgroundColor: props?.theme?.color?.primary,
+        backgroundColor: props?.color?.primary,
       },
     },
     itemMore: {
@@ -89,7 +87,7 @@ const ProductList = ({ ...props }) => {
 
   const styles = {
     tabMore: {
-      color: props?.theme?.color?.primary,
+      color: props?.color?.primary,
       backgroundColor: '#D0D0D0',
     },
     paper: {
@@ -124,22 +122,22 @@ const ProductList = ({ ...props }) => {
     align-items: center;
 
     &:hover {
-      background-color: ${props?.theme?.color?.primary
-        ? props.theme.color.primary
+      background-color: ${props?.color?.primary
+        ? props.color.primary
         : 'white'};
     }
 
     &.${buttonUnstyledClasses.active} {
       color: #fff;
       outline: none;
-      background-color: ${props?.theme?.color?.primary
-        ? props.theme.color.primary
+      background-color: ${props?.color?.primary
+        ? props.color.primary
         : 'white'};
     }
 
     &.${tabUnstyledClasses.selected} {
-      background-color: ${props?.theme?.color?.primary
-        ? props.theme.color.primary
+      background-color: ${props?.color?.primary
+        ? props.color.primary
         : 'white'};
       color: #fff;
     }
@@ -368,16 +366,12 @@ const ProductList = ({ ...props }) => {
     <TabsUnstyled value={`${selectedCategory.name}`}>
       {renderTabHeader()}
       {renderTabList()}
-
-      <LoadingOverlay active={isLoading} spinner text='Loading...'>
-        {renderProductList()}
-      </LoadingOverlay>
+      {isLoading ? <Loading loadingType='NestedList' /> : renderProductList()}
     </TabsUnstyled>
   );
 };
 
 ProductList.defaultProps = {
-  theme: {},
   color: '',
   dispatch: null,
   orderingMode: '',
@@ -388,10 +382,7 @@ ProductList.propTypes = {
   color: PropTypes.string,
   dispatch: PropTypes.func,
   orderingMode: PropTypes.string,
-  orderingSetting: PropTypes.objectOf(
-    PropTypes.shape({ ShowOrderingModeModalFirst: PropTypes.string })
-  ),
-  theme: PropTypes.object,
+  orderingSetting: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList);

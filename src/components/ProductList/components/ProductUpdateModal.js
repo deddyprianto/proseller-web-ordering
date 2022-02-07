@@ -343,7 +343,7 @@ const ProductUpdateModal = ({
           open={isOpenAddModal}
           width={width}
           handleClose={handleCloseAddModal}
-          selectedProductBasketUpdate={selectedProductBasketUpdate}
+          selectedProduct={selectedProductBasketUpdate}
           product={product}
         />
       )}

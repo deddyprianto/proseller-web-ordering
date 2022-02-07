@@ -22,6 +22,7 @@ export const OrderAction = {
   updateCart,
   processAddCart,
   processUpdateCart,
+  processRemoveCart,
   deleteCart,
   submitBasket,
   submitOrdering,
@@ -766,5 +767,27 @@ function setData(data, constant) {
   return {
     type: constant,
     data: data,
+  };
+}
+
+function processRemoveCart(basket, selectedProduct) {
+  return async (dispatch) => {
+    let payload = [];
+
+    basket.details.forEach((item) => {
+      if (item.id === selectedProduct.id) {
+        payload.push({ ...item, quantity: 0 });
+      } else {
+        payload.push(item);
+      }
+    });
+
+    let basketUpdate = {};
+    if (account) {
+      basketUpdate = await dispatch(updateCart(payload));
+    } else {
+      basketUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+    }
+    return basketUpdate;
   };
 }
