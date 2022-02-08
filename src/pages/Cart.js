@@ -8,8 +8,10 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import SendIcon from '@mui/icons-material/Send';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 import ProductCartList from '../components/productCartList';
 import { isEmptyArray } from 'helpers/CheckEmpty';
@@ -18,6 +20,7 @@ const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
     basket: state.order.basket,
+    defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
     isLoggedIn: state.auth.isLoggedIn,
   };
@@ -40,6 +43,10 @@ const Cart = ({ ...props }) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
   const styles = {
+    rootPaper: {
+      marginBottom: 10,
+      backgroundColor: props.color.background,
+    },
     rootEmptyCart: {
       paddingLeft: 10,
       paddingRight: 10,
@@ -106,6 +113,11 @@ const Cart = ({ ...props }) => {
       color: '#808080',
       fontSize: 16,
     },
+    totalDiscount: {
+      fontWeight: 'bold',
+      color: 'red',
+      fontSize: 16,
+    },
     inclusiveTax: {
       color: '#808080',
       fontSize: 12,
@@ -127,7 +139,7 @@ const Cart = ({ ...props }) => {
       textTransform: 'none',
       backgroundColor: props.color.primary,
     },
-    grandTotalGadgetSize: {
+    grandTotalGadgetScreen: {
       width: '100%',
       margin: 0,
       top: 'auto',
@@ -136,12 +148,30 @@ const Cart = ({ ...props }) => {
       left: 'auto',
       position: 'fixed',
       padding: 10,
+      backgroundColor: props.color.background,
+    },
+    grandTotalFullScreen: {
+      backgroundColor: props.color.background,
     },
     emptyText: {
       marginTop: 10,
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
+    },
+    rootMode: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: 10,
+      alignItems: 'center',
+      alignContent: 'center',
+    },
+    mode: {
+      borderRadius: 5,
+      width: '50%',
+      height: 35,
+      textTransform: 'none',
+      backgroundColor: props.color.primary,
     },
   };
 
@@ -158,21 +188,96 @@ const Cart = ({ ...props }) => {
     }
   };
 
+  const renderPickupDateTime = () => {
+    return (
+      <Paper variant='outlined' style={styles.rootPaper}>
+        <div style={styles.rootMode}>
+          <Typography style={styles.subTotal}>Pickup Date & Time</Typography>
+          <Button
+            style={styles.mode}
+            startIcon={<AccessTimeIcon style={styles.icon} />}
+            variant='outlined'
+            // TODO; Tunggu Roy
+            // onClick={handleConfirmAndPay}
+          >
+            <Typography style={styles.typography}>Select Timeslot</Typography>
+          </Button>
+        </div>
+      </Paper>
+    );
+  };
+
+  const renderOrderingMode = () => {
+    return (
+      <Paper variant='outlined' style={styles.rootPaper}>
+        <div style={styles.rootMode}>
+          <Typography style={styles.subTotal}>Ordering Mode</Typography>
+          <Button
+            style={styles.mode}
+            startIcon={<SendIcon style={styles.icon} />}
+            variant='outlined'
+            // TODO; Tunggu Roy
+            // onClick={handleConfirmAndPay}
+          >
+            <Typography style={styles.typography}>Self Pickup</Typography>
+          </Button>
+        </div>
+      </Paper>
+    );
+  };
+
+  const renderDeliveryAdddress = () => {
+    return (
+      <Paper variant='outlined' style={styles.rootPaper}>
+        <div style={styles.rootMode}>
+          <Typography style={styles.subTotal}>Delivery Address</Typography>
+          <Button
+            style={styles.mode}
+            startIcon={<ContactMailIcon style={styles.icon} />}
+            variant='outlined'
+            // TODO; Tunggu Roy
+            // onClick={handleConfirmAndPay}
+          >
+            <Typography style={styles.typography}>Delivery Address</Typography>
+          </Button>
+        </div>
+      </Paper>
+    );
+  };
+
   const renderSubTotal = () => {
     return (
-      <Paper variant='outlined'>
+      <Paper variant='outlined' style={styles.rootPaper}>
         <div>
-          <div style={styles.rootSubTotal}>
-            <Typography style={styles.subTotal}>Subtotal</Typography>
-            <Typography style={styles.subTotal}>
-              {handleCurrency(props.basket?.totalAmountBeforeSurcharge)}
-            </Typography>
-          </div>
+          {props.basket?.totalDiscountAmount !== 0 && (
+            <div style={styles.rootSubTotal}>
+              <Typography style={styles.subTotal}>Subtotal b/f disc</Typography>
+              <Typography style={styles.subTotal}>
+                {handleCurrency(props.basket?.totalGrossAmount)}
+              </Typography>
+            </div>
+          )}
           {props.basket?.exclusiveTax !== 0 && (
             <div style={styles.rootExclusiveTax}>
               <Typography style={styles.subTotal}>Tax</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(props.basket.exclusiveTax)}
+              </Typography>
+            </div>
+          )}
+          {props.basket?.totalDiscountAmount !== 0 && (
+            <div style={styles.rootExclusiveTax}>
+              <Typography style={styles.totalDiscount}>Discount</Typography>
+              <Typography style={styles.totalDiscount}>
+                - {handleCurrency(props.basket.totalDiscountAmount)}
+              </Typography>
+            </div>
+          )}
+          {props.basket?.totalNettAmount !== 0 && (
+            <div style={styles.rootSubTotal}>
+              <Typography style={styles.subTotal}>Subtotal</Typography>
+              <Typography style={styles.subTotal}>
+                {handleCurrency(props.basket.totalNettAmount)}
               </Typography>
             </div>
           )}
@@ -185,30 +290,9 @@ const Cart = ({ ...props }) => {
     document.getElementById('login-register-btn').click();
   };
 
-  const renderButtonSubmit = () => {
-    if (!props.isLoggedIn) {
-      return (
-        <Button
-          style={styles.button}
-          startIcon={<CheckCircleIcon style={styles.icon} />}
-          variant='outlined'
-          onClick={handleLogin}
-        >
-          <Typography style={styles.typography}>Submit</Typography>
-        </Button>
-      );
-    }
-
-    return (
-      <Button
-        style={styles.button}
-        startIcon={<MonetizationOnIcon style={styles.icon} />}
-        variant='outlined'
-        // onClick={handleConfirmAndPay}
-      >
-        <Typography style={styles.typography}>Confirm & Pay</Typography>
-      </Button>
-    );
+  const handleConfirmAndPay = () => {
+    // TODO: tunggu roy
+    return;
   };
 
   const renderGrandTotal = () => {
@@ -217,7 +301,11 @@ const Cart = ({ ...props }) => {
         variant={gadgetScreen ? 'elevation' : 'outlined'}
         square={gadgetScreen}
         elevation={gadgetScreen ? 3 : 0}
-        style={gadgetScreen ? styles.grandTotalGadgetSize : {}}
+        style={
+          gadgetScreen
+            ? styles.grandTotalGadgetScreen
+            : styles.grandTotalFullScreen
+        }
       >
         <div style={styles.rootGrandTotal}>
           <Typography style={styles.grandTotal}>GRAND TOTAL</Typography>
@@ -236,7 +324,16 @@ const Cart = ({ ...props }) => {
           </div>
         )}
 
-        <div style={styles.rootSubmitButton}>{renderButtonSubmit()}</div>
+        <div style={styles.rootSubmitButton}>
+          <Button
+            style={styles.button}
+            startIcon={<MonetizationOnIcon style={styles.icon} />}
+            variant='outlined'
+            onClick={props.isLoggedIn ? handleConfirmAndPay() : handleLogin()}
+          >
+            <Typography style={styles.typography}>Confirm & Pay</Typography>
+          </Button>
+        </div>
       </Paper>
     );
   };
@@ -247,6 +344,9 @@ const Cart = ({ ...props }) => {
         <>
           <div style={styles.rootCartGadgetSize}>
             <ProductCartList />
+            {renderOrderingMode()}
+            {renderDeliveryAdddress()}
+            {renderPickupDateTime()}
             {renderSubTotal()}
           </div>
           {renderGrandTotal()}
@@ -259,6 +359,9 @@ const Cart = ({ ...props }) => {
           <ProductCartList />
         </div>
         <div style={styles.cartGridRight}>
+          {renderOrderingMode()}
+          {renderDeliveryAdddress()}
+          {renderPickupDateTime()}
           {renderSubTotal()}
           {renderGrandTotal()}
         </div>

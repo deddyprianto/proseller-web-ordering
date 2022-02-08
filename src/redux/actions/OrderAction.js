@@ -770,11 +770,11 @@ function setData(data, constant) {
   };
 }
 
-function processRemoveCart(basket, selectedProduct) {
+function processRemoveCart(cartItem, selectedProduct) {
   return async (dispatch) => {
     let payload = [];
 
-    basket.details.forEach((item) => {
+    cartItem.details.forEach((item) => {
       if (item.id === selectedProduct.id) {
         payload.push({ ...item, quantity: 0 });
       } else {
@@ -782,12 +782,12 @@ function processRemoveCart(basket, selectedProduct) {
       }
     });
 
-    let basketUpdate = {};
+    let cartItemUpdate = {};
     if (account) {
-      basketUpdate = await dispatch(updateCart(payload));
+      cartItemUpdate = await dispatch(updateCart(payload));
     } else {
-      basketUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+      cartItemUpdate = await dispatch(processOfflineCart(payload, 'Update'));
     }
-    return basketUpdate;
+    return cartItemUpdate;
   };
 }

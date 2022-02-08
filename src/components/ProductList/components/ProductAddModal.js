@@ -617,8 +617,6 @@ const ProductAddModal = ({
   };
 
   const renderImageProduct = () => {
-    const productConfig = props.productConfig;
-
     if (variantImageURL) {
       return variantImageURL;
     }
@@ -627,10 +625,9 @@ const ProductAddModal = ({
       return product.defaultImageURL;
     }
 
-    if (productConfig?.color?.productPlaceholder) {
-      return productConfig.color.productPlaceholder;
+    if (props?.color?.productPlaceholder) {
+      return props.color.productPlaceholder;
     }
-
     return config.image_placeholder;
   };
 
@@ -1028,7 +1025,6 @@ ProductAddModal.defaultProps = {
   defaultOutlet: {},
   color: {},
   basket: {},
-  productConfig: {},
   dispatch: null,
   width: 600,
   selectedProduct: {},
@@ -1043,7 +1039,6 @@ ProductAddModal.propTypes = {
   handleClose: PropTypes.func,
   open: PropTypes.bool,
   product: PropTypes.object,
-  productConfig: PropTypes.object,
   selectedProduct: PropTypes.object,
   width: PropTypes.number,
 };

@@ -82,14 +82,7 @@ const ProductRemoveCartModal = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => {
-        handleClose();
-      }}
-      fullWidth
-      maxWidth='xs'
-    >
+    <Dialog open={open} fullWidth maxWidth='xs'>
       <div style={styles.rootLoading}>
         {renderLoading()}
         <Typography align='center' style={styles.typography}>

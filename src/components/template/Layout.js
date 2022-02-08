@@ -156,6 +156,7 @@ class Layout extends Component {
             )}
             {enableOrdering && <Route exact path='/signIn' component={Home} />}
             {enableOrdering && <Route exact path='/cart' component={Cart} />}
+            {/* TODO: component basket will remove later */}
             {enableOrdering && (
               <Route exact path='/basket' component={Basket} />
             )}

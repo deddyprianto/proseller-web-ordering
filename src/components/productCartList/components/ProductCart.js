@@ -41,6 +41,20 @@ const mapDispatchToProps = (dispatch) => ({
 const ProductCart = ({ item, ...props }) => {
   const [width] = useWindowSize();
   const styles = {
+    textNote: {
+      paddingTop: 10,
+      fontSize: 12,
+    },
+    textPromotion: {
+      fontSize: 12,
+      color: props.color.primary,
+    },
+    rootProductCart: {
+      position: 'relative',
+    },
+    rootPrice: {
+      display: 'flex',
+    },
     buttonDelete: {
       display: 'flex',
       justifyContent: 'end',
@@ -95,12 +109,22 @@ const ProductCart = ({ item, ...props }) => {
       fontWeight: 600,
     },
     price: {
+      paddingRight: 10,
       paddingBottom: 6,
       marginTop: 10,
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
       color: props.color.primary,
+    },
+    priceDiscount: {
+      paddingBottom: 6,
+      marginTop: 10,
+      fontSize: 14,
+      lineHeight: '17px',
+      fontWeight: 600,
+      color: props.color.primary,
+      textDecorationLine: 'line-through',
     },
     quantity: {
       fontSize: 14,
@@ -205,8 +229,51 @@ const ProductCart = ({ item, ...props }) => {
     }
   };
 
+  const renderPromotion = () => {
+    if (!isEmptyArray(item.promotions)) {
+      const promotions = item.promotions.map((promotion, index) => {
+        return (
+          <Typography key={index} style={styles.textPromotion}>
+            - {promotion.name}
+          </Typography>
+        );
+      });
+      return promotions;
+    }
+  };
+
+  const renderNotes = () => {
+    if (item.remark) {
+      return (
+        <Typography style={styles.textNote}>Note: {item.remark}</Typography>
+      );
+    }
+  };
+
+  const renderPrice = () => {
+    if (!isEmptyArray(item.promotions)) {
+      return (
+        <div style={styles.rootPrice}>
+          <Typography style={styles.price}>
+            {handleCurrency(item?.nettAmount)}
+          </Typography>
+          <Typography style={styles.priceDiscount}>
+            {handleCurrency(item?.grossAmount)}
+          </Typography>
+        </div>
+      );
+    }
+    return (
+      <div style={styles.rootPrice}>
+        <Typography style={styles.price}>
+          {handleCurrency(item?.nettAmount)}
+        </Typography>
+      </div>
+    );
+  };
+
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={styles.rootProductCart}>
       {isOpenAddModal && (
         <ProductAddModal
           open={isOpenAddModal}
@@ -248,12 +315,10 @@ const ProductCart = ({ item, ...props }) => {
               {item?.product.name} ({handleCurrency(item.product.retailPrice)})
             </Typography>
           </div>
-
+          {renderPromotion()}
           {renderProductModifiers(item?.modifiers)}
-
-          <Typography style={styles.price}>
-            {handleCurrency(item?.nettAmount)}
-          </Typography>
+          {renderNotes()}
+          {renderPrice()}
         </div>
       </div>
       <IconButton
