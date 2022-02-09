@@ -16,13 +16,21 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ProductCartList from '../components/productCartList';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+
 const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
     basket: state.order.basket,
-    defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
     isLoggedIn: state.auth.isLoggedIn,
+
+    defaultOutlet: state.outlet.defaultOutlet,
+    deliveryAddress: state.order.deliveryAddress,
+    orderingMode: state.order.orderingMode,
+    orderActionDate: state.order.orderActionDate,
+    orderActionTime: state.order.orderActionTime,
+    orderActionTimeSlot: state.order.orderActionTimeSlot,
   };
 };
 
@@ -198,7 +206,6 @@ const Cart = ({ ...props }) => {
             startIcon={<AccessTimeIcon style={styles.icon} />}
             variant='outlined'
             // TODO; Tunggu Roy
-            // onClick={handleConfirmAndPay}
           >
             <Typography style={styles.typography}>Select Timeslot</Typography>
           </Button>
@@ -217,7 +224,6 @@ const Cart = ({ ...props }) => {
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
             // TODO; Tunggu Roy
-            // onClick={handleConfirmAndPay}
           >
             <Typography style={styles.typography}>Self Pickup</Typography>
           </Button>
@@ -226,7 +232,7 @@ const Cart = ({ ...props }) => {
     );
   };
 
-  const renderDeliveryAdddress = () => {
+  const renderDeliveryAddress = () => {
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
         <div style={styles.rootMode}>
@@ -236,7 +242,6 @@ const Cart = ({ ...props }) => {
             startIcon={<ContactMailIcon style={styles.icon} />}
             variant='outlined'
             // TODO; Tunggu Roy
-            // onClick={handleConfirmAndPay}
           >
             <Typography style={styles.typography}>Delivery Address</Typography>
           </Button>
@@ -291,8 +296,22 @@ const Cart = ({ ...props }) => {
   };
 
   const handleConfirmAndPay = () => {
-    // TODO: tunggu roy
-    return;
+    localStorage.setItem(
+      `${config.prefix}_dataSettle`,
+      JSON.stringify(
+        encryptor.encrypt({
+          dataBasket: props.basket,
+          deliveryAddress: props.deliveryAddress,
+          storeDetail: props.defaultOutlet,
+          pointsToRebateRatio: '0:0',
+          orderingMode: props.orderingMode,
+          orderActionDate: props.orderActionDate,
+          orderActionTime: props.orderActionTime,
+          orderActionTimeSlot: props.orderActionTimeSlot,
+        })
+      )
+    );
+    props.history.push('/payment');
   };
 
   const renderGrandTotal = () => {
@@ -329,7 +348,14 @@ const Cart = ({ ...props }) => {
             style={styles.button}
             startIcon={<MonetizationOnIcon style={styles.icon} />}
             variant='outlined'
-            onClick={props.isLoggedIn ? handleConfirmAndPay() : handleLogin()}
+            //TODO; handle disabled button
+            onClick={() => {
+              if (props.isLoggedIn) {
+                handleConfirmAndPay();
+              } else {
+                handleLogin();
+              }
+            }}
           >
             <Typography style={styles.typography}>Confirm & Pay</Typography>
           </Button>
@@ -345,7 +371,7 @@ const Cart = ({ ...props }) => {
           <div style={styles.rootCartGadgetSize}>
             <ProductCartList />
             {renderOrderingMode()}
-            {renderDeliveryAdddress()}
+            {renderDeliveryAddress()}
             {renderPickupDateTime()}
             {renderSubTotal()}
           </div>
@@ -360,7 +386,7 @@ const Cart = ({ ...props }) => {
         </div>
         <div style={styles.cartGridRight}>
           {renderOrderingMode()}
-          {renderDeliveryAdddress()}
+          {renderDeliveryAddress()}
           {renderPickupDateTime()}
           {renderSubTotal()}
           {renderGrandTotal()}
@@ -393,13 +419,27 @@ Cart.defaultProps = {
   color: {},
   companyInfo: {},
   isLoggedIn: false,
+  deliveryAddress: {},
+  defaultOutlet: {},
+  orderingMode: {},
+  orderActionDate: {},
+  orderActionTime: {},
+  orderActionTimeSlot: {},
+  history: null,
 };
 
 Cart.propTypes = {
   basket: PropTypes.object,
   color: PropTypes.object,
   companyInfo: PropTypes.object,
+  defaultOutlet: PropTypes.object,
+  deliveryAddress: PropTypes.object,
+  history: PropTypes.func,
   isLoggedIn: PropTypes.bool,
+  orderActionDate: PropTypes.object,
+  orderActionTime: PropTypes.object,
+  orderActionTimeSlot: PropTypes.object,
+  orderingMode: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(Cart);
