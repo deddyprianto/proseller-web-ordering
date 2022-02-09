@@ -14,6 +14,7 @@ const HeaderWebOrdering = loadable(() => import('./HeaderWebOrdering'));
 const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
+const Cart = loadable(() => import('../../pages/Cart'));
 const Profile = loadable(() => import('../../pages/Profile'));
 const ListMembership = loadable(() => import('../../pages/ListMembership'));
 const DetailMembership = loadable(() => import('../../pages/DetailMembership'));
@@ -154,6 +155,8 @@ class Layout extends Component {
               <Route exact path='/outlets' component={OutletSelection} />
             )}
             {enableOrdering && <Route exact path='/signIn' component={Home} />}
+            {enableOrdering && <Route exact path='/cart' component={Cart} />}
+            {/* TODO: component basket will remove later */}
             {enableOrdering && (
               <Route exact path='/basket' component={Basket} />
             )}
@@ -211,6 +214,7 @@ class Layout extends Component {
                 component={DetailMembership}
               />
             )}
+            <Route exact path='/cart' component={Cart} />
             <Route exact path='/history' component={History} />
             <Route exact path='/category' component={Categories} />
             <Route exact path='/category/:childId' component={Categories} />

@@ -220,15 +220,14 @@ const Product = ({ item, ...props }) => {
   };
 
   const renderImageProduct = (item) => {
-    const productConfig = props.productConfig;
     if (item?.product?.defaultImageURL) {
       return item.product.defaultImageURL;
     } else {
       if (item?.defaultImageURL) {
         return item?.defaultImageURL;
       }
-      if (productConfig?.color?.productPlaceholder) {
-        return productConfig.color.productPlaceholder;
+      if (props?.color?.productPlaceholder) {
+        return props.color.productPlaceholder;
       }
       return config.image_placeholder;
     }
@@ -365,7 +364,7 @@ const Product = ({ item, ...props }) => {
 
 Product.defaultProps = {
   basket: {},
-  color: '',
+  color: {},
   dispatch: null,
   productConfig: {},
   companyInfo: {},
@@ -374,7 +373,7 @@ Product.defaultProps = {
 
 Product.propTypes = {
   basket: PropTypes.object,
-  color: PropTypes.string,
+  color: PropTypes.object,
   companyInfo: PropTypes.object,
   dispatch: PropTypes.func,
   item: PropTypes.object,

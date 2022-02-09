@@ -343,7 +343,7 @@ const ProductUpdateModal = ({
           open={isOpenAddModal}
           width={width}
           handleClose={handleCloseAddModal}
-          selectedProductBasketUpdate={selectedProductBasketUpdate}
+          selectedProduct={selectedProductBasketUpdate}
           product={product}
         />
       )}
@@ -400,7 +400,6 @@ ProductUpdateModal.defaultProps = {
   product: {},
   defaultOutlet: {},
   color: {},
-  productConfig: {},
   dispatch: null,
   width: 600,
 };
@@ -414,7 +413,6 @@ ProductUpdateModal.propTypes = {
   handleClose: PropTypes.func,
   open: PropTypes.bool,
   product: PropTypes.object,
-  productConfig: PropTypes.object,
   width: PropTypes.number,
 };
 

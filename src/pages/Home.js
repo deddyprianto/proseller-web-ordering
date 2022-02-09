@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Promotion from '../components/banner';
-import Ordering from '../components/ordering';
 import OrderingRetail from '../components/ordering/indexRetail';
 import OutletSelection from './OutletSelection';
 import { OrderAction } from '../redux/actions/OrderAction';

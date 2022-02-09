@@ -259,7 +259,7 @@ class Header extends Component {
     await this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
     if (this.props.isLoggedIn) {
       const currentLocation = window.location.hash;
-      if (currentLocation.includes('/basket')) {
+      if (currentLocation.includes('/cart')) {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
         await localStorage.setItem(
@@ -797,7 +797,7 @@ class Header extends Component {
               justifyContent='center'
             >
               {enableOrdering && (
-                <Link id='cart-icon' to='/basket'>
+                <Link id='cart-icon' to='/cart'>
                   <div
                     style={{
                       border: `1px solid ${this.props.color.font}`,

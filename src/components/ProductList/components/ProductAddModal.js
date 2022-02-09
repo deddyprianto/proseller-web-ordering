@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -47,7 +46,7 @@ const ProductAddModal = ({
   handleClose,
   product,
   width,
-  selectedProductBasketUpdate,
+  selectedProduct,
   ...props
 }) => {
   const theme = useTheme();
@@ -217,6 +216,39 @@ const ProductAddModal = ({
   const [selectedVariantOptions, setSelectedVariantOptions] = useState([]);
   const [variantImageURL, setVariantImageURL] = useState('');
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
+  const [notes, setNotes] = useState('');
+
+  const handleProductModifierSelected = () => {
+    let defaultValue = [];
+    selectedProduct.modifiers.forEach((item) => {
+      item.modifier.details.forEach((detail) => {
+        defaultValue.push({
+          modifierId: item.modifierID,
+          modifierProductId: detail.productID,
+          name: detail.name,
+          price: detail.price,
+          qty: detail.quantity,
+        });
+      });
+    });
+    setSelectedProductModifiers(defaultValue);
+    setQty(selectedProduct?.quantity);
+    setNotes(selectedProduct?.remark);
+  };
+
+  const handleProductSelected = () => {
+    setQty(selectedProduct?.quantity);
+    setNotes(selectedProduct?.remark);
+  };
+
+  useEffect(() => {
+    if (!isEmptyArray(selectedProduct?.product?.productModifiers)) {
+      return handleProductModifierSelected();
+    }
+    if (!isEmptyObject(selectedProduct)) {
+      return handleProductSelected();
+    }
+  }, []);
 
   const handleClear = () => {
     setQty(1);
@@ -238,7 +270,7 @@ const ProductAddModal = ({
     setTotalPrice(qty * totalPrice);
   };
 
-  const handleProductModifierChoosed = (items) => {
+  const handleProductModifierFormated = (items) => {
     let totalPrice = 0;
     let productModifiers = [];
     if (!isEmptyArray(items)) {
@@ -288,7 +320,7 @@ const ProductAddModal = ({
     return productModifiers;
   };
 
-  const handleProductVariantChoosed = (items) => {
+  const handleProductVariantFormated = (items) => {
     let productVariant = {};
     const productVariantName = items.map((item) => {
       return item.value;
@@ -319,49 +351,51 @@ const ProductAddModal = ({
 
       setSelectedVariantOptions(productVariants);
 
-      const productVariantChoosed =
-        handleProductVariantChoosed(productVariants);
+      const productVariantFormated =
+        handleProductVariantFormated(productVariants);
 
-      if (!isEmptyObject(selectedProductBasketUpdate)) {
+      if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
-          id: selectedProductBasketUpdate.id,
-          productID: `product::${productVariantChoosed.id}`,
-          retailPrice: productVariantChoosed.retailPrice,
-          remark: '',
+          id: selectedProduct.id,
+          productID: `product::${productVariantFormated.id}`,
+          retailPrice: productVariantFormated.retailPrice,
+          remark: notes,
           quantity: qty,
+          unitPrice: qty * productVariantFormated.retailPrice,
         });
       }
       return setProductAdd({
-        productID: `product::${productVariantChoosed.id}`,
-        retailPrice: productVariantChoosed.retailPrice,
-        remark: '',
+        productID: `product::${productVariantFormated.id}`,
+        retailPrice: productVariantFormated.retailPrice,
+        remark: notes,
         quantity: qty,
       });
     }
 
     if (!isEmptyArray(product?.productModifiers)) {
-      const productModifierChoosed = handleProductModifierChoosed(
+      const productModifierFormated = handleProductModifierFormated(
         selectedProductModifiers
       );
 
       const totalAmount = totalPrice / qty;
 
-      if (!isEmptyObject(selectedProductBasketUpdate)) {
+      if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
-          id: selectedProductBasketUpdate.id,
+          id: selectedProduct.id,
           productID: `product::${product.id}`,
           retailPrice: totalAmount,
-          remark: '',
+          remark: notes,
           quantity: qty,
-          modifiers: productModifierChoosed,
+          unitPrice: qty * totalAmount,
+          modifiers: productModifierFormated,
         });
       }
       return setProductAdd({
         productID: `product::${product.id}`,
         retailPrice: totalAmount,
-        remark: '',
+        remark: notes,
         quantity: qty,
-        modifiers: productModifierChoosed,
+        modifiers: productModifierFormated,
       });
     }
 
@@ -370,20 +404,21 @@ const ProductAddModal = ({
         qty,
         totalPrice: product?.retailPrice || 0,
       });
-
-      if (!isEmptyObject(selectedProductBasketUpdate)) {
+      if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
-          id: selectedProductBasketUpdate.id,
+          id: selectedProduct.id,
           productID: `product::${product.id}`,
           retailPrice: product.retailPrice,
-          remark: '',
+          remark: notes,
           quantity: qty,
+          unitPrice: qty * product.retailPrice,
         });
       }
+
       return setProductAdd({
         productID: `product::${product.id}`,
         retailPrice: product.retailPrice,
-        remark: '',
+        remark: notes,
         quantity: qty,
       });
     }
@@ -392,7 +427,8 @@ const ProductAddModal = ({
     qty,
     selectedProductModifiers,
     product,
-    selectedProductBasketUpdate,
+    selectedProduct,
+    notes,
   ]);
 
   const isCheckedCheckbox = (modifier) => {
@@ -430,7 +466,6 @@ const ProductAddModal = ({
   const handleDisabledAddProductButton = () => {
     if (!isEmptyArray(product?.productModifiers) && !isLoading) {
       let qtyModifierSelected = 0;
-
       const productModifiers = product.productModifiers.map(
         (productModifier) => {
           selectedProductModifiers.forEach((selectedProductModifier) => {
@@ -474,9 +509,9 @@ const ProductAddModal = ({
     return result;
   };
 
-  const handleAddProduct = async () => {
+  const handleAddOrUpdateProduct = async () => {
     setIsLoading(true);
-    if (!isEmptyObject(selectedProductBasketUpdate)) {
+    if (!isEmptyObject(selectedProduct)) {
       const basketUpdated = handleUpdate({
         baskets: props.basket.details,
         productUpdate,
@@ -496,11 +531,11 @@ const ProductAddModal = ({
     handleClear();
   };
 
-  const handleDisabledCheckbox = ({ modifier, max }) => {
+  const handleDisabledCheckbox = ({ modifier, max, productModifier }) => {
     let qtyTotal = 0;
 
     const modifierProducts = selectedProductModifiers.filter(
-      (item) => item.modifierId === modifier.modifierID
+      (item) => item.modifierId === productModifier.modifierID
     );
     const modifierProductIds = modifierProducts.map(
       (item) => item.modifierProductId
@@ -582,8 +617,6 @@ const ProductAddModal = ({
   };
 
   const renderImageProduct = () => {
-    const productConfig = props.productConfig;
-
     if (variantImageURL) {
       return variantImageURL;
     }
@@ -592,10 +625,9 @@ const ProductAddModal = ({
       return product.defaultImageURL;
     }
 
-    if (productConfig?.color?.productPlaceholder) {
-      return productConfig.color.productPlaceholder;
+    if (props?.color?.productPlaceholder) {
+      return props.color.productPlaceholder;
     }
-
     return config.image_placeholder;
   };
 
@@ -733,7 +765,7 @@ const ProductAddModal = ({
   };
 
   const renderProductModifierOptions = (productModifier) => {
-    const productModifierOptions = productModifier?.details?.map(
+    const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
         return (
           <div key={index}>
@@ -749,7 +781,7 @@ const ProductAddModal = ({
                     onChange={() => {
                       handleModifierOptionSelected({
                         modifierProductId: modifier.productID,
-                        modifierId: modifier.modifierID,
+                        modifierId: productModifier.modifierID,
                         qty: 1,
                         price: modifier.price,
                         name: modifier.name,
@@ -757,7 +789,8 @@ const ProductAddModal = ({
                     }}
                     disabled={handleDisabledCheckbox({
                       modifier,
-                      max: productModifier.max,
+                      max: productModifier.modifier.max,
+                      productModifier,
                     })}
                   />
                 }
@@ -770,15 +803,14 @@ const ProductAddModal = ({
               <div style={styles.displayFlex}>
                 {renderAddAndRemoveButtonProductModifierOptions({
                   modifierProductId: modifier.productID,
-                  max: productModifier.max,
-                  min: productModifier.min,
+                  max: productModifier.modifier.max,
                 })}
                 <Typography style={styles.optionPrice}>
                   {handleCurrency(modifier.price)}
                 </Typography>
               </div>
             </div>
-            {productModifier.details.length - 1 !== index && (
+            {productModifier.modifier.details.length - 1 !== index && (
               <Divider style={styles.divider} />
             )}
           </div>
@@ -801,7 +833,7 @@ const ProductAddModal = ({
               {renderTermsAndConditionsProductModifiers(productModifier)}
             </div>
             <FormGroup>
-              {renderProductModifierOptions(productModifier.modifier)}
+              {renderProductModifierOptions(productModifier)}
             </FormGroup>
           </Paper>
         );
@@ -845,6 +877,73 @@ const ProductAddModal = ({
     }
   };
 
+  const renderTotalPriceOrRemove = () => {
+    if (qty === 0) {
+      return (
+        <Button
+          style={styles.addButton}
+          onClick={() => {
+            handleAddOrUpdateProduct();
+          }}
+        >
+          <Typography style={styles.addText}>Remove</Typography>
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        style={styles.addButton}
+        disabled={handleDisabledAddProductButton()}
+        onClick={() => {
+          handleAddOrUpdateProduct();
+        }}
+      >
+        <Typography style={styles.addText}>
+          {isLoading ? 'Loading.....' : handleCurrency(totalPrice)}
+        </Typography>
+      </Button>
+    );
+  };
+
+  const renderSpecialInstruction = () => {
+    return (
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingTop: 20,
+          }}
+        >
+          <Typography
+            style={{ fontSize: 16, color: '#808080', fontWeight: 'bold' }}
+          >
+            Special Instruction
+          </Typography>
+          <Typography
+            style={{ fontSize: 10, color: '#777777', paddingLeft: 10 }}
+          >
+            Optional
+          </Typography>
+        </div>
+        <textarea
+          style={{
+            minHeight: 100,
+            minWidth: '100%',
+            maxWidth: '100%',
+            borderRadius: 5,
+          }}
+          value={notes}
+          onChange={(event) => {
+            setNotes(event.target.value);
+          }}
+        />
+      </div>
+    );
+  };
+
   return (
     <div>
       <Dialog
@@ -886,6 +985,8 @@ const ProductAddModal = ({
             <div>{renderVariants(product?.variantOptions)}</div>
 
             <div>{renderProductModifiers(product?.productModifiers)}</div>
+
+            <div>{renderSpecialInstruction()}</div>
           </div>
         </DialogContent>
 
@@ -909,17 +1010,7 @@ const ProductAddModal = ({
           >
             <AddIcon style={styles.icon} />
           </IconButton>
-          <Button
-            style={styles.addButton}
-            disabled={handleDisabledAddProductButton()}
-            onClick={() => {
-              handleAddProduct();
-            }}
-          >
-            <Typography style={styles.addText}>
-              {isLoading ? 'Loading.....' : handleCurrency(totalPrice)}
-            </Typography>
-          </Button>
+          {renderTotalPriceOrRemove()}
         </DialogActions>
       </Dialog>
     </div>
@@ -934,10 +1025,9 @@ ProductAddModal.defaultProps = {
   defaultOutlet: {},
   color: {},
   basket: {},
-  productConfig: {},
   dispatch: null,
   width: 600,
-  selectedProductBasketUpdate: {},
+  selectedProduct: {},
 };
 
 ProductAddModal.propTypes = {
@@ -949,8 +1039,7 @@ ProductAddModal.propTypes = {
   handleClose: PropTypes.func,
   open: PropTypes.bool,
   product: PropTypes.object,
-  productConfig: PropTypes.object,
-  selectedProductBasketUpdate: PropTypes.object,
+  selectedProduct: PropTypes.object,
   width: PropTypes.number,
 };
 
