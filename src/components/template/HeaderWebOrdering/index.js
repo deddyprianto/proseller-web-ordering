@@ -13,8 +13,8 @@ import Grid from '@mui/material/Grid';
 import { withStyles } from '@mui/styles';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
-import AppBar from '@material-ui/core/AppBar';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import AppBar from '@mui/material/AppBar';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingBasket, faBars } from '@fortawesome/free-solid-svg-icons';
@@ -23,7 +23,7 @@ import clsx from 'clsx';
 
 import styles from './styles.module.css';
 import OrderingMode from './OrderingMode';
-import { color } from '@material-ui/system';
+import Typography from '@mui/material/Typography';
 
 const useStyles = (theme) => ({
   header: {
@@ -46,19 +46,23 @@ const useStyles = (theme) => ({
     display: 'inline-flex',
     align: 'center',
   },
-  iconBars: {
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-
-    position: 'fixed',
-    backgroundColor: 'transparent',
-    direction: 'column',
-    alignItems: 'center',
+  outletText: {
+    className: 'color',
+    fontSize: '0.2rem',
     textAlign: 'center',
-    marginTop: -10,
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
   },
 });
+
+const boxStyle = {
+  outletWarpStyle: {
+    width: { xs: 200, md: 400, lg: 200 },
+    overflowX: 'auto',
+    whiteSpace: 'nowrap',
+    my: '0.5rem',
+  },
+};
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Header extends Component {
@@ -295,28 +299,37 @@ class Header extends Component {
         );
       } else {
         return (
-          <div className={useStyles.outletStyle}>
-            <Link to='/outlets'>
-              <h4 className='color' style={{ fontSize: 14, marginTop: 10 }}>
-                {this.props.defaultOutlet.name}{' '}
-                <i style={{ marginLeft: 6, fontSize: 10 }} />
-              </h4>
-            </Link>
-          </div>
+          <Box component='div' sx={boxStyle.outletWarpStyle}>
+            <Box component={Link} to='/outlets'>
+              <Typography
+                variant='h5'
+                fontWeight={700}
+                className={clsx([this.props.classes.outletText, 'color'])}
+              >
+                {this.props.defaultOutlet.name}
+              </Typography>
+            </Box>
+          </Box>
         );
       }
     } else if (this.props.outletSelection === 'DEFAULT') {
       return (
-        <div className={useStyles.outletStyle}>
-          <h4 className='color' style={{ fontSize: 12, marginTop: 10 }}>
-            {this.props.defaultOutlet.name}
-          </h4>
-        </div>
+        <Box component='div' sx={boxStyle.outletWarpStyle}>
+          <Box component={Link} to='/outlets'>
+            <Typography
+              variant='h5'
+              fontWeight={700}
+              className={clsx([this.props.classes.outletText, 'color'])}
+            >
+              {this.props.defaultOutlet.name}
+            </Typography>
+          </Box>
+        </Box>
       );
     } else {
       return (
         <div className={useStyles.outletStyle}>
-          <LocationOnIcon
+          <LocationOnOutlinedIcon
             className='color'
             style={{ fontSize: 22, marginBottom: -5 }}
           />
@@ -386,14 +399,17 @@ class Header extends Component {
           );
         } else {
           return (
-            <div className={classes.outletStyle}>
-              <Link to='/outlets'>
-                <h4 className='color' style={{ fontSize: 15, marginTop: 10 }}>
-                  {this.props.defaultOutlet.name}{' '}
-                  <i style={{ marginLeft: 6, fontSize: 10 }} />
-                </h4>
-              </Link>
-            </div>
+            <Box component='div' sx={boxStyle.outletWarpStyle}>
+              <Box component={Link} to='/outlets'>
+                <Typography
+                  variant='h5'
+                  fontWeight={700}
+                  className={clsx([classes.outletText, 'color'])}
+                >
+                  {this.props.defaultOutlet.name}
+                </Typography>
+              </Box>
+            </Box>
           );
         }
       } else if (this.props.outletSelection === 'DEFAULT') {
@@ -402,9 +418,9 @@ class Header extends Component {
         return (
           <Grid container direction='row' alignItems='center'>
             <Grid item>
-              <LocationOnIcon
+              <LocationOnOutlinedIcon
                 className='color'
-                style={{ fontSize: 22, marginTop: 5 }}
+                sx={{ fontSize: 22, marginTop: 5 }}
               />
             </Grid>
             <Grid item className={classes.outletStyle} alignItems='center'>
@@ -447,7 +463,6 @@ class Header extends Component {
         >
           <Grid
             container
-            spacing={2}
             direction='row'
             justifyContent='space-between'
             alignItems='center'
