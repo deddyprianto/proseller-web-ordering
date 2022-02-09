@@ -143,7 +143,6 @@ const ProductCart = ({ item, ...props }) => {
       flexDirection: 'column',
       justifyContent: 'space-between',
       height: 'auto',
-      maxHeight: 180,
       width: '100%',
     },
     name: { display: 'flex' },
