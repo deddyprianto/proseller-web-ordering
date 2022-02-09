@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
+import LoadingOverlay from 'react-loading-overlay';
 
 import { styled } from '@mui/system';
 
@@ -30,7 +31,6 @@ import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
-import Loading from 'components/loading/Loading';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -366,7 +366,9 @@ const ProductList = ({ ...props }) => {
     <TabsUnstyled value={`${selectedCategory.name}`}>
       {renderTabHeader()}
       {renderTabList()}
-      {isLoading ? <Loading loadingType='NestedList' /> : renderProductList()}
+      <LoadingOverlay active={isLoading} spinner text='Loading...'>
+        {renderProductList()}
+      </LoadingOverlay>
     </TabsUnstyled>
   );
 };

@@ -255,7 +255,7 @@ class Header extends Component {
     await this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
     if (this.props.isLoggedIn) {
       const currentLocation = window.location.hash;
-      if (currentLocation.includes('/basket')) {
+      if (currentLocation.includes('/cart')) {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
         await localStorage.setItem(
