@@ -239,36 +239,6 @@ const ProductAddModal = ({
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
 
-  const handleProductVariantDefaultValue = (variants) => {
-    return setSelectedVariantOptions(variants[0].attributes);
-  };
-
-  const handleProductModifierDefaultValue = (productModifiers) => {
-    let defaultValue = [];
-    productModifiers.forEach((item) => {
-      if (item.modifier.min > 0) {
-        defaultValue.push({
-          modifierId: item.modifier?.details[0]?.modifierID,
-          modifierProductId: item.modifier?.details[0]?.productID,
-          name: item.modifier?.details[0]?.name,
-          price: item.modifier?.details[0]?.price,
-          qty: 1,
-        });
-      }
-    });
-    setSelectedProductModifiers(defaultValue);
-  };
-
-  const handleCheckDefaultValue = () => {
-    if (product?.variants) {
-      return handleProductVariantDefaultValue(product?.variants);
-    }
-
-    if (product?.productModifiers) {
-      return handleProductModifierDefaultValue(product?.productModifiers);
-    }
-  };
-
   const handleProductModifierSelected = () => {
     let defaultValue = [];
     selectedProduct.modifiers.forEach((item) => {
@@ -293,8 +263,6 @@ const ProductAddModal = ({
   };
 
   useEffect(() => {
-    handleCheckDefaultValue();
-
     if (!isEmptyArray(selectedProduct?.product?.productModifiers)) {
       return handleProductModifierSelected();
     }
@@ -398,9 +366,13 @@ const ProductAddModal = ({
 
   useEffect(() => {
     if (!isEmptyArray(product?.variants)) {
-      const productVariantFormated = handleProductVariantFormated(
-        selectedVariantOptions
-      );
+      const productVariants = !isEmptyArray(selectedVariantOptions)
+        ? selectedVariantOptions
+        : product?.variants[0]?.attributes;
+
+      setSelectedVariantOptions(productVariants);
+      const productVariantFormated =
+        handleProductVariantFormated(productVariants);
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
