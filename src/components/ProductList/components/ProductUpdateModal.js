@@ -87,7 +87,6 @@ const ProductUpdateModal = ({
     buttonEdit: {
       display: 'flex',
       alignItems: 'center',
-      backgroundColor: 'white',
     },
     iconEdit: {
       height: 14,
