@@ -1,7 +1,10 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
+import { Link } from 'react-router-dom';
+import _ from 'lodash';
+import moment from 'moment';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -15,6 +18,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 import ProductCartList from '../components/productCartList';
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import OrderingModeDialog from 'components/orderingModeDialog';
+import TimeSlotDialog from 'components/timeSlot/TimeSlot';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -182,6 +187,25 @@ const Cart = ({ ...props }) => {
       backgroundColor: props.color.primary,
     },
   };
+  const [openOrderingMode, setOpenOrderingMode] = useState(false);
+  const [openTimeSlot, setOpenTimeSlot] = useState(false);
+  const [timeSlotLabel, setTimeSlotLabel] = useState('Select Time Slot');
+
+  useEffect(() => {
+    const orderTimeSlotTime = localStorage.getItem(
+      `${config.prefix}_order_action_time`
+    );
+    const orderTimeSlotDate = localStorage.getItem(
+      `${config.prefix}_order_action_date`
+    );
+    if (!_.isEmpty(orderTimeSlotTime) && !_.isEmpty(orderTimeSlotDate)) {
+      setTimeSlotLabel(
+        `${moment(orderTimeSlotDate).format(
+          'DD MMM YYYY'
+        )} ${orderTimeSlotDate}`
+      );
+    }
+  }, [timeSlotLabel]);
 
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
@@ -196,6 +220,18 @@ const Cart = ({ ...props }) => {
     }
   };
 
+  const handleCloseOrderingMode = () => {
+    setOpenOrderingMode(false);
+  };
+
+  const handleCloseTimeSlot = () => {
+    setOpenTimeSlot(false);
+  };
+
+  const handleOpenOrderingMode = () => {
+    setOpenOrderingMode(true);
+  };
+
   const renderPickupDateTime = () => {
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
@@ -205,9 +241,9 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<AccessTimeIcon style={styles.icon} />}
             variant='outlined'
-            // TODO; Tunggu Roy
+            onClick={() => setOpenTimeSlot(true)}
           >
-            <Typography style={styles.typography}>Select Timeslot</Typography>
+            <Typography style={styles.typography}>{timeSlotLabel}</Typography>
           </Button>
         </div>
       </Paper>
@@ -223,9 +259,13 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
-            // TODO; Tunggu Roy
+            onClick={handleOpenOrderingMode}
           >
-            <Typography style={styles.typography}>Self Pickup</Typography>
+            <Typography style={styles.typography}>
+              {props.orderingMode
+                ? props.orderingMode
+                : setOpenOrderingMode(true)}
+            </Typography>
           </Button>
         </div>
       </Paper>
@@ -241,7 +281,8 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<ContactMailIcon style={styles.icon} />}
             variant='outlined'
-            // TODO; Tunggu Roy
+            component={Link}
+            to='/delivery-address'
           >
             <Typography style={styles.typography}>Delivery Address</Typography>
           </Button>
@@ -402,6 +443,16 @@ const Cart = ({ ...props }) => {
         flexGrow: 1,
       }}
     >
+      <OrderingModeDialog
+        open={openOrderingMode}
+        onClose={handleCloseOrderingMode}
+        defaultOutlet={props.defaultOutlet}
+      />
+      <TimeSlotDialog
+        open={openTimeSlot}
+        onClose={handleCloseTimeSlot}
+        defaultOutlet={props.defaultOutlet}
+      />
       {!isEmptyArray(props.basket.details) ? (
         <div>{renderCart()}</div>
       ) : (
