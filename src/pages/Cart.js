@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -32,7 +32,7 @@ const mapStateToProps = (state) => {
 
     defaultOutlet: state.outlet.defaultOutlet,
     deliveryAddress: state.order.deliveryAddress,
-    orderingMode: state.order.orderingMode,
+    orderingMode: state?.order?.orderingMode,
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
@@ -54,6 +54,7 @@ const useWindowSize = () => {
 
 const Cart = ({ ...props }) => {
   const [width] = useWindowSize();
+  const history = useHistory();
   const gadgetScreen = width < 600;
   const styles = {
     rootPaper: {
@@ -137,8 +138,9 @@ const Cart = ({ ...props }) => {
     },
     typography: {
       color: 'white',
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: 'bold',
+      marginY: 1,
     },
     icon: {
       height: 20,
@@ -187,9 +189,10 @@ const Cart = ({ ...props }) => {
       backgroundColor: props.color.primary,
     },
   };
+
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
-  const [timeSlotLabel, setTimeSlotLabel] = useState('Select Time Slot');
+  const [timeSlotLabel, setTimeSlotLabel] = useState({});
 
   useEffect(() => {
     const orderTimeSlotTime = localStorage.getItem(
@@ -198,14 +201,18 @@ const Cart = ({ ...props }) => {
     const orderTimeSlotDate = localStorage.getItem(
       `${config.prefix}_order_action_date`
     );
+
     if (!_.isEmpty(orderTimeSlotTime) && !_.isEmpty(orderTimeSlotDate)) {
-      setTimeSlotLabel(
-        `${moment(orderTimeSlotDate).format(
-          'DD MMM YYYY'
-        )} ${orderTimeSlotDate}`
-      );
+      setTimeSlotLabel({
+        date: moment(orderTimeSlotDate).format('DD MMM YYYY'),
+        time: orderTimeSlotTime,
+      });
     }
   }, [timeSlotLabel]);
+
+  if (_.isEmpty(props.defaultOutlet)) {
+    history.push('/outlets');
+  }
 
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
@@ -243,7 +250,18 @@ const Cart = ({ ...props }) => {
             variant='outlined'
             onClick={() => setOpenTimeSlot(true)}
           >
-            <Typography style={styles.typography}>{timeSlotLabel}</Typography>
+            {timeSlotLabel ? (
+              <Box flexDirection='column'>
+                <Typography style={styles.typography}>
+                  {timeSlotLabel?.date}
+                </Typography>
+                <Typography style={styles.typography}>
+                  {timeSlotLabel?.time}
+                </Typography>
+              </Box>
+            ) : (
+              'Select Date & Time'
+            )}
           </Button>
         </div>
       </Paper>
@@ -259,12 +277,10 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
-            onClick={handleOpenOrderingMode}
+            onClick={() => handleOpenOrderingMode()}
           >
             <Typography style={styles.typography}>
-              {props.orderingMode
-                ? props.orderingMode
-                : setOpenOrderingMode(true)}
+              {props.orderingMode || 'Ordering Mode'}
             </Typography>
           </Button>
         </div>
@@ -273,6 +289,9 @@ const Cart = ({ ...props }) => {
   };
 
   const renderDeliveryAddress = () => {
+    if (props.orderingMode !== 'DELIVERY') {
+      return;
+    }
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
         <div style={styles.rootMode}>
@@ -445,12 +464,12 @@ const Cart = ({ ...props }) => {
     >
       <OrderingModeDialog
         open={openOrderingMode}
-        onClose={handleCloseOrderingMode}
+        onClose={() => handleCloseOrderingMode()}
         defaultOutlet={props.defaultOutlet}
       />
       <TimeSlotDialog
         open={openTimeSlot}
-        onClose={handleCloseTimeSlot}
+        onClose={() => handleCloseTimeSlot()}
         defaultOutlet={props.defaultOutlet}
       />
       {!isEmptyArray(props.basket.details) ? (

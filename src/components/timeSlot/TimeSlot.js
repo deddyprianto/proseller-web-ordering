@@ -138,7 +138,10 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
 
   const getOutletAndTimeData = useCallback(async () => {
     let dateTime = new Date();
-    const maxDays = defaultOutlet?.timeSlots[0]?.interval || 90;
+    let maxDays = 90;
+
+    if (!_.isEmpty(defaultOutlet))
+      maxDays = defaultOutlet?.timeSlots[0]?.interval;
 
     let payload = {
       outletID: `outlet::${defaultOutlet.id}`,
@@ -175,7 +178,7 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
     }
     const render = temp.map((item, index) => {
       return (
-        <Grid item xs={2}>
+        <Grid item xs={2} key={index}>
           <LoadingButton
             sx={{
               textAlign: 'center',

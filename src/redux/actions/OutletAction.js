@@ -119,7 +119,6 @@ function getNearsesOutlet(position = null) {
         if (find !== undefined) {
           orderModeType = find.settingValue;
         }
-        console.log(orderModeType, 'orderModeType');
       }
     } catch (e) {}
 
@@ -175,7 +174,6 @@ function fetchSingleOutlet(outlet) {
       null,
       `outlets/get/${OUTLET_ID}`
     );
-    console.log(data, '>>>>');
     if (!isEmptyObject(data.data)) {
       if (data.data && data.data.id)
         data.data = config.getValidation(data.data);
