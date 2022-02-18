@@ -1,9 +1,9 @@
-import { CONSTANT } from "../../helpers";
-import { MasterDataService } from "../../Services/MasterDataService";
-import { isEmptyObject } from "../../helpers/CheckEmpty";
-import config from "../../config";
-import _ from "lodash";
-const geolib = require("geolib");
+import { CONSTANT } from '../../helpers';
+import { MasterDataService } from '../../Services/MasterDataService';
+import { isEmptyObject } from '../../helpers/CheckEmpty';
+import config from '../../config';
+import _ from 'lodash';
+const geolib = require('geolib');
 
 export const OutletAction = {
   fetchDefaultOutlet,
@@ -16,11 +16,11 @@ export const OutletAction = {
 };
 
 const orderingModesField = [
-  { isEnabledFieldName: "enableStorePickUp", name: "STOREPICKUP" },
-  { isEnabledFieldName: "enableStoreCheckOut", name: "STORECHECKOUT" },
-  { isEnabledFieldName: "enableDelivery", name: "DELIVERY" },
-  { isEnabledFieldName: "enableTakeAway", name: "TAKEAWAY" },
-  { isEnabledFieldName: "enableDineIn", name: "DINEIN" },
+  { isEnabledFieldName: 'enableStorePickUp', name: 'STOREPICKUP' },
+  { isEnabledFieldName: 'enableStoreCheckOut', name: 'STORECHECKOUT' },
+  { isEnabledFieldName: 'enableDelivery', name: 'DELIVERY' },
+  { isEnabledFieldName: 'enableTakeAway', name: 'TAKEAWAY' },
+  { isEnabledFieldName: 'enableDineIn', name: 'DINEIN' },
 ];
 
 function fetchDefaultOutlet(defaultOutlet = {}) {
@@ -35,7 +35,7 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
       const orderingModesMapped = orderingModesFieldFiltered.map(
         (mode) => mode.name
       );
-      dispatch({ type: "SET_ORDERING_MODES", payload: orderingModesMapped });
+      dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
       return defaultOutlet;
     } else {
       try {
@@ -100,7 +100,7 @@ function setDefaultOutlet(outlet) {
     const orderingModesMapped = orderingModesFieldFiltered.map(
       (mode) => mode.name
     );
-    dispatch({ type: "SET_ORDERING_MODES", payload: orderingModesMapped });
+    dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
     dispatch(setData(outlet, CONSTANT.DEFAULT_OUTLET));
   };
 }
@@ -110,34 +110,33 @@ function getNearsesOutlet(position = null) {
     const state = getState();
 
     // FIND ORDER SELECTION TYPE ( MANUAL / NEAREST / DEFAULT )
-    let orderModeType = "DEFAULT";
+    let orderModeType = 'DEFAULT';
     try {
       if (state.order.setting.length > 0) {
         const find = state.order.setting.find(
-          (item) => item.settingKey === "OutletSelection"
+          (item) => item.settingKey === 'OutletSelection'
         );
         if (find !== undefined) {
           orderModeType = find.settingValue;
         }
-        console.log(orderModeType, "orderModeType");
       }
-    } catch (e) { }
+    } catch (e) {}
 
     let data = {};
-    if (orderModeType === "NEAREST") {
+    if (orderModeType === 'NEAREST') {
       data = await MasterDataService.api(
-        "POST",
+        'POST',
         position,
-        "outlets/nearestoutlet"
+        'outlets/nearestoutlet'
       );
       if (data.ResultCode === 400)
         data = await MasterDataService.api(
-          "GET",
+          'GET',
           null,
-          "outlets/defaultoutlet"
+          'outlets/defaultoutlet'
         );
     } else {
-      data = await MasterDataService.api("GET", null, "outlets/defaultoutlet");
+      data = await MasterDataService.api('GET', null, 'outlets/defaultoutlet');
     }
 
     if (!isEmptyObject(data.data)) {
@@ -150,7 +149,7 @@ function getNearsesOutlet(position = null) {
       const orderingModesMapped = orderingModesFieldFiltered.map(
         (mode) => mode.name
       );
-      dispatch({ type: "SET_ORDERING_MODES", payload: orderingModesMapped });
+      dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
       return data.data;
     }
   };
@@ -159,7 +158,7 @@ function getNearsesOutlet(position = null) {
 function getBackupOutlet() {
   return async (dispatch) => {
     const data = await MasterDataService.api(
-      "GET",
+      'GET',
       null,
       `outlets/defaultoutlet`
     );
@@ -171,7 +170,7 @@ function fetchSingleOutlet(outlet) {
   const OUTLET_ID = outlet.id;
   return async (dispatch) => {
     const data = await MasterDataService.api(
-      "GET",
+      'GET',
       null,
       `outlets/get/${OUTLET_ID}`
     );
@@ -185,7 +184,7 @@ function fetchSingleOutlet(outlet) {
       const orderingModesMapped = orderingModesFieldFiltered.map(
         (mode) => mode.name
       );
-      dispatch({ type: "SET_ORDERING_MODES", payload: orderingModesMapped });
+      dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
       return data.data;
     }
   };
@@ -198,7 +197,7 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
         localStorage.getItem(`${config.prefix}_locationCustomer`)
       );
 
-    const data = await MasterDataService.api("POST", null, "outlets/load");
+    const data = await MasterDataService.api('POST', null, 'outlets/load');
     if (!isEmptyObject(data.data)) {
       let outletData = [];
       data.data.forEach((element) => {
@@ -218,7 +217,7 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
         outletData.push(element);
       });
 
-      outletData = _.orderBy(outletData, ["distance"], ["asc"]);
+      outletData = _.orderBy(outletData, ['distance'], ['asc']);
       dispatch(setData(outletData, CONSTANT.LIST_OUTLET));
       return outletData;
     }

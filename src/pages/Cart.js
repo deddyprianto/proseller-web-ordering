@@ -1,7 +1,10 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
+import { Link, useHistory } from 'react-router-dom';
+import _ from 'lodash';
+import moment from 'moment';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -15,6 +18,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 import ProductCartList from '../components/productCartList';
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import OrderingModeDialog from 'components/orderingModeDialog';
+import TimeSlotDialog from 'components/timeSlot/TimeSlot';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -27,7 +32,7 @@ const mapStateToProps = (state) => {
 
     defaultOutlet: state.outlet.defaultOutlet,
     deliveryAddress: state.order.deliveryAddress,
-    orderingMode: state.order.orderingMode,
+    orderingMode: state?.order?.orderingMode,
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
@@ -49,6 +54,7 @@ const useWindowSize = () => {
 
 const Cart = ({ ...props }) => {
   const [width] = useWindowSize();
+  const history = useHistory();
   const gadgetScreen = width < 600;
   const styles = {
     rootPaper: {
@@ -132,8 +138,9 @@ const Cart = ({ ...props }) => {
     },
     typography: {
       color: 'white',
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: 'bold',
+      marginY: 1,
     },
     icon: {
       height: 20,
@@ -183,6 +190,30 @@ const Cart = ({ ...props }) => {
     },
   };
 
+  const [openOrderingMode, setOpenOrderingMode] = useState(false);
+  const [openTimeSlot, setOpenTimeSlot] = useState(false);
+  const [timeSlotLabel, setTimeSlotLabel] = useState({});
+
+  useEffect(() => {
+    const orderTimeSlotTime = localStorage.getItem(
+      `${config.prefix}_order_action_time`
+    );
+    const orderTimeSlotDate = localStorage.getItem(
+      `${config.prefix}_order_action_date`
+    );
+
+    if (!_.isEmpty(orderTimeSlotTime) && !_.isEmpty(orderTimeSlotDate)) {
+      setTimeSlotLabel({
+        date: moment(orderTimeSlotDate).format('DD MMM YYYY'),
+        time: orderTimeSlotTime,
+      });
+    }
+  }, [timeSlotLabel]);
+
+  if (_.isEmpty(props.defaultOutlet)) {
+    history.push('/outlets');
+  }
+
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
       const result = price.toLocaleString(
@@ -196,6 +227,18 @@ const Cart = ({ ...props }) => {
     }
   };
 
+  const handleCloseOrderingMode = () => {
+    setOpenOrderingMode(false);
+  };
+
+  const handleCloseTimeSlot = () => {
+    setOpenTimeSlot(false);
+  };
+
+  const handleOpenOrderingMode = () => {
+    setOpenOrderingMode(true);
+  };
+
   const renderPickupDateTime = () => {
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
@@ -205,9 +248,20 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<AccessTimeIcon style={styles.icon} />}
             variant='outlined'
-            // TODO; Tunggu Roy
+            onClick={() => setOpenTimeSlot(true)}
           >
-            <Typography style={styles.typography}>Select Timeslot</Typography>
+            {timeSlotLabel ? (
+              <Box flexDirection='column'>
+                <Typography style={styles.typography}>
+                  {timeSlotLabel?.date}
+                </Typography>
+                <Typography style={styles.typography}>
+                  {timeSlotLabel?.time}
+                </Typography>
+              </Box>
+            ) : (
+              'Select Date & Time'
+            )}
           </Button>
         </div>
       </Paper>
@@ -223,9 +277,11 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
-            // TODO; Tunggu Roy
+            onClick={() => handleOpenOrderingMode()}
           >
-            <Typography style={styles.typography}>Self Pickup</Typography>
+            <Typography style={styles.typography}>
+              {props.orderingMode || 'Ordering Mode'}
+            </Typography>
           </Button>
         </div>
       </Paper>
@@ -233,6 +289,9 @@ const Cart = ({ ...props }) => {
   };
 
   const renderDeliveryAddress = () => {
+    if (props.orderingMode !== 'DELIVERY') {
+      return;
+    }
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
         <div style={styles.rootMode}>
@@ -241,7 +300,8 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<ContactMailIcon style={styles.icon} />}
             variant='outlined'
-            // TODO; Tunggu Roy
+            component={Link}
+            to='/delivery-address'
           >
             <Typography style={styles.typography}>Delivery Address</Typography>
           </Button>
@@ -402,6 +462,16 @@ const Cart = ({ ...props }) => {
         flexGrow: 1,
       }}
     >
+      <OrderingModeDialog
+        open={openOrderingMode}
+        onClose={() => handleCloseOrderingMode()}
+        defaultOutlet={props.defaultOutlet}
+      />
+      <TimeSlotDialog
+        open={openTimeSlot}
+        onClose={() => handleCloseTimeSlot()}
+        defaultOutlet={props.defaultOutlet}
+      />
       {!isEmptyArray(props.basket.details) ? (
         <div>{renderCart()}</div>
       ) : (
