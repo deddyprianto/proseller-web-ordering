@@ -58,7 +58,7 @@ const Product = ({ item, ...props }) => {
     },
     imageSize: {
       height: 600 > width ? 75 : 180,
-      width: 600 > width ? 75 : 180,
+      width: 'auto',
       minWidth: 600 > width ? 75 : 180,
       borderRadius: 5,
     },
@@ -142,6 +142,11 @@ const Product = ({ item, ...props }) => {
       color: '#FFFFFF',
     },
     name: { display: 'flex' },
+    priceAndButton: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
   });
   const classes = useStyles();
 
@@ -153,11 +158,11 @@ const Product = ({ item, ...props }) => {
     let items = [];
     if (item?.product) {
       if (!isEmptyArray(item?.product?.variants || [])) {
-        item.product.variants.forEach((variant) => {
+        item.product?.variants.forEach((variant) => {
           items.push(variant.id);
         });
       }
-      items.push(item.product.id);
+      items.push(item.product?.id);
     }
     return items;
   };
@@ -211,17 +216,19 @@ const Product = ({ item, ...props }) => {
   };
 
   const handleCurrency = (price) => {
-    const result = price.toLocaleString(props.companyInfo.currency.locale, {
-      style: 'currency',
-      currency: props.companyInfo.currency.code,
-    });
+    if (props.companyInfo && price) {
+      const result = price.toLocaleString(props.companyInfo.currency.locale, {
+        style: 'currency',
+        currency: props.companyInfo.currency.code,
+      });
 
-    return result;
+      return result;
+    }
   };
 
   const renderImageProduct = (item) => {
     if (item?.product?.defaultImageURL) {
-      return item.product.defaultImageURL;
+      return item.product?.defaultImageURL;
     } else {
       if (item?.defaultImageURL) {
         return item?.defaultImageURL;
@@ -240,13 +247,7 @@ const Product = ({ item, ...props }) => {
       );
     }
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
+      <div className={classes.priceAndButton}>
         <Typography className={classes.price}>
           {handleCurrency(item?.product?.retailPrice)}
         </Typography>
@@ -332,8 +333,8 @@ const Product = ({ item, ...props }) => {
               <img
                 className={classes.imageSize}
                 src={renderImageProduct(item)}
-                alt={item?.product.name || ''}
-                title={item?.product.name}
+                alt={item?.product?.name || ''}
+                title={item?.product?.name}
               />
             </div>
             <div className={classes.itemBody}>
@@ -341,7 +342,7 @@ const Product = ({ item, ...props }) => {
                 <div className={classes.name}>
                   {renderQuantityProduct()}
                   <Typography className={classes.typography}>
-                    {item?.product.name}
+                    {item?.product?.name}
                   </Typography>
                 </div>
                 <Typography

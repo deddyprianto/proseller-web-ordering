@@ -83,15 +83,8 @@ class Home extends Component {
               <OutletSelection />
             ) : (
               <main id='main' className='site-main'>
-                {orderingSetting &&
-                orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE' ? (
-                  <OrderingRetail history={this.props.history}></OrderingRetail>
-                ) : (
-                  <>
-                    <Promotion />
-                    <ProductList />
-                  </>
-                )}
+                <Promotion />
+                <ProductList />
               </main>
             )}
           </div>
