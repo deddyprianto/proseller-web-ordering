@@ -2,6 +2,8 @@ const defaultState = {
   paymentCard: [],
   selectedVoucher: [],
   selectedPoint: {},
+  useSVC: 0,
+  selectedPaymentCard: {},
   totalPaymentAmount: 0,
 };
 
@@ -22,10 +24,20 @@ export default function reducer(state = defaultState, action) {
         ...state,
         selectedPoint: action.data,
       };
+    case 'USE_SVC':
+      return {
+        ...state,
+        useSVC: action.data,
+      };
     case 'SET_TOTAL_PAYMENT_AMOUNT':
       return {
         ...state,
         totalPaymentAmount: action.data,
+      };
+    case 'SET_SELECTED_PAYMENT_CARD':
+      return {
+        ...state,
+        selectedPaymentCard: action.data,
       };
     case 'ALL':
       return {

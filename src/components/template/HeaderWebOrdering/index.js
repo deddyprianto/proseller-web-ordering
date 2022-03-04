@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -12,10 +10,11 @@ import { isEmptyObject } from '../../../helpers/CheckEmpty';
 import LoginRegister from '../../login-register';
 
 import Grid from '@mui/material/Grid';
-import Badge from '@material-ui/core/Badge';
+import { withStyles } from '@mui/styles';
+import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingBasket, faBars } from '@fortawesome/free-solid-svg-icons';
@@ -24,12 +23,18 @@ import clsx from 'clsx';
 
 import styles from './styles.module.css';
 import OrderingMode from './OrderingMode';
-import MenuDrawer from '../MenuDrawer';
+import Typography from '@mui/material/Typography';
 
-const useStyles = () => ({
+const useStyles = (theme) => ({
   header: {
     paddingTop: 5,
     paddingBottom: 5,
+  },
+  logo: {
+    maxWidth: '9.5em',
+    objectFit: 'contain',
+    zIndex: 1000,
+    maxHeight: 68,
   },
   logoWithBranch: {
     alignItems: 'center',
@@ -41,19 +46,23 @@ const useStyles = () => ({
     display: 'inline-flex',
     align: 'center',
   },
-  iconBars: {
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-
-    position: 'fixed',
-    backgroundColor: 'transparent',
-    direction: 'column',
-    alignItems: 'center',
+  outletText: {
+    className: 'color',
+    fontSize: '0.2rem',
     textAlign: 'center',
-    marginTop: -10,
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
   },
 });
+
+const boxStyle = {
+  outletWarpStyle: {
+    width: { xs: 200, md: 400, lg: 200 },
+    overflowX: 'auto',
+    whiteSpace: 'nowrap',
+    my: '0.5rem',
+  },
+};
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Header extends Component {
@@ -70,11 +79,10 @@ class Header extends Component {
       showOrderingMode: false,
       routeWithOutletSelect: [],
       routeWithOrderingMode: [],
-      showDrawer: false,
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     /* Re-fetch ordering setting if view is already  */
     if (this.props.setting || this.props.setting.length > 0) {
       this.props.dispatch(OrderAction.getSettingOrdering());
@@ -114,9 +122,9 @@ class Header extends Component {
         }));
       }
     }
-  }
+  };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate = (prevProps, prevState) => {
     if (this.props !== prevProps) {
       let enableOrdering = this.props.setting.find((items) => {
         return items.settingKey === 'EnableOrdering';
@@ -158,6 +166,7 @@ class Header extends Component {
         const firstAvailableOutlet = this.props.outlets.find(
           (outlet) => outlet.orderingStatus === 'AVAILABLE'
         );
+        console.log(firstAvailableOutlet);
         if (firstAvailableOutlet) {
           this.props.dispatch({
             type: CONSTANT.DEFAULT_OUTLET,
@@ -204,13 +213,13 @@ class Header extends Component {
         }
       }
     }
-  }
+  };
 
-  handleNavigation() {
-    this.setState({ showDrawer: true });
-  }
+  handleNavigation = () => {
+    document.getElementById('site-navigation').classList.toggle('toggled');
+  };
 
-  activeRoute(route) {
+  activeRoute = (route) => {
     let active = false;
     let check = 0;
     let url = window.location.hash.split('#')[1];
@@ -222,11 +231,11 @@ class Header extends Component {
     if (check === route.path.split('/').length) active = true;
 
     return active ? 'current-menu-item' : 'menu-item';
-  }
+  };
 
-  handelOnClick() {
+  handelOnClick = () => {
     this.setState({ isLoading: false });
-  }
+  };
 
   handleLogout() {
     const lsKeyList = [];
@@ -250,7 +259,7 @@ class Header extends Component {
     await this.props.dispatch(OutletAction.fetchSingleOutlet({ id: outletId }));
     if (this.props.isLoggedIn) {
       const currentLocation = window.location.hash;
-      if (currentLocation.includes('/basket')) {
+      if (currentLocation.includes('/cart')) {
         await this.props.dispatch(OrderAction.moveCart(payloadMoveCart));
         await localStorage.setItem(`${config.prefix}_isOutletChanged`, true);
         await localStorage.setItem(
@@ -278,7 +287,7 @@ class Header extends Component {
     }
   }
 
-  displayOutletInfo(outlets, defaultOutlet) {
+  displayOutletInfo = (outlets, defaultOutlet) => {
     if (this.props.outletSelection === 'MANUAL') {
       if (isEmptyObject(this.props.defaultOutlet)) {
         return (
@@ -290,28 +299,37 @@ class Header extends Component {
         );
       } else {
         return (
-          <div className={useStyles.outletStyle}>
-            <Link to='/outlets'>
-              <h4 className='color' style={{ fontSize: 14, marginTop: 10 }}>
-                {this.props.defaultOutlet.name}{' '}
-                <i style={{ marginLeft: 6, fontSize: 10 }} />
-              </h4>
-            </Link>
-          </div>
+          <Box component='div' sx={boxStyle.outletWarpStyle}>
+            <Box component={Link} to='/outlets'>
+              <Typography
+                variant='h5'
+                fontWeight={700}
+                className={clsx([this.props.classes.outletText, 'color'])}
+              >
+                {this.props.defaultOutlet.name}
+              </Typography>
+            </Box>
+          </Box>
         );
       }
     } else if (this.props.outletSelection === 'DEFAULT') {
       return (
-        <div className={useStyles.outletStyle}>
-          <h4 className='color' style={{ fontSize: 12, marginTop: 10 }}>
-            {this.props.defaultOutlet.name}
-          </h4>
-        </div>
+        <Box component='div' sx={boxStyle.outletWarpStyle}>
+          <Box component={Link} to='/outlets'>
+            <Typography
+              variant='h5'
+              fontWeight={700}
+              className={clsx([this.props.classes.outletText, 'color'])}
+            >
+              {this.props.defaultOutlet.name}
+            </Typography>
+          </Box>
+        </Box>
       );
     } else {
       return (
         <div className={useStyles.outletStyle}>
-          <LocationOnIcon
+          <LocationOnOutlinedIcon
             className='color'
             style={{ fontSize: 22, marginBottom: -5 }}
           />
@@ -337,9 +355,9 @@ class Header extends Component {
         </div>
       );
     }
-  }
+  };
 
-  renderLabel() {
+  renderLabel = () => {
     try {
       const { setting } = this.props;
       if (setting && setting.length > 0) {
@@ -350,11 +368,11 @@ class Header extends Component {
     } catch (e) {
       return 'Menu';
     }
-  }
+  };
 
   render() {
     let { isLoggedIn, basket, defaultOutlet } = this.props;
-    const classes = useStyles();
+    let { classes } = this.props;
     let outlets =
       this.props.outlets &&
       this.props.outlets.filter(
@@ -381,14 +399,17 @@ class Header extends Component {
           );
         } else {
           return (
-            <div className={classes.outletStyle}>
-              <Link to='/outlets'>
-                <h4 className='color' style={{ fontSize: 15, marginTop: 10 }}>
-                  {this.props.defaultOutlet.name}{' '}
-                  <i style={{ marginLeft: 6, fontSize: 10 }} />
-                </h4>
-              </Link>
-            </div>
+            <Box component='div' sx={boxStyle.outletWarpStyle}>
+              <Box component={Link} to='/outlets'>
+                <Typography
+                  variant='h5'
+                  fontWeight={700}
+                  className={clsx([classes.outletText, 'color'])}
+                >
+                  {this.props.defaultOutlet.name}
+                </Typography>
+              </Box>
+            </Box>
           );
         }
       } else if (this.props.outletSelection === 'DEFAULT') {
@@ -397,9 +418,9 @@ class Header extends Component {
         return (
           <Grid container direction='row' alignItems='center'>
             <Grid item>
-              <LocationOnIcon
+              <LocationOnOutlinedIcon
                 className='color'
-                style={{ fontSize: 22, marginTop: 5 }}
+                sx={{ fontSize: 22, marginTop: 5 }}
               />
             </Grid>
             <Grid item className={classes.outletStyle} alignItems='center'>
@@ -431,15 +452,7 @@ class Header extends Component {
         {!isLoggedIn && <LoginRegister />}
         <AppBar
           className={clsx(classes.header, 'site-main')}
-          paddingLeft={{
-            sm: '1.5rem',
-            md: 0,
-          }}
-          paddingRight={{
-            sm: '1.5rem',
-            md: 0,
-          }}
-          sx={{
+          style={{
             width: '-webkit-fill-available',
             marginBottom: '1rem',
             paddingTop: '1rem',
@@ -450,7 +463,6 @@ class Header extends Component {
         >
           <Grid
             container
-            spacing={2}
             direction='row'
             justifyContent='space-between'
             alignItems='center'
@@ -486,12 +498,7 @@ class Header extends Component {
                   <Link to='/'>
                     <img
                       alt='logo'
-                      style={{
-                        maxWidth: '9.5em',
-                        objectFit: 'contain',
-                        zIndex: 1000,
-                        maxHeight: 'auto',
-                      }}
+                      className={classes.logo}
                       src={infoCompany.imageURL || logoCompany}
                     />
                   </Link>
@@ -587,7 +594,7 @@ class Header extends Component {
                   onClick={() => this.handleNavigation()}
                   color={this.props.color.font}
                 >
-                  <FontAwesomeIcon icon={faBars} size='md' />
+                  <FontAwesomeIcon icon={faBars} size='25x' />
                 </Box>
 
                 <div
@@ -697,13 +704,77 @@ class Header extends Component {
                     )}
                   </ul>
                 </div>
-                {/* Menu Drawer */}
-                <MenuDrawer
-                  open={this.state.showDrawer}
-                  onClose={() => {
-                    this.setState({ showDrawer: false });
-                  }}
-                />
+                <div className='handheld-navigation navigation-theme'>
+                  <span className='phm-close'>Close</span>
+                  <ul className='menu'>
+                    {enableOrdering && (
+                      <li className='menu-item menu-hide'>
+                        <Link to='/'>
+                          <i className='fa fa-book' />
+                          {this.renderLabel()}
+                        </Link>
+                      </li>
+                    )}
+                    {(isLoggedIn || !enableOrdering) && (
+                      <li className='menu-item menu-hide'>
+                        <Link to='/profile'>
+                          <i className='fa fa-user' />
+                          Profile
+                        </Link>
+                      </li>
+                    )}
+                    {isLoggedIn ? (
+                      <>
+                        <li className='menu-item menu-hide'>
+                          <Link to='/history'>
+                            <i className='fa fa-history' />
+                            History
+                          </Link>
+                        </li>
+                        <li className='menu-item menu-hide'>
+                          <Link to='/inbox'>
+                            <i className='fa fa-envelope-o' />
+                            Inbox
+                          </Link>
+                        </li>
+                        <li className='menu-item menu-hide'>
+                          <Link to='/voucher'>
+                            <i className='fa fa-tags' />
+                            Voucher
+                          </Link>
+                        </li>
+                        <li className='menu-item menu-hide'>
+                          <Link to='/setting'>
+                            <i className='fa fa-gear' />
+                            Setting
+                          </Link>
+                        </li>
+                        <li
+                          className='menu-item'
+                          onClick={() => this.handleLogout()}
+                        >
+                          <Link to='/'>
+                            <i className='fa fa-sign-out' />
+                            Log Out
+                          </Link>
+                        </li>
+                      </>
+                    ) : null}
+                    {!isLoggedIn && (
+                      <li
+                        className='menu-item menu-hide'
+                        onClick={() => this.handleNavigation()}
+                        data-toggle='modal'
+                        data-target='#login-register-modal'
+                      >
+                        <Link to='/'>
+                          <i className='fa fa-sign-in' />
+                          Log In / Sign Up
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </div>
               </Box>
             </Grid>
             {/* cart */}
@@ -742,10 +813,7 @@ class Header extends Component {
                     data-toggle='modal'
                     data-target='#basket-modal'
                   >
-                    <Badge
-                      color={this.props.color.primary}
-                      badgeContent={basketLength}
-                    >
+                    <Badge color='info' badgeContent={basketLength}>
                       <FontAwesomeIcon icon={faShoppingBasket} />
                     </Badge>
                   </div>
@@ -759,7 +827,7 @@ class Header extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
     account: state,
@@ -777,4 +845,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return { dispatch };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Header));
+export default withStyles(useStyles)(
+  connect(mapStateToProps, mapDispatchToProps)(withRouter(Header))
+);

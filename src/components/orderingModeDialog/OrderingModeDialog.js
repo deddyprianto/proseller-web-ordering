@@ -10,6 +10,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
 
 import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
@@ -17,10 +18,17 @@ import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import ArticleIcon from '@mui/icons-material/Article';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
+import config from 'config';
+import { CONSTANT } from 'helpers';
 
-const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
+const OrderingModeDialog = ({ open, onClose }) => {
   const colorState = useSelector((state) => state.theme.color);
-  //orderingMode in down below is selected ordering mode from local storage.
+  const defaultOutlet = useSelector((state) => state.order.basket.outlet);
+  const dataBasket = useSelector((state) => state.order.basket);
+  const selectedDeliveryProvider = useSelector(
+    (state) => state.order.selectedDeliveryProvider
+  );
+
   const orderingMode = useSelector((state) => state.order.orderingMode);
 
   const style = {
@@ -81,7 +89,7 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
       const data = await dispatch(
         OutletAction?.fetchSingleOutlet(defaultOutlet)
       );
-      if (!!data) {
+      if (data) {
         const orderingModesFieldFiltered = orderingModesField.filter(
           (mode) => data[mode.isEnabledFieldName]
         );
@@ -93,38 +101,169 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
       }
     };
     getOrderingModes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderingMode]);
+  }, []);
 
   const iconCheck = (item) => {
     if (item === 'STOREPICKUP') {
-      return <StoreMallDirectoryIcon />;
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <StoreMallDirectoryIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+              paddingLeft: 20,
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
     } else if (item === 'STORECHECKOUT') {
-      return <LocalMallIcon />;
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <LocalMallIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+              paddingLeft: 20,
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
     } else if (item === 'DELIVERY') {
-      return <DeliveryDiningIcon />;
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <DeliveryDiningIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
     } else {
-      return <ArticleIcon />;
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <ArticleIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+              paddingLeft: 20,
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
     }
   };
 
   const handleConfirmOrderingMode = async (value) => {
     setIsLoading(true);
+
+    if (value !== 'DELIVERY' && selectedDeliveryProvider) {
+      const payload = {
+        ...dataBasket,
+        totalNettAmount:
+          dataBasket?.totalNettAmount - selectedDeliveryProvider?.deliveryFee,
+      };
+
+      await dispatch(OrderAction.setData(payload, CONSTANT.DATA_BASKET));
+
+      await dispatch(
+        OrderAction.changeOrderingMode({ orderingMode: value, provider: {} })
+      );
+
+      await dispatch({
+        type: 'SET_SELECTED_DELIVERY_PROVIDERS',
+        payload: {},
+      });
+    }
+
     await dispatch({
       type: 'SET_ORDERING_MODE',
       payload: value,
     });
 
-    if (value !== '' && value !== undefined && value !== null) {
-      const payload = {
+    await dispatch(
+      OrderAction.changeOrderingMode({
         orderingMode: value,
-      };
-      await dispatch(OrderAction.updateCartInfo(payload));
-    }
+        provider: selectedDeliveryProvider,
+      })
+    );
+
+    localStorage.removeItem(`${config.prefix}_deliveryProvider`);
 
     setIsLoading(false);
     onClose();
   };
+  // const handleConfirmOrderingMode = async (value) => {
+  //   setIsLoading(true);
+  //   const payload = {
+  //     orderingMode: value,
+  //     provider: {},
+  //   };
+
+  //   await dispatch(OrderAction.changeOrderingMode(payload));
+  //   await dispatch({
+  //     type: 'SET_SELECTED_DELIVERY_PROVIDERS',
+  //     payload: {},
+  //   });
+
+  //   await dispatch({
+  //     type: 'SET_ORDERING_MODE',
+  //     payload: value,
+  //   });
+
+  //   localStorage.removeItem(`${config.prefix}_deliveryProvider`);
+
+  //   setIsLoading(false);
+  //   onClose();
+  // };
 
   const renderButton = () => {
     const rendering = orderingModes.map((item, index) => {
@@ -133,11 +272,10 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
           <LoadingButton
             sx={orderingMode === item ? style.buttonSelected : style.button}
             loadingPosition='start'
-            startIcon={iconCheck(item)}
             loading={isLoading}
             onClick={() => handleConfirmOrderingMode(item)}
           >
-            {item}
+            {iconCheck(item)}
           </LoadingButton>
         </Box>
       );
@@ -147,7 +285,7 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
   };
 
   return (
-    <Dialog fullWidth maxWidth={'xs'} open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
       <DialogTitle sx={style.dialogTitle}>
         <Typography
           fontSize={20}
@@ -169,22 +307,16 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
         <Button sx={style.buttonJustBrowsing} onClick={onClose}>
-          I'm just browsing
+          Back
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-OrderingModeDialog.defaultProps = {
-  defaultOutlet: {},
-  open: false,
-  onClose: null,
-};
 OrderingModeDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  defaultOutlet: PropTypes.object.isRequired,
 };
 
 export default OrderingModeDialog;

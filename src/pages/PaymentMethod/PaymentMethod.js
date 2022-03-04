@@ -608,6 +608,7 @@ const PaymentMethodPage = () => {
         <Box
           sx={{
             marginTop: '1em',
+            marginBottom: '5em',
           }}
         >
           {isLoading ? (

@@ -29,13 +29,8 @@ const OutletSelection = loadable(() => import('../../pages/OutletSelection'));
 const StoreValueCard = loadable(() => import('../../pages/StoreValueCard'));
 const BuyStoreValueCard = loadable(() => import('../../components/svc/BuySVC'));
 const UseSVC = loadable(() => import('../../components/svc/useSVC'));
-const DeliveryAddress = loadable(() =>
-  import('../../components/delivery-address')
-);
-
-const PaymentMethod = loadable(() =>
-  import('../../components/payment/paymentMethod')
-);
+const DeliveryAddress = loadable(() => import('../../pages/DeliveryAddress'));
+const PaymentMethod = loadable(() => import('../../pages/PaymentMethod'));
 const Setting = loadable(() => import('../../components/setting'));
 const Referral = loadable(() => import('../../components/referral'));
 const Basket = loadable(() => import('../../components/basket'));

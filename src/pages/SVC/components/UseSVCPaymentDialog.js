@@ -32,7 +32,6 @@ const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
   const [currentBalance, setCurrentBalance] = useState(0);
 
   useEffect(() => {
-    console.log(dataSettle, '>>>>>>>>');
     const getSVCAction = async () => {
       const result = await dispatch(SVCAction.summarySVC());
       if (result.resultCode === 200) {
@@ -106,6 +105,7 @@ const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
         orderActionTime: dataSettle?.orderActionTime,
         orderActionTimeSlot: dataSettle?.orderActionTimeSlot,
       };
+
       try {
         const response = await dispatch(
           OrderAction.submitAndPay(payloadFullSVC)
@@ -134,8 +134,9 @@ const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
         paymentName: 'Store Value Card',
         paymentType: 'Store Value Card',
       };
-      onSuccess(payload);
+
       await dispatch(PaymentAction.setData(payload, 'USE_SVC'));
+
       onClose();
     }
   };
@@ -297,18 +298,9 @@ const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
   );
 };
 
-UseSVCPaymentDialog.defaultProps = {
-  // svcAmount: 0,
-  onSuccess: null,
-  // onSubmitError: null,
-};
-
 UseSVCPaymentDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  // svcAmount: PropTypes.number,
   onClose: PropTypes.func.isRequired,
-  onSuccess: PropTypes.func,
-  // onSubmitError: PropTypes.func,
 };
 
 export default UseSVCPaymentDialog;

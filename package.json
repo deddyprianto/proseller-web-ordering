@@ -19,14 +19,13 @@
     "@mui/material": "^5.2.5",
     "@mui/styles": "^5.2.3",
     "add": "^2.0.6",
-    "axios": "^0.19.2",
     "base-64": "^0.1.0",
     "bootstrap": "^4.5.0",
     "env-cmd": "^10.1.0",
+    "formik": "^2.2.9",
     "geolib": "^3.3.1",
     "google-map-react": "^2.1.5",
     "google-maps-react": "^2.0.6",
-    "history": "^4.9.0",
     "html-react-parser": "^1.2.8",
     "http-build-query": "^0.7.0",
     "jquery": "^3.5.1",
@@ -36,7 +35,6 @@
     "lottie-react-web": "^2.2.2",
     "moment": "^2.27.0",
     "node-sass": "^4.14.1",
-    "nuka-carousel": "^4.7.0",
     "password-generation": "^1.1.0",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
@@ -60,7 +58,6 @@
     "react-qr-reader": "^2.2.1",
     "react-qr-scanner": "^1.0.0-alpha.7",
     "react-redux": "^7.1.2",
-    "react-responsive-carousel": "^3.2.22",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-select": "^3.1.0",
@@ -75,7 +72,8 @@
     "source-map-explorer": "^2.5.0",
     "sweetalert2": "^9.17.0",
     "swiper": "^7.4.1",
-    "uuidv4": "^6.2.0"
+    "uuidv4": "^6.2.0",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "analyze": "react-scripts build && source-map-explorer 'build/static/js/*.js'",
@@ -112,5 +110,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
+  }
 }

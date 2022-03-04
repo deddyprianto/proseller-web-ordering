@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import config from 'config';
+import _ from 'lodash';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -17,15 +18,19 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 
 import PointAddModal from 'components/pointAddModal';
+
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { CampaignAction } from 'redux/actions/CampaignAction';
+import { CustomerAction } from 'redux/actions/CustomerAction';
 import { OrderAction } from 'redux/actions/OrderAction';
-import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
+import { SVCAction } from 'redux/actions/SVCAction';
 
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import MyVoucherWarningModal from 'components/myVoucherList/components/MyVoucherWarningModal';
 
 import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
@@ -41,7 +46,8 @@ const mapStateToProps = (state) => {
     campaignPoint: state.campaign.data,
     selectedPoint: state.payment.selectedPoint,
     selectedVoucher: state.payment.selectedVoucher,
-
+    selectedPaymentCard: state.payment.selectedPaymentCard,
+    useSVC: state.payment.useSVC,
     orderingMode: state.order.orderingMode,
     deliveryAddress: state.order.deliveryAddress,
     orderActionDate: state.order.orderActionDate,
@@ -77,8 +83,12 @@ const Payment = ({ ...props }) => {
   const [isOpenSVC, setIsOpenSVC] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState({});
   const [selectedVouchers, setSelectedVouchers] = useState([]);
+  const [myVouchers, setMyVouchers] = useState([]);
   const [warningMessage, serWarningMessage] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
+  const [useSVCPayment, setUseSVCPayment] = useState({});
+  const [checkSVCAvailable, setCheckSVCAvailable] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
@@ -238,6 +248,10 @@ const Payment = ({ ...props }) => {
       });
     }
 
+    if (!isEmptyObject(useSVCPayment)) {
+      price = price - useSVCPayment.paymentAmount;
+    }
+
     if (price < 0) {
       return 0;
     }
@@ -255,14 +269,30 @@ const Payment = ({ ...props }) => {
     }
   };
 
+  const getSVCData = async () => {
+    const result = await props.dispatch(SVCAction.summarySVC());
+    if (result.resultCode === 200 && result?.data?.balance) {
+      setCheckSVCAvailable(true);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      const vouchers = await props.dispatch(CustomerAction.getVoucher());
+
+      setMyVouchers(vouchers.data);
+    };
+    loadData();
+  }, []);
+
   useEffect(() => {
     const price = handlePrice();
-
     setSelectedPoint(props.selectedPoint);
     setSelectedVouchers(props.selectedVoucher);
     getCampaignPoints();
+    getSVCData();
     setTotalPrice(price);
-
+    handleGetSVCdata(props.useSVC);
     props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PAYMENT_AMOUNT'));
   }, [
     selectedPoint,
@@ -271,6 +301,7 @@ const Payment = ({ ...props }) => {
     totalPrice,
     props.basket,
     props.companyInfo,
+    props.useSVC,
   ]);
 
   const handleOpenPointAddModal = () => {
@@ -291,6 +322,10 @@ const Payment = ({ ...props }) => {
 
   const handleCloseSVC = () => {
     setIsOpenSVC(false);
+  };
+
+  const handleGetSVCdata = (data) => {
+    setUseSVCPayment(data);
   };
 
   const handleCurrency = (price) => {
@@ -335,6 +370,15 @@ const Payment = ({ ...props }) => {
     setSelectedPoint({});
 
     props.dispatch(PaymentAction.setData({}, 'SELECT_POINT'));
+  };
+
+  const handleRemovePaymentCard = () => {
+    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
+  };
+
+  const handleRemoveSVC = () => {
+    setUseSVCPayment({});
+    props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
   };
 
   const handleRemoveVoucher = (value) => {
@@ -420,31 +464,35 @@ const Payment = ({ ...props }) => {
   };
 
   const renderVoucher = () => {
-    return (
-      <Paper variant='outlined' style={styles.paperVoucher}>
-        <Button
-          style={styles.buttonVoucher}
-          variant='outlined'
-          disabled={handleDisableButton()}
-          onClick={() => {
-            handleSelectVoucher();
-          }}
-        >
-          <div style={styles.displayFlexAndAlignCenter}>
-            <CardGiftcardIcon style={styles.icon} />
-            <Typography style={styles.typography}>Use Voucher</Typography>
-          </div>
-          <ArrowForwardIosIcon style={styles.iconArrow} />
-        </Button>
+    if (!isEmptyArray(myVouchers)) {
+      return (
+        <Paper variant='outlined' style={styles.paperVoucher}>
+          <Button
+            style={styles.buttonVoucher}
+            variant='outlined'
+            disabled={handleDisableButton()}
+            onClick={() => {
+              handleSelectVoucher();
+            }}
+          >
+            <div style={styles.displayFlexAndAlignCenter}>
+              <CardGiftcardIcon style={styles.icon} />
+              <Typography style={styles.typography}>Use Voucher</Typography>
+            </div>
+            <ArrowForwardIosIcon style={styles.iconArrow} />
+          </Button>
 
-        {renderSelectedVoucher()}
-      </Paper>
-    );
+          {renderSelectedVoucher()}
+        </Paper>
+      );
+    }
   };
 
   const renderPoint = () => {
     const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
-    if (pointToRebateRatio && pointToRebateRatio !== '0:0') {
+    const isTotalPoint = props.campaignPoint.totalPoint > 0;
+
+    if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
       return (
         <Paper variant='outlined' style={styles.paper}>
           <Button
@@ -477,54 +525,74 @@ const Payment = ({ ...props }) => {
   };
 
   const renderSVC = () => {
-    return (
-      <Paper variant='outlined' style={styles.paper}>
-        <Button
-          style={styles.button}
-          variant='outlined'
-          onClick={() => setIsOpenSVC(true)}
-        >
-          <div style={styles.displayFlexAndAlignCenter}>
-            <CreditCardIcon style={styles.icon} />
-            <Typography style={styles.typography}>
-              Use Store Value Card
-            </Typography>
-          </div>
-          <ArrowForwardIosIcon style={styles.iconArrow} />
-        </Button>
-
-        {/* TODO:: change the condition */}
-        {selectedPoint.redeemValue > 0 && (
-          <IconButton
-            style={styles.iconButtonRemove}
-            onClick={() => {
-              handleRemovePoint();
-            }}
+    if (checkSVCAvailable) {
+      return (
+        <Paper variant='outlined' style={styles.paper}>
+          <Button
+            style={styles.button}
+            variant='outlined'
+            onClick={() => setIsOpenSVC(true)}
           >
-            <CloseIcon style={styles.iconRemove} />
-          </IconButton>
-        )}
-      </Paper>
-    );
+            <div style={styles.displayFlexAndAlignCenter}>
+              <CreditCardIcon style={styles.icon} />
+              <Typography style={styles.typography}>
+                Use Store Value Card
+                {props.useSVC?.isSVC
+                  ? `(${handleCurrency(props.useSVC?.paymentAmount)})`
+                  : ''}
+              </Typography>
+            </div>
+            <ArrowForwardIosIcon style={styles.iconArrow} />
+          </Button>
+
+          {useSVCPayment?.isSVC && (
+            <IconButton
+              style={styles.iconButtonRemove}
+              onClick={() => {
+                handleRemoveSVC();
+              }}
+            >
+              <CloseIcon style={styles.iconRemove} />
+            </IconButton>
+          )}
+        </Paper>
+      );
+    }
+    return;
   };
 
   const renderPaymentMethod = () => {
     return (
       <Paper variant='outlined' style={styles.paper}>
-        <Button style={styles.button} variant='outlined'>
+        <Button
+          style={styles.button}
+          variant='outlined'
+          component={Link}
+          to='/payment-method'
+        >
           <div style={styles.displayFlexAndAlignCenter}>
             <CreditCardIcon style={styles.icon} />
-            <Typography style={styles.typography}>Visa 11111</Typography>
+            <Typography style={styles.typography}>
+              {!_.isEmpty(props.selectedPaymentCard)
+                ? `${props.selectedPaymentCard?.details?.cardIssuer?.toUpperCase()} ${
+                    props.selectedPaymentCard?.details?.maskedAccountNumber
+                      ? `${props.selectedPaymentCard?.details?.maskedAccountNumber?.replace(
+                          '*',
+                          ''
+                        )} (SGD ${handlePrice()})`
+                      : ''
+                  }`
+                : 'Payment With Card'}
+            </Typography>
           </div>
           <ArrowForwardIosIcon style={styles.iconArrow} />
         </Button>
 
-        {/* TODO:: change the condition */}
-        {selectedPoint.redeemValue > 0 && (
+        {!isEmptyObject(props.selectedPaymentCard) && (
           <IconButton
             style={styles.iconButtonRemove}
             onClick={() => {
-              handleRemovePoint();
+              handleRemovePaymentCard();
             }}
           >
             <CloseIcon style={styles.iconRemove} />
@@ -539,12 +607,14 @@ const Payment = ({ ...props }) => {
   };
 
   const handlePay = async () => {
+    setIsLoading(true);
     let payload = {
       cartID: props.basket.cartID,
       totalNettAmount: props.basket.totalNettAmount,
       payments: [],
       isNeedConfirmation: false,
       payAtPOS: false,
+      tableNo: '-',
       orderingMode: props.orderingMode,
       orderActionDate: props.orderActionDate,
       orderActionTime: props.orderActionTime,
@@ -568,56 +638,74 @@ const Payment = ({ ...props }) => {
       payload.payments.push(selectedPoint);
     }
 
-    // if (!isEmptyObject(selectedAmountSVC)) {
-    //   payload.payments.push(selectedAmountSVC);
-    // }
+    if (!isEmptyObject(useSVCPayment)) {
+      payload.payments.push(useSVCPayment);
+    }
 
-    // if (!isEmptyObject(selectedCard)) {
-    //   payload.payments.push(selectedCard);
-    // }
+    if (!isEmptyObject(props.selectedPaymentCard)) {
+      const dataPaymentMethod = {
+        accountId: props.selectedPaymentCard.accountID,
+        paymentAmount: totalPrice,
+        paymentID: props.selectedPaymentCard.paymentID,
+        paymentName: props.selectedPaymentCard.paymentName,
+        paymentType: props.selectedPaymentCard.paymentID,
+      };
+
+      payload.payments.push(dataPaymentMethod);
+    }
 
     const dateTime = new Date();
     payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset());
 
     const response = await props.dispatch(OrderAction.submitAndPay(payload));
 
-    if (response && response.resultCode >= 400) {
-      serWarningMessage('Payment Failed!');
-      handleOpenWarningModal();
-    } else {
+    if (response && response.resultCode === 200) {
       localStorage.setItem(
         `${config.prefix}_paymentSuccess`,
         JSON.stringify(
           encryptor.encrypt({ totalPrice: payload.totalNettAmount })
         )
       );
-      // localStorage.removeItem(`${config.prefix}_isOutletChanged`);
-      // localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
-      // localStorage.removeItem(`${config.prefix}_selectedPoint`);
-      // localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-      // localStorage.removeItem(`${config.prefix}_dataSettle`);
-      // await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
-      // await props.dispatch(PaymentAction.clearAll());
+      localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+      localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
+      localStorage.removeItem(`${config.prefix}_selectedPoint`);
+      localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+      localStorage.removeItem(`${config.prefix}_dataSettle`);
+
+      localStorage.setItem(
+        `${config.prefix}_settleSuccess`,
+        JSON.stringify(encryptor.encrypt(response.data))
+      );
+
+      await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+      await props.dispatch(PaymentAction.clearAll());
 
       handleAudio();
-      // if (selectedCard?.paymentID === 'MANUAL_TRANSFER') {
-      //   document.getElementById('open-modal-info-transfer').click();
-      // } else {
-      history.push('/settleSuccess');
-      // }
+      if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
+        document.getElementById('open-modal-info-transfer').click();
+      } else {
+        history.push('/settleSuccess');
+      }
+    } else {
+      serWarningMessage('Payment Failed!');
+      handleOpenWarningModal();
+      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const handleDisabledButtonPay = () => {
-    // if (isEmptyObject(selectedCard)) {
-    //   return true;
-    // }
+    if (isEmptyObject(props.selectedPaymentCard)) {
+      return true;
+    }
     return false;
   };
 
   const renderButtonPay = () => {
     return (
-      <Button
+      <LoadingButton
+        loading={isLoading}
+        loadingPosition='center'
         style={styles.buttonPay}
         variant='outlined'
         disabled={handleDisabledButtonPay()}
@@ -626,7 +714,7 @@ const Payment = ({ ...props }) => {
         <Typography style={styles.typographyPay}>
           Pay {handleCurrency(totalPrice)}
         </Typography>
-      </Button>
+      </LoadingButton>
     );
   };
 
@@ -685,6 +773,8 @@ Payment.defaultProps = {
   orderActionTimeSlot: {},
   orderingMode: {},
   selectedDeliveryProvider: {},
+  selectedPaymentCard: {},
+  useSVC: {},
 };
 
 Payment.propTypes = {
@@ -699,12 +789,14 @@ Payment.propTypes = {
   orderActionTimeSlot: PropTypes.object,
   orderingMode: PropTypes.object,
   selectedDeliveryProvider: PropTypes.object,
+  selectedPaymentCard: PropTypes.object,
   selectedPoint: PropTypes.object,
   selectedVoucher: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
     })
   ),
+  useSVC: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Payment);
