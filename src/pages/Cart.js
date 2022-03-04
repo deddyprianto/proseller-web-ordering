@@ -540,9 +540,7 @@ const Cart = ({ ...props }) => {
             variant='outlined'
             disabled={handleDisabled()}
             onClick={() => {
-              console.log('masuk button');
               if (props.isLoggedIn) {
-                console.log('masuk if');
                 handleConfirmAndPay();
               } else {
                 handleLogin();
