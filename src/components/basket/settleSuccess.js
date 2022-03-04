@@ -1,32 +1,33 @@
-import React, { Component } from "react";
-import { Button } from "reactstrap";
-import { connect } from "react-redux";
-import ModalStatus from "./ModalSatatus";
-import config from "../../config";
+import React, { Component } from 'react';
+import { Button } from 'reactstrap';
+import { connect } from 'react-redux';
+import ModalStatus from './ModalSatatus';
+import config from '../../config';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const Swal = require("sweetalert2");
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const Swal = require('sweetalert2');
 
 class SettleSuccess extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      countryCode: "SG",
+      countryCode: 'SG',
       settleSuccess: null,
-      orderingMode: "",
+      orderingMode: '',
       dataBasket: null,
       paymentSuccess: {},
       infoCompany: {},
-      successIcon: "",
+      successIcon: '',
     };
   }
 
   componentDidMount = async () => {
     Swal.close();
-    document.getElementById("open-modal-status").click();
+    document.getElementById('open-modal-status').click();
     let paymentSuccess = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_paymentSuccess`))
     );
+    console.log('MANTAP', paymentSuccess);
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
@@ -42,7 +43,7 @@ class SettleSuccess extends Component {
     console.log(settleSuccess);
 
     let settingConfig = this.props.setting.find((items) => {
-      return items.settingKey === "PaymentSuccessIcon";
+      return items.settingKey === 'PaymentSuccessIcon';
     });
     if (settingConfig)
       this.setState({ successIcon: settingConfig.settingValue });
@@ -58,7 +59,7 @@ class SettleSuccess extends Component {
     });
     setTimeout(() => {
       try {
-        document.getElementById("open-modal-status").click();
+        document.getElementById('open-modal-status').click();
       } catch (error) {}
     }, 2500);
   };
@@ -67,9 +68,9 @@ class SettleSuccess extends Component {
     if (this.props.companyInfo) {
       if (price !== undefined) {
         const { currency } = this.props.companyInfo;
-        if (!price || price === "-") price = 0;
+        if (!price || price === '-') price = 0;
         let result = price.toLocaleString(currency.locale, {
-          style: "currency",
+          style: 'currency',
           currency: currency.code,
         });
         return result.split(currency.code)[1];
@@ -79,18 +80,18 @@ class SettleSuccess extends Component {
 
   getMonth(value) {
     var mount = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return mount[value];
   }
@@ -99,13 +100,13 @@ class SettleSuccess extends Component {
     var tanggal = new Date(date);
     return (
       tanggal.getDate() +
-      " " +
+      ' ' +
       this.getMonth(tanggal.getMonth()) +
-      " " +
+      ' ' +
       tanggal.getFullYear() +
-      " • " +
+      ' • ' +
       tanggal.getHours() +
-      ":" +
+      ':' +
       tanggal.getMinutes()
     );
   }
@@ -117,49 +118,45 @@ class SettleSuccess extends Component {
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
 
     if (this.state.settleSuccess.paidMembership === true) {
-      this.props.history.push("/profile");
+      this.props.history.push('/profile');
     } else if (this.state.settleSuccess.paySVC === true) {
-      this.props.history.push("/svc");
+      this.props.history.push('/svc');
     } else {
-      this.props.history.push("/history");
+      this.props.history.push('/history');
     }
   };
 
   getHeadMessage = (message) => {
     try {
-      message = message.split(",");
+      message = message.split(',');
       return message[0];
     } catch (e) {
-      return "Congratulations";
+      return 'Congratulations';
     }
   };
 
   getSubtitleMessage = (message) => {
     try {
-      message = message.split(",");
+      message = message.split(',');
       return message[1];
     } catch (e) {
-      return "";
+      return '';
     }
   };
 
   render() {
-    let {
-      settleSuccess,
-      paymentSuccess,
-      infoCompany,
-      successIcon,
-    } = this.state;
-    let colorText = this.props.color.primary || "#c00a27";
-    let secondaryColor = this.props.color.secondary || "#c00a27";
+    let { settleSuccess, paymentSuccess, infoCompany, successIcon } =
+      this.state;
+    let colorText = this.props.color.primary || '#c00a27';
+    let secondaryColor = this.props.color.secondary || '#c00a27';
     let paymentStatus =
-      settleSuccess && settleSuccess.message === "payment failed!"
+      settleSuccess && settleSuccess.message === 'payment failed!'
         ? false
         : true;
     let discount = 0;
     if (settleSuccess && settleSuccess.payments) {
       settleSuccess.payments.forEach((items) => {
-        if (items.paymentType === "voucher" || items.paymentType === "point") {
+        if (items.paymentType === 'voucher' || items.paymentType === 'point') {
           discount += items.paymentAmount;
         }
       });
@@ -171,71 +168,71 @@ class SettleSuccess extends Component {
     return (
       <div>
         <ModalStatus paymentStatus={paymentStatus} />
-        <div className="col-full" style={{ marginTop: 130, marginBottom: 50 }}>
-          <div id="primary" className="content-area">
+        <div className='col-full' style={{ marginTop: 130, marginBottom: 50 }}>
+          <div id='primary' className='content-area'>
             <div
-              className="stretch-full-width"
-              style={{ display: "flex", justifyContent: "center" }}
+              className='stretch-full-width'
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <main
-                id="main"
-                className="site-main"
+                id='main'
+                className='site-main'
                 style={{ maxWidth: 500, minWidth: 330 }}
               >
                 {settleSuccess && (
                   <div
                     style={{
-                      width: "100%",
+                      width: '100%',
                       borderRadius: 5,
                     }}
                   >
                     <h2
-                      className="text-center"
+                      className='text-center'
                       style={{
                         color: secondaryColor,
-                        fontFamily: "Arial Black",
+                        fontFamily: 'Arial Black',
                       }}
                     >
                       {this.getHeadMessage(
                         settleSuccess.message ||
-                          "Please proceed payment at the store"
+                          'Please proceed payment at the store'
                       )}
                     </h2>
                     <h4
-                      className="text-center"
+                      className='text-center'
                       style={{
                         color: secondaryColor,
-                        fontFamily: "Arial Black",
+                        fontFamily: 'Arial Black',
                       }}
                     >
                       {this.getSubtitleMessage(
                         settleSuccess.message ||
-                          "Please proceed payment at the store"
+                          'Please proceed payment at the store'
                       )}
                     </h4>
-                    {successIcon && successIcon !== "" ? (
+                    {successIcon && successIcon !== '' ? (
                       <img
                         src={successIcon}
-                        alt="success logo"
+                        alt='success logo'
                         style={{
                           height: 200,
-                          objectFit: "contain",
+                          objectFit: 'contain',
                           marginTop: 10,
-                          margin: "0 auto",
-                          display: "block",
+                          margin: '0 auto',
+                          display: 'block',
                         }}
                       />
                     ) : (
                       <div
-                        style={{ display: "flex", justifyContent: "center" }}
+                        style={{ display: 'flex', justifyContent: 'center' }}
                       >
                         <i
                           className={`fa ${
                             paymentStatus
-                              ? "fa-check-circle"
-                              : "fa-times-circle"
+                              ? 'fa-check-circle'
+                              : 'fa-times-circle'
                           } background-theme`}
-                          aria-hidden="true"
+                          aria-hidden='true'
                           style={{
                             marginTop: 10,
                             fontSize: 180,
@@ -247,17 +244,17 @@ class SettleSuccess extends Component {
                     <div
                       style={{
                         marginTop: 30,
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        verticalAlign: "top",
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        verticalAlign: 'top',
                       }}
                     >
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
                           marginTop: -15,
                         }}
                       >
@@ -267,16 +264,16 @@ class SettleSuccess extends Component {
                             height: 30,
                             borderRadius: 50,
                             border: `1px solid ${colorText}`,
-                            justifyContent: "center",
+                            justifyContent: 'center',
                           }}
                         >
                           <i
-                            className="fa fa-shopping-cart"
-                            aria-hidden="true"
+                            className='fa fa-shopping-cart'
+                            aria-hidden='true'
                             style={{
                               color: colorText,
                               fontSize: 18,
-                              alignSelf: "center",
+                              alignSelf: 'center',
                               marginLeft: 4,
                             }}
                           />
@@ -285,8 +282,8 @@ class SettleSuccess extends Component {
                           <div
                             style={{
                               color: colorText,
-                              fontWeight: "bold",
-                              textAlign: "left",
+                              fontWeight: 'bold',
+                              textAlign: 'left',
                               fontSize: 14,
                             }}
                           >
@@ -295,7 +292,7 @@ class SettleSuccess extends Component {
                           <div
                             style={{
                               color: colorText,
-                              textAlign: "left",
+                              textAlign: 'left',
                               marginTop: -8,
                               fontSize: 12,
                             }}
@@ -311,28 +308,28 @@ class SettleSuccess extends Component {
                           style={{
                             color: colorText,
                             fontSize: 14,
-                            fontWeight: "bold",
-                            textAlign: "center",
+                            fontWeight: 'bold',
+                            textAlign: 'center',
                           }}
                         >
                           {settleSuccess.payAtPOS
-                            ? "Amount to Pay"
+                            ? 'Amount to Pay'
                             : "You've Paid"}
                         </div>
                         <div
                           style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "center",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
                             marginLeft: -20,
                             marginTop: 10,
                           }}
                         >
                           <div
                             style={{
-                              color: "gray",
+                              color: 'gray',
                               fontSize: 10,
-                              fontWeight: "bold",
+                              fontWeight: 'bold',
                               marginTop: -20,
                             }}
                           >
@@ -340,15 +337,15 @@ class SettleSuccess extends Component {
                               this.props.companyInfo.currency.code}
                           </div>
                           <div>
-                            <div style={{ fontSize: 20, fontWeight: "bold" }}>
+                            <div style={{ fontSize: 20, fontWeight: 'bold' }}>
                               {this.getCurrency(totalAmount - discount)}
                             </div>
                             {discount > 0 && (
                               <div
                                 style={{
-                                  textAlign: "right",
+                                  textAlign: 'right',
                                   marginRight: -10,
-                                  textDecorationLine: "line-through",
+                                  textDecorationLine: 'line-through',
                                 }}
                               >
                                 {this.getCurrency(totalAmount)}
@@ -360,9 +357,9 @@ class SettleSuccess extends Component {
                     </div>
                     <div
                       style={{
-                        backgroundColor: "gray",
+                        backgroundColor: 'gray',
                         height: 1,
-                        width: "100%",
+                        width: '100%',
                         marginBottom: 10,
                         marginTop: 10,
                       }}
@@ -376,9 +373,9 @@ class SettleSuccess extends Component {
                     >
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         }}
                       >
                         <div>Date & Time</div>
@@ -391,30 +388,30 @@ class SettleSuccess extends Component {
                       {settleSuccess.paymentType && (
                         <div
                           style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <div>Paid By</div>
-                          <div>{settleSuccess.paymentType || "-"}</div>
+                          <div>{settleSuccess.paymentType || '-'}</div>
                         </div>
                       )}
                     </div>
                     <div
                       style={{
-                        backgroundColor: "gray",
+                        backgroundColor: 'gray',
                         height: 1,
-                        width: "100%",
+                        width: '100%',
                         marginBottom: 10,
                         marginTop: 10,
                       }}
                     />
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
                       }}
                     >
                       <Button
@@ -423,8 +420,8 @@ class SettleSuccess extends Component {
                           marginBottom: 10,
                           width: 100,
                           backgroundColor: colorText,
-                          border: "1px solid #FFF",
-                          fontWeight: "bold",
+                          border: '1px solid #FFF',
+                          fontWeight: 'bold',
                         }}
                       >
                         OK
@@ -434,9 +431,9 @@ class SettleSuccess extends Component {
                 )}
               </main>
               <span
-                data-toggle="modal"
-                data-target="#status-ordering-modal"
-                id="open-modal-status"
+                data-toggle='modal'
+                data-target='#status-ordering-modal'
+                id='open-modal-status'
               />
             </div>
           </div>

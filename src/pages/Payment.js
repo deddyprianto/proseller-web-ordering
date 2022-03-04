@@ -21,9 +21,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 
 import PointAddModal from 'components/pointAddModal';
+
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { CampaignAction } from 'redux/actions/CampaignAction';
+import { CustomerAction } from 'redux/actions/CustomerAction';
 import { OrderAction } from 'redux/actions/OrderAction';
+
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 
 import MyVoucherWarningModal from 'components/myVoucherList/components/MyVoucherWarningModal';
@@ -77,6 +80,7 @@ const Payment = ({ ...props }) => {
   const [isOpenSVC, setIsOpenSVC] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState({});
   const [selectedVouchers, setSelectedVouchers] = useState([]);
+  const [myVouchers, setMyVouchers] = useState([]);
   const [warningMessage, serWarningMessage] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -234,7 +238,7 @@ const Payment = ({ ...props }) => {
     }
     if (!isEmptyArray(selectedVouchers)) {
       selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.discount;
+        price = price - selectedVoucher.paymentAmount;
       });
     }
 
@@ -256,8 +260,16 @@ const Payment = ({ ...props }) => {
   };
 
   useEffect(() => {
-    const price = handlePrice();
+    const loadData = async () => {
+      const vouchers = await props.dispatch(CustomerAction.getVoucher());
 
+      setMyVouchers(vouchers.data);
+    };
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const price = handlePrice();
     setSelectedPoint(props.selectedPoint);
     setSelectedVouchers(props.selectedVoucher);
     getCampaignPoints();
@@ -420,31 +432,35 @@ const Payment = ({ ...props }) => {
   };
 
   const renderVoucher = () => {
-    return (
-      <Paper variant='outlined' style={styles.paperVoucher}>
-        <Button
-          style={styles.buttonVoucher}
-          variant='outlined'
-          disabled={handleDisableButton()}
-          onClick={() => {
-            handleSelectVoucher();
-          }}
-        >
-          <div style={styles.displayFlexAndAlignCenter}>
-            <CardGiftcardIcon style={styles.icon} />
-            <Typography style={styles.typography}>Use Voucher</Typography>
-          </div>
-          <ArrowForwardIosIcon style={styles.iconArrow} />
-        </Button>
+    if (!isEmptyArray(myVouchers)) {
+      return (
+        <Paper variant='outlined' style={styles.paperVoucher}>
+          <Button
+            style={styles.buttonVoucher}
+            variant='outlined'
+            disabled={handleDisableButton()}
+            onClick={() => {
+              handleSelectVoucher();
+            }}
+          >
+            <div style={styles.displayFlexAndAlignCenter}>
+              <CardGiftcardIcon style={styles.icon} />
+              <Typography style={styles.typography}>Use Voucher</Typography>
+            </div>
+            <ArrowForwardIosIcon style={styles.iconArrow} />
+          </Button>
 
-        {renderSelectedVoucher()}
-      </Paper>
-    );
+          {renderSelectedVoucher()}
+        </Paper>
+      );
+    }
   };
 
   const renderPoint = () => {
     const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
-    if (pointToRebateRatio && pointToRebateRatio !== '0:0') {
+    const isTotalPoint = props.campaignPoint.totalPoint > 0;
+
+    if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
       return (
         <Paper variant='outlined' style={styles.paper}>
           <Button
@@ -590,6 +606,11 @@ const Payment = ({ ...props }) => {
         JSON.stringify(
           encryptor.encrypt({ totalPrice: payload.totalNettAmount })
         )
+      );
+
+      localStorage.setItem(
+        `${config.prefix}_settleSuccess`,
+        JSON.stringify(encryptor.encrypt(response.data))
       );
       // localStorage.removeItem(`${config.prefix}_isOutletChanged`);
       // localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);

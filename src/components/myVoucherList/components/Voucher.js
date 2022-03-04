@@ -87,13 +87,13 @@ const Voucher = ({ item, quantity, ...props }) => {
       fontSize: 12,
       display: 'flex',
       alignItems: 'start',
-      color: 'black',
+      color: props.color.font,
     },
     iconExpiryDate: {
       width: 12,
       height: 12,
       marginRight: 2,
-      color: 'black',
+      color: props.color.font,
     },
     image: {
       height: '100%',
@@ -117,7 +117,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     typographyDescription: {
       maxWidth: gadgetScreen ? 200 : 340,
       fontSize: 12,
-      color: 'black',
+      color: props.color.font,
       display: '-webkit-box',
       WebkitLineClamp: 3,
       WebkitBoxOrient: 'vertical',
@@ -131,7 +131,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     },
     typographyExpiryDate: {
       fontSize: 12,
-      color: 'black',
+      color: props.color.font,
     },
     typographyName: {
       color: props.color.primary,
@@ -142,7 +142,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     typographyQuantity: {
       fontSize: 12,
       fontWeight: 'bold',
-      color: 'white',
+      color: props.color.font,
     },
   };
 
@@ -340,12 +340,12 @@ const Voucher = ({ item, quantity, ...props }) => {
 
       result.push({
         name: item.name,
-        isVoucher: 'true',
+        isVoucher: true,
         voucherId: item.id,
         paymentType: 'voucher',
         serialNumber: item.serialNumber,
         cannotBeMixed: item.validity?.cannotBeMixed,
-        discount,
+        paymentAmount: discount,
       });
 
       props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
