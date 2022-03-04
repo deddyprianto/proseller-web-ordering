@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import config from 'config';
 import filter from 'lodash/filter';
 import indexOf from 'lodash/indexOf';
 import _ from 'lodash';
-import LoadingOverlay from 'react-loading-overlay';
 
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
-
-import { CustomerAction } from 'redux/actions/CustomerAction';
 
 import Voucher from './components/Voucher';
 
@@ -24,6 +19,7 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state) => {
   return {
     selectedVoucher: state.payment.selectedVoucher,
+    myVoucher: state.customer.myVoucher,
   };
 };
 
@@ -44,7 +40,6 @@ const MyVoucherList = ({ ...props }) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 900;
   const [vouchers, setVouchers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   const styles = {
     root: {
@@ -122,21 +117,10 @@ const MyVoucherList = ({ ...props }) => {
   };
 
   useEffect(() => {
-    try {
-      const loadData = async () => {
-        setIsLoading(true);
-        const vouchers = await props.dispatch(CustomerAction.getVoucher());
-        const voucherGroup = handleVoucherGroup(vouchers.data);
+    const voucherGroup = handleVoucherGroup(props.myVoucher);
 
-        setVouchers(voucherGroup);
-
-        setIsLoading(false);
-      };
-      loadData();
-    } catch (e) {
-      // console.log(e);
-    }
-  }, []);
+    setVouchers(voucherGroup);
+  }, [props.myVoucher]);
 
   const renderVoucherList = () => {
     if (!isEmptyArray(vouchers)) {
@@ -157,22 +141,11 @@ const MyVoucherList = ({ ...props }) => {
         </Grid>
       );
     }
-
-    if (isEmptyArray(vouchers) && !isLoading) {
-      return (
-        <div>
-          <img src={config.url_emptyImage} alt='is empty' />
-          <Typography>Oppss.. Voucher Not Found.</Typography>
-        </div>
-      );
-    }
   };
 
   return (
     <Box component='div' sx={styles.root}>
-      <LoadingOverlay active={isLoading} spinner text='Loading...'>
-        {renderVoucherList()}
-      </LoadingOverlay>
+      {renderVoucherList()}
     </Box>
   );
 };
@@ -180,10 +153,16 @@ const MyVoucherList = ({ ...props }) => {
 MyVoucherList.defaultProps = {
   dispatch: null,
   selectedVoucher: [],
+  myVoucher: [],
 };
 
 MyVoucherList.propTypes = {
   dispatch: PropTypes.func,
+  myVoucher: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+    })
+  ),
   selectedVoucher: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,

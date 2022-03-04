@@ -66,9 +66,7 @@ const ProductRemoveCartModal = ({
 
   const handleRemoveProductInCart = async () => {
     setIsLoading(true);
-    await props.dispatch(
-      OrderAction.processRemoveCart(props.basket, selectedProductRemove)
-    );
+    await props.dispatch(OrderAction.processRemoveCart(selectedProductRemove));
 
     setIsLoading(false);
     handleClose();

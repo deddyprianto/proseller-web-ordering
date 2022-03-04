@@ -46,7 +46,6 @@ const mapDispatchToProps = (dispatch) => ({
 const Product = ({ item, ...props }) => {
   const [width] = useWindowSize();
   const useStyles = makeStyles({
-    box: {},
     image: {
       display: 'flex',
       justifyContent: 'center',
@@ -72,6 +71,7 @@ const Product = ({ item, ...props }) => {
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
+      color: props.color.font,
     },
     price: {
       paddingBottom: 6,

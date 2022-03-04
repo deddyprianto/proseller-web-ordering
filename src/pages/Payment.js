@@ -31,6 +31,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { SVCAction } from 'redux/actions/SVCAction';
 
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
+
 import MyVoucherWarningModal from 'components/myVoucherList/components/MyVoucherWarningModal';
 
 import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
@@ -244,7 +245,7 @@ const Payment = ({ ...props }) => {
     }
     if (!isEmptyArray(selectedVouchers)) {
       selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.discount;
+        price = price - selectedVoucher.paymentAmount;
       });
     }
 

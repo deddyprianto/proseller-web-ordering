@@ -1,7 +1,6 @@
 import { CONSTANT } from '../../helpers';
 import { OrderingService } from '../../Services/OrderingService';
 import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
-import _ from 'lodash';
 import config from '../../config';
 
 import { lsLoad } from '../../helpers/localStorage';
@@ -270,92 +269,18 @@ function updateCart(payload) {
       'cart/updateitem',
       'Bearer'
     );
-    console.log(response);
 
     return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
   };
 }
 
-function processUpdateCart(basket, products, key) {
+function processUpdateCart(product) {
   return async (dispatch) => {
     let payload = [];
-    if (key !== 'new') {
-      for (let index = 0; index < products.length; index++) {
-        let product = products[index];
-        let find = await basket.details.find((data) => data.id === product.id);
-        const quantity =
-          product.originalQuantity && product.promoQuantity
-            ? product.originalQuantity +
-              (product.quantity - product.promoQuantity)
-            : product.quantity;
-
-        let dataproduct = {
-          id: find.id,
-          productID: product.productID,
-          unitPrice: product.product.retailPrice,
-          quantity,
-        };
-
-        if (product.remark !== '' && product.remark !== undefined)
-          dataproduct.remark = product.remark;
-
-        if (!isEmptyArray(product.product.productModifiers)) {
-          console.log(product.product.productModifiers);
-          let totalModifier = 0;
-          let productModifiers = [...product.product.productModifiers];
-          dataproduct.modifiers = productModifiers;
-
-          let tempDetails = [];
-          for (let i = 0; i < dataproduct.modifiers.length; i++) {
-            tempDetails = [];
-            let data = dataproduct.modifiers[i];
-
-            for (let j = 0; j < data.modifier.details.length; j++) {
-              if (
-                data.modifier.details[j].quantity !== undefined &&
-                data.modifier.details[j].quantity > 0
-              ) {
-                // check if price is undefined
-                if (data.modifier.details[j].price === undefined) {
-                  data.modifier.details[j].price = 0;
-                }
-                tempDetails.push(data.modifier.details[j]);
-              }
-            }
-
-            // if not null, then replace details
-            dataproduct.modifiers[i].modifier.details = tempDetails;
-          }
-
-          //  calculate total modifier
-          await dataproduct.modifiers.forEach((group) => {
-            group.modifier.details.forEach((detail) => {
-              if (detail.quantity !== undefined && detail.quantity > 0) {
-                totalModifier += parseFloat(detail.quantity * detail.price);
-              }
-            });
-          });
-
-          // check if item modifier was deleted, if yes, then remove array modifier
-          dataproduct.modifiers = await _.remove(
-            dataproduct.modifiers,
-            (group) => {
-              return group.modifier.details.length > 0;
-            }
-          );
-
-          //  add total item modifier to subtotal product
-          dataproduct.unitPrice += totalModifier;
-        }
-        console.log(dataproduct);
-
-        payload.push(dataproduct);
-      }
-    } else {
-      payload = products;
-    }
+    payload.push(product);
 
     let basketUpdate = {};
+
     if (account) {
       basketUpdate = await dispatch(updateCart(payload));
     } else {
@@ -365,17 +290,10 @@ function processUpdateCart(basket, products, key) {
   };
 }
 
-function processRemoveCart(cartItem, selectedProduct) {
+function processRemoveCart(product) {
   return async (dispatch) => {
     let payload = [];
-
-    cartItem.details.forEach((item) => {
-      if (item.id === selectedProduct.id) {
-        payload.push({ ...item, quantity: 0 });
-      } else {
-        payload.push(item);
-      }
-    });
+    payload.push({ ...product, quantity: 0 });
 
     let cartItemUpdate = {};
     if (account) {
@@ -558,6 +476,20 @@ function submitOrdering(payload) {
   };
 }
 
+function submitTakeAway(payload) {
+  return async () => {
+    let response = await OrderingService.api(
+      'POST',
+      payload,
+      'cart/submitAndPay',
+      'Bearer'
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
 function submitSettle(payload) {
   return async () => {
     let response = await OrderingService.api(
@@ -608,19 +540,20 @@ function getProvider(
 
 function getCalculateFee(payload) {
   return async () => {
+    let response = await OrderingService.api(
+      'POST',
+      payload,
+      'delivery/calculateFee',
+      'Bearer'
+    );
     try {
-      let response = await OrderingService.api(
-        'POST',
-        payload,
-        'delivery/calculateFee',
-        'Bearer'
-      );
-      if (response.data.dataProvider !== undefined) {
-        return response.data;
+      if (response.data.dataProfider !== undefined) {
+        response.data.dataProvider = response.data.dataProfider;
       }
     } catch (e) {
       console.log(e);
     }
+    return response.data;
   };
 }
 
@@ -698,7 +631,7 @@ export const OrderAction = {
   deleteCart,
   submitBasket,
   submitOrdering,
-  submitAndPay,
+  submitTakeAway,
   getProvider,
   getCalculateFee,
   submitSettle,
@@ -707,6 +640,7 @@ export const OrderAction = {
   cartUpdate,
   shareURL,
   setData,
+  submitAndPay,
   changeOrderingMode,
   buildCart,
   getSettingOrdering,

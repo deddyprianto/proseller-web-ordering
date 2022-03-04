@@ -137,17 +137,17 @@ const ProductAddModal = ({
     },
     optionTitle: {
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
     },
     optionPrice: {
       paddingRight: 20,
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
     },
     optionPriceGadgetScreen: {
       paddingRight: 20,
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
     },
     title: {
       padding: 10,
@@ -159,7 +159,7 @@ const ProductAddModal = ({
       padding: 10,
       fontWeight: 600,
       fontSize: 13,
-      color: '#808080',
+      color: props.color.font,
     },
     qty: {
       fontSize: 26,
@@ -218,7 +218,7 @@ const ProductAddModal = ({
     },
     specialInstructionTypography: {
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
       fontWeight: 'bold',
     },
     optionalTypography: { fontSize: 10, color: '#777777', paddingLeft: 10 },
@@ -262,21 +262,30 @@ const ProductAddModal = ({
   };
 
   const handleProductSelected = () => {
-    if (!isEmptyObject(selectedProduct)) {
+    if (!isEmptyObject(selectedProduct) && qty && notes) {
       setQty(selectedProduct?.quantity);
       setNotes(selectedProduct?.remark);
     }
   };
 
-  useEffect(() => {
-    handleProductSelected();
-  }, []);
+  const handleProductVariantSelected = () => {
+    if (!isEmptyArray(selectedProduct?.product?.variants)) {
+      let selected = {};
+
+      selectedProduct.product?.variants.forEach((item) => {
+        if (item.id === selectedProduct.product?.id) {
+          selected = item;
+        }
+      });
+
+      setQty(selectedProduct?.quantity);
+      setNotes(selectedProduct?.remark);
+      setSelectedVariantOptions(selected?.attributes);
+    }
+  };
 
   const handleProductModifierSelected = () => {
-    if (
-      !isEmptyArray(selectedProduct?.product?.productModifiers) &&
-      isEmptyArray(selectedProductModifiers)
-    ) {
+    if (!isEmptyArray(selectedProduct?.product?.productModifiers)) {
       let defaultValue = [];
       selectedProduct.modifiers.forEach((item) => {
         item.modifier.details.forEach((detail) => {
@@ -289,12 +298,17 @@ const ProductAddModal = ({
           });
         });
       });
+      setQty(selectedProduct?.quantity);
+      setNotes(selectedProduct?.remark);
       setSelectedProductModifiers(defaultValue);
-      return defaultValue;
-    } else {
-      return selectedProductModifiers;
     }
   };
+
+  useEffect(() => {
+    handleProductModifierSelected();
+    handleProductVariantSelected();
+    handleProductSelected();
+  }, []);
 
   const handleProductModifierFormated = (items) => {
     let totalPrice = 0;
@@ -347,31 +361,6 @@ const ProductAddModal = ({
     return productModifiers;
   };
 
-  const handleProductVariantSelected = () => {
-    if (
-      !isEmptyArray(selectedProduct?.product?.variants) &&
-      isEmptyArray(selectedVariantOptions)
-    ) {
-      let selected = {};
-
-      selectedProduct.product?.variants.forEach((item) => {
-        if (item.id === selectedProduct.product?.id) {
-          selected = item;
-        }
-      });
-
-      setSelectedVariantOptions(selected.attributes);
-      return selected.attributes;
-    } else {
-      const defaultProductVariant = isEmptyArray(selectedVariantOptions)
-        ? product?.variants[0].attributes
-        : selectedVariantOptions;
-
-      setSelectedVariantOptions(defaultProductVariant);
-      return defaultProductVariant;
-    }
-  };
-
   const handleProductVariantFormated = (items) => {
     let productVariant = {};
     const productVariantName = items.map((item) => {
@@ -397,8 +386,13 @@ const ProductAddModal = ({
 
   useEffect(() => {
     if (!isEmptyArray(product?.variants)) {
-      const selected = handleProductVariantSelected();
-      const productVariantFormated = handleProductVariantFormated(selected);
+      const defaultProductVariant = isEmptyArray(selectedVariantOptions)
+        ? product?.variants[0]?.attributes
+        : selectedVariantOptions;
+
+      const productVariantFormated = handleProductVariantFormated(
+        defaultProductVariant
+      );
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
@@ -419,25 +413,26 @@ const ProductAddModal = ({
     }
 
     if (!isEmptyArray(product?.productModifiers)) {
-      const selected = handleProductModifierSelected();
-      const productModifierFormated = handleProductModifierFormated(selected);
+      const productModifierFormated = handleProductModifierFormated(
+        selectedProductModifiers
+      );
 
-      const totalAmount = totalPrice / qty;
+      const price = totalPrice / qty;
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
           id: selectedProduct.id,
           productID: `product::${product.id}`,
-          retailPrice: totalAmount,
+          retailPrice: price,
           remark: notes,
           quantity: qty,
-          unitPrice: totalAmount,
+          unitPrice: price,
           modifiers: productModifierFormated,
         });
       }
       return setProductAdd({
         productID: `product::${product.id}`,
-        retailPrice: totalAmount,
+        retailPrice: price,
         remark: notes,
         quantity: qty,
         modifiers: productModifierFormated,
@@ -538,7 +533,7 @@ const ProductAddModal = ({
                 qtyModifierSelected + selectedProductModifier.qty;
           });
 
-          const result = qtyModifierSelected >= productModifier.modifier.min;
+          const result = qtyModifierSelected >= productModifier.modifier?.min;
           qtyModifierSelected = 0;
           return result;
         }
@@ -555,33 +550,10 @@ const ProductAddModal = ({
     return true;
   };
 
-  const handleUpdate = ({ baskets, productUpdate }) => {
-    const result = [...baskets];
-
-    const basketIds = baskets.map((item) => {
-      return item.id;
-    });
-
-    const basketIdIndex = basketIds.indexOf(productUpdate.id);
-
-    if (basketIdIndex !== -1) {
-      result[basketIdIndex] = { ...productUpdate };
-    }
-
-    return result;
-  };
-
   const handleAddOrUpdateProduct = async () => {
     setIsLoading(true);
     if (!isEmptyObject(selectedProduct)) {
-      const basketUpdated = handleUpdate({
-        baskets: props.basket.details,
-        productUpdate,
-      });
-
-      await props.dispatch(
-        OrderAction.processUpdateCart(props.basket, basketUpdated, 'new')
-      );
+      await props.dispatch(OrderAction.processUpdateCart(productUpdate));
     } else {
       await props.dispatch(
         OrderAction.processAddCart(props.defaultOutlet, productAdd)
@@ -672,7 +644,8 @@ const ProductAddModal = ({
     name,
   }) => {
     const items = selectedProductModifiers;
-    const modifierProductIds = items.map((item) => {
+
+    const modifierProductIds = selectedProductModifiers.map((item) => {
       return item.modifierProductId;
     });
 
