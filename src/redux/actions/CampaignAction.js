@@ -2,13 +2,6 @@ import { CONSTANT } from '../../helpers';
 import { CRMService } from '../../Services/CRMService';
 import _ from 'lodash';
 
-function setData(data, constant) {
-  return {
-    type: constant,
-    data: data.Data,
-  };
-}
-
 function getCampaignStamps(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api(
@@ -53,7 +46,7 @@ function getCampaignStamps(payload = null) {
           _.iteratee(['stampsStatus', true])
         );
 
-        let dataStampsRasio = `${stampsTrueItem.length}':'${response.Data.stamps.stampsItem.length}`;
+        let dataStampsRatio = `${stampsTrueItem.length}":"${response.Data.stamps.stampsItem.length}`;
         let campaignStampsAnnouncement = false;
 
         if (
@@ -66,18 +59,18 @@ function getCampaignStamps(payload = null) {
 
         if (
           dataStamps &&
-          dataStampsRasio &&
+          dataStampsRatio &&
           dataStamps.length > 0 &&
-          dataStamps[0][dataStampsRasio.split(':')[0]] &&
-          dataStamps[0][dataStampsRasio.split(':')[0]].reward
+          dataStamps[0][dataStampsRatio.split(':')[0]] &&
+          dataStamps[0][dataStampsRatio.split(':')[0]].reward
         ) {
           let image =
-            dataStamps[0][dataStampsRasio.split(':')[0]].reward.imageURL;
+            dataStamps[0][dataStampsRatio.split(':')[0]].reward.imageURL;
           this.setState({ image });
         }
 
         response.Data = {
-          dataStampsRasio,
+          dataStampsRasio: dataStampsRatio,
           dataStamps,
           campaignStampsAnnouncement,
           stampsDetail,
@@ -85,21 +78,6 @@ function getCampaignStamps(payload = null) {
       }
     }
     dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_STAMPS));
-    return response;
-  };
-}
-
-function getCampaignByPoints(payload = null) {
-  return async (dispatch) => {
-    let response = await CRMService.api(
-      'GET',
-      payload,
-      'campaign/points',
-      'bearer'
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
-    dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_BY_POINTS));
     return response;
   };
 }
@@ -180,6 +158,28 @@ function getCampaignPoints(payload = null, companyId = null) {
     }
     dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_POINTS));
     return response;
+  };
+}
+
+function getCampaignByPoints(payload = null) {
+  return async (dispatch) => {
+    let response = await CRMService.api(
+      'GET',
+      payload,
+      'campaign/points',
+      'bearer'
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_BY_POINTS));
+    return response;
+  };
+}
+
+function setData(data, constant) {
+  return {
+    type: constant,
+    data: data.Data,
   };
 }
 

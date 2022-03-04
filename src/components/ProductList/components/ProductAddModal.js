@@ -49,17 +49,21 @@ const ProductAddModal = ({
   selectedProduct,
   ...props
 }) => {
+  const gadgetScreen = width < 600;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const styles = {
+    backgroundColor: {
+      backgroundColor: props.color.background,
+    },
     header: {
       display: 'flex',
-      flexDirection: 600 > width ? 'column' : 'row',
+      flexDirection: gadgetScreen ? 'column' : 'row',
     },
     imageSize: {
-      height: 340,
-      width: 340,
-      minWidth: width > 600 && 340,
+      height: gadgetScreen ? gadgetScreen : 340,
+      width: gadgetScreen ? gadgetScreen : 340,
+      minWidth: !gadgetScreen && 340,
       borderRadius: 5,
     },
     productName: {
@@ -69,15 +73,15 @@ const ProductAddModal = ({
       lineHeight: '30px',
       fontWeight: 600,
       paddingBottom: 10,
-      paddingLeft: 600 > width ? 0 : 10,
-      paddingTop: 600 > width && 10,
+      paddingLeft: gadgetScreen ? 0 : 10,
+      paddingTop: gadgetScreen && 10,
     },
     productDescription: {
       width: '100%',
       fontSize: 16,
       color: props.color.primary,
       lineHeight: '17px',
-      paddingLeft: 600 > width ? 0 : 10,
+      paddingLeft: gadgetScreen ? 0 : 10,
     },
     buttonIcon: {
       height: 35,
@@ -97,15 +101,6 @@ const ProductAddModal = ({
       color: 'white',
     },
     fullWidth: { width: '100%' },
-    footer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'start',
-      backgroundColor: '#657482',
-      alignItems: 'center',
-      alignContents: 'center',
-    },
-
     addText: {
       color: 'white',
       fontWeight: 600,
@@ -124,7 +119,10 @@ const ProductAddModal = ({
       alignItems: 'center',
       justifyContent: 'center',
     },
-    paper: { marginTop: 30 },
+    paper: {
+      marginTop: 30,
+      backgroundColor: props.color.background,
+    },
     modifierHeader: {
       display: 'flex',
       flexDirection: 'row',
@@ -142,6 +140,11 @@ const ProductAddModal = ({
       color: '#808080',
     },
     optionPrice: {
+      paddingRight: 20,
+      fontSize: 16,
+      color: '#808080',
+    },
+    optionPriceGadgetScreen: {
       paddingRight: 20,
       fontSize: 16,
       color: '#808080',
@@ -194,6 +197,8 @@ const ProductAddModal = ({
       lineHeight: '30px',
       fontWeight: 600,
     },
+    rootMofidierOptions: { display: 'flex', marginRight: 10 },
+
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
@@ -204,6 +209,40 @@ const ProductAddModal = ({
       position: 'relative',
       left: 0,
       top: 0,
+    },
+    rootSpecialInstruction: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: 20,
+    },
+    specialInstructionTypography: {
+      fontSize: 16,
+      color: '#808080',
+      fontWeight: 'bold',
+    },
+    optionalTypography: { fontSize: 10, color: '#777777', paddingLeft: 10 },
+    specialInstructionInput: {
+      minHeight: 100,
+      minWidth: '100%',
+      maxWidth: '100%',
+      borderRadius: 5,
+    },
+
+    footer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'start',
+      backgroundColor: '#657482',
+      alignItems: 'center',
+      alignContents: 'center',
+      padding: 10,
+    },
+    modifierOptionsPrice: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'end',
+      alignItems: 'end',
     },
   };
 
@@ -218,61 +257,49 @@ const ProductAddModal = ({
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
 
-  const handleProductModifierSelected = () => {
-    let defaultValue = [];
-    selectedProduct.modifiers.forEach((item) => {
-      item.modifier.details.forEach((detail) => {
-        defaultValue.push({
-          modifierId: item.modifierID,
-          modifierProductId: detail.productID,
-          name: detail.name,
-          price: detail.price,
-          qty: detail.quantity,
-        });
-      });
-    });
-    setSelectedProductModifiers(defaultValue);
-    setQty(selectedProduct?.quantity);
-    setNotes(selectedProduct?.remark);
+  const handlePrice = ({ qty, totalPrice }) => {
+    setTotalPrice(qty * totalPrice);
   };
 
   const handleProductSelected = () => {
-    setQty(selectedProduct?.quantity);
-    setNotes(selectedProduct?.remark);
+    if (!isEmptyObject(selectedProduct)) {
+      setQty(selectedProduct?.quantity);
+      setNotes(selectedProduct?.remark);
+    }
   };
 
   useEffect(() => {
-    if (!isEmptyArray(selectedProduct?.product?.productModifiers)) {
-      return handleProductModifierSelected();
-    }
-    if (!isEmptyObject(selectedProduct)) {
-      return handleProductSelected();
-    }
+    handleProductSelected();
   }, []);
 
-  const handleClear = () => {
-    setQty(1);
-    setTotalPrice(0);
-    setSelectedVariantOptions([]);
-    setSelectedProductModifiers([]);
-  };
-
-  const handleCurrency = (price) => {
-    const result = price.toLocaleString(props.companyInfo.currency.locale, {
-      style: 'currency',
-      currency: props.companyInfo.currency.code,
-    });
-
-    return result;
-  };
-
-  const handlePrice = ({ qty, totalPrice }) => {
-    setTotalPrice(qty * totalPrice);
+  const handleProductModifierSelected = () => {
+    if (
+      !isEmptyArray(selectedProduct?.product?.productModifiers) &&
+      isEmptyArray(selectedProductModifiers)
+    ) {
+      let defaultValue = [];
+      selectedProduct.modifiers.forEach((item) => {
+        item.modifier.details.forEach((detail) => {
+          defaultValue.push({
+            modifierId: item.modifierID,
+            modifierProductId: detail.productID,
+            name: detail.name,
+            price: detail.price,
+            qty: detail.quantity,
+          });
+        });
+      });
+      setSelectedProductModifiers(defaultValue);
+      return defaultValue;
+    } else {
+      return selectedProductModifiers;
+    }
   };
 
   const handleProductModifierFormated = (items) => {
     let totalPrice = 0;
     let productModifiers = [];
+
     if (!isEmptyArray(items)) {
       items.forEach((item) => {
         totalPrice = totalPrice + item.qty * item.price;
@@ -320,6 +347,31 @@ const ProductAddModal = ({
     return productModifiers;
   };
 
+  const handleProductVariantSelected = () => {
+    if (
+      !isEmptyArray(selectedProduct?.product?.variants) &&
+      isEmptyArray(selectedVariantOptions)
+    ) {
+      let selected = {};
+
+      selectedProduct.product?.variants.forEach((item) => {
+        if (item.id === selectedProduct.product?.id) {
+          selected = item;
+        }
+      });
+
+      setSelectedVariantOptions(selected.attributes);
+      return selected.attributes;
+    } else {
+      const defaultProductVariant = isEmptyArray(selectedVariantOptions)
+        ? product?.variants[0].attributes
+        : selectedVariantOptions;
+
+      setSelectedVariantOptions(defaultProductVariant);
+      return defaultProductVariant;
+    }
+  };
+
   const handleProductVariantFormated = (items) => {
     let productVariant = {};
     const productVariantName = items.map((item) => {
@@ -345,14 +397,8 @@ const ProductAddModal = ({
 
   useEffect(() => {
     if (!isEmptyArray(product?.variants)) {
-      const productVariants = !isEmptyArray(selectedVariantOptions)
-        ? selectedVariantOptions
-        : product?.variants[0]?.attributes;
-
-      setSelectedVariantOptions(productVariants);
-
-      const productVariantFormated =
-        handleProductVariantFormated(productVariants);
+      const selected = handleProductVariantSelected();
+      const productVariantFormated = handleProductVariantFormated(selected);
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
@@ -361,7 +407,7 @@ const ProductAddModal = ({
           retailPrice: productVariantFormated.retailPrice,
           remark: notes,
           quantity: qty,
-          unitPrice: qty * productVariantFormated.retailPrice,
+          unitPrice: productVariantFormated.retailPrice,
         });
       }
       return setProductAdd({
@@ -373,9 +419,8 @@ const ProductAddModal = ({
     }
 
     if (!isEmptyArray(product?.productModifiers)) {
-      const productModifierFormated = handleProductModifierFormated(
-        selectedProductModifiers
-      );
+      const selected = handleProductModifierSelected();
+      const productModifierFormated = handleProductModifierFormated(selected);
 
       const totalAmount = totalPrice / qty;
 
@@ -386,7 +431,7 @@ const ProductAddModal = ({
           retailPrice: totalAmount,
           remark: notes,
           quantity: qty,
-          unitPrice: qty * totalAmount,
+          unitPrice: totalAmount,
           modifiers: productModifierFormated,
         });
       }
@@ -411,7 +456,7 @@ const ProductAddModal = ({
           retailPrice: product.retailPrice,
           remark: notes,
           quantity: qty,
-          unitPrice: qty * product.retailPrice,
+          unitPrice: product.retailPrice,
         });
       }
 
@@ -423,13 +468,30 @@ const ProductAddModal = ({
       });
     }
   }, [
-    selectedVariantOptions,
     qty,
-    selectedProductModifiers,
-    product,
-    selectedProduct,
     notes,
+    product,
+    totalPrice,
+    selectedProduct,
+    selectedVariantOptions,
+    selectedProductModifiers,
   ]);
+
+  const handleClear = () => {
+    setQty(1);
+    setTotalPrice(0);
+    setSelectedVariantOptions([]);
+    setSelectedProductModifiers([]);
+  };
+
+  const handleCurrency = (price) => {
+    const result = price.toLocaleString(props.companyInfo.currency.locale, {
+      style: 'currency',
+      currency: props.companyInfo.currency.code,
+    });
+
+    return result;
+  };
 
   const isCheckedCheckbox = (modifier) => {
     const isChecked = selectedProductModifiers.find(
@@ -551,6 +613,24 @@ const ProductAddModal = ({
     return isDisabled;
   };
 
+  const handleDisabledRemoveButtonProductModifier = ({ modifier, min }) => {
+    if (min > 0) {
+      let qtyTotal = 0;
+
+      const modifierProducts = selectedProductModifiers.filter(
+        (item) => item.modifierId === modifier.modifierId
+      );
+
+      modifierProducts.forEach((modifierProduct) => {
+        qtyTotal = qtyTotal + modifierProduct.qty;
+      });
+
+      const isDisabled = qtyTotal <= min;
+
+      return isDisabled;
+    }
+  };
+
   const handleDisabledAddButtonProductModifier = ({ modifier, max }) => {
     if (max > 0) {
       let qtyTotal = 0;
@@ -663,7 +743,7 @@ const ProductAddModal = ({
           <Paper key={index} variant='outlined' style={styles.paper}>
             <Typography style={styles.title}>{variant.optionName}</Typography>
 
-            <RadioGroup defaultValue={variant.options[0]}>
+            <RadioGroup defaultValue={selectedVariantOptions[index]?.value}>
               {renderVariantOptions(variant)}
             </RadioGroup>
           </Paper>
@@ -677,17 +757,23 @@ const ProductAddModal = ({
   const renderAddAndRemoveButtonProductModifierOptions = ({
     modifierProductId,
     max,
+    min,
   }) => {
     const selectedProductModifier = selectedProductModifiers.find(
       (item) => item.modifierProductId === modifierProductId
     );
 
-    if (selectedProductModifier) {
+    if (selectedProductModifier && max > 1) {
       return (
-        <div style={styles.displayFlex}>
+        <div style={styles.rootMofidierOptions}>
           <IconButton
             style={styles.buttonIconProductModifier}
-            disabled={isLoading}
+            disabled={
+              handleDisabledRemoveButtonProductModifier({
+                modifier: selectedProductModifier,
+                min,
+              }) || isLoading
+            }
             onClick={() => {
               handleAddAndReduceQtyProductModifier({
                 key: 'reduce',
@@ -764,6 +850,28 @@ const ProductAddModal = ({
     }
   };
 
+  const renderAddAndRemoveButtonAndPrice = ({ modifier, productModifier }) => {
+    const renderButtonAndPrice = (
+      <>
+        <Typography style={styles.optionPriceGadgetScreen}>
+          {handleCurrency(modifier.price)}
+        </Typography>
+        {renderAddAndRemoveButtonProductModifierOptions({
+          modifierProductId: modifier.productID,
+          max: productModifier.modifier.max,
+          min: productModifier.modifier.min,
+        })}
+      </>
+    );
+
+    if (gadgetScreen) {
+      return (
+        <div style={styles.modifierOptionsPrice}>{renderButtonAndPrice}</div>
+      );
+    }
+    return <div style={styles.displayFlex}>{renderButtonAndPrice}</div>;
+  };
+
   const renderProductModifierOptions = (productModifier) => {
     const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
@@ -800,15 +908,7 @@ const ProductAddModal = ({
                   </Typography>
                 }
               />
-              <div style={styles.displayFlex}>
-                {renderAddAndRemoveButtonProductModifierOptions({
-                  modifierProductId: modifier.productID,
-                  max: productModifier.modifier.max,
-                })}
-                <Typography style={styles.optionPrice}>
-                  {handleCurrency(modifier.price)}
-                </Typography>
-              </div>
+              {renderAddAndRemoveButtonAndPrice({ modifier, productModifier })}
             </div>
             {productModifier.modifier.details.length - 1 !== index && (
               <Divider style={styles.divider} />
@@ -844,7 +944,7 @@ const ProductAddModal = ({
   };
 
   const renderCloseButton = () => {
-    if (width > 600) {
+    if (!gadgetScreen) {
       return (
         <IconButton
           style={styles.buttonIcon}
@@ -860,7 +960,7 @@ const ProductAddModal = ({
   };
 
   const renderCloseButtonGadgetSize = () => {
-    if (width < 600) {
+    if (gadgetScreen) {
       return (
         <div style={styles.buttonCloseGadgetSize}>
           <IconButton
@@ -909,32 +1009,14 @@ const ProductAddModal = ({
   const renderSpecialInstruction = () => {
     return (
       <div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingTop: 20,
-          }}
-        >
-          <Typography
-            style={{ fontSize: 16, color: '#808080', fontWeight: 'bold' }}
-          >
+        <div style={styles.rootSpecialInstruction}>
+          <Typography style={styles.specialInstructionTypography}>
             Special Instruction
           </Typography>
-          <Typography
-            style={{ fontSize: 10, color: '#777777', paddingLeft: 10 }}
-          >
-            Optional
-          </Typography>
+          <Typography style={styles.optionalTypography}>Optional</Typography>
         </div>
         <textarea
-          style={{
-            minHeight: 100,
-            minWidth: '100%',
-            maxWidth: '100%',
-            borderRadius: 5,
-          }}
+          style={styles.specialInstructionInput}
           value={notes}
           onChange={(event) => {
             setNotes(event.target.value);
@@ -945,75 +1027,70 @@ const ProductAddModal = ({
   };
 
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={() => {
-          handleClear();
-          handleClose();
-        }}
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-      >
-        <DialogContent>
-          <div>
-            <div style={styles.header}>
-              <div style={styles.imageAndButtonCloseGadgetSize}>
-                <img
-                  style={styles.imageSize}
-                  src={renderImageProduct()}
-                  alt={product.name}
-                  title={product.name}
-                />
+    <Dialog
+      open={open}
+      onClose={() => {
+        handleClear();
+        handleClose();
+      }}
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth='md'
+    >
+      <DialogContent style={styles.backgroundColor}>
+        <div style={styles.header}>
+          <div style={styles.imageAndButtonCloseGadgetSize}>
+            <img
+              style={styles.imageSize}
+              src={renderImageProduct()}
+              alt={product.name}
+              title={product.name}
+            />
 
-                {renderCloseButtonGadgetSize()}
-              </div>
-
-              <div style={styles.fullWidth}>
-                <Typography style={styles.productName}>
-                  {product.name} {variantName}
-                </Typography>
-                <Typography style={styles.productDescription}>
-                  {product.description}
-                </Typography>
-              </div>
-
-              {renderCloseButton()}
-            </div>
-
-            <div>{renderVariants(product?.variantOptions)}</div>
-
-            <div>{renderProductModifiers(product?.productModifiers)}</div>
-
-            <div>{renderSpecialInstruction()}</div>
+            {renderCloseButtonGadgetSize()}
           </div>
-        </DialogContent>
 
-        <DialogActions style={styles.footer}>
-          <IconButton
-            style={styles.buttonIcon}
-            disabled={qty === 0 || isLoading}
-            onClick={() => {
-              setQty(qty - 1);
-            }}
-          >
-            <RemoveIcon style={styles.icon} />
-          </IconButton>
-          <Typography style={styles.qty}>{qty}</Typography>
-          <IconButton
-            disabled={isLoading}
-            style={styles.buttonIcon}
-            onClick={() => {
-              setQty(qty + 1);
-            }}
-          >
-            <AddIcon style={styles.icon} />
-          </IconButton>
-          {renderTotalPriceOrRemove()}
-        </DialogActions>
-      </Dialog>
-    </div>
+          <div style={styles.fullWidth}>
+            <Typography style={styles.productName}>
+              {product.name} {variantName}
+            </Typography>
+            <Typography style={styles.productDescription}>
+              {product.description}
+            </Typography>
+          </div>
+
+          {renderCloseButton()}
+        </div>
+
+        <div>{renderVariants(product?.variantOptions)}</div>
+
+        <div>{renderProductModifiers(product?.productModifiers)}</div>
+
+        <div>{renderSpecialInstruction()}</div>
+      </DialogContent>
+      <DialogActions style={styles.footer}>
+        <IconButton
+          style={styles.buttonIcon}
+          disabled={qty === 0 || isLoading}
+          onClick={() => {
+            setQty(qty - 1);
+          }}
+        >
+          <RemoveIcon style={styles.icon} />
+        </IconButton>
+        <Typography style={styles.qty}>{qty}</Typography>
+        <IconButton
+          disabled={isLoading}
+          style={styles.buttonIcon}
+          onClick={() => {
+            setQty(qty + 1);
+          }}
+        >
+          <AddIcon style={styles.icon} />
+        </IconButton>
+        {renderTotalPriceOrRemove()}
+      </DialogActions>
+    </Dialog>
   );
 };
 

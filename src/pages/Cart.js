@@ -63,10 +63,6 @@ const useWindowSize = () => {
 };
 
 const Cart = ({ ...props }) => {
-  console.log(
-    props.deliveryAddress,
-    ':>>>>>>>deliveryAddressdeliveryAddressdeliveryAddressdeliveryAddress'
-  );
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   const styles = {
@@ -208,10 +204,32 @@ const Cart = ({ ...props }) => {
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
+  const [timeSlotLabel, setTimeSlotLabel] = useState({});
 
   useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
-  }, []);
+  }, [props]);
+
+  // useEffect(() => {
+  //   const orderTimeSlotTime = localStorage.getItem(
+  //     `${config.prefix}_order_action_time`
+  //   );
+  //   const orderTimeSlotDate = localStorage.getItem(
+  //     `${config.prefix}_order_action_date`
+  //   );
+
+  //   if (!_.isEmpty(orderTimeSlotTime) && !_.isEmpty(orderTimeSlotDate)) {
+  //     setTimeSlotLabel({
+  //       date: moment(orderTimeSlotDate).format('DD MMM YYYY'),
+  //       time: orderTimeSlotTime,
+  //     });
+  //   }
+  // }, [
+  //   props?.deliveryAddress,
+  //   props?.orderActionDate,
+  //   props?.orderActionTime,
+  //   props?.orderActionTimeSlot,
+  // ]);
 
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
@@ -496,7 +514,12 @@ const Cart = ({ ...props }) => {
         <div style={styles.rootGrandTotal}>
           <Typography style={styles.grandTotal}>GRAND TOTAL</Typography>
           <Typography style={styles.grandTotal}>
-            {handleCurrency(props.basket?.totalNettAmount)}
+            {handleCurrency(
+              props.basket?.totalNettAmount +
+                (props.orderingMode === 'DELIVERY'
+                  ? props.selectedDeliveryProvider?.deliveryFee
+                  : 0)
+            )}
           </Typography>
         </div>
         {props.basket?.inclusiveTax !== 0 && (

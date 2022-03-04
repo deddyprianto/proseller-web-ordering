@@ -1,6 +1,7 @@
 import { CONSTANT } from '../../helpers';
 import { OrderingService } from '../../Services/OrderingService';
 import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
+import _ from 'lodash';
 import config from '../../config';
 
 import { lsLoad } from '../../helpers/localStorage';
@@ -269,18 +270,92 @@ function updateCart(payload) {
       'cart/updateitem',
       'Bearer'
     );
+    console.log(response);
 
     return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
   };
 }
 
-function processUpdateCart(product) {
+function processUpdateCart(basket, products, key) {
   return async (dispatch) => {
     let payload = [];
-    payload.push(product);
+    if (key !== 'new') {
+      for (let index = 0; index < products.length; index++) {
+        let product = products[index];
+        let find = await basket.details.find((data) => data.id === product.id);
+        const quantity =
+          product.originalQuantity && product.promoQuantity
+            ? product.originalQuantity +
+              (product.quantity - product.promoQuantity)
+            : product.quantity;
+
+        let dataproduct = {
+          id: find.id,
+          productID: product.productID,
+          unitPrice: product.product.retailPrice,
+          quantity,
+        };
+
+        if (product.remark !== '' && product.remark !== undefined)
+          dataproduct.remark = product.remark;
+
+        if (!isEmptyArray(product.product.productModifiers)) {
+          console.log(product.product.productModifiers);
+          let totalModifier = 0;
+          let productModifiers = [...product.product.productModifiers];
+          dataproduct.modifiers = productModifiers;
+
+          let tempDetails = [];
+          for (let i = 0; i < dataproduct.modifiers.length; i++) {
+            tempDetails = [];
+            let data = dataproduct.modifiers[i];
+
+            for (let j = 0; j < data.modifier.details.length; j++) {
+              if (
+                data.modifier.details[j].quantity !== undefined &&
+                data.modifier.details[j].quantity > 0
+              ) {
+                // check if price is undefined
+                if (data.modifier.details[j].price === undefined) {
+                  data.modifier.details[j].price = 0;
+                }
+                tempDetails.push(data.modifier.details[j]);
+              }
+            }
+
+            // if not null, then replace details
+            dataproduct.modifiers[i].modifier.details = tempDetails;
+          }
+
+          //  calculate total modifier
+          await dataproduct.modifiers.forEach((group) => {
+            group.modifier.details.forEach((detail) => {
+              if (detail.quantity !== undefined && detail.quantity > 0) {
+                totalModifier += parseFloat(detail.quantity * detail.price);
+              }
+            });
+          });
+
+          // check if item modifier was deleted, if yes, then remove array modifier
+          dataproduct.modifiers = await _.remove(
+            dataproduct.modifiers,
+            (group) => {
+              return group.modifier.details.length > 0;
+            }
+          );
+
+          //  add total item modifier to subtotal product
+          dataproduct.unitPrice += totalModifier;
+        }
+        console.log(dataproduct);
+
+        payload.push(dataproduct);
+      }
+    } else {
+      payload = products;
+    }
 
     let basketUpdate = {};
-
     if (account) {
       basketUpdate = await dispatch(updateCart(payload));
     } else {
@@ -290,10 +365,17 @@ function processUpdateCart(product) {
   };
 }
 
-function processRemoveCart(product) {
+function processRemoveCart(cartItem, selectedProduct) {
   return async (dispatch) => {
     let payload = [];
-    payload.push({ ...product, quantity: 0 });
+
+    cartItem.details.forEach((item) => {
+      if (item.id === selectedProduct.id) {
+        payload.push({ ...item, quantity: 0 });
+      } else {
+        payload.push(item);
+      }
+    });
 
     let cartItemUpdate = {};
     if (account) {
