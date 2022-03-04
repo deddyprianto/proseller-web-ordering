@@ -1,7 +1,7 @@
-import { CONSTANT } from "../../helpers";
-import config from "../../config";
+import { CONSTANT } from '../../helpers';
+import config from '../../config';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const defaultState = {
   defaultOutlet:
     encryptor.decrypt(
@@ -13,7 +13,7 @@ const defaultState = {
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
     case CONSTANT.DEFAULT_OUTLET:
-      if (!(action.data.status && action.data.status === "failed")) {
+      if (!(action.data.status && action.data.status === 'failed')) {
         localStorage.setItem(
           `${config.prefix}_defaultOutlet`,
           JSON.stringify(encryptor.encrypt(action.data))

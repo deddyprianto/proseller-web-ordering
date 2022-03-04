@@ -1,4 +1,4 @@
-import { CONSTANT } from "../../helpers";
+import { CONSTANT } from '../../helpers';
 const defaultState = {
   isOpen: true,
   myVoucher: null,
@@ -21,12 +21,12 @@ export default function reducer(state = defaultState, action) {
         ...state,
         fields: action.data,
       };
-    case "SET_DEFAULT_PHONE_NUMBER":
+    case 'SET_DEFAULT_PHONE_NUMBER':
       return {
         ...state,
         defaultPhoneNumber: action.data,
       };
-    case "SET_DEFAULT_EMAIL":
+    case 'SET_DEFAULT_EMAIL':
       return {
         ...state,
         defaultEmail: action.data,

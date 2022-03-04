@@ -1,51 +1,65 @@
 import { CONSTANT } from '../../helpers';
 import { OrderingService } from '../../Services/OrderingService';
-import {
-  isEmptyData,
-  isEmptyArray,
-  isEmptyObject,
-} from '../../helpers/CheckEmpty';
-import _ from 'lodash';
+import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
 import config from '../../config';
 
 import { lsLoad } from '../../helpers/localStorage';
 import { CRMService } from '../../Services/CRMService';
 
-// const Swal = require("sweetalert2");
-
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
-export const OrderAction = {
-  addCart,
-  getCart,
-  updateCart,
-  processAddCart,
-  processUpdateCart,
-  processRemoveCart,
-  deleteCart,
-  submitBasket,
-  submitOrdering,
-  submitTakeAway,
-  getProvider,
-  getCalculateFee,
-  submitSettle,
-  getCartPending,
-  getCartCompleted,
-  cartUpdate,
-  shareURL,
-  setData,
-  changeOrderingMode,
-  buildCart,
-  getSettingOrdering,
-  moveCart,
-  getTimeSlot,
-  submitMembership,
-  updateCartInfo,
-};
+function setData(data, constant) {
+  return {
+    type: constant,
+    data: data,
+  };
+}
+
+function buildCart(payload = {}) {
+  return async (dispatch) => {
+    try {
+      payload.orderingMode =
+        localStorage.getItem(`${config.prefix}_ordering_mode`) ||
+        (window.location.hostname.includes('emenu') ? 'DINEIN' : 'DELIVERY');
+    } catch (error) {
+      console.log(error);
+    }
+    const response = await OrderingService.api(
+      'POST',
+      payload,
+      'cart/build',
+      'Bearer'
+    );
+
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log('Status is ' + response.ResultCode || response.resultCode);
+      localStorage.removeItem(`${config.prefix}_offlineCart`);
+      return dispatch(setData({}, CONSTANT.DATA_BASKET));
+    }
+    // else if(response)
+    else {
+      let { data } = response;
+      let basketData = { ...data };
+
+      if (data.message) {
+        data = null;
+        basketData = {};
+      }
+
+      // console.log('Status is not 400');
+
+      localStorage.setItem(
+        `${config.prefix}_offlineCart`,
+        JSON.stringify(data)
+      );
+      return dispatch(setData(basketData, CONSTANT.DATA_BASKET));
+    }
+  };
+}
 
 function shareURL(tableNo, outletID, orderMode) {
-  return async (dispatch) => {
+  return async () => {
     const payload = {
       tableNo: tableNo,
       outletID: outletID,
@@ -56,7 +70,7 @@ function shareURL(tableNo, outletID, orderMode) {
     const response = await OrderingService.api(
       'POST',
       payload,
-      `cart/generateshareurl/`,
+      'cart/generateshareurl/',
       'Bearer'
     );
 
@@ -132,16 +146,6 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === 'ProductPlaceholder';
         });
-      let ActiveNavigationColor =
-        data &&
-        data.settings.find((items) => {
-          return items.settingKey === 'ActiveNavigationColor';
-        });
-      let InactiveNavigationColor =
-        data &&
-        data.settings.find((items) => {
-          return items.settingKey === 'InactiveNavigationColor';
-        });
 
       if (outletSelection === undefined) {
         outletSelection = 'DEFAULT';
@@ -164,9 +168,6 @@ function getSettingOrdering() {
         textButtonColor: textButtonColor.settingValue || '#FFFFFF',
         textWarningColor: textWarningColor.settingValue || 'red',
         productPlaceholder: ProductPlaceholder || null,
-        activeNavigationColor: ActiveNavigationColor.settingValue || '#FA8072',
-        inactiveNavigationColor:
-          InactiveNavigationColor.settingValue || '#FFFAFA',
       };
       dispatch({ type: 'SET_THEME', payload });
       dispatch({
@@ -179,179 +180,48 @@ function getSettingOrdering() {
   };
 }
 
-function processAddCart(defaultOutlet, selectedItem) {
+function getCart(isSetData = true) {
   return async (dispatch) => {
-    // console.log(selectedItem);
-    // if (isEmptyData(selectedItem.product.retailPrice)) {
-    //   selectedItem.product.retailPrice = 0;
-    // }
-
-    // ORIGINAL PRODUCT
-    let product = {
-      productID: selectedItem.productID,
-      unitPrice: selectedItem?.product?.retailPrice || selectedItem.retailPrice,
-      quantity: selectedItem.quantity,
-    };
-
-    if (selectedItem.remark !== '' || selectedItem.remark !== undefined)
-      product.remark = selectedItem.remark;
-
-    if (!isEmptyArray(selectedItem?.modifiers)) {
-      product.modifiers = selectedItem.modifiers;
+    // IF CUSTOMER NOT LOGIN
+    if (!account) {
+      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
+      offlineCart = JSON.parse(offlineCart);
+      if (!isEmptyObject(offlineCart)) {
+        if (isSetData)
+          return dispatch(setData(offlineCart, CONSTANT.DATA_BASKET));
+        return offlineCart;
+      }
+      return;
     }
 
-    if (!isEmptyArray(selectedItem?.product?.productModifiers || [])) {
-      const productModifierClone = JSON.stringify(
-        selectedItem.product.productModifiers
-      );
-      let productModifiers = JSON.parse(productModifierClone);
+    const response = await OrderingService.api(
+      'GET',
+      null,
+      'cart/getcart',
+      'Bearer'
+    );
 
-      product.modifiers = productModifiers;
-
-      let tempDetails = [];
-      for (let i = 0; i < product.modifiers.length; i++) {
-        tempDetails = [];
-        let data = product.modifiers[i];
-        for (let j = 0; j < data.modifier.details.length; j++) {
-          if (
-            data.modifier.details[j].quantity !== undefined &&
-            data.modifier.details[j].quantity > 0
-          ) {
-            // check if price is undefined
-            if (data.modifier.details[j].price === undefined) {
-              data.modifier.details[j].price = 0;
-            }
-
-            tempDetails.push(data.modifier.details[j]);
-          }
-        }
-        // replace details
-        product.modifiers[i].modifier.details = tempDetails;
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    else if (response.data && response.data.message !== 'No details data') {
+      if (response.data.status === 'PENDING_PAYMENT') {
+        await OrderingService.api('DELETE', null, 'cart/delete', 'Bearer');
+        return {};
       }
 
-      // check if item modifier was deleted, if yes, then remove array modifier
-      product.modifiers = await _.remove(product.modifiers, (group) => {
-        return group.modifier.details.length > 0;
-      });
-
-      //  calculate total modifier
-      let totalModifier = 0;
-      await product.modifiers.forEach((group) => {
-        if (group.postToServer === true) {
-          group.modifier.details.forEach((detail) => {
-            if (detail.quantity !== undefined && detail.quantity > 0) {
-              totalModifier += parseFloat(detail.quantity * detail.price);
-            }
-          });
-        }
-      });
-
-      //  add total item modifier to subtotal product
-      product.unitPrice += totalModifier;
-    }
-
-    let payload = {
-      outletID: `outlet::${defaultOutlet.id}`,
-      details: [],
-    };
-
-    payload.details.push(product);
-
-    if (account) {
-      dispatch(addCart(payload));
-    } else {
-      dispatch(processOfflineCart(payload, 'Add'));
-    }
-  };
-}
-
-function processUpdateCart(basket, products, key) {
-  return async (dispatch) => {
-    let payload = [];
-
-    if (key !== 'new') {
-      for (let index = 0; index < products.length; index++) {
-        let product = products[index];
-        console.log('product:', product);
-        let find = await basket.details.find((data) => data.id === product.id);
-        const quantity =
-          product.originalQuantity && product.promoQuantity
-            ? product.originalQuantity +
-              (product.quantity - product.promoQuantity)
-            : product.quantity;
-        let dataproduct = {
-          id: find.id,
-          productID: product.productID,
-          unitPrice: product.product.retailPrice,
-          quantity,
-        };
-
-        if (product.remark !== '' && product.remark !== undefined)
-          dataproduct.remark = product.remark;
-
-        if (!isEmptyArray(product.product.productModifiers)) {
-          console.log(product.product.productModifiers);
-          let totalModifier = 0;
-          let productModifiers = [...product.product.productModifiers];
-          dataproduct.modifiers = productModifiers;
-
-          let tempDetails = [];
-          for (let i = 0; i < dataproduct.modifiers.length; i++) {
-            tempDetails = [];
-            let data = dataproduct.modifiers[i];
-
-            for (let j = 0; j < data.modifier.details.length; j++) {
-              if (
-                data.modifier.details[j].quantity !== undefined &&
-                data.modifier.details[j].quantity > 0
-              ) {
-                // check if price is undefined
-                if (data.modifier.details[j].price === undefined) {
-                  data.modifier.details[j].price = 0;
-                }
-                tempDetails.push(data.modifier.details[j]);
-              }
-            }
-
-            // if not null, then replace details
-            dataproduct.modifiers[i].modifier.details = tempDetails;
-          }
-
-          //  calculate total modifier
-          await dataproduct.modifiers.forEach((group) => {
-            group.modifier.details.forEach((detail) => {
-              if (detail.quantity !== undefined && detail.quantity > 0) {
-                totalModifier += parseFloat(detail.quantity * detail.price);
-              }
-            });
-          });
-
-          // check if item modifier was deleted, if yes, then remove array modifier
-          dataproduct.modifiers = await _.remove(
-            dataproduct.modifiers,
-            (group) => {
-              return group.modifier.details.length > 0;
-            }
-          );
-
-          //  add total item modifier to subtotal product
-          dataproduct.unitPrice += totalModifier;
-        }
-        console.log(dataproduct);
-
-        payload.push(dataproduct);
+      if (isSetData) {
+        return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
       }
-    } else {
-      payload = products;
+
+      return response.data;
+    } else if (response.ResultCode === 404) {
+      if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
+      return {};
+    } else if (response.data === null) {
+      if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
 
-    let basketUpdate = {};
-    if (account) {
-      basketUpdate = await dispatch(updateCart(payload));
-    } else {
-      basketUpdate = await dispatch(processOfflineCart(payload, 'Update'));
-    }
-    return basketUpdate;
+    return response;
   };
 }
 
@@ -385,7 +255,53 @@ function processOfflineCart(payload, mode) {
           return await dispatch(buildCart(offlineCart));
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
+  };
+}
+
+function updateCart(payload) {
+  return async (dispatch) => {
+    const response = await OrderingService.api(
+      'POST',
+      payload,
+      'cart/updateitem',
+      'Bearer'
+    );
+
+    return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+  };
+}
+
+function processUpdateCart(product) {
+  return async (dispatch) => {
+    let payload = [];
+    payload.push(product);
+
+    let basketUpdate = {};
+
+    if (account) {
+      basketUpdate = await dispatch(updateCart(payload));
+    } else {
+      basketUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+    }
+    return basketUpdate;
+  };
+}
+
+function processRemoveCart(product) {
+  return async (dispatch) => {
+    let payload = [];
+    payload.push({ ...product, quantity: 0 });
+
+    let cartItemUpdate = {};
+    if (account) {
+      cartItemUpdate = await dispatch(updateCart(payload));
+    } else {
+      cartItemUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+    }
+    return cartItemUpdate;
   };
 }
 
@@ -395,7 +311,7 @@ function moveCart(payload) {
       const response = await OrderingService.api(
         'POST',
         payload,
-        `cart/moveItem`,
+        'cart/moveItem',
         'Bearer'
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
@@ -410,12 +326,30 @@ function moveCart(payload) {
   };
 }
 
+function changeOrderingMode(payload) {
+  return async () => {
+    if (account && payload.orderingMode) {
+      let response = await OrderingService.api(
+        'POST',
+        payload,
+        'cart/changeOrderingMode',
+        'Bearer'
+      );
+      if (response.ResultCode >= 400 || response.resultCode >= 400)
+        console.log(response);
+      return response;
+    } else {
+      return { resultCode: 400 };
+    }
+  };
+}
+
 function addCart(payload) {
   return async (dispatch) => {
     const response = await OrderingService.api(
       'POST',
       payload,
-      `cart/additem`,
+      'cart/additem',
       'Bearer'
     );
 
@@ -432,132 +366,55 @@ function addCart(payload) {
           dispatch(changeOrderingMode(payload));
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
 
-    try {
-      document.getElementById('close-modal').click();
-    } catch (e) {}
-
-    // console.log(response)
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
-      console.log(
-        'Dispatching CONSTANT.DATA_BASKET from OrderAction.addCart ',
-        response.data
-      );
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
   };
 }
 
-function buildCart(payload = {}) {
+function processAddCart(defaultOutlet, selectedItem) {
   return async (dispatch) => {
-    try {
-      payload.orderingMode =
-        localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (window.location.hostname.includes('emenu') ? 'DINEIN' : 'DELIVERY');
-    } catch (error) {}
-    const response = await OrderingService.api(
-      'POST',
-      payload,
-      `cart/build`,
-      'Bearer'
-    );
+    let payload = {
+      outletID: `outlet::${defaultOutlet.id}`,
+      details: [],
+    };
 
-    try {
-      document.getElementById('close-modal').click();
-    } catch (e) {}
+    let product = {
+      productID: selectedItem.productID,
+      unitPrice: selectedItem?.product?.retailPrice || selectedItem.retailPrice,
+      quantity: selectedItem.quantity,
+    };
 
-    // console.log(response);
-    if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log('Status is ' + response.ResultCode || response.resultCode);
-      localStorage.removeItem(`${config.prefix}_offlineCart`);
-      return dispatch(setData({}, CONSTANT.DATA_BASKET));
+    if (selectedItem.remark !== '' || selectedItem.remark !== undefined)
+      product.remark = selectedItem.remark;
+
+    if (!isEmptyArray(selectedItem?.modifiers)) {
+      product.modifiers = selectedItem.modifiers;
     }
-    // else if(response)
-    else {
-      let { data } = response;
-      let basketData = { ...data };
 
-      if (data.message) {
-        data = null;
-        basketData = {};
-      }
-      console.log('Status is not 400');
-      localStorage.setItem(
-        `${config.prefix}_offlineCart`,
-        JSON.stringify(data)
-      );
-      return dispatch(setData(basketData, CONSTANT.DATA_BASKET));
+    payload.details.push(product);
+
+    if (account) {
+      await dispatch(addCart(payload));
+    } else {
+      await dispatch(processOfflineCart(payload, 'Add'));
     }
-  };
-}
-
-function updateCart(payload) {
-  return async (dispatch) => {
-    await OrderingService.api('POST', payload, `cart/updateitem`, 'Bearer');
-    try {
-      document.getElementById('close-modal').click();
-    } catch (e) {}
-
-    if (window.location.hash === '#/basket') {
-      await localStorage.removeItem(`${config.prefix}_dataBasket`);
-      // window.location.reload();
-    }
-    return dispatch(getCart());
   };
 }
 
 function updateCartInfo(payload) {
   return async (dispatch) => {
-    await OrderingService.api('POST', payload, `cart/updateCartInfo`, 'Bearer');
+    await OrderingService.api('POST', payload, 'cart/updateCartInfo', 'Bearer');
     try {
-    } catch (e) {}
+      console.log('in');
+    } catch (e) {
+      console.log(e);
+    }
     return dispatch(getCart());
-  };
-}
-
-function getCart(isSetData = true) {
-  return async (dispatch) => {
-    // IF CUSTOMER NOT LOGIN
-    if (!account) {
-      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
-      offlineCart = JSON.parse(offlineCart);
-      if (!isEmptyObject(offlineCart)) {
-        if (isSetData)
-          return dispatch(setData(offlineCart, CONSTANT.DATA_BASKET));
-        return offlineCart;
-      }
-      return;
-    }
-
-    const response = await OrderingService.api(
-      'GET',
-      null,
-      `cart/getcart`,
-      'Bearer'
-    );
-
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
-    else if (response.data && response.data.message !== 'No details data') {
-      if (response.data.status === 'PENDING_PAYMENT') {
-        await OrderingService.api('DELETE', null, `cart/delete`, 'Bearer');
-        return {};
-      }
-
-      if (isSetData) {
-        return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
-      }
-
-      return response.data;
-    } else if (response.ResultCode === 404) {
-      if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
-      return {};
-    } else if (response.data === null) {
-      if (isSetData) return dispatch(setData({}, CONSTANT.DATA_BASKET));
-    }
-
-    return response;
   };
 }
 
@@ -580,7 +437,7 @@ function deleteCart(isDeleteServer = false) {
       const response = await OrderingService.api(
         'DELETE',
         null,
-        `cart/delete`,
+        'cart/delete',
         'Bearer'
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -592,11 +449,11 @@ function deleteCart(isDeleteServer = false) {
 }
 
 function submitBasket(payload) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'POST',
       payload,
-      `cart/submit`,
+      'cart/submit',
       'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -606,25 +463,11 @@ function submitBasket(payload) {
 }
 
 function submitOrdering(payload) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'POST',
       payload,
-      `cart/settle`,
-      'Bearer'
-    );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
-    return response;
-  };
-}
-
-function submitTakeAway(payload) {
-  return async (dispatch) => {
-    let response = await OrderingService.api(
-      'POST',
-      payload,
-      `cart/submitAndPay`,
+      'cart/settle',
       'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -634,11 +477,11 @@ function submitTakeAway(payload) {
 }
 
 function submitSettle(payload) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'POST',
       payload,
-      `cart/customer/settle`,
+      'cart/customer/settle',
       'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -648,11 +491,11 @@ function submitSettle(payload) {
 }
 
 function submitMembership(payload) {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
       'POST',
       payload,
-      `sales/customer/submit`,
+      'sales/customer/submit',
       'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -673,7 +516,7 @@ function getProvider(
     let response = await OrderingService.api(
       'POST',
       payload,
-      `delivery/providers`,
+      'delivery/providers',
       'Bearer'
     );
     dispatch({ type: 'SET_DELIVERY_PROVIDERS', payload: response.data });
@@ -682,24 +525,25 @@ function getProvider(
 }
 
 function getCalculateFee(payload) {
-  return async (dispatch) => {
-    let response = await OrderingService.api(
-      'POST',
-      payload,
-      `delivery/calculateFee`,
-      'Bearer'
-    );
+  return async () => {
     try {
-      if (response.data.dataProfider !== undefined) {
-        response.data.dataProvider = response.data.dataProfider;
+      let response = await OrderingService.api(
+        'POST',
+        payload,
+        'delivery/calculateFee',
+        'Bearer'
+      );
+      if (response.data.dataProvider !== undefined) {
+        return response.data;
       }
-    } catch (e) {}
-    return response.data;
+    } catch (e) {
+      console.log(e);
+    }
   };
 }
 
 function getCartPending(id) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'GET',
       null,
@@ -711,7 +555,7 @@ function getCartPending(id) {
 }
 
 function getCartCompleted(id) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'GET',
       null,
@@ -723,11 +567,11 @@ function getCartCompleted(id) {
 }
 
 function cartUpdate(payload) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'POST',
       payload,
-      `outlet/cart/update`,
+      'outlet/cart/update',
       'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
@@ -736,58 +580,56 @@ function cartUpdate(payload) {
   };
 }
 
-function changeOrderingMode(payload) {
-  return async (dispatch) => {
-    if (account && payload.orderingMode) {
-      let response = await OrderingService.api(
-        'POST',
-        payload,
-        `cart/changeOrderingMode`,
-        'Bearer'
-      );
-      if (response.ResultCode >= 400 || response.resultCode >= 400)
-        console.log(response);
-      return response;
-    } else {
-      return { resultCode: 400 };
-    }
-  };
-}
-
 function getTimeSlot(payload) {
-  return async (dispatch) => {
-    let response = await OrderingService.api('POST', payload, `timeslot`);
+  return async () => {
+    let response = await OrderingService.api('POST', payload, 'timeslot');
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     return response;
   };
 }
 
-function setData(data, constant) {
-  return {
-    type: constant,
-    data: data,
-  };
-}
+function submitAndPay(payload) {
+  return async () => {
+    let response = await OrderingService.api(
+      'POST',
+      payload,
+      'cart/submitAndPay',
+      'Bearer'
+    );
 
-function processRemoveCart(cartItem, selectedProduct) {
-  return async (dispatch) => {
-    let payload = [];
-
-    cartItem.details.forEach((item) => {
-      if (item.id === selectedProduct.id) {
-        payload.push({ ...item, quantity: 0 });
-      } else {
-        payload.push(item);
-      }
-    });
-
-    let cartItemUpdate = {};
-    if (account) {
-      cartItemUpdate = await dispatch(updateCart(payload));
-    } else {
-      cartItemUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log(response);
     }
-    return cartItemUpdate;
+
+    return response;
   };
 }
+
+export const OrderAction = {
+  addCart,
+  getCart,
+  updateCart,
+  processAddCart,
+  processUpdateCart,
+  processRemoveCart,
+  deleteCart,
+  submitBasket,
+  submitOrdering,
+  submitAndPay,
+  getProvider,
+  getCalculateFee,
+  submitSettle,
+  getCartPending,
+  getCartCompleted,
+  cartUpdate,
+  shareURL,
+  setData,
+  changeOrderingMode,
+  buildCart,
+  getSettingOrdering,
+  moveCart,
+  getTimeSlot,
+  submitMembership,
+  updateCartInfo,
+};

@@ -1,7 +1,7 @@
-import { CONSTANT } from "../../helpers";
-import config from "../../config";
+import { CONSTANT } from '../../helpers';
+import config from '../../config';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
   infoCompany: {
@@ -9,7 +9,7 @@ const defaultState = {
     isFetching: false,
     errors: false,
   },
-  domainName: localStorage.getItem(`apiDomainName`) || null,
+  domainName: localStorage.getItem('apiDomainName') || null,
 };
 
 export default function reducer(state = defaultState, action) {
@@ -18,7 +18,7 @@ export default function reducer(state = defaultState, action) {
       return Object.assign({}, state, {
         product: action.data,
       });
-    case "GET_COMPANY_INFO":
+    case 'GET_COMPANY_INFO':
       return {
         ...state,
         companyInfo: {
@@ -27,13 +27,13 @@ export default function reducer(state = defaultState, action) {
           isFetching: true,
         },
       };
-    case "SET_DOMAIN_NAME":
-      localStorage.setItem(`apiDomainName`, action.payload);
+    case 'SET_DOMAIN_NAME':
+      localStorage.setItem('apiDomainName', action.payload);
       return {
         ...state,
         domainName: action.payload,
       };
-    case "GET_COMPANY_INFO_SUCCESS":
+    case 'GET_COMPANY_INFO_SUCCESS':
       return {
         ...state,
         companyInfo: {
@@ -43,7 +43,7 @@ export default function reducer(state = defaultState, action) {
           errors: false,
         },
       };
-    case "GET_COMPANY_INFO_FAILED":
+    case 'GET_COMPANY_INFO_FAILED':
       return {
         ...state,
         companyInfo: {

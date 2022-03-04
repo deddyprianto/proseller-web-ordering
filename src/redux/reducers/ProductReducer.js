@@ -1,6 +1,6 @@
-import { CONSTANT } from "../../helpers";
-import config from "../../config";
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import { CONSTANT } from '../../helpers';
+import config from '../../config';
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const defaultState = {
   categories:
@@ -27,48 +27,48 @@ export default function reducer(state = defaultState, action) {
       return Object.assign({}, state, {
         categories: action.data,
       });
-    case "SET_CATEGORY_LIST":
+    case 'SET_CATEGORY_LIST':
       return {
         ...state,
         categoryList: action.data,
       };
-    case "SET_SELECTED_CATEGORY":
+    case 'SET_SELECTED_CATEGORY':
       return {
         ...state,
         selectedCategory: action.data,
       };
-    case "GET_PRODUCT_LIST_STARTED":
+    case 'GET_PRODUCT_LIST_STARTED':
       return {
         ...state,
         loading: true,
       };
-    case "GET_PRODUCT_CATEGORY_STARTED":
+    case 'GET_PRODUCT_CATEGORY_STARTED':
       return {
         ...state,
         loadingProductCategory: true,
       };
-    case "GET_PRODUCT_LIST_SUCCESS":
+    case 'GET_PRODUCT_LIST_SUCCESS':
       return {
         ...state,
         loading: false,
         error: null,
         productList: action.data,
       };
-    case "CLEAR_CATEGORY_PRODUCTS":
+    case 'CLEAR_CATEGORY_PRODUCTS':
       return {
         ...state,
         loading: true,
         error: null,
         productList: [],
       };
-    case "GET_PRODUCT_CATEGORY_SUCCESS":
+    case 'GET_PRODUCT_CATEGORY_SUCCESS':
       return {
         ...state,
         loadingProductCategory: false,
         error: null,
         productCategory: action.data,
       };
-    case "GET_PRODUCT_LIST_ERROR":
+    case 'GET_PRODUCT_LIST_ERROR':
       return {
         ...state,
         loading: false,

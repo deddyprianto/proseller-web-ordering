@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { Map, GoogleApiWrapper, InfoWindow, Marker } from "google-maps-react";
-import config from "../../config";
-import { Input, Button } from "reactstrap";
-import { Col, Row } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
+import React, { Component } from 'react';
+import { Map, GoogleApiWrapper, InfoWindow, Marker } from 'google-maps-react';
+import PropTypes from 'prop-types';
+import config from '../../config';
+import { Input } from 'reactstrap';
+import Loading from 'components/loading/Loading';
 
 const mapStyles = {
-  width: "100%",
-  height: "62%",
+  width: '100%',
+  height: '62%',
 };
 
 export class MapContainer extends Component {
@@ -28,6 +28,7 @@ export class MapContainer extends Component {
     }
 
     let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
+
     let edit = false;
     if (coordinate !== null && coordinate !== undefined) {
       coordinate = JSON.parse(coordinate);
@@ -39,7 +40,7 @@ export class MapContainer extends Component {
       }
     }
 
-    let center = initialCenter
+    let center = initialCenter;
 
     this.state = {
       showingInfoWindow: false,
@@ -47,43 +48,27 @@ export class MapContainer extends Component {
       selectedPlace: {},
       initialCenter,
       center,
-      userLocation: "",
+      userLocation: '',
       detailAddress: {},
       regionChangeProgress: false,
       edit,
-      searchLocation: "",
-      loaded: true
+      searchLocation: '',
+      loaded: true,
     };
   }
-
-  viewShimmer = (isHeight = 500) => {
-    return (
-      <Shimmer>
-        <div
-          style={{
-            width: "100%",
-            height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
-            marginBottom: 10,
-          }}
-        />
-      </Shimmer>
-    );
-  };
 
   componentDidMount = () => {
     this.fetchAddress();
   };
 
-  onMarkerClick = (props, marker, e) =>
+  onMarkerClick = (props, marker) =>
     this.setState({
       selectedPlace: props,
       activeMarker: marker,
       showingInfoWindow: true,
     });
 
-  onClose = (props) => {
+  onClose = () => {
     if (this.state.showingInfoWindow) {
       this.setState({
         showingInfoWindow: false,
@@ -94,12 +79,12 @@ export class MapContainer extends Component {
 
   fetchAddress = () => {
     fetch(
-      "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-      this.state.initialCenter.lat +
-      "," +
-      this.state.initialCenter.lng +
-      "&key=" +
-      "AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4"
+      'https://maps.googleapis.com/maps/api/geocode/json?address=' +
+        this.state.initialCenter.lat +
+        ',' +
+        this.state.initialCenter.lng +
+        '&key=' +
+        'AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4'
     )
       .then((response) => response.json())
       .then((responseJson) => {
@@ -113,7 +98,6 @@ export class MapContainer extends Component {
   };
 
   setCoordinate = () => {
-    console.log(this.state.detailAddress)
     let coordinate = {
       detailAddress: this.state.detailAddress,
       latitude: this.state.initialCenter.lat,
@@ -130,7 +114,7 @@ export class MapContainer extends Component {
   };
 
   getGeolocation = async () => {
-    this.setState({ loaded: false })
+    this.setState({ loaded: false });
     const { searchLocation } = this.state;
     let url = `https://maps.google.com/maps/api/geocode/json?address=${searchLocation}&sensor=false&key=AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4`;
     let response = await fetch(url);
@@ -140,16 +124,30 @@ export class MapContainer extends Component {
         lat: response.results[0].geometry.location.lat,
         lng: response.results[0].geometry.location.lng,
       };
-      let detailAddress = response.results[0]
-      let userLocation = response.results[0].formatted_address
-      let center = initialCenter
+      let detailAddress = response.results[0];
+      let userLocation = response.results[0].formatted_address;
+      let center = initialCenter;
 
-      await this.setState({ initialCenter, center, userLocation, loaded: true, detailAddress });
-    } catch (e) { }
+      await this.setState({
+        initialCenter,
+        center,
+        userLocation,
+        loaded: true,
+        detailAddress,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   render() {
-    const { initialCenter, userLocation, regionChangeProgress, center, loaded } = this.state;
+    const {
+      initialCenter,
+      userLocation,
+      regionChangeProgress,
+      center,
+      loaded,
+    } = this.state;
     return (
       <div>
         <div
@@ -157,111 +155,107 @@ export class MapContainer extends Component {
             marginTop: 90,
             marginLeft: 10,
             marginRight: 10,
-            display: "flex",
-            marginBottom: 7
+            display: 'flex',
+            marginBottom: 7,
           }}
         >
           <Input
-            type="text"
-            placeholder="Enter your address here...."
+            type='text'
+            placeholder='Enter your address here....'
             style={{
               height: 40,
               borderRadius: 5,
-              width: "85%",
+              width: '85%',
               marginRight: 10,
             }}
             onChange={(e) => this.setState({ searchLocation: e.target.value })}
           />
           <button
-            type="button"
-            className="button btn-block"
-            style={{ width: "15%" }}
+            type='button'
+            className='button btn-block'
+            style={{ width: '15%' }}
             onClick={this.getGeolocation}
           >
-            <span aria-hidden="true" style={{ fontSize: 12 }}>
+            <span aria-hidden='true' style={{ fontSize: 12 }}>
               Find
             </span>
           </button>
         </div>
-        {
-          loaded ?
-            <Map
-              google={this.props.google}
-              zoom={17}
-              style={mapStyles}
-              center={center}
-              onDragend={(e, coord) => {
-                try {
-                  const { center } = coord;
-                  const lat = center.lat();
-                  const lng = center.lng();
+        {loaded ? (
+          <Map
+            google={this.props.google}
+            zoom={17}
+            style={mapStyles}
+            center={center}
+            onDragend={(e, coord) => {
+              try {
+                const { center } = coord;
+                const lat = center.lat();
+                const lng = center.lng();
 
-                  this.setState(
-                    {
-                      initialCenter: {
-                        lat,
-                        lng,
-                      },
-                      regionChangeProgress: true,
+                this.setState(
+                  {
+                    initialCenter: {
+                      lat,
+                      lng,
                     },
-                    () => this.fetchAddress()
-                  );
-                } catch (e) { }
-              }}
-              initialCenter={initialCenter}
-            >
-              <Marker
-                position={initialCenter}
-                // onClick={this.onMarkerClick}
-                name={"You Are Here"}
-              />
-              <InfoWindow
-                marker={this.state.activeMarker}
-                visible={this.state.showingInfoWindow}
-                onClose={this.onClose}
-              >
-                <div>
-                  {/* <h4>{this.state.selectedPlace.name}</h4> */}
-                </div>
-              </InfoWindow>
-            </Map>
-            :
-            <Row>
-              <Col sm={12}>{this.viewShimmer(500)}</Col>
-            </Row>
-
-        }
+                    regionChangeProgress: true,
+                  },
+                  () => this.fetchAddress()
+                );
+              } catch (e) {
+                console.log(e);
+              }
+            }}
+            initialCenter={initialCenter}
+          >
+            <Marker position={initialCenter} name='You Are Here' />
+            <InfoWindow
+              marker={this.state.activeMarker}
+              visible={this.state.showingInfoWindow}
+              onClose={this.onClose}
+            ></InfoWindow>
+          </Map>
+        ) : (
+          <Loading loadingType='element' />
+        )}
 
         <div
           style={{
-            backgroundColor: "white",
+            backgroundColor: 'white',
             zIndex: 2999,
-            position: "absolute",
+            position: 'absolute',
             bottom: 0,
-            width: "100%",
-            height: "20%",
+            width: '100%',
+            height: '20%',
           }}
         >
           <br />
           <h5
-            className="text text-primary text-center"
+            className='text text-primary text-center'
             style={{ marginBottom: 10 }}
           >
             Move map to change coordinate.
           </h5>
-          <div style={{ maxWidth: "100%", width: "100%", textAlign: 'center',  }}>
-            <i style={{ fontSize: '1.3rem', color: '#2d3436', fontWeight: 'bold' }}>
+          <div style={{ maxWidth: '100%', width: '100%', textAlign: 'center' }}>
+            <i
+              style={{
+                fontSize: '1.3rem',
+                color: '#2d3436',
+                fontWeight: 'bold',
+              }}
+            >
               {!regionChangeProgress
                 ? userLocation
-                : "Identifying Location ...."}
+                : 'Identifying Location ....'}
             </i>
           </div>
           <br />
           <button
-            type="button"
+            type='button'
             onClick={this.setCoordinate}
-            className="button btn-block"
-            style={{ position: "absolute", zIndex: 3, bottom: 0, padding: 10 }}
+            className='button btn-block'
+            style={{ position: 'absolute', zIndex: 3, bottom: 0, padding: 10 }}
           >
             <b>Use This Location</b>
           </button>
@@ -271,6 +265,11 @@ export class MapContainer extends Component {
   }
 }
 
+MapContainer.propTypes = {
+  google: PropTypes.func.isRequired,
+  history: PropTypes.func.isRequired,
+};
+
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4",
+  apiKey: 'AIzaSyC9KLjlHDwdfmp7AbzuW7B3PRe331RJIu4',
 })(MapContainer);

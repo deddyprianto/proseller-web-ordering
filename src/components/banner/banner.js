@@ -6,18 +6,14 @@ import { MasterDataService } from '../../Services/MasterDataService';
 import { Link as LinkRouter } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 
-// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 
-// Import Swiper styles
 import 'swiper/swiper.scss';
 import 'swiper/modules/navigation/navigation.scss'; // Navigation module
 import 'swiper/modules/pagination/pagination.scss'; // Pagination module
 
-// import Swiper core and required modules
 import SwiperCore, { Pagination, Navigation } from 'swiper';
 
-// install Swiper modules
 SwiperCore.use([Pagination, Navigation]);
 
 const Banner = () => {
@@ -31,8 +27,6 @@ const Banner = () => {
         'promobanners/load'
       );
       if (result) {
-        //TODO: delete this console
-        console.log(result, 'delete this console after QA');
         setBanners(result.data);
       }
     };
@@ -48,7 +42,7 @@ const Banner = () => {
         '--swiper-navigation-color': '#DCDCDC	',
         '--swiper-pagination-color': '#DCDCDC	',
         '--swiper-pagination-bullet-vertical-gap': '2em',
-        marginTop: '6em',
+        marginTop: '5.5em',
         paddingTop: '1rem',
         paddingBottom: '1rem',
         display: 'flex',
@@ -67,27 +61,28 @@ const Banner = () => {
       navigation
     >
       {banners.map((item, index) => {
-        let promotionId = '';
-
         if (item?.promotionId) {
-          promotionId = item?.promotionId?.split(':')[2];
-        }
-
-        return (
-          <SwiperSlide key={index}>
-            {promotionId ? (
-              <Link
-                component={LinkRouter}
-                to={`/promotions-detail/${promotionId}`}
-                rel='noopener noreferrer'
-              >
+          const promotionId = item.promotionId.split(':')[2];
+          return (
+            <SwiperSlide key={index}>
+              {promotionId ? (
+                <Link
+                  component={LinkRouter}
+                  to={`/promotions-detail/${promotionId}`}
+                  rel='noopener noreferrer'
+                >
+                  <img
+                    src={item.defaultImageURL}
+                    alt={item.name}
+                    width='100%'
+                  />
+                </Link>
+              ) : (
                 <img src={item.defaultImageURL} alt={item.name} width='100%' />
-              </Link>
-            ) : (
-              <img src={item.defaultImageURL} alt={item.name} width='100%' />
-            )}
-          </SwiperSlide>
-        );
+              )}
+            </SwiperSlide>
+          );
+        }
       })}
     </Swiper>
   );

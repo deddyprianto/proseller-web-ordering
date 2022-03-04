@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -15,11 +16,15 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import SendIcon from '@mui/icons-material/Send';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 
 import ProductCartList from '../components/productCartList';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
+
+import { PaymentAction } from 'redux/actions/PaymentAction';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -29,18 +34,23 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo.data,
     isLoggedIn: state.auth.isLoggedIn,
-
     defaultOutlet: state.outlet.defaultOutlet,
     deliveryAddress: state.order.deliveryAddress,
-    orderingMode: state?.order?.orderingMode,
+    orderingMode: state.order.orderingMode,
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
+    selectedDeliveryProvider: state.order.selectedDeliveryProvider,
   };
 };
 
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
+
   useLayoutEffect(() => {
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight]);
@@ -53,9 +63,12 @@ const useWindowSize = () => {
 };
 
 const Cart = ({ ...props }) => {
+  console.log(
+    props.deliveryAddress,
+    ':>>>>>>>deliveryAddressdeliveryAddressdeliveryAddressdeliveryAddress'
+  );
   const [width] = useWindowSize();
-  const history = useHistory();
-  const gadgetScreen = width < 600;
+  const gadgetScreen = width < 980;
   const styles = {
     rootPaper: {
       marginBottom: 10,
@@ -67,8 +80,8 @@ const Cart = ({ ...props }) => {
       paddingTop: 150,
     },
     rootCart: {
-      paddingLeft: 280,
-      paddingRight: 280,
+      paddingLeft: 200,
+      paddingRight: 200,
       paddingTop: 150,
       display: 'flex',
     },
@@ -97,7 +110,7 @@ const Cart = ({ ...props }) => {
       justifyContent: 'space-between',
       paddingLeft: 10,
       paddingRight: 10,
-      paddingBottom: 10,
+      paddingTop: 10,
     },
     rootSubmitButton: {
       paddingTop: 15,
@@ -138,7 +151,7 @@ const Cart = ({ ...props }) => {
     },
     typography: {
       color: 'white',
-      fontSize: 13,
+      fontSize: 12,
       fontWeight: 'bold',
       marginY: 1,
     },
@@ -186,37 +199,23 @@ const Cart = ({ ...props }) => {
       width: '50%',
       height: 35,
       textTransform: 'none',
+      padding: 0,
       backgroundColor: props.color.primary,
     },
   };
 
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
-  const [timeSlotLabel, setTimeSlotLabel] = useState({});
+  const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
+    useState(false);
 
   useEffect(() => {
-    const orderTimeSlotTime = localStorage.getItem(
-      `${config.prefix}_order_action_time`
-    );
-    const orderTimeSlotDate = localStorage.getItem(
-      `${config.prefix}_order_action_date`
-    );
-
-    if (!_.isEmpty(orderTimeSlotTime) && !_.isEmpty(orderTimeSlotDate)) {
-      setTimeSlotLabel({
-        date: moment(orderTimeSlotDate).format('DD MMM YYYY'),
-        time: orderTimeSlotTime,
-      });
-    }
-  }, [timeSlotLabel]);
-
-  if (_.isEmpty(props.defaultOutlet)) {
-    history.push('/outlets');
-  }
+    props.dispatch(PaymentAction.clearAll());
+  }, []);
 
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
-      const result = price.toLocaleString(
+      const result = price?.toLocaleString(
         props?.companyInfo?.currency?.locale,
         {
           style: 'currency',
@@ -239,33 +238,104 @@ const Cart = ({ ...props }) => {
     setOpenOrderingMode(true);
   };
 
+  const handleLogin = () => {
+    document.getElementById('login-register-btn').click();
+  };
+
+  const handleDisabled = () => {
+    if (props.orderingMode === 'DELIVERY') {
+      const isAllCompleted =
+        props.orderingMode &&
+        props.orderActionDate &&
+        props.orderActionTime &&
+        props.orderActionTimeSlot &&
+        props.deliveryAddress;
+
+      return !isAllCompleted;
+    } else if (props.orderingMode === 'STOREPICKUP') {
+      const isAllCompleted =
+        props.orderingMode &&
+        props.orderActionDate &&
+        props.orderActionTime &&
+        props.orderActionTimeSlot;
+
+      return !isAllCompleted;
+    }
+
+    return !props.orderingMode;
+  };
+
+  const handleConfirmAndPay = () => {
+    if (
+      props.basket &&
+      props.deliveryAddress &&
+      props.defaultOutlet &&
+      props.orderingMode &&
+      props.orderActionDate &&
+      props.orderActionTime &&
+      props.orderActionTimeSlot
+    ) {
+      localStorage.setItem(
+        `${config.prefix}_dataSettle`,
+        JSON.stringify(
+          encryptor.encrypt({
+            dataBasket: props.basket,
+            deliveryAddress: props.deliveryAddress,
+            deliveryProvider: props.selectedDeliveryProvider,
+            storeDetail: props.defaultOutlet,
+            pointsToRebateRatio: '0:0',
+            orderingMode: props.orderingMode,
+            orderActionDate: props.orderActionDate,
+            orderActionTime: props.orderActionTime,
+            orderActionTimeSlot: props.orderActionTimeSlot,
+          })
+        )
+      );
+      props.history.push('/payment');
+    }
+
+    props.history.push('/payment');
+  };
+
   const renderPickupDateTime = () => {
-    return (
-      <Paper variant='outlined' style={styles.rootPaper}>
-        <div style={styles.rootMode}>
-          <Typography style={styles.subTotal}>Pickup Date & Time</Typography>
-          <Button
-            style={styles.mode}
-            startIcon={<AccessTimeIcon style={styles.icon} />}
-            variant='outlined'
-            onClick={() => setOpenTimeSlot(true)}
-          >
-            {timeSlotLabel ? (
-              <Box flexDirection='column'>
+    if (
+      (props.orderingMode === 'DELIVERY' &&
+        props.deliveryAddress &&
+        props.selectedDeliveryProvider) ||
+      props.orderingMode === 'STOREPICKUP'
+    ) {
+      return (
+        <Paper variant='outlined' style={styles.rootPaper}>
+          <div style={styles.rootMode}>
+            <Typography style={styles.subTotal}>Pickup Date & Time</Typography>
+            <Button
+              style={styles.mode}
+              startIcon={<AccessTimeIcon style={styles.icon} />}
+              variant='outlined'
+              onClick={() => {
+                setOpenTimeSlot(true);
+              }}
+            >
+              {!_.isEmpty(props.orderActionTimeSlot) ? (
+                <Box flexDirection='column'>
+                  <Typography style={styles.typography}>
+                    {props.orderActionDate}
+                  </Typography>
+                  <Typography style={styles.typography}>
+                    {props.orderActionTime}
+                  </Typography>
+                </Box>
+              ) : (
                 <Typography style={styles.typography}>
-                  {timeSlotLabel?.date}
+                  Select Date & Time
                 </Typography>
-                <Typography style={styles.typography}>
-                  {timeSlotLabel?.time}
-                </Typography>
-              </Box>
-            ) : (
-              'Select Date & Time'
-            )}
-          </Button>
-        </div>
-      </Paper>
-    );
+              )}
+            </Button>
+          </div>
+        </Paper>
+      );
+    }
+    return;
   };
 
   const renderOrderingMode = () => {
@@ -277,7 +347,13 @@ const Cart = ({ ...props }) => {
             style={styles.mode}
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
-            onClick={() => handleOpenOrderingMode()}
+            onClick={() => {
+              if (!props.isLoggedIn) {
+                handleLogin();
+              } else {
+                handleOpenOrderingMode();
+              }
+            }}
           >
             <Typography style={styles.typography}>
               {props.orderingMode || 'Ordering Mode'}
@@ -293,20 +369,45 @@ const Cart = ({ ...props }) => {
       return;
     }
     return (
-      <Paper variant='outlined' style={styles.rootPaper}>
-        <div style={styles.rootMode}>
-          <Typography style={styles.subTotal}>Delivery Address</Typography>
-          <Button
-            style={styles.mode}
-            startIcon={<ContactMailIcon style={styles.icon} />}
-            variant='outlined'
-            component={Link}
-            to='/delivery-address'
-          >
-            <Typography style={styles.typography}>Delivery Address</Typography>
-          </Button>
-        </div>
-      </Paper>
+      <>
+        <Paper variant='outlined' style={styles.rootPaper}>
+          <div style={styles.rootMode}>
+            <Typography style={styles.subTotal}>Delivery Address</Typography>
+            <Button
+              style={styles.mode}
+              startIcon={<ContactMailIcon style={styles.icon} />}
+              variant='outlined'
+              component={Link}
+              to='/delivery-address'
+            >
+              <Typography sx={styles.typography}>
+                {props?.deliveryAddress
+                  ? props?.deliveryAddress?.addressName
+                  : 'Delivery Address'}
+              </Typography>
+            </Button>
+          </div>
+        </Paper>
+        {props?.deliveryAddress && (
+          <Paper variant='outlined' style={styles.rootPaper}>
+            <div style={styles.rootMode}>
+              <Typography style={styles.subTotal}>Delivery Provider</Typography>
+              <Button
+                style={styles.mode}
+                startIcon={<ContactsRoundedIcon style={styles.icon} />}
+                variant='outlined'
+                onClick={() => setOpenSelectDeliveryProvider(true)}
+              >
+                <Typography sx={styles.typography}>
+                  {props?.selectedDeliveryProvider
+                    ? props?.selectedDeliveryProvider?.name
+                    : 'Delivery Provider'}
+                </Typography>
+              </Button>
+            </div>
+          </Paper>
+        )}
+      </>
     );
   };
 
@@ -315,7 +416,7 @@ const Cart = ({ ...props }) => {
       <Paper variant='outlined' style={styles.rootPaper}>
         <div>
           {props.basket?.totalDiscountAmount !== 0 && (
-            <div style={styles.rootSubTotal}>
+            <div style={styles.rootExclusiveTax}>
               <Typography style={styles.subTotal}>Subtotal b/f disc</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(props.basket?.totalGrossAmount)}
@@ -338,40 +439,46 @@ const Cart = ({ ...props }) => {
               </Typography>
             </div>
           )}
-          {props.basket?.totalNettAmount !== 0 && (
+          {props.basket?.totalGrossAmount !== 0 && (
             <div style={styles.rootSubTotal}>
               <Typography style={styles.subTotal}>Subtotal</Typography>
               <Typography style={styles.subTotal}>
-                {handleCurrency(props.basket.totalNettAmount)}
+                {handleCurrency(props.basket.totalGrossAmount)}
               </Typography>
             </div>
+          )}
+          {props.basket.totalSurchargeAmount !== 0 && (
+            <div style={styles.rootExclusiveTax}>
+              <Typography style={styles.subTotal}>Surcharge Amount</Typography>
+              <Typography style={styles.subTotal}>
+                {handleCurrency(props.basket.totalSurchargeAmount)}
+              </Typography>
+            </div>
+          )}
+          {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
+            <>
+              {props.selectedDeliveryProvider?.deliveryFee !== 0 && (
+                <div style={styles.rootSubTotal}>
+                  <Typography style={styles.subTotal}>Delivery Fee</Typography>
+                  <Typography style={styles.subTotal}>
+                    {handleCurrency(
+                      props.selectedDeliveryProvider?.deliveryFee
+                    )}
+                  </Typography>
+                </div>
+              )}
+              {props.selectedDeliveryProvider?.deliveryFee === 0 &&
+              props.orderingMode === 'DELIVERY' ? (
+                <div style={styles.rootSubTotal}>
+                  <Typography style={styles.subTotal}>Delivery Fee</Typography>
+                  <Typography style={styles.subTotal}>Free</Typography>
+                </div>
+              ) : null}
+            </>
           )}
         </div>
       </Paper>
     );
-  };
-
-  const handleLogin = () => {
-    document.getElementById('login-register-btn').click();
-  };
-
-  const handleConfirmAndPay = () => {
-    localStorage.setItem(
-      `${config.prefix}_dataSettle`,
-      JSON.stringify(
-        encryptor.encrypt({
-          dataBasket: props.basket,
-          deliveryAddress: props.deliveryAddress,
-          storeDetail: props.defaultOutlet,
-          pointsToRebateRatio: '0:0',
-          orderingMode: props.orderingMode,
-          orderActionDate: props.orderActionDate,
-          orderActionTime: props.orderActionTime,
-          orderActionTimeSlot: props.orderActionTimeSlot,
-        })
-      )
-    );
-    props.history.push('/payment');
   };
 
   const renderGrandTotal = () => {
@@ -408,9 +515,11 @@ const Cart = ({ ...props }) => {
             style={styles.button}
             startIcon={<MonetizationOnIcon style={styles.icon} />}
             variant='outlined'
-            //TODO; handle disabled button
+            disabled={handleDisabled()}
             onClick={() => {
+              console.log('masuk button');
               if (props.isLoggedIn) {
+                console.log('masuk if');
                 handleConfirmAndPay();
               } else {
                 handleLogin();
@@ -462,16 +571,25 @@ const Cart = ({ ...props }) => {
         flexGrow: 1,
       }}
     >
-      <OrderingModeDialog
-        open={openOrderingMode}
-        onClose={() => handleCloseOrderingMode()}
-        defaultOutlet={props.defaultOutlet}
-      />
-      <TimeSlotDialog
-        open={openTimeSlot}
-        onClose={() => handleCloseTimeSlot()}
-        defaultOutlet={props.defaultOutlet}
-      />
+      {openSelectDeliveryProvider && (
+        <SelectProviderDialog
+          open={openSelectDeliveryProvider}
+          onClose={() => setOpenSelectDeliveryProvider(false)}
+        />
+      )}
+
+      {openOrderingMode && (
+        <OrderingModeDialog
+          open={openOrderingMode}
+          onClose={() => handleCloseOrderingMode()}
+        />
+      )}
+      {openTimeSlot && (
+        <TimeSlotDialog
+          open={openTimeSlot}
+          onClose={() => handleCloseTimeSlot()}
+        />
+      )}
       {!isEmptyArray(props.basket.details) ? (
         <div>{renderCart()}</div>
       ) : (
@@ -496,6 +614,8 @@ Cart.defaultProps = {
   orderActionTime: {},
   orderActionTimeSlot: {},
   history: null,
+  selectedDeliveryProvider: {},
+  dispatch: null,
 };
 
 Cart.propTypes = {
@@ -504,12 +624,14 @@ Cart.propTypes = {
   companyInfo: PropTypes.object,
   defaultOutlet: PropTypes.object,
   deliveryAddress: PropTypes.object,
+  dispatch: PropTypes.func,
   history: PropTypes.func,
   isLoggedIn: PropTypes.bool,
   orderActionDate: PropTypes.object,
   orderActionTime: PropTypes.object,
   orderActionTimeSlot: PropTypes.object,
   orderingMode: PropTypes.object,
+  selectedDeliveryProvider: PropTypes.object,
 };
 
-export default connect(mapStateToProps)(Cart);
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);

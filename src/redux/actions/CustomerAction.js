@@ -1,31 +1,26 @@
-import { CONSTANT } from "../../helpers";
-import { CRMService } from "../../Services/CRMService";
-import { MasterDataService } from "../../Services/MasterDataService";
-import _ from "lodash";
-import moment from "moment";
-import config from "../../config";
+import { CONSTANT } from '../../helpers';
+import { CRMService } from '../../Services/CRMService';
+import { MasterDataService } from '../../Services/MasterDataService';
+import _ from 'lodash';
+import moment from 'moment';
+import config from '../../config';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
-export const CustomerAction = {
-  getCustomerProfile,
-  getDeliferyAddress,
-  updateCustomerProfile,
-  mandatoryField,
-  getVoucher,
-  checkStatusPayment,
-  updatePassword,
-  updateCustomerAccount,
-  getSalesByReference,
-};
+function setData(data, constant) {
+  return {
+    type: constant,
+    data: data.Data,
+  };
+}
 
 function getCustomerProfile() {
   return async (dispatch) => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       null,
-      "customer/getProfile",
-      "bearer"
+      'customer/getProfile',
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -35,37 +30,37 @@ function getCustomerProfile() {
 }
 
 function getSalesByReference(referenceNo) {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       null,
       `sales/status?referenceNo=${referenceNo}&ignorePendingRewards=${true}`,
-      "bearer"
+      'bearer'
     );
     return response;
   };
 }
 
 function checkStatusPayment(referenceNo) {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       null,
       `sales/status?referenceNo=${referenceNo}`,
-      "bearer"
+      'bearer'
     );
     if (response.ResultCode === 200) return response;
     else return {};
   };
 }
 
-function getDeliferyAddress() {
+function getDeliveryAddress() {
   return async (dispatch) => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       null,
-      "customer/getProfile",
-      "bearer"
+      'customer/getProfile',
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -80,10 +75,10 @@ function getDeliferyAddress() {
       } else if (deliveryAddress.address) {
         deliveryAddress = [
           {
-            addressName: "My Default Address",
+            addressName: 'My Default Address',
             address: deliveryAddress.address,
-            postalCode: "",
-            city: "",
+            postalCode: '',
+            city: '',
           },
         ];
       } else deliveryAddress = null;
@@ -98,10 +93,10 @@ function updateCustomerProfile(payload = null) {
   return async (dispatch) => {
     console.log(payload);
     let response = await CRMService.api(
-      "PUT",
+      'PUT',
       payload,
-      "customer/updateProfile",
-      "bearer"
+      'customer/updateProfile',
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -111,12 +106,12 @@ function updateCustomerProfile(payload = null) {
 }
 
 function updateCustomerAccount(payload = null) {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
-      "PUT",
+      'PUT',
       payload,
-      "customer/updateProfile?requestOtp=true",
-      "bearer"
+      'customer/updateProfile?requestOtp=true',
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -125,12 +120,12 @@ function updateCustomerAccount(payload = null) {
 }
 
 function updatePassword(payload = null) {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
-      "POST",
+      'POST',
       payload,
-      "profile/changePassword",
-      "Bearer"
+      'profile/changePassword',
+      'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -141,109 +136,110 @@ function updatePassword(payload = null) {
 function mandatoryField(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       payload,
-      "mandatoryfield/customer"
+      'mandatoryfield/customer'
     );
     const data = await response.data;
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else {
       const customFieldsResponse = await MasterDataService.api(
-        "GET",
+        'GET',
         payload,
-        "customfields/customer"
+        'customfields/customer'
       );
       const customFields = await customFieldsResponse.data;
       const fields =
         data.fields &&
         data.fields.map((field) => {
           switch (field.fieldName) {
-            case "birthDate":
+            case 'birthDate':
               return {
                 ...field,
-                type: "date",
+                type: 'date',
               };
-            case "gender":
+            case 'gender':
               return {
                 ...field,
-                type: "radio",
+                type: 'radio',
                 options: [
                   {
-                    value: "male",
-                    text: "Male",
+                    value: 'male',
+                    text: 'Male',
                   },
                   {
-                    value: "female",
-                    text: "Female",
+                    value: 'female',
+                    text: 'Female',
                   },
                 ],
               };
-            case "address":
+            case 'address':
               return {
                 ...field,
-                type: "multipleField",
+                type: 'multipleField',
                 children: [
                   {
-                    fieldName: "street",
-                    displayName: "Street",
-                    type: "text",
+                    fieldName: 'street',
+                    displayName: 'Street',
+                    type: 'text',
                   },
                   {
-                    fieldName: "unitNo",
-                    displayName: "Unit No.",
-                    type: "text",
+                    fieldName: 'unitNo',
+                    displayName: 'Unit No.',
+                    type: 'text',
                   },
                 ],
               };
-            default:
+            default: {
               const customField = customFields.find(
                 (item) => item.fieldName === field.fieldName
               );
               const type = customField
-                ? customField.dataType === "dropdown"
-                  ? "select"
+                ? customField.dataType === 'dropdown'
+                  ? 'select'
                   : customField.dataType
-                : "text";
+                : 'text';
               return {
                 ...field,
                 ...customField,
                 type,
                 options: customField ? customField.items : [],
               };
+            }
           }
         });
 
       let mandatory = [
         {
-          dataType: "text",
-          defaultValue: "-",
-          displayName: "Name",
-          fieldName: "name",
+          dataType: 'text',
+          defaultValue: '-',
+          displayName: 'Name',
+          fieldName: 'name',
           mandatory: true,
           show: true,
-          type: "text",
+          type: 'text',
           signUpField: false,
         },
         {
-          dataType: "text",
-          defaultValue: "-",
-          displayName: "Email",
-          fieldName: "email",
+          dataType: 'text',
+          defaultValue: '-',
+          displayName: 'Email',
+          fieldName: 'email',
           mandatory: true,
           show: true,
-          type: "text",
+          type: 'text',
           signUpField: false,
           change: true,
         },
         {
-          dataType: "text",
-          defaultValue: "-",
-          displayName: "Phone Number",
-          fieldName: "phoneNumber",
+          dataType: 'text',
+          defaultValue: '-',
+          displayName: 'Phone Number',
+          fieldName: 'phoneNumber',
           mandatory: true,
           show: true,
-          type: "text",
+          type: 'text',
           signUpField: false,
           change: true,
         },
@@ -261,11 +257,12 @@ function mandatoryField(payload = null) {
 function getVoucher() {
   return async (dispatch) => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       null,
-      "customer/vouchers",
-      "bearer"
+      'customer/vouchers',
+      'bearer'
     );
+
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else {
@@ -283,15 +280,15 @@ function getVoucher() {
 
       response.Data = _.forEach(response.Data, function (value) {
         if (value.expiryDate)
-          value.expiryDate = moment(value.expiryDate).format("YYYY-MM-DD");
+          value.expiryDate = moment(value.expiryDate).format('YYYY-MM-DD');
         return value;
       });
 
       let myVoucherGroup = [];
-      _.forEach(_.groupBy(response.Data, "id"), function (value) {
-        let group = _.groupBy(value, "expiryDate");
+      _.forEach(_.groupBy(response.Data, 'id'), function (value) {
+        let group = _.groupBy(value, 'expiryDate');
         for (const key in group) {
-          if (group.hasOwnProperty(key)) {
+          if (Object.hasOwnProperty.call(group, key)) {
             group[key][0].totalRedeem = group[key].length;
             myVoucherGroup.push(group[key][0]);
           }
@@ -299,16 +296,21 @@ function getVoucher() {
       });
       // console.log(myVoucherGroup)
 
-      response.Data = _.orderBy(myVoucherGroup, ["expiryDate"], ["asc"]);
+      response.Data = _.orderBy(myVoucherGroup, ['expiryDate'], ['asc']);
       dispatch(setData(response, CONSTANT.GET_VOUCHER));
     }
     return response;
   };
 }
 
-function setData(data, constant) {
-  return {
-    type: constant,
-    data: data.Data,
-  };
-}
+export const CustomerAction = {
+  getCustomerProfile,
+  getDeliveryAddress,
+  updateCustomerProfile,
+  mandatoryField,
+  getVoucher,
+  checkStatusPayment,
+  updatePassword,
+  updateCustomerAccount,
+  getSalesByReference,
+};
