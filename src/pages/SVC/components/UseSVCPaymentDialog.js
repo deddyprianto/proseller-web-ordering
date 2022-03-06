@@ -24,6 +24,7 @@ import { PaymentAction } from 'redux/actions/PaymentAction';
 const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
   const color = useSelector((state) => state.theme.color);
   const dataSettle = useSelector((state) => state.order.basket);
+  const orderingMode = useSelector((state) => state.order.orderingMode);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -78,7 +79,7 @@ const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
   };
 
   const handleSubmitPayWithSVC = async (item) => {
-    const { cartID, totalNettAmount, orderingMode } = dataSettle;
+    const { cartID, totalNettAmount } = dataSettle;
 
     if (totalNettAmount === item.amountToUse) {
       const payloadFullSVC = {
