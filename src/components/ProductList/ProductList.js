@@ -26,7 +26,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject, isEmptyArray } from 'helpers/CheckEmpty';
 
 import { ProductAction } from 'redux/actions/ProductAction';
-import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from 'helpers';
@@ -161,14 +160,6 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
-  const handleFetchDefaultOutlet = async () => {
-    let defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
-    if (defaultOutlet?.id) {
-      defaultOutlet = config.getValidation(defaultOutlet);
-    }
-    return defaultOutlet;
-  };
-
   const handleFetchCategoryProduct = async ({ outlet }) => {
     const categories = await props.dispatch(
       ProductAction.fetchCategoryProduct({
@@ -200,12 +191,11 @@ const ProductList = ({ ...props }) => {
     try {
       const loadData = async () => {
         props.dispatch(OrderAction.getCart());
-        const defaultOutlet = await handleFetchDefaultOutlet();
         const categories = await handleFetchCategoryProduct({
-          outlet: defaultOutlet,
+          outlet: props.defaultOutlet,
         });
 
-        setOutlet(defaultOutlet);
+        setOutlet(props.defaultOutlet);
         setCategories(categories);
         setSelectedCategory(categories[0]);
       };
@@ -213,7 +203,7 @@ const ProductList = ({ ...props }) => {
     } catch (e) {
       // console.log(e);
     }
-  }, []);
+  }, [props.defaultOutlet]);
 
   useEffect(() => {
     try {

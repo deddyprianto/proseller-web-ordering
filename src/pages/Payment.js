@@ -20,8 +20,6 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
-
 import PointAddModal from 'components/pointAddModal';
 
 import { PaymentAction } from 'redux/actions/PaymentAction';
@@ -33,6 +31,7 @@ import { SVCAction } from 'redux/actions/SVCAction';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 
 import MyVoucherWarningModal from 'components/myVoucherList/components/MyVoucherWarningModal';
+import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 
 import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
 
@@ -697,11 +696,12 @@ const Payment = ({ ...props }) => {
       await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
       await props.dispatch(PaymentAction.clearAll());
 
-      handleAudio();
       if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
-        document.getElementById('open-modal-info-transfer').click();
+        handleAudio();
+        return document.getElementById('open-modal-info-transfer').click();
       } else {
-        history.push('/settleSuccess');
+        handleAudio();
+        return history.push('/settleSuccess');
       }
     } else {
       setWarningMessage('Payment Failed!');

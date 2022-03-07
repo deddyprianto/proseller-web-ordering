@@ -407,6 +407,15 @@ const Cart = ({ ...props }) => {
     );
   };
 
+  const handleSubtotal = () => {
+    if (props.basket?.totalDiscountAmount !== 0) {
+      const subTotalAfterDiscount =
+        props.basket?.totalGrossAmount - props.basket.totalDiscountAmount;
+      return subTotalAfterDiscount;
+    }
+    return props.basket?.totalGrossAmount;
+  };
+
   const renderSubTotal = () => {
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
@@ -439,7 +448,7 @@ const Cart = ({ ...props }) => {
             <div style={styles.rootSubTotal}>
               <Typography style={styles.subTotal}>Subtotal</Typography>
               <Typography style={styles.subTotal}>
-                {handleCurrency(props.basket.totalGrossAmount)}
+                {handleCurrency(handleSubtotal())}
               </Typography>
             </div>
           )}

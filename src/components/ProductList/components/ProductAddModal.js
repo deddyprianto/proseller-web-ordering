@@ -269,7 +269,10 @@ const ProductAddModal = ({
   };
 
   const handleProductVariantSelected = () => {
-    if (!isEmptyArray(selectedProduct?.product?.variants)) {
+    if (
+      !isEmptyArray(selectedProduct?.product?.variants) &&
+      isEmptyArray(selectedVariantOptions)
+    ) {
       let selected = {};
 
       selectedProduct.product?.variants.forEach((item) => {
@@ -277,10 +280,16 @@ const ProductAddModal = ({
           selected = item;
         }
       });
-
       setQty(selectedProduct?.quantity);
       setNotes(selectedProduct?.remark);
       setSelectedVariantOptions(selected?.attributes);
+    } else {
+      if (!isEmptyArray(product?.variants)) {
+        const result = isEmptyArray(selectedVariantOptions)
+          ? product?.variants[0]?.attributes || []
+          : selectedVariantOptions;
+        setSelectedVariantOptions(result);
+      }
     }
   };
 
@@ -386,13 +395,8 @@ const ProductAddModal = ({
 
   useEffect(() => {
     if (!isEmptyArray(product?.variants)) {
-      const defaultProductVariant = isEmptyArray(selectedVariantOptions)
-        ? product?.variants[0]?.attributes
-        : selectedVariantOptions;
-      setSelectedVariantOptions(defaultProductVariant);
-
       const productVariantFormated = handleProductVariantFormated(
-        defaultProductVariant
+        selectedVariantOptions
       );
 
       if (!isEmptyObject(selectedProduct)) {
