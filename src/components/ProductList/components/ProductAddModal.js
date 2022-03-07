@@ -284,11 +284,12 @@ const ProductAddModal = ({
       setNotes(selectedProduct?.remark);
       setSelectedVariantOptions(selected?.attributes);
     } else {
-      const result = isEmptyArray(selectedVariantOptions)
-        ? product?.variants[0]?.attributes
-        : selectedVariantOptions;
-
-      setSelectedVariantOptions(result);
+      if (!isEmptyArray(product?.variants)) {
+        const result = isEmptyArray(selectedVariantOptions)
+          ? product?.variants[0]?.attributes || []
+          : selectedVariantOptions;
+        setSelectedVariantOptions(result);
+      }
     }
   };
 
