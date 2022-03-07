@@ -18,13 +18,12 @@ import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import ArticleIcon from '@mui/icons-material/Article';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
-import config from 'config';
+
 import { CONSTANT } from 'helpers';
 
 const OrderingModeDialog = ({ open, onClose }) => {
   const colorState = useSelector((state) => state.theme.color);
   const defaultOutlet = useSelector((state) => state.order.basket.outlet);
-  const dataBasket = useSelector((state) => state.order.basket);
   const selectedDeliveryProvider = useSelector(
     (state) => state.order.selectedDeliveryProvider
   );
@@ -205,65 +204,27 @@ const OrderingModeDialog = ({ open, onClose }) => {
   const handleConfirmOrderingMode = async (value) => {
     setIsLoading(true);
 
-    if (value !== 'DELIVERY' && selectedDeliveryProvider) {
-      const payload = {
-        ...dataBasket,
-        totalNettAmount:
-          dataBasket?.totalNettAmount - selectedDeliveryProvider?.deliveryFee,
-      };
-
-      await dispatch(OrderAction.setData(payload, CONSTANT.DATA_BASKET));
-
-      await dispatch(
-        OrderAction.changeOrderingMode({ orderingMode: value, provider: {} })
-      );
-
-      await dispatch({
-        type: 'SET_SELECTED_DELIVERY_PROVIDERS',
-        payload: {},
-      });
-    }
-
     await dispatch({
       type: 'SET_ORDERING_MODE',
       payload: value,
     });
 
-    await dispatch(
+    const responseChangeOrderingMode = await dispatch(
       OrderAction.changeOrderingMode({
         orderingMode: value,
-        provider: selectedDeliveryProvider,
+        provider: selectedDeliveryProvider ? selectedDeliveryProvider : {},
       })
     );
 
-    localStorage.removeItem(`${config.prefix}_deliveryProvider`);
+    console.log(responseChangeOrderingMode);
+
+    await dispatch(
+      OrderAction.setData(responseChangeOrderingMode.data, CONSTANT.DATA_BASKET)
+    );
 
     setIsLoading(false);
     onClose();
   };
-  // const handleConfirmOrderingMode = async (value) => {
-  //   setIsLoading(true);
-  //   const payload = {
-  //     orderingMode: value,
-  //     provider: {},
-  //   };
-
-  //   await dispatch(OrderAction.changeOrderingMode(payload));
-  //   await dispatch({
-  //     type: 'SET_SELECTED_DELIVERY_PROVIDERS',
-  //     payload: {},
-  //   });
-
-  //   await dispatch({
-  //     type: 'SET_ORDERING_MODE',
-  //     payload: value,
-  //   });
-
-  //   localStorage.removeItem(`${config.prefix}_deliveryProvider`);
-
-  //   setIsLoading(false);
-  //   onClose();
-  // };
 
   const renderButton = () => {
     const rendering = orderingModes.map((item, index) => {
