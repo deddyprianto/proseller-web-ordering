@@ -21,7 +21,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 
-const UseSVCPaymentDialog = ({ onClose, open, onSuccess }) => {
+const UseSVCPaymentDialog = ({ onClose, open }) => {
   const color = useSelector((state) => state.theme.color);
   const dataSettle = useSelector((state) => state.order.basket);
   const orderingMode = useSelector((state) => state.order.orderingMode);

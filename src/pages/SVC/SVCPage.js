@@ -1,10 +1,12 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
 
+// TODO: Revamp SVC page on profile.
+
 const SVCPage = () => {
   return (
     <div>
-      <>sintings</>
+      <>under construction</>
     </div>
   );
 };

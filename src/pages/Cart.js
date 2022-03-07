@@ -204,7 +204,6 @@ const Cart = ({ ...props }) => {
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
-  const [timeSlotLabel, setTimeSlotLabel] = useState({});
 
   useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
