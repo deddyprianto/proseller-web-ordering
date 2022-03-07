@@ -210,27 +210,6 @@ const Cart = ({ ...props }) => {
     props.dispatch(PaymentAction.clearAll());
   }, [props]);
 
-  // useEffect(() => {
-  //   const orderTimeSlotTime = localStorage.getItem(
-  //     `${config.prefix}_order_action_time`
-  //   );
-  //   const orderTimeSlotDate = localStorage.getItem(
-  //     `${config.prefix}_order_action_date`
-  //   );
-
-  //   if (!_.isEmpty(orderTimeSlotTime) && !_.isEmpty(orderTimeSlotDate)) {
-  //     setTimeSlotLabel({
-  //       date: moment(orderTimeSlotDate).format('DD MMM YYYY'),
-  //       time: orderTimeSlotTime,
-  //     });
-  //   }
-  // }, [
-  //   props?.deliveryAddress,
-  //   props?.orderActionDate,
-  //   props?.orderActionTime,
-  //   props?.orderActionTimeSlot,
-  // ]);
-
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
       const result = price?.toLocaleString(
@@ -429,6 +408,15 @@ const Cart = ({ ...props }) => {
     );
   };
 
+  const handleSubtotal = () => {
+    if (props.basket?.totalDiscountAmount !== 0) {
+      const subTotalAfterDiscount =
+        props.basket?.totalGrossAmount - props.basket.totalDiscountAmount;
+      return subTotalAfterDiscount;
+    }
+    return props.basket?.totalGrossAmount;
+  };
+
   const renderSubTotal = () => {
     return (
       <Paper variant='outlined' style={styles.rootPaper}>
@@ -461,7 +449,7 @@ const Cart = ({ ...props }) => {
             <div style={styles.rootSubTotal}>
               <Typography style={styles.subTotal}>Subtotal</Typography>
               <Typography style={styles.subTotal}>
-                {handleCurrency(props.basket.totalGrossAmount)}
+                {handleCurrency(handleSubtotal())}
               </Typography>
             </div>
           )}

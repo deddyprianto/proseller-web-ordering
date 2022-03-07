@@ -48,7 +48,6 @@ const MyVoucherList = ({ ...props }) => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      paddingTop: 20,
       paddingBottom: 20,
       paddingLeft: gadgetScreen ? 2 : 40,
       paddingRight: gadgetScreen ? 2 : 40,

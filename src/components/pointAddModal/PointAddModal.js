@@ -16,6 +16,7 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     campaignPoint: state.campaign.data,
     companyInfo: state.masterdata.companyInfo.data,
+    selectedPoint: state.payment.selectedPoint,
   };
 };
 
@@ -167,7 +168,9 @@ const PointAddModal = ({ open, handleClose, price, ...props }) => {
   };
 
   const handleInput = (value) => {
-    const maxPoint = (price / ratioCurrency) * ratioPoint;
+    const selectedPointValue = props.selectedPoint?.paymentAmount || 0;
+
+    const maxPoint = (price / ratioCurrency) * ratioPoint + selectedPointValue;
 
     if (value >= maxPoint || value >= campaignPoint) {
       const point = maxPoint > campaignPoint ? campaignPoint : maxPoint;
@@ -262,6 +265,7 @@ PointAddModal.defaultProps = {
   handleClose: null,
   companyInfo: {},
   campaignPoint: {},
+  selectedPoint: {},
   price: 0,
 };
 
@@ -273,6 +277,7 @@ PointAddModal.propTypes = {
   handleClose: PropTypes.func,
   open: PropTypes.bool,
   price: PropTypes.number,
+  selectedPoint: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PointAddModal);
