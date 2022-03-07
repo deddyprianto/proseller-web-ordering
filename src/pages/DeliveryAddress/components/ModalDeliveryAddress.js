@@ -25,7 +25,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import MapAtom from '../../../pages/Map/MapAtom';
 import config from '../../../config';
-import { MasterdataAction } from 'redux/actions/MaterdataAction';
+import { MasterdataAction } from 'redux/actions/MasterDataAction';
 import { CustomerAction } from 'redux/actions/CustomerAction';
 
 const ModalDeliveryAddress = ({

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import config from 'config';
-import _ from 'lodash';
+import _, { concat } from 'lodash';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -77,7 +77,6 @@ const useWindowSize = () => {
 
 const Payment = ({ ...props }) => {
   const audio = new Audio(Sound_Effect);
-
   const history = useHistory();
   const [isOpenPointAddModal, setIsOpenPointAddModal] = useState(false);
   const [isOpenWarningModal, setIsOpenWarningModal] = useState(false);
@@ -85,7 +84,7 @@ const Payment = ({ ...props }) => {
   const [selectedPoint, setSelectedPoint] = useState({});
   const [selectedVouchers, setSelectedVouchers] = useState([]);
   const [myVouchers, setMyVouchers] = useState([]);
-  const [warningMessage, serWarningMessage] = useState('');
+  const [warningMessage, setWarningMessage] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
   const [useSVCPayment, setUseSVCPayment] = useState({});
   const [checkSVCAvailable, setCheckSVCAvailable] = useState(false);
@@ -243,6 +242,7 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
     }
+
     if (!isEmptyArray(selectedVouchers)) {
       selectedVouchers.forEach((selectedVoucher) => {
         price = price - selectedVoucher.paymentAmount;
@@ -354,12 +354,13 @@ const Payment = ({ ...props }) => {
 
   const handleSelectVoucher = () => {
     if (selectedVouchers[0]?.cannotBeMixed) {
-      serWarningMessage('this voucher cannot be mixed with other voucher');
+      setWarningMessage('This voucher cannot be mixed with other voucher');
       handleOpenWarningModal();
     } else {
       history.push('/my-voucher');
     }
   };
+
   const handlePoint = () => {
     if (selectedPoint?.redeemValue) {
       return parseFloat(selectedPoint.redeemValue);
@@ -389,6 +390,19 @@ const Payment = ({ ...props }) => {
 
     props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
     setSelectedVouchers(result);
+  };
+
+  const handleMixSVC = () => {
+    let temp = [];
+    if (!isEmptyArray(selectedVouchers)) {
+      temp.push(...selectedVouchers);
+    }
+
+    if (!isEmptyObject(selectedPoint)) {
+      temp.push(selectedPoint);
+    }
+
+    return temp;
   };
 
   const renderPrice = () => {
@@ -532,6 +546,7 @@ const Payment = ({ ...props }) => {
           <Button
             style={styles.button}
             variant='outlined'
+            disabled={handleDisableButton()}
             onClick={() => setIsOpenSVC(true)}
           >
             <div style={styles.displayFlexAndAlignCenter}>
@@ -569,6 +584,7 @@ const Payment = ({ ...props }) => {
           style={styles.button}
           variant='outlined'
           component={Link}
+          disabled={handleDisableButton()}
           to='/payment-method'
         >
           <div style={styles.displayFlexAndAlignCenter}>
@@ -688,7 +704,7 @@ const Payment = ({ ...props }) => {
         history.push('/settleSuccess');
       }
     } else {
-      serWarningMessage('Payment Failed!');
+      setWarningMessage('Payment Failed!');
       handleOpenWarningModal();
       setIsLoading(false);
     }
@@ -738,7 +754,12 @@ const Payment = ({ ...props }) => {
       )}
 
       {isOpenSVC && (
-        <UseSVCPaymentDialog open={isOpenSVC} onClose={handleCloseSVC} />
+        <UseSVCPaymentDialog
+          open={isOpenSVC}
+          onClose={handleCloseSVC}
+          maxAmount={totalPrice}
+          anotherPayment={handleMixSVC()}
+        />
       )}
 
       <Box component='div' sx={styles.root}>

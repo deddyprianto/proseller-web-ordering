@@ -1,29 +1,29 @@
-import React, { Component } from "react";
-import { Button } from "reactstrap";
-import _ from "lodash";
-import moment from "moment";
-import { Col, Row } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
-import Iframe from "react-iframe";
-import LoadingPayAtPOS from "../loading/LoadingPayAtPOS";
-import AddPromo from "../basket/addPromo";
-import SelectSVC from "../svc/SelectSVC";
-import { connect } from "react-redux";
-import PaymentMethodBasket from "../basket/paymentMethodBasket";
-import { OrderAction } from "../../redux/actions/OrderAction";
-import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyObject } from "../../helpers/CheckEmpty";
-import config from "../../config";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import { CampaignAction } from "../../redux/actions/CampaignAction";
-import { PaymentAction } from "../../redux/actions/PaymentAction";
-import { ProductAction } from "../../redux/actions/ProductAction";
-import styles from "./styles.module.css";
-import { uuid } from "uuidv4";
-import { SVCAction } from "../../redux/actions/SVCAction";
-import ModalInfoTransfer from "./ModalInfoTransfer";
-const Swal = require("sweetalert2");
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import React, { Component } from 'react';
+import { Button } from 'reactstrap';
+import _ from 'lodash';
+import moment from 'moment';
+import { Col, Row } from 'reactstrap';
+import Shimmer from 'react-shimmer-effect';
+import Iframe from 'react-iframe';
+import LoadingPayAtPOS from '../loading/LoadingPayAtPOS';
+import AddPromo from '../basket/addPromo';
+import SelectSVC from '../svc/SelectSVC';
+import { connect } from 'react-redux';
+import PaymentMethodBasket from '../basket/paymentMethodBasket';
+import { OrderAction } from '../../redux/actions/OrderAction';
+import Sound_Effect from '../../assets/sound/Sound_Effect.mp3';
+import { isEmptyObject } from '../../helpers/CheckEmpty';
+import config from '../../config';
+import { CustomerAction } from '../../redux/actions/CustomerAction';
+import { CampaignAction } from '../../redux/actions/CampaignAction';
+import { PaymentAction } from '../../redux/actions/PaymentAction';
+import { ProductAction } from '../../redux/actions/ProductAction';
+import styles from './styles.module.css';
+import { v4 as uuid } from 'uuid';
+import { SVCAction } from '../../redux/actions/SVCAction';
+import ModalInfoTransfer from './ModalInfoTransfer';
+const Swal = require('sweetalert2');
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const companyInfo = encryptor.decrypt(
   JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
 );
@@ -37,13 +37,13 @@ class Payment extends Component {
       isLoadingPOS: false,
       dataBasket: null,
       myVoucher: null,
-      countryCode: "SG",
+      countryCode: 'SG',
       totalPoint: 0,
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
       discountVoucher: 0,
-      newTotalPrice: "0",
+      newTotalPrice: '0',
       selectedVoucher: null,
       statusSelectedVoucher: null,
       selectedPoint: null,
@@ -60,19 +60,19 @@ class Payment extends Component {
       widthSelected: 0,
       settle: false,
       storeDetail: null,
-      pointsToRebateRatio: "0:0",
-      roundingOptions: "INTEGER",
+      pointsToRebateRatio: '0:0',
+      roundingOptions: 'INTEGER',
       xstep: 1,
-      orderingMode: "",
+      orderingMode: '',
       btnBasketOrder: true,
       play: false,
       deliveryProvaider: [],
-      dataCVV: "",
+      dataCVV: '',
       cartDetails: {},
       dataSettle: {},
       failed: false,
       showPaymentPage: false,
-      paymentUrl: "",
+      paymentUrl: '',
       paymentCard: [],
       voucherDiscountList: [],
       amountSVC: 0,
@@ -107,11 +107,11 @@ class Payment extends Component {
 
       response = await this.props.dispatch(
         CampaignAction.getCampaignPoints(
-          { history: "false" },
+          { history: 'false' },
           companyInfo && companyInfo.companyId
         )
       );
-      console.log(response, "response");
+      console.log(response, 'response');
       if (response.ResultCode === 200) this.setState(response.Data);
     }
     const svc = await this.props.dispatch(SVCAction.loadSVC());
@@ -120,7 +120,7 @@ class Payment extends Component {
     const paymentTypes = this.props.companyInfo.paymentTypes;
     if (paymentTypes.length === 1) {
       try {
-        if (paymentTypes[0].paymentID === "MANUAL_TRANSFER") {
+        if (paymentTypes[0].paymentID === 'MANUAL_TRANSFER') {
           this.setState({
             paymentCard: this.props.paymentCard,
             selectedCard: paymentTypes[0],
@@ -149,10 +149,10 @@ class Payment extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -177,13 +177,13 @@ class Payment extends Component {
         (response.data && response.data.isPaymentComplete)
       ) {
         // hostedPage.close();
-        console.log("payment success");
+        console.log('payment success');
         let data = {
           message:
             response.data.confirmationInfo.message ||
-            "Congratulations, payment success",
+            'Congratulations, payment success',
           paymentType:
-            response.data.paymentType || payment.paymentType || "CREDIT CARD",
+            response.data.paymentType || payment.paymentType || 'CREDIT CARD',
           totalNettAmount: response.data.totalNettAmount,
           outletName: this.state.dataBasket.outlet.name,
           orderingMode: this.state.dataBasket.orderingMode,
@@ -199,9 +199,9 @@ class Payment extends Component {
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
         this.togglePlay();
-        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
-        this.props.history.push("/settleSuccess");
+        await this.props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+        this.props.history.push('/settleSuccess');
         this.setState({ isLoading: false, showPaymentPage: false });
         return;
       } else if (
@@ -210,9 +210,9 @@ class Payment extends Component {
       ) {
         // hostedPage.close();
         Swal.fire(
-          "Payment Failed",
-          response.message || "Please try again",
-          "error"
+          'Payment Failed',
+          response.message || 'Please try again',
+          'error'
         );
         this.setState({
           isLoading: false,
@@ -240,15 +240,15 @@ class Payment extends Component {
       const response = await this.props.dispatch(
         CustomerAction.getSalesByReference(payment.referenceNo)
       );
-      if (response && response.data.status === "COMPLETED") {
+      if (response && response.data.status === 'COMPLETED') {
         clearInterval(this.pendingSalesInterval);
         let data = {
           message: response.message,
           paymentType:
-            response.data.paymentType || payment.paymentType || "CREDIT CARD",
+            response.data.paymentType || payment.paymentType || 'CREDIT CARD',
           totalNettAmount: response.data.totalNettAmount,
           outletName: response.data.outlet.name,
-          orderingMode: "",
+          orderingMode: '',
           createdAt: response.data.createdAt,
           payments: response.data.payments,
         };
@@ -261,18 +261,14 @@ class Payment extends Component {
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
         this.togglePlay();
-        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
-        this.props.history.push("/settleSuccess");
+        await this.props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+        this.props.history.push('/settleSuccess');
         this.setState({ isLoading: false, showPaymentPage: false });
         return;
-      } else if (response.data.status === "FAILED") {
+      } else if (response.data.status === 'FAILED') {
         clearInterval(this.pendingSalesInterval);
-        Swal.fire(
-          "Payment Failed",
-          "Please try again",
-          "error"
-        );
+        Swal.fire('Payment Failed', 'Please try again', 'error');
         this.setState({
           isLoading: false,
           failed: true,
@@ -327,7 +323,7 @@ class Payment extends Component {
     let dataSettle = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_dataSettle`))
     );
-    console.log(dataSettle, "dataSettle");
+    console.log(dataSettle, 'dataSettle');
     let selectedVoucher = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
     );
@@ -377,7 +373,7 @@ class Payment extends Component {
 
     if (selectedVoucher) {
       await this.props.dispatch(
-        PaymentAction.setData(selectedVoucher, "SELECT_VOUCHER")
+        PaymentAction.setData(selectedVoucher, 'SELECT_VOUCHER')
       );
       this.setState({ voucherDiscountList: [], discountVoucher: 0 });
       for (let index = 0; index < selectedVoucher.length; index++) {
@@ -392,13 +388,13 @@ class Payment extends Component {
 
     const point = selectedPoint || 0;
     const pointToRebate =
-      parseInt(dataSettle.pointsToRebateRatio.split(":")[0]) > 0
-        ? parseInt(dataSettle.pointsToRebateRatio.split(":")[0])
+      parseInt(dataSettle.pointsToRebateRatio.split(':')[0]) > 0
+        ? parseInt(dataSettle.pointsToRebateRatio.split(':')[0])
         : 1;
 
     let totalPrice = dataSettle.dataBasket.totalNettAmount;
     let voucherDiscount = _.sumBy(this.state.voucherDiscountList, (items) => {
-      return items.paymentType === "voucher" && items.paymentAmount;
+      return items.paymentType === 'voucher' && items.paymentAmount;
     });
     let discountPoint = Number(this.state.discountPoint);
     if (discountPoint === 0) {
@@ -470,7 +466,7 @@ class Payment extends Component {
         dataBasket.details.sort((a, b) => {
           return b.nettAmount - a.nettAmount;
         });
-        if (selectedVoucher.appliedTo === "PRODUCT") {
+        if (selectedVoucher.appliedTo === 'PRODUCT') {
           let check = null;
           for (let i = 0; i < dataBasket.details.length; i++) {
             let details = dataBasket.details[i];
@@ -480,7 +476,7 @@ class Payment extends Component {
             if (check) checkProduct = details;
           }
           // todo check modifier
-        } else if (selectedVoucher.appliedTo === "COLLECTION") {
+        } else if (selectedVoucher.appliedTo === 'COLLECTION') {
           for (
             let index = 0;
             index < selectedVoucher.appliedItems.length;
@@ -488,7 +484,7 @@ class Payment extends Component {
           ) {
             let appliedItems = selectedVoucher.appliedItems[index];
             let collection = await this.props.dispatch(
-              ProductAction.getCollection(appliedItems.value.split("::")[1])
+              ProductAction.getCollection(appliedItems.value.split('::')[1])
             );
 
             if (collection.products) {
@@ -501,7 +497,7 @@ class Payment extends Component {
               }
             }
           }
-        } else if (selectedVoucher.appliedTo === "CATEGORY") {
+        } else if (selectedVoucher.appliedTo === 'CATEGORY') {
           for (let i = 0; i < dataBasket.details.length; i++) {
             let details = dataBasket.details[i];
             let check = selectedVoucher.appliedItems.find((items) => {
@@ -513,10 +509,10 @@ class Payment extends Component {
       }
 
       let voucherDiscount = _.sumBy(this.state.voucherDiscountList, (items) => {
-        return items.paymentType === "voucher" && items.paymentAmount;
+        return items.paymentType === 'voucher' && items.paymentAmount;
       });
       let voucherDiscountList = {
-        paymentType: "voucher",
+        paymentType: 'voucher',
         voucherId: selectedVoucher.id,
         serialNumber: selectedVoucher.serialNumber,
         paymentAmount: 5,
@@ -525,14 +521,14 @@ class Payment extends Component {
 
       if (checkOutlet || storeDetail.paidMembership || storeDetail.paySVC) {
         if (
-          selectedVoucher.appliedTo !== "ALL" &&
+          selectedVoucher.appliedTo !== 'ALL' &&
           selectedVoucher.appliedItems &&
           selectedVoucher.appliedItems.length > 0
         ) {
           if (checkProduct) {
             let date = new Date();
-            let tanggal = moment().format().split("T")[0];
-            let region = moment().format().split("+")[1];
+            let tanggal = moment().format().split('T')[0];
+            let region = moment().format().split('+')[1];
             let activeWeekDays = selectedVoucher.validity.activeWeekDays;
             let validHour = activeWeekDays[date.getDay()].validHour;
             let validHourFrom = validHour.from;
@@ -546,7 +542,7 @@ class Payment extends Component {
               );
               if (statusValidHour) {
                 discount = voucherValue;
-                if (voucherType === "discPercentage") {
+                if (voucherType === 'discPercentage') {
                   discount =
                     Number(checkProduct.unitPrice) *
                     (Number(voucherValue) / 100);
@@ -565,7 +561,7 @@ class Payment extends Component {
                   this.state.voucherDiscountList,
                   (items) => {
                     return (
-                      items.paymentType === "voucher" &&
+                      items.paymentType === 'voucher' &&
                       items.voucherId === selectedVoucher.id &&
                       items.paymentAmount
                     );
@@ -596,19 +592,19 @@ class Payment extends Component {
                   });
                 } else {
                   this.setRemoveVoucher(
-                    "Sorry, the discount has exceeded the total price for a specific product!",
+                    'Sorry, the discount has exceeded the total price for a specific product!',
                     selectedVoucher
                   );
                 }
               } else {
                 this.setRemoveVoucher(
-                  "Sorry, this voucher not available this time!",
+                  'Sorry, this voucher not available this time!',
                   selectedVoucher
                 );
               }
             } else {
               this.setRemoveVoucher(
-                "Sorry, this voucher not available today!",
+                'Sorry, this voucher not available today!',
                 selectedVoucher
               );
             }
@@ -627,7 +623,7 @@ class Payment extends Component {
             totalAmount -= dataBasket.provider.deliveryFee;
           }
 
-          if (voucherType === "discPercentage") {
+          if (voucherType === 'discPercentage') {
             // discount = Number(totalAmount - voucherDiscount) * (Number(voucherValue) / 100);
             discount = Number(totalAmount) * (Number(voucherValue) / 100);
           } else {
@@ -658,31 +654,31 @@ class Payment extends Component {
             });
           } else {
             this.setRemoveVoucher(
-              "The voucher has met the net amount!",
+              'The voucher has met the net amount!',
               selectedVoucher
             );
           }
         }
       } else {
-        this.setRemoveVoucher("Voucher be used this outlet!", selectedVoucher);
+        this.setRemoveVoucher('Voucher be used this outlet!', selectedVoucher);
       }
     }
   };
 
   roleBtnClear = () => {
     let props = this.state;
-    return (props.dataBasket.status === "SUBMITTED" &&
+    return (props.dataBasket.status === 'SUBMITTED' &&
       props.orderingMode &&
-      (props.orderingMode === "TAKEAWAY" ||
-        props.orderingMode === "STOREPICKUP" ||
-        props.orderingMode === "STORECHECKOUT")) ||
-      (props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE") ||
-      (props.dataBasket.orderingMode === "DELIVERY" &&
-        props.dataBasket.status !== "PENDING") ||
-      props.dataBasket.status === "CONFIRMED" ||
-      props.dataBasket.status === "PROCESSING" ||
-      props.dataBasket.status === "READY_FOR_COLLECTION"
+      (props.orderingMode === 'TAKEAWAY' ||
+        props.orderingMode === 'STOREPICKUP' ||
+        props.orderingMode === 'STORECHECKOUT')) ||
+      (props.dataBasket.orderingMode === 'DINEIN' &&
+        props.dataBasket.outlet.outletType === 'QUICKSERVICE') ||
+      (props.dataBasket.orderingMode === 'DELIVERY' &&
+        props.dataBasket.status !== 'PENDING') ||
+      props.dataBasket.status === 'CONFIRMED' ||
+      props.dataBasket.status === 'PROCESSING' ||
+      props.dataBasket.status === 'READY_FOR_COLLECTION'
       ? true
       : false;
   };
@@ -692,9 +688,9 @@ class Payment extends Component {
     if (this.props.companyInfo) {
       const { currency } = this.props.companyInfo;
 
-      if (!price || price === "-") price = 0;
+      if (!price || price === '-') price = 0;
       let result = price.toLocaleString(currency.locale, {
-        style: "currency",
+        style: 'currency',
         currency: currency.code,
       });
       return result;
@@ -704,7 +700,7 @@ class Payment extends Component {
   cancelSelectVoucher = async () => {
     this.setState({
       discountVoucher: 0,
-      newTotalPrice: "0",
+      newTotalPrice: '0',
       isLoading: true,
       selectedVoucher: false,
     });
@@ -753,22 +749,22 @@ class Payment extends Component {
 
     if (totalPoint < 0) totalPoint = 0;
 
-    let needPoint = this.calculateSelectedPoint(selectedPoint, "selectedPoint");
+    let needPoint = this.calculateSelectedPoint(selectedPoint, 'selectedPoint');
     if (selectedPoint <= 0) {
       selectedPoint = this.calculateSelectedPoint(
         selectedPoint,
-        "selectedPoint"
+        'selectedPoint'
       );
       if (selectedPoint > totalPoint) {
-        selectedPoint = this.calculateSelectedPoint(totalPoint, "allIn");
+        selectedPoint = this.calculateSelectedPoint(totalPoint, 'allIn');
         needPoint = selectedPoint;
       }
     } else if (selectedPoint > totalPoint) {
-      selectedPoint = this.calculateSelectedPoint(totalPoint, "allIn");
+      selectedPoint = this.calculateSelectedPoint(totalPoint, 'allIn');
       needPoint = selectedPoint;
     } else if (
-      pointsToRebateRatio.split(":")[0] &&
-      pointsToRebateRatio.split(":")[1] === "0"
+      pointsToRebateRatio.split(':')[0] &&
+      pointsToRebateRatio.split(':')[1] === '0'
     ) {
       selectedPoint = 0;
     }
@@ -776,9 +772,9 @@ class Payment extends Component {
     if (needPoint > totalPoint) needPoint = totalPoint;
 
     let textRasio = `Redeem ${
-      pointsToRebateRatio.split(":")[0]
+      pointsToRebateRatio.split(':')[0]
     } point to ${this.getCurrency(
-      parseInt(pointsToRebateRatio.split(":")[1])
+      parseInt(pointsToRebateRatio.split(':')[1])
     )}`;
 
     this.setState({ textRasio, selectedPoint, needPoint });
@@ -794,13 +790,13 @@ class Payment extends Component {
       this.state;
     totalPrice = totalPrice + discountPoint;
 
-    if (type === "selectedPoint") {
+    if (type === 'selectedPoint') {
       selectedPoint =
-        (totalPrice / pointsToRebateRatio.split(":")[1]) *
-        pointsToRebateRatio.split(":")[0];
+        (totalPrice / pointsToRebateRatio.split(':')[1]) *
+        pointsToRebateRatio.split(':')[0];
     }
     selectedPoint = parseFloat(selectedPoint.toFixed(2));
-    if (detailPoint.roundingOptions !== "DECIMAL") {
+    if (detailPoint.roundingOptions !== 'DECIMAL') {
       selectedPoint = Math.floor(selectedPoint);
     }
     return selectedPoint;
@@ -819,7 +815,7 @@ class Payment extends Component {
 
   setRemoveVoucher = (message, itemVoucher) => {
     this.handleCancelVoucher(itemVoucher);
-    Swal.fire("Oppss!", message, "error");
+    Swal.fire('Oppss!', message, 'error');
   };
 
   handleSettle = async (payAtPOS) => {
@@ -829,11 +825,11 @@ class Payment extends Component {
       let userInput = selectedCard.details.userInput;
       if (userInput.length > 0) {
         let needCVV = userInput.find((items) => {
-          return items.name === "cardCVV" && items.required;
+          return items.name === 'cardCVV' && items.required;
         });
 
         if (Object.keys(needCVV).length !== 0) {
-          console.log("need cvv");
+          console.log('need cvv');
           return;
         }
       }
@@ -915,7 +911,7 @@ class Payment extends Component {
 
     if (selectedPoint > 0) {
       payload.payments.push({
-        paymentType: "point",
+        paymentType: 'point',
         redeemValue: selectedPoint,
         paymentAmount: discountPoint,
         isPoint: true,
@@ -944,17 +940,17 @@ class Payment extends Component {
 
     if (response && response.ResultCode === 400) {
       Swal.fire(
-        "Oppss!",
+        'Oppss!',
         response.message ||
           (response.data && response.data.message) ||
-          "Payment Failed!",
-        "error"
+          'Payment Failed!',
+        'error'
       );
     } else {
       // if need further actions
       if (response.Data.action !== undefined) {
-        if (response.Data.action.type === "url") {
-          if (selectedCard.paymentID === "UOB") {
+        if (response.Data.action.type === 'url') {
+          if (selectedCard.paymentID === 'UOB') {
             this.checkPendingSales(response.Data);
           } else {
             this.getPendingPayment(response.Data);
@@ -979,8 +975,8 @@ class Payment extends Component {
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
 
-        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        this.props.history.push("/settleSuccess");
+        await this.props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        this.props.history.push('/settleSuccess');
       }
     }
   };
@@ -1055,7 +1051,7 @@ class Payment extends Component {
 
     if (selectedPoint > 0) {
       payload.payments.push({
-        paymentType: "point",
+        paymentType: 'point',
         redeemValue: selectedPoint,
         paymentAmount: discountPoint,
         isPoint: true,
@@ -1064,8 +1060,8 @@ class Payment extends Component {
 
     if (this.state.amountSVC > 0) {
       payload.payments.push({
-        paymentType: "Store Value Card",
-        paymentName: "Store Value Card",
+        paymentType: 'Store Value Card',
+        paymentName: 'Store Value Card',
         paymentAmount: Number(this.state.amountSVC),
         isSVC: true,
       });
@@ -1093,17 +1089,17 @@ class Payment extends Component {
 
     if (response && response.ResultCode === 400) {
       Swal.fire(
-        "Oppss!",
+        'Oppss!',
         response.message ||
           (response.data && response.data.message) ||
-          "Payment Failed!",
-        "error"
+          'Payment Failed!',
+        'error'
       );
     } else {
       // if need further actions
       if (response.Data.action !== undefined) {
-        if (response.Data.action.type === "url") {
-          if (selectedCard.paymentID === "UOB") {
+        if (response.Data.action.type === 'url') {
+          if (selectedCard.paymentID === 'UOB') {
             this.checkPendingSales(response.Data);
           } else {
             this.getPendingPayment(response.Data);
@@ -1128,8 +1124,8 @@ class Payment extends Component {
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
 
-        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        this.props.history.push("/settleSuccess");
+        await this.props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        this.props.history.push('/settleSuccess');
       }
     }
   };
@@ -1148,7 +1144,7 @@ class Payment extends Component {
 
     let isNeedConfirmation = false;
     let enableAutoConfirmation = this.props.setting.find((items) => {
-      return items.settingKey === "EnableAutoConfirmation";
+      return items.settingKey === 'EnableAutoConfirmation';
     });
     if (enableAutoConfirmation) {
       isNeedConfirmation = enableAutoConfirmation.settingValue || false;
@@ -1183,13 +1179,13 @@ class Payment extends Component {
     };
 
     if (scanTable)
-      payload.tableNo = scanTable.table || scanTable.tableNo || "-";
+      payload.tableNo = scanTable.table || scanTable.tableNo || '-';
 
-    if (orderingMode === "DELIVERY") {
+    if (orderingMode === 'DELIVERY') {
       payload.deliveryAddress = deliveryAddress;
       payload.deliveryProvider = this.props.deliveryProvider.name;
       payload.deliveryProviderName = this.props.deliveryProvider.name;
-      payload.deliveryService = "-";
+      payload.deliveryService = '-';
       payload.deliveryProviderId = this.props.deliveryProvider.id;
       payload.deliveryFee = this.props.deliveryProvider.deliveryFeeFloat;
     }
@@ -1200,7 +1196,7 @@ class Payment extends Component {
 
     if (selectedPoint > 0) {
       payload.payments.push({
-        paymentType: "point",
+        paymentType: 'point',
         redeemValue: selectedPoint,
         paymentAmount: discountPoint,
         isPoint: true,
@@ -1214,10 +1210,10 @@ class Payment extends Component {
         paymentName: selectedCard.paymentName,
         paymentAmount: totalPrice,
         description: selectedCard.configurations.find(
-          (x) => x.name === "payment_description"
+          (x) => x.name === 'payment_description'
         ).value,
         manual_transfer_image: selectedCard.configurations.find(
-          (x) => x.name === "manual_transfer_image"
+          (x) => x.name === 'manual_transfer_image'
         ).value,
       });
     } else if (selectedCard) {
@@ -1232,8 +1228,8 @@ class Payment extends Component {
 
     if (this.state.amountSVC > 0) {
       payload.payments.push({
-        paymentType: "Store Value Card",
-        paymentName: "Store Value Card",
+        paymentType: 'Store Value Card',
+        paymentName: 'Store Value Card',
         paymentAmount: Number(this.state.amountSVC),
         isSVC: true,
       });
@@ -1265,7 +1261,7 @@ class Payment extends Component {
       payload.outletId = dataBasket.outletId;
       payload.outletID = dataBasket.outletID;
       payload.id = dataBasket.id;
-      payload.status = "COMPLETED";
+      payload.status = 'COMPLETED';
 
       // embed other payment method if exist
       if (dataBasket.payments && dataBasket.payments.length > 0) {
@@ -1285,11 +1281,11 @@ class Payment extends Component {
       response.data = response.Data;
     } else {
       if (
-        orderingMode === "TAKEAWAY" ||
-        orderingMode === "STOREPICKUP" ||
-        orderingMode === "STORECHECKOUT" ||
-        orderingMode === "DELIVERY" ||
-        storeDetail.outletType === "QUICKSERVICE"
+        orderingMode === 'TAKEAWAY' ||
+        orderingMode === 'STOREPICKUP' ||
+        orderingMode === 'STORECHECKOUT' ||
+        orderingMode === 'DELIVERY' ||
+        storeDetail.outletType === 'QUICKSERVICE'
       ) {
         payload.orderActionDate = orderActionDate;
         payload.orderActionTime = orderActionTime;
@@ -1308,17 +1304,17 @@ class Payment extends Component {
 
     if (response && response.resultCode >= 400) {
       Swal.fire(
-        "Oppss!",
+        'Oppss!',
         response.message ||
           (response.data && response.data.message) ||
-          "Payment Failed!",
-        "error"
+          'Payment Failed!',
+        'error'
       );
     } else {
       // if need further actions
       if (response.data && response.data.action !== undefined) {
-        if (response.data.action.type === "url") {
-          if (selectedCard.paymentID === "UOB") {
+        if (response.data.action.type === 'url') {
+          if (selectedCard.paymentID === 'UOB') {
             this.checkPendingSales(response.data);
           } else {
             this.getPendingPayment(response.data);
@@ -1339,12 +1335,12 @@ class Payment extends Component {
         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
         localStorage.removeItem(`${config.prefix}_dataSettle`);
         this.togglePlay();
-        await this.props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
-        await this.props.dispatch(PaymentAction.setData([], "SELECT_VOUCHER"));
-        if (selectedCard && selectedCard.paymentID === "MANUAL_TRANSFER") {
-          document.getElementById("open-modal-info-transfer").click();
+        await this.props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+        await this.props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        if (selectedCard && selectedCard.paymentID === 'MANUAL_TRANSFER') {
+          document.getElementById('open-modal-info-transfer').click();
         } else {
-          this.props.history.push("/settleSuccess");
+          this.props.history.push('/settleSuccess');
         }
       }
     }
@@ -1394,18 +1390,18 @@ class Payment extends Component {
     let { basket } = this.props;
 
     let deliveryFee = 0;
-    if (orderingMode === "DINEIN" && orderingMode === "TAKEAWAY")
+    if (orderingMode === 'DINEIN' && orderingMode === 'TAKEAWAY')
       deliveryFee = 0;
 
     let currency = this.props.companyInfo && this.props.companyInfo.currency;
-    let formattedPrice = (this.getCurrency(totalPrice) || "").split(
-      (currency && currency.code) || " "
+    let formattedPrice = (this.getCurrency(totalPrice) || '').split(
+      (currency && currency.code) || ' '
     )[1];
     let totalAmount = (
       this.getCurrency(
         dataBasket && dataBasket.totalNettAmount + deliveryFee
-      ) || ""
-    ).split((currency && currency.code) || " ")[1];
+      ) || ''
+    ).split((currency && currency.code) || ' ')[1];
     let basketLength = 0;
     if (basket && basket.details) {
       basket.details.forEach((cart) => {
@@ -1417,29 +1413,29 @@ class Payment extends Component {
     if (selectedCard && selectedCard.isAccountRequired) {
       let lengthNumber =
         selectedCard.details.maskedAccountNumber.toString().length;
-      nameCreditCard = "Pay " + this.getCurrency(totalPrice) + " with ";
+      nameCreditCard = 'Pay ' + this.getCurrency(totalPrice) + ' with ';
       nameCreditCard += selectedCard.details.cardIssuer
-        ? selectedCard.details.cardIssuer.toUpperCase() + " "
-        : "- ";
+        ? selectedCard.details.cardIssuer.toUpperCase() + ' '
+        : '- ';
       nameCreditCard +=
-        selectedCard.details.maskedAccountNumber.substr(lengthNumber - 4) + " ";
+        selectedCard.details.maskedAccountNumber.substr(lengthNumber - 4) + ' ';
     }
 
     if (this.state.loadingShow) {
       return (
         <div
-          className="col-full"
+          className='col-full'
           style={{
-            marginTop: config.prefix === "emenu" ? 30 : 50,
+            marginTop: config.prefix === 'emenu' ? 30 : 50,
             marginBottom: 50,
           }}
         >
-          <div id="primary" className="content-area">
-            <div className="stretch-full-width">
+          <div id='primary' className='content-area'>
+            <div className='stretch-full-width'>
               <main
-                id="main"
-                className="site-main"
-                style={{ textAlign: "center" }}
+                id='main'
+                className='site-main'
+                style={{ textAlign: 'center' }}
               ></main>
               <Row>
                 <Col sm={6}>{this.viewShimmer()}</Col>
@@ -1453,55 +1449,55 @@ class Payment extends Component {
     if (!this.props.isLoggedIn || isEmptyObject(dataSettle)) {
       return (
         <div
-          className="col-full"
+          className='col-full'
           style={{
-            marginTop: config.prefix === "emenu" ? 70 : 90,
+            marginTop: config.prefix === 'emenu' ? 70 : 90,
             marginBottom: 50,
             padding: 0,
           }}
         >
-          <div id="primary" className="content-area">
+          <div id='primary' className='content-area'>
             <div
-              className="stretch-full-width"
-              style={{ display: "flex", justifyContent: "center" }}
+              className='stretch-full-width'
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
-              <main id="main" className="site-main" style={{ width: "100%" }}>
+              <main id='main' className='site-main' style={{ width: '100%' }}>
                 <div>
                   <img
                     src={config.url_emptyImage}
-                    alt="is empty"
+                    alt='is empty'
                     style={{ marginTop: 30 }}
                   />
                   {basketLength > 0 ? (
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                         marginLeft: 10,
                         marginRight: 10,
                       }}
                     >
-                      <div style={{ textAlign: "center" }}>
+                      <div style={{ textAlign: 'center' }}>
                         Confirm your cart to proceed with payment
                       </div>
                       <Button
-                        className="color"
+                        className='color'
                         style={{
-                          color: "#FFF",
-                          fontWeight: "bold",
+                          color: '#FFF',
+                          fontWeight: 'bold',
                           borderRadius: 5,
                           height: 35,
                           marginTop: 10,
                           width: 100,
                         }}
-                        onClick={() => this.props.history.push("/basket")}
+                        onClick={() => this.props.history.push('/basket')}
                       >
                         Go to Cart
                       </Button>
                     </div>
                   ) : (
-                    <div style={{ textAlign: "center" }}>
+                    <div style={{ textAlign: 'center' }}>
                       No Pending Payment
                     </div>
                   )}
@@ -1523,81 +1519,81 @@ class Payment extends Component {
         />
         {isLoadingPOS && <LoadingPayAtPOS cart={cartDetails} />}
         <div
-          className="col-full"
+          className='col-full'
           style={{
-            marginTop: config.prefix === "emenu" ? 120 : 155,
+            marginTop: config.prefix === 'emenu' ? 120 : 155,
             marginBottom: 50,
             padding: 0,
           }}
         >
-          <div id="primary" className="content-area">
+          <div id='primary' className='content-area'>
             <div
-              className="stretch-full-width"
-              style={{ display: "flex", justifyContent: "center" }}
+              className='stretch-full-width'
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <div
                 style={{
-                  flexDirection: "row",
-                  position: "fixed",
+                  flexDirection: 'row',
+                  position: 'fixed',
                   zIndex: 10,
-                  width: "100%",
+                  width: '100%',
                   marginTop: -60,
-                  boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                  display: "flex",
+                  boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+                  display: 'flex',
                   height: 40,
                 }}
-                className="background-theme"
+                className='background-theme'
               >
                 <div
                   style={{ marginLeft: 10, fontSize: 16 }}
                   onClick={() => this.props.history.goBack()}
                 >
-                  <i className="fa fa-chevron-left"></i> Back
+                  <i className='fa fa-chevron-left'></i> Back
                 </div>
               </div>
-              <main id="main" className="site-main" style={{ width: "100%" }}>
+              <main id='main' className='site-main' style={{ width: '100%' }}>
                 {dataBasket && (
-                  <div style={{ width: "100%" }}>
+                  <div style={{ width: '100%' }}>
                     <div>
                       <div
                         style={{
-                          color: this.props.color.primary || "#c00a27",
+                          color: this.props.color.primary || '#c00a27',
                           fontSize: 16,
-                          fontWeight: "bold",
-                          textAlign: "center",
+                          fontWeight: 'bold',
+                          textAlign: 'center',
                         }}
                       >
                         Confirm Payment
                       </div>
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "center",
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'center',
                           marginTop: 15,
                           marginLeft: -20,
                         }}
                       >
                         <div
                           style={{
-                            color: "gray",
+                            color: 'gray',
                             fontSize: 10,
-                            fontWeight: "bold",
+                            fontWeight: 'bold',
                             marginTop: -20,
                           }}
                         >
                           {currency && currency.code}
                         </div>
                         <div>
-                          <div style={{ fontSize: 40, fontWeight: "bold" }}>
+                          <div style={{ fontSize: 40, fontWeight: 'bold' }}>
                             {formattedPrice}
                           </div>
                           {totalAmount !== formattedPrice && (
                             <div
                               style={{
-                                textAlign: "right",
+                                textAlign: 'right',
                                 marginRight: -10,
-                                textDecorationLine: "line-through",
+                                textDecorationLine: 'line-through',
                               }}
                             >
                               {totalAmount}
@@ -1609,49 +1605,49 @@ class Payment extends Component {
 
                     <div
                       style={{
-                        backgroundColor: "#DCDCDC",
+                        backgroundColor: '#DCDCDC',
                         height: 1,
-                        width: "100%",
+                        width: '100%',
                         marginBottom: 10,
                         marginTop: 20,
                       }}
                     />
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
                         paddingLeft: 10,
                       }}
                     >
                       <i
-                        className="fa fa-shopping-cart"
-                        aria-hidden="true"
+                        className='fa fa-shopping-cart'
+                        aria-hidden='true'
                         style={{
-                          color: this.props.color.primary || "#c00a27",
+                          color: this.props.color.primary || '#c00a27',
                           fontSize: 22,
                           padding: 7,
                           borderRadius: 45,
                           border: `1px solid ${
-                            this.props.color.primary || "#c00a27"
+                            this.props.color.primary || '#c00a27'
                           }`,
                         }}
                       />
                       <div
                         style={{
                           marginLeft: 10,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "100%",
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          width: '100%',
                         }}
                       >
                         <div
                           style={{
-                            color: this.props.color.primary || "#c00a27",
-                            fontWeight: "bold",
-                            textAlign: "left",
+                            color: this.props.color.primary || '#c00a27',
+                            fontWeight: 'bold',
+                            textAlign: 'left',
                             fontSize: 14,
-                            lineHeight: "17px",
+                            lineHeight: '17px',
                           }}
                         >
                           {dataBasket.outlet.name}
@@ -1660,9 +1656,9 @@ class Payment extends Component {
                     </div>
                     <div
                       style={{
-                        backgroundColor: "#DCDCDC",
+                        backgroundColor: '#DCDCDC',
                         height: 1,
-                        width: "100%",
+                        width: '100%',
                         marginBottom: 10,
                         marginTop: 10,
                       }}
@@ -1716,9 +1712,9 @@ class Payment extends Component {
 
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
                         marginTop: 50,
                       }}
                     >
@@ -1733,7 +1729,7 @@ class Payment extends Component {
                         onClick={() => {
                           if (
                             selectedCard &&
-                            selectedCard.paymentID === "MANUAL_TRANSFER"
+                            selectedCard.paymentID === 'MANUAL_TRANSFER'
                           ) {
                             this.handleSettle();
                             // document
@@ -1743,11 +1739,11 @@ class Payment extends Component {
                             this.handleSettle();
                           }
                         }}
-                        className="customer-group button"
+                        className='customer-group button'
                         style={{
                           marginBottom: 10,
-                          width: "100%",
-                          fontWeight: "bold",
+                          width: '100%',
+                          fontWeight: 'bold',
                           marginLeft: 10,
                           marginRight: 10,
                           height: 40,
@@ -1758,25 +1754,25 @@ class Payment extends Component {
                     </div>
 
                     {storeDetail.enablePayAtPOS === true &&
-                      this.state.orderingMode !== "DELIVERY" && (
+                      this.state.orderingMode !== 'DELIVERY' && (
                         <div>
-                          <p style={{ textAlign: "center" }}>OR</p>
+                          <p style={{ textAlign: 'center' }}>OR</p>
                           <div
                             style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "center",
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
                               marginTop: 10,
                             }}
                           >
                             <Button
                               onClick={() => this.handleSettle(true)}
-                              className="customer-group button"
+                              className='customer-group button'
                               style={{
                                 marginBottom: 10,
-                                width: "100%",
-                                backgroundColor: "#34495e",
-                                fontWeight: "bold",
+                                width: '100%',
+                                backgroundColor: '#34495e',
+                                fontWeight: 'bold',
                                 marginLeft: 10,
                                 marginRight: 10,
                                 height: 40,
@@ -1789,14 +1785,14 @@ class Payment extends Component {
                 )}
               </main>
               <span
-                data-toggle="modal"
-                data-target="#status-ordering-modal"
-                id="open-modal-status"
+                data-toggle='modal'
+                data-target='#status-ordering-modal'
+                id='open-modal-status'
               />
               <span
-                data-toggle="modal"
-                data-target="#modal-info-transfer"
-                id="open-modal-info-transfer"
+                data-toggle='modal'
+                data-target='#modal-info-transfer'
+                id='open-modal-info-transfer'
               />
             </div>
           </div>
@@ -1805,7 +1801,7 @@ class Payment extends Component {
         {this.state.showPaymentPage && this.state.paymentUrl && (
           <div className={styles.modalContainer}>
             <Iframe
-              loading="auto"
+              loading='auto'
               url={this.state.paymentUrl}
               className={styles.paymentModal}
             />

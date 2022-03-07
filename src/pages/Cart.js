@@ -318,7 +318,7 @@ const Cart = ({ ...props }) => {
                     {props.orderActionDate}
                   </Typography>
                   <Typography style={styles.typography}>
-                    {props.orderActionTime}
+                    {props.orderActionTimeSlot}
                   </Typography>
                 </Box>
               ) : (

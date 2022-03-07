@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useHistory } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -18,13 +19,23 @@ import { LoadingButton } from '@mui/lab';
 import { SVCAction } from '../../../redux/actions/SVCAction';
 
 import { OrderAction } from 'redux/actions/OrderAction';
-import Swal from 'sweetalert2';
 import { PaymentAction } from 'redux/actions/PaymentAction';
+import config from 'config';
+import Sound_Effect from '../../../assets/sound/Sound_Effect.mp3';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
-const UseSVCPaymentDialog = ({ onClose, open }) => {
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+
+const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
   const color = useSelector((state) => state.theme.color);
   const dataSettle = useSelector((state) => state.order.basket);
   const orderingMode = useSelector((state) => state.order.orderingMode);
+  const deliveryAddress = useSelector((state) => state.order.deliveryAddress);
+  const selectedDeliveryProvider = useSelector(
+    (state) => state.order.selectedDeliveryProvider
+  );
+
+  const audio = new Audio(Sound_Effect);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -78,54 +89,89 @@ const UseSVCPaymentDialog = ({ onClose, open }) => {
     },
   };
 
+  const handleAudio = () => {
+    audio.play();
+  };
+
+  console.log(anotherPayment, '>>>>>>>>>>>>>>Aedyudgwaygdwgayd');
+
   const handleSubmitPayWithSVC = async (item) => {
     const { cartID, totalNettAmount } = dataSettle;
+    const paymentArray = [
+      {
+        paymentType: 'Store Value Card',
+        paymentName: 'Store Value Card',
+        paymentAmount: item.amountToUse,
+        isSVC: true,
+      },
+    ];
 
-    if (totalNettAmount === item.amountToUse) {
+    if (!isEmptyArray(anotherPayment)) {
+      anotherPayment.push(...paymentArray);
+    }
+
+    if (
+      totalNettAmount === item.amountToUse ||
+      item.amountToUse === maxAmount
+    ) {
+      console.log(
+        paymentArray,
+        anotherPayment,
+        '>>>>>>>>anotherPaymentanotherPaymentanotherPaymentanotherPaymentswqdqw'
+      );
       const payloadFullSVC = {
         cartID,
         totalNettAmount,
-        payments: [
-          {
-            paymentType: 'Store Value Card',
-            paymentName: 'Store Value Card',
-            paymentAmount: item.amountToUse,
-            isSVC: true,
-          },
-        ],
+        payments: !isEmptyArray(anotherPayment) ? anotherPayment : paymentArray,
         isNeedConfirmation: false,
         payAtPOS: false,
         orderingMode,
         tableNo: '-',
-        deliveryAddress: dataSettle?.deliveryAddress,
-        deliveryProvider: dataSettle?.deliveryProvider?.name,
-        deliveryProviderId: dataSettle?.deliveryProvider?.id,
-        deliveryFee: dataSettle?.deliveryProvider?.deliveryFee,
+        deliveryAddress: deliveryAddress,
+        deliveryProvider: selectedDeliveryProvider?.name,
+        deliveryProviderId: selectedDeliveryProvider?.id,
+        deliveryFee: selectedDeliveryProvider?.deliveryFee,
         clientTimezone: 480,
         orderActionDate: dataSettle?.orderActionDate,
         orderActionTime: dataSettle?.orderActionTime,
         orderActionTimeSlot: dataSettle?.orderActionTimeSlot,
       };
 
+      console.log(
+        payloadFullSVC,
+        '>>>>payloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVC'
+      );
       try {
         const response = await dispatch(
           OrderAction.submitAndPay(payloadFullSVC)
         );
-        if (response.resultCode === 200) {
-          onClose();
-          Swal.fire(
-            'Order Submitted',
-            'Your order has been submitted',
-            'success'
-          ).then((result) => {
-            if (result.isConfirmed || result.isDismissed) {
-              history.push('/history');
-            }
-          });
+        if (response && response.resultCode === 200) {
+          localStorage.setItem(
+            `${config.prefix}_paymentSuccess`,
+            JSON.stringify(encryptor.encrypt({ totalPrice: totalNettAmount }))
+          );
+          localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+          localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
+          localStorage.removeItem(`${config.prefix}_selectedPoint`);
+          localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+          localStorage.removeItem(`${config.prefix}_dataSettle`);
+
+          localStorage.setItem(
+            `${config.prefix}_settleSuccess`,
+            JSON.stringify(encryptor.encrypt(response.data))
+          );
+
+          await dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+          await dispatch(PaymentAction.clearAll());
+
+          handleAudio();
+
+          history.push('/settleSuccess');
+        } else {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.log(error);
-        onClose();
+      } catch (err) {
+        console.log(err);
         Swal.fire('Please try again!', 'Failed to submit order', 'error');
       }
     } else {
@@ -146,7 +192,7 @@ const UseSVCPaymentDialog = ({ onClose, open }) => {
     amountToUse: yup
       .number()
       .required('Please Enter Amount to Use')
-      .max(dataSettle?.totalNettAmount),
+      .max(maxAmount ? maxAmount : dataSettle?.totalNettAmount),
   });
 
   const formik = useFormik({
@@ -299,7 +345,15 @@ const UseSVCPaymentDialog = ({ onClose, open }) => {
   );
 };
 
+UseSVCPaymentDialog.defaultProps = {
+  maxAmount: 0,
+  anotherPayment: [],
+};
+
 UseSVCPaymentDialog.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  anotherPayment: PropTypes.array,
+  maxAmount: PropTypes.number,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };

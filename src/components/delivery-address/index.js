@@ -3,7 +3,7 @@ import { Col, Row, Button } from 'reactstrap';
 import Shimmer from 'react-shimmer-effect';
 import config from '../../config';
 import { CustomerAction } from '../../redux/actions/CustomerAction';
-import { MasterdataAction } from '../../redux/actions/MaterdataAction';
+import { MasterdataAction } from '../../redux/actions/MasterDataAction';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ModalDeliveryAddress from './ModalDeliveryAddress';

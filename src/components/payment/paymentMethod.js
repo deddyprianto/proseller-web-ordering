@@ -1,21 +1,21 @@
-import React, { Component } from "react";
-import { Col, Row, Button } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
-import Iframe from "react-iframe";
+import React, { Component } from 'react';
+import { Col, Row, Button } from 'reactstrap';
+import Shimmer from 'react-shimmer-effect';
+import Iframe from 'react-iframe';
 
-import config from "../../config";
-import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import { PaymentAction } from "../../redux/actions/PaymentAction";
-import { connect } from "react-redux";
-import CreditCard from "@material-ui/icons/CreditCard";
-import ModalPaymentMethod from "./ModalPaymentMethod";
-import ModalPaymentPermission from "./ModalRegisterPermission";
-import _ from "lodash";
-import { uuid } from "uuidv4";
-import styles from "./styles.module.css";
+import config from '../../config';
+import { MasterdataAction } from '../../redux/actions/MasterDataAction';
+import { PaymentAction } from '../../redux/actions/PaymentAction';
+import { connect } from 'react-redux';
+import CreditCard from '@material-ui/icons/CreditCard';
+import ModalPaymentMethod from './ModalPaymentMethod';
+import ModalPaymentPermission from './ModalRegisterPermission';
+import _ from 'lodash';
+import { uuid } from 'uuidv4';
+import styles from './styles.module.css';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const Swal = require("sweetalert2");
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const Swal = require('sweetalert2');
 
 class PaymentMethod extends Component {
   constructor(props) {
@@ -30,7 +30,7 @@ class PaymentMethod extends Component {
       detailCard: null,
       getPaymentMethod: false,
       showAddPaymentForm: false,
-      addPaymentFormUrl: "",
+      addPaymentFormUrl: '',
       latestCardRegistered: null,
       CreditCardSelected: null,
     };
@@ -43,11 +43,11 @@ class PaymentMethod extends Component {
     this.setState({ getPaymentMethod });
     this.getDataPaymentCard();
 
-    window.addEventListener("focus", this.onFocus);
+    window.addEventListener('focus', this.onFocus);
   };
 
   componentWillUnmount() {
-    window.removeEventListener("focus", this.onFocus);
+    window.removeEventListener('focus', this.onFocus);
   }
 
   onFocus = async () => {
@@ -57,7 +57,7 @@ class PaymentMethod extends Component {
       const response = await this.props.dispatch(
         PaymentAction.checkPaymentCard(accountID)
       );
-      if (response.data.registrationStatus === "completed") {
+      if (response.data.registrationStatus === 'completed') {
         localStorage.setItem(
           `${config.prefix}_paymentCardAccountDefault`,
           JSON.stringify(encryptor.encrypt(response.data))
@@ -67,21 +67,21 @@ class PaymentMethod extends Component {
         this.setState({ showAddPaymentForm: false });
         this.handleSelectCard(response.data);
         Swal.fire({
-          icon: "success",
+          icon: 'success',
           timer: 1500,
-          title: "Your Credit Card has been added.",
+          title: 'Your Credit Card has been added.',
           showConfirmButton: false,
         });
       } else if (
         response.data &&
-        response.data.registrationStatus === "failed"
+        response.data.registrationStatus === 'failed'
       ) {
         this.setState({ showAddPaymentForm: false });
         Swal.fire({
-          icon: "error",
+          icon: 'error',
           timer: 1500,
           showConfirmButton: false,
-          title: "Failed to add Credit Card!",
+          title: 'Failed to add Credit Card!',
         });
       }
     } catch (e) {}
@@ -133,10 +133,10 @@ class PaymentMethod extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -147,13 +147,13 @@ class PaymentMethod extends Component {
   handleRemoveCard = () => {
     let detailCard = this.state.detailCard;
     Swal.fire({
-      title: "Are you sure?",
-      text: "You will delete the card!",
-      icon: "question",
+      title: 'Are you sure?',
+      text: 'You will delete the card!',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
     }).then(async (result) => {
       if (result.value) {
         this.setState({ isLoading: true });
@@ -211,7 +211,7 @@ class PaymentMethod extends Component {
     // CHECK IF PAYMENT PROVIDER NEED TO OPEN NEW TAB, THEN REGISTER NOW
     if (
       data.forceNewTab === true ||
-      data.paymentID === "MASTERCARD_PAYMENT_GATEWAY"
+      data.paymentID === 'MASTERCARD_PAYMENT_GATEWAY'
     ) {
       await this.setState({ isLoading: true });
       let response = await this.props.dispatch(
@@ -224,19 +224,19 @@ class PaymentMethod extends Component {
         CreditCardSelected: data,
       });
       try {
-        document.getElementById("register-card-on-new-tab").click();
+        document.getElementById('register-card-on-new-tab').click();
       } catch (e) {}
       return;
     }
 
     Swal.fire({
-      title: "Add a Card",
-      text: "Do you want to add a card?",
-      icon: "warning",
+      title: 'Add a Card',
+      text: 'Do you want to add a card?',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
     }).then(async (result) => {
       if (result.value) {
         setTimeout(async () => {
@@ -252,10 +252,10 @@ class PaymentMethod extends Component {
               latestCardRegistered: response.data,
             });
             if (
-              data.paymentID === "MASTERCARD_PAYMENT_GATEWAY" ||
+              data.paymentID === 'MASTERCARD_PAYMENT_GATEWAY' ||
               data.forceNewTab
             ) {
-              win = window.open(response.data.url, "_blank");
+              win = window.open(response.data.url, '_blank');
               win.focus();
             } else {
               this.setState({
@@ -273,7 +273,7 @@ class PaymentMethod extends Component {
                 response = await this.props.dispatch(
                   PaymentAction.checkPaymentCard(accountID)
                 );
-                if (response.data.registrationStatus === "completed") {
+                if (response.data.registrationStatus === 'completed') {
                   localStorage.setItem(
                     `${config.prefix}_paymentCardAccountDefault`,
                     JSON.stringify(encryptor.encrypt(response.data))
@@ -285,22 +285,22 @@ class PaymentMethod extends Component {
                   this.setState({ showAddPaymentForm: false });
                   this.handleSelectCard(response.data);
                   Swal.fire({
-                    icon: "success",
+                    icon: 'success',
                     timer: 1500,
-                    title: "Your Credit Card has been added.",
+                    title: 'Your Credit Card has been added.',
                     showConfirmButton: false,
                   });
                   return clearInterval(this.timeInterval);
                 } else if (
                   response.data &&
-                  response.data.registrationStatus === "failed"
+                  response.data.registrationStatus === 'failed'
                 ) {
                   this.setState({ showAddPaymentForm: false });
                   Swal.fire({
-                    icon: "error",
+                    icon: 'error',
                     timer: 1500,
                     showConfirmButton: false,
-                    title: "Failed to add Credit Card!",
+                    title: 'Failed to add Credit Card!',
                   });
                   return clearInterval(this.timeInterval);
                 }
@@ -318,7 +318,7 @@ class PaymentMethod extends Component {
       const response = await this.props.dispatch(
         PaymentAction.checkPaymentCard(accountID)
       );
-      if (response.data.registrationStatus === "completed") {
+      if (response.data.registrationStatus === 'completed') {
         localStorage.setItem(
           `${config.prefix}_paymentCardAccountDefault`,
           JSON.stringify(encryptor.encrypt(response.data))
@@ -328,22 +328,22 @@ class PaymentMethod extends Component {
         this.setState({ showAddPaymentForm: false });
         this.handleSelectCard(response.data);
         Swal.fire({
-          icon: "success",
+          icon: 'success',
           timer: 1500,
-          title: "Your Credit Card has been added.",
+          title: 'Your Credit Card has been added.',
           showConfirmButton: false,
         });
         return;
       } else if (
         response.data &&
-        response.data.registrationStatus === "failed"
+        response.data.registrationStatus === 'failed'
       ) {
         this.setState({ showAddPaymentForm: false });
         Swal.fire({
-          icon: "error",
+          icon: 'error',
           timer: 1500,
           showConfirmButton: false,
-          title: "Failed to add Credit Card!",
+          title: 'Failed to add Credit Card!',
         });
         return;
       }
@@ -370,9 +370,9 @@ class PaymentMethod extends Component {
       this.state;
     return (
       <div
-        className="col-full"
+        className='col-full'
         style={{
-          marginTop: config.prefix === "emenu" ? 120 : 140,
+          marginTop: config.prefix === 'emenu' ? 120 : 140,
           marginBottom: 50,
         }}
       >
@@ -394,43 +394,43 @@ class PaymentMethod extends Component {
           removeDetailDataCard={this.removeDetailDataCard}
         />
         <a
-          id="register-card-on-new-tab"
-          data-toggle="modal"
-          data-target="#payment-method-permission"
+          id='register-card-on-new-tab'
+          data-toggle='modal'
+          data-target='#payment-method-permission'
         ></a>
-        <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -40,
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                display: "flex",
+                boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+                display: 'flex',
                 height: 40,
               }}
-              className="background-theme"
+              className='background-theme'
             >
               <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
-                <i className="fa fa-chevron-left"></i> Back
+                <i className='fa fa-chevron-left'></i> Back
               </div>
             </div>
             <main
-              id="main"
-              className="site-main"
-              style={{ textAlign: "center" }}
+              id='main'
+              className='site-main'
+              style={{ textAlign: 'center' }}
             >
               <div style={{ marginBottom: 20 }}>
                 <div
-                  className="customer-group-name"
+                  className='customer-group-name'
                   style={{
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    fontWeight: 'bold',
+                    textAlign: 'center',
                     marginBottom: 20,
                   }}
                 >
@@ -449,18 +449,18 @@ class PaymentMethod extends Component {
                         <div key={key} style={{ marginBottom: 10 }}>
                           <div
                             onClick={() => this.handleSelectCard(item)}
-                            className="button"
+                            className='button'
                             style={{
                               marginBottom: 30,
-                              alignItems: "center",
-                              width: "100%",
+                              alignItems: 'center',
+                              width: '100%',
                             }}
                           >
                             <div
-                              className="customer-group-name"
+                              className='customer-group-name'
                               style={{
-                                display: "flex",
-                                justifyContent: "center",
+                                display: 'flex',
+                                justifyContent: 'center',
                                 paddingTop: 11,
                                 paddingBottom: 11,
                               }}
@@ -468,15 +468,15 @@ class PaymentMethod extends Component {
                               <CreditCard
                                 style={{
                                   fontSize: 20,
-                                  color: "white",
+                                  color: 'white',
                                   marginRight: 10,
                                 }}
                               />
                               <h3
                                 style={{
-                                  fontWeight: "bold",
+                                  fontWeight: 'bold',
                                   fontSize: 15,
-                                  color: "white",
+                                  color: 'white',
                                 }}
                               >
                                 {item.paymentName}
@@ -488,21 +488,21 @@ class PaymentMethod extends Component {
                         <div key={key} style={{ marginBottom: 10 }}>
                           <div
                             style={{
-                              display: "flex",
-                              justifyContent: "space-between",
+                              display: 'flex',
+                              justifyContent: 'space-between',
                               marginBottom: 10,
-                              alignItems: "center",
+                              alignItems: 'center',
                             }}
                           >
                             <div
-                              className="customer-group-name"
-                              style={{ display: "flex", alignItems: "center" }}
+                              className='customer-group-name'
+                              style={{ display: 'flex', alignItems: 'center' }}
                             >
                               <CreditCard style={{ fontSize: 20 }} />
                               <div
                                 style={{
                                   marginLeft: 5,
-                                  fontWeight: "bold",
+                                  fontWeight: 'bold',
                                   fontSize: 12,
                                 }}
                               >
@@ -512,7 +512,7 @@ class PaymentMethod extends Component {
                             {(item.allowMultipleAccount ||
                               item.data.length === 0) && (
                               <Button
-                                className="button"
+                                className='button'
                                 style={{
                                   width: 100,
                                   paddingLeft: 5,
@@ -522,7 +522,7 @@ class PaymentMethod extends Component {
                                 }}
                                 onClick={() => this.handleAddMethod(item)}
                               >
-                                <i className="fa fa-plus" aria-hidden="true" />{" "}
+                                <i className='fa fa-plus' aria-hidden='true' />{' '}
                                 Add Card
                               </Button>
                             )}
@@ -535,38 +535,38 @@ class PaymentMethod extends Component {
                                     padding: 10,
                                     borderRadius: 5,
                                     marginBottom: 5,
-                                    color: "#FFF",
-                                    cursor: "pointer",
-                                    backgroundColor: "#1d282e",
-                                    border: "1 solid #FFF",
+                                    color: '#FFF',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#1d282e',
+                                    border: '1 solid #FFF',
                                   }}
-                                  data-toggle="modal"
+                                  data-toggle='modal'
                                   data-target={
-                                    !getPaymentMethod && "#payment-method-modal"
+                                    !getPaymentMethod && '#payment-method-modal'
                                   }
                                   onClick={() => this.handleSelectCard(card)}
                                 >
                                   <div
                                     style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                      width: "100%",
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center',
+                                      width: '100%',
                                     }}
                                   >
                                     <div
                                       style={{
                                         fontSize: 16,
-                                        fontWeight: "bold",
+                                        fontWeight: 'bold',
                                       }}
                                     >
                                       {card.details.cardIssuer
                                         ? card.details.cardIssuer.toUpperCase()
-                                        : "-"}
+                                        : '-'}
                                     </div>
                                     {card.default === true && (
                                       <div
-                                        className="profile-dashboard"
+                                        className='profile-dashboard'
                                         style={{
                                           paddingLeft: 10,
                                           paddingRight: 10,
@@ -574,7 +574,7 @@ class PaymentMethod extends Component {
                                           marginTop: -20,
                                           marginRight: -10,
                                           fontSize: 12,
-                                          fontWeight: "bold",
+                                          fontWeight: 'bold',
                                         }}
                                       >
                                         DEFAULT
@@ -582,7 +582,7 @@ class PaymentMethod extends Component {
                                     )}
                                     {card.selected === true && (
                                       <div
-                                        className="profile-dashboard"
+                                        className='profile-dashboard'
                                         style={{
                                           paddingLeft: 10,
                                           paddingRight: 10,
@@ -590,7 +590,7 @@ class PaymentMethod extends Component {
                                           marginTop: -20,
                                           marginRight: -10,
                                           fontSize: 12,
-                                          fontWeight: "bold",
+                                          fontWeight: 'bold',
                                         }}
                                       >
                                         SELECTED
@@ -602,7 +602,7 @@ class PaymentMethod extends Component {
                                   </div>
                                   <div
                                     style={{
-                                      textAlign: "center",
+                                      textAlign: 'center',
                                       fontSize: 18,
                                       marginTop: 15,
                                       marginBottom: 15,
@@ -612,15 +612,15 @@ class PaymentMethod extends Component {
                                   </div>
                                   <div
                                     style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                      width: "100%",
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center',
+                                      width: '100%',
                                     }}
                                   >
                                     <div style={{ fontSize: 12 }}>{`${
-                                      card.details.firstName || ""
-                                    } ${card.details.lastName || ""}`}</div>
+                                      card.details.firstName || ''
+                                    } ${card.details.lastName || ''}`}</div>
                                     <div
                                       style={{ fontSize: 12 }}
                                     >{`VALID THRU ${card.details.cardExpiryMonth} / ${card.details.cardExpiryYear}`}</div>
@@ -641,7 +641,7 @@ class PaymentMethod extends Component {
                         /> */}
                         <img
                           src={config.url_emptyImage}
-                          alt="is empty"
+                          alt='is empty'
                           style={{ marginTop: 30 }}
                         />
                         <div>Data is empty</div>
@@ -667,10 +667,10 @@ class PaymentMethod extends Component {
                 });
               }}
             >
-              <i className="fa fa-close" /> Close
+              <i className='fa fa-close' /> Close
             </button>
             <Iframe
-              loading="auto"
+              loading='auto'
               url={this.state.addPaymentFormUrl}
               className={styles.paymentModal}
             />

@@ -20,7 +20,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { MasterdataAction } from 'redux/actions/MaterdataAction';
+import { MasterdataAction } from 'redux/actions/MasterDataAction';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import config from 'config';
 import Loading from 'components/loading/Loading';

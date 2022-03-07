@@ -16,7 +16,7 @@ import Add from '@mui/icons-material/Add';
 
 import config from '../../config';
 import { CustomerAction } from '../../redux/actions/CustomerAction';
-import { MasterdataAction } from '../../redux/actions/MaterdataAction';
+import { MasterdataAction } from '../../redux/actions/MasterDataAction';
 import ModalDeliveryAddress from './components/ModalDeliveryAddress';
 import validationPostalCode from 'helpers/PostalCodeCheck';
 import { OrderAction } from 'redux/actions/OrderAction';

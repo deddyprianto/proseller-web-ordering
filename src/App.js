@@ -9,7 +9,7 @@ import { AuthActions } from './redux/actions/AuthAction';
 import { Redirect, Switch, Route, HashRouter } from 'react-router-dom';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import { OutletAction } from './redux/actions/OutletAction';
-import { MasterdataAction } from './redux/actions/MaterdataAction';
+import { MasterdataAction } from './redux/actions/MasterDataAction';
 import { OrderAction } from './redux/actions/OrderAction';
 import { PaymentAction } from './redux/actions/PaymentAction';
 import { ReferralAction } from './redux/actions/ReferralAction';

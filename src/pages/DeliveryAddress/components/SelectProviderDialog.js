@@ -24,6 +24,9 @@ const SelectProviderDialog = ({ open, onClose }) => {
       borderBottom: '1px solid #e5e5e5',
       marginBottom: 2,
     },
+    boxContent: {
+      marginTop: 1,
+    },
     button: {
       width: '100%',
       borderRadius: 2,
@@ -33,6 +36,9 @@ const SelectProviderDialog = ({ open, onClose }) => {
       boxShadow: '0 0 2px 0px #666',
       fontWeight: 600,
       fontSize: 14,
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
     },
     buttonSelected: {
       width: '100%',
@@ -125,15 +131,29 @@ const SelectProviderDialog = ({ open, onClose }) => {
               justifyContent='space-between'
               alignItems='center'
             >
-              <Grid item xs={9} alignItems='center'>
-                <LocalShippingIcon
+              <Grid item xs={9}>
+                <Typography
+                  className='text'
+                  textOverflow='ellipsis'
+                  noWrap
+                  fontWeight={600}
+                  fontSize={14}
                   sx={{
-                    fontSize: 21,
-                    marginRight: 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
                   }}
-                  viewBox='0 -5 24 24'
-                />
-                {item.name}
+                >
+                  <LocalShippingIcon
+                    sx={{
+                      fontSize: 21,
+                      marginRight: 1,
+                    }}
+                    viewBox='0 -5 24 24'
+                  />
+                  {item.name}
+                </Typography>
               </Grid>
               <Grid item xs={3}>
                 {`(SGD ${item.deliveryFee})`}

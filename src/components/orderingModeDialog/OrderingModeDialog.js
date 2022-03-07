@@ -103,7 +103,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
   }, []);
 
   const iconCheck = (item) => {
-    if (item === 'STOREPICKUP') {
+    if (item === CONSTANT.ORDERING_MODE_PICKUP) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
           <Grid item xs={4} sx={{ textAlign: 'right' }}>
@@ -127,7 +127,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           </Grid>
         </Grid>
       );
-    } else if (item === 'STORECHECKOUT') {
+    } else if (item === CONSTANT.ORDERING_MODE_CHECKOUT) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
           <Grid item xs={4} sx={{ textAlign: 'right' }}>
@@ -151,7 +151,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           </Grid>
         </Grid>
       );
-    } else if (item === 'DELIVERY') {
+    } else if (item === CONSTANT.ORDERING_MODE_DELIVERY) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
           <Grid item xs={4} sx={{ textAlign: 'right' }}>

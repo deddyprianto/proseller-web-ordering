@@ -359,7 +359,7 @@ function addCart(payload) {
         `${config.prefix}_ordering_mode`
       );
       if (response.data) {
-        if (response.data.details.length === 1) {
+        if (response?.data?.details?.length === 1) {
           const payload = {
             orderingMode: orderingMode,
           };

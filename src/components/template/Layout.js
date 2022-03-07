@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import loadable from '@loadable/component';
-import { MasterdataAction } from '../../redux/actions/MaterdataAction';
+import { MasterdataAction } from '../../redux/actions/MasterDataAction';
 import { AuthActions } from '../../redux/actions/AuthAction';
 import { InboxAction } from '../../redux/actions/InboxAction';
 import { HistoryAction } from '../../redux/actions/HistoryAction';
