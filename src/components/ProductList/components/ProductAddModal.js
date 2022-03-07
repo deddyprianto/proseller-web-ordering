@@ -389,6 +389,7 @@ const ProductAddModal = ({
       const defaultProductVariant = isEmptyArray(selectedVariantOptions)
         ? product?.variants[0]?.attributes
         : selectedVariantOptions;
+      setSelectedVariantOptions(defaultProductVariant);
 
       const productVariantFormated = handleProductVariantFormated(
         defaultProductVariant
