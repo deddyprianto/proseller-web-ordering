@@ -94,7 +94,7 @@ const FooterWebOrdering = () => {
           }}
           sx={style.bottomNav}
         >
-          {allState.theme.menu.navBar.map((menu, index) => {
+          {allState?.theme?.menu?.navBar?.map((menu, index) => {
             if (!enableOrdering && menu.showWhenOrderingEnabled) {
               return null;
             }

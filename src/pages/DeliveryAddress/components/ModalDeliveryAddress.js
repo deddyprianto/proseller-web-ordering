@@ -83,6 +83,8 @@ const ModalDeliveryAddress = ({
     typographyTitle: {
       textAlign: 'center',
       marginLeft: 2,
+      fontSize: 20,
+      fontWeight: 700,
     },
     iconCloseStyle: {
       padding: 0,
@@ -98,6 +100,14 @@ const ModalDeliveryAddress = ({
       paddingTop: '0.5rem',
       paddingBottom: 0,
       marginBottom: '0.5rem',
+    },
+    dialogStyle: {
+      '& .MuiDialog-paper': {
+        width: 'calc(100% - 16px)',
+        maxWidth: 'calc(100% - 40px)',
+        minHeight: '60%',
+        marginX: 0,
+      },
     },
   };
   let {
@@ -248,14 +258,7 @@ const ModalDeliveryAddress = ({
         localStorage.removeItem(`${config.prefix}_locationPinned`);
         onClose();
       }}
-      sx={{
-        '& .MuiDialog-paper': {
-          width: 'calc(100% - 16px)',
-          maxWidth: 'calc(100% - 40px)',
-          minHeight: '60%',
-          marginX: 0,
-        },
-      }}
+      sx={style.dialogStyle}
       fullWidth
       maxWidth='xl'
       aria-labelledby='scroll-dialog-title'
@@ -265,8 +268,6 @@ const ModalDeliveryAddress = ({
         <Box sx={style.boxTitle}>
           <div />
           <Typography
-            fontSize={20}
-            fontWeight={700}
             id='tkb-dialog-title'
             className='color'
             sx={style.typographyTitle}

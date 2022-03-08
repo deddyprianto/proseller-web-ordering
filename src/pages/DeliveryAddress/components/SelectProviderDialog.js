@@ -52,6 +52,15 @@ const SelectProviderDialog = ({ open, onClose }) => {
       borderWidth: 'thin',
       borderColor: 'rgb(61, 70, 79)',
     },
+    typographyButtonProvider: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      display: '-webkit-box',
+      '-webkit-box-orient': 'vertical',
+      whiteSpace: 'noWrap',
+      fontWeight: 600,
+      fontSize: 14,
+    },
   };
 
   const dispatch = useDispatch();
@@ -91,13 +100,6 @@ const SelectProviderDialog = ({ open, onClose }) => {
       payload: value,
     });
 
-    // const payload = {
-    //   ...dataBasket,
-    //   totalNettAmount: dataBasket.totalNettAmount + value.deliveryFee,
-    // };
-
-    // await dispatch(OrderAction.setData(payload, CONSTANT.DATA_BASKET));
-
     const response = await dispatch(
       OrderAction.changeOrderingMode({
         orderingMode: 'DELIVERY',
@@ -134,16 +136,7 @@ const SelectProviderDialog = ({ open, onClose }) => {
               <Grid item xs={9}>
                 <Typography
                   className='text'
-                  textOverflow='ellipsis'
-                  noWrap
-                  fontWeight={600}
-                  fontSize={14}
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    '-webkit-box-orient': 'vertical',
-                  }}
+                  sx={style.typographyButtonProvider}
                 >
                   <LocalShippingIcon
                     sx={{

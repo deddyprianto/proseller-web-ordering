@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 
 import moment from 'moment';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -19,6 +18,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { isEmptyArray } from 'helpers/CheckEmpty';
+import { isEmptyObject } from 'jquery';
 
 const TimeSlotDialog = ({ open, onClose }) => {
   const colorState = useSelector((state) => state.theme.color);
@@ -143,7 +144,7 @@ const TimeSlotDialog = ({ open, onClose }) => {
       let dateTime = new Date();
       let maxDays = 90;
 
-      if (!_.isEmpty(defaultOutlet)) {
+      if (!isEmptyArray(defaultOutlet)) {
         maxDays = defaultOutlet?.timeSlots[0]?.interval;
       }
 
@@ -342,7 +343,7 @@ const TimeSlotDialog = ({ open, onClose }) => {
             </InputLabel>
             <Select
               defaultValue={timeSlotSelected}
-              disabled={_.isEmpty(selectedDate)}
+              disabled={!isEmptyObject(selectedDate)}
               labelId='demo-simple-select-autowidth-label'
               id='demo-simple-select-autowidth'
               value={selectedTime}

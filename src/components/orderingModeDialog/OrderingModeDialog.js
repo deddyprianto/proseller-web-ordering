@@ -103,7 +103,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
   }, []);
 
   const iconCheck = (item) => {
-    if (item === CONSTANT.ORDERING_MODE_PICKUP) {
+    if (item === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
           <Grid item xs={4} sx={{ textAlign: 'right' }}>

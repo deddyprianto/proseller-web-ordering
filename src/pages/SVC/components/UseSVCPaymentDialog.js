@@ -63,6 +63,14 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
     },
     typographyTitle: {
       marginX: 'auto',
+      fontSize: 20,
+      fontWeight: 700,
+    },
+    typographyPrice: {
+      fontSize: 30,
+      fontWeight: 700,
+      marginX: 'auto',
+      marginBottom: 1,
     },
     typographyAmount: {
       fontSize: 18,
@@ -239,8 +247,6 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
           <Box sx={style.boxTitle}>
             <div />
             <Typography
-              fontSize={20}
-              fontWeight={700}
               id='tkb-dialog-title'
               className='color'
               sx={style.typographyTitle}
@@ -268,8 +274,6 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
           }}
         >
           <Typography
-            fontSize={16}
-            fontWeight={700}
             id='tkb-dialog-title'
             color={color.textButtonColor}
             sx={style.typographyTitle}
@@ -277,14 +281,9 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
             Total Balance
           </Typography>
           <Typography
-            fontSize={30}
-            fontWeight={700}
             id='tkb-dialog-title'
             color={color.textButtonColor}
-            sx={{
-              marginX: 'auto',
-              marginBottom: 1,
-            }}
+            sx={style.typographyPrice}
           >
             SGD {ThousandSeparator(currentBalance)}
           </Typography>
@@ -323,7 +322,6 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
               placeholder='0'
               value={formik.values.amountToUse}
               onChange={(e) => {
-                console.log(e.target.value);
                 if (e.target.value >= maxAmount) {
                   formik.setFieldValue('amountToUse', maxAmount);
                 } else {
@@ -362,7 +360,6 @@ UseSVCPaymentDialog.defaultProps = {
 };
 
 UseSVCPaymentDialog.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   anotherPayment: PropTypes.array,
   maxAmount: PropTypes.number,
   open: PropTypes.bool.isRequired,
