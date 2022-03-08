@@ -68,6 +68,7 @@ const Cart = ({ ...props }) => {
   const styles = {
     rootPaper: {
       marginBottom: 10,
+      paddingBottom: 10,
       backgroundColor: props.color.background,
     },
     rootEmptyCart: {
@@ -445,7 +446,7 @@ const Cart = ({ ...props }) => {
             </div>
           )}
           {props.basket?.totalGrossAmount !== 0 && (
-            <div style={styles.rootSubTotal}>
+            <div style={styles.rootExclusiveTax}>
               <Typography style={styles.subTotal}>Subtotal</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(handleSubtotal())}
@@ -463,7 +464,7 @@ const Cart = ({ ...props }) => {
           {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
             <>
               {props.selectedDeliveryProvider?.deliveryFee !== 0 && (
-                <div style={styles.rootSubTotal}>
+                <div style={styles.rootExclusiveTax}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
                   <Typography style={styles.subTotal}>
                     {handleCurrency(
@@ -474,7 +475,7 @@ const Cart = ({ ...props }) => {
               )}
               {props.selectedDeliveryProvider?.deliveryFee === 0 &&
               props.orderingMode === 'DELIVERY' ? (
-                <div style={styles.rootSubTotal}>
+                <div style={styles.rootExclusiveTax}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
                   <Typography style={styles.subTotal}>Free</Typography>
                 </div>

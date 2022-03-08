@@ -279,14 +279,14 @@ function processUpdateCart(product) {
     let payload = [];
     payload.push(product);
 
-    let basketUpdate = {};
-
     if (account) {
-      basketUpdate = await dispatch(updateCart(payload));
+      await dispatch(updateCart(payload));
     } else {
-      basketUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+      await dispatch(processOfflineCart(payload, 'Update'));
     }
-    return basketUpdate;
+
+    const response = await dispatch(getCart());
+    return response;
   };
 }
 
@@ -295,13 +295,14 @@ function processRemoveCart(product) {
     let payload = [];
     payload.push({ ...product, quantity: 0 });
 
-    let cartItemUpdate = {};
     if (account) {
-      cartItemUpdate = await dispatch(updateCart(payload));
+      await dispatch(updateCart(payload));
     } else {
-      cartItemUpdate = await dispatch(processOfflineCart(payload, 'Update'));
+      await dispatch(processOfflineCart(payload, 'Update'));
     }
-    return cartItemUpdate;
+
+    const response = await dispatch(getCart());
+    return response;
   };
 }
 
@@ -327,7 +328,7 @@ function moveCart(payload) {
 }
 
 function changeOrderingMode(payload) {
-  return async () => {
+  return async (dispatch) => {
     if (account && payload.orderingMode) {
       let response = await OrderingService.api(
         'POST',
@@ -335,9 +336,12 @@ function changeOrderingMode(payload) {
         'cart/changeOrderingMode',
         'Bearer'
       );
-      if (response.ResultCode >= 400 || response.resultCode >= 400)
+      if (response.ResultCode >= 400 || response.resultCode >= 400) {
         console.log(response);
-      return response;
+      }
+
+      const result = await dispatch(getCart());
+      return result;
     } else {
       return { resultCode: 400 };
     }
@@ -359,7 +363,7 @@ function addCart(payload) {
         `${config.prefix}_ordering_mode`
       );
       if (response.data) {
-        if (response?.data?.details?.length === 1) {
+        if (response.data.details.length === 1) {
           const payload = {
             orderingMode: orderingMode,
           };
@@ -367,7 +371,7 @@ function addCart(payload) {
         }
       }
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
 
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
@@ -403,6 +407,8 @@ function processAddCart(defaultOutlet, selectedItem) {
     } else {
       await dispatch(processOfflineCart(payload, 'Add'));
     }
+
+    await dispatch(getCart());
   };
 }
 

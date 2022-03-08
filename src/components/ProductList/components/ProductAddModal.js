@@ -262,7 +262,7 @@ const ProductAddModal = ({
   };
 
   const handleProductSelected = () => {
-    if (!isEmptyObject(selectedProduct) && qty && notes) {
+    if (!isEmptyObject(selectedProduct)) {
       setQty(selectedProduct?.quantity);
       setNotes(selectedProduct?.remark);
     }
@@ -283,13 +283,11 @@ const ProductAddModal = ({
       setQty(selectedProduct?.quantity);
       setNotes(selectedProduct?.remark);
       setSelectedVariantOptions(selected?.attributes);
-    } else {
-      if (!isEmptyArray(product?.variants)) {
-        const result = isEmptyArray(selectedVariantOptions)
-          ? product?.variants[0]?.attributes || []
-          : selectedVariantOptions;
-        setSelectedVariantOptions(result);
-      }
+    } else if (!isEmptyArray(product?.variants)) {
+      const result = isEmptyArray(selectedVariantOptions)
+        ? product?.variants[0]?.attributes || []
+        : selectedVariantOptions;
+      setSelectedVariantOptions(result);
     }
   };
 
@@ -926,6 +924,7 @@ const ProductAddModal = ({
       return (
         <IconButton
           style={styles.buttonIcon}
+          disabled={isLoading}
           onClick={() => {
             handleClear();
             handleClose();
@@ -943,6 +942,7 @@ const ProductAddModal = ({
         <div style={styles.buttonCloseGadgetSize}>
           <IconButton
             style={styles.buttonIcon}
+            disabled={isLoading}
             onClick={() => {
               handleClear();
               handleClose();
