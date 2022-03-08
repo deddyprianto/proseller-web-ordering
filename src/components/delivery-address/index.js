@@ -3,7 +3,7 @@ import { Col, Row, Button } from 'reactstrap';
 import Shimmer from 'react-shimmer-effect';
 import config from '../../config';
 import { CustomerAction } from '../../redux/actions/CustomerAction';
-import { MasterdataAction } from '../../redux/actions/MasterDataAction';
+import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ModalDeliveryAddress from './ModalDeliveryAddress';
@@ -82,7 +82,7 @@ class DeliveryAddress extends Component {
       JSON.parse(localStorage.getItem(`${config.prefix}_deliveryAddress`))
     );
     let infoCompany = await this.props.dispatch(
-      MasterdataAction.getInfoCompany()
+      MasterDataAction.getInfoCompany()
     );
     let addressDelivery = await this.props.dispatch(
       CustomerAction.getDeliferyAddress()
@@ -110,7 +110,7 @@ class DeliveryAddress extends Component {
     try {
       if (!countryCode) countryCode = this.state.countryCode;
       let province = await this.props.dispatch(
-        MasterdataAction.getAddressLocation(countryCode)
+        MasterDataAction.getAddressLocation(countryCode)
       );
       let optionsProvince = [];
       province.data.forEach((element) => {
@@ -282,7 +282,7 @@ class DeliveryAddress extends Component {
     if (province) {
       this.setState({ isLoading: true });
       let city = await this.props.dispatch(
-        MasterdataAction.getAddressLocation(countryCode, province.code)
+        MasterDataAction.getAddressLocation(countryCode, province.code)
       );
       await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
       let optionsCity = [];

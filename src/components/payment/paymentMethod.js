@@ -4,7 +4,7 @@ import Shimmer from 'react-shimmer-effect';
 import Iframe from 'react-iframe';
 
 import config from '../../config';
-import { MasterdataAction } from '../../redux/actions/MasterDataAction';
+import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import { PaymentAction } from '../../redux/actions/PaymentAction';
 import { connect } from 'react-redux';
 import CreditCard from '@material-ui/icons/CreditCard';
@@ -89,7 +89,7 @@ class PaymentMethod extends Component {
 
   getDataPaymentCard = async () => {
     let infoCompany = await this.props.dispatch(
-      MasterdataAction.getInfoCompany()
+      MasterDataAction.getInfoCompany()
     );
 
     let paymentCardAccount = await this.props.dispatch(

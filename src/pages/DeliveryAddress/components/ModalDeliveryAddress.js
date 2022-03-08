@@ -25,7 +25,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import MapAtom from '../../../pages/Map/MapAtom';
 import config from '../../../config';
-import { MasterdataAction } from 'redux/actions/MasterDataAction';
+import { MasterDataAction } from 'redux/actions/MasterDataAction';
 import { CustomerAction } from 'redux/actions/CustomerAction';
 
 const ModalDeliveryAddress = ({
@@ -146,7 +146,7 @@ const ModalDeliveryAddress = ({
     let currentAddresses = initialValue.addressDelivery || [];
 
     let province = await dispatch(
-      MasterdataAction.getAddressLocation(initialValue.countryCode)
+      MasterDataAction.getAddressLocation(initialValue.countryCode)
     );
 
     if (province.resultCode === 200) value.city = province.data[0].name;

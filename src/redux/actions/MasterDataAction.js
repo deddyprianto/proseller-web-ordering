@@ -146,7 +146,7 @@ function getDomainName() {
   };
 }
 
-export const MasterdataAction = {
+export const MasterDataAction = {
   getAddressLocation,
   getInfoCompany,
   getOutletByID,

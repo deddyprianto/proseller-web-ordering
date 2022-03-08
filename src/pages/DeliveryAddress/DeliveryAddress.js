@@ -16,7 +16,7 @@ import Add from '@mui/icons-material/Add';
 
 import config from '../../config';
 import { CustomerAction } from '../../redux/actions/CustomerAction';
-import { MasterdataAction } from '../../redux/actions/MasterDataAction';
+import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import ModalDeliveryAddress from './components/ModalDeliveryAddress';
 import validationPostalCode from 'helpers/PostalCodeCheck';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -191,10 +191,9 @@ const DeliveryAddress = () => {
     });
 
     if (province) {
-      // this.setState({ isLoading: true });
       setLoading(true);
       let city = await dispatch(
-        MasterdataAction.getAddressLocation(countryCode, province.code)
+        MasterDataAction.getAddressLocation(countryCode, province.code)
       );
       await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
       let optionsCity = [];
@@ -252,7 +251,7 @@ const DeliveryAddress = () => {
   const handleGetProvider = async () => {
     try {
       let province = await dispatch(
-        MasterdataAction.getAddressLocation(countryCode)
+        MasterDataAction.getAddressLocation(countryCode)
       );
       let optionsProvinceArray = [];
       province?.data?.forEach((element) => {
@@ -270,7 +269,7 @@ const DeliveryAddress = () => {
 
   const getDataDeliveryAddress = async () => {
     setLoading(true);
-    let infoCompany = await dispatch(MasterdataAction.getInfoCompany());
+    let infoCompany = await dispatch(MasterDataAction.getInfoCompany());
 
     let addressDelivery = await dispatch(CustomerAction.getDeliveryAddress());
     if (addressDelivery.ResultCode === 200) {

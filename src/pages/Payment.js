@@ -118,6 +118,7 @@ const Payment = ({ ...props }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      textTransform: 'none',
       margin: 10,
     },
     buttonVoucher: {
@@ -183,6 +184,26 @@ const Payment = ({ ...props }) => {
       alignItems: 'center',
       backgroundColor: props.color.background,
     },
+    paperPaymentMethod: {
+      width: '100%',
+      marginBottom: 10,
+      display: 'flex',
+      backgroundColor: props.color.background,
+    },
+    paperPaymentMethodInside: {
+      width: '100%',
+      display: 'flex',
+      backgroundColor: props.color.background,
+    },
+    warningText: {
+      fontSize: '1.2rem',
+      fontStyle: 'italic',
+      fontWeight: 500,
+      marginX: 2,
+      marginY: 1,
+      marginTop: 0,
+      color: props.color.textWarningColor,
+    },
     paperOutletName: {
       borderRadius: '50%',
       width: 40,
@@ -247,9 +268,8 @@ const Payment = ({ ...props }) => {
         price = price - selectedVoucher.paymentAmount;
       });
     }
-
-    if (!isEmptyObject(useSVCPayment)) {
-      price = price - useSVCPayment.paymentAmount;
+    if (props.useSVC?.paymentAmount) {
+      price = price - props.useSVC.paymentAmount;
     }
 
     if (price < 0) {
@@ -292,16 +312,19 @@ const Payment = ({ ...props }) => {
     getCampaignPoints();
     getSVCData();
     setTotalPrice(price);
-    handleGetSVCdata(props.useSVC);
-    props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PAYMENT_AMOUNT'));
+    setUseSVCPayment(props.useSVC);
+    props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PYMENT_AMOUNT'));
+    if (!isEmptyObject(props.selectedPaymentCard) && price === 0) {
+      handleRemovePaymentCard();
+    }
   }, [
+    props.useSVC,
     selectedPoint,
     selectedVouchers,
     props.selectedPoint,
     totalPrice,
     props.basket,
     props.companyInfo,
-    props.useSVC,
   ]);
 
   const handleOpenPointAddModal = () => {
@@ -322,10 +345,6 @@ const Payment = ({ ...props }) => {
 
   const handleCloseSVC = () => {
     setIsOpenSVC(false);
-  };
-
-  const handleGetSVCdata = (data) => {
-    setUseSVCPayment(data);
   };
 
   const handleCurrency = (price) => {
@@ -455,6 +474,7 @@ const Payment = ({ ...props }) => {
   const renderSelectedVoucher = () => {
     if (!isEmptyArray(selectedVouchers)) {
       return selectedVouchers.map((selectedVoucher, index) => {
+        console.log(selectedVoucher, '>>>>>>>');
         return (
           <div key={index}>
             <div style={styles.buttonVoucher} variant='outlined'>
@@ -538,6 +558,16 @@ const Payment = ({ ...props }) => {
     }
   };
 
+  const renderSVCAmount = () => {
+    if (props.useSVC?.isSVC) {
+      return `Use Store Value Card (${handleCurrency(
+        props.useSVC?.paymentAmount
+      )})`;
+    } else {
+      return 'Use Store Value Card';
+    }
+  };
+
   const renderSVC = () => {
     if (checkSVCAvailable) {
       return (
@@ -551,10 +581,7 @@ const Payment = ({ ...props }) => {
             <div style={styles.displayFlexAndAlignCenter}>
               <CreditCardIcon style={styles.icon} />
               <Typography style={styles.typography}>
-                Use Store Value Card
-                {props.useSVC?.isSVC
-                  ? `(${handleCurrency(props.useSVC?.paymentAmount)})`
-                  : ''}
+                {renderSVCAmount()}
               </Typography>
             </div>
             <ArrowForwardIosIcon style={styles.iconArrow} />
@@ -576,45 +603,83 @@ const Payment = ({ ...props }) => {
     return;
   };
 
+  const renderPaymentDetail = () => {
+    if (!isEmptyObject(props.selectedPaymentCard)) {
+      const { cardIssuer, maskedAccountNumber } =
+        props.selectedPaymentCard?.details;
+      return `${cardIssuer.toUpperCase()} ${maskedAccountNumber} (${handlePrice()})`;
+    } else {
+      return 'Payment With Card';
+    }
+  };
+
+  const renderFullPaymentMix = () => {
+    if (
+      isEmptyObject(props.selectedPaymentCard) &&
+      totalPrice === 0 &&
+      (!isEmptyObject(props.useSVC) ||
+        !isEmptyArray(selectedVouchers) ||
+        !isEmptyObject(selectedPoint))
+    ) {
+      const label = [];
+      if (!isEmptyObject(props.useSVC)) {
+        label.push('Store Value Card');
+      }
+      if (!isEmptyArray(selectedVouchers)) {
+        label.push('Voucher');
+      }
+      if (!isEmptyObject(selectedPoint)) {
+        label.push('Points');
+      }
+      return (
+        <Typography sx={styles.warningText}>
+          * You have selected full payment with {label.join(', ')}
+        </Typography>
+      );
+    } else {
+      return null;
+    }
+  };
+
   const renderPaymentMethod = () => {
     return (
-      <Paper variant='outlined' style={styles.paper}>
-        <Button
-          style={styles.button}
-          variant='outlined'
-          component={Link}
-          disabled={handleDisableButton()}
-          to='/payment-method'
-        >
-          <div style={styles.displayFlexAndAlignCenter}>
-            <CreditCardIcon style={styles.icon} />
-            <Typography style={styles.typography}>
-              {!_.isEmpty(props.selectedPaymentCard)
-                ? `${props.selectedPaymentCard?.details?.cardIssuer?.toUpperCase()} ${
-                    props.selectedPaymentCard?.details?.maskedAccountNumber
-                      ? `${props.selectedPaymentCard?.details?.maskedAccountNumber?.replace(
-                          '*',
-                          ''
-                        )} (SGD ${handlePrice()})`
-                      : ''
-                  }`
-                : 'Payment With Card'}
-            </Typography>
-          </div>
-          <ArrowForwardIosIcon style={styles.iconArrow} />
-        </Button>
-
-        {!isEmptyObject(props.selectedPaymentCard) && (
-          <IconButton
-            style={styles.iconButtonRemove}
-            onClick={() => {
-              handleRemovePaymentCard();
-            }}
+      <Box
+        flexDirection='column'
+        component={Paper}
+        variant='outlined'
+        style={styles.paperPaymentMethod}
+      >
+        <Box style={styles.paperPaymentMethodInside}>
+          <Button
+            style={styles.button}
+            variant='outlined'
+            component={Link}
+            textTransform='none'
+            disabled={handleDisableButton()}
+            to='/payment-method'
           >
-            <CloseIcon style={styles.iconRemove} />
-          </IconButton>
-        )}
-      </Paper>
+            <div style={styles.displayFlexAndAlignCenter}>
+              <CreditCardIcon style={styles.icon} />
+              <Typography style={styles.typography}>
+                {renderPaymentDetail()}
+              </Typography>
+            </div>
+            <ArrowForwardIosIcon style={styles.iconArrow} />
+          </Button>
+          {!isEmptyObject(props.selectedPaymentCard) && (
+            <IconButton
+              style={styles.iconButtonRemove}
+              onClick={() => {
+                handleRemovePaymentCard();
+              }}
+            >
+              <CloseIcon style={styles.iconRemove} />
+            </IconButton>
+          )}
+        </Box>
+        {renderFullPaymentMix()}
+        {/* <Typography sx={styles.warningText}>* You have selected full payment with </Typography> */}
+      </Box>
     );
   };
 
@@ -695,6 +760,10 @@ const Payment = ({ ...props }) => {
 
       await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
       await props.dispatch(PaymentAction.clearAll());
+      await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
+      await props.dispatch(
+        OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
+      );
 
       if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
         handleAudio();
@@ -712,10 +781,17 @@ const Payment = ({ ...props }) => {
   };
 
   const handleDisabledButtonPay = () => {
-    if (isEmptyObject(props.selectedPaymentCard)) {
-      return true;
+    if (!isEmptyObject(props.selectedPaymentCard) || totalPrice !== 0) {
+      return false;
+    } else if (
+      (!isEmptyObject(selectedPoint) ||
+        !isEmptyArray(selectedVouchers) ||
+        !isEmptyObject(useSVCPayment)) &&
+      totalPrice === 0
+    ) {
+      return false;
     }
-    return false;
+    return true;
   };
 
   const renderButtonPay = () => {

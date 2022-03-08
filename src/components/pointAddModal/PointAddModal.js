@@ -128,7 +128,7 @@ const PointAddModal = ({ open, handleClose, price, ...props }) => {
   const [campaignPoint, setCampaignPoint] = useState(0);
 
   const handlePointRatio = () => {
-    const ratio = props.campaignPoint.pointsToRebateRatio.split(':');
+    const ratio = props.campaignPoint?.pointsToRebateRatio?.split(':');
     setRatioPoint(ratio[0]);
     setRatioCurrency(Number(ratio[1]));
   };

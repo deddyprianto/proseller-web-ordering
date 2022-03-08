@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useHistory } from 'react-router-dom';
-import Swal from 'sweetalert2';
+// import { useHistory } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -18,27 +17,29 @@ import { LoadingButton } from '@mui/lab';
 
 import { SVCAction } from '../../../redux/actions/SVCAction';
 
-import { OrderAction } from 'redux/actions/OrderAction';
+// import { OrderAction } from 'redux/actions/OrderAction';
 import { PaymentAction } from 'redux/actions/PaymentAction';
-import config from 'config';
-import Sound_Effect from '../../../assets/sound/Sound_Effect.mp3';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+// import config from 'config';
+// import Sound_Effect from '../../../assets/sound/Sound_Effect.mp3';
+// import { isEmptyArray } from 'helpers/CheckEmpty';
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+// const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
+  //TODO: Uncomment to pay full with SVC
+
   const color = useSelector((state) => state.theme.color);
   const dataSettle = useSelector((state) => state.order.basket);
-  const orderingMode = useSelector((state) => state.order.orderingMode);
-  const deliveryAddress = useSelector((state) => state.order.deliveryAddress);
-  const selectedDeliveryProvider = useSelector(
-    (state) => state.order.selectedDeliveryProvider
-  );
+  // const orderingMode = useSelector((state) => state.order.orderingMode);
+  // const deliveryAddress = useSelector((state) => state.order.deliveryAddress);
+  // const selectedDeliveryProvider = useSelector(
+  //   (state) => state.order.selectedDeliveryProvider
+  // );
 
-  const audio = new Audio(Sound_Effect);
+  // const audio = new Audio(Sound_Effect);
 
   const dispatch = useDispatch();
-  const history = useHistory();
+  // const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(0);
@@ -89,104 +90,107 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
     },
   };
 
-  const handleAudio = () => {
-    audio.play();
-  };
-
-  console.log(anotherPayment, '>>>>>>>>>>>>>>Aedyudgwaygdwgayd');
+  // const handleAudio = () => {
+  //   audio.play();
+  // };
 
   const handleSubmitPayWithSVC = async (item) => {
-    const { cartID, totalNettAmount } = dataSettle;
-    const paymentArray = [
-      {
-        paymentType: 'Store Value Card',
-        paymentName: 'Store Value Card',
-        paymentAmount: item.amountToUse,
-        isSVC: true,
-      },
-    ];
+    const payload = {
+      isSVC: true,
+      paymentAmount: item.amountToUse,
+      paymentName: 'Store Value Card',
+      paymentType: 'Store Value Card',
+    };
 
-    if (!isEmptyArray(anotherPayment)) {
-      anotherPayment.push(...paymentArray);
-    }
+    await dispatch(PaymentAction.setData(payload, 'USE_SVC'));
 
-    if (
-      totalNettAmount === item.amountToUse ||
-      item.amountToUse === maxAmount
-    ) {
-      console.log(
-        paymentArray,
-        anotherPayment,
-        '>>>>>>>>anotherPaymentanotherPaymentanotherPaymentanotherPaymentswqdqw'
-      );
-      const payloadFullSVC = {
-        cartID,
-        totalNettAmount,
-        payments: !isEmptyArray(anotherPayment) ? anotherPayment : paymentArray,
-        isNeedConfirmation: false,
-        payAtPOS: false,
-        orderingMode,
-        tableNo: '-',
-        deliveryAddress: deliveryAddress,
-        deliveryProvider: selectedDeliveryProvider?.name,
-        deliveryProviderId: selectedDeliveryProvider?.id,
-        deliveryFee: selectedDeliveryProvider?.deliveryFee,
-        clientTimezone: 480,
-        orderActionDate: dataSettle?.orderActionDate,
-        orderActionTime: dataSettle?.orderActionTime,
-        orderActionTimeSlot: dataSettle?.orderActionTimeSlot,
-      };
-
-      console.log(
-        payloadFullSVC,
-        '>>>>payloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVCpayloadFullSVC'
-      );
-      try {
-        const response = await dispatch(
-          OrderAction.submitAndPay(payloadFullSVC)
-        );
-        if (response && response.resultCode === 200) {
-          localStorage.setItem(
-            `${config.prefix}_paymentSuccess`,
-            JSON.stringify(encryptor.encrypt({ totalPrice: totalNettAmount }))
-          );
-          localStorage.removeItem(`${config.prefix}_isOutletChanged`);
-          localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
-          localStorage.removeItem(`${config.prefix}_selectedPoint`);
-          localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-          localStorage.removeItem(`${config.prefix}_dataSettle`);
-
-          localStorage.setItem(
-            `${config.prefix}_settleSuccess`,
-            JSON.stringify(encryptor.encrypt(response.data))
-          );
-
-          await dispatch(OrderAction.setData({}, 'DATA_BASKET'));
-          await dispatch(PaymentAction.clearAll());
-
-          handleAudio();
-
-          history.push('/settleSuccess');
-        } else {
-          setIsLoading(false);
-        }
-      } catch (err) {
-        console.log(err);
-        Swal.fire('Please try again!', 'Failed to submit order', 'error');
-      }
-    } else {
-      const payload = {
-        isSVC: true,
-        paymentAmount: item.amountToUse,
-        paymentName: 'Store Value Card',
-        paymentType: 'Store Value Card',
-      };
-
-      await dispatch(PaymentAction.setData(payload, 'USE_SVC'));
-
-      onClose();
-    }
+    onClose();
   };
+
+  // TODO: Please enable this function to septate the payment with full svc
+  // const handleSubmitPayWithSVC = async (item) => {
+  //   const { cartID, totalNettAmount } = dataSettle;
+  //   const paymentArray = [
+  //     {
+  //       paymentType: 'Store Value Card',
+  //       paymentName: 'Store Value Card',
+  //       paymentAmount: item.amountToUse,
+  //       isSVC: true,
+  //     },
+  //   ];
+
+  //   if (!isEmptyArray(anotherPayment)) {
+  //     anotherPayment.push(...paymentArray);
+  //   }
+
+  //   if (
+  //     totalNettAmount === item.amountToUse ||
+  //     item.amountToUse === maxAmount
+  //   ) {
+  //     const payloadFullSVC = {
+  //       cartID,
+  //       totalNettAmount,
+  //       payments: !isEmptyArray(anotherPayment) ? anotherPayment : paymentArray,
+  //       isNeedConfirmation: false,
+  //       payAtPOS: false,
+  //       orderingMode,
+  //       tableNo: '-',
+  //       deliveryAddress: deliveryAddress,
+  //       deliveryProvider: selectedDeliveryProvider?.name,
+  //       deliveryProviderId: selectedDeliveryProvider?.id,
+  //       deliveryFee: selectedDeliveryProvider?.deliveryFee,
+  //       clientTimezone: 480,
+  //       orderActionDate: dataSettle?.orderActionDate,
+  //       orderActionTime: dataSettle?.orderActionTime,
+  //       orderActionTimeSlot: dataSettle?.orderActionTimeSlot,
+  //     };
+
+  //     try {
+  //       const response = await dispatch(
+  //         OrderAction.submitAndPay(payloadFullSVC)
+  //       );
+  //       if (response && response.resultCode === 200) {
+  //         localStorage.setItem(
+  //           `${config.prefix}_paymentSuccess`,
+  //           JSON.stringify(encryptor.encrypt({ totalPrice: totalNettAmount }))
+  //         );
+  //         localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+  //         localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
+  //         localStorage.removeItem(`${config.prefix}_selectedPoint`);
+  //         localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+  //         localStorage.removeItem(`${config.prefix}_dataSettle`);
+
+  //         localStorage.setItem(
+  //           `${config.prefix}_settleSuccess`,
+  //           JSON.stringify(encryptor.encrypt(response.data))
+  //         );
+
+  //         await dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+  //         await dispatch(PaymentAction.clearAll());
+
+  //         handleAudio();
+
+  //         history.push('/settleSuccess');
+  //       } else {
+  //         setIsLoading(false);
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       Swal.fire('Please try again!', 'Failed to submit order', 'error');
+  //     }
+  //   } else {
+  //     const payload = {
+  //       isSVC: true,
+  //       paymentAmount: item.amountToUse,
+  //       paymentName: 'Store Value Card',
+  //       paymentType: 'Store Value Card',
+  //     };
+
+  //     await dispatch(PaymentAction.setData(payload, 'USE_SVC'));
+
+  //     onClose();
+  //   }
+  // };
 
   const validationSchema = yup.object({
     amountToUse: yup
@@ -318,7 +322,14 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
               size='small'
               placeholder='0'
               value={formik.values.amountToUse}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                console.log(e.target.value);
+                if (e.target.value >= maxAmount) {
+                  formik.setFieldValue('amountToUse', maxAmount);
+                } else {
+                  formik.setFieldValue('amountToUse', e.target.value);
+                }
+              }}
             />
             {formik.errors.amountToUse ? (
               <div

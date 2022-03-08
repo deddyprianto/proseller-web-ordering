@@ -4,7 +4,7 @@ import { Col, Row } from 'reactstrap';
 import Shimmer from 'react-shimmer-effect';
 import config from '../../config';
 import { OrderAction } from '../../redux/actions/OrderAction';
-import { MasterdataAction } from '../../redux/actions/MasterDataAction';
+import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import ViewCartBasket from './viewCartBasket';
 import ViewProsessBasket from './viewProssessBasket';
 import moment from 'moment';
@@ -219,7 +219,7 @@ class Basket extends Component {
       storeDetail = this.props.defaultOutlet;
     } else {
       storeDetail = await this.props.dispatch(
-        MasterdataAction.getOutletByID(dataBasket.outlet.id)
+        MasterDataAction.getOutletByID(dataBasket.outlet.id)
       );
     }
 

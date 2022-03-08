@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
 import loadable from '@loadable/component';
 import { HistoryAction } from '../redux/actions/HistoryAction';
-import { MasterdataAction } from '../redux/actions/MasterDataAction';
+import { MasterDataAction } from '../redux/actions/MasterDataAction';
 // import Lottie from "lottie-react-web";
 // import emptyGif from "../assets/gif/empty-and-lost.json";
 import config from '../config';
@@ -53,7 +53,7 @@ class History extends Component {
     // await this.getDataBasketPending();
     // }, 5000);
     let infoCompany = await this.props.dispatch(
-      MasterdataAction.getInfoCompany()
+      MasterDataAction.getInfoCompany()
     );
     this.setState({ countryCode: infoCompany.countryCode, loadingShow: false });
     Swal.close();

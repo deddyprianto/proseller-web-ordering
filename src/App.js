@@ -9,7 +9,7 @@ import { AuthActions } from './redux/actions/AuthAction';
 import { Redirect, Switch, Route, HashRouter } from 'react-router-dom';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import { OutletAction } from './redux/actions/OutletAction';
-import { MasterdataAction } from './redux/actions/MasterDataAction';
+import { MasterDataAction } from './redux/actions/MasterDataAction';
 import { OrderAction } from './redux/actions/OrderAction';
 import { PaymentAction } from './redux/actions/PaymentAction';
 import { ReferralAction } from './redux/actions/ReferralAction';
@@ -171,7 +171,7 @@ const App = (props) => {
           param.orderingMode
         );
       defaultOutlet = await props.dispatch(
-        MasterdataAction.getOutletByID(param['outlet'].split('::')[1], true)
+        MasterDataAction.getOutletByID(param['outlet'].split('::')[1], true)
       );
 
       if (defaultOutlet && defaultOutlet.id)
@@ -216,7 +216,7 @@ const App = (props) => {
     if (window.location.hash.split('#')[1] !== '/') {
       if (!param && defaultOutlet && defaultOutlet.id && enableOrdering) {
         defaultOutlet = await props.dispatch(
-          MasterdataAction.getOutletByID(defaultOutlet.id, true)
+          MasterDataAction.getOutletByID(defaultOutlet.id, true)
         );
       }
       props.dispatch(OrderAction.getCart());
@@ -354,7 +354,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(AuthActions.auth(username, password));
     },
     getDomainName: () => {
-      dispatch(MasterdataAction.getDomainName());
+      dispatch(MasterDataAction.getDomainName());
     },
   };
 };

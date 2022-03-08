@@ -27,7 +27,6 @@ class SettleSuccess extends Component {
     let paymentSuccess = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_paymentSuccess`))
     );
-    console.log('MANTAP', paymentSuccess);
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
