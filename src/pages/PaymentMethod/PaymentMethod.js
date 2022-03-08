@@ -42,7 +42,6 @@ const PaymentMethodPage = () => {
 
   const colorState = useSelector((state) => state.theme.color);
   const account = useSelector((state) => state.auth.account.idToken.payload);
-  // const defaultOutlet = useSelector((state) => state.basket.outlet.name);
 
   const [width] = useWindowSize();
   const gadgetScreen = 900 > width;
@@ -352,7 +351,7 @@ const PaymentMethodPage = () => {
             sx={style.buttonManualTransfer}
             fullWidth
             startIcon={<CreditCardIcon />}
-            onClick={handleSelectedCard(item)}
+            onClick={() => handleSelectedCard(item)}
           >
             {item.paymentName}
           </Button>

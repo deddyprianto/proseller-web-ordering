@@ -34,6 +34,7 @@ import MyVoucherWarningModal from 'components/myVoucherList/components/MyVoucher
 import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 
 import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
+import ModalInfoTransferDialog from 'components/payment/ModalInfoTransferDialog';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -88,6 +89,7 @@ const Payment = ({ ...props }) => {
   const [useSVCPayment, setUseSVCPayment] = useState({});
   const [checkSVCAvailable, setCheckSVCAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [openTransferDialog, setOpenTransferDialog] = useState(false);
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
@@ -272,10 +274,17 @@ const Payment = ({ ...props }) => {
       price = price - props.useSVC.paymentAmount;
     }
 
+    // setOpenTransferDialog(true);
+
     if (price < 0) {
       return 0;
     }
     return handlePriceLength(price);
+  };
+
+  const handleCloseManualTransfer = () => {
+    setOpenTransferDialog(false);
+    handlePay();
   };
 
   const getCampaignPoints = () => {
@@ -313,7 +322,7 @@ const Payment = ({ ...props }) => {
     getSVCData();
     setTotalPrice(price);
     setUseSVCPayment(props.useSVC);
-    props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PYMENT_AMOUNT'));
+    props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PAYMENT_AMOUNT'));
     if (!isEmptyObject(props.selectedPaymentCard) && price === 0) {
       handleRemovePaymentCard();
     }
@@ -474,7 +483,6 @@ const Payment = ({ ...props }) => {
   const renderSelectedVoucher = () => {
     if (!isEmptyArray(selectedVouchers)) {
       return selectedVouchers.map((selectedVoucher, index) => {
-        console.log(selectedVoucher, '>>>>>>>');
         return (
           <div key={index}>
             <div style={styles.buttonVoucher} variant='outlined'>
@@ -576,7 +584,10 @@ const Payment = ({ ...props }) => {
             style={styles.button}
             variant='outlined'
             disabled={handleDisableButton()}
-            onClick={() => setIsOpenSVC(true)}
+            onClick={() => {
+              props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
+              setIsOpenSVC(true);
+            }}
           >
             <div style={styles.displayFlexAndAlignCenter}>
               <CreditCardIcon style={styles.icon} />
@@ -604,12 +615,23 @@ const Payment = ({ ...props }) => {
   };
 
   const renderPaymentDetail = () => {
-    if (!isEmptyObject(props.selectedPaymentCard)) {
-      const { cardIssuer, maskedAccountNumber } =
-        props.selectedPaymentCard?.details;
-      return `${cardIssuer.toUpperCase()} ${maskedAccountNumber} (${handlePrice()})`;
+    if (
+      !isEmptyObject(props.selectedPaymentCard) &&
+      props.selectedPaymentCard.paymentID !== 'MANUAL_TRANSFER'
+    ) {
+      const cardIssuer =
+        props.selectedPaymentCard?.details?.cardIssuer?.toUpperCase() || '';
+      const maskedAccountNumber =
+        props.selectedPaymentCard?.details?.maskedAccountNumber || '';
+
+      return `${cardIssuer} ${maskedAccountNumber} (SGD ${handlePrice()})`;
+    } else if (
+      !isEmptyObject(props.selectedPaymentCard) &&
+      props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER'
+    ) {
+      return 'Manual Transfer';
     } else {
-      return 'Payment With Card';
+      return 'Payment Method';
     }
   };
 
@@ -678,7 +700,6 @@ const Payment = ({ ...props }) => {
           )}
         </Box>
         {renderFullPaymentMix()}
-        {/* <Typography sx={styles.warningText}>* You have selected full payment with </Typography> */}
       </Box>
     );
   };
@@ -730,6 +751,11 @@ const Payment = ({ ...props }) => {
         paymentID: props.selectedPaymentCard.paymentID,
         paymentName: props.selectedPaymentCard.paymentName,
         paymentType: props.selectedPaymentCard.paymentID,
+        description: props.selectedPaymentCard.description,
+        manual_transfer_image:
+          props.selectedPaymentCard?.configurations?.filter(
+            (item) => item.name === 'manual_transfer_image'
+          )[0].value || null,
       };
 
       payload.payments.push(dataPaymentMethod);
@@ -765,13 +791,8 @@ const Payment = ({ ...props }) => {
         OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
       );
 
-      if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
-        handleAudio();
-        return document.getElementById('open-modal-info-transfer').click();
-      } else {
-        handleAudio();
-        return history.push('/settleSuccess');
-      }
+      handleAudio();
+      return history.push('/settleSuccess');
     } else {
       setWarningMessage('Payment Failed!');
       handleOpenWarningModal();
@@ -802,7 +823,13 @@ const Payment = ({ ...props }) => {
         style={styles.buttonPay}
         variant='outlined'
         disabled={handleDisabledButtonPay()}
-        onClick={() => handlePay()}
+        onClick={() => {
+          if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
+            setOpenTransferDialog(true);
+          } else {
+            handlePay();
+          }
+        }}
       >
         <Typography style={styles.typographyPay}>
           Pay {handleCurrency(totalPrice)}
@@ -813,6 +840,11 @@ const Payment = ({ ...props }) => {
 
   return (
     <>
+      <ModalInfoTransferDialog
+        open={openTransferDialog}
+        onClose={handleCloseManualTransfer}
+        data={props.selectedPaymentCard}
+      />
       {isOpenPointAddModal && (
         <PointAddModal
           open={isOpenPointAddModal}
