@@ -585,6 +585,10 @@ const ProductAddModal = ({
     const isDisabled =
       qtyTotal >= max && modifierProductIds.indexOf(modifier.productID) === -1;
 
+    if (max === 0) {
+      return false;
+    }
+
     return isDisabled;
   };
 
@@ -739,7 +743,9 @@ const ProductAddModal = ({
       (item) => item.modifierProductId === modifierProductId
     );
 
-    if (selectedProductModifier && max > 1) {
+    const qty = selectedProductModifier?.qty || 0;
+
+    if (qty > 0) {
       return (
         <div style={styles.rootMofidierOptions}>
           <IconButton
