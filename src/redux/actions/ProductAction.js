@@ -178,6 +178,7 @@ function fetchProduct(category, outlet, skip, take, orderingMode) {
 }
 
 export const ProductAction = {
+  setData,
   fetchCategoryProduct,
   fetchProduct,
   fetchCategoryList,

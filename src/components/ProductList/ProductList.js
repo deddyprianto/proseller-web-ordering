@@ -161,18 +161,21 @@ const ProductList = ({ ...props }) => {
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
   const handleFetchCategoryProduct = async ({ outlet }) => {
-    const orderingMode = props.orderingMode | '';
-    const categories = await props.dispatch(
-      ProductAction.fetchCategoryProduct({
-        outlet,
-        orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
-          ? orderingMode
-          : '',
-      })
-    );
+    if (!isEmptyObject(outlet)) {
+      const categories = await props.dispatch(
+        ProductAction.fetchCategoryProduct({
+          outlet,
+          orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
+            ? props.orderingMode
+            : '',
+        })
+      );
 
-    const results = categories?.data || [];
-    return results;
+      const results = categories?.data || [];
+
+      setCategories(results);
+      setSelectedCategory(results[0]);
+    }
   };
 
   useEffect(() => {
@@ -192,20 +195,17 @@ const ProductList = ({ ...props }) => {
     try {
       const loadData = async () => {
         props.dispatch(OrderAction.getCart());
-
-        const categories = await handleFetchCategoryProduct({
+        await handleFetchCategoryProduct({
           outlet: props.defaultOutlet,
         });
 
         setOutlet(props.defaultOutlet);
-        setCategories(categories);
-        setSelectedCategory(categories[0]);
       };
       loadData();
     } catch (e) {
       console.log(e);
     }
-  }, []);
+  }, [props.defaultOutlet]);
 
   useEffect(() => {
     try {
@@ -217,10 +217,9 @@ const ProductList = ({ ...props }) => {
           );
 
           setProducts(products.data);
-          props.dispatch({
-            type: CONSTANT.LIST_CATEGORY,
-            data: products,
-          });
+          props.dispatch(
+            ProductAction.setData(products, CONSTANT.LIST_CATEGORY)
+          );
         }
         setIsLoading(false);
       };
