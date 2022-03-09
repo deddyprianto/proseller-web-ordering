@@ -83,14 +83,19 @@ const OrderingModeDialog = ({ open, onClose }) => {
     { isEnabledFieldName: 'enableDineIn', name: 'DINEIN' },
   ];
 
+  const handleFilter = (value) => {
+    return value === 'TRUE';
+  };
+
   useEffect(() => {
     const getOrderingModes = async () => {
       const data = await dispatch(
         OutletAction?.fetchSingleOutlet(defaultOutlet)
       );
       if (data) {
-        const orderingModesFieldFiltered = orderingModesField.filter(
-          (mode) => data[mode.isEnabledFieldName]
+        //TODO: Please remove the function after update from backend
+        const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
+          handleFilter(data[mode.isEnabledFieldName].toString().toUpperCase())
         );
         const orderingModesMapped = orderingModesFieldFiltered.map(
           (mode) => mode.name
