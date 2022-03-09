@@ -165,8 +165,9 @@ const ProductList = ({ ...props }) => {
     const categories = await props.dispatch(
       ProductAction.fetchCategoryProduct({
         outlet,
-        orderingMode:
-          props.orderingSetting?.ShowOrderingModeModalFirst && orderingMode,
+        orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
+          ? orderingMode
+          : '',
       })
     );
 
