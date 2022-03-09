@@ -36,6 +36,23 @@ const Banner = () => {
 
   if (isEmptyArray(banners)) return null;
 
+  const renderBannerItem = (item) => {
+    if (item?.promotionId) {
+      const promotionId = item.promotionId.split(':')[2];
+      return (
+        <Link
+          component={LinkRouter}
+          to={`/promotions-detail/${promotionId}`}
+          rel='noopener noreferrer'
+        >
+          <img src={item.defaultImageURL} alt={item.name} width='100%' />
+        </Link>
+      );
+    } else {
+      return <img src={item.defaultImageURL} alt={item.name} width='100%' />;
+    }
+  };
+
   return (
     <Swiper
       style={{
@@ -61,28 +78,7 @@ const Banner = () => {
       navigation
     >
       {banners.map((item, index) => {
-        if (item?.promotionId) {
-          const promotionId = item.promotionId.split(':')[2];
-          return (
-            <SwiperSlide key={index}>
-              {promotionId ? (
-                <Link
-                  component={LinkRouter}
-                  to={`/promotions-detail/${promotionId}`}
-                  rel='noopener noreferrer'
-                >
-                  <img
-                    src={item.defaultImageURL}
-                    alt={item.name}
-                    width='100%'
-                  />
-                </Link>
-              ) : (
-                <img src={item.defaultImageURL} alt={item.name} width='100%' />
-              )}
-            </SwiperSlide>
-          );
-        }
+        return <SwiperSlide key={index}>{renderBannerItem(item)}</SwiperSlide>;
       })}
     </Swiper>
   );
