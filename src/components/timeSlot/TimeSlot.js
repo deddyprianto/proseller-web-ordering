@@ -208,6 +208,7 @@ const TimeSlotDialog = ({ open, onClose }) => {
             loading={false}
             loadingIndicator='Loading...'
             variant='contained'
+            disabled={isLoading}
             key={index}
             onClick={() => {
               setSelectedTime(null);
