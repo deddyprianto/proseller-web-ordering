@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Col, Row } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
-import config from "../../config";
-import { OrderAction } from "../../redux/actions/OrderAction";
-import { MasterdataAction } from "../../redux/actions/MaterdataAction";
-import ViewCartBasket from "./viewCartBasket";
-import ViewProsessBasket from "./viewProssessBasket";
-import moment from "moment";
-import _ from "lodash";
-import Sound_Effect from "../../assets/sound/Sound_Effect.mp3";
-import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
-import ModalInfoTransfer from '../payment/ModalInfoTransfer'
-const Swal = require("sweetalert2");
-const base64 = require("base-64");
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Col, Row } from 'reactstrap';
+import Shimmer from 'react-shimmer-effect';
+import config from '../../config';
+import { OrderAction } from '../../redux/actions/OrderAction';
+import { MasterDataAction } from '../../redux/actions/MasterDataAction';
+import ViewCartBasket from './viewCartBasket';
+import ViewProsessBasket from './viewProssessBasket';
+import moment from 'moment';
+import _ from 'lodash';
+import Sound_Effect from '../../assets/sound/Sound_Effect.mp3';
+import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
+import ModalInfoTransfer from '../payment/ModalInfoTransfer';
+const Swal = require('sweetalert2');
+const base64 = require('base-64');
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 class Basket extends Component {
   constructor(props) {
@@ -24,13 +24,13 @@ class Basket extends Component {
       isLoading: true,
       dataBasket: null,
       myVoucher: null,
-      countryCode: "SG",
+      countryCode: 'SG',
       totalPoint: 0,
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
       discountVoucher: 0,
-      newTotalPrice: "0",
+      newTotalPrice: '0',
       selectedVoucher: null,
       statusSelectedVoucher: null,
       selectedPoint: null,
@@ -47,18 +47,18 @@ class Basket extends Component {
       widthSelected: 0,
       settle: false,
       storeDetail: null,
-      pointsToRebateRatio: "0:0",
-      roundingOptions: "INTEGER",
+      pointsToRebateRatio: '0:0',
+      roundingOptions: 'INTEGER',
       xstep: 1,
-      orderingMode: "DELIVERY",
+      orderingMode: 'DELIVERY',
       btnBasketOrder: true,
       play: false,
       deliveryProvaider: [],
-      dataCVV: "",
-      orderActionDate: moment().format("YYYY-MM-DD"),
-      orderActionTime: moment().format("HH") + ":00",
+      dataCVV: '',
+      orderActionDate: moment().format('YYYY-MM-DD'),
+      orderActionTime: moment().format('HH') + ':00',
       checkOperationalHours: {},
-      orderingTime: []
+      orderingTime: [],
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -68,10 +68,10 @@ class Basket extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -81,11 +81,11 @@ class Basket extends Component {
 
   componentDidMount = async () => {
     await this.checkOfflineCart();
-    this.audio.addEventListener("ended", () => this.setState({ play: false }));
+    this.audio.addEventListener('ended', () => this.setState({ play: false }));
 
     let param = this.getUrlParameters();
-    if (param && param["input"]) {
-      param = this.getUrlParameters(base64.decode(decodeURI(param["input"])));
+    if (param && param['input']) {
+      param = this.getUrlParameters(base64.decode(decodeURI(param['input'])));
       localStorage.setItem(
         `${config.prefix}_scanTable`,
         JSON.stringify(encryptor.encrypt(param))
@@ -96,23 +96,23 @@ class Basket extends Component {
 
     setInterval(() => {
       try {
-        let widthSelected = document.getElementById("cardItem").clientWidth;
+        let widthSelected = document.getElementById('cardItem').clientWidth;
         if (widthSelected !== this.state.widthSelected) {
           this.setState({ widthSelected });
         }
-      } catch (error) { }
+      } catch (error) {}
     }, 0);
     this.getDataBasket();
   };
 
   getUrlParameters = (pageParamString = null) => {
-    if (!pageParamString) pageParamString = window.location.href.split("?")[1];
+    if (!pageParamString) pageParamString = window.location.href.split('?')[1];
     if (pageParamString) {
-      var paramsArray = pageParamString.split("&");
+      var paramsArray = pageParamString.split('&');
       var paramsHash = {};
 
       for (var i = 0; i < paramsArray.length; i++) {
-        var singleParam = paramsArray[i].split("=");
+        var singleParam = paramsArray[i].split('=');
         paramsHash[singleParam[0]] = singleParam[1];
       }
       return paramsHash;
@@ -137,7 +137,7 @@ class Basket extends Component {
 
           if (
             offlineCart.details[i].remark !== undefined &&
-            offlineCart.details[i].remark !== "-"
+            offlineCart.details[i].remark !== '-'
           ) {
             product.remark = offlineCart.details[i].remark;
           }
@@ -155,7 +155,7 @@ class Basket extends Component {
         }
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   getDataBasket = async () => {
@@ -185,7 +185,9 @@ class Basket extends Component {
 
     if (!infoCompany) {
       let time = setInterval(() => {
-        infoCompany = encryptor.decrypt( JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`)));
+        infoCompany = encryptor.decrypt(
+          JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+        );
         if (infoCompany) clearInterval(time);
       }, 0);
     } else {
@@ -194,7 +196,10 @@ class Basket extends Component {
 
     if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
       selectedVoucher = dataBasket.confirmationInfo.voucher;
-      localStorage.setItem(`${config.prefix}_selectedVoucher`, JSON.stringify(encryptor.encrypt(selectedVoucher)));
+      localStorage.setItem(
+        `${config.prefix}_selectedVoucher`,
+        JSON.stringify(encryptor.encrypt(selectedVoucher))
+      );
     } else if (
       dataBasket.confirmationInfo &&
       dataBasket.confirmationInfo.redeemPoint > 0
@@ -202,21 +207,29 @@ class Basket extends Component {
       selectedPoint = this.setPoint(
         dataBasket.confirmationInfo.redeemPoint,
         dataBasket,
-        dataBasket.confirmationInfo.pointsToRebateRatio,
+        dataBasket.confirmationInfo.pointsToRebateRatio
       );
     }
 
     let storeDetail = null;
-    if (!isEmptyObject(this.props.defaultOutlet) && this.props.defaultOutlet.product) {
+    if (
+      !isEmptyObject(this.props.defaultOutlet) &&
+      this.props.defaultOutlet.product
+    ) {
       storeDetail = this.props.defaultOutlet;
     } else {
-      storeDetail = await this.props.dispatch(MasterdataAction.getOutletByID(dataBasket.outlet.id));
+      storeDetail = await this.props.dispatch(
+        MasterDataAction.getOutletByID(dataBasket.outlet.id)
+      );
     }
 
     await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
     let discount = (selectedPoint || 0) + this.state.discountVoucher;
-    let totalPrice = (dataBasket.totalNettAmount - discount < 0) ? 0 : (dataBasket.totalNettAmount - discount);
-    
+    let totalPrice =
+      dataBasket.totalNettAmount - discount < 0
+        ? 0
+        : dataBasket.totalNettAmount - discount;
+
     let orderingMode = dataBasket.orderingMode;
     scanTable = {
       ...scanTable,
@@ -225,8 +238,10 @@ class Basket extends Component {
       outlet: dataBasket.outletID,
     };
 
-    let deliveryProvaider = await this.props.dispatch(OrderAction.getProvider());
-    let provaiderDelivery = {}
+    let deliveryProvaider = await this.props.dispatch(
+      OrderAction.getProvider()
+    );
+    let provaiderDelivery = {};
     if (dataBasket.deliveryProviderId) {
       provaiderDelivery = deliveryProvaider.find((items) => {
         return items.id === dataBasket.deliveryProviderId;
@@ -234,10 +249,12 @@ class Basket extends Component {
       this.setState({ provaiderDelivery });
     }
 
-    if (dataBasket.orderActionDate) this.setState({ orderActionDate: dataBasket.orderActionDate })
-    if (dataBasket.orderActionTime) this.setState({ orderActionTime: dataBasket.orderActionTime })
+    if (dataBasket.orderActionDate)
+      this.setState({ orderActionDate: dataBasket.orderActionDate });
+    if (dataBasket.orderActionTime)
+      this.setState({ orderActionTime: dataBasket.orderActionTime });
 
-    let checkOperationalHours = this.checkOperationalHours(storeDetail)
+    let checkOperationalHours = this.checkOperationalHours(storeDetail);
     this.setState({
       dataBasket,
       storeDetail,
@@ -249,32 +266,32 @@ class Basket extends Component {
     });
 
     // if (dataBasket.id) dataBasket = await this.getDataBasketPending(dataBasket.id, dataBasket.status);
-    if (
-      deliveryProvaider &&
-      deliveryProvaider.length > 0 &&
-      deliveryAddress
-    ) {
+    if (deliveryProvaider && deliveryProvaider.length > 0 && deliveryAddress) {
       let payload = {
         outletId: dataBasket.outlet.id,
         cartID: dataBasket.cartID,
         deliveryAddress: deliveryAddress,
       };
 
-      let response = await this.props.dispatch(OrderAction.getCalculateFee(payload));
-      if(!response.dataProvider) return
+      let response = await this.props.dispatch(
+        OrderAction.getCalculateFee(payload)
+      );
+      if (!response.dataProvider) return;
 
-      deliveryProvaider = response.dataProvider
+      deliveryProvaider = response.dataProvider;
       deliveryProvaider.forEach(async (provider) => {
         provider.deliveryFeeFloat = provider.deliveryFee;
         provider.deliveryFee = this.getCurrency(provider.deliveryFee);
       });
 
       await this.props.dispatch({
-        type: "SET_DELIVERY_PROVIDERS",
+        type: 'SET_DELIVERY_PROVIDERS',
         payload: deliveryProvaider,
       });
 
-      provaiderDelivery = deliveryProvaider.find(items => {return items.id === provaiderDelivery.id})
+      provaiderDelivery = deliveryProvaider.find((items) => {
+        return items.id === provaiderDelivery.id;
+      });
       this.setState({ deliveryProvaider, provaiderDelivery });
     }
 
@@ -292,10 +309,10 @@ class Basket extends Component {
     let { viewCartStatus } = this.state;
     if (
       viewCartStatus &&
-      (dataBasket.status === "PROCESSING" ||
-        dataBasket.status === "READY_FOR_COLLECTION" ||
-        dataBasket.status === "READY_FOR_DELIVERY" ||
-        dataBasket.status === "ON_THE_WAY")
+      (dataBasket.status === 'PROCESSING' ||
+        dataBasket.status === 'READY_FOR_COLLECTION' ||
+        dataBasket.status === 'READY_FOR_DELIVERY' ||
+        dataBasket.status === 'ON_THE_WAY')
     ) {
       this.setState({ viewCart: false });
     }
@@ -304,49 +321,70 @@ class Basket extends Component {
   getDataBasketPending = async (id, status) => {
     let response = await this.props.dispatch(OrderAction.getCartPending(id));
     if (response.resultCode === 200) {
-      localStorage.setItem(`${config.prefix}_dataBasket`,
+      localStorage.setItem(
+        `${config.prefix}_dataBasket`,
         JSON.stringify(encryptor.encrypt(response.data))
       );
       this.checkViewCart(response.data);
       this.setState({ dataBasket: response.data });
-      return response.data
+      return response.data;
     } else {
       response = await this.props.dispatch(OrderAction.getCartCompleted(id));
-      if ( response.data && response.data.status && response.data.status === "COMPLETED" ) {
-        Swal.fire( "Congratulations!", "Your order has been completed.", "success" );
-      } else if ( response.data && response.data.status && response.data.status === "CANCELLED" ) {
-        Swal.fire("Oppss!",`Your order has been ${response.data.status}.`,"error");
+      if (
+        response.data &&
+        response.data.status &&
+        response.data.status === 'COMPLETED'
+      ) {
+        Swal.fire(
+          'Congratulations!',
+          'Your order has been completed.',
+          'success'
+        );
+      } else if (
+        response.data &&
+        response.data.status &&
+        response.data.status === 'CANCELLED'
+      ) {
+        Swal.fire(
+          'Oppss!',
+          `Your order has been ${response.data.status}.`,
+          'error'
+        );
       } else {
-        Swal.fire("Oppss!",`Your order has been ${response.data.status || "REFUND"}.`,"error");
+        Swal.fire(
+          'Oppss!',
+          `Your order has been ${response.data.status || 'REFUND'}.`,
+          'error'
+        );
       }
       setTimeout(() => {
-        this.props.history.push("/history");
+        this.props.history.push('/history');
         localStorage.removeItem(`${config.prefix}_dataBasket`);
       }, 3000);
-      return response.data
+      return response.data;
     }
   };
 
   checkOperationalHours = (storeDetail) => {
-    let operationalHours = {}
+    let operationalHours = {};
     if (storeDetail.operationalHours !== undefined) {
       operationalHours = storeDetail.operationalHours.filter(function (a) {
-        return a.nameOfDay === moment().format("dddd");
+        return a.nameOfDay === moment().format('dddd');
       })[0];
     }
-    
-    let status = moment(moment().format("HH:mm"), "HH:mm");
-    let beforeTime = moment(operationalHours.open, "HH:mm");
-    let afterTime = moment(operationalHours.close, "HH:mm");
+
+    let status = moment(moment().format('HH:mm'), 'HH:mm');
+    let beforeTime = moment(operationalHours.open, 'HH:mm');
+    let afterTime = moment(operationalHours.close, 'HH:mm');
     status = status.isBetween(beforeTime, afterTime);
 
     if (status) {
       let lastOrderOn = storeDetail.lastOrderOn ? storeDetail.lastOrderOn : 0;
-      status = moment(moment().format("HH:mm"), "HH:mm");
-      beforeTime = moment(operationalHours.open, "HH:mm");
-      afterTime = moment(operationalHours.close, "HH:mm").subtract(
+      status = moment(moment().format('HH:mm'), 'HH:mm');
+      beforeTime = moment(operationalHours.open, 'HH:mm');
+      afterTime = moment(operationalHours.close, 'HH:mm').subtract(
         lastOrderOn,
-        "minutes"
+        'minutes'
       );
 
       status = status.isBetween(beforeTime, afterTime);
@@ -386,18 +424,21 @@ class Basket extends Component {
         if (selectedVoucher.applyToSpecificProduct) {
           if (checkProduct) {
             let date = new Date();
-            let tanggal = moment().format().split("T")[0];
-            let region = moment().format().split("+")[1];
+            let tanggal = moment().format().split('T')[0];
+            let region = moment().format().split('+')[1];
             let activeWeekDays = selectedVoucher.validity.activeWeekDays;
             let validHour = activeWeekDays[date.getDay()].validHour;
             let validHourFrom = validHour.from;
             let validHourTo = validHour.to;
             if (activeWeekDays[date.getDay()].active) {
-              let from = `${tanggal}T${validHourFrom}:00+${region}`
-              let to = `${tanggal}T${validHourTo}:00+${region}`
-              let statusValidHour = moment(moment().format()).isBetween(from,to);
+              let from = `${tanggal}T${validHourFrom}:00+${region}`;
+              let to = `${tanggal}T${validHourTo}:00+${region}`;
+              let statusValidHour = moment(moment().format()).isBetween(
+                from,
+                to
+              );
               if (statusValidHour) {
-                if (voucherType === "discPercentage") {
+                if (voucherType === 'discPercentage') {
                   discount =
                     Number(checkProduct.unitPrice) *
                     Number(checkProduct.quantity) *
@@ -411,16 +452,16 @@ class Basket extends Component {
                   selectedVoucher,
                 });
               } else {
-                this.setRemoveVoucher("Voucher not available this time!");
+                this.setRemoveVoucher('Voucher not available this time!');
               }
             } else {
-              this.setRemoveVoucher("Voucher not available today!");
+              this.setRemoveVoucher('Voucher not available today!');
             }
           } else {
-            this.setRemoveVoucher("Voucher only available this product!");
+            this.setRemoveVoucher('Voucher only available this product!');
           }
         } else {
-          if (voucherType === "discPercentage") {
+          if (voucherType === 'discPercentage') {
             discount =
               Number(dataBasket.totalNettAmount) * (Number(voucherValue) / 100);
           } else {
@@ -433,37 +474,53 @@ class Basket extends Component {
           });
         }
       } else {
-        this.setRemoveVoucher("Voucher be used this outlet!");
+        this.setRemoveVoucher('Voucher be used this outlet!');
       }
     }
   };
 
   setPoint = (point, dataBasket = null, pointsToRebateRatio) => {
     if (!dataBasket) dataBasket = this.state.dataBasket;
-    if (!pointsToRebateRatio) pointsToRebateRatio = this.state.pointsToRebateRatio;
-    let totalPrice = (point / pointsToRebateRatio.split(":")[0]) * pointsToRebateRatio.split(":")[1];
-    totalPrice = dataBasket.totalNettAmount - totalPrice < 0 ? 0 : dataBasket.totalNettAmount - totalPrice;
-    localStorage.setItem( `${config.prefix}_selectedPoint`, JSON.stringify(encryptor.encrypt(point)) );
+    if (!pointsToRebateRatio)
+      pointsToRebateRatio = this.state.pointsToRebateRatio;
+    let totalPrice =
+      (point / pointsToRebateRatio.split(':')[0]) *
+      pointsToRebateRatio.split(':')[1];
+    totalPrice =
+      dataBasket.totalNettAmount - totalPrice < 0
+        ? 0
+        : dataBasket.totalNettAmount - totalPrice;
+    localStorage.setItem(
+      `${config.prefix}_selectedPoint`,
+      JSON.stringify(encryptor.encrypt(point))
+    );
 
-    point = (point * pointsToRebateRatio.split(":")[1]) / pointsToRebateRatio.split(":")[0]
+    point =
+      (point * pointsToRebateRatio.split(':')[1]) /
+      pointsToRebateRatio.split(':')[0];
 
-    this.setState({ selectedPoint: point, discountPoint: point, totalPrice, newTotalPrice: totalPrice });
+    this.setState({
+      selectedPoint: point,
+      discountPoint: point,
+      totalPrice,
+      newTotalPrice: totalPrice,
+    });
     return point;
   };
 
   setRemoveVoucher = (message) => {
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     this.setState({ statusSelectedVoucher: false, selectedVoucher: null });
-    Swal.fire("Oppss!", message, "error");
+    Swal.fire('Oppss!', message, 'error');
   };
 
   getCurrency = (price) => {
     if (this.props.companyInfo) {
       if (price !== undefined) {
         const { currency } = this.props.companyInfo;
-        if (!price || price === "-") price = 0;
+        if (!price || price === '-') price = 0;
         let result = price.toLocaleString(currency.locale, {
-          style: "currency",
+          style: 'currency',
           currency: currency.code,
         });
         return result;
@@ -471,23 +528,23 @@ class Basket extends Component {
     }
   };
 
-  cancelSelectVoucher = async () => { };
+  cancelSelectVoucher = async () => {};
 
-  cancelSelectPoint = async () => { };
+  cancelSelectPoint = async () => {};
 
-  handleRedeemVoucher = async () => { };
+  handleRedeemVoucher = async () => {};
 
   handleRedeemPoint = async () => {};
 
-  scrollPoint = (data) => { };
+  scrollPoint = (data) => {};
 
   setOrderingMode = async (orderingMode) => {};
 
   handleClear = async (dataBasket = null) => {};
 
-  handleSettle = async () => { };
+  handleSettle = async () => {};
 
-  handleSubmit = async () => { };
+  handleSubmit = async () => {};
 
   handleSetProvaider = async (data) => {
     this.setState({ provaiderDelivery: data });
@@ -503,24 +560,38 @@ class Basket extends Component {
 
   handleCompletedOrdering = (status) => {
     Swal.fire({
-      title: "Received your order?",
-      text: "You hereby receive your order.",
-      icon: "warning",
+      title: 'Received your order?',
+      text: 'You hereby receive your order.',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
     }).then(async (result) => {
       if (result.value) {
         try {
           this.setState({ isLoading: true });
-          let response = await this.props.dispatch(OrderAction.cartUpdate({ id: this.state.dataBasket.cartID, status }));
+          let response = await this.props.dispatch(
+            OrderAction.cartUpdate({ id: this.state.dataBasket.cartID, status })
+          );
           if (response.resultCode === 200) {
-            Swal.fire( "Congratulations!", "Your order has been completed.", "success" );
+            Swal.fire(
+              'Congratulations!',
+              'Your order has been completed.',
+              'success'
+            );
           } else {
-            Swal.fire( "Oppss!", response.data.message || response.message || "Your order has been filed", "error" );
+            Swal.fire(
+              'Oppss!',
+              response.data.message ||
+                response.message ||
+                'Your order has been filed',
+              'error'
+            );
           }
-          setTimeout(() => { this.props.history.push("/history"); }, 2000);
+          setTimeout(() => {
+            this.props.history.push('/history');
+          }, 2000);
         } catch (error) {
           console.log(error);
         }
@@ -530,24 +601,30 @@ class Basket extends Component {
 
   handleSetState = async (field, value) => {
     this.setState({ [field]: value });
-    if (field === "dataBasket") {
-      localStorage.setItem( `${config.prefix}_dataBasket`, JSON.stringify(encryptor.encrypt(value)));
+    if (field === 'dataBasket') {
+      localStorage.setItem(
+        `${config.prefix}_dataBasket`,
+        JSON.stringify(encryptor.encrypt(value))
+      );
       window.location.reload();
     }
   };
 
   isManualTransfer = (dataBasket) => {
     try {
-      const data = dataBasket.payments.find(x => x.paymentID === 'MANUAL_TRANSFER');
+      const data = dataBasket.payments.find(
+        (x) => x.paymentID === 'MANUAL_TRANSFER'
+      );
       if (data) return true;
       return false;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
-  }
+  };
 
   render() {
-    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } = this.state;
+    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } =
+      this.state;
     let { isLoggedIn, product, setting } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;
@@ -557,49 +634,57 @@ class Basket extends Component {
     let selectedCard = {};
     let paymentAmount = 0;
     try {
-      let desc = dataBasket.payments.find(x => x.paymentID === 'MANUAL_TRANSFER');
-      const paymentAmountFromCart = dataBasket.payments.find(x => x.description).paymentAmount;
+      let desc = dataBasket.payments.find(
+        (x) => x.paymentID === 'MANUAL_TRANSFER'
+      );
+      const paymentAmountFromCart = dataBasket.payments.find(
+        (x) => x.description
+      ).paymentAmount;
       if (desc) {
         paymentAmount = paymentAmountFromCart;
         selectedCard = desc;
       }
-    } catch(e) {
-    }
+    } catch (e) {}
 
     return (
       <div
-        className="col-full"
-        style={{ marginTop: config.prefix === "emenu" ? 120 : 140 }}
-        id="cardItem"
+        className='col-full'
+        style={{ marginTop: config.prefix === 'emenu' ? 120 : 140 }}
+        id='cardItem'
       >
-        <div id="close-modal" />
-        <ModalInfoTransfer isPendingCart={true} totalAmount={paymentAmount} selectedCard={selectedCard} handleSettle={this.handleSettle} />
-        <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+        <div id='close-modal' />
+        <ModalInfoTransfer
+          isPendingCart={true}
+          totalAmount={paymentAmount}
+          selectedCard={selectedCard}
+          handleSettle={this.handleSettle}
+        />
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -60,
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                display: "flex",
+                boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+                display: 'flex',
                 height: 40,
               }}
-              className="background-theme"
+              className='background-theme'
             >
               <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
-                <i className="fa fa-chevron-left"></i> Back
+                <i className='fa fa-chevron-left'></i> Back
               </div>
             </div>
             <main
-              id="main"
-              className="site-main"
-              style={{ textAlign: "center" }}
+              id='main'
+              className='site-main'
+              style={{ textAlign: 'center' }}
             >
               {loadingShow && (
                 <Row>
@@ -609,7 +694,11 @@ class Basket extends Component {
               )}
               {!loadingShow && !dataBasket && (
                 <div>
-                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
+                  <img
+                    src={config.url_emptyImage}
+                    alt='is empty'
+                    style={{ marginTop: 30 }}
+                  />
                   <div>Data is empty</div>
                 </div>
               )}
@@ -657,28 +746,40 @@ class Basket extends Component {
                     />
                   )}
                   <br />
-                  {
-                    this.isManualTransfer(dataBasket) !== false ?
-                      <>
+                  {this.isManualTransfer(dataBasket) !== false ? (
+                    <>
                       <div style={{ marginTop: -15 }}>
-                        <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                          <div data-toggle="modal" data-target="#modal-info-transfer"style={{ fontSize: 13 }} className="customer-group-name"><b><i>How to transfer ?</i></b></div>
+                        <a
+                          data-toggle='collapse'
+                          href='#collapseExample'
+                          role='button'
+                          aria-expanded='false'
+                          aria-controls='collapseExample'
+                        >
+                          <div
+                            data-toggle='modal'
+                            data-target='#modal-info-transfer'
+                            style={{ fontSize: 13 }}
+                            className='customer-group-name'
+                          >
+                            <b>
+                              <i>How to transfer ?</i>
+                            </b>
+                          </div>
                         </a>
                       </div>
                     </>
-                  :
-                  null
-                  }
+                  ) : null}
                 </div>
               )}
             </main>
           </div>
         </div>
         <span
-          data-toggle="modal"
-          data-target="#detail-product-modal"
-          id="open-modal-product"
-          style={{ color: "white" }}
+          data-toggle='modal'
+          data-target='#detail-product-modal'
+          id='open-modal-product'
+          style={{ color: 'white' }}
         ></span>
       </div>
     );

@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import loadable from '@loadable/component';
-import { MasterdataAction } from '../../redux/actions/MaterdataAction';
+import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import { AuthActions } from '../../redux/actions/AuthAction';
 import { InboxAction } from '../../redux/actions/InboxAction';
 import { HistoryAction } from '../../redux/actions/HistoryAction';
@@ -15,6 +15,8 @@ const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
 const Cart = loadable(() => import('../../pages/Cart'));
+const Payment = loadable(() => import('pages/Payment'));
+const MyVoucher = loadable(() => import('pages/MyVoucher'));
 const Profile = loadable(() => import('../../pages/Profile'));
 const ListMembership = loadable(() => import('../../pages/ListMembership'));
 const DetailMembership = loadable(() => import('../../pages/DetailMembership'));
@@ -27,13 +29,8 @@ const OutletSelection = loadable(() => import('../../pages/OutletSelection'));
 const StoreValueCard = loadable(() => import('../../pages/StoreValueCard'));
 const BuyStoreValueCard = loadable(() => import('../../components/svc/BuySVC'));
 const UseSVC = loadable(() => import('../../components/svc/useSVC'));
-const DeliveryAddress = loadable(() =>
-  import('../../components/delivery-address')
-);
-const Payment = loadable(() => import('../../components/payment/index'));
-const PaymentMethod = loadable(() =>
-  import('../../components/payment/paymentMethod')
-);
+const DeliveryAddress = loadable(() => import('../../pages/DeliveryAddress'));
+const PaymentMethod = loadable(() => import('../../pages/PaymentMethod'));
 const Setting = loadable(() => import('../../components/setting'));
 const Referral = loadable(() => import('../../components/referral'));
 const Basket = loadable(() => import('../../components/basket'));
@@ -42,9 +39,6 @@ const SettleSuccess = loadable(() =>
   import('../../components/basket/settleSuccess')
 );
 const ScanTable = loadable(() => import('../../components/basket/scanTable'));
-const SelectVoucher = loadable(() =>
-  import('../../components/voucher/SelectVoucher')
-);
 const EditProfile = loadable(() =>
   import('../../components/profile/EditProfile')
 );
@@ -74,7 +68,7 @@ class Layout extends Component {
     const { isLoggedIn } = this.props;
     const { isEmenu } = this.state;
     let infoCompany = await this.props.dispatch(
-      MasterdataAction.getInfoCompany()
+      MasterDataAction.getInfoCompany()
     );
 
     if (isLoggedIn) {
@@ -164,6 +158,20 @@ class Layout extends Component {
               <Route exact path='/profile' component={Profile} />
             )}
             {(isLoggedIn || !enableOrdering) && (
+              <Route
+                exact
+                path='/profile/delivery-address'
+                component={DeliveryAddress}
+              />
+            )}
+            {(isLoggedIn || !enableOrdering) && (
+              <Route
+                exact
+                path='/profile/payment-method'
+                component={PaymentMethod}
+              />
+            )}
+            {(isLoggedIn || !enableOrdering) && (
               <Route exact path='/rewards' component={Profile} />
             )}
             {isLoggedIn && <Route exact path='/inbox' component={Inbox} />}
@@ -193,7 +201,7 @@ class Layout extends Component {
               <Route exact path='/edit-profile' component={EditProfile} />
             )}
             {isLoggedIn && (
-              <Route exact path='/myVoucher' component={SelectVoucher} />
+              <Route exact path='/my-voucher' component={MyVoucher} />
             )}
             {isLoggedIn && (
               <Route exact path='/scanTable' component={ScanTable} />

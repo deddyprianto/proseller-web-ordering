@@ -1,9 +1,9 @@
-import { isEmptyArray } from "./CheckEmpty";
+import { isEmptyArray } from './CheckEmpty';
 
 const getInitialProductValue = (productSelected, mode) => {
   let product = JSON.stringify(productSelected);
   product = JSON.parse(product);
-  console.log("calling select product");
+  console.log('calling select product');
   try {
     product.product.productModifiers.forEach((group, i) => {
       if (!isEmptyArray(group.modifier.details))
@@ -18,11 +18,11 @@ const getInitialProductValue = (productSelected, mode) => {
 
           if (
             group.modifier.isYesNo === true &&
-            detail.orderingStatus === "AVAILABLE"
+            detail.orderingStatus === 'AVAILABLE'
           ) {
             if (
               group.modifier.yesNoDefaultValue === true &&
-              detail.yesNoValue === "no"
+              detail.yesNoValue === 'no'
             ) {
               product.product.productModifiers[i].modifier.details[
                 j
@@ -31,7 +31,7 @@ const getInitialProductValue = (productSelected, mode) => {
 
             if (
               group.modifier.yesNoDefaultValue === false &&
-              detail.yesNoValue === "yes"
+              detail.yesNoValue === 'yes'
             ) {
               product.product.productModifiers[i].modifier.details[
                 j
@@ -45,18 +45,20 @@ const getInitialProductValue = (productSelected, mode) => {
           }
         });
     });
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 
   product.quantity = 1;
-  product.remark = "";
+  product.remark = '';
   product.mode = mode;
   return product;
 };
 
 const getFormattedPrice = (price, currency) => {
-  if (!price || price === "-") price = 0;
+  if (!price || price === '-') price = 0;
   let result = price.toLocaleString(currency.locale, {
-    style: "currency",
+    style: 'currency',
     currency: currency.code,
   });
   return result;

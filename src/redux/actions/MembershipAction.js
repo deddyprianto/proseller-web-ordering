@@ -1,17 +1,12 @@
-import { CRMService } from "../../Services/CRMService";
-
-export const MembershiplAction = {
-  getPaidMembership,
-  redeemPaidMembership,
-};
+import { CRMService } from '../../Services/CRMService';
 
 function getPaidMembership() {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
-      "GET",
+      'GET',
       null,
-      "customergroup/paidmemberships",
-      "bearer"
+      'customergroup/paidmemberships',
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -20,15 +15,20 @@ function getPaidMembership() {
 }
 
 function redeemPaidMembership(payload) {
-  return async (dispatch) => {
+  return async () => {
     let response = await CRMService.api(
-      "POST",
+      'POST',
       payload,
-      "accummulation/point/redeem/membership",
-      "bearer"
+      'accummulation/point/redeem/membership',
+      'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     return response;
   };
 }
+
+export const MembershiplAction = {
+  getPaidMembership,
+  redeemPaidMembership,
+};

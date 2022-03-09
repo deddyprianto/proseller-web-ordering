@@ -535,7 +535,6 @@ class Basket extends Component {
           return items.id === dataBasket.deliveryProviderId;
         });
       }
-      console.log('calling handleSetProvider from setDeliveryProvider');
       await this.handleSetProvaider(provaiderDelivery);
       await this.setState({ deliveryProvaider });
     }

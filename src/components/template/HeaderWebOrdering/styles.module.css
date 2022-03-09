@@ -3,21 +3,6 @@
   background-color: transparent;
 }
 
-.logo {
-  height: 55px;
-  object-fit: contain;
-  margin-top: -10px;
-  margin-bottom: -10px;
-  z-index: 100;
-}
-
-@media only screen and (min-width: 768px) {
-  .logo {
-    height: auto !important;
-    max-height: 5.5rem !important;
-  }
-}
-
 @media only screen and (min-width: 1201px) {
   .outlet {
     margin-left: 5px;

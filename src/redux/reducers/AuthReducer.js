@@ -1,9 +1,9 @@
-import { CONSTANT } from "../../helpers";
-import config from "../../config";
+import { CONSTANT } from '../../helpers';
+import config from '../../config';
 
-import { lsLoad } from "../../helpers/localStorage";
+import { lsLoad } from '../../helpers/localStorage';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 let defaultState = { isLoggedIn: false };
@@ -32,8 +32,8 @@ export default function reducer(state = defaultState, action) {
       return Object.assign({}, state, {
         payload: action.data,
       });
-    case "SET_REFERRAL_CODE":
-      return {...state, invitationCode: action.data}
+    case 'SET_REFERRAL_CODE':
+      return { ...state, invitationCode: action.data };
     default:
       return state;
   }

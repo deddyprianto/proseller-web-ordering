@@ -5,16 +5,61 @@ import config from '../../config';
 
 const PRESET_TYPE = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
 
-export const ProductAction = {
-  fetchCategoryProduct,
-  fetchProduct,
-  fetchCategoryList,
-  getCollection,
-  setSelectedCategory,
-  fetchProductList,
-  setProductList,
-  isParentCategory,
-};
+const clearCategoryProducts = () => ({ type: 'CLEAR_CATEGORY_PRODUCTS' });
+const fetchProductStarted = () => ({ type: 'GET_PRODUCT_LIST_STARTED' });
+const fetchProductCategoryStarted = () => ({
+  type: 'GET_PRODUCT_CATEGORY_STARTED',
+});
+const fetchProductCategorySuccess = (data) => ({
+  type: 'GET_PRODUCT_CATEGORY_SUCCESS',
+  data,
+});
+const fetchProductSuccess = (data) => ({
+  type: 'GET_PRODUCT_LIST_SUCCESS',
+  data,
+});
+const fetchProductError = (error) => ({
+  type: 'GET_PRODUCT_LIST_ERROR',
+  error,
+});
+
+function isParentCategory(parentCategoryID) {
+  return async () => {
+    let payload = { take: 1, skip: 0 };
+    payload.parentCategoryID = parentCategoryID;
+
+    const data = await ProductService.api('POST', payload, 'category/load');
+    if (isEmptyArray(data.data)) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+}
+
+function getCollection(id) {
+  return async () => {
+    try {
+      let response = await ProductService.api(
+        'GET',
+        null,
+        `collection/get/${id}`,
+        'Bearer'
+      );
+      if (response.resultCode !== 200) return {};
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+function setData(data, constant) {
+  return {
+    type: constant,
+    data: data,
+  };
+}
 
 function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
   try {
@@ -44,26 +89,33 @@ function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
         }
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function setSelectedCategory(category) {
-  return (dispatch) => {
-    dispatch(setData(category, 'SET_SELECTED_CATEGORY'));
+function fetchProductList(filter, sort) {
+  return async (dispatch) => {
+    const payload = { ...filter, ...sort };
+    dispatch(fetchProductCategoryStarted());
+    dispatch(clearCategoryProducts());
+    const response = await ProductService.api('POST', payload, 'product/load');
+    // console.log(response, 'responseresponseresponse')
+    if (response.statusCode >= 400 || response.StatusCode >= 400)
+      dispatch(
+        fetchProductError({
+          message: response.message || 'Failed to load product',
+        })
+      );
+    else {
+      dispatch(fetchProductCategorySuccess(response.data));
+    }
   };
 }
 
-function isParentCategory(parentCategoryID) {
+function setProductList(data) {
   return async (dispatch) => {
-    let payload = { take: 1, skip: 0 };
-    payload.parentCategoryID = parentCategoryID;
-
-    const data = await ProductService.api('POST', payload, `category/load`);
-    if (isEmptyArray(data.data)) {
-      return false;
-    } else {
-      return true;
-    }
+    dispatch(fetchProductCategorySuccess(data));
   };
 }
 
@@ -77,13 +129,19 @@ function fetchCategoryList(payload, parentCategoryID = null) {
       payload.parentCategoryID = parentCategoryID;
     }
 
-    const data = await ProductService.api('POST', payload, `category/load`);
+    const data = await ProductService.api('POST', payload, 'category/load');
     if (!isEmptyArray(data.data)) {
       dispatch(setData(data.data, 'SET_CATEGORY_LIST'));
       return data.data;
     } else {
       return [];
     }
+  };
+}
+
+function setSelectedCategory(category) {
+  return (dispatch) => {
+    dispatch(setData(category, 'SET_SELECTED_CATEGORY'));
   };
 }
 
@@ -119,67 +177,13 @@ function fetchProduct(category, outlet, skip, take, orderingMode) {
   };
 }
 
-function fetchProductList(filter, sort) {
-  return async (dispatch) => {
-    const payload = { ...filter, ...sort };
-    dispatch(fetchProductCategoryStarted());
-    dispatch(clearCategoryProducts());
-    const response = await ProductService.api('POST', payload, `product/load`);
-    // console.log(response, 'responseresponseresponse')
-    if (response.statusCode >= 400 || response.StatusCode >= 400)
-      dispatch(
-        fetchProductError({
-          message: response.message || 'Failed to load product',
-        })
-      );
-    else {
-      dispatch(fetchProductCategorySuccess(response.data));
-    }
-  };
-}
-
-function setProductList(data) {
-  return async (dispatch) => {
-    dispatch(fetchProductCategorySuccess(data));
-  };
-}
-
-const clearCategoryProducts = () => ({ type: 'CLEAR_CATEGORY_PRODUCTS' });
-const fetchProductStarted = () => ({ type: 'GET_PRODUCT_LIST_STARTED' });
-const fetchProductCategoryStarted = () => ({
-  type: 'GET_PRODUCT_CATEGORY_STARTED',
-});
-const fetchProductCategorySuccess = (data) => ({
-  type: 'GET_PRODUCT_CATEGORY_SUCCESS',
-  data,
-});
-const fetchProductSuccess = (data) => ({
-  type: 'GET_PRODUCT_LIST_SUCCESS',
-  data,
-});
-const fetchProductError = (error) => ({
-  type: 'GET_PRODUCT_LIST_ERROR',
-  error,
-});
-
-function getCollection(id) {
-  return async (dispatch) => {
-    try {
-      let response = await ProductService.api(
-        'GET',
-        null,
-        `collection/get/${id}`,
-        'Bearer'
-      );
-      if (response.resultCode !== 200) return {};
-      return response.data;
-    } catch (error) {}
-  };
-}
-
-function setData(data, constant) {
-  return {
-    type: constant,
-    data: data,
-  };
-}
+export const ProductAction = {
+  fetchCategoryProduct,
+  fetchProduct,
+  fetchCategoryList,
+  getCollection,
+  setSelectedCategory,
+  fetchProductList,
+  setProductList,
+  isParentCategory,
+};

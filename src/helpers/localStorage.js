@@ -1,4 +1,5 @@
 const lsLoad = (item, persist = true) => {
+  //TODO check this lsLoad _account unlimited call
   const storage = !persist ? sessionStorage : localStorage;
   try {
     const serializedState = storage.getItem(item);

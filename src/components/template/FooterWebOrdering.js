@@ -79,10 +79,9 @@ const FooterWebOrdering = () => {
       }
     };
     enableOrderingChecker();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const matches = useMediaQuery('(max-width:768px)');
+  const matches = useMediaQuery('(max-width:1200px)');
 
   if (matches) {
     return (
@@ -95,7 +94,7 @@ const FooterWebOrdering = () => {
           }}
           sx={style.bottomNav}
         >
-          {allState.theme.menu.navBar.map((menu, index) => {
+          {allState?.theme?.menu?.navBar?.map((menu, index) => {
             if (!enableOrdering && menu.showWhenOrderingEnabled) {
               return null;
             }

@@ -5,16 +5,6 @@ import config from '../../config';
 import _ from 'lodash';
 const geolib = require('geolib');
 
-export const OutletAction = {
-  fetchDefaultOutlet,
-  fetchAllOutlet,
-  fetchSingleOutlet,
-  getCoordinates,
-  setData,
-  getBackupOutlet,
-  setDefaultOutlet,
-};
-
 const orderingModesField = [
   { isEnabledFieldName: 'enableStorePickUp', name: 'STOREPICKUP' },
   { isEnabledFieldName: 'enableStoreCheckOut', name: 'STORECHECKOUT' },
@@ -22,6 +12,97 @@ const orderingModesField = [
   { isEnabledFieldName: 'enableTakeAway', name: 'TAKEAWAY' },
   { isEnabledFieldName: 'enableDineIn', name: 'DINEIN' },
 ];
+
+function setData(data, constant) {
+  return {
+    type: constant,
+    data: data,
+  };
+}
+
+function getCoordinates() {
+  return async () => {
+    const position = await new Promise(function (resolve, reject) {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    if (position) {
+      const location = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      localStorage.setItem(
+        `${config.prefix}_locationCustomer`,
+        JSON.stringify(location)
+      );
+    }
+  };
+}
+
+function setDefaultOutlet(outlet) {
+  return async (dispatch) => {
+    const orderingModesFieldFiltered = orderingModesField.filter(
+      (mode) => outlet[mode.isEnabledFieldName]
+    );
+    const orderingModesMapped = orderingModesFieldFiltered.map(
+      (mode) => mode.name
+    );
+    dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
+    dispatch(setData(outlet, CONSTANT.DEFAULT_OUTLET));
+  };
+}
+
+function getNearsesOutlet(position = null) {
+  return async (dispatch, getState) => {
+    const state = getState();
+
+    // FIND ORDER SELECTION TYPE ( MANUAL / NEAREST / DEFAULT )
+    let orderModeType = 'DEFAULT';
+    try {
+      if (state.order.setting.length > 0) {
+        const find = state.order.setting.find(
+          (item) => item.settingKey === 'OutletSelection'
+        );
+        if (find !== undefined) {
+          orderModeType = find.settingValue;
+        }
+        console.log(orderModeType, 'orderModeType');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    let data = {};
+    if (orderModeType === 'NEAREST') {
+      data = await MasterDataService.api(
+        'POST',
+        position,
+        'outlets/nearestoutlet'
+      );
+      if (data.ResultCode === 400)
+        data = await MasterDataService.api(
+          'GET',
+          null,
+          'outlets/defaultoutlet'
+        );
+    } else {
+      data = await MasterDataService.api('GET', null, 'outlets/defaultoutlet');
+    }
+
+    if (!isEmptyObject(data.data)) {
+      if (data.data && data.data.id)
+        data.data = config.getValidation(data.data);
+      dispatch(setData(data.data, CONSTANT.DEFAULT_OUTLET));
+      const orderingModesFieldFiltered = orderingModesField.filter(
+        (mode) => data.data[mode.isEnabledFieldName]
+      );
+      const orderingModesMapped = orderingModesFieldFiltered.map(
+        (mode) => mode.name
+      );
+      dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
+      return data.data;
+    }
+  };
+}
 
 function fetchDefaultOutlet(defaultOutlet = {}) {
   return async (dispatch) => {
@@ -74,93 +155,12 @@ function fetchDefaultOutlet(defaultOutlet = {}) {
   };
 }
 
-function getCoordinates() {
-  return async (dispatch) => {
-    const position = await new Promise(function (resolve, reject) {
-      navigator.geolocation.getCurrentPosition(resolve, reject);
-    });
-    if (position) {
-      const location = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      };
-      localStorage.setItem(
-        `${config.prefix}_locationCustomer`,
-        JSON.stringify(location)
-      );
-    }
-  };
-}
-
-function setDefaultOutlet(outlet) {
-  return async (dispatch) => {
-    const orderingModesFieldFiltered = orderingModesField.filter(
-      (mode) => outlet[mode.isEnabledFieldName]
-    );
-    const orderingModesMapped = orderingModesFieldFiltered.map(
-      (mode) => mode.name
-    );
-    dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
-    dispatch(setData(outlet, CONSTANT.DEFAULT_OUTLET));
-  };
-}
-
-function getNearsesOutlet(position = null) {
-  return async (dispatch, getState) => {
-    const state = getState();
-
-    // FIND ORDER SELECTION TYPE ( MANUAL / NEAREST / DEFAULT )
-    let orderModeType = 'DEFAULT';
-    try {
-      if (state.order.setting.length > 0) {
-        const find = state.order.setting.find(
-          (item) => item.settingKey === 'OutletSelection'
-        );
-        if (find !== undefined) {
-          orderModeType = find.settingValue;
-        }
-      }
-    } catch (e) {}
-
-    let data = {};
-    if (orderModeType === 'NEAREST') {
-      data = await MasterDataService.api(
-        'POST',
-        position,
-        'outlets/nearestoutlet'
-      );
-      if (data.ResultCode === 400)
-        data = await MasterDataService.api(
-          'GET',
-          null,
-          'outlets/defaultoutlet'
-        );
-    } else {
-      data = await MasterDataService.api('GET', null, 'outlets/defaultoutlet');
-    }
-
-    if (!isEmptyObject(data.data)) {
-      if (data.data && data.data.id)
-        data.data = config.getValidation(data.data);
-      dispatch(setData(data.data, CONSTANT.DEFAULT_OUTLET));
-      const orderingModesFieldFiltered = orderingModesField.filter(
-        (mode) => data.data[mode.isEnabledFieldName]
-      );
-      const orderingModesMapped = orderingModesFieldFiltered.map(
-        (mode) => mode.name
-      );
-      dispatch({ type: 'SET_ORDERING_MODES', payload: orderingModesMapped });
-      return data.data;
-    }
-  };
-}
-
 function getBackupOutlet() {
-  return async (dispatch) => {
+  return async () => {
     const data = await MasterDataService.api(
       'GET',
       null,
-      `outlets/defaultoutlet`
+      'outlets/defaultoutlet'
     );
     return data;
   };
@@ -224,9 +224,12 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
   };
 }
 
-function setData(data, constant) {
-  return {
-    type: constant,
-    data: data,
-  };
-}
+export const OutletAction = {
+  fetchDefaultOutlet,
+  fetchAllOutlet,
+  fetchSingleOutlet,
+  getCoordinates,
+  setData,
+  getBackupOutlet,
+  setDefaultOutlet,
+};

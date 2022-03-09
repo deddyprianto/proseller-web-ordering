@@ -2,7 +2,6 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
-import LoadingOverlay from 'react-loading-overlay';
 
 import { styled } from '@mui/system';
 
@@ -26,11 +25,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject, isEmptyArray } from 'helpers/CheckEmpty';
 
 import { ProductAction } from 'redux/actions/ProductAction';
-import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
+import Loading from 'components/loading/Loading';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -161,14 +160,6 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
-  const handleFetchDefaultOutlet = async () => {
-    let defaultOutlet = await props.dispatch(OutletAction.fetchDefaultOutlet());
-    if (defaultOutlet?.id) {
-      defaultOutlet = config.getValidation(defaultOutlet);
-    }
-    return defaultOutlet;
-  };
-
   const handleFetchCategoryProduct = async ({ outlet }) => {
     const categories = await props.dispatch(
       ProductAction.fetchCategoryProduct({
@@ -200,18 +191,17 @@ const ProductList = ({ ...props }) => {
     try {
       const loadData = async () => {
         props.dispatch(OrderAction.getCart());
-        const defaultOutlet = await handleFetchDefaultOutlet();
         const categories = await handleFetchCategoryProduct({
-          outlet: defaultOutlet,
+          outlet: props.defaultOutlet,
         });
 
-        setOutlet(defaultOutlet);
+        setOutlet(props.defaultOutlet);
         setCategories(categories);
         setSelectedCategory(categories[0]);
       };
       loadData();
     } catch (e) {
-      // console.log(e);
+      console.log(e);
     }
   }, []);
 
@@ -366,22 +356,22 @@ const ProductList = ({ ...props }) => {
     <TabsUnstyled value={`${selectedCategory.name}`}>
       {renderTabHeader()}
       {renderTabList()}
-      <LoadingOverlay active={isLoading} spinner text='Loading...'>
-        {renderProductList()}
-      </LoadingOverlay>
+      {isLoading ? <Loading loadingType='NestedList' /> : renderProductList()}
     </TabsUnstyled>
   );
 };
 
 ProductList.defaultProps = {
-  color: '',
+  color: {},
   dispatch: null,
+  defaultOutlet: {},
   orderingMode: '',
   orderingSetting: {},
 };
 
 ProductList.propTypes = {
-  color: PropTypes.string,
+  color: PropTypes.object,
+  defaultOutlet: PropTypes.object,
   dispatch: PropTypes.func,
   orderingMode: PropTypes.string,
   orderingSetting: PropTypes.object,

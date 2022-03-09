@@ -594,7 +594,7 @@ class Header extends Component {
                   onClick={() => this.handleNavigation()}
                   color={this.props.color.font}
                 >
-                  <FontAwesomeIcon icon={faBars} size='1x' />
+                  <FontAwesomeIcon icon={faBars} size='25x' />
                 </Box>
 
                 <div

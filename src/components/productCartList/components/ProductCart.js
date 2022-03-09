@@ -254,7 +254,7 @@ const ProductCart = ({ item, ...props }) => {
       return (
         <div style={styles.rootPrice}>
           <Typography style={styles.price}>
-            {handleCurrency(item?.nettAmount)}
+            {handleCurrency(item?.amountAfterDisc)}
           </Typography>
           <Typography style={styles.priceDiscount}>
             {handleCurrency(item?.grossAmount)}
@@ -265,7 +265,7 @@ const ProductCart = ({ item, ...props }) => {
     return (
       <div style={styles.rootPrice}>
         <Typography style={styles.price}>
-          {handleCurrency(item?.nettAmount)}
+          {handleCurrency(item?.grossAmount)}
         </Typography>
       </div>
     );

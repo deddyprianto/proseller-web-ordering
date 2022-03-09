@@ -1,24 +1,25 @@
-import React from "react";
-import { connect } from "react-redux";
+/* eslint-disable react/prop-types */
+import React from 'react';
+import { connect } from 'react-redux';
 
 function OrderingMode({ mode, alias, icon, orderingModes }) {
   const showOrderingModeModal = () => {
     if (orderingModes.length !== 1) {
-      document.getElementById("open-modal-ordering-mode").click();
+      document.getElementById('open-modal-ordering-mode').click();
     }
   };
   return (
     <div
-      className="color"
-      style={{ marginTop: "0.3rem", cursor: "pointer" }}
+      className='color'
+      style={{ marginTop: '0.3rem', cursor: 'pointer' }}
       onClick={showOrderingModeModal}
     >
       <i className={`fa ${icon}`}></i>
-      {alias || mode}{" "}
+      {alias || mode}{' '}
       {orderingModes.length !== 1 && (
         <i
           style={{ marginLeft: 6, fontSize: 10 }}
-          className="fa fa-chevron-right"
+          className='fa fa-chevron-right'
         />
       )}
     </div>

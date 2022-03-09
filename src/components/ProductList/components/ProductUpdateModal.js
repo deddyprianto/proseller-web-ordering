@@ -25,7 +25,6 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
-    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
@@ -315,7 +314,7 @@ const ProductUpdateModal = ({
               {renderProductModifiers(product?.modifiers)}
               <div style={styles.productBody}>
                 <Typography style={styles.price}>
-                  {handleCurrency(product?.nettAmount)}
+                  {handleCurrency(product?.grossAmount)}
                 </Typography>
                 <Button
                   style={styles.buttonEdit}
@@ -401,7 +400,6 @@ ProductUpdateModal.defaultProps = {
   companyInfo: {},
   handleClose: null,
   product: {},
-  defaultOutlet: {},
   color: {},
   dispatch: null,
   width: 600,
@@ -411,7 +409,6 @@ ProductUpdateModal.propTypes = {
   basket: PropTypes.object,
   color: PropTypes.object,
   companyInfo: PropTypes.object,
-  defaultOutlet: PropTypes.object,
   dispatch: PropTypes.func,
   handleClose: PropTypes.func,
   open: PropTypes.bool,

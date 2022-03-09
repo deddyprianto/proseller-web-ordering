@@ -49,6 +49,7 @@ const ProductAddModal = ({
   selectedProduct,
   ...props
 }) => {
+  const gadgetScreen = width < 600;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const styles = {
@@ -57,12 +58,12 @@ const ProductAddModal = ({
     },
     header: {
       display: 'flex',
-      flexDirection: 600 > width ? 'column' : 'row',
+      flexDirection: gadgetScreen ? 'column' : 'row',
     },
     imageSize: {
-      height: 340,
-      width: 340,
-      minWidth: width > 600 && 340,
+      height: gadgetScreen ? gadgetScreen : 340,
+      width: gadgetScreen ? gadgetScreen : 340,
+      minWidth: !gadgetScreen && 340,
       borderRadius: 5,
     },
     productName: {
@@ -72,15 +73,15 @@ const ProductAddModal = ({
       lineHeight: '30px',
       fontWeight: 600,
       paddingBottom: 10,
-      paddingLeft: 600 > width ? 0 : 10,
-      paddingTop: 600 > width && 10,
+      paddingLeft: gadgetScreen ? 0 : 10,
+      paddingTop: gadgetScreen && 10,
     },
     productDescription: {
       width: '100%',
       fontSize: 16,
       color: props.color.primary,
       lineHeight: '17px',
-      paddingLeft: 600 > width ? 0 : 10,
+      paddingLeft: gadgetScreen ? 0 : 10,
     },
     buttonIcon: {
       height: 35,
@@ -100,15 +101,6 @@ const ProductAddModal = ({
       color: 'white',
     },
     fullWidth: { width: '100%' },
-    footer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'start',
-      backgroundColor: '#657482',
-      alignItems: 'center',
-      alignContents: 'center',
-    },
-
     addText: {
       color: 'white',
       fontWeight: 600,
@@ -127,7 +119,10 @@ const ProductAddModal = ({
       alignItems: 'center',
       justifyContent: 'center',
     },
-    paper: { marginTop: 30 },
+    paper: {
+      marginTop: 30,
+      backgroundColor: props.color.background,
+    },
     modifierHeader: {
       display: 'flex',
       flexDirection: 'row',
@@ -142,12 +137,17 @@ const ProductAddModal = ({
     },
     optionTitle: {
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
     },
     optionPrice: {
       paddingRight: 20,
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
+    },
+    optionPriceGadgetScreen: {
+      paddingRight: 20,
+      fontSize: 16,
+      color: props.color.font,
     },
     title: {
       padding: 10,
@@ -159,7 +159,7 @@ const ProductAddModal = ({
       padding: 10,
       fontWeight: 600,
       fontSize: 13,
-      color: '#808080',
+      color: props.color.font,
     },
     qty: {
       fontSize: 26,
@@ -197,6 +197,8 @@ const ProductAddModal = ({
       lineHeight: '30px',
       fontWeight: 600,
     },
+    rootMofidierOptions: { display: 'flex', marginRight: 10 },
+
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
@@ -216,7 +218,7 @@ const ProductAddModal = ({
     },
     specialInstructionTypography: {
       fontSize: 16,
-      color: '#808080',
+      color: props.color.font,
       fontWeight: 'bold',
     },
     optionalTypography: { fontSize: 10, color: '#777777', paddingLeft: 10 },
@@ -225,6 +227,22 @@ const ProductAddModal = ({
       minWidth: '100%',
       maxWidth: '100%',
       borderRadius: 5,
+    },
+
+    footer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'start',
+      backgroundColor: '#657482',
+      alignItems: 'center',
+      alignContents: 'center',
+      padding: 10,
+    },
+    modifierOptionsPrice: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'end',
+      alignItems: 'end',
     },
   };
 
@@ -239,61 +257,70 @@ const ProductAddModal = ({
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
 
-  const handleProductModifierSelected = () => {
-    let defaultValue = [];
-    selectedProduct.modifiers.forEach((item) => {
-      item.modifier.details.forEach((detail) => {
-        defaultValue.push({
-          modifierId: item.modifierID,
-          modifierProductId: detail.productID,
-          name: detail.name,
-          price: detail.price,
-          qty: detail.quantity,
-        });
-      });
-    });
-    setSelectedProductModifiers(defaultValue);
-    setQty(selectedProduct?.quantity);
-    setNotes(selectedProduct?.remark);
-  };
-
-  const handleProductSelected = () => {
-    setQty(selectedProduct?.quantity);
-    setNotes(selectedProduct?.remark);
-  };
-
-  useEffect(() => {
-    if (!isEmptyArray(selectedProduct?.product?.productModifiers)) {
-      return handleProductModifierSelected();
-    }
-    if (!isEmptyObject(selectedProduct)) {
-      return handleProductSelected();
-    }
-  }, []);
-
-  const handleClear = () => {
-    setQty(1);
-    setTotalPrice(0);
-    setSelectedVariantOptions([]);
-    setSelectedProductModifiers([]);
-  };
-
-  const handleCurrency = (price) => {
-    const result = price.toLocaleString(props.companyInfo.currency.locale, {
-      style: 'currency',
-      currency: props.companyInfo.currency.code,
-    });
-
-    return result;
-  };
-
   const handlePrice = ({ qty, totalPrice }) => {
     setTotalPrice(qty * totalPrice);
   };
 
+  const handleProductSelected = () => {
+    if (!isEmptyObject(selectedProduct)) {
+      setQty(selectedProduct?.quantity);
+      setNotes(selectedProduct?.remark);
+    }
+  };
+
+  const handleProductVariantSelected = () => {
+    if (
+      !isEmptyArray(selectedProduct?.product?.variants) &&
+      isEmptyArray(selectedVariantOptions)
+    ) {
+      let selected = {};
+
+      selectedProduct.product?.variants.forEach((item) => {
+        if (item.id === selectedProduct.product?.id) {
+          selected = item;
+        }
+      });
+      setQty(selectedProduct?.quantity);
+      setNotes(selectedProduct?.remark);
+      setSelectedVariantOptions(selected?.attributes);
+    } else if (!isEmptyArray(product?.variants)) {
+      const result = isEmptyArray(selectedVariantOptions)
+        ? product?.variants[0]?.attributes || []
+        : selectedVariantOptions;
+      setSelectedVariantOptions(result);
+    }
+  };
+
+  const handleProductModifierSelected = () => {
+    if (!isEmptyArray(selectedProduct?.product?.productModifiers)) {
+      let defaultValue = [];
+      selectedProduct.modifiers.forEach((item) => {
+        item.modifier.details.forEach((detail) => {
+          defaultValue.push({
+            modifierId: item.modifierID,
+            modifierProductId: detail.productID,
+            name: detail.name,
+            price: detail.price,
+            qty: detail.quantity,
+          });
+        });
+      });
+      setQty(selectedProduct?.quantity);
+      setNotes(selectedProduct?.remark);
+      setSelectedProductModifiers(defaultValue);
+    }
+  };
+
+  useEffect(() => {
+    handleProductModifierSelected();
+    handleProductVariantSelected();
+    handleProductSelected();
+  }, []);
+
   const handleProductModifierFormated = (items) => {
     let totalPrice = 0;
     let productModifiers = [];
+
     if (!isEmptyArray(items)) {
       items.forEach((item) => {
         totalPrice = totalPrice + item.qty * item.price;
@@ -366,13 +393,9 @@ const ProductAddModal = ({
 
   useEffect(() => {
     if (!isEmptyArray(product?.variants)) {
-      const productVariants = !isEmptyArray(selectedVariantOptions)
-        ? selectedVariantOptions
-        : product?.variants[0]?.attributes;
-
-      setSelectedVariantOptions(productVariants);
-      const productVariantFormated =
-        handleProductVariantFormated(productVariants);
+      const productVariantFormated = handleProductVariantFormated(
+        selectedVariantOptions
+      );
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
@@ -381,7 +404,7 @@ const ProductAddModal = ({
           retailPrice: productVariantFormated.retailPrice,
           remark: notes,
           quantity: qty,
-          unitPrice: qty * productVariantFormated.retailPrice,
+          unitPrice: productVariantFormated.retailPrice,
         });
       }
       return setProductAdd({
@@ -397,22 +420,22 @@ const ProductAddModal = ({
         selectedProductModifiers
       );
 
-      const totalAmount = totalPrice / qty;
+      const price = totalPrice / qty;
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
           id: selectedProduct.id,
           productID: `product::${product.id}`,
-          retailPrice: totalAmount,
+          retailPrice: price,
           remark: notes,
           quantity: qty,
-          unitPrice: qty * totalAmount,
+          unitPrice: price,
           modifiers: productModifierFormated,
         });
       }
       return setProductAdd({
         productID: `product::${product.id}`,
-        retailPrice: totalAmount,
+        retailPrice: price,
         remark: notes,
         quantity: qty,
         modifiers: productModifierFormated,
@@ -431,7 +454,7 @@ const ProductAddModal = ({
           retailPrice: product.retailPrice,
           remark: notes,
           quantity: qty,
-          unitPrice: qty * product.retailPrice,
+          unitPrice: product.retailPrice,
         });
       }
 
@@ -443,13 +466,30 @@ const ProductAddModal = ({
       });
     }
   }, [
-    selectedVariantOptions,
     qty,
-    selectedProductModifiers,
-    product,
-    selectedProduct,
     notes,
+    product,
+    totalPrice,
+    selectedProduct,
+    selectedVariantOptions,
+    selectedProductModifiers,
   ]);
+
+  const handleClear = () => {
+    setQty(1);
+    setTotalPrice(0);
+    setSelectedVariantOptions([]);
+    setSelectedProductModifiers([]);
+  };
+
+  const handleCurrency = (price) => {
+    const result = price.toLocaleString(props.companyInfo.currency.locale, {
+      style: 'currency',
+      currency: props.companyInfo.currency.code,
+    });
+
+    return result;
+  };
 
   const isCheckedCheckbox = (modifier) => {
     const isChecked = selectedProductModifiers.find(
@@ -496,7 +536,7 @@ const ProductAddModal = ({
                 qtyModifierSelected + selectedProductModifier.qty;
           });
 
-          const result = qtyModifierSelected >= productModifier.modifier.min;
+          const result = qtyModifierSelected >= productModifier.modifier?.min;
           qtyModifierSelected = 0;
           return result;
         }
@@ -513,33 +553,10 @@ const ProductAddModal = ({
     return true;
   };
 
-  const handleUpdate = ({ baskets, productUpdate }) => {
-    const result = [...baskets];
-
-    const basketIds = baskets.map((item) => {
-      return item.id;
-    });
-
-    const basketIdIndex = basketIds.indexOf(productUpdate.id);
-
-    if (basketIdIndex !== -1) {
-      result[basketIdIndex] = { ...productUpdate };
-    }
-
-    return result;
-  };
-
   const handleAddOrUpdateProduct = async () => {
     setIsLoading(true);
     if (!isEmptyObject(selectedProduct)) {
-      const basketUpdated = handleUpdate({
-        baskets: props.basket.details,
-        productUpdate,
-      });
-
-      await props.dispatch(
-        OrderAction.processUpdateCart(props.basket, basketUpdated, 'new')
-      );
+      await props.dispatch(OrderAction.processUpdateCart(productUpdate));
     } else {
       await props.dispatch(
         OrderAction.processAddCart(props.defaultOutlet, productAdd)
@@ -630,7 +647,8 @@ const ProductAddModal = ({
     name,
   }) => {
     const items = selectedProductModifiers;
-    const modifierProductIds = items.map((item) => {
+
+    const modifierProductIds = selectedProductModifiers.map((item) => {
       return item.modifierProductId;
     });
 
@@ -701,7 +719,7 @@ const ProductAddModal = ({
           <Paper key={index} variant='outlined' style={styles.paper}>
             <Typography style={styles.title}>{variant.optionName}</Typography>
 
-            <RadioGroup defaultValue={variant.options[0]}>
+            <RadioGroup defaultValue={selectedVariantOptions[index]?.value}>
               {renderVariantOptions(variant)}
             </RadioGroup>
           </Paper>
@@ -723,7 +741,7 @@ const ProductAddModal = ({
 
     if (selectedProductModifier && max > 1) {
       return (
-        <div style={styles.displayFlex}>
+        <div style={styles.rootMofidierOptions}>
           <IconButton
             style={styles.buttonIconProductModifier}
             disabled={
@@ -808,6 +826,28 @@ const ProductAddModal = ({
     }
   };
 
+  const renderAddAndRemoveButtonAndPrice = ({ modifier, productModifier }) => {
+    const renderButtonAndPrice = (
+      <>
+        <Typography style={styles.optionPriceGadgetScreen}>
+          {handleCurrency(modifier.price)}
+        </Typography>
+        {renderAddAndRemoveButtonProductModifierOptions({
+          modifierProductId: modifier.productID,
+          max: productModifier.modifier.max,
+          min: productModifier.modifier.min,
+        })}
+      </>
+    );
+
+    if (gadgetScreen) {
+      return (
+        <div style={styles.modifierOptionsPrice}>{renderButtonAndPrice}</div>
+      );
+    }
+    return <div style={styles.displayFlex}>{renderButtonAndPrice}</div>;
+  };
+
   const renderProductModifierOptions = (productModifier) => {
     const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
@@ -844,16 +884,7 @@ const ProductAddModal = ({
                   </Typography>
                 }
               />
-              <div style={styles.displayFlex}>
-                {renderAddAndRemoveButtonProductModifierOptions({
-                  modifierProductId: modifier.productID,
-                  max: productModifier.modifier.max,
-                  min: productModifier.modifier.min,
-                })}
-                <Typography style={styles.optionPrice}>
-                  {handleCurrency(modifier.price)}
-                </Typography>
-              </div>
+              {renderAddAndRemoveButtonAndPrice({ modifier, productModifier })}
             </div>
             {productModifier.modifier.details.length - 1 !== index && (
               <Divider style={styles.divider} />
@@ -889,10 +920,11 @@ const ProductAddModal = ({
   };
 
   const renderCloseButton = () => {
-    if (width > 600) {
+    if (!gadgetScreen) {
       return (
         <IconButton
           style={styles.buttonIcon}
+          disabled={isLoading}
           onClick={() => {
             handleClear();
             handleClose();
@@ -905,11 +937,12 @@ const ProductAddModal = ({
   };
 
   const renderCloseButtonGadgetSize = () => {
-    if (width < 600) {
+    if (gadgetScreen) {
       return (
         <div style={styles.buttonCloseGadgetSize}>
           <IconButton
             style={styles.buttonIcon}
+            disabled={isLoading}
             onClick={() => {
               handleClear();
               handleClose();
@@ -982,61 +1015,59 @@ const ProductAddModal = ({
       fullWidth
       maxWidth='md'
     >
-      <div style={styles.backgroundColor}>
-        <DialogContent>
-          <div style={styles.header}>
-            <div style={styles.imageAndButtonCloseGadgetSize}>
-              <img
-                style={styles.imageSize}
-                src={renderImageProduct()}
-                alt={product.name}
-                title={product.name}
-              />
+      <DialogContent style={styles.backgroundColor}>
+        <div style={styles.header}>
+          <div style={styles.imageAndButtonCloseGadgetSize}>
+            <img
+              style={styles.imageSize}
+              src={renderImageProduct()}
+              alt={product.name}
+              title={product.name}
+            />
 
-              {renderCloseButtonGadgetSize()}
-            </div>
-
-            <div style={styles.fullWidth}>
-              <Typography style={styles.productName}>
-                {product.name} {variantName}
-              </Typography>
-              <Typography style={styles.productDescription}>
-                {product.description}
-              </Typography>
-            </div>
-
-            {renderCloseButton()}
+            {renderCloseButtonGadgetSize()}
           </div>
 
-          <div>{renderVariants(product?.variantOptions)}</div>
+          <div style={styles.fullWidth}>
+            <Typography style={styles.productName}>
+              {product.name} {variantName}
+            </Typography>
+            <Typography style={styles.productDescription}>
+              {product.description}
+            </Typography>
+          </div>
 
-          <div>{renderProductModifiers(product?.productModifiers)}</div>
+          {renderCloseButton()}
+        </div>
 
-          <div>{renderSpecialInstruction()}</div>
-        </DialogContent>
-        <DialogActions style={styles.footer}>
-          <IconButton
-            style={styles.buttonIcon}
-            disabled={qty === 0 || isLoading}
-            onClick={() => {
-              setQty(qty - 1);
-            }}
-          >
-            <RemoveIcon style={styles.icon} />
-          </IconButton>
-          <Typography style={styles.qty}>{qty}</Typography>
-          <IconButton
-            disabled={isLoading}
-            style={styles.buttonIcon}
-            onClick={() => {
-              setQty(qty + 1);
-            }}
-          >
-            <AddIcon style={styles.icon} />
-          </IconButton>
-          {renderTotalPriceOrRemove()}
-        </DialogActions>
-      </div>
+        <div>{renderVariants(product?.variantOptions)}</div>
+
+        <div>{renderProductModifiers(product?.productModifiers)}</div>
+
+        <div>{renderSpecialInstruction()}</div>
+      </DialogContent>
+      <DialogActions style={styles.footer}>
+        <IconButton
+          style={styles.buttonIcon}
+          disabled={qty === 0 || isLoading}
+          onClick={() => {
+            setQty(qty - 1);
+          }}
+        >
+          <RemoveIcon style={styles.icon} />
+        </IconButton>
+        <Typography style={styles.qty}>{qty}</Typography>
+        <IconButton
+          disabled={isLoading}
+          style={styles.buttonIcon}
+          onClick={() => {
+            setQty(qty + 1);
+          }}
+        >
+          <AddIcon style={styles.icon} />
+        </IconButton>
+        {renderTotalPriceOrRemove()}
+      </DialogActions>
     </Dialog>
   );
 };

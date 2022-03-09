@@ -10,6 +10,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
 
 import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
@@ -18,9 +19,15 @@ import ArticleIcon from '@mui/icons-material/Article';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 
-const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
+import { CONSTANT } from 'helpers';
+
+const OrderingModeDialog = ({ open, onClose }) => {
   const colorState = useSelector((state) => state.theme.color);
-  //orderingMode in down below is selected ordering mode from local storage.
+  const defaultOutlet = useSelector((state) => state.order.basket.outlet);
+  const selectedDeliveryProvider = useSelector(
+    (state) => state.order.selectedDeliveryProvider
+  );
+
   const orderingMode = useSelector((state) => state.order.orderingMode);
 
   const style = {
@@ -76,14 +83,19 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
     { isEnabledFieldName: 'enableDineIn', name: 'DINEIN' },
   ];
 
+  const handleFilter = (value) => {
+    return value === 'TRUE';
+  };
+
   useEffect(() => {
     const getOrderingModes = async () => {
       const data = await dispatch(
         OutletAction?.fetchSingleOutlet(defaultOutlet)
       );
-      if (!!data) {
-        const orderingModesFieldFiltered = orderingModesField.filter(
-          (mode) => data[mode.isEnabledFieldName]
+      if (data) {
+        //TODO: Please remove the function after update from backend
+        const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
+          handleFilter(data[mode.isEnabledFieldName].toString().toUpperCase())
         );
         const orderingModesMapped = orderingModesFieldFiltered.map(
           (mode) => mode.name
@@ -93,34 +105,125 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
       }
     };
     getOrderingModes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderingMode]);
+  }, []);
 
   const iconCheck = (item) => {
-    if (item === 'STOREPICKUP') {
-      return <StoreMallDirectoryIcon />;
-    } else if (item === 'STORECHECKOUT') {
-      return <LocalMallIcon />;
-    } else if (item === 'DELIVERY') {
-      return <DeliveryDiningIcon />;
+    if (item === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <StoreMallDirectoryIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+              paddingLeft: 20,
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
+    } else if (item === CONSTANT.ORDERING_MODE_CHECKOUT) {
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <LocalMallIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+              paddingLeft: 20,
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
+    } else if (item === CONSTANT.ORDERING_MODE_DELIVERY) {
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <DeliveryDiningIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
     } else {
-      return <ArticleIcon />;
+      return (
+        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
+          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+            <ArticleIcon />
+          </Grid>
+          <Grid
+            item
+            xs={8}
+            sx={{
+              textAlign: 'left',
+              paddingLeft: 20,
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: 18,
+              }}
+            >
+              {item}
+            </div>
+          </Grid>
+        </Grid>
+      );
     }
   };
 
   const handleConfirmOrderingMode = async (value) => {
     setIsLoading(true);
+
     await dispatch({
       type: 'SET_ORDERING_MODE',
       payload: value,
     });
 
-    if (value !== '' && value !== undefined && value !== null) {
-      const payload = {
+    const responseChangeOrderingMode = await dispatch(
+      OrderAction.changeOrderingMode({
         orderingMode: value,
-      };
-      await dispatch(OrderAction.updateCartInfo(payload));
-    }
+        provider: selectedDeliveryProvider ? selectedDeliveryProvider : {},
+      })
+    );
+
+    await dispatch(
+      OrderAction.setData(responseChangeOrderingMode.data, CONSTANT.DATA_BASKET)
+    );
 
     setIsLoading(false);
     onClose();
@@ -133,11 +236,10 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
           <LoadingButton
             sx={orderingMode === item ? style.buttonSelected : style.button}
             loadingPosition='start'
-            startIcon={iconCheck(item)}
             loading={isLoading}
             onClick={() => handleConfirmOrderingMode(item)}
           >
-            {item}
+            {iconCheck(item)}
           </LoadingButton>
         </Box>
       );
@@ -147,7 +249,7 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
   };
 
   return (
-    <Dialog fullWidth maxWidth={'xs'} open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
       <DialogTitle sx={style.dialogTitle}>
         <Typography
           fontSize={20}
@@ -169,22 +271,16 @@ const OrderingModeDialog = ({ open, onClose, defaultOutlet }) => {
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
         <Button sx={style.buttonJustBrowsing} onClick={onClose}>
-          I'm just browsing
+          Back
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-OrderingModeDialog.defaultProps = {
-  defaultOutlet: {},
-  open: false,
-  onClose: null,
-};
 OrderingModeDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  defaultOutlet: PropTypes.object.isRequired,
 };
 
 export default OrderingModeDialog;

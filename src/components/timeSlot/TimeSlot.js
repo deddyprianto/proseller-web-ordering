@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 
 import moment from 'moment';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -19,14 +18,17 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { isEmptyArray } from 'helpers/CheckEmpty';
+import { isEmptyObject } from 'jquery';
 
-const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
+const TimeSlotDialog = ({ open, onClose }) => {
   const colorState = useSelector((state) => state.theme.color);
-  //orderingMode in down below is selected ordering mode from local storage.
   const orderingMode = useSelector((state) => state.order.orderingMode);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  const dateSlotSelected = useSelector((state) => state.order.orderActionDate);
+  const timeSlotSelected = useSelector((state) => state.order.orderActionTime);
 
   const dispatch = useDispatch();
-
   const style = {
     dialogContent: {
       '& .MuiDialogContent-root': {
@@ -84,11 +86,16 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedDate, setSelectedDate] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [availableTime, setAvailableTime] = useState([]);
+  let dateList = [];
 
   const [showMore, setShowMore] = useState(false);
+  const [startIndex, setStartIndex] = useState(
+    dateSlotSelected || selectedDate
+  );
 
   const dateMax = availableTimeSlots[availableTimeSlots?.length - 1]?.date;
-  const dateMin = moment().format('YYYY-MM-DD');
+  const dateMin = moment(new Date()).format('YYYY-MM-DD');
 
   const handleCheckTextTitle = useCallback(async () => {
     if (orderingMode === 'DELIVERY') {
@@ -102,11 +109,6 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
     setSelectedTime(event.target.value);
   };
 
-  const handleChangeDate = (value) => {
-    setSelectedDate(value);
-    setSelectedTime(value.timeSlot[0].time);
-  };
-
   const handleSaveDateTime = async () => {
     setIsLoading(true);
     const [orderActionTime] = selectedTime?.split('-');
@@ -115,68 +117,74 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
       // date of time slot
       await dispatch({
         type: 'SET_ORDER_ACTION_DATE',
-        payload: selectedDate.date,
+        payload: selectedDate,
       });
 
       // action time slot range
       await dispatch({
         type: 'SET_ORDER_ACTION_TIME',
-        payload: selectedTime,
+        payload: orderActionTime?.trim(),
       });
 
       //action time slot
       await dispatch({
         type: 'SET_ORDER_ACTION_TIME_SLOT',
-        payload: orderActionTime,
+        payload: selectedTime,
       });
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
     setIsLoading(false);
     onClose();
   };
 
-  const getOutletAndTimeData = useCallback(async () => {
-    let dateTime = new Date();
-    let maxDays = 90;
+  const getOutletAndTimeData = useCallback(
+    async (orderingMode) => {
+      setIsLoading(true);
+      let dateTime = new Date();
+      let maxDays = 90;
 
-    if (!_.isEmpty(defaultOutlet))
-      maxDays = defaultOutlet?.timeSlots[0]?.interval;
+      if (!isEmptyArray(defaultOutlet)) {
+        maxDays = defaultOutlet?.timeSlots[0]?.interval;
+      }
 
-    let payload = {
-      outletID: `outlet::${defaultOutlet.id}`,
-      clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
-      date: moment(dateTime).format('YYYY-MM-DD'),
-      maxDays: maxDays,
-      orderingMode,
-    };
+      let payload = {
+        outletID: defaultOutlet.sortKey,
+        clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+        date: moment(dateTime).format('YYYY-MM-DD'),
+        maxDays: maxDays,
+        orderingMode: orderingMode,
+      };
 
-    const response = await dispatch(OrderAction.getTimeSlot(payload));
+      const response = await dispatch(OrderAction.getTimeSlot(payload));
 
-    if (response.resultCode === 200) {
-      const filteredTimeSlot = response.data.filter((items) => {
-        return items.timeSlot.filter((item) => {
-          return item.isAvailable;
-        });
-      });
-      setSelectedDate(filteredTimeSlot[0]);
-      setAvailableTimeSlots(filteredTimeSlot);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      if (response.resultCode === 200) {
+        if (dateSlotSelected) {
+          setSelectedDate(dateSlotSelected);
+        } else {
+          setSelectedDate(response.data[0].date);
+        }
+        setAvailableTimeSlots(response.data);
+      }
+      setIsLoading(false);
+    },
+    [dateSlotSelected]
+  );
 
   useEffect(() => {
     handleCheckTextTitle();
-    getOutletAndTimeData();
+    getOutletAndTimeData(orderingMode);
     setShowMore(false);
-  }, [open]);
+  }, [getOutletAndTimeData, handleCheckTextTitle, open, orderingMode]);
 
+  //render time slot button
   const renderButton = () => {
-    const temp = [];
     for (let index = 0; index < 5; index++) {
-      temp.push(availableTimeSlots[index]);
+      const temp = moment(startIndex).add(index, 'days');
+      dateList.push(moment(temp).format('YYYY-MM-DD'));
     }
-    const render = temp.map((item, index) => {
+
+    const render = dateList.map((item, index) => {
       return (
         <Grid item xs={2} key={index}>
           <LoadingButton
@@ -184,17 +192,16 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
               textAlign: 'center',
               padding: 0,
               minHeight: 70,
-              minWidth: '55px',
-              width: '18%',
+              minWidth: '40px',
+              maxWidth: '200px',
+              width: '100%',
               '&:hover': {
                 backgroundColor: colorState.primary,
               },
               backgroundColor:
-                item?.date === selectedDate?.date
-                  ? colorState.primary
-                  : '#dcdcdc',
+                item === selectedDate ? colorState.primary : '#dcdcdc',
               color:
-                item?.date === selectedDate?.date
+                item === selectedDate
                   ? colorState.textButtonColor
                   : colorState.font,
             }}
@@ -202,7 +209,10 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
             loadingIndicator='Loading...'
             variant='contained'
             key={index}
-            onClick={() => handleChangeDate(item)}
+            onClick={() => {
+              setSelectedTime(null);
+              setSelectedDate(item);
+            }}
           >
             <Grid
               container
@@ -212,17 +222,19 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
             >
               <Grid item>
                 <Typography fontWeight={500}>
-                  {index === 0 ? 'Today' : moment(item?.date).format('ddd')}
+                  {item === moment(new Date()).format('YYYY-MM-DD')
+                    ? 'Today'
+                    : moment(item).format('ddd')}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography fontWeight='bold' fontSize={18}>
-                  {moment(item?.date).format('DD')}
+                  {moment(item).format('DD')}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography fontWeight='bold' fontSize={12}>
-                  {moment(item?.date).format('MMM')}
+                  {moment(item).format('MMM')}
                 </Typography>
               </Grid>
             </Grid>
@@ -233,8 +245,21 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
     return render;
   };
 
+  useEffect(() => {
+    const handleCheckAvailableTime = async () => {
+      const filterSelectedDateAvailable = await availableTimeSlots.filter(
+        (item) => item.date === selectedDate
+      );
+      if (filterSelectedDateAvailable) {
+        setAvailableTime(filterSelectedDateAvailable);
+      }
+    };
+
+    handleCheckAvailableTime();
+  }, [availableTimeSlots, selectedDate]);
+
   const renderMenuItemSelectTime = () => {
-    return selectedDate?.timeSlot?.map((item, index) => {
+    return availableTime[0]?.timeSlot?.map((item, index) => {
       return (
         <MenuItem value={item?.time} key={index}>
           {item?.time}
@@ -244,7 +269,7 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
   };
 
   return (
-    <Dialog fullWidth maxWidth={'md'} open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth='md' open={open} onClose={onClose}>
       <DialogTitle sx={style.dialogTitle}>
         <Typography
           fontSize={20}
@@ -262,7 +287,7 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
           justifyContent='space-between'
           alignItems='center'
         >
-          <Grid item xs={6}>
+          <Grid item xs={6} marginBottom={1}>
             <Typography
               fontSize={12}
               fontWeight={600}
@@ -271,60 +296,71 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
               {`${textTitle} Time`}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} marginBottom={1}>
             <Typography
               fontSize={12}
               fontWeight={600}
               textAlign='right'
               color={colorState.secondary}
-              onClick={() => setShowMore(true)}
+              onClick={() => setShowMore(!showMore)}
               textTransform={false}
             >
-              Show More
+              Show {`${showMore ? 'Less' : 'More'}`}
             </Typography>
           </Grid>
         </Grid>
         {showMore ? (
           <Calendar
             className='calender'
-            onChange={(value) => {
-              //temp for selected object available time slot
-              const [temp] = availableTimeSlots.filter(
-                (item) => item.date === moment(value).format('YYYY-MM-DD')
-              );
-
-              setSelectedDate(temp);
+            onClickDay={(value) => {
+              setStartIndex(moment(value).format('YYYY-MM-DD'));
+              setSelectedDate(moment(value).format('YYYY-MM-DD'));
             }}
             maxDate={new Date(dateMax)}
             minDate={new Date(dateMin)}
-            value={new Date(selectedDate.date)}
+            value={new Date(selectedDate)}
           />
         ) : (
           <Grid container columns={10} spacing={1} marginBottom={2}>
             {renderButton()}
           </Grid>
         )}
-        <FormControl sx={{ marginTop: 2, width: '100%' }}>
-          <InputLabel id='demo-simple-select-autowidth-label'>
-            {textTitle} Time
-          </InputLabel>
-          <Select
-            disabled={_.isEmpty(selectedDate)}
-            labelId='demo-simple-select-autowidth-label'
-            id='demo-simple-select-autowidth'
-            value={selectedTime}
-            onChange={handleChangeTime}
-            sx={{ width: '100%' }}
-            label={`${textTitle} Time`}
-          >
-            {renderMenuItemSelectTime()}
-          </Select>
-        </FormControl>
+
+        {availableTime?.length === 0 && !isLoading ? (
+          <Typography className='text text-warning-theme small'>
+            {`Your Selected ${textTitle} date: ${moment(selectedDate).format(
+              'DD MMM YYYY'
+            )}, doesn't have any available time slot. The next available time slot is ${moment(
+              selectedDate
+            )
+              .add('d', 1)
+              .format('DD MMM YYYY')}.`}
+          </Typography>
+        ) : (
+          <FormControl sx={{ marginTop: 2, width: '100%' }}>
+            <InputLabel id='demo-simple-select-autowidth-label'>
+              {textTitle} Time
+            </InputLabel>
+            <Select
+              defaultValue={timeSlotSelected}
+              disabled={isEmptyObject(selectedDate)}
+              labelId='demo-simple-select-autowidth-label'
+              id='demo-simple-select-autowidth'
+              value={selectedTime}
+              onChange={handleChangeTime}
+              sx={{ width: '100%' }}
+              label={`${textTitle} Time`}
+            >
+              {renderMenuItemSelectTime()}
+            </Select>
+          </FormControl>
+        )}
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
         <LoadingButton
           loading={isLoading}
           fullWidth
+          disabled={selectedTime && selectedDate ? false : true}
           sx={style.buttonSave}
           onClick={() => handleSaveDateTime()}
         >
@@ -335,14 +371,7 @@ const TimeSlotDialog = ({ open, onClose, defaultOutlet }) => {
   );
 };
 
-TimeSlotDialog.defaultProps = {
-  defaultOutlet: {},
-  open: false,
-  onClose: null,
-};
-
 TimeSlotDialog.propTypes = {
-  defaultOutlet: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };

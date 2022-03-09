@@ -1,18 +1,16 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Promotion from '../components/banner';
-import OrderingRetail from '../components/ordering/indexRetail';
+import Banner from '../components/banner';
+import ProductList from '../components/productList';
 import OutletSelection from './OutletSelection';
 import { OrderAction } from '../redux/actions/OrderAction';
 import { PromotionAction } from '../redux/actions/PromotionAction';
 import LoadingAddCart from '../components/loading/LoadingAddCart';
 import { isEmptyArray, isEmptyObject } from '../helpers/CheckEmpty';
-import config from 'config';
+import config from '../config';
 
 import { lsLoad } from '../helpers/localStorage';
-
-import ProductList from 'components/productList';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 class Home extends Component {
@@ -60,13 +58,12 @@ class Home extends Component {
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }
 
   render() {
     const { isEmenu } = this.state;
-    const { orderingSetting } = this.props;
 
     return (
       <div className='col-full'>
@@ -83,15 +80,8 @@ class Home extends Component {
               <OutletSelection />
             ) : (
               <main id='main' className='site-main'>
-                {orderingSetting &&
-                orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE' ? (
-                  <OrderingRetail history={this.props.history}></OrderingRetail>
-                ) : (
-                  <>
-                    <Promotion />
-                    <ProductList />
-                  </>
-                )}
+                <Banner />
+                <ProductList />
               </main>
             )}
           </div>
