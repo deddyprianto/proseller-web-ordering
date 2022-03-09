@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import "react-phone-input-2/lib/style.css";
-import { connect } from "react-redux";
-import generate from "password-generation";
-import { AuthActions } from "../../redux/actions/AuthAction";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import Login from "./Login";
-import Portal from "./Portal";
-import SignUp from "./Signup";
+import React, { useState, useEffect } from 'react';
+import 'react-phone-input-2/lib/style.css';
+import { connect } from 'react-redux';
+import generate from 'password-generation';
+import { AuthActions } from '../../redux/actions/AuthAction';
+import { CustomerAction } from '../../redux/actions/CustomerAction';
+import Login from './Login';
+import Portal from './Portal';
+import SignUp from './Signup';
 
-import { lsLoad, lsStore } from "../../helpers/localStorage";
+import { lsLoad, lsStore } from '../../helpers/localStorage';
 
-import config from "../../config";
+import config from '../../config';
 
 const regEmail =
   /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const Swal = require("sweetalert2");
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const Swal = require('sweetalert2');
 
 let max_retries = 0;
 
-const reducer = "masterdata";
+const reducer = 'masterdata';
 
 const mapStateToProps = (state) => ({
   companyInfo: state[reducer].companyInfo.data,
@@ -38,26 +38,26 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const LoginRegister = (props) => {
-  const [method, setMethod] = useState("phone" || props.defaultEmail);
-  const [userStatus, setUserStatus] = useState("NOT_CHECKED");
+  const [method, setMethod] = useState('phone' || props.defaultEmail);
+  const [userStatus, setUserStatus] = useState('NOT_CHECKED');
   const [payloadResponse, setPayloadResponse] = useState({});
 
   const [btnSend, setBtnSend] = useState(true);
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
-  const [counter, setCounter] = useState("00");
-  const [counterMinutes, setCounterMinutes] = useState("00");
+  const [counter, setCounter] = useState('00');
+  const [counterMinutes, setCounterMinutes] = useState('00');
   const [sendCounter, setSendCounter] = useState(0);
-  const [txtOtp, setTxtOtp] = useState("");
+  const [txtOtp, setTxtOtp] = useState('');
   const [btnSubmit, setBtnSubmit] = useState(false);
-  const [password, setPassword] = useState("");
-  const [referralCode, setReferralCode] = useState("");
+  const [password, setPassword] = useState('');
+  const [referralCode, setReferralCode] = useState('');
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState(props.defaultEmail || "");
-  const [birthDate, setBirthDate] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState(props.defaultEmail || '');
+  const [birthDate, setBirthDate] = useState('');
   const [phoneNumber, setPhoneNumber] = useState(
-    props.defaultPhoneNumber || ""
+    props.defaultPhoneNumber || ''
   );
 
   const [enableRegisterWithPassword, setEnableRegisterWithPassword] =
@@ -71,19 +71,19 @@ const LoginRegister = (props) => {
   const [enableOrdering, setEnableOrdering] = useState(false);
   const [minimumAge, setMinimumAge] = useState(null);
 
-  const [errorName, setErrorName] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
+  const [errorName, setErrorName] = useState('');
+  const [errorPassword, setErrorPassword] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
   //   const [errorBirthdate, setErrorBirthDate] = useState("");
-  const [errorPhone, setErrorPhone] = useState("");
+  const [errorPhone, setErrorPhone] = useState('');
   const [inputs, setInputs] = useState({});
 
   useEffect(() => {
-    setErrorPhone("");
-    setErrorEmail("");
-    const otpData = lsLoad(config.prefix + "_otp") || null;
+    setErrorPhone('');
+    setErrorEmail('');
+    const otpData = lsLoad(config.prefix + '_otp') || null;
     if (otpData) {
-      const waitTime = method === "phone" ? 60 : 300;
+      const waitTime = method === 'phone' ? 60 : 300;
       const countdown =
         waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
       if (countdown > 0) {
@@ -102,7 +102,7 @@ const LoginRegister = (props) => {
           secondsTimer = secondsTimer - 1;
           let counterTimer =
             secondsTimer.toString().length < 2
-              ? "0" + secondsTimer
+              ? '0' + secondsTimer
               : secondsTimer;
 
           setCounter(counterTimer);
@@ -112,13 +112,13 @@ const LoginRegister = (props) => {
             let minutesTimer = minutes - 1;
             let counterMinutesTimer =
               minutesTimer.toString().length < 2
-                ? "0" + minutesTimer
+                ? '0' + minutesTimer
                 : minutesTimer;
 
             setCounterMinutes(counterMinutesTimer);
             setMinutes(minutesTimer);
             setSeconds(59);
-            setCounter("59");
+            setCounter('59');
 
             if (minutesTimer < 0 && secondsTimer === 0) {
               clearInterval(timer);
@@ -134,7 +134,7 @@ const LoginRegister = (props) => {
     Swal.showLoading();
     if (props) {
       const enableRegisterWithPassword = props.setting.find((items) => {
-        return items.settingKey === "EnableRegisterWithPassword";
+        return items.settingKey === 'EnableRegisterWithPassword';
       });
       if (enableRegisterWithPassword) {
         setEnableRegisterWithPassword(enableRegisterWithPassword.settingValue);
@@ -142,42 +142,42 @@ const LoginRegister = (props) => {
 
       const loginByEmail = props.setting.find((items) => {
         return (
-          items.settingKey === "LoginByEmail" && items.settingValue === true
+          items.settingKey === 'LoginByEmail' && items.settingValue === true
         );
       });
       if (loginByEmail) {
         setLoginByEmail(true);
-        setMethod("email");
+        setMethod('email');
       }
 
       const loginByMobile = props.setting.find((items) => {
         return (
-          items.settingKey === "LoginByMobile" && items.settingValue === true
+          items.settingKey === 'LoginByMobile' && items.settingValue === true
         );
       });
       if (loginByMobile) {
         setLoginByMobile(true);
-        setMethod("phone");
+        setMethod('phone');
       }
 
       const mobileOTP = props.setting.find((items) => {
-        return items.settingKey === "MobileOTP";
+        return items.settingKey === 'MobileOTP';
       });
       if (mobileOTP) {
-        const check = mobileOTP.settingValue === "WHATSAPP";
+        const check = mobileOTP.settingValue === 'WHATSAPP';
         setEnableSMSOTP(!check);
         setEnableWhatsappOTP(check);
       }
 
       const enableOrdering = props.setting.find((items) => {
-        return items.settingKey === "EnableOrdering";
+        return items.settingKey === 'EnableOrdering';
       });
       if (enableOrdering) {
         setEnableOrdering(enableOrdering.settingValue);
       }
 
       const minimumAge = props.setting.find((items) => {
-        return items.settingKey === "MinimumAge";
+        return items.settingKey === 'MinimumAge';
       });
       if (minimumAge) {
         setMinimumAge(Number(minimumAge.settingValue));
@@ -185,14 +185,14 @@ const LoginRegister = (props) => {
 
       if (props.defaultEmail) {
         setEmail(props.defaultEmail);
-        setMethod("email");
-        setUserStatus("NOT_REGISTERED");
+        setMethod('email');
+        setUserStatus('NOT_REGISTERED');
         setPayloadResponse({ email: props.defaultEmail });
       }
       if (props.defaultPhoneNumber) {
         setEmail(props.defaultPhoneNumber);
-        setMethod("phone");
-        setUserStatus("NOT_REGISTERED");
+        setMethod('phone');
+        setUserStatus('NOT_REGISTERED');
         setPayloadResponse({ phoneNumber: props.defaultPhoneNumber });
       }
       if (props.referralCode) {
@@ -208,22 +208,22 @@ const LoginRegister = (props) => {
       setInputs({ ...inputs, [jenis]: data });
     }
     switch (jenis) {
-      case "phoneNumber":
+      case 'phoneNumber':
         const number = data.trim();
         setPhoneNumber(data);
         if (number && number.length > 7) {
-          setErrorPhone("");
+          setErrorPhone('');
           setBtnSubmit(true);
         } else if (number.length === 3) {
-          setErrorPhone("");
+          setErrorPhone('');
           setBtnSubmit(false);
         } else {
-          setErrorPhone("PhoneNumber not valid");
+          setErrorPhone('PhoneNumber not valid');
           setBtnSubmit(false);
         }
         break;
 
-      case "txtOtp":
+      case 'txtOtp':
         setTxtOtp(data);
         if (data.length === 4) {
           setBtnSubmit(true);
@@ -232,15 +232,15 @@ const LoginRegister = (props) => {
         }
         break;
 
-      case "password":
+      case 'password':
         setPassword(data);
-        if (data === "") {
+        if (data === '') {
           setBtnSubmit(false);
           return;
         }
         if (data.length < 8) {
           setBtnSubmit(false);
-          setErrorPassword("Password consists of 8 characters or more");
+          setErrorPassword('Password consists of 8 characters or more');
           return;
         }
         if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
@@ -250,26 +250,26 @@ const LoginRegister = (props) => {
           );
           return;
         } else {
-          setErrorPassword("");
+          setErrorPassword('');
           setBtnSubmit(true);
         }
         break;
 
-      case "email":
+      case 'email':
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
-        if (email === "") {
+        if (email === '') {
           //   setErrorEmail("Email is required");
           setBtnSubmit(false);
           return;
         } else if (!checkEmail) {
-          setErrorEmail("Email not valid");
+          setErrorEmail('Email not valid');
           setBtnSubmit(false);
         } else {
-          setErrorEmail("");
+          setErrorEmail('');
           setBtnSubmit(true);
         }
         break;
@@ -289,36 +289,36 @@ const LoginRegister = (props) => {
       setInputs({ ...inputs, [jenis]: data });
     }
     switch (jenis) {
-      case "name":
+      case 'name':
         setName(data);
-        if (data === "") {
-          setErrorName("Name is required");
+        if (data === '') {
+          setErrorName('Name is required');
           setBtnSubmit(false);
         } else if (/^[A-Za-z\s]+$/.test(data)) {
-          setErrorName("");
+          setErrorName('');
           setBtnSubmit(true);
         } else {
-          setErrorName("Name is alphabets only");
+          setErrorName('Name is alphabets only');
           setBtnSubmit(false);
         }
         break;
 
-      case "phoneNumber":
+      case 'phoneNumber':
         const number = data.trim();
         setPhoneNumber(data);
         if (number && number.length > 7) {
-          setErrorPhone("");
+          setErrorPhone('');
           setBtnSubmit(true);
         } else if (number.length === 3) {
-          setErrorPhone("");
+          setErrorPhone('');
           setBtnSubmit(false);
         } else {
-          setErrorPhone("PhoneNumber not valid");
+          setErrorPhone('PhoneNumber not valid');
           setBtnSubmit(false);
         }
         break;
 
-      case "txtOtp":
+      case 'txtOtp':
         setTxtOtp(data);
         if (data.length === 4) {
           setBtnSubmit(true);
@@ -327,13 +327,13 @@ const LoginRegister = (props) => {
         }
         break;
 
-      case "passwords":
+      case 'passwords':
         setPassword(data);
-        if (data === "") {
-          setErrorPassword("Password is required");
+        if (data === '') {
+          setErrorPassword('Password is required');
           setBtnSubmit(false);
         } else if (data.length < 8) {
-          setErrorPassword("Password consists of 8 characters or more");
+          setErrorPassword('Password consists of 8 characters or more');
           setBtnSubmit(false);
         } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
           setErrorPassword(
@@ -341,32 +341,32 @@ const LoginRegister = (props) => {
           );
           setBtnSubmit(false);
         } else {
-          setErrorPassword("");
+          setErrorPassword('');
           setBtnSubmit(true);
         }
         break;
 
-      case "email":
+      case 'email':
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
-        if (email === "") {
-          setErrorEmail("Email is required");
+        if (email === '') {
+          setErrorEmail('Email is required');
           setBtnSubmit(false);
           return;
         } else if (!checkEmail) {
-          setErrorEmail("Email not valid");
+          setErrorEmail('Email not valid');
           setBtnSubmit(false);
         } else {
-          setErrorEmail("");
+          setErrorEmail('');
           setBtnSubmit(true);
         }
         break;
 
-      case "birthDate":
+      case 'birthDate':
         setBirthDate(data);
         if (data) {
           setBtnSubmit(true);
@@ -395,27 +395,27 @@ const LoginRegister = (props) => {
     if (response && response.status === false) {
       // Fetch Custom & Mandatory Fields
       await props.dispatch(CustomerAction.mandatoryField());
-      setUserStatus("NOT_REGISTERED");
-      setMethod("phone");
+      setUserStatus('NOT_REGISTERED');
+      setMethod('phone');
       setPayloadResponse({ phoneNumber });
       setBtnSubmit(false);
     } else if (response) {
-      if (response.status === "SUSPENDED") {
+      if (response.status === 'SUSPENDED') {
         Swal.fire(
-          "Suspended!",
-          "Your account has been suspended. Please contact administrator.",
-          "error"
+          'Suspended!',
+          'Your account has been suspended. Please contact administrator.',
+          'error'
         );
       } else {
         if (enableSMSOTP && !enableWhatsappOTP) {
-          handleSendOTP("SMSOTP");
+          handleSendOTP('SMSOTP');
         }
         if (!enableSMSOTP && enableWhatsappOTP) {
-          handleSendOTP("whatsappOTP");
+          handleSendOTP('whatsappOTP');
         }
 
-        setUserStatus("REGISTERED");
-        setMethod("phone");
+        setUserStatus('REGISTERED');
+        setMethod('phone');
         setPayloadResponse(response.data);
         setBtnSubmit(false);
 
@@ -429,11 +429,11 @@ const LoginRegister = (props) => {
         }, 2000);
       } else {
         Swal.fire({
-          title: "Sorry...",
+          title: 'Sorry...',
           allowOutsideClick: false,
-          icon: "info",
-          text: "We need to refresh your app, then you can continue to register.",
-          confirmButtonText: "Ok",
+          icon: 'info',
+          text: 'We need to refresh your app, then you can continue to register.',
+          confirmButtonText: 'Ok',
         }).then((result) => {
           if (result.isConfirmed) {
             window.location.reload();
@@ -445,13 +445,13 @@ const LoginRegister = (props) => {
     await Swal.close();
   };
 
-  const handleSendOTP = async (sendBy = "SMSOTP") => {
+  const handleSendOTP = async (sendBy = 'SMSOTP') => {
     if (!enableRegisterWithPassword) {
       let payloadResponseOtp = payloadResponse;
       let phoneNumberOtp = phoneNumber;
       let sendCounterOtp = sendCounter + 1;
-      if (phoneNumberOtp.charAt(0) !== "+")
-        phoneNumberOtp = "+" + phoneNumberOtp.trim();
+      if (phoneNumberOtp.charAt(0) !== '+')
+        phoneNumberOtp = '+' + phoneNumberOtp.trim();
 
       setSendCounter(sendCounterOtp);
       setBtnSend(false);
@@ -473,7 +473,7 @@ const LoginRegister = (props) => {
           secondsTimer = secondsTimer - 1;
           const counterTimer =
             secondsTimer.toString().length < 2
-              ? "0" + secondsTimer
+              ? '0' + secondsTimer
               : secondsTimer;
 
           setCounter(counterTimer);
@@ -488,9 +488,9 @@ const LoginRegister = (props) => {
       } else {
         setSendCounter(sendCounterOtp);
         setMinutes(4);
-        setCounterMinutes("04");
+        setCounterMinutes('04');
         setSeconds(59);
-        setCounter("59");
+        setCounter('59');
 
         let secondsTimer = 0;
         let minutesTimer = 0;
@@ -499,7 +499,7 @@ const LoginRegister = (props) => {
           secondsTimer = secondsTimer - 1;
           let counterTimer =
             secondsTimer.toString().length < 2
-              ? "0" + secondsTimer
+              ? '0' + secondsTimer
               : secondsTimer;
 
           setCounter(counterTimer);
@@ -509,12 +509,12 @@ const LoginRegister = (props) => {
             minutesTimer = minutesTimer - 1;
             let counterMinutesTimer =
               minutesTimer.toString().length < 2
-                ? "0" + minutesTimer
+                ? '0' + minutesTimer
                 : minutesTimer;
 
             setCounterMinutes(counterMinutesTimer);
             setMinutes(minutesTimer);
-            setCounter("59");
+            setCounter('59');
             setSeconds(59);
 
             if (minutesTimer < 0 && seconds === 0) {
@@ -526,7 +526,7 @@ const LoginRegister = (props) => {
       }
 
       const otpLastTry = new Date();
-      lsStore(config.prefix + "_otp", {
+      lsStore(config.prefix + '_otp', {
         lastTry: otpLastTry,
         counterTimer: sendCounterOtp,
       });
@@ -571,7 +571,7 @@ const LoginRegister = (props) => {
 
       responseData.isLogin = true;
 
-      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
+      const offlineCart = lsLoad(config.prefix + '_offlineCart', true);
       const lsKeyList = [];
 
       for (let i = 0; i < localStorage.length; i++) {
@@ -579,27 +579,29 @@ const LoginRegister = (props) => {
         if (
           key.includes(`${config.prefix}_`) &&
           !key.includes(`${config.prefix}_scanTable`) &&
-          !key.includes(`${config.prefix}_ordering_mode`)
+          !key.includes(`${config.prefix}_ordering_mode`) &&
+          // TODO: need explain for this
+          !key.includes(`${config.prefix}_defaultOutlet`)
         ) {
           lsKeyList.push(key);
         }
       }
       lsKeyList.forEach((key) => localStorage.removeItem(key));
       lsStore(
-        config.prefix + "_account",
+        config.prefix + '_account',
         encryptor.encrypt(responseData),
         true
       );
-      lsStore(config.prefix + "_offlineCart", offlineCart, true);
-      const url = window.location.href.split("?")[0];
+      lsStore(config.prefix + '_offlineCart', offlineCart, true);
+      const url = window.location.href.split('?')[0];
       window.location.replace(url);
       window.location.reload();
     } catch (err) {
-      let error = "Please try again.";
+      let error = 'Please try again.';
       if (err.message) {
         error = err.message;
       }
-      Swal.fire("Oppss!", error, "error");
+      Swal.fire('Oppss!', error, 'error');
     }
   };
 
@@ -624,10 +626,10 @@ const LoginRegister = (props) => {
           (items) => items.signUpField === true && items.mandatory === true
         ) || [];
 
-      mandatory.push({ fieldName: "name", displayName: "Name" });
-      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
-      mandatory.push({ fieldName: "email", displayName: "Email" });
-      mandatory.push({ fieldName: "password", displayName: "Password" });
+      mandatory.push({ fieldName: 'name', displayName: 'Name' });
+      mandatory.push({ fieldName: 'phoneNumber', displayName: 'Phone Number' });
+      mandatory.push({ fieldName: 'email', displayName: 'Email' });
+      mandatory.push({ fieldName: 'password', displayName: 'Password' });
 
       const customFields =
         fields &&
@@ -637,7 +639,7 @@ const LoginRegister = (props) => {
           }
           return {
             ...acc,
-            [field.fieldName]: inputs[field.fieldName] || "",
+            [field.fieldName]: inputs[field.fieldName] || '',
           };
         });
 
@@ -670,21 +672,21 @@ const LoginRegister = (props) => {
         ...customFields,
       };
 
-      let listName = "";
+      let listName = '';
 
       mandatory.forEach((field) => {
         const name = field.fieldName;
         const defaultValue = field.defaultValue;
 
-        if (payload[name] && payload[name] !== "Invalid date") {
+        if (payload[name] && payload[name] !== 'Invalid date') {
           field.check = true;
-        } else if (defaultValue && defaultValue !== "-") {
+        } else if (defaultValue && defaultValue !== '-') {
           payload[name] = defaultValue;
           field.check = true;
         } else if (inputs[name]) {
           payload[name] = inputs[name];
         } else {
-          listName += field.displayName + ", ";
+          listName += field.displayName + ', ';
           field.check = false;
         }
       });
@@ -695,7 +697,7 @@ const LoginRegister = (props) => {
 
       if (mandatory.length > 0) {
         listName = listName.substr(0, listName.length - 2);
-        Swal.fire("Oppss!", `${listName} is required`, "error");
+        Swal.fire('Oppss!', `${listName} is required`, 'error');
         return;
       }
 
@@ -704,9 +706,9 @@ const LoginRegister = (props) => {
         const currentAge = getAge(payload.birthDate);
         if (currentAge < minimumAge) {
           Swal.fire(
-            "Oppss!",
+            'Oppss!',
             `The minimum age for registration is ${minimumAge} years old`,
-            "error"
+            'error'
           );
           return;
         }
@@ -717,14 +719,14 @@ const LoginRegister = (props) => {
       const response = await props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
       );
-      const responseMessage = response.Data.message || "";
+      const responseMessage = response.Data.message || '';
 
       if (responseMessage) {
-        Swal.fire("Oppss!", responseMessage, "error");
+        Swal.fire('Oppss!', responseMessage, 'error');
       } else {
         enableRegisterWithPassword &&
           lsStore(
-            config.prefix + "_account",
+            config.prefix + '_account',
             encryptor.encrypt({
               phoneNumber: payloadResponse.phoneNumber,
               email,
@@ -738,13 +740,13 @@ const LoginRegister = (props) => {
           } else {
             setSignUpSuccess(true);
             if (enableSMSOTP && !enableWhatsappOTP) {
-              await handleSendOTP("SMSOTP");
+              await handleSendOTP('SMSOTP');
             }
             if (!enableSMSOTP && enableWhatsappOTP) {
-              await handleSendOTP("WhatsappOTP");
+              await handleSendOTP('WhatsappOTP');
             }
             if (enableSMSOTP && enableWhatsappOTP) {
-              await handleSendOTP("SMSOTP");
+              await handleSendOTP('SMSOTP');
             }
           }
 
@@ -759,7 +761,7 @@ const LoginRegister = (props) => {
         }
       }
     } catch (err) {
-      let error = "Please try again.";
+      let error = 'Please try again.';
       if (
         err.response &&
         err.response.data &&
@@ -768,7 +770,7 @@ const LoginRegister = (props) => {
       ) {
         error = err.response.data.Data.message;
       }
-      Swal.fire("Oppss!", error, "error");
+      Swal.fire('Oppss!', error, 'error');
     }
   };
 
@@ -784,22 +786,22 @@ const LoginRegister = (props) => {
       if (response.status === false) {
         // Fetch Custom & Mandatory Fields
         await props.dispatch(CustomerAction.mandatoryField());
-        setMethod("email");
-        setUserStatus("NOT_REGISTERED");
+        setMethod('email');
+        setUserStatus('NOT_REGISTERED');
         setPayloadResponse({ email });
         setBtnSubmit(false);
         Swal.close();
       } else {
-        if (response.data.status === "SUSPENDED") {
+        if (response.data.status === 'SUSPENDED') {
           Swal.fire(
-            "Suspended!",
-            "Your account has been suspended. Please contact administrator.",
-            "error"
+            'Suspended!',
+            'Your account has been suspended. Please contact administrator.',
+            'error'
           );
           return;
         } else {
           Swal.close();
-          setUserStatus("REGISTERED");
+          setUserStatus('REGISTERED');
           setPayloadResponse(response.data);
           setBtnSubmit(false);
           handleSendEmailOTP();
@@ -825,7 +827,7 @@ const LoginRegister = (props) => {
       setCounter(`${counter}`);
 
       setSendCounter(sendCounter + 1);
-      lsStore(config.prefix + "_otp", {
+      lsStore(config.prefix + '_otp', {
         lastTry: otpLastTry,
         counter: sendCounter + 1,
       });
@@ -837,7 +839,7 @@ const LoginRegister = (props) => {
         secondsTimer = secondsTimer - 1;
         let counterTimer =
           secondsTimer.toString().length < 2
-            ? "0" + secondsTimer
+            ? '0' + secondsTimer
             : secondsTimer;
 
         setSeconds(secondsTimer);
@@ -847,10 +849,10 @@ const LoginRegister = (props) => {
           minutesTimer = minutesTimer - 1;
           let counterMinutesTimer =
             minutesTimer.toString().length < 2
-              ? "0" + minutesTimer
+              ? '0' + minutesTimer
               : minutesTimer;
 
-          setCounter("59");
+          setCounter('59');
           setSeconds(59);
           setMinutes(minutesTimer);
           setCounterMinutes(counterMinutesTimer);
@@ -896,7 +898,7 @@ const LoginRegister = (props) => {
       }
       responseData.isLogin = true;
 
-      const offlineCart = lsLoad(config.prefix + "_offlineCart", true);
+      const offlineCart = lsLoad(config.prefix + '_offlineCart', true);
       const lsKeyList = [];
 
       for (let i = 0; i < localStorage.length; i++) {
@@ -904,32 +906,34 @@ const LoginRegister = (props) => {
         if (
           key.includes(`${config.prefix}_`) &&
           !key.includes(`${config.prefix}_scanTable`) &&
-          !key.includes(`${config.prefix}_ordering_mode`)
+          !key.includes(`${config.prefix}_ordering_mode`) &&
+          // TODO: need explain for this
+          !key.includes(`${config.prefix}_defaultOutlet`)
         ) {
           lsKeyList.push(key);
         }
       }
       lsKeyList.forEach((key) => localStorage.removeItem(key));
       lsStore(
-        config.prefix + "_account",
+        config.prefix + '_account',
         encryptor.encrypt(responseData),
         true
       );
       if (offlineCart !== null) {
-        lsStore(config.prefix + "_offlineCart", offlineCart, true);
+        lsStore(config.prefix + '_offlineCart', offlineCart, true);
       }
 
-      const url = window.location.href.split("?")[0];
+      const url = window.location.href.split('?')[0];
       window.location.replace(url);
       window.location.reload();
     } catch (err) {
       //
       Swal.close();
-      let error = "Please try again.";
+      let error = 'Please try again.';
       if (err.message) {
         error = err.message;
       }
-      Swal.fire("Oppss!", error, "error");
+      Swal.fire('Oppss!', error, 'error');
     }
   };
 
@@ -940,10 +944,10 @@ const LoginRegister = (props) => {
       mandatory = fields.filter((items) => {
         return items.signUpField === true && items.mandatory === true;
       });
-      mandatory.push({ fieldName: "name", displayName: "Name" });
-      mandatory.push({ fieldName: "phoneNumber", displayName: "Phone Number" });
-      mandatory.push({ fieldName: "email", displayName: "Email" });
-      mandatory.push({ fieldName: "password", displayName: "Password" });
+      mandatory.push({ fieldName: 'name', displayName: 'Name' });
+      mandatory.push({ fieldName: 'phoneNumber', displayName: 'Phone Number' });
+      mandatory.push({ fieldName: 'email', displayName: 'Email' });
+      mandatory.push({ fieldName: 'password', displayName: 'Password' });
 
       const customFields =
         fields &&
@@ -953,7 +957,7 @@ const LoginRegister = (props) => {
           }
           return {
             ...acc,
-            [field.fieldName]: inputs[field.fieldName] || "",
+            [field.fieldName]: inputs[field.fieldName] || '',
           };
         });
 
@@ -985,21 +989,21 @@ const LoginRegister = (props) => {
       };
 
       //mark
-      let listName = "";
+      let listName = '';
       mandatory.forEach((field) => {
         const name = field.fieldName;
         const defaultValue = field.defaultValue;
 
-        if (payload[name] && payload[name] !== "Invalid date") {
+        if (payload[name] && payload[name] !== 'Invalid date') {
           field.check = true;
-        } else if (defaultValue && defaultValue !== "-") {
+        } else if (defaultValue && defaultValue !== '-') {
           payload[name] = defaultValue;
           field.check = true;
         } else if (inputs[name]) {
           payload[name] = inputs[name];
           field.check = true;
         } else {
-          listName += name + ", ";
+          listName += name + ', ';
           field.check = false;
         }
       });
@@ -1010,7 +1014,7 @@ const LoginRegister = (props) => {
 
       if (mandatory.length > 0) {
         listName = listName.substr(0, listName.length - 2);
-        Swal.fire("Oppss!", `${listName} is required`, "error");
+        Swal.fire('Oppss!', `${listName} is required`, 'error');
         return;
       }
 
@@ -1019,9 +1023,9 @@ const LoginRegister = (props) => {
         const currentAge = getAge(payload.birthDate);
         if (currentAge < minimumAge) {
           Swal.fire(
-            "Oppss!",
+            'Oppss!',
             `The minimum age for registration is ${minimumAge} years old`,
-            "error"
+            'error'
           );
           return;
         }
@@ -1034,11 +1038,11 @@ const LoginRegister = (props) => {
       response = response.Data;
 
       if (response.message) {
-        Swal.fire("Oppss!", response.message, "error");
+        Swal.fire('Oppss!', response.message, 'error');
       } else {
         if (enableRegisterWithPassword) {
           lsStore(
-            config.prefix + "_account",
+            config.prefix + '_account',
             encryptor.encrypt({
               phoneNumber: phoneNumber,
               email: payloadResponse.email,
@@ -1065,7 +1069,7 @@ const LoginRegister = (props) => {
         }
       }
     } catch (err) {
-      let error = "Please try again.";
+      let error = 'Please try again.';
       if (
         err.response &&
         err.response.data &&
@@ -1074,15 +1078,15 @@ const LoginRegister = (props) => {
       ) {
         error = err.response.data.Data.message;
       }
-      Swal.fire("Oppss!", error, "error");
+      Swal.fire('Oppss!', error, 'error');
     }
   };
 
   const handleClear = () => {
-    setPhoneNumber("");
-    setEmail("");
-    setErrorPhone("");
-    setErrorEmail("");
+    setPhoneNumber('');
+    setEmail('');
+    setErrorPhone('');
+    setErrorEmail('');
     setSignUpSuccess(false);
     setBtnSubmit(false);
   };
@@ -1090,24 +1094,24 @@ const LoginRegister = (props) => {
   return (
     <div>
       <div
-        className="modal fade"
-        id="login-register-modal"
+        className='modal fade'
+        id='login-register-modal'
         tabIndex={-1}
-        role="dialog"
-        aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true"
+        role='dialog'
+        aria-labelledby='exampleModalCenterTitle'
+        aria-hidden='true'
       >
-        <div className="modal-dialog modal-dialog-centered" role="document">
-          {userStatus === "REGISTERED" ? (
+        <div className='modal-dialog modal-dialog-centered' role='document'>
+          {userStatus === 'REGISTERED' ? (
             <Login
               method={method}
-              username={method === "email" ? email : phoneNumber}
+              username={method === 'email' ? email : phoneNumber}
               enablePassword={enableRegisterWithPassword}
               handleSubmit={
-                method === "email" ? handleEmailLogin : handleMobileLogin
+                method === 'email' ? handleEmailLogin : handleMobileLogin
               }
               handleBackButtonClick={() => {
-                setUserStatus("NOT_CHECKED");
+                setUserStatus('NOT_CHECKED');
                 handleClear();
               }}
               handleChange={handleInput}
@@ -1124,12 +1128,12 @@ const LoginRegister = (props) => {
               enableWhatsappOTP={enableWhatsappOTP}
               enableOrdering={enableOrdering}
             ></Login>
-          ) : userStatus === "NOT_REGISTERED" ? (
+          ) : userStatus === 'NOT_REGISTERED' ? (
             <SignUp
               method={method}
               initialUserData={payloadResponse}
               handleBackButtonClick={() => {
-                setUserStatus("NOT_CHECKED");
+                setUserStatus('NOT_CHECKED');
                 handleClear();
               }}
               handleChange={handleInputRegister}
