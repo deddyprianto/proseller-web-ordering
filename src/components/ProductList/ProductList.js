@@ -161,11 +161,12 @@ const ProductList = ({ ...props }) => {
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
   const handleFetchCategoryProduct = async ({ outlet }) => {
+    const orderingMode = props.orderingMode | '';
     const categories = await props.dispatch(
       ProductAction.fetchCategoryProduct({
         outlet,
         orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
-          ? props.orderingMode
+          ? orderingMode
           : '',
       })
     );
@@ -191,6 +192,7 @@ const ProductList = ({ ...props }) => {
     try {
       const loadData = async () => {
         props.dispatch(OrderAction.getCart());
+
         const categories = await handleFetchCategoryProduct({
           outlet: props.defaultOutlet,
         });
