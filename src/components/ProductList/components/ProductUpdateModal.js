@@ -41,6 +41,9 @@ const ProductUpdateModal = ({
   ...props
 }) => {
   const styles = {
+    backgroundColor: {
+      backgroundColor: props.color.background,
+    },
     productRoot: {
       marginLeft: 10,
       marginRight: 10,
@@ -84,7 +87,6 @@ const ProductUpdateModal = ({
     buttonEdit: {
       display: 'flex',
       alignItems: 'center',
-      backgroundColor: 'white',
     },
     iconEdit: {
       height: 14,
@@ -166,7 +168,6 @@ const ProductUpdateModal = ({
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'start',
-      backgroundColor: 'white',
       alignItems: 'center',
       alignContents: 'center',
     },
@@ -356,37 +357,39 @@ const ProductUpdateModal = ({
         fullWidth
         maxWidth='sm'
       >
-        <DialogContent>
-          <div style={styles.header}>
-            <div style={styles.fullWidth}>
-              <Typography style={styles.productName}>
-                This item in cart
-              </Typography>
+        <div style={styles.backgroundColor}>
+          <DialogContent>
+            <div style={styles.header}>
+              <div style={styles.fullWidth}>
+                <Typography style={styles.productName}>
+                  This item in cart
+                </Typography>
+              </div>
             </div>
-          </div>
-          <div>{renderProducts()}</div>
-        </DialogContent>
+            <div>{renderProducts()}</div>
+          </DialogContent>
 
-        <DialogActions style={styles.footer}>
-          <Button
-            style={styles.addButton}
-            onClick={() => {
-              handleOpenAddModal();
-            }}
-          >
-            <AddIcon style={styles.icon} />
-            <Typography style={styles.addText}>Make Another</Typography>
-          </Button>
+          <DialogActions style={styles.footer}>
+            <Button
+              style={styles.addButton}
+              onClick={() => {
+                handleOpenAddModal();
+              }}
+            >
+              <AddIcon style={styles.icon} />
+              <Typography style={styles.addText}>Make Another</Typography>
+            </Button>
 
-          <IconButton
-            style={styles.buttonIcon}
-            onClick={() => {
-              handleClose();
-            }}
-          >
-            <CloseIcon style={styles.icon} />
-          </IconButton>
-        </DialogActions>
+            <IconButton
+              style={styles.buttonIcon}
+              onClick={() => {
+                handleClose();
+              }}
+            >
+              <CloseIcon style={styles.icon} />
+            </IconButton>
+          </DialogActions>
+        </div>
       </Dialog>
     </div>
   );

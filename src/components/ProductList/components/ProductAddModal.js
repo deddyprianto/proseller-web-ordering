@@ -52,6 +52,9 @@ const ProductAddModal = ({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const styles = {
+    backgroundColor: {
+      backgroundColor: props.color.background,
+    },
     header: {
       display: 'flex',
       flexDirection: 600 > width ? 'column' : 'row',
@@ -205,6 +208,24 @@ const ProductAddModal = ({
       left: 0,
       top: 0,
     },
+    rootSpecialInstruction: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: 20,
+    },
+    specialInstructionTypography: {
+      fontSize: 16,
+      color: '#808080',
+      fontWeight: 'bold',
+    },
+    optionalTypography: { fontSize: 10, color: '#777777', paddingLeft: 10 },
+    specialInstructionInput: {
+      minHeight: 100,
+      minWidth: '100%',
+      maxWidth: '100%',
+      borderRadius: 5,
+    },
   };
 
   const [variantName, setVariantName] = useState('');
@@ -350,7 +371,6 @@ const ProductAddModal = ({
         : product?.variants[0]?.attributes;
 
       setSelectedVariantOptions(productVariants);
-
       const productVariantFormated =
         handleProductVariantFormated(productVariants);
 
@@ -551,6 +571,24 @@ const ProductAddModal = ({
     return isDisabled;
   };
 
+  const handleDisabledRemoveButtonProductModifier = ({ modifier, min }) => {
+    if (min > 0) {
+      let qtyTotal = 0;
+
+      const modifierProducts = selectedProductModifiers.filter(
+        (item) => item.modifierId === modifier.modifierId
+      );
+
+      modifierProducts.forEach((modifierProduct) => {
+        qtyTotal = qtyTotal + modifierProduct.qty;
+      });
+
+      const isDisabled = qtyTotal <= min;
+
+      return isDisabled;
+    }
+  };
+
   const handleDisabledAddButtonProductModifier = ({ modifier, max }) => {
     if (max > 0) {
       let qtyTotal = 0;
@@ -677,17 +715,23 @@ const ProductAddModal = ({
   const renderAddAndRemoveButtonProductModifierOptions = ({
     modifierProductId,
     max,
+    min,
   }) => {
     const selectedProductModifier = selectedProductModifiers.find(
       (item) => item.modifierProductId === modifierProductId
     );
 
-    if (selectedProductModifier) {
+    if (selectedProductModifier && max > 1) {
       return (
         <div style={styles.displayFlex}>
           <IconButton
             style={styles.buttonIconProductModifier}
-            disabled={isLoading}
+            disabled={
+              handleDisabledRemoveButtonProductModifier({
+                modifier: selectedProductModifier,
+                min,
+              }) || isLoading
+            }
             onClick={() => {
               handleAddAndReduceQtyProductModifier({
                 key: 'reduce',
@@ -804,6 +848,7 @@ const ProductAddModal = ({
                 {renderAddAndRemoveButtonProductModifierOptions({
                   modifierProductId: modifier.productID,
                   max: productModifier.modifier.max,
+                  min: productModifier.modifier.min,
                 })}
                 <Typography style={styles.optionPrice}>
                   {handleCurrency(modifier.price)}
@@ -909,32 +954,14 @@ const ProductAddModal = ({
   const renderSpecialInstruction = () => {
     return (
       <div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingTop: 20,
-          }}
-        >
-          <Typography
-            style={{ fontSize: 16, color: '#808080', fontWeight: 'bold' }}
-          >
+        <div style={styles.rootSpecialInstruction}>
+          <Typography style={styles.specialInstructionTypography}>
             Special Instruction
           </Typography>
-          <Typography
-            style={{ fontSize: 10, color: '#777777', paddingLeft: 10 }}
-          >
-            Optional
-          </Typography>
+          <Typography style={styles.optionalTypography}>Optional</Typography>
         </div>
         <textarea
-          style={{
-            minHeight: 100,
-            minWidth: '100%',
-            maxWidth: '100%',
-            borderRadius: 5,
-          }}
+          style={styles.specialInstructionInput}
           value={notes}
           onChange={(event) => {
             setNotes(event.target.value);
@@ -945,51 +972,48 @@ const ProductAddModal = ({
   };
 
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={() => {
-          handleClear();
-          handleClose();
-        }}
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-      >
+    <Dialog
+      open={open}
+      onClose={() => {
+        handleClear();
+        handleClose();
+      }}
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth='md'
+    >
+      <div style={styles.backgroundColor}>
         <DialogContent>
-          <div>
-            <div style={styles.header}>
-              <div style={styles.imageAndButtonCloseGadgetSize}>
-                <img
-                  style={styles.imageSize}
-                  src={renderImageProduct()}
-                  alt={product.name}
-                  title={product.name}
-                />
+          <div style={styles.header}>
+            <div style={styles.imageAndButtonCloseGadgetSize}>
+              <img
+                style={styles.imageSize}
+                src={renderImageProduct()}
+                alt={product.name}
+                title={product.name}
+              />
 
-                {renderCloseButtonGadgetSize()}
-              </div>
-
-              <div style={styles.fullWidth}>
-                <Typography style={styles.productName}>
-                  {product.name} {variantName}
-                </Typography>
-                <Typography style={styles.productDescription}>
-                  {product.description}
-                </Typography>
-              </div>
-
-              {renderCloseButton()}
+              {renderCloseButtonGadgetSize()}
             </div>
 
-            <div>{renderVariants(product?.variantOptions)}</div>
+            <div style={styles.fullWidth}>
+              <Typography style={styles.productName}>
+                {product.name} {variantName}
+              </Typography>
+              <Typography style={styles.productDescription}>
+                {product.description}
+              </Typography>
+            </div>
 
-            <div>{renderProductModifiers(product?.productModifiers)}</div>
-
-            <div>{renderSpecialInstruction()}</div>
+            {renderCloseButton()}
           </div>
-        </DialogContent>
 
+          <div>{renderVariants(product?.variantOptions)}</div>
+
+          <div>{renderProductModifiers(product?.productModifiers)}</div>
+
+          <div>{renderSpecialInstruction()}</div>
+        </DialogContent>
         <DialogActions style={styles.footer}>
           <IconButton
             style={styles.buttonIcon}
@@ -1012,8 +1036,8 @@ const ProductAddModal = ({
           </IconButton>
           {renderTotalPriceOrRemove()}
         </DialogActions>
-      </Dialog>
-    </div>
+      </div>
+    </Dialog>
   );
 };
 
