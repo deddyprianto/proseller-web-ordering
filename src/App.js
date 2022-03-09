@@ -63,13 +63,14 @@ const App = (props) => {
   const domainNameExist = props.domainName && props.domainName.length > 0;
   const initialDomainNameExists = domainNameExist;
 
-  try {
-    if (window.location.hash === '#/') {
-      localStorage.removeItem(`${config.prefix}_defaultOutlet`);
-    }
-  } catch (e) {
-    console.log(e);
-  }
+  // TODO: need explain why in this state need to remove deault outlet
+  // try {
+  //   if (window.location.hash === '#/') {
+  //     localStorage.removeItem(`${config.prefix}_defaultOutlet`);
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  // }
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
