@@ -208,6 +208,7 @@ const TimeSlotDialog = ({ open, onClose }) => {
             loading={false}
             loadingIndicator='Loading...'
             variant='contained'
+            disabled={isLoading}
             key={index}
             onClick={() => {
               setSelectedTime(null);
@@ -259,13 +260,15 @@ const TimeSlotDialog = ({ open, onClose }) => {
   }, [availableTimeSlots, selectedDate]);
 
   const renderMenuItemSelectTime = () => {
-    return availableTime[0]?.timeSlot?.map((item, index) => {
-      return (
-        <MenuItem value={item?.time} key={index}>
-          {item?.time}
-        </MenuItem>
-      );
-    });
+    return availableTime[0]?.timeSlot
+      ?.filter((item) => item.isAvailable)
+      .map((item, index) => {
+        return (
+          <MenuItem value={item?.time} key={index}>
+            {item?.time}
+          </MenuItem>
+        );
+      });
   };
 
   return (
