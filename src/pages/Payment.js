@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import config from 'config';
-import _, { concat } from 'lodash';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -274,14 +273,11 @@ const Payment = ({ ...props }) => {
       price = price - props.useSVC.paymentAmount;
     }
 
-    // setOpenTransferDialog(true);
-
     if (price < 0) {
       return 0;
     }
     return handlePriceLength(price);
   };
-
   const handleCloseManualTransfer = () => {
     setOpenTransferDialog(false);
     handlePay();
@@ -303,6 +299,10 @@ const Payment = ({ ...props }) => {
     if (result.resultCode === 200 && result?.data?.balance) {
       setCheckSVCAvailable(true);
     }
+  };
+
+  const handleRemovePaymentCard = () => {
+    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
   };
 
   useEffect(() => {
@@ -400,11 +400,6 @@ const Payment = ({ ...props }) => {
 
     props.dispatch(PaymentAction.setData({}, 'SELECT_POINT'));
   };
-
-  const handleRemovePaymentCard = () => {
-    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
-  };
-
   const handleRemoveSVC = () => {
     setUseSVCPayment({});
     props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
