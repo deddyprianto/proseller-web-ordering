@@ -615,23 +615,18 @@ const Payment = ({ ...props }) => {
   };
 
   const renderPaymentDetail = () => {
-    if (
-      !isEmptyObject(props.selectedPaymentCard) &&
-      props.selectedPaymentCard.paymentID !== 'MANUAL_TRANSFER'
-    ) {
+    if (!isEmptyObject(props.selectedPaymentCard)) {
       const cardIssuer =
         props.selectedPaymentCard?.details?.cardIssuer?.toUpperCase() || '';
       const maskedAccountNumber =
         props.selectedPaymentCard?.details?.maskedAccountNumber || '';
 
+      if (props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER') {
+        return 'Manual Transfer';
+      }
       return `${cardIssuer} ${maskedAccountNumber} (SGD ${handlePrice()})`;
-    } else if (
-      !isEmptyObject(props.selectedPaymentCard) &&
-      props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER'
-    ) {
-      return 'Manual Transfer';
     } else {
-      return 'Payment Method';
+      return 'Payment With Card';
     }
   };
 

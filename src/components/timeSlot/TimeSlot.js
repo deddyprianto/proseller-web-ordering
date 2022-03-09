@@ -343,7 +343,7 @@ const TimeSlotDialog = ({ open, onClose }) => {
             </InputLabel>
             <Select
               defaultValue={timeSlotSelected}
-              disabled={!isEmptyObject(selectedDate)}
+              disabled={isEmptyObject(selectedDate)}
               labelId='demo-simple-select-autowidth-label'
               id='demo-simple-select-autowidth'
               value={selectedTime}

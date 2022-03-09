@@ -25,7 +25,7 @@ import { PaymentAction } from 'redux/actions/PaymentAction';
 
 // const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
-const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
+const UseSVCPaymentDialog = ({ onClose, open, maxAmount }) => {
   //TODO: Uncomment to pay full with SVC
 
   const color = useSelector((state) => state.theme.color);
@@ -113,6 +113,16 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
     await dispatch(PaymentAction.setData(payload, 'USE_SVC'));
 
     onClose();
+  };
+
+  const checkAmountToUse = (value) => {
+    if (value >= maxAmount && maxAmount <= currentBalance) {
+      return maxAmount;
+    } else if (value >= maxAmount && maxAmount >= currentBalance) {
+      return currentBalance;
+    } else {
+      return value;
+    }
   };
 
   // TODO: Please enable this function to septate the payment with full svc
@@ -204,7 +214,10 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
     amountToUse: yup
       .number()
       .required('Please Enter Amount to Use')
-      .max(maxAmount ? maxAmount : dataSettle?.totalNettAmount),
+      .max(
+        maxAmount ? maxAmount : dataSettle?.totalNettAmount,
+        'Please enter a valid amount'
+      ),
   });
 
   const formik = useFormik({
@@ -322,11 +335,8 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
               placeholder='0'
               value={formik.values.amountToUse}
               onChange={(e) => {
-                if (e.target.value >= maxAmount) {
-                  formik.setFieldValue('amountToUse', maxAmount);
-                } else {
-                  formik.setFieldValue('amountToUse', e.target.value);
-                }
+                const checkAmount = checkAmountToUse(e.target.value);
+                formik.setFieldValue('amountToUse', checkAmount);
               }}
             />
             {formik.errors.amountToUse ? (
@@ -343,7 +353,7 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
               variant='contained'
               type='submit'
               loading={isLoading}
-              disabled={formik.values.amountToUse >= currentBalance}
+              disabled={formik.values.amountToUse > currentBalance}
             >
               Use SGD {ThousandSeparator(formik.values.amountToUse)}
             </LoadingButton>
@@ -356,11 +366,11 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount, anotherPayment }) => {
 
 UseSVCPaymentDialog.defaultProps = {
   maxAmount: 0,
-  anotherPayment: [],
+  // anotherPayment: [],
 };
 
 UseSVCPaymentDialog.propTypes = {
-  anotherPayment: PropTypes.array,
+  // anotherPayment: PropTypes.array,
   maxAmount: PropTypes.number,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

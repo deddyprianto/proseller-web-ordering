@@ -216,8 +216,6 @@ const OrderingModeDialog = ({ open, onClose }) => {
       })
     );
 
-    console.log(responseChangeOrderingMode);
-
     await dispatch(
       OrderAction.setData(responseChangeOrderingMode.data, CONSTANT.DATA_BASKET)
     );
