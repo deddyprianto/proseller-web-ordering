@@ -136,6 +136,16 @@ function getSettingOrdering() {
         data.settings.find((items) => {
           return items.settingKey === 'TextWarningColor';
         });
+      let navigationFontColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'NavigationFontColor';
+        });
+      let navigationIconSelectedColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'NavigationIconSelectedColor';
+        });
       let outletSelection =
         data &&
         data.settings.find((items) => {
@@ -164,10 +174,13 @@ function getSettingOrdering() {
         secondary: secondaryColor.settingValue || '#C00A27',
         font: font.settingValue || '#808080',
         background: background.settingValue || '#FFFFFF',
-        navigation: navigation.settingValue || '#C00A27',
         textButtonColor: textButtonColor.settingValue || '#FFFFFF',
         textWarningColor: textWarningColor.settingValue || 'red',
         productPlaceholder: ProductPlaceholder || null,
+        navigationColor: navigation.settingValue || '#C00A27',
+        navigationFontColor: navigationFontColor.settingValue || '#FFFF',
+        navigationIconSelectedColor:
+          navigationIconSelectedColor.settingValue || '#393939',
       };
       dispatch({ type: 'SET_THEME', payload });
       dispatch({

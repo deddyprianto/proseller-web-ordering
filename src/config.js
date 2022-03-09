@@ -193,8 +193,8 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
       { settingKey: 'NavigationColor', settingValue: primary || '#C00A27' },
       { settingKey: 'TextButtonColor', settingValue: '#FFF' },
       { settingKey: 'TextWarningColor', settingValue: 'red' },
-      { settingKey: 'ActiveNavigationColor', settingValue: 'red' },
-      { settingKey: 'InactiveNavigationColor', settingValue: '#388383' },
+      { settingKey: 'NavigationFontColor', settingValue: 'red' },
+      { settingKey: 'NavigationIconSelectedColor', settingValue: '#388383' },
       { settingKey: 'CategoryHeaderType', settingValue: 'CATEGORY_ONLY' },
     ],
   };

@@ -28,18 +28,18 @@ const FooterWebOrdering = () => {
       right: 0,
       height: '4.6em',
       zIndex: 10,
-      backgroundColor: allState.theme.color.navigation,
+      backgroundColor: allState.theme.color.navigationColor,
     },
     bottomNav: {
       marginY: '1.2rem',
-      backgroundColor: allState.theme.color.navigation,
+      backgroundColor: allState.theme.color.navigationColor,
       '& .Mui-selected': {
-        color: allState.theme.color.activeNavigationColor,
+        color: allState.theme.color.navigationIconSelectedColor,
         fontWeight: 700,
       },
       '& .MuiBottomNavigationAction-root': {
         fontSize: '2.3rem',
-        color: allState.theme.color.inactiveNavigationColor,
+        color: allState.theme.color.navigationFontColor,
       },
       '& .MuiBottomNavigationAction-label': {
         fontSize: '1.5rem',
@@ -126,8 +126,8 @@ const FooterWebOrdering = () => {
                     icon={iconCheck(menu.icon)}
                     color={
                       value === index
-                        ? allState.theme.color.activeNavigationColor
-                        : allState.theme.color.inactiveNavigationColor
+                        ? allState.theme.color.navigationIconSelectedColor
+                        : allState.theme.color.navigationFontColor
                     }
                   />
                 }
