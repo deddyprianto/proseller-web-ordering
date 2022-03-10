@@ -44,7 +44,6 @@ const Home = ({ ...props }) => {
       paddingBottom: 100,
     },
     rootProduct: {
-      paddingTop: gadgetScreen ? '3%' : '10%',
       paddingLeft: gadgetScreen ? '3%' : '10%',
       paddingRight: gadgetScreen ? '3%' : '10%',
     },
