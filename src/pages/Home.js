@@ -44,6 +44,7 @@ const Home = ({ ...props }) => {
       paddingBottom: 100,
     },
     rootProduct: {
+      paddingTop: gadgetScreen ? '3%' : '10%',
       paddingLeft: gadgetScreen ? '3%' : '10%',
       paddingRight: gadgetScreen ? '3%' : '10%',
     },
@@ -59,10 +60,7 @@ const Home = ({ ...props }) => {
   }, []);
 
   const renderOrderingRetail = () => {
-    if (
-      props.orderingSetting &&
-      props.orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE'
-    ) {
+    if (props.orderingSetting?.CategoryHeaderType === 'WITH_CATEGORY_PAGE') {
       return <OrderingRetail history={props.history}></OrderingRetail>;
     } else {
       return (
@@ -75,7 +73,7 @@ const Home = ({ ...props }) => {
   };
   const renderProductListOrOutletSelection = () => {
     if (
-      props.setting.outletSelection === 'MANUAL' &&
+      props.setting?.outletSelection === 'MANUAL' &&
       !props.defaultOutlet?.id &&
       !isEmenu
     ) {
