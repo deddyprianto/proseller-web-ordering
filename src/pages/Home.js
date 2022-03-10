@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import Banner from 'components/banner';
 import ProductList from 'components/productList';
+import OrderingRetail from '../components/ordering/indexRetail';
 
 import OutletSelection from './OutletSelection';
 
@@ -27,6 +28,7 @@ const mapStateToProps = (state) => {
   return {
     setting: state.order,
     defaultOutlet: state.outlet.defaultOutlet,
+    orderingSetting: state.order.orderingSetting,
   };
 };
 
@@ -56,6 +58,21 @@ const Home = ({ ...props }) => {
     loadData();
   }, []);
 
+  const renderOrderingRetail = () => {
+    if (
+      props.orderingSetting &&
+      props.orderingSetting.CategoryHeaderType === 'WITH_CATEGORY_PAGE'
+    ) {
+      return <OrderingRetail history={props.history}></OrderingRetail>;
+    } else {
+      return (
+        <>
+          <Banner />
+          <ProductList />
+        </>
+      );
+    }
+  };
   const renderProductListOrOutletSelection = () => {
     if (
       props.setting.outletSelection === 'MANUAL' &&
@@ -64,12 +81,7 @@ const Home = ({ ...props }) => {
     ) {
       return <OutletSelection />;
     } else {
-      return (
-        <div style={styles.rootProduct}>
-          <Banner />
-          <ProductList />
-        </div>
-      );
+      return <div style={styles.rootProduct}>{renderOrderingRetail()}</div>;
     }
   };
 
