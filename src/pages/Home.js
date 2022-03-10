@@ -63,12 +63,7 @@ const Home = ({ ...props }) => {
     if (props.orderingSetting?.CategoryHeaderType === 'WITH_CATEGORY_PAGE') {
       return <OrderingRetail history={props.history}></OrderingRetail>;
     } else {
-      return (
-        <>
-          <Banner />
-          <ProductList />
-        </>
-      );
+      return <ProductList />;
     }
   };
   const renderProductListOrOutletSelection = () => {
@@ -79,7 +74,12 @@ const Home = ({ ...props }) => {
     ) {
       return <OutletSelection />;
     } else {
-      return <div style={styles.rootProduct}>{renderOrderingRetail()}</div>;
+      return (
+        <div style={styles.rootProduct}>
+          <Banner />
+          {renderOrderingRetail()}
+        </div>
+      );
     }
   };
 
