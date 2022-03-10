@@ -83,11 +83,22 @@ const OrderingModeDialog = ({ open, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const orderingModesField = [
-    { isEnabledFieldName: 'enableStorePickUp', name: 'STOREPICKUP' },
-    { isEnabledFieldName: 'enableStoreCheckOut', name: 'STORECHECKOUT' },
-    { isEnabledFieldName: 'enableDelivery', name: 'DELIVERY' },
-    { isEnabledFieldName: 'enableTakeAway', name: 'TAKEAWAY' },
-    { isEnabledFieldName: 'enableDineIn', name: 'DINEIN' },
+    {
+      isEnabledFieldName: 'enableStorePickUp',
+      name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
+    },
+    {
+      isEnabledFieldName: 'enableDelivery',
+      name: CONSTANT.ORDERING_MODE_DELIVERY,
+    },
+    {
+      isEnabledFieldName: 'enableTakeAway',
+      name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
+    },
+    {
+      isEnabledFieldName: 'enableDineIn',
+      name: CONSTANT.ORDERING_MODE_DINE_IN,
+    },
   ];
 
   const handleFilter = (value) => {
