@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import moment from 'moment';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -18,13 +16,16 @@ import SendIcon from '@mui/icons-material/Send';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 
-import ProductCartList from '../components/productCartList';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import LoadingAddCart from 'components/loading/LoadingAddCart';
 import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
 
+import { isEmptyArray } from 'helpers/CheckEmpty';
+
 import { PaymentAction } from 'redux/actions/PaymentAction';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -102,7 +103,7 @@ const Cart = ({ ...props }) => {
       paddingLeft: 10,
       paddingRight: 10,
     },
-    rootExclusiveTax: {
+    rootSubTotalItem: {
       display: 'flex',
       justifyContent: 'space-between',
       paddingLeft: 10,
@@ -201,10 +202,21 @@ const Cart = ({ ...props }) => {
     },
   };
 
+  const [isLoading, setIsLoading] = useState(false);
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      await props.dispatch(OrderAction.checkOfflineCart());
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, []);
 
   useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
@@ -422,7 +434,7 @@ const Cart = ({ ...props }) => {
       <Paper variant='outlined' style={styles.rootPaper}>
         <div>
           {props.basket?.totalDiscountAmount !== 0 && (
-            <div style={styles.rootExclusiveTax}>
+            <div style={styles.rootSubTotalItem}>
               <Typography style={styles.subTotal}>Subtotal b/f disc</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(props.basket?.totalGrossAmount)}
@@ -430,7 +442,7 @@ const Cart = ({ ...props }) => {
             </div>
           )}
           {props.basket?.exclusiveTax !== 0 && (
-            <div style={styles.rootExclusiveTax}>
+            <div style={styles.rootSubTotalItem}>
               <Typography style={styles.subTotal}>Tax</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(props.basket.exclusiveTax)}
@@ -438,7 +450,7 @@ const Cart = ({ ...props }) => {
             </div>
           )}
           {props.basket?.totalDiscountAmount !== 0 && (
-            <div style={styles.rootExclusiveTax}>
+            <div style={styles.rootSubTotalItem}>
               <Typography style={styles.totalDiscount}>Discount</Typography>
               <Typography style={styles.totalDiscount}>
                 - {handleCurrency(props.basket.totalDiscountAmount)}
@@ -446,7 +458,7 @@ const Cart = ({ ...props }) => {
             </div>
           )}
           {props.basket?.totalGrossAmount !== 0 && (
-            <div style={styles.rootExclusiveTax}>
+            <div style={styles.rootSubTotalItem}>
               <Typography style={styles.subTotal}>Subtotal</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(handleSubtotal())}
@@ -454,7 +466,7 @@ const Cart = ({ ...props }) => {
             </div>
           )}
           {props.basket.totalSurchargeAmount !== 0 && (
-            <div style={styles.rootExclusiveTax}>
+            <div style={styles.rootSubTotalItem}>
               <Typography style={styles.subTotal}>Surcharge Amount</Typography>
               <Typography style={styles.subTotal}>
                 {handleCurrency(props.basket.totalSurchargeAmount)}
@@ -464,7 +476,7 @@ const Cart = ({ ...props }) => {
           {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
             <>
               {props.selectedDeliveryProvider?.deliveryFee !== 0 && (
-                <div style={styles.rootExclusiveTax}>
+                <div style={styles.rootSubTotalItem}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
                   <Typography style={styles.subTotal}>
                     {handleCurrency(
@@ -475,7 +487,7 @@ const Cart = ({ ...props }) => {
               )}
               {props.selectedDeliveryProvider?.deliveryFee === 0 &&
               props.orderingMode === 'DELIVERY' ? (
-                <div style={styles.rootExclusiveTax}>
+                <div style={styles.rootSubTotalItem}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
                   <Typography style={styles.subTotal}>Free</Typography>
                 </div>
@@ -568,6 +580,19 @@ const Cart = ({ ...props }) => {
     );
   };
 
+  const renderCartOrEmpty = () => {
+    if (!isEmptyArray(props.basket.details)) {
+      return <div>{renderCart()}</div>;
+    } else {
+      return (
+        <div style={styles.rootEmptyCart}>
+          <img src={config.url_emptyImage} alt='is empty' />
+          <Typography style={styles.emptyText}>Data is empty</Typography>
+        </div>
+      );
+    }
+  };
+
   return (
     <Box
       component='div'
@@ -575,6 +600,8 @@ const Cart = ({ ...props }) => {
         flexGrow: 1,
       }}
     >
+      {isLoading && <LoadingAddCart />}
+
       {openSelectDeliveryProvider && (
         <SelectProviderDialog
           open={openSelectDeliveryProvider}
@@ -594,14 +621,8 @@ const Cart = ({ ...props }) => {
           onClose={() => handleCloseTimeSlot()}
         />
       )}
-      {!isEmptyArray(props.basket.details) ? (
-        <div>{renderCart()}</div>
-      ) : (
-        <div style={styles.rootEmptyCart}>
-          <img src={config.url_emptyImage} alt='is empty' />
-          <Typography style={styles.emptyText}>Data is empty</Typography>
-        </div>
-      )}
+
+      {renderCartOrEmpty()}
     </Box>
   );
 };

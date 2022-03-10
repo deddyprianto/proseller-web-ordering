@@ -1,101 +1,91 @@
-/* eslint-disable react/prop-types */
-import React, { Component } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Banner from '../components/banner';
-import ProductList from '../components/productList';
+
+import Banner from 'components/banner';
+import ProductList from 'components/productList';
+
 import OutletSelection from './OutletSelection';
-import { OrderAction } from '../redux/actions/OrderAction';
-import { PromotionAction } from '../redux/actions/PromotionAction';
-import LoadingAddCart from '../components/loading/LoadingAddCart';
-import { isEmptyArray, isEmptyObject } from '../helpers/CheckEmpty';
-import config from '../config';
 
-import { lsLoad } from '../helpers/localStorage';
+import { PromotionAction } from 'redux/actions/PromotionAction';
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      isEmenu: window.location.hostname.includes('emenu'),
-    };
-  }
+const useWindowSize = () => {
+  const [size, setSize] = useState([0, 0]);
 
-  async componentDidMount() {
-    await this.props.dispatch(PromotionAction.fetchPromotion());
-    await this.setState({ loading: true });
-    await this.checkOfflineCart();
-    await this.setState({ loading: false });
-  }
-
-  async checkOfflineCart() {
-    try {
-      let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
-      let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
-      offlineCart = JSON.parse(offlineCart);
-
-      if (isEmptyObject(offlineCart)) return;
-      if (account) {
-        for (let i = 0; i < offlineCart.details.length; i++) {
-          let product = {
-            productID: offlineCart.details[i].productID,
-            unitPrice: offlineCart.details[i].unitPrice,
-            quantity: offlineCart.details[i].quantity,
-          };
-
-          if (!isEmptyArray(offlineCart.details[i].modifiers)) {
-            product.modifiers = offlineCart.details[i].modifiers;
-          }
-
-          let payload = {
-            outletID: offlineCart.outletID,
-            details: [],
-          };
-          payload.details.push(product);
-          await this.props.dispatch(OrderAction.addCart(payload));
-        }
-        localStorage.removeItem(`${config.prefix}_offlineCart`);
-      }
-    } catch (e) {
-      // console.log(e);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight]);
     }
-  }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+  return size;
+};
 
-  render() {
-    const { isEmenu } = this.state;
-
-    return (
-      <div className='col-full'>
-        <div
-          id='primary'
-          className='content-area'
-          style={{ paddingBottom: 100 }}
-        >
-          {this.state.loading ? <LoadingAddCart /> : null}
-          <div className='stretch-full-width'>
-            {this.props.setting.outletSelection === 'MANUAL' &&
-            !this.props.defaultOutlet.id &&
-            !isEmenu ? (
-              <OutletSelection />
-            ) : (
-              <main id='main' className='site-main'>
-                <Banner />
-                <ProductList />
-              </main>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
 const mapStateToProps = (state) => {
   return {
     setting: state.order,
-    orderingSetting: state.order.orderingSetting,
     defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
-export default connect(mapStateToProps)(Home);
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
+const Home = ({ ...props }) => {
+  const [width] = useWindowSize();
+  const gadgetScreen = width < 980;
+  const styles = {
+    root: {
+      paddingBottom: 100,
+    },
+    rootProduct: {
+      paddingLeft: gadgetScreen ? '3%' : '10%',
+      paddingRight: gadgetScreen ? '3%' : '10%',
+    },
+  };
+  const isEmenu = window.location.hostname.includes('emenu');
+
+  useEffect(() => {
+    const loadData = async () => {
+      // TODO: need explain for this
+      await props.dispatch(PromotionAction.fetchPromotion());
+    };
+    loadData();
+  }, []);
+
+  const renderProductListOrOutletSelection = () => {
+    if (
+      props.setting.outletSelection === 'MANUAL' &&
+      !props.defaultOutlet?.id &&
+      !isEmenu
+    ) {
+      return <OutletSelection />;
+    } else {
+      return (
+        <div style={styles.rootProduct}>
+          <Banner />
+          <ProductList />
+        </div>
+      );
+    }
+  };
+
+  return <div style={styles.root}>{renderProductListOrOutletSelection()}</div>;
+};
+
+Home.defaultProps = {
+  defaultOutlet: {},
+  setting: {},
+  dispatch: null,
+};
+
+Home.propTypes = {
+  defaultOutlet: PropTypes.object,
+  dispatch: PropTypes.func,
+  setting: PropTypes.object,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

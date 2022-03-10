@@ -640,9 +640,53 @@ function submitAndPay(payload) {
   };
 }
 
+function checkOfflineCart() {
+  return async (dispatch) => {
+    try {
+      const account = encryptor.decrypt(
+        lsLoad(`${config.prefix}_account`, true)
+      );
+
+      const getOfflineCart = localStorage.getItem(
+        `${config.prefix}_offlineCart`
+      );
+
+      const offlineCart = JSON.parse(getOfflineCart);
+
+      if (account && !isEmptyObject(offlineCart)) {
+        let payload = {
+          outletID: offlineCart.outletID,
+          details: [],
+        };
+        offlineCart.details.forEach(async (item) => {
+          let product = {
+            productID: item.productID,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+          };
+
+          if (!isEmptyArray(item.modifiers)) {
+            product.modifiers = item.modifiers;
+          }
+
+          payload.details.push(product);
+        });
+
+        await dispatch(addCart(payload));
+        await dispatch(getCart());
+
+        localStorage.removeItem(`${config.prefix}_offlineCart`);
+      }
+    } catch (e) {
+      // console.log(e);
+    }
+  };
+}
+
 export const OrderAction = {
   addCart,
   getCart,
+  checkOfflineCart,
   updateCart,
   processAddCart,
   processUpdateCart,
