@@ -109,6 +109,7 @@ const ModalDeliveryAddress = ({
         marginX: 0,
       },
     },
+    errorMessage: { lineHeight: '15px', marginTop: 1 },
   };
   let {
     addressDelivery, // address delivery is array of address
@@ -140,6 +141,7 @@ const ModalDeliveryAddress = ({
   }, []);
 
   const validationSchema = yup.object({
+    addressName: yup.string().required('Please enter Address Name.'),
     postalCode: yup
       .string()
       .required()
@@ -209,6 +211,21 @@ const ModalDeliveryAddress = ({
     }
     localStorage.removeItem(`${config.prefix}_locationPinned`);
     localStorage.removeItem(`${config.prefix}_addressName`);
+  };
+
+  const renderErrorMessage = (item) => {
+    if (item) {
+      return (
+        <Typography
+          className='text text-warning-theme small'
+          sx={style.errorMessage}
+        >
+          {item}
+        </Typography>
+      );
+    } else {
+      return;
+    }
   };
 
   const formik = useFormik({
@@ -321,6 +338,7 @@ const ModalDeliveryAddress = ({
               );
             })}
           </Box>
+          {renderErrorMessage(formik.errors.addressName)}
           <Box sx={style.boxPadding}>
             <Typography fontSize={12} fontWeight='500' color='#666'>
               Street Name <span className='required'>*</span>
@@ -370,14 +388,7 @@ const ModalDeliveryAddress = ({
               value={formik.values.postalCode || ''}
               onChange={formik.handleChange}
             />
-            {formik.errors.postalCode ? (
-              <div
-                className='text text-warning-theme small'
-                style={{ lineHeight: '15px', marginTop: 5 }}
-              >
-                {formik.errors.postalCode}
-              </div>
-            ) : null}
+            {renderErrorMessage(formik.errors.postalCode)}
           </Box>
           <div
             className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'
