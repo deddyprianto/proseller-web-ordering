@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import parse from 'html-react-parser';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -11,7 +12,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
-import { isEmptyObject } from 'jquery';
 
 const ModalInfoTransferDialog = ({ open, onClose, data }) => {
   const color = useSelector((state) => state.theme.color);
@@ -34,17 +34,22 @@ const ModalInfoTransferDialog = ({ open, onClose, data }) => {
 
   const imageSource = () => {
     if (!isEmptyArray(data.configurations)) {
-      const [a] = data?.configurations?.filter(
+      const [image] = data?.configurations?.filter(
         (item) => item.name === 'manual_transfer_image'
       );
 
-      return a.value;
+      return image.value;
     } else return '';
   };
 
   const renderDescription = () => {
-    if (!isEmptyObject(data)) {
-      return <Typography sx={style.description}>{data.description}</Typography>;
+    if (!isEmptyArray(data.configurations)) {
+      const [description] = data?.configurations?.filter(
+        (item) => item.name === 'payment_description'
+      );
+      return parse(description.value);
+    } else {
+      return;
     }
   };
 
@@ -73,7 +78,8 @@ const ModalInfoTransferDialog = ({ open, onClose, data }) => {
           src={imageSource()}
           sx={style.imgStyle}
         />
-        {renderDescription()}
+
+        <Box sx={style.description}>{renderDescription()}</Box>
       </DialogContent>
       <DialogActions>
         <Button
@@ -92,10 +98,6 @@ const ModalInfoTransferDialog = ({ open, onClose, data }) => {
     </Dialog>
   );
 };
-
-// ModalInfoTransferDialog.defaultValue = {
-
-// }
 
 ModalInfoTransferDialog.propTypes = {
   open: PropTypes.bool.isRequired,
