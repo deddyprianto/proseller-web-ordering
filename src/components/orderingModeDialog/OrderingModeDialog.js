@@ -69,6 +69,13 @@ const OrderingModeDialog = ({ open, onClose }) => {
       borderWidth: 'thin',
       borderColor: 'rgb(61, 70, 79)',
     },
+    gridIconCheck: {
+      textAlign: 'left',
+      paddingLeft: 20,
+    },
+    divInsideGirdIconCheck: {
+      paddingLeft: 18,
+    },
   };
 
   const dispatch = useDispatch();
@@ -95,7 +102,9 @@ const OrderingModeDialog = ({ open, onClose }) => {
       if (data) {
         //TODO: Please remove the function after update from backend
         const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
-          handleFilter(data[mode.isEnabledFieldName].toString().toUpperCase())
+          handleFilter(
+            data[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
+          )
         );
         const orderingModesMapped = orderingModesFieldFiltered.map(
           (mode) => mode.name
@@ -114,21 +123,8 @@ const OrderingModeDialog = ({ open, onClose }) => {
           <Grid item xs={4} sx={{ textAlign: 'right' }}>
             <StoreMallDirectoryIcon />
           </Grid>
-          <Grid
-            item
-            xs={8}
-            sx={{
-              textAlign: 'left',
-              paddingLeft: 20,
-            }}
-          >
-            <div
-              style={{
-                paddingLeft: 18,
-              }}
-            >
-              {item}
-            </div>
+          <Grid item xs={8} sx={style.gridIconCheck}>
+            <div style={style.divInsideGirdIconCheck}>{item}</div>
           </Grid>
         </Grid>
       );
@@ -138,21 +134,8 @@ const OrderingModeDialog = ({ open, onClose }) => {
           <Grid item xs={4} sx={{ textAlign: 'right' }}>
             <LocalMallIcon />
           </Grid>
-          <Grid
-            item
-            xs={8}
-            sx={{
-              textAlign: 'left',
-              paddingLeft: 20,
-            }}
-          >
-            <div
-              style={{
-                paddingLeft: 18,
-              }}
-            >
-              {item}
-            </div>
+          <Grid item xs={8} sx={style.gridIconCheck}>
+            <div style={style.divInsideGirdIconCheck}>{item}</div>
           </Grid>
         </Grid>
       );
@@ -169,13 +152,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
               textAlign: 'left',
             }}
           >
-            <div
-              style={{
-                paddingLeft: 18,
-              }}
-            >
-              {item}
-            </div>
+            <div style={style.divInsideGirdIconCheck}>{item}</div>
           </Grid>
         </Grid>
       );
@@ -185,21 +162,8 @@ const OrderingModeDialog = ({ open, onClose }) => {
           <Grid item xs={4} sx={{ textAlign: 'right' }}>
             <ArticleIcon />
           </Grid>
-          <Grid
-            item
-            xs={8}
-            sx={{
-              textAlign: 'left',
-              paddingLeft: 20,
-            }}
-          >
-            <div
-              style={{
-                paddingLeft: 18,
-              }}
-            >
-              {item}
-            </div>
+          <Grid item xs={8} sx={style.gridIconCheck}>
+            <div style={style.divInsideGirdIconCheck}>{item}</div>
           </Grid>
         </Grid>
       );
