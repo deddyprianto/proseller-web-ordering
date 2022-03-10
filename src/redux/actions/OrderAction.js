@@ -297,9 +297,6 @@ function processUpdateCart(product) {
     } else {
       await dispatch(processOfflineCart(payload, 'Update'));
     }
-
-    const response = await dispatch(getCart());
-    return response;
   };
 }
 
@@ -313,9 +310,6 @@ function processRemoveCart(product) {
     } else {
       await dispatch(processOfflineCart(payload, 'Update'));
     }
-
-    const response = await dispatch(getCart());
-    return response;
   };
 }
 
@@ -420,8 +414,6 @@ function processAddCart(defaultOutlet, selectedItem) {
     } else {
       await dispatch(processOfflineCart(payload, 'Add'));
     }
-
-    await dispatch(getCart());
   };
 }
 
