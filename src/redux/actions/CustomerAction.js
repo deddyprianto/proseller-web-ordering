@@ -263,40 +263,9 @@ function getVoucher() {
       'bearer'
     );
 
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
       console.log(response);
-    else {
-      let selectedVoucher = encryptor.decrypt(
-        JSON.parse(localStorage.getItem(`${config.prefix}_selectedVoucher`))
-      );
-
-      if (selectedVoucher) {
-        selectedVoucher.forEach((element) => {
-          response.Data = response.Data.filter((items) => {
-            return items.serialNumber !== element.serialNumber;
-          });
-        });
-      }
-
-      response.Data = _.forEach(response.Data, function (value) {
-        if (value.expiryDate)
-          value.expiryDate = moment(value.expiryDate).format('YYYY-MM-DD');
-        return value;
-      });
-
-      let myVoucherGroup = [];
-      _.forEach(_.groupBy(response.Data, 'id'), function (value) {
-        let group = _.groupBy(value, 'expiryDate');
-        for (const key in group) {
-          if (Object.hasOwnProperty.call(group, key)) {
-            group[key][0].totalRedeem = group[key].length;
-            myVoucherGroup.push(group[key][0]);
-          }
-        }
-      });
-      // console.log(myVoucherGroup)
-
-      response.Data = _.orderBy(myVoucherGroup, ['expiryDate'], ['asc']);
+    } else {
       dispatch(setData(response, CONSTANT.GET_VOUCHER));
     }
     return response;
