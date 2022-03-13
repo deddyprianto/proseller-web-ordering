@@ -115,22 +115,19 @@ const TimeSlotDialog = ({ open, onClose }) => {
 
     try {
       // date of time slot
-      await dispatch({
-        type: 'SET_ORDER_ACTION_DATE',
-        payload: selectedDate,
-      });
+      await dispatch(
+        OrderAction.setData(selectedDate, 'SET_ORDER_ACTION_DATE')
+      );
 
       // action time slot range
-      await dispatch({
-        type: 'SET_ORDER_ACTION_TIME',
-        payload: orderActionTime?.trim(),
-      });
+      await dispatch(
+        OrderAction.setData(orderActionTime?.trim(), 'SET_ORDER_ACTION_TIME')
+      );
 
       //action time slot
-      await dispatch({
-        type: 'SET_ORDER_ACTION_TIME_SLOT',
-        payload: selectedTime,
-      });
+      await dispatch(
+        OrderAction.setData(selectedTime, 'SET_ORDER_ACTION_TIME_SLOT')
+      );
     } catch (error) {
       console.log(error);
     }

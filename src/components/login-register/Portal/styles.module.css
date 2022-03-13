@@ -18,13 +18,13 @@
 }
 
 .emailField {
-  padding: 10rem;
+  padding: 1rem;
   color: #666666;
   outline: none;
   border: 1px solid #cccccc;
   box-sizing: border-box;
   font-weight: normal;
-  border-radius: 50px;
+  border-radius: 5px;
 }
 
 .phoneField {

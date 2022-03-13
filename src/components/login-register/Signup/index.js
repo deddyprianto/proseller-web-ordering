@@ -1,11 +1,11 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import EmailForm from "./EmailForm";
-import PhoneForm from "./PhoneForm";
-import SignUpSuccess from "./SignUpSuccess";
-import CustomFields from "../../profile/CustomFields";
+import EmailForm from './EmailForm';
+import PhoneForm from './PhoneForm';
+import SignUpSuccess from './SignUpSuccess';
+import CustomFields from '../../profile/CustomFields';
 
 const SignUp = ({
   method,
@@ -36,10 +36,9 @@ const SignUp = ({
   color,
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
-
   if (minimumAge && fields) {
     fields.forEach((mandatory) => {
-      if (mandatory.fieldName === "birthDate") {
+      if (mandatory.fieldName === 'birthDate') {
         mandatory.minimumAge = minimumAge;
         mandatory.isAutoDisable = false;
       }
@@ -47,9 +46,9 @@ const SignUp = ({
   }
 
   let isTCAvailable = false;
-  let termsAndConditions = "";
+  let termsAndConditions = '';
   try {
-    const find = setting.find((item) => item.settingKey === "TermCondition");
+    const find = setting.find((item) => item.settingKey === 'TermCondition');
     if (find !== undefined) {
       isTCAvailable = true;
       termsAndConditions = find.settingValue;
@@ -57,42 +56,42 @@ const SignUp = ({
   } catch (e) {}
 
   return (
-    <div className="modal-content" style={{ width: "100%" }}>
+    <div className='modal-content' style={{ width: '100%' }}>
       <div
-        className="modal-header"
-        style={{ display: "flex", justifyContent: "center" }}
+        className='modal-header'
+        style={{ display: 'flex', justifyContent: 'center' }}
       >
         <button
-          type="button"
-          className="close"
+          type='button'
+          className='close'
           style={{
-            position: "absolute",
+            position: 'absolute',
             left: 10,
             top: 20,
           }}
           onClick={handleBackButtonClick}
         >
-          <i className="fa fa-chevron-left"></i>
+          <i className='fa fa-chevron-left'></i>
         </button>
         <h5
-          className="modal-title"
-          id="exampleModalLabel"
+          className='modal-title'
+          id='exampleModalLabel'
           style={{ fontSize: 20 }}
         >
-          {method === "phone" ? "Mobile" : "Email"} Register
+          {method === 'phone' ? 'Mobile' : 'Email'} Register
         </h5>
         <button
-          type="button"
-          className="close"
-          data-dismiss="modal"
-          aria-label="Close"
+          type='button'
+          className='close'
+          data-dismiss='modal'
+          aria-label='Close'
           style={{
-            position: "absolute",
+            position: 'absolute',
             right: 10,
             top: 16,
           }}
         >
-          <span aria-hidden="true" style={{ fontSize: 30 }}>
+          <span aria-hidden='true' style={{ fontSize: 30 }}>
             ×
           </span>
         </button>
@@ -100,9 +99,9 @@ const SignUp = ({
       {signUpSuccess ? (
         <SignUpSuccess
           method={method}
-          handleLogin={method === "phone" ? handlePhoneLogin : handleEmailLogin}
+          handleLogin={method === 'phone' ? handlePhoneLogin : handleEmailLogin}
           username={
-            method === "phone"
+            method === 'phone'
               ? initialUserData.phoneNumber
               : initialUserData.email
           }
@@ -119,7 +118,7 @@ const SignUp = ({
           enableSMSOTP={enableSMSOTP}
           enableWhatsappOTP={enableWhatsappOTP}
         ></SignUpSuccess>
-      ) : method === "phone" ? (
+      ) : method === 'phone' ? (
         <PhoneForm
           phoneNumber={initialUserData.phoneNumber}
           handleChange={handleChange}
@@ -168,7 +167,7 @@ const SignUp = ({
 };
 
 SignUp.propTypes = {
-  method: PropTypes.oneOf(["phone", "email"]),
+  method: PropTypes.oneOf(['phone', 'email']),
   initialUserData: PropTypes.object,
   handleChange: PropTypes.func,
   handleEmailSubmit: PropTypes.func,

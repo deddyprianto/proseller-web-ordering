@@ -200,6 +200,13 @@ const Cart = ({ ...props }) => {
       padding: 0,
       backgroundColor: props.color.primary,
     },
+    warningText: {
+      fontSize: '1.2rem',
+      fontStyle: 'italic',
+      fontWeight: 500,
+      marginTop: 1,
+      color: props.color.textWarningColor,
+    },
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -220,6 +227,9 @@ const Cart = ({ ...props }) => {
 
   useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
+    if (!props.orderingMode) {
+      setOpenOrderingMode(true);
+    }
   }, [props]);
 
   const handleCurrency = (price) => {
@@ -306,6 +316,12 @@ const Cart = ({ ...props }) => {
     props.history.push('/payment');
   };
 
+  const renderWarning = (value) => {
+    return (
+      <Typography sx={styles.warningText}>* Please Select {value}</Typography>
+    );
+  };
+
   const renderPickupDateTime = () => {
     if (
       (props.orderingMode === 'DELIVERY' &&
@@ -316,7 +332,14 @@ const Cart = ({ ...props }) => {
       return (
         <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
-            <Typography style={styles.subTotal}>Pickup Date & Time</Typography>
+            <Box flexDirection='column'>
+              <Typography style={styles.subTotal}>
+                Pickup Date & Time
+              </Typography>
+              {props?.orderActionTimeSlot
+                ? null
+                : renderWarning('Pickup Date & Time.')}
+            </Box>
             <Button
               style={styles.mode}
               startIcon={<AccessTimeIcon style={styles.icon} />}
@@ -381,7 +404,12 @@ const Cart = ({ ...props }) => {
       <>
         <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
-            <Typography style={styles.subTotal}>Delivery Address</Typography>
+            <Box flexDirection='column'>
+              <Typography style={styles.subTotal}>Delivery Address</Typography>
+              {props?.deliveryAddress
+                ? null
+                : renderWarning('delivery address.')}
+            </Box>
             <Button
               style={styles.mode}
               startIcon={<ContactMailIcon style={styles.icon} />}
@@ -400,7 +428,14 @@ const Cart = ({ ...props }) => {
         {props?.deliveryAddress && (
           <Paper variant='outlined' style={styles.rootPaper}>
             <div style={styles.rootMode}>
-              <Typography style={styles.subTotal}>Delivery Provider</Typography>
+              <Box flexDirection='column'>
+                <Typography style={styles.subTotal}>
+                  Delivery Provider
+                </Typography>
+                {props?.selectedDeliveryProvider
+                  ? null
+                  : renderWarning('delivery provider.')}
+              </Box>
               <Button
                 style={styles.mode}
                 startIcon={<ContactsRoundedIcon style={styles.icon} />}
