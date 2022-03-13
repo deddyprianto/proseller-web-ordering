@@ -95,7 +95,6 @@ const OrderingModeDialog = ({ open, onClose }) => {
         OutletAction?.fetchSingleOutlet(defaultOutlet)
       );
       if (data) {
-        console.log(data, '>>>>> ');
         const orderingModesField = [
           {
             isEnabledFieldName: 'enableStorePickUp',
