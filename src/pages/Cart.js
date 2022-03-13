@@ -38,6 +38,7 @@ const mapStateToProps = (state) => {
     defaultOutlet: state.outlet.defaultOutlet,
     deliveryAddress: state.order.deliveryAddress,
     orderingMode: state.order.orderingMode,
+    orderingModeDisplayName: state.order.orderingModeDisplayName,
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
@@ -239,7 +240,10 @@ const Cart = ({ ...props }) => {
 
   useEffect(() => {
     const handleRemoveOrderingMode = async () => {
-      if (isEmptyArray(props.basket.details)) {
+      const orderingModeLocal = localStorage.getItem(
+        `${config.prefix}_ordering_mode`
+      );
+      if (isEmptyArray(props.basket.details) && !orderingModeLocal) {
         await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
         await props.dispatch(
           OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
@@ -249,6 +253,7 @@ const Cart = ({ ...props }) => {
         );
         localStorage.removeItem(`${config.prefix}_delivery_providers`);
         localStorage.removeItem(`${config.prefix}_ordering_mode`);
+        localStorage.removeItem(`${config.prefix}_ordering_mode_display_name`);
       }
     };
 
@@ -286,6 +291,16 @@ const Cart = ({ ...props }) => {
 
   const handleLogin = () => {
     document.getElementById('login-register-btn').click();
+  };
+
+  const handleRenderOrderingModeLabel = () => {
+    if (props.orderingModeDisplayName) {
+      return props.orderingModeDisplayName;
+    } else if (props.orderingMode) {
+      return props.orderingMode;
+    } else {
+      return 'Ordering Mode';
+    }
   };
 
   const handleDisabled = () => {
@@ -411,7 +426,7 @@ const Cart = ({ ...props }) => {
             }}
           >
             <Typography style={styles.typography}>
-              {props.orderingMode || 'Ordering Mode'}
+              {handleRenderOrderingModeLabel()}
             </Typography>
           </Button>
         </div>
@@ -693,6 +708,7 @@ Cart.defaultProps = {
   deliveryAddress: {},
   defaultOutlet: {},
   orderingMode: {},
+  orderingModeDisplayName: '',
   orderActionDate: {},
   orderActionTime: {},
   orderActionTimeSlot: {},
@@ -714,6 +730,7 @@ Cart.propTypes = {
   orderActionTime: PropTypes.object,
   orderActionTimeSlot: PropTypes.object,
   orderingMode: PropTypes.object,
+  orderingModeDisplayName: PropTypes.object,
   selectedDeliveryProvider: PropTypes.object,
 };
 

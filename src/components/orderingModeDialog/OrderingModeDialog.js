@@ -194,14 +194,18 @@ const OrderingModeDialog = ({ open, onClose }) => {
 
     await dispatch({
       type: 'SET_ORDERING_MODE',
-      payload: value,
+      payload: value.name,
     });
 
     const responseChangeOrderingMode = await dispatch(
       OrderAction.changeOrderingMode({
-        orderingMode: value,
+        orderingMode: value.name,
         provider: selectedDeliveryProvider ? selectedDeliveryProvider : {},
       })
+    );
+
+    await dispatch(
+      OrderAction.setData(value.displayName, 'SET_ORDERING_MODE_DISPlAY_NAME')
     );
 
     await dispatch(
@@ -220,7 +224,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
             sx={orderingMode === item ? style.buttonSelected : style.button}
             loadingPosition='start'
             loading={isLoading}
-            onClick={() => handleConfirmOrderingMode(item.name)}
+            onClick={() => handleConfirmOrderingMode(item)}
           >
             {iconCheck(item)}
           </LoadingButton>
