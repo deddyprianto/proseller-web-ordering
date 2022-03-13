@@ -226,10 +226,37 @@ const Cart = ({ ...props }) => {
   }, []);
 
   useEffect(() => {
+    const checkLoginAndOrderingMode = async () => {
+      if (!props.isLoggedIn) {
+        document.getElementById('login-register-btn').click();
+      } else if (!props.orderingMode && !isEmptyArray(props.basket.details)) {
+        setOpenOrderingMode(true);
+      }
+    };
+
+    checkLoginAndOrderingMode();
+  }, []);
+
+  useEffect(() => {
+    const handleRemoveOrderingMode = async () => {
+      if (isEmptyArray(props.basket.details)) {
+        await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
+        await props.dispatch(
+          OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
+        );
+        await props.dispatch(
+          OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
+        );
+        localStorage.removeItem(`${config.prefix}_delivery_providers`);
+        localStorage.removeItem(`${config.prefix}_ordering_mode`);
+      }
+    };
+
+    handleRemoveOrderingMode();
+  }, [props.basket.details]);
+
+  useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
-    if (!props.orderingMode) {
-      setOpenOrderingMode(true);
-    }
   }, [props]);
 
   const handleCurrency = (price) => {
@@ -380,11 +407,7 @@ const Cart = ({ ...props }) => {
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
             onClick={() => {
-              if (!props.isLoggedIn) {
-                handleLogin();
-              } else {
-                handleOpenOrderingMode();
-              }
+              handleOpenOrderingMode();
             }}
           >
             <Typography style={styles.typography}>
