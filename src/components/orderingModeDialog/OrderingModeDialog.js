@@ -76,30 +76,14 @@ const OrderingModeDialog = ({ open, onClose }) => {
     divInsideGirdIconCheck: {
       paddingLeft: 18,
     },
+    iconAlign: {
+      textAlign: 'right',
+    },
   };
 
   const dispatch = useDispatch();
   const [orderingModes, setOrderingModes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const orderingModesField = [
-    {
-      isEnabledFieldName: 'enableStorePickUp',
-      name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
-    },
-    {
-      isEnabledFieldName: 'enableDelivery',
-      name: CONSTANT.ORDERING_MODE_DELIVERY,
-    },
-    {
-      isEnabledFieldName: 'enableTakeAway',
-      name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
-    },
-    {
-      isEnabledFieldName: 'enableDineIn',
-      name: CONSTANT.ORDERING_MODE_DINE_IN,
-    },
-  ];
 
   const handleFilter = (value) => {
     return value === 'TRUE';
@@ -111,6 +95,28 @@ const OrderingModeDialog = ({ open, onClose }) => {
         OutletAction?.fetchSingleOutlet(defaultOutlet)
       );
       if (data) {
+        const orderingModesField = [
+          {
+            isEnabledFieldName: 'enableStorePickUp',
+            name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
+            displayName: data.storePickUpName || null,
+          },
+          {
+            isEnabledFieldName: 'enableDelivery',
+            name: CONSTANT.ORDERING_MODE_DELIVERY,
+            displayName: data.deliveryName || null,
+          },
+          {
+            isEnabledFieldName: 'enableTakeAway',
+            name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
+            displayName: data.takeAwayName || null,
+          },
+          {
+            isEnabledFieldName: 'enableDineIn',
+            name: CONSTANT.ORDERING_MODE_DINE_IN,
+            displayName: data.dineInName || null,
+          },
+        ];
         //TODO: Please remove the function after update from backend
         const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
           handleFilter(
@@ -118,7 +124,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           )
         );
         const orderingModesMapped = orderingModesFieldFiltered.map(
-          (mode) => mode.name
+          (mode) => mode
         );
 
         await setOrderingModes(orderingModesMapped);
@@ -128,53 +134,55 @@ const OrderingModeDialog = ({ open, onClose }) => {
   }, []);
 
   const iconCheck = (item) => {
-    if (item === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
+    if (item.name === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+          <Grid item xs={4} sx={style.iconAlign}>
             <StoreMallDirectoryIcon />
           </Grid>
           <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>{item}</div>
+            <div style={style.divInsideGirdIconCheck}>
+              {item.displayName || item.name}
+            </div>
           </Grid>
         </Grid>
       );
-    } else if (item === CONSTANT.ORDERING_MODE_CHECKOUT) {
+    } else if (item.name === CONSTANT.ORDERING_MODE_CHECKOUT) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+          <Grid item xs={4} sx={style.iconAlign}>
             <LocalMallIcon />
           </Grid>
           <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>{item}</div>
+            <div style={style.divInsideGirdIconCheck}>
+              {item.displayName || item.name}
+            </div>
           </Grid>
         </Grid>
       );
-    } else if (item === CONSTANT.ORDERING_MODE_DELIVERY) {
+    } else if (item.name === CONSTANT.ORDERING_MODE_DELIVERY) {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+          <Grid item xs={4} sx={style.iconAlign}>
             <DeliveryDiningIcon />
           </Grid>
-          <Grid
-            item
-            xs={8}
-            sx={{
-              textAlign: 'left',
-            }}
-          >
-            <div style={style.divInsideGirdIconCheck}>{item}</div>
+          <Grid item xs={8} sx={style.gridIconCheck}>
+            <div style={style.divInsideGirdIconCheck}>
+              {item.displayName || item.name}
+            </div>
           </Grid>
         </Grid>
       );
     } else {
       return (
         <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={{ textAlign: 'right' }}>
+          <Grid item xs={4} sx={style.iconAlign}>
             <ArticleIcon />
           </Grid>
           <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>{item}</div>
+            <div style={style.divInsideGirdIconCheck}>
+              {item.displayName || item.name}
+            </div>
           </Grid>
         </Grid>
       );
@@ -186,14 +194,18 @@ const OrderingModeDialog = ({ open, onClose }) => {
 
     await dispatch({
       type: 'SET_ORDERING_MODE',
-      payload: value,
+      payload: value.name,
     });
 
     const responseChangeOrderingMode = await dispatch(
       OrderAction.changeOrderingMode({
-        orderingMode: value,
+        orderingMode: value.name,
         provider: selectedDeliveryProvider ? selectedDeliveryProvider : {},
       })
+    );
+
+    await dispatch(
+      OrderAction.setData(value.displayName, 'SET_ORDERING_MODE_DISPlAY_NAME')
     );
 
     await dispatch(
@@ -205,7 +217,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
   };
 
   const renderButton = () => {
-    const rendering = orderingModes.map((item, index) => {
+    return orderingModes.map((item, index) => {
       return (
         <Box sx={style.boxContent} key={index}>
           <LoadingButton
@@ -219,8 +231,6 @@ const OrderingModeDialog = ({ open, onClose }) => {
         </Box>
       );
     });
-
-    return rendering;
   };
 
   return (

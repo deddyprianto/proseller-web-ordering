@@ -18,6 +18,8 @@ const defaultState = {
     null,
   deliveryAddress: null,
   orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`) || null,
+  orderingModeDisplayName:
+    localStorage.getItem(`${config.prefix}_ordering_mode_display_name`) || null,
   orderingModeSelectedOn: localStorage.getItem(
     `${config.prefix}_ordering_mode_selected_on`
   )
@@ -64,11 +66,19 @@ export default function reducer(state = defaultState, action) {
         deliveryProviders: action.payload,
       };
     case 'SET_SELECTED_DELIVERY_PROVIDERS':
+      localStorage.setItem(
+        `${config.prefix}_delivery_providers`,
+        JSON.stringify(encryptor.encrypt(action.data))
+      );
       return {
         ...state,
-        selectedDeliveryProvider: action.payload,
+        selectedDeliveryProvider: action.data,
       };
     case 'SET_DELIVERY_ADDRESS':
+      localStorage.setItem(
+        `${config.prefix}_delivery_address`,
+        JSON.stringify(encryptor.encrypt(action.data))
+      );
       return {
         ...state,
         deliveryAddress: action.data,
@@ -82,6 +92,15 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         dataPendingLength: action.payload,
+      };
+    case 'SET_ORDERING_MODE_DISPlAY_NAME':
+      localStorage.setItem(
+        `${config.prefix}_ordering_mode_display_name`,
+        action.data
+      );
+      return {
+        ...state,
+        orderingModeDisplayName: action.data,
       };
     case 'SET_ORDERING_MODE': {
       const selectedOn = new Date();
@@ -107,19 +126,25 @@ export default function reducer(state = defaultState, action) {
         orderingModes: action.payload,
       };
     case 'SET_ORDER_ACTION_DATE':
+      localStorage.setItem(`${config.prefix}_order_action_date`, action.data);
       return {
         ...state,
-        orderActionDate: action.payload,
+        orderActionDate: action.data,
       };
     case 'SET_ORDER_ACTION_TIME':
+      localStorage.setItem(`${config.prefix}_order_action_time`, action.data);
       return {
         ...state,
-        orderActionTime: action.payload,
+        orderActionTime: action.data,
       };
     case 'SET_ORDER_ACTION_TIME_SLOT':
+      localStorage.setItem(
+        `${config.prefix}_order_action_time_slot`,
+        action.data
+      );
       return {
         ...state,
-        orderActionTimeSlot: action.payload,
+        orderActionTimeSlot: action.data,
       };
     case 'DELETE_ORDER_ACTION_TIME_SLOT':
       localStorage.removeItem(

@@ -38,6 +38,7 @@ const mapStateToProps = (state) => {
     defaultOutlet: state.outlet.defaultOutlet,
     deliveryAddress: state.order.deliveryAddress,
     orderingMode: state.order.orderingMode,
+    orderingModeDisplayName: state.order.orderingModeDisplayName,
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
@@ -200,6 +201,13 @@ const Cart = ({ ...props }) => {
       padding: 0,
       backgroundColor: props.color.primary,
     },
+    warningText: {
+      fontSize: '1.2rem',
+      fontStyle: 'italic',
+      fontWeight: 500,
+      marginTop: 1,
+      color: props.color.textWarningColor,
+    },
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -217,6 +225,40 @@ const Cart = ({ ...props }) => {
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    const checkLoginAndOrderingMode = async () => {
+      if (!props.isLoggedIn) {
+        document.getElementById('login-register-btn').click();
+      } else if (!props.orderingMode && !isEmptyArray(props.basket.details)) {
+        setOpenOrderingMode(true);
+      }
+    };
+
+    checkLoginAndOrderingMode();
+  }, []);
+
+  useEffect(() => {
+    const handleRemoveOrderingMode = async () => {
+      const orderingModeLocal = localStorage.getItem(
+        `${config.prefix}_ordering_mode`
+      );
+      if (isEmptyArray(props.basket.details) && !orderingModeLocal) {
+        await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
+        await props.dispatch(
+          OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
+        );
+        await props.dispatch(
+          OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
+        );
+        localStorage.removeItem(`${config.prefix}_delivery_providers`);
+        localStorage.removeItem(`${config.prefix}_ordering_mode`);
+        localStorage.removeItem(`${config.prefix}_ordering_mode_display_name`);
+      }
+    };
+
+    handleRemoveOrderingMode();
+  }, [props.basket.details]);
 
   useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
@@ -249,6 +291,16 @@ const Cart = ({ ...props }) => {
 
   const handleLogin = () => {
     document.getElementById('login-register-btn').click();
+  };
+
+  const handleRenderOrderingModeLabel = () => {
+    if (props.orderingModeDisplayName) {
+      return props.orderingModeDisplayName;
+    } else if (props.orderingMode) {
+      return props.orderingMode;
+    } else {
+      return 'Ordering Mode';
+    }
   };
 
   const handleDisabled = () => {
@@ -306,6 +358,12 @@ const Cart = ({ ...props }) => {
     props.history.push('/payment');
   };
 
+  const renderWarning = (value) => {
+    return (
+      <Typography sx={styles.warningText}>* Please Select {value}</Typography>
+    );
+  };
+
   const renderPickupDateTime = () => {
     if (
       (props.orderingMode === 'DELIVERY' &&
@@ -316,7 +374,14 @@ const Cart = ({ ...props }) => {
       return (
         <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
-            <Typography style={styles.subTotal}>Pickup Date & Time</Typography>
+            <Box flexDirection='column'>
+              <Typography style={styles.subTotal}>
+                Pickup Date & Time
+              </Typography>
+              {props?.orderActionTimeSlot
+                ? null
+                : renderWarning('Pickup Date & Time.')}
+            </Box>
             <Button
               style={styles.mode}
               startIcon={<AccessTimeIcon style={styles.icon} />}
@@ -357,15 +422,11 @@ const Cart = ({ ...props }) => {
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
             onClick={() => {
-              if (!props.isLoggedIn) {
-                handleLogin();
-              } else {
-                handleOpenOrderingMode();
-              }
+              handleOpenOrderingMode();
             }}
           >
             <Typography style={styles.typography}>
-              {props.orderingMode || 'Ordering Mode'}
+              {handleRenderOrderingModeLabel()}
             </Typography>
           </Button>
         </div>
@@ -381,7 +442,12 @@ const Cart = ({ ...props }) => {
       <>
         <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
-            <Typography style={styles.subTotal}>Delivery Address</Typography>
+            <Box flexDirection='column'>
+              <Typography style={styles.subTotal}>Delivery Address</Typography>
+              {props?.deliveryAddress
+                ? null
+                : renderWarning('delivery address.')}
+            </Box>
             <Button
               style={styles.mode}
               startIcon={<ContactMailIcon style={styles.icon} />}
@@ -400,7 +466,14 @@ const Cart = ({ ...props }) => {
         {props?.deliveryAddress && (
           <Paper variant='outlined' style={styles.rootPaper}>
             <div style={styles.rootMode}>
-              <Typography style={styles.subTotal}>Delivery Provider</Typography>
+              <Box flexDirection='column'>
+                <Typography style={styles.subTotal}>
+                  Delivery Provider
+                </Typography>
+                {props?.selectedDeliveryProvider
+                  ? null
+                  : renderWarning('delivery provider.')}
+              </Box>
               <Button
                 style={styles.mode}
                 startIcon={<ContactsRoundedIcon style={styles.icon} />}
@@ -635,6 +708,7 @@ Cart.defaultProps = {
   deliveryAddress: {},
   defaultOutlet: {},
   orderingMode: {},
+  orderingModeDisplayName: '',
   orderActionDate: {},
   orderActionTime: {},
   orderActionTimeSlot: {},
@@ -656,6 +730,7 @@ Cart.propTypes = {
   orderActionTime: PropTypes.object,
   orderActionTimeSlot: PropTypes.object,
   orderingMode: PropTypes.object,
+  orderingModeDisplayName: PropTypes.object,
   selectedDeliveryProvider: PropTypes.object,
 };
 

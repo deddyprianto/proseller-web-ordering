@@ -37,6 +37,24 @@ import ModalInfoTransferDialog from 'components/payment/ModalInfoTransferDialog'
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
+const deliveryLocal = encryptor.decrypt(
+  JSON.parse(localStorage.getItem(`${config.prefix}_delivery_address`))
+);
+
+const deliveryProviderLocal = encryptor.decrypt(
+  JSON.parse(localStorage.getItem(`${config.prefix}_delivery_providers`))
+);
+
+const orderActionDate = localStorage.getItem(
+  `${config.prefix}_order_action_date`
+);
+const orderActionTime = localStorage.getItem(
+  `${config.prefix}_order_action_time`
+);
+const orderActionTimeSlot = localStorage.getItem(
+  `${config.prefix}_order_action_time_slot`
+);
+
 const mapStateToProps = (state) => {
   return {
     color: state.theme.color,
@@ -49,11 +67,12 @@ const mapStateToProps = (state) => {
     selectedPaymentCard: state.payment.selectedPaymentCard,
     useSVC: state.payment.useSVC,
     orderingMode: state.order.orderingMode,
-    deliveryAddress: state.order.deliveryAddress,
-    orderActionDate: state.order.orderActionDate,
-    orderActionTime: state.order.orderActionTime,
-    orderActionTimeSlot: state.order.orderActionTimeSlot,
-    selectedDeliveryProvider: state.order.selectedDeliveryProvider,
+    deliveryAddress: state.order.deliveryAddress || deliveryLocal,
+    orderActionDate: state.order.orderActionDate || orderActionDate,
+    orderActionTime: state.order.orderActionTime || orderActionTime,
+    orderActionTimeSlot: state.order.orderActionTimeSlot || orderActionTimeSlot,
+    selectedDeliveryProvider:
+      state.order.selectedDeliveryProvider || deliveryProviderLocal,
   };
 };
 
@@ -779,6 +798,9 @@ const Payment = ({ ...props }) => {
       await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
       await props.dispatch(
         OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
+      );
+      await props.dispatch(
+        OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
       );
 
       handleAudio();

@@ -147,7 +147,6 @@ const LoginRegister = (props) => {
       });
       if (loginByEmail) {
         setLoginByEmail(true);
-        setMethod('email');
       }
 
       const loginByMobile = props.setting.find((items) => {
@@ -157,7 +156,6 @@ const LoginRegister = (props) => {
       });
       if (loginByMobile) {
         setLoginByMobile(true);
-        setMethod('phone');
       }
 
       const mobileOTP = props.setting.find((items) => {
@@ -782,7 +780,7 @@ const LoginRegister = (props) => {
     if (email) {
       let response = await props.dispatch(AuthActions.check({ email }));
       response = response.Data;
-      // //
+
       if (response.status === false) {
         // Fetch Custom & Mandatory Fields
         await props.dispatch(CustomerAction.mandatoryField());
@@ -1160,7 +1158,7 @@ const LoginRegister = (props) => {
               enableSMSOTP={enableSMSOTP}
               enableWhatsappOTP={enableWhatsappOTP}
               minimumAge={minimumAge}
-            ></SignUp>
+            />
           ) : (
             <Portal
               color={props.color.background}
@@ -1178,7 +1176,7 @@ const LoginRegister = (props) => {
               loginByMobile={loginByMobile}
               enableOrdering={enableOrdering}
               companyInfo={props.companyInfo}
-            ></Portal>
+            />
           )}
         </div>
       </div>

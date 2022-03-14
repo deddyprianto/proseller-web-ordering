@@ -95,11 +95,6 @@ const SelectProviderDialog = ({ open, onClose }) => {
   const handleSelectDeliveryProvider = async (value) => {
     setIsLoading(true);
 
-    await dispatch({
-      type: 'SET_SELECTED_DELIVERY_PROVIDERS',
-      payload: value,
-    });
-
     const response = await dispatch(
       OrderAction.changeOrderingMode({
         orderingMode: 'DELIVERY',
@@ -108,6 +103,10 @@ const SelectProviderDialog = ({ open, onClose }) => {
     );
 
     await dispatch(OrderAction.setData(response.data, CONSTANT.DATA_BASKET));
+
+    await dispatch(
+      OrderAction.setData(value, 'SET_SELECTED_DELIVERY_PROVIDERS')
+    );
 
     setIsLoading(false);
     onClose();
