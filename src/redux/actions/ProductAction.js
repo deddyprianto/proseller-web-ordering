@@ -100,7 +100,6 @@ function fetchProductList(filter, sort) {
     dispatch(fetchProductCategoryStarted());
     dispatch(clearCategoryProducts());
     const response = await ProductService.api('POST', payload, 'product/load');
-    // console.log(response, 'responseresponseresponse')
     if (response.statusCode >= 400 || response.StatusCode >= 400)
       dispatch(
         fetchProductError({
