@@ -738,7 +738,7 @@ const Payment = ({ ...props }) => {
       payload.deliveryProviderName = props.selectedDeliveryProvider.name;
       payload.deliveryService = '-';
       payload.deliveryProviderId = props.selectedDeliveryProvider.id;
-      payload.deliveryFee = props.selectedDeliveryProvider.deliveryFeeFloat;
+      payload.deliveryFee = props.selectedDeliveryProvider.deliveryFee;
     }
 
     if (!isEmptyArray(selectedVouchers)) {
