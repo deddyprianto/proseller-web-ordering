@@ -61,6 +61,13 @@ const SelectProviderDialog = ({ open, onClose }) => {
       fontWeight: 600,
       fontSize: 14,
     },
+    marginBottomGrid: {
+      marginBottom: '5px',
+    },
+    iconStyle: {
+      fontSize: 21,
+      marginRight: 1,
+    },
   };
 
   const dispatch = useDispatch();
@@ -132,17 +139,14 @@ const SelectProviderDialog = ({ open, onClose }) => {
               justifyContent='space-between'
               alignItems='center'
             >
-              <Grid item xs={9}>
+              <Grid item xs={9} sx={style.marginBottomGrid}>
                 <Typography
                   className='text'
                   sx={style.typographyButtonProvider}
                 >
                   <LocalShippingIcon
-                    sx={{
-                      fontSize: 21,
-                      marginRight: 1,
-                    }}
-                    viewBox='0 -5 24 24'
+                    sx={style.iconStyle}
+                    viewBox='-4 -9 27 27'
                   />
                   {item.name}
                 </Typography>
