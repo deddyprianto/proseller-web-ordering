@@ -806,7 +806,7 @@ const Payment = ({ ...props }) => {
       handleAudio();
       return history.push('/settleSuccess');
     } else {
-      setWarningMessage('Payment Failed!');
+      setWarningMessage(response?.data?.message);
       handleOpenWarningModal();
       setIsLoading(false);
     }
