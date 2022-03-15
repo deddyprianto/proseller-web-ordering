@@ -72,7 +72,7 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         loading: false,
-        error: action.payload.error,
+        error: action?.error?.data?.message,
       };
     case CONSTANT.LIST_PRODUCT:
       return Object.assign({}, state, {
