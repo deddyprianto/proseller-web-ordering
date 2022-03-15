@@ -60,6 +60,7 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo.data,
+    settings: state.order.setting,
 
     campaignPoint: state.campaign.data,
     selectedPoint: state.payment.selectedPoint,
@@ -718,12 +719,20 @@ const Payment = ({ ...props }) => {
   };
 
   const handlePay = async () => {
+    let isNeedConfirmation = false;
+    const enableAutoConfirmation = props.settings.find((item) => {
+      return item.settingKey === 'EnableAutoConfirmation';
+    });
+    console.log(enableAutoConfirmation);
+    if (enableAutoConfirmation) {
+      isNeedConfirmation = enableAutoConfirmation?.settingValue || false;
+    }
     setIsLoading(true);
     let payload = {
       cartID: props.basket.cartID,
       totalNettAmount: props.basket.totalNettAmount,
       payments: [],
-      isNeedConfirmation: false,
+      isNeedConfirmation,
       payAtPOS: false,
       tableNo: '-',
       orderingMode: props.orderingMode,
@@ -909,6 +918,7 @@ Payment.defaultProps = {
   selectedVoucher: [],
   campaignPoint: {},
   dispatch: null,
+  settings: [],
   deliveryAddress: {},
   orderActionDate: {},
   orderActionTime: {},
@@ -934,6 +944,11 @@ Payment.propTypes = {
   selectedPaymentCard: PropTypes.object,
   selectedPoint: PropTypes.object,
   selectedVoucher: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+    })
+  ),
+  settings: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
     })
