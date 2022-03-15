@@ -717,7 +717,7 @@ const Payment = ({ ...props }) => {
   const handleAudio = () => {
     audio.play();
   };
-
+ //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
     let isNeedConfirmation = false;
     const enableAutoConfirmation = props.settings.find((item) => {
