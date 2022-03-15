@@ -230,7 +230,11 @@ const Cart = ({ ...props }) => {
     const checkLoginAndOrderingMode = async () => {
       if (!props.isLoggedIn) {
         document.getElementById('login-register-btn').click();
-      } else if (!props.orderingMode && !isEmptyArray(props.basket.details)) {
+      } else if (
+        !props.orderingMode &&
+        !isEmptyArray(props.basket.details) &&
+        props.isLoggedIn
+      ) {
         setOpenOrderingMode(true);
       }
     };
@@ -239,7 +243,6 @@ const Cart = ({ ...props }) => {
   }, []);
 
   useEffect(() => {
-    console.log('masuk sin');
     const handleRemoveOrderingMode = async () => {
       const orderingModeLocal = localStorage.getItem(
         `${config.prefix}_ordering_mode`
@@ -424,7 +427,11 @@ const Cart = ({ ...props }) => {
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
             onClick={() => {
-              handleOpenOrderingMode();
+              if (!props.isLoggedIn) {
+                handleLogin();
+              } else {
+                handleOpenOrderingMode();
+              }
             }}
           >
             <Typography style={styles.typography}>

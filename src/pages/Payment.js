@@ -108,6 +108,7 @@ const Payment = ({ ...props }) => {
   const [checkSVCAvailable, setCheckSVCAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [openTransferDialog, setOpenTransferDialog] = useState(false);
+  const [disableButtonAll, setDisableButtonAll] = useState(false);
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
@@ -214,6 +215,7 @@ const Payment = ({ ...props }) => {
       width: '100%',
       display: 'flex',
       backgroundColor: props.color.background,
+      alignItems: 'center',
     },
     warningText: {
       fontSize: '1.2rem',
@@ -392,6 +394,9 @@ const Payment = ({ ...props }) => {
     }
   };
   const handleDisableButton = () => {
+    if (disableButtonAll) {
+      return true;
+    }
     if (totalPrice === 0) {
       return true;
     }
@@ -445,6 +450,21 @@ const Payment = ({ ...props }) => {
 
     return temp;
   };
+
+  useEffect(() => {
+    const disableAnotherPaymentForManual = () => {
+      if (props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER') {
+        handleRemovePoint();
+        handleRemoveSVC();
+        handleRemoveVoucher();
+        setDisableButtonAll(true);
+      } else {
+        setDisableButtonAll(false);
+      }
+    };
+
+    disableAnotherPaymentForManual();
+  }, [props.selectedPaymentCard?.paymentID]);
 
   const renderPrice = () => {
     return (
@@ -756,7 +776,7 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(props.selectedPaymentCard)) {
       const dataPaymentMethod = {
         accountId: props.selectedPaymentCard.accountID,
-        paymentAmount: totalPrice,
+        paymentAmount: Number(totalPrice),
         paymentID: props.selectedPaymentCard.paymentID,
         paymentName: props.selectedPaymentCard.paymentName,
         paymentType: props.selectedPaymentCard.paymentID,
@@ -787,6 +807,8 @@ const Payment = ({ ...props }) => {
       localStorage.removeItem(`${config.prefix}_selectedPoint`);
       localStorage.removeItem(`${config.prefix}_selectedVoucher`);
       localStorage.removeItem(`${config.prefix}_dataSettle`);
+      localStorage.removeItem(`${config.prefix}_delivery_address`);
+      localStorage.removeItem(`${config.prefix}_delivery_providers`);
 
       localStorage.setItem(
         `${config.prefix}_settleSuccess`,
@@ -814,8 +836,8 @@ const Payment = ({ ...props }) => {
   };
 
   const handleDisabledButtonPay = () => {
-    if (!isEmptyObject(props.selectedPaymentCard) || totalPrice !== 0) {
-      return false;
+    if (isEmptyObject(props.selectedPaymentCard) || totalPrice !== 0) {
+      return true;
     } else if (
       (!isEmptyObject(selectedPoint) ||
         !isEmptyArray(selectedVouchers) ||
