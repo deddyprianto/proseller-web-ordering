@@ -83,11 +83,6 @@ class Header extends Component {
   }
 
   componentDidMount = () => {
-    /* Re-fetch ordering setting if view is already  */
-    if (this.props.setting || this.props.setting.length > 0) {
-      this.props.dispatch(OrderAction.getSettingOrdering());
-    }
-
     let infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );

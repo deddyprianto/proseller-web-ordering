@@ -74,7 +74,6 @@ class Layout extends Component {
     if (isLoggedIn) {
       Promise.all([
         this.props.dispatch(InboxAction.getBroadcast({ take: 5, skip: 0 })),
-        this.props.dispatch(HistoryAction.getBasketPending()),
       ]);
     }
 

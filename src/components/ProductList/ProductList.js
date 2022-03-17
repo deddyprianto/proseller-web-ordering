@@ -156,7 +156,6 @@ const ProductList = ({ ...props }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [products, setProducts] = useState([]);
-  const [outlet, setOutlet] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
@@ -198,8 +197,6 @@ const ProductList = ({ ...props }) => {
         await handleFetchCategoryProduct({
           outlet: props.defaultOutlet,
         });
-
-        setOutlet(props.defaultOutlet);
       };
       loadData();
     } catch (e) {
@@ -213,7 +210,12 @@ const ProductList = ({ ...props }) => {
         setIsLoading(true);
         if (!isEmptyObject(selectedCategory)) {
           const products = await props.dispatch(
-            ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
+            ProductAction.fetchProduct(
+              selectedCategory,
+              props.defaultOutlet,
+              0,
+              200
+            )
           );
 
           setProducts(products.data);
