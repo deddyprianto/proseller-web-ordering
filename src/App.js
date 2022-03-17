@@ -149,14 +149,6 @@ const App = (props) => {
     if (!isLoggedIn || !account)
       localStorage.removeItem(`${config.prefix}_account`);
 
-    if (account) {
-      await props.dispatch(PaymentAction.getPaymentCard());
-      await handleReLogin(account);
-      setInterval(async () => {
-        await handleReLogin(account);
-      }, 1000);
-    }
-
     let param = getUrlParameters();
     if (param && param['input']) {
       param = getUrlParameters(base64.decode(decodeURI(param['input'])));

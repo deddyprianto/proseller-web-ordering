@@ -50,14 +50,6 @@ const Home = ({ ...props }) => {
   };
   const isEmenu = window.location.hostname.includes('emenu');
 
-  useEffect(() => {
-    const loadData = async () => {
-      // TODO: need explain for this
-      await props.dispatch(PromotionAction.fetchPromotion());
-    };
-    loadData();
-  }, []);
-
   const renderOrderingRetail = () => {
     if (props.orderingSetting?.CategoryHeaderType === 'WITH_CATEGORY_PAGE') {
       return <OrderingRetail history={props.history}></OrderingRetail>;
