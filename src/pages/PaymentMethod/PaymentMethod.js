@@ -24,6 +24,7 @@ import { MasterDataAction } from 'redux/actions/MasterDataAction';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import config from 'config';
 import Loading from 'components/loading/Loading';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const PaymentMethodPage = () => {
@@ -42,6 +43,7 @@ const PaymentMethodPage = () => {
 
   const colorState = useSelector((state) => state.theme.color);
   const account = useSelector((state) => state.auth.account.idToken.payload);
+  const amountToPay = useSelector((state) => state.payment.totalPaymentAmount);
 
   const [width] = useWindowSize();
   const gadgetScreen = 900 > width;
@@ -131,6 +133,18 @@ const PaymentMethodPage = () => {
       fontSize: 12,
       fontWeight: 'bold',
     },
+    dialogContent: {
+      '& .MuiDialogContent-root': {
+        paddingBottom: 0,
+      },
+    },
+    warningText: {
+      fontSize: '1.5rem',
+      textAlign: 'center',
+      fontWeight: 500,
+      marginTop: 1,
+      color: colorState.textWarningColor,
+    },
   };
 
   const history = useHistory();
@@ -146,6 +160,9 @@ const PaymentMethodPage = () => {
   const [openDialogRemoveCard, setOpenDialogRemoveCard] = useState(false);
   const [openSetDefaultPaymentMethod, setOpenSetDefaultPaymentMethod] =
     useState(false);
+
+  const [openAlertMinimumPayment, setOpenAlertMinimumPayment] = useState(false);
+  const [minimumPaymentAmount, setMinimumPaymentAmount] = useState(1);
 
   const selectedCard = encryptor.decrypt(
     JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
@@ -255,12 +272,23 @@ const PaymentMethodPage = () => {
     setIsLoading(false);
   };
 
-  const handleSelectedCard = async (item) => {
-    await dispatch(PaymentAction.setData(item, 'SET_SELECTED_PAYMENT_CARD'));
+  const handleSelectedCard = async (paymentSelected, minimumPayment) => {
+    if (amountToPay < minimumPayment) {
+      setMinimumPaymentAmount(minimumPayment);
+      setOpenAlertMinimumPayment(true);
+    } else {
+      const dataPaymentSelected = {
+        ...paymentSelected,
+        minimumPayment,
+      };
+      await dispatch(
+        PaymentAction.setData(dataPaymentSelected, 'SET_SELECTED_PAYMENT_CARD')
+      );
 
-    localStorage.removeItem(`${config.prefix}_getPaymentMethod`);
+      localStorage.removeItem(`${config.prefix}_getPaymentMethod`);
 
-    history.goBack();
+      history.goBack();
+    }
   };
 
   const handleRemoveCard = async () => {
@@ -291,10 +319,10 @@ const PaymentMethodPage = () => {
     }
   };
 
-  const renderCardList = (paymentID) => {
+  const renderCardList = (cardList) => {
     return listCardAccount
-      .filter((item) => item.paymentID === paymentID)
-      .map((item, index) => {
+      .filter((cardAccount) => cardAccount.paymentID === cardList.paymentID)
+      .map((card, index) => {
         return (
           <Box
             component={Grid}
@@ -304,24 +332,24 @@ const PaymentMethodPage = () => {
             sx={style.root}
             key={index}
             onClick={() => {
-              setCreditCardSelected(item);
+              setCreditCardSelected(card);
               if (profileRouteMatch) {
                 setOpenSetDefaultPaymentMethod(true);
               } else {
-                handleSelectedCard(item);
+                handleSelectedCard(card, cardList.minimumPayment);
               }
             }}
           >
             <Grid container justifyContent='space-between'>
               <Grid item xs={9}>
                 <Typography variant='inherit' fontWeight={700} paddingX={1}>
-                  {item?.details?.cardIssuer?.toUpperCase()}
+                  {card?.details?.cardIssuer?.toUpperCase()}
                 </Typography>
               </Grid>
               <Grid item xs={3} textAlign='right'>
-                {item.isDefault || item.id === selectedCard?.id ? (
+                {card.isDefault || card.id === selectedCard?.id ? (
                   <div className='profile-dashboard' style={style.cornerBadge}>
-                    {handleRenderCornerBadge(item)}
+                    {handleRenderCornerBadge(card)}
                   </div>
                 ) : (
                   <CreditCardIcon style={{ fontSize: 20 }} />
@@ -329,12 +357,12 @@ const PaymentMethodPage = () => {
               </Grid>
               <Grid item xs={12} textAlign='center'>
                 <Typography variant='inherit' fontSize={18} paddingY={3}>
-                  {item.details.maskedAccountNumber}
+                  {card.details.maskedAccountNumber}
                 </Typography>
               </Grid>
               <Grid item xs={12} textAlign='right'>
                 <Typography variant='inherit' fontSize={14} paddingX={1}>
-                  {`VALID THRU ${item.details.cardExpiryMonth} / ${item.details.cardExpiryYear}`}
+                  {`VALID THRU ${card.details.cardExpiryMonth} / ${card.details.cardExpiryYear}`}
                 </Typography>
               </Grid>
             </Grid>
@@ -351,7 +379,7 @@ const PaymentMethodPage = () => {
             sx={style.buttonManualTransfer}
             fullWidth
             startIcon={<CreditCardIcon />}
-            onClick={() => handleSelectedCard(item)}
+            onClick={() => handleSelectedCard(item, item.minimumPayment)}
           >
             {item.paymentName}
           </Button>
@@ -397,7 +425,7 @@ const PaymentMethodPage = () => {
               </LoadingButton>
             </Grid>
           </Grid>
-          <Grid container>{renderCardList(item.paymentID)}</Grid>
+          <Grid container>{renderCardList(item)}</Grid>
         </Box>
       );
     });
@@ -547,13 +575,7 @@ const PaymentMethodPage = () => {
             {creditCardSelected?.details?.cardIssuer?.toUpperCase()}
           </Typography>
         </DialogTitle>
-        <DialogContent
-          sx={{
-            '& .MuiDialogContent-root': {
-              paddingBottom: 0,
-            },
-          }}
-        >
+        <DialogContent sx={style.dialogContent}>
           <LoadingButton
             sx={style.buttonSetDefault}
             loadingPosition='start'
@@ -579,8 +601,54 @@ const PaymentMethodPage = () => {
     );
   };
 
+  const dialogAlertMinimumPayment = () => {
+    return (
+      <Dialog
+        fullWidth
+        maxWidth='xs'
+        open={openAlertMinimumPayment}
+        onClose={() => setOpenAlertMinimumPayment(false)}
+      >
+        <DialogTitle sx={style.dialogTitle}>
+          <Typography
+            fontSize={20}
+            fontWeight={700}
+            className='color'
+            textAlign='center'
+          >
+            Warning
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={style.dialogContent}>
+          <Typography sx={style.warningText}>
+            You're not reach the minimum payment. The minimum payment is{' '}
+            {new Intl.NumberFormat('en-SG', {
+              style: 'currency',
+              currency: 'SGD',
+            }).format(minimumPaymentAmount)}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            fullWidth
+            autoFocus
+            variant='outlined'
+            sx={style.buttonAddCard}
+            onClick={() => {
+              history.goBack();
+              setOpenAlertMinimumPayment(false);
+            }}
+          >
+            Back
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
   return (
     <Box>
+      {dialogAlertMinimumPayment()}
       {dialogConfirmation()}
       {dialogIframe()}
       {dialogSelectDefaultPaymentMethod()}
@@ -603,7 +671,6 @@ const PaymentMethodPage = () => {
         >
           Payment Method
         </Typography>
-
         <Box
           sx={{
             marginTop: '1em',

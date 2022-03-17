@@ -22,7 +22,7 @@ import TimeSlotDialog from 'components/timeSlot/TimeSlot';
 import LoadingAddCart from 'components/loading/LoadingAddCart';
 import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
 
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -230,7 +230,11 @@ const Cart = ({ ...props }) => {
     const checkLoginAndOrderingMode = async () => {
       if (!props.isLoggedIn) {
         document.getElementById('login-register-btn').click();
-      } else if (!props.orderingMode && !isEmptyArray(props.basket.details)) {
+      } else if (
+        !props.orderingMode &&
+        !isEmptyArray(props.basket.details) &&
+        props.isLoggedIn
+      ) {
         setOpenOrderingMode(true);
       }
     };
@@ -243,7 +247,7 @@ const Cart = ({ ...props }) => {
       const orderingModeLocal = localStorage.getItem(
         `${config.prefix}_ordering_mode`
       );
-      if (isEmptyArray(props.basket.details) && !orderingModeLocal) {
+      if (isEmptyArray(props.basket.details) && orderingModeLocal) {
         await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
         await props.dispatch(
           OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
@@ -251,7 +255,14 @@ const Cart = ({ ...props }) => {
         await props.dispatch(
           OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
         );
+        await props.dispatch(
+          OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
+        );
+        await props.dispatch(
+          OrderAction.setData(null, 'SET_ORDERING_MODE_DISPlAY_NAME')
+        );
         localStorage.removeItem(`${config.prefix}_delivery_providers`);
+        localStorage.removeItem(`${config.prefix}_delivery_address`);
         localStorage.removeItem(`${config.prefix}_ordering_mode`);
         localStorage.removeItem(`${config.prefix}_ordering_mode_display_name`);
       }
@@ -422,7 +433,11 @@ const Cart = ({ ...props }) => {
             startIcon={<SendIcon style={styles.icon} />}
             variant='outlined'
             onClick={() => {
-              handleOpenOrderingMode();
+              if (!props.isLoggedIn) {
+                handleLogin();
+              } else {
+                handleOpenOrderingMode();
+              }
             }}
           >
             <Typography style={styles.typography}>
@@ -481,7 +496,7 @@ const Cart = ({ ...props }) => {
                 onClick={() => setOpenSelectDeliveryProvider(true)}
               >
                 <Typography sx={styles.typography}>
-                  {props?.selectedDeliveryProvider
+                  {!isEmptyObject(props.selectedDeliveryProvider)
                     ? props?.selectedDeliveryProvider?.name
                     : 'Delivery Provider'}
                 </Typography>

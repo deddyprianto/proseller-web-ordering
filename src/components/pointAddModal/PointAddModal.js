@@ -141,7 +141,7 @@ const PointAddModal = ({ open, handleClose, price, ...props }) => {
   const handleSubmit = async () => {
     const result = {
       paymentType: 'point',
-      redeemValue: pointToUse,
+      redeemValue: Number(pointToUse),
       paymentAmount: selectedPointValue,
       isPoint: true,
     };
