@@ -255,6 +255,12 @@ const Cart = ({ ...props }) => {
         await props.dispatch(
           OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
         );
+        await props.dispatch(
+          OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
+        );
+        await props.dispatch(
+          OrderAction.setData(null, 'SET_ORDERING_MODE_DISPlAY_NAME')
+        );
         localStorage.removeItem(`${config.prefix}_delivery_providers`);
         localStorage.removeItem(`${config.prefix}_delivery_address`);
         localStorage.removeItem(`${config.prefix}_ordering_mode`);

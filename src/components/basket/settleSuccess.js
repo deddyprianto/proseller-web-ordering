@@ -38,9 +38,6 @@ class SettleSuccess extends Component {
     );
     const { orderingMode } = this.props;
 
-    console.log(paymentSuccess);
-    console.log(settleSuccess);
-
     let settingConfig = this.props.setting.find((items) => {
       return items.settingKey === 'PaymentSuccessIcon';
     });

@@ -277,8 +277,12 @@ const PaymentMethodPage = () => {
       setMinimumPaymentAmount(minimumPayment);
       setOpenAlertMinimumPayment(true);
     } else {
+      const dataPaymentSelected = {
+        ...paymentSelected,
+        minimumPayment,
+      };
       await dispatch(
-        PaymentAction.setData(paymentSelected, 'SET_SELECTED_PAYMENT_CARD')
+        PaymentAction.setData(dataPaymentSelected, 'SET_SELECTED_PAYMENT_CARD')
       );
 
       localStorage.removeItem(`${config.prefix}_getPaymentMethod`);

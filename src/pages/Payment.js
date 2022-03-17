@@ -110,6 +110,7 @@ const Payment = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [openTransferDialog, setOpenTransferDialog] = useState(false);
   const [disableButtonAll, setDisableButtonAll] = useState(false);
+  const [disabledSVCButton, setDisabledSVCButton] = useState(false);
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
@@ -280,6 +281,10 @@ const Payment = ({ ...props }) => {
     return result;
   };
 
+  const handleRemovePaymentCard = () => {
+    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
+  };
+
   const handlePrice = () => {
     let price = props.basket?.totalNettAmount || 0;
     if (!isEmptyObject(selectedPoint)) {
@@ -291,15 +296,37 @@ const Payment = ({ ...props }) => {
         price = price - selectedVoucher.paymentAmount;
       });
     }
-    if (props.useSVC?.paymentAmount) {
-      price = price - props.useSVC.paymentAmount;
-    }
 
     if (price < 0) {
       return 0;
     }
     return handlePriceLength(price);
   };
+
+  const handlePaymentCardPrice = () => {
+    let price = props.basket?.totalNettAmount || 0;
+
+    if (!isEmptyObject(useSVCPayment)) {
+      price = price - useSVCPayment.paymentAmount;
+    }
+
+    if (!isEmptyObject(selectedPoint)) {
+      price = price - selectedPoint.paymentAmount;
+    }
+
+    if (!isEmptyArray(selectedVouchers)) {
+      selectedVouchers.forEach((selectedVoucher) => {
+        price = price - selectedVoucher.paymentAmount;
+      });
+    }
+
+    if (price === 0) {
+      handleRemovePaymentCard();
+    }
+
+    return handlePriceLength(price);
+  };
+
   const handleCloseManualTransfer = () => {
     setOpenTransferDialog(false);
     handlePay();
@@ -321,10 +348,6 @@ const Payment = ({ ...props }) => {
     if (result.resultCode === 200 && result?.data?.balance) {
       setCheckSVCAvailable(true);
     }
-  };
-
-  const handleRemovePaymentCard = () => {
-    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
   };
 
   useEffect(() => {
@@ -401,7 +424,21 @@ const Payment = ({ ...props }) => {
     if (totalPrice === 0) {
       return true;
     }
+    if (useSVCPayment.paymentAmount === totalPrice) {
+      return true;
+    }
+
     return false;
+  };
+  const handleDisableSVCButton = () => {
+    if (disableButtonAll) {
+      return true;
+    }
+    if (useSVCPayment.paymentAmount === totalPrice) {
+      return false;
+    } else {
+      return false;
+    }
   };
 
   const handleSelectVoucher = () => {
@@ -618,7 +655,7 @@ const Payment = ({ ...props }) => {
           <Button
             style={styles.button}
             variant='outlined'
-            disabled={handleDisableButton()}
+            disabled={handleDisableSVCButton()}
             onClick={() => {
               props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
               setIsOpenSVC(true);
@@ -659,7 +696,7 @@ const Payment = ({ ...props }) => {
       if (props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER') {
         return 'Manual Transfer';
       }
-      return `${cardIssuer} ${maskedAccountNumber} (SGD ${handlePrice()})`;
+      return `${cardIssuer} ${maskedAccountNumber} (SGD ${handlePaymentCardPrice()})`;
     } else {
       return 'Payment With Card';
     }
@@ -737,13 +774,13 @@ const Payment = ({ ...props }) => {
   const handleAudio = () => {
     audio.play();
   };
- //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
+  //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
     let isNeedConfirmation = false;
     const enableAutoConfirmation = props.settings.find((item) => {
       return item.settingKey === 'EnableAutoConfirmation';
     });
-    console.log(enableAutoConfirmation);
+
     if (enableAutoConfirmation) {
       isNeedConfirmation = enableAutoConfirmation?.settingValue || false;
     }
@@ -845,15 +882,31 @@ const Payment = ({ ...props }) => {
   };
 
   const handleDisabledButtonPay = () => {
-    if (isEmptyObject(props.selectedPaymentCard) || totalPrice !== 0) {
+    const amountSVC = useSVCPayment?.paymentAmount;
+    if (
+      isEmptyObject(props.selectedPaymentCard) &&
+      totalPrice !== 0 &&
+      isEmptyObject(useSVCPayment)
+    ) {
       return true;
-    } else if (
-      (!isEmptyObject(selectedPoint) ||
-        !isEmptyArray(selectedVouchers) ||
-        !isEmptyObject(useSVCPayment)) &&
-      totalPrice === 0
+    }
+    if (
+      !isEmptyObject(selectedPoint) ||
+      (!isEmptyArray(selectedVouchers) && totalPrice === 0)
     ) {
       return false;
+    }
+    if (amountSVC - totalPrice === 0) {
+      return false;
+    }
+    if (
+      !isEmptyObject(props.selectedPaymentCard) &&
+      totalPrice > props.selectedPaymentCard.minimumPayment
+    ) {
+      return false;
+    }
+    if (totalPrice < props.selectedPaymentCard.minimumPayment) {
+      return true;
     }
     return true;
   };
