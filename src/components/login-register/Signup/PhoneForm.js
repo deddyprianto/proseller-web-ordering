@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import PasswordField from '../PasswordField';
 import CheckBox from '../../setting/checkBoxCostume';
+import { useSelector } from 'react-redux';
 
 const PhoneForm = ({
   phoneNumber,
@@ -19,6 +20,23 @@ const PhoneForm = ({
   invitationCode,
 }) => {
   const [agreeTC, setAgreeTC] = useState(true);
+  const orderState = useSelector((state) => state.order.setting);
+
+  const [settingFilterEmail] = orderState.filter(
+    (setting) => setting.settingKey === 'HideEmailOnRegistration'
+  );
+
+  useEffect(() => {
+    const handleSendEmailOnHide = () => {
+      if (settingFilterEmail?.settingValue) {
+        handleChange('email', 'phonenumber@proseller.io', true);
+      }
+    };
+
+    handleSendEmailOnHide();
+  }, [settingFilterEmail]);
+
+  console.log(settingFilterEmail);
 
   if (
     termsAndConditions === undefined ||
@@ -27,6 +45,37 @@ const PhoneForm = ({
   ) {
     isTCAvailable = false;
   }
+
+  const renderEmailInput = () => {
+    if (settingFilterEmail?.settingValue) {
+      return null;
+    }
+    return (
+      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
+        <label for='email'>
+          Email <span className='required'>*</span>
+        </label>
+        <input
+          type='email'
+          className='woocommerce-Input woocommerce-Input--text input-text'
+          style={{ borderRadius: 5 }}
+          onChange={(e) => handleChange('email', e.target.value, true)}
+        />
+        {error !== '' && (
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: 'red',
+              lineHeight: '15px',
+            }}
+          >
+            {error}
+          </div>
+        )}
+      </p>
+    );
+  };
 
   return (
     <div className='modal-body'>
@@ -54,30 +103,7 @@ const PhoneForm = ({
           </div>
         )}
       </p>
-
-      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-        <label for='email'>
-          Email <span className='required'>*</span>
-        </label>
-        <input
-          type='email'
-          className='woocommerce-Input woocommerce-Input--text input-text'
-          style={{ borderRadius: 5 }}
-          onChange={(e) => handleChange('email', e.target.value, true)}
-        />
-        {error !== '' && (
-          <div
-            style={{
-              marginTop: 5,
-              marginBottom: 5,
-              color: 'red',
-              lineHeight: '15px',
-            }}
-          >
-            {error}
-          </div>
-        )}
-      </p>
+      {renderEmailInput()}
       {children}
       {enablePassword && (
         <PasswordField
