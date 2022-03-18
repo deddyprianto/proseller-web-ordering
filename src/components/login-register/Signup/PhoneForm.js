@@ -26,6 +26,7 @@ const PhoneForm = ({
     (setting) => setting.settingKey === 'HideEmailOnRegistration'
   );
 
+  //TODO: this is not the best practice and must be removed when backend is ready.
   useEffect(() => {
     const handleSendEmailOnHide = () => {
       if (settingFilterEmail?.settingValue) {
