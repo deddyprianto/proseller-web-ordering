@@ -74,9 +74,12 @@ const LoginRegister = (props) => {
   const [errorName, setErrorName] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
-  //   const [errorBirthdate, setErrorBirthDate] = useState("");
   const [errorPhone, setErrorPhone] = useState('');
   const [inputs, setInputs] = useState({});
+
+  const [settingFilterEmail] = props.setting.filter(
+    (setting) => setting.settingKey === 'RegistrationEmailMandatory'
+  );
 
   useEffect(() => {
     setErrorPhone('');
@@ -345,13 +348,13 @@ const LoginRegister = (props) => {
         break;
 
       case 'email':
-        const email = data.toLowerCase().trim();
+        let email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
-        if (email === '') {
+        if (email && !settingFilterEmail.settingValue) {
           setErrorEmail('Email is required');
           setBtnSubmit(false);
           return;
@@ -362,6 +365,7 @@ const LoginRegister = (props) => {
           setErrorEmail('');
           setBtnSubmit(true);
         }
+
         break;
 
       case 'birthDate':
@@ -661,7 +665,7 @@ const LoginRegister = (props) => {
 
       let payload = {
         name,
-        email,
+        email: email || 'phonenumber@proseller.io',
         password: enableRegisterWithPassword ? password : randomPassword,
         referralCode,
         birthDate,

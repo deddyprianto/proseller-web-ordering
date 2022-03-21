@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import PasswordField from '../PasswordField';
 import CheckBox from '../../setting/checkBoxCostume';
-import { useSelector } from 'react-redux';
 
 const PhoneForm = ({
   phoneNumber,
@@ -20,24 +19,8 @@ const PhoneForm = ({
   invitationCode,
 }) => {
   const [agreeTC, setAgreeTC] = useState(true);
-  const orderState = useSelector((state) => state.order.setting);
-
-  const [settingFilterEmail] = orderState.filter(
-    (setting) => setting.settingKey === 'HideEmailOnRegistration'
-  );
 
   //TODO: this is not the best practice and must be removed when backend is ready.
-  useEffect(() => {
-    const handleSendEmailOnHide = () => {
-      if (settingFilterEmail?.settingValue) {
-        handleChange('email', 'phonenumber@proseller.io', true);
-      }
-    };
-
-    handleSendEmailOnHide();
-  }, [settingFilterEmail]);
-
-  console.log(settingFilterEmail);
 
   if (
     termsAndConditions === undefined ||
@@ -48,9 +31,6 @@ const PhoneForm = ({
   }
 
   const renderEmailInput = () => {
-    if (settingFilterEmail?.settingValue) {
-      return null;
-    }
     return (
       <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
         <label for='email'>
