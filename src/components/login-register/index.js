@@ -74,13 +74,15 @@ const LoginRegister = (props) => {
   const [errorName, setErrorName] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
-  //   const [errorBirthdate, setErrorBirthDate] = useState("");
   const [errorPhone, setErrorPhone] = useState('');
   const [inputs, setInputs] = useState({});
 
+  const [settingFilterEmail] = props.setting.filter(
+    (setting) => setting.settingKey === 'RegistrationEmailMandatory'
+  );
+
   useEffect(() => {
     setErrorPhone('');
-    setErrorEmail('');
     const otpData = lsLoad(config.prefix + '_otp') || null;
     if (otpData) {
       const waitTime = method === 'phone' ? 60 : 300;
@@ -294,7 +296,11 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         } else if (/^[A-Za-z\s]+$/.test(data)) {
           setErrorName('');
-          setBtnSubmit(true);
+          if (settingFilterEmail.settingValue) {
+            setBtnSubmit(true);
+          } else {
+            setBtnSubmit(false);
+          }
         } else {
           setErrorName('Name is alphabets only');
           setBtnSubmit(false);
@@ -345,23 +351,33 @@ const LoginRegister = (props) => {
         break;
 
       case 'email':
-        const email = data.toLowerCase().trim();
+        let email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
         if (email === '') {
-          setErrorEmail('Email is required');
-          setBtnSubmit(false);
+          if (!settingFilterEmail.settingValue) {
+            setErrorEmail('Email is required');
+            setBtnSubmit(false);
+          } else {
+            setErrorEmail('');
+            setBtnSubmit(true);
+          }
           return;
-        } else if (!checkEmail) {
+        } else if (!checkEmail && email) {
+          if (!settingFilterEmail.settingValue) {
+            setErrorEmail('Email not valid');
+            setBtnSubmit(false);
+          }
           setErrorEmail('Email not valid');
           setBtnSubmit(false);
         } else {
           setErrorEmail('');
           setBtnSubmit(true);
         }
+
         break;
 
       case 'birthDate':
@@ -661,7 +677,7 @@ const LoginRegister = (props) => {
 
       let payload = {
         name,
-        email,
+        email: email || 'phonenumber@proseller.io',
         password: enableRegisterWithPassword ? password : randomPassword,
         referralCode,
         birthDate,

@@ -50,7 +50,7 @@ const FooterWebOrdering = () => {
 
   const [value, setValue] = useState(0);
 
-  const [enableOrdering, setEnableOrdering] = useState(true);
+  const [enableOrdering, setEnableOrdering] = useState(false);
   const isLoggedIn = allState.auth.isLoggedIn;
 
   const iconCheck = (iconName) => {
@@ -71,11 +71,11 @@ const FooterWebOrdering = () => {
 
   useEffect(() => {
     const enableOrderingChecker = () => {
-      let enableOrderingCheck = allState.order.setting.find((items) => {
+      let enableOrdering = allState.order.setting.find((items) => {
         return items.settingKey === 'EnableOrdering';
       });
-      if (enableOrderingCheck) {
-        setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
+      if (enableOrdering?.settingValue) {
+        setEnableOrdering(enableOrdering?.settingValue);
       }
     };
     enableOrderingChecker();
@@ -95,7 +95,10 @@ const FooterWebOrdering = () => {
           sx={style.bottomNav}
         >
           {allState?.theme?.menu?.navBar?.map((menu, index) => {
-            if (!enableOrdering && menu.showWhenOrderingEnabled) {
+            if (!enableOrdering && menu?.text === 'Menu') {
+              return null;
+            }
+            if (!enableOrdering && menu?.showWhenOrderingEnabled) {
               return null;
             }
             if (!isLoggedIn && menu.loggedInOnly) {

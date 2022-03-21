@@ -20,6 +20,8 @@ const PhoneForm = ({
 }) => {
   const [agreeTC, setAgreeTC] = useState(true);
 
+  //TODO: this is not the best practice and must be removed when backend is ready.
+
   if (
     termsAndConditions === undefined ||
     termsAndConditions === null ||
@@ -27,6 +29,34 @@ const PhoneForm = ({
   ) {
     isTCAvailable = false;
   }
+
+  const renderEmailInput = () => {
+    return (
+      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
+        <label for='email'>
+          Email <span className='required'>*</span>
+        </label>
+        <input
+          type='email'
+          className='woocommerce-Input woocommerce-Input--text input-text'
+          style={{ borderRadius: 5 }}
+          onChange={(e) => handleChange('email', e.target.value, true)}
+        />
+        {error !== '' && (
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: 'red',
+              lineHeight: '15px',
+            }}
+          >
+            {error}
+          </div>
+        )}
+      </p>
+    );
+  };
 
   return (
     <div className='modal-body'>
@@ -54,30 +84,7 @@ const PhoneForm = ({
           </div>
         )}
       </p>
-
-      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-        <label for='email'>
-          Email <span className='required'>*</span>
-        </label>
-        <input
-          type='email'
-          className='woocommerce-Input woocommerce-Input--text input-text'
-          style={{ borderRadius: 5 }}
-          onChange={(e) => handleChange('email', e.target.value, true)}
-        />
-        {error !== '' && (
-          <div
-            style={{
-              marginTop: 5,
-              marginBottom: 5,
-              color: 'red',
-              lineHeight: '15px',
-            }}
-          >
-            {error}
-          </div>
-        )}
-      </p>
+      {renderEmailInput()}
       {children}
       {enablePassword && (
         <PasswordField
