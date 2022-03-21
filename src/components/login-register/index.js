@@ -83,7 +83,6 @@ const LoginRegister = (props) => {
 
   useEffect(() => {
     setErrorPhone('');
-    setErrorEmail('');
     const otpData = lsLoad(config.prefix + '_otp') || null;
     if (otpData) {
       const waitTime = method === 'phone' ? 60 : 300;
@@ -297,7 +296,11 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         } else if (/^[A-Za-z\s]+$/.test(data)) {
           setErrorName('');
-          setBtnSubmit(true);
+          if (settingFilterEmail.settingValue) {
+            setBtnSubmit(true);
+          } else {
+            setBtnSubmit(false);
+          }
         } else {
           setErrorName('Name is alphabets only');
           setBtnSubmit(false);
@@ -354,11 +357,20 @@ const LoginRegister = (props) => {
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
-        if (email && !settingFilterEmail.settingValue) {
-          setErrorEmail('Email is required');
-          setBtnSubmit(false);
+        if (email === '') {
+          if (!settingFilterEmail.settingValue) {
+            setErrorEmail('Email is required');
+            setBtnSubmit(false);
+          } else {
+            setErrorEmail('');
+            setBtnSubmit(true);
+          }
           return;
-        } else if (!checkEmail) {
+        } else if (!checkEmail && email) {
+          if (!settingFilterEmail.settingValue) {
+            setErrorEmail('Email not valid');
+            setBtnSubmit(false);
+          }
           setErrorEmail('Email not valid');
           setBtnSubmit(false);
         } else {
