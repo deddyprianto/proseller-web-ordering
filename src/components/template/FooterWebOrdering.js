@@ -71,7 +71,7 @@ const FooterWebOrdering = () => {
 
   useEffect(() => {
     const enableOrderingChecker = () => {
-      let enableOrdering = allState.order.setting.find((items) => {
+      let enableOrdering = allState?.order?.setting.find((items) => {
         return items.settingKey === 'EnableOrdering';
       });
       if (enableOrdering?.settingValue) {
@@ -79,7 +79,7 @@ const FooterWebOrdering = () => {
       }
     };
     enableOrderingChecker();
-  }, []);
+  }, [allState?.order?.setting]);
 
   const matches = useMediaQuery('(max-width:1200px)');
 

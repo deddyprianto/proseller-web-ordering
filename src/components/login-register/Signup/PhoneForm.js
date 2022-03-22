@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import PasswordField from '../PasswordField';
 import CheckBox from '../../setting/checkBoxCostume';
+import { useSelector } from 'react-redux';
 
 const PhoneForm = ({
   phoneNumber,
@@ -19,6 +20,11 @@ const PhoneForm = ({
   invitationCode,
 }) => {
   const [agreeTC, setAgreeTC] = useState(true);
+  const orderState = useSelector((state) => state.order.setting);
+
+  const [settingFilterEmail] = orderState.filter(
+    (setting) => setting.settingKey === 'RegistrationEmailMandatory'
+  );
 
   //TODO: this is not the best practice and must be removed when backend is ready.
 
@@ -30,12 +36,22 @@ const PhoneForm = ({
     isTCAvailable = false;
   }
 
+  const renderEmailTextRequired = () => {
+    if (settingFilterEmail.settingValue) {
+      return (
+        <div>
+          Email <span className='required'>*</span>
+        </div>
+      );
+    } else {
+      return 'Email';
+    }
+  };
+
   const renderEmailInput = () => {
     return (
       <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-        <label for='email'>
-          Email <span className='required'>*</span>
-        </label>
+        <label for='email'>{renderEmailTextRequired()}</label>
         <input
           type='email'
           className='woocommerce-Input woocommerce-Input--text input-text'
