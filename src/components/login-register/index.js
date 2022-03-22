@@ -296,7 +296,7 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         } else if (/^[A-Za-z\s]+$/.test(data)) {
           setErrorName('');
-          if (settingFilterEmail.settingValue) {
+          if (!settingFilterEmail.settingValue) {
             setBtnSubmit(true);
           } else {
             setBtnSubmit(false);
@@ -358,7 +358,7 @@ const LoginRegister = (props) => {
         setEmail(email);
 
         if (email === '') {
-          if (!settingFilterEmail.settingValue) {
+          if (settingFilterEmail.settingValue) {
             setErrorEmail('Email is required');
             setBtnSubmit(false);
           } else {
@@ -367,7 +367,7 @@ const LoginRegister = (props) => {
           }
           return;
         } else if (!checkEmail && email) {
-          if (!settingFilterEmail.settingValue) {
+          if (settingFilterEmail.settingValue) {
             setErrorEmail('Email not valid');
             setBtnSubmit(false);
           }
