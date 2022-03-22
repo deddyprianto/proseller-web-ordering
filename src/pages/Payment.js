@@ -114,6 +114,7 @@ const Payment = ({ ...props }) => {
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
+  const minPayment = props?.selectedPaymentCard?.minimumPayment;
 
   const styles = {
     root: {
@@ -730,6 +731,37 @@ const Payment = ({ ...props }) => {
     }
   };
 
+  const renderMinimumPaymentWarning = () => {
+    let price = props.basket?.totalNettAmount || 0;
+
+    if (!isEmptyObject(useSVCPayment)) {
+      price = price - useSVCPayment.paymentAmount;
+    }
+
+    if (!isEmptyObject(selectedPoint)) {
+      price = price - selectedPoint.paymentAmount;
+    }
+
+    if (!isEmptyArray(selectedVouchers)) {
+      selectedVouchers.forEach((selectedVoucher) => {
+        price = price - selectedVoucher.paymentAmount;
+      });
+    }
+    if (price < minPayment) {
+      return (
+        <Typography sx={styles.warningText}>
+          * Minimum Payment Using Card is{' '}
+          {new Intl.NumberFormat('en-SG', {
+            style: 'currency',
+            currency: 'SGD',
+          }).format(minPayment)}
+        </Typography>
+      );
+    } else {
+      return null;
+    }
+  };
+
   const renderPaymentMethod = () => {
     return (
       <Box
@@ -767,6 +799,7 @@ const Payment = ({ ...props }) => {
           )}
         </Box>
         {renderFullPaymentMix()}
+        {renderMinimumPaymentWarning()}
       </Box>
     );
   };
@@ -820,9 +853,11 @@ const Payment = ({ ...props }) => {
     }
 
     if (!isEmptyObject(props.selectedPaymentCard)) {
+      const totalWithSVC = totalPrice - (useSVCPayment.paymentAmount || 0);
+
       const dataPaymentMethod = {
         accountId: props.selectedPaymentCard.accountID,
-        paymentAmount: Number(totalPrice),
+        paymentAmount: Number(totalWithSVC),
         paymentID: props.selectedPaymentCard.paymentID,
         paymentName: props.selectedPaymentCard.paymentName,
         paymentType: props.selectedPaymentCard.paymentID,
@@ -899,13 +934,13 @@ const Payment = ({ ...props }) => {
     if (amountSVC - totalPrice === 0) {
       return false;
     }
-    if (
-      !isEmptyObject(props.selectedPaymentCard) &&
-      totalPrice > props.selectedPaymentCard.minimumPayment
-    ) {
+    if (totalPrice - amountSVC < minPayment) {
+      return true;
+    }
+    if (!isEmptyObject(props.selectedPaymentCard) && totalPrice > minPayment) {
       return false;
     }
-    if (totalPrice < props.selectedPaymentCard.minimumPayment) {
+    if (totalPrice < minPayment) {
       return true;
     }
     return true;
