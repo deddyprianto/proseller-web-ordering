@@ -37,7 +37,7 @@ const PhoneForm = ({
   }
 
   const renderEmailTextRequired = () => {
-    if (settingFilterEmail.settingValue) {
+    if (settingFilterEmail?.settingValue) {
       return (
         <div>
           Email <span className='required'>*</span>
