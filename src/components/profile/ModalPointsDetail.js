@@ -11,8 +11,8 @@ class ModalPointsDetail extends Component {
   };
 
   render() {
-    const { detailPoint, pendingPoints, color } = this.props;
-
+    const { detailPoint, pendingPoints, color, campaignDescription } =
+      this.props;
     return (
       <div>
         <div
@@ -97,35 +97,50 @@ class ModalPointsDetail extends Component {
                       margin: -16,
                     }}
                   >
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: 16, fontWeight: 'bold' }}>
-                        Campaign Rules
-                      </div>
+                    {campaignDescription ? (
                       <div
                         style={{
                           fontSize: 18,
                           fontWeight: 'bold',
                           color: color.font,
+                          whiteSpace: 'pre',
                         }}
                       >
-                        {`${detailPoint.netSpendToPoint.split(':')[0]} : ${
-                          detailPoint.netSpendToPoint.split(':')[1]
-                        }`}
+                        {campaignDescription}
                       </div>
-                      <div
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 'bold',
-                          color: color.font,
-                        }}
-                      >
-                        {`Get ${
-                          detailPoint.netSpendToPoint.split(':')[1]
-                        } points for every $${
-                          detailPoint.netSpendToPoint.split(':')[0]
-                        } Purchases`}
+                    ) : (
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: 16, fontWeight: 'bold' }}>
+                          Campaign Rules
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            color: color.font,
+                            whiteSpace: 'pre',
+                          }}
+                        >
+                          {`${detailPoint.netSpendToPoint.split(':')[0]} : ${
+                            detailPoint.netSpendToPoint.split(':')[1]
+                          }`}
+                          {/* {campaignDescription} */}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            color: color.font,
+                          }}
+                        >
+                          {`Get ${
+                            detailPoint.netSpendToPoint.split(':')[1]
+                          } points for every $${
+                            detailPoint.netSpendToPoint.split(':')[0]
+                          } Purchases`}
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <div
                       style={{
                         backgroundColor: '#CDCDCD',

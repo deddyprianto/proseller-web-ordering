@@ -11,7 +11,6 @@ import { IntlProvider, addLocaleData } from 'react-intl';
 import { OutletAction } from './redux/actions/OutletAction';
 import { MasterDataAction } from './redux/actions/MasterDataAction';
 import { OrderAction } from './redux/actions/OrderAction';
-import { PaymentAction } from './redux/actions/PaymentAction';
 import { ReferralAction } from './redux/actions/ReferralAction';
 
 import locale_en from 'react-intl/locale-data/en';
@@ -300,6 +299,20 @@ const App = (props) => {
     }
   }, [props.banners, props.theme]);
 
+  useEffect(() => {
+    if (props.account) {
+      const expiredToken = moment(props.account.accessToken.payload.exp).format(
+        'x'
+      );
+      const dateNow = new Date().today;
+      const isTokenExpired = expiredToken < moment(dateNow).format('x');
+      if (isTokenExpired) {
+        handleReLogin();
+        // props.dispatch(AuthActions.refreshToken);
+      }
+    }
+  }, [props.account]);
+
   return domainNameExist ? (
     props.domainName !== 'NOT_FOUND' ? (
       <IntlProvider locale={lang} messages={messages[lang]}>
@@ -311,7 +324,7 @@ const App = (props) => {
         </HashRouter>
       </IntlProvider>
     ) : (
-      <NotFound></NotFound>
+      <NotFound />
     )
   ) : (
     <Loading loadingType='ListLoading' />
@@ -320,23 +333,24 @@ const App = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    isLoggedIn: state.auth.isLoggedIn,
-    lang: state.language.lang,
-    theme: state.theme,
-    defaultOutlet: state.outlet.defaultOutlet,
-    deliveryProviders: state.order.deliveryProviders,
-    deliveryAddress: state.order.deliveryAddress,
+    account: state.auth.account,
+    banners: state.promotion.banners,
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo,
-    setting: state.order.setting,
-    outletSelection: state.order.outletSelection,
     defaultEmail: state.customer.defaultEmail,
+    defaultOutlet: state.outlet.defaultOutlet,
     defaultPhoneNumber: state.customer.defaultPhoneNumber,
+    deliveryAddress: state.order.deliveryAddress,
+    deliveryProviders: state.order.deliveryProviders,
     domainName: state.masterdata.domainName,
+    isLoggedIn: state.auth.isLoggedIn,
+    lang: state.language.lang,
     orderingModeSelectedOn: state.order.orderingModeSelectedOn,
-    orderingSetting: state.order.orderingSetting,
     orderingModes: state.order.orderingModes,
-    banners: state.promotion.banners,
+    orderingSetting: state.order.orderingSetting,
+    outletSelection: state.order.outletSelection,
+    setting: state.order.setting,
+    theme: state.theme,
   };
 };
 

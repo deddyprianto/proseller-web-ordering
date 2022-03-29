@@ -145,6 +145,7 @@ function getCampaignPoints(payload = null, companyId = null) {
       }
 
       response.Data = {
+        campaignDescription: response_.campaignDesc,
         pendingPoints: response.Data.pendingPoints,
         lockPoints: response.Data.lockPoints || 0,
         defaultPoints: response.Data.defaultPoints || 0,
