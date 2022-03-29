@@ -18,6 +18,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Dialog from '@mui/material/Dialog';
 
 import PointAddModal from 'components/pointAddModal';
 
@@ -34,7 +35,7 @@ import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 
 import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
 import ModalInfoTransferDialog from 'components/payment/ModalInfoTransferDialog';
-
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const deliveryLocal = encryptor.decrypt(
@@ -110,7 +111,14 @@ const Payment = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [openTransferDialog, setOpenTransferDialog] = useState(false);
   const [disableButtonAll, setDisableButtonAll] = useState(false);
-  const [disabledSVCButton, setDisabledSVCButton] = useState(false);
+  const [referenceNumberConfirmation, setReferenceNumberConfirmation] =
+    useState('');
+  const [
+    openConfirmationDialogActionPayment,
+    setOpenConfirmationDialogActionPayment,
+  ] = useState(false);
+
+  const [urlConfirmationDialog, setUrlConfirmationDialog] = useState('');
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
@@ -276,6 +284,36 @@ const Payment = ({ ...props }) => {
       fontWeight: 'bold',
     },
   };
+
+  useEffect(() => {
+    if (!referenceNumberConfirmation) {
+      return;
+    }
+
+    //This interval used for check the registration card
+    const interval = setInterval(async () => {
+      const getSalesReference = await props.dispatch(
+        CustomerAction.getSalesByReference(referenceNumberConfirmation)
+      );
+      if (getSalesReference?.data?.status === 'COMPLETED') {
+        setIsLoading(false);
+        setOpenConfirmationDialogActionPayment(false);
+        clearInterval(interval);
+        return history.push('/settleSuccess');
+      } else if (getSalesReference?.data?.status === 'FAILED') {
+        setWarningMessage('Payment Failed, please try again.');
+        handleOpenWarningModal();
+        setIsLoading(false);
+        setOpenConfirmationDialogActionPayment(false);
+        clearInterval(interval);
+      } else if (getSalesReference.ResultCode >= 400) {
+        setWarningMessage(getSalesReference?.data?.message);
+        handleOpenWarningModal();
+        setIsLoading(false);
+        clearInterval(interval);
+      }
+    }, 5000);
+  }, [referenceNumberConfirmation]);
 
   const handlePriceLength = (price) => {
     const result = parseFloat(price.toFixed(2));
@@ -807,6 +845,36 @@ const Payment = ({ ...props }) => {
   const handleAudio = () => {
     audio.play();
   };
+
+  const handleAfterPaymentSuccess = async (payload, response) => {
+    localStorage.setItem(
+      `${config.prefix}_paymentSuccess`,
+      JSON.stringify(encryptor.encrypt({ totalPrice: payload.totalNettAmount }))
+    );
+    localStorage.removeItem(`${config.prefix}_isOutletChanged`);
+    localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
+    localStorage.removeItem(`${config.prefix}_selectedPoint`);
+    localStorage.removeItem(`${config.prefix}_selectedVoucher`);
+    localStorage.removeItem(`${config.prefix}_dataSettle`);
+    localStorage.removeItem(`${config.prefix}_delivery_address`);
+    localStorage.removeItem(`${config.prefix}_delivery_providers`);
+
+    localStorage.setItem(
+      `${config.prefix}_settleSuccess`,
+      JSON.stringify(encryptor.encrypt(response.data))
+    );
+
+    await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
+    await props.dispatch(PaymentAction.clearAll());
+    await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
+    await props.dispatch(
+      OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
+    );
+    await props.dispatch(
+      OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
+    );
+  };
+
   //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
     let isNeedConfirmation = false;
@@ -876,44 +944,30 @@ const Payment = ({ ...props }) => {
 
     const response = await props.dispatch(OrderAction.submitAndPay(payload));
 
-    if (response && response.resultCode === 200) {
-      localStorage.setItem(
-        `${config.prefix}_paymentSuccess`,
-        JSON.stringify(
-          encryptor.encrypt({ totalPrice: payload.totalNettAmount })
-        )
-      );
-      localStorage.removeItem(`${config.prefix}_isOutletChanged`);
-      localStorage.removeItem(`${config.prefix}_outletChangedFromHeader`);
-      localStorage.removeItem(`${config.prefix}_selectedPoint`);
-      localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-      localStorage.removeItem(`${config.prefix}_dataSettle`);
-      localStorage.removeItem(`${config.prefix}_delivery_address`);
-      localStorage.removeItem(`${config.prefix}_delivery_providers`);
-
-      localStorage.setItem(
-        `${config.prefix}_settleSuccess`,
-        JSON.stringify(encryptor.encrypt(response.data))
-      );
-
-      await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
-      await props.dispatch(PaymentAction.clearAll());
-      await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
-      await props.dispatch(
-        OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
-      );
-      await props.dispatch(
-        OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
-      );
-
+    if (
+      response &&
+      response.resultCode === 200 &&
+      response?.data?.action?.type !== 'url'
+    ) {
+      handleAfterPaymentSuccess(payload, response);
       handleAudio();
+
       return history.push('/settleSuccess');
+    } else if (
+      response &&
+      response.resultCode === 200 &&
+      response?.data?.action?.type === 'url'
+    ) {
+      setReferenceNumberConfirmation(response?.data?.referenceNo);
+      setUrlConfirmationDialog(response.data.action.url);
+      handleAfterPaymentSuccess(payload, response);
+      setIsLoading(false);
+      setOpenConfirmationDialogActionPayment(true);
     } else {
       setWarningMessage(response?.data?.message);
       handleOpenWarningModal();
       setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleDisabledButtonPay = () => {
@@ -969,8 +1023,41 @@ const Payment = ({ ...props }) => {
     );
   };
 
+  const handleCloseDialog = () => {
+    handleAudio();
+    setOpenConfirmationDialogActionPayment(false);
+  };
+
+  const dialogConfirmActionIframe = () => {
+    return (
+      <Dialog
+        open={openConfirmationDialogActionPayment}
+        onClose={() => handleCloseDialog()}
+        fullWidth
+        maxWidth='xl'
+        sx={{
+          '& .MuiDialog-paper': {
+            minHeight: '70%',
+            maxHeight: '70%',
+            marginX: 0,
+            height: '-webkit-fill-available',
+            zIndex: 1000001,
+          },
+        }}
+      >
+        <iframe src={urlConfirmationDialog} width='100%' height='100%' />
+      </Dialog>
+    );
+  };
+
   return (
     <>
+      <LoadingOverlayCustom
+        active={isLoading}
+        spinner
+        loadingText='Please Wait...'
+      />
+      {openConfirmationDialogActionPayment ? dialogConfirmActionIframe() : null}
       <ModalInfoTransferDialog
         open={openTransferDialog}
         onClose={handleCloseManualTransfer}

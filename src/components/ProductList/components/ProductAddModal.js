@@ -27,6 +27,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { OrderAction } from 'redux/actions/OrderAction';
 
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
+import { CONSTANT } from 'helpers';
 
 const mapStateToProps = (state) => {
   return {
@@ -34,6 +35,8 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     defaultOutlet: state.outlet.defaultOutlet,
     companyInfo: state.masterdata.companyInfo.data,
+    deliveryProviderSelected: state.order.selectedDeliveryProvider,
+    deliveryAddress: state.order.deliveryAddress,
   };
 };
 
@@ -557,6 +560,35 @@ const ProductAddModal = ({
     setIsLoading(true);
     if (!isEmptyObject(selectedProduct)) {
       await props.dispatch(OrderAction.processUpdateCart(productUpdate));
+      if (props.deliveryProviderSelected) {
+        const payloadCalculateFee = {
+          outletId: props.basket.outlet.id,
+          cartID: props.basket.cartID,
+          deliveryAddress: props.deliveryAddress,
+        };
+
+        const responseCalculateFee = await props.dispatch(
+          OrderAction.getCalculateFee(payloadCalculateFee)
+        );
+
+        if (!isEmptyArray(responseCalculateFee.dataProvider)) {
+          const [filteredData] = responseCalculateFee.dataProvider.filter(
+            (item) => (item.id = props.deliveryProviderSelected.id)
+          );
+          const payloadOrderingModeChange = {
+            orderingMode: CONSTANT.ORDERING_MODE_DELIVERY,
+            provider: filteredData,
+          };
+
+          await props.dispatch(
+            OrderAction.changeOrderingMode(payloadOrderingModeChange)
+          );
+
+          await props.dispatch(
+            OrderAction.setData(filteredData, 'SET_SELECTED_DELIVERY_PROVIDERS')
+          );
+        }
+      }
     } else {
       await props.dispatch(
         OrderAction.processAddCart(props.defaultOutlet, productAdd)

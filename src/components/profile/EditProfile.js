@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Col, Row } from "reactstrap";
-import { AuthActions } from "../../redux/actions/AuthAction";
-import Shimmer from "react-shimmer-effect";
-import config from "../../config";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import { CONSTANT } from "../../helpers";
-import { lsLoad, lsStore } from "../../helpers/localStorage";
-import CustomFields from "./CustomFields";
-import ModalEditAccount from "./ModalEditAccount";
-import { Button } from "reactstrap";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Col, Row } from 'reactstrap';
+import { AuthActions } from '../../redux/actions/AuthAction';
+import Shimmer from 'react-shimmer-effect';
+import config from '../../config';
+import { CustomerAction } from '../../redux/actions/CustomerAction';
+import { CONSTANT } from '../../helpers';
+import { lsLoad, lsStore } from '../../helpers/localStorage';
+import CustomFields from './CustomFields';
+import ModalEditAccount from './ModalEditAccount';
+import { Button } from 'reactstrap';
 
-let Swal = require("sweetalert2");
-let encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+let Swal = require('sweetalert2');
+let encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 class EditProfile extends Component {
@@ -29,18 +29,18 @@ class EditProfile extends Component {
       isLoading: false,
       editFotoShow: false,
       birthMonthOption: [
-        { value: "2000-01-01", lable: "January" },
-        { value: "2000-02-01", lable: "February" },
-        { value: "2000-03-01", lable: "March" },
-        { value: "2000-04-01", lable: "April" },
-        { value: "2000-05-01", lable: "May" },
-        { value: "2000-06-01", lable: "June" },
-        { value: "2000-07-01", lable: "July" },
-        { value: "2000-08-01", lable: "August" },
-        { value: "2000-09-01", lable: "September" },
-        { value: "2000-10-01", lable: "October" },
-        { value: "2000-11-01", lable: "November" },
-        { value: "2000-12-01", lable: "December" },
+        { value: '2000-01-01', lable: 'January' },
+        { value: '2000-02-01', lable: 'February' },
+        { value: '2000-03-01', lable: 'March' },
+        { value: '2000-04-01', lable: 'April' },
+        { value: '2000-05-01', lable: 'May' },
+        { value: '2000-06-01', lable: 'June' },
+        { value: '2000-07-01', lable: 'July' },
+        { value: '2000-08-01', lable: 'August' },
+        { value: '2000-09-01', lable: 'September' },
+        { value: '2000-10-01', lable: 'October' },
+        { value: '2000-11-01', lable: 'November' },
+        { value: '2000-12-01', lable: 'December' },
       ],
       editName: false,
 
@@ -55,20 +55,20 @@ class EditProfile extends Component {
       checkingPhone: false,
 
       editPassword: false,
-      newPassword: "",
-      oldPassword: "",
-      retypeNewPassword: "",
+      newPassword: '',
+      oldPassword: '',
+      retypeNewPassword: '',
       validatePass: false,
-      textValidate: "",
+      textValidate: '',
       showOldPassword: false,
       showNewPassword: false,
       showRePassword: false,
       isDisableBirthDate: false,
-      errorName: "",
+      errorName: '',
 
       defaultError: {},
       defaultEdit: {},
-      titleEditAccount: { display: "Account", field: "phoneNumber" },
+      titleEditAccount: { display: 'Account', field: 'phoneNumber' },
     };
   }
 
@@ -92,7 +92,7 @@ class EditProfile extends Component {
   componentDidUpdate = async (prevProps) => {
     if (prevProps.fields !== this.props.fields) {
       let minimumAge = this.props.setting.find((items) => {
-        return items.settingKey === "MinimumAge";
+        return items.settingKey === 'MinimumAge';
       });
       if (minimumAge) {
         minimumAge = minimumAge.settingValue;
@@ -102,10 +102,10 @@ class EditProfile extends Component {
       let defaultEdit = {};
       this.props.fields &&
         this.props.fields.forEach((field) => {
-          if (field.fieldName === "birthDate")
+          if (field.fieldName === 'birthDate')
             field.minimumAge = minimumAge || 1;
 
-          defaultError[field.fieldName] = "";
+          defaultError[field.fieldName] = '';
           defaultEdit[field.fieldName] = false;
           if (!this.state.dataCustomer[field.fieldName] && field.defaultValue) {
             this.setState((prevState) => ({
@@ -117,7 +117,7 @@ class EditProfile extends Component {
           }
           if (field.children) {
             field.children.forEach((child) => {
-              defaultError[child.fieldName] = "";
+              defaultError[child.fieldName] = '';
               defaultEdit[field.fieldName] = false;
             });
           }
@@ -128,9 +128,9 @@ class EditProfile extends Component {
   };
 
   validationField = (field, value) => {
-    if (field === "newName") field = "name";
-    if (field === "newPhoneNumber") field = "phoneNumber";
-    if (field === "newEmail") field = "email";
+    if (field === 'newName') field = 'name';
+    if (field === 'newPhoneNumber') field = 'phoneNumber';
+    if (field === 'newEmail') field = 'email';
 
     let defaultError = this.state.defaultError;
     let defaultEdit = this.state.defaultEdit;
@@ -153,26 +153,26 @@ class EditProfile extends Component {
     if (/^\s/.test(value)) value = value.trim();
 
     if (
-      (value === "" ||
-        value === "undefined, undefined" ||
-        value === ", undefined" ||
-        value === ", ") &&
+      (value === '' ||
+        value === 'undefined, undefined' ||
+        value === ', undefined' ||
+        value === ', ') &&
       ((mandatoryData && mandatoryData.mandatory) || !mandatoryData)
     ) {
       defaultError[field] = `${
         (mandatoryData && mandatoryData.displayName) || field
       } is required`;
       result = false;
-    } else defaultError[field] = "";
+    } else defaultError[field] = '';
 
-    if (field === "name" && result) {
+    if (field === 'name' && result) {
       if (!/^[A-Za-z\s]+$/.test(value)) {
         defaultError[field] = `${mandatoryData.displayName} is alphabets only`;
         result = false;
-      } else defaultError[field] = "";
+      } else defaultError[field] = '';
     }
 
-    if (field === "newPassword" || field === "oldPassword") {
+    if (field === 'newPassword' || field === 'oldPassword') {
       if (
         !(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(value) && value.length >= 8)
       ) {
@@ -180,14 +180,14 @@ class EditProfile extends Component {
           field
         ] = `Minimum password is 8 characters consisting of an uppercase, lowercase and number`;
         result = false;
-      } else defaultError[field] = "";
+      } else defaultError[field] = '';
     }
 
-    if (field === "retypeNewPassword") {
+    if (field === 'retypeNewPassword') {
       if (this.state.newPassword === this.state.retypeNewPassword) {
         defaultError[field] = `Retype password is different from new password`;
         result = false;
-      } else defaultError[field] = "";
+      } else defaultError[field] = '';
     }
 
     defaultEdit[field] = true;
@@ -200,9 +200,9 @@ class EditProfile extends Component {
     this.validationField(field, value);
 
     dataCustomer[field] = value;
-    dataCustomer.address = `${dataCustomer.street || ""}, ${
-      dataCustomer.unitNo || ""
-    }, ${dataCustomer.postalCode || ""}`;
+    dataCustomer.address = `${dataCustomer.street || ''}, ${
+      dataCustomer.unitNo || ''
+    }, ${dataCustomer.postalCode || ''}`;
     this.setState({ dataCustomer, isLoading: false, touched: true });
   };
 
@@ -212,20 +212,20 @@ class EditProfile extends Component {
     if (this.state.defaultEdit.password) {
       const { oldPassword, newPassword, retypeNewPassword } = this.state;
 
-      if (oldPassword === "" || newPassword === "") {
+      if (oldPassword === '' || newPassword === '') {
         Swal.fire({
-          icon: "info",
-          title: "Oppss..",
-          text: "Please fill the password form",
+          icon: 'info',
+          title: 'Oppss..',
+          text: 'Please fill the password form',
         });
         this.setState({ isLoading: false });
         return;
       }
       if (newPassword !== retypeNewPassword) {
         Swal.fire({
-          icon: "info",
-          title: "Oppss..",
-          text: "Retype password is different from new password",
+          icon: 'info',
+          title: 'Oppss..',
+          text: 'Retype password is different from new password',
         });
         this.setState({ isLoading: false });
         return;
@@ -242,9 +242,9 @@ class EditProfile extends Component {
       );
       if (resChangePassword.ResultCode !== 200) {
         Swal.fire({
-          icon: "error",
-          title: "Oppss...",
-          text: resChangePassword.message || "Failed to change password",
+          icon: 'error',
+          title: 'Oppss...',
+          text: resChangePassword.message || 'Failed to change password',
         });
         this.setState({ isLoading: false });
         return;
@@ -256,11 +256,11 @@ class EditProfile extends Component {
     this.props.fields &&
       this.props.fields.forEach((field) => {
         payload[field.fieldName] =
-          this.state.dataCustomer[field.fieldName] || "";
+          this.state.dataCustomer[field.fieldName] || '';
         if (field.children) {
           field.children.forEach((child) => {
             payload[child.fieldName] =
-              this.state.dataCustomer[child.fieldName] || "";
+              this.state.dataCustomer[child.fieldName] || '';
           });
         }
       });
@@ -272,16 +272,16 @@ class EditProfile extends Component {
     if (this.state.defaultEdit.email)
       payload.newEmail = this.state.dataCustomer.email;
 
-    let listName = "";
+    let listName = '';
     for (const key in payload) {
       let check = this.validationField(key, payload[key]);
-      if (!check.status) listName += check.displayName + ", ";
+      if (!check.status) listName += check.displayName + ', ';
     }
 
-    if (listName !== "") {
+    if (listName !== '') {
       listName = listName.substr(0, listName.length - 2);
       Swal.fire({
-        icon: "warning",
+        icon: 'warning',
         timer: 1500,
         title: `${listName} is required`,
         showConfirmButton: false,
@@ -299,11 +299,11 @@ class EditProfile extends Component {
         AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN)
       );
       lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
-      let message = "Profile Updated";
-      if (this.state.editPassword) message = "Profile & Password Updated";
+      let message = 'Profile Updated';
+      if (this.state.editPassword) message = 'Profile & Password Updated';
 
       Swal.fire({
-        icon: "success",
+        icon: 'success',
         timer: 2000,
         title: message,
         showConfirmButton: false,
@@ -313,7 +313,7 @@ class EditProfile extends Component {
       }, 2000);
     } else {
       Swal.fire({
-        icon: "error",
+        icon: 'error',
         timer: 1500,
         title: response.message,
         showConfirmButton: false,
@@ -324,29 +324,29 @@ class EditProfile extends Component {
 
   clearData = () => {
     let defaultEdit = this.state.defaultEdit;
-    defaultEdit["password"] = false;
+    defaultEdit['password'] = false;
 
     this.setState({
       defaultEdit,
-      newPassword: "",
-      retypeNewPassword: "",
-      oldPassword: "",
+      newPassword: '',
+      retypeNewPassword: '',
+      oldPassword: '',
       validatePass: false,
-      textValidate: "",
+      textValidate: '',
     });
   };
 
   toggleEditPassword = () => {
     let defaultEdit = this.state.defaultEdit;
-    defaultEdit["password"] = !defaultEdit["password"];
+    defaultEdit['password'] = !defaultEdit['password'];
 
     this.setState({
       defaultEdit,
-      newPassword: "",
-      retypeNewPassword: "",
-      oldPassword: "",
+      newPassword: '',
+      retypeNewPassword: '',
+      oldPassword: '',
       validatePass: false,
-      textValidate: "",
+      textValidate: '',
     });
   };
 
@@ -355,10 +355,10 @@ class EditProfile extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -367,35 +367,31 @@ class EditProfile extends Component {
   };
 
   viewPassword() {
-    let {
-      defaultError,
-      showOldPassword,
-      showNewPassword,
-      showRePassword,
-    } = this.state;
+    let { defaultError, showOldPassword, showNewPassword, showRePassword } =
+      this.state;
 
     return (
       <Row>
         <div
           style={{
             height: 1,
-            backgroundColor: "#DCDCDC",
+            backgroundColor: '#DCDCDC',
             margin: 5,
             marginTop: 10,
             marginBottom: 5,
           }}
         />
         <Col sm={6}>
-          <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
             <label style={{ fontSize: 14 }}>Old Password</label>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: 'flex' }}>
               <input
-                type={showOldPassword ? "text" : "password"}
+                type={showOldPassword ? 'text' : 'password'}
                 value={this.state.oldPassword}
-                className="woocommerce-Input woocommerce-Input--text input-text"
+                className='woocommerce-Input woocommerce-Input--text input-text'
                 onChange={(e) => {
                   this.setState({ oldPassword: e.target.value });
-                  this.validationField("oldPassword", e.target.value);
+                  this.validationField('oldPassword', e.target.value);
                 }}
                 style={{
                   borderRadius: 5,
@@ -406,16 +402,16 @@ class EditProfile extends Component {
               <div
                 style={{
                   width: 40,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  border: "1px solid #cccccc",
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  border: '1px solid #cccccc',
                   borderTopRightRadius: 5,
                   borderBottomRightRadius: 5,
                 }}
               >
                 <i
-                  className={showOldPassword ? "fa fa-eye" : "fa fa-eye-slash"}
+                  className={showOldPassword ? 'fa fa-eye' : 'fa fa-eye-slash'}
                   onClick={() => {
                     this.setState({
                       showOldPassword: showOldPassword ? false : true,
@@ -424,26 +420,26 @@ class EditProfile extends Component {
                 />
               </div>
             </div>
-            {defaultError && defaultError["oldPassword"] !== "" && (
+            {defaultError && defaultError['oldPassword'] !== '' && (
               <div
-                className="text text-warning-theme small"
-                style={{ lineHeight: "15px", marginTop: 5 }}
+                className='text text-warning-theme small'
+                style={{ lineHeight: '15px', marginTop: 5 }}
               >
-                {" "}
-                <em>{defaultError["oldPassword"]}</em>{" "}
+                {' '}
+                <em>{defaultError['oldPassword']}</em>{' '}
               </div>
             )}
           </div>
         </Col>
 
         <Col sm={6}>
-          <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
             <label style={{ fontSize: 14 }}>New Password</label>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: 'flex' }}>
               <input
-                type={showNewPassword ? "text" : "password"}
+                type={showNewPassword ? 'text' : 'password'}
                 value={this.state.newPassword}
-                className="woocommerce-Input woocommerce-Input--text input-text"
+                className='woocommerce-Input woocommerce-Input--text input-text'
                 style={{
                   borderRadius: 5,
                   borderTopRightRadius: 0,
@@ -451,22 +447,22 @@ class EditProfile extends Component {
                 }}
                 onChange={(e) => {
                   this.setState({ newPassword: e.target.value });
-                  this.validationField("newPassword", e.target.value);
+                  this.validationField('newPassword', e.target.value);
                 }}
               />
               <div
                 style={{
                   width: 40,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  border: "1px solid #cccccc",
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  border: '1px solid #cccccc',
                   borderTopRightRadius: 5,
                   borderBottomRightRadius: 5,
                 }}
               >
                 <i
-                  className={showNewPassword ? "fa fa-eye" : "fa fa-eye-slash"}
+                  className={showNewPassword ? 'fa fa-eye' : 'fa fa-eye-slash'}
                   onClick={() => {
                     this.setState({
                       showNewPassword: showNewPassword ? false : true,
@@ -475,29 +471,29 @@ class EditProfile extends Component {
                 />
               </div>
             </div>
-            {defaultError && defaultError["newPassword"] !== "" && (
+            {defaultError && defaultError['newPassword'] !== '' && (
               <div
-                className="text text-warning-theme small"
-                style={{ lineHeight: "15px", marginTop: 5 }}
+                className='text text-warning-theme small'
+                style={{ lineHeight: '15px', marginTop: 5 }}
               >
-                {" "}
-                <em>{defaultError["newPassword"]}</em>{" "}
+                {' '}
+                <em>{defaultError['newPassword']}</em>{' '}
               </div>
             )}
           </div>
         </Col>
 
         <Col sm={6}>
-          <div className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
             <label style={{ fontSize: 14 }}>Retype New Password</label>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: 'flex' }}>
               <input
-                type={showRePassword ? "text" : "password"}
+                type={showRePassword ? 'text' : 'password'}
                 value={this.state.retypeNewPassword}
-                className="woocommerce-Input woocommerce-Input--text input-text"
+                className='woocommerce-Input woocommerce-Input--text input-text'
                 onChange={(e) => {
                   this.setState({ retypeNewPassword: e.target.value });
-                  this.validationField("retypeNewPassword", e.target.value);
+                  this.validationField('retypeNewPassword', e.target.value);
                 }}
                 style={{
                   borderRadius: 5,
@@ -508,16 +504,16 @@ class EditProfile extends Component {
               <div
                 style={{
                   width: 40,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  border: "1px solid #cccccc",
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  border: '1px solid #cccccc',
                   borderTopRightRadius: 5,
                   borderBottomRightRadius: 5,
                 }}
               >
                 <i
-                  className={showRePassword ? "fa fa-eye" : "fa fa-eye-slash"}
+                  className={showRePassword ? 'fa fa-eye' : 'fa fa-eye-slash'}
                   onClick={() => {
                     this.setState({
                       showRePassword: showRePassword ? false : true,
@@ -526,13 +522,13 @@ class EditProfile extends Component {
                 />
               </div>
             </div>
-            {defaultError && defaultError["retypeNewPassword"] !== "" && (
+            {defaultError && defaultError['retypeNewPassword'] !== '' && (
               <div
-                className="text text-warning-theme small"
-                style={{ lineHeight: "15px", marginTop: 5 }}
+                className='text text-warning-theme small'
+                style={{ lineHeight: '15px', marginTop: 5 }}
               >
-                {" "}
-                <em>{defaultError["retypeNewPassword"]}</em>{" "}
+                {' '}
+                <em>{defaultError['retypeNewPassword']}</em>{' '}
               </div>
             )}
           </div>
@@ -563,30 +559,30 @@ class EditProfile extends Component {
           {this.checkLoginSetting() && (
             <div
               style={{
-                border: "1px solid #CCC",
+                border: '1px solid #CCC',
                 borderRadius: 5,
                 padding: 10,
                 marginTop: 20,
               }}
             >
               <div
-                className="color"
+                className='color'
                 onClick={() => this.toggleEditPassword()}
-                style={{ textAlign: "right", cursor: "pointer" }}
+                style={{ textAlign: 'right', cursor: 'pointer' }}
               >
                 <div
                   style={{
                     fontSize: 14,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
                   <b>Change Password </b>
                   {defaultEdit.password ? (
-                    <i className="fa fa-arrow-circle-o-up" />
+                    <i className='fa fa-arrow-circle-o-up' />
                   ) : (
-                    <i className="fa fa-arrow-circle-o-down" />
+                    <i className='fa fa-arrow-circle-o-down' />
                   )}
                 </div>
               </div>
@@ -603,7 +599,7 @@ class EditProfile extends Component {
       const { setting } = this.props;
       const find = setting.find(
         (item) =>
-          item.settingKey === "EnableRegisterWithPassword" && item.settingValue
+          item.settingKey === 'EnableRegisterWithPassword' && item.settingValue
       );
       if (find === undefined) return false;
       return true;
@@ -611,47 +607,46 @@ class EditProfile extends Component {
       return true;
     }
   };
-
   render() {
     let { loadingShow, titleEditAccount } = this.state;
     return (
       <div
-        className="col-full"
+        className='col-full'
         style={{
-          marginTop: config.prefix === "emenu" ? 120 : 140,
+          marginTop: config.prefix === 'emenu' ? 120 : 140,
           marginBottom: 50,
           padding: 0,
         }}
       >
         <ModalEditAccount title={titleEditAccount} />
-        <div id="primary" className="content-area">
+        <div id='primary' className='content-area'>
           <div
             // className="stretch-full-width"
-            style={{ display: "flex", justifyContent: "center" }}
+            style={{ display: 'flex', justifyContent: 'center' }}
           >
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -60,
-                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
-                display: "flex",
+                boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+                display: 'flex',
                 height: 40,
                 left: 0,
-                right: 0
+                right: 0,
               }}
-              className="background-theme"
+              className='background-theme'
             >
               <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
-                <i className="fa fa-chevron-left"></i> Back
+                <i className='fa fa-chevron-left'></i> Back
               </div>
             </div>
-            <main id="main" className="site-main" style={{ width: "100%" }}>
+            <main id='main' className='site-main' style={{ width: '100%' }}>
               {loadingShow && (
                 <Row>
                   <Col sm={6}>{this.viewShimmer()}</Col>
@@ -662,16 +657,16 @@ class EditProfile extends Component {
                 <div style={{ marginTop: -20 }}>
                   {this.viewPage(this.props.fields)}
                   <Button
-                    className="button"
+                    className='button'
                     style={{
-                      width: "100%",
+                      width: '100%',
                       marginTop: 20,
                       borderRadius: 5,
                       height: 50,
                     }}
                     onClick={() => this.handleUpdateProfile()}
                   >
-                    <i className="fa fa-floppy-o" aria-hidden="true" /> Update
+                    <i className='fa fa-floppy-o' aria-hidden='true' /> Update
                   </Button>
                 </div>
               )}
