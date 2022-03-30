@@ -62,21 +62,21 @@ function getReferralById(id) {
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (
-      response.Data &&
-      response.Data.list &&
-      response.Data.list[0] &&
-      response.Data.list[0].signUpStatus !== 'DONE'
+      response.data &&
+      response.data.list &&
+      response.data.list[0] &&
+      response.data.list[0].signUpStatus !== 'DONE'
     ) {
-      console.log(response.Data.list[0].signUpStatus);
+      console.log(response.data.list[0]);
       if (response.Data.list[0].email) {
         dispatch({
           type: 'SET_DEFAULT_EMAIL',
-          data: response.Data.list[0].email,
+          data: response.data.list[0].email,
         });
       } else {
         dispatch({
           type: 'SET_DEFAULT_PHONE_NUMBER',
-          data: response.Data.list[0].phoneNumber,
+          data: response.data.list[0].mobileNo,
         });
       }
       return true;

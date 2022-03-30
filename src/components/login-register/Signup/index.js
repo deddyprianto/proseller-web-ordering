@@ -54,7 +54,6 @@ const SignUp = ({
       termsAndConditions = find.settingValue;
     }
   } catch (e) {}
-
   return (
     <div className='modal-content' style={{ width: '100%' }}>
       <div

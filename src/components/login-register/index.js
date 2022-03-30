@@ -11,6 +11,7 @@ import SignUp from './Signup';
 import { lsLoad, lsStore } from '../../helpers/localStorage';
 
 import config from '../../config';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const regEmail =
   /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -645,17 +646,17 @@ const LoginRegister = (props) => {
       mandatory.push({ fieldName: 'email', displayName: 'Email' });
       mandatory.push({ fieldName: 'password', displayName: 'Password' });
 
-      const customFields =
-        fields &&
-        fields.reduce((acc, field) => {
-          if (!field.signUpField) {
-            return { ...acc };
-          }
-          return {
-            ...acc,
-            [field.fieldName]: inputs[field.fieldName] || '',
-          };
-        });
+      const customFields = !isEmptyArray(fields)
+        ? fields.reduce((acc, field) => {
+            if (!field.signUpField) {
+              return { ...acc };
+            }
+            return {
+              ...acc,
+              [field.fieldName]: inputs[field.fieldName] || '',
+            };
+          })
+        : [];
 
       if (customFields) {
         delete customFields.displayName;
@@ -1104,7 +1105,6 @@ const LoginRegister = (props) => {
     setSignUpSuccess(false);
     setBtnSubmit(false);
   };
-
   return (
     <div>
       <div

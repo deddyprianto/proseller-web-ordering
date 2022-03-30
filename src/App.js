@@ -188,8 +188,9 @@ const App = (props) => {
     }
 
     if (param && param['referral'] && !isLoggedIn && !account) {
+      document.getElementById('login-register-btn').click();
+
       const referralCode = param['referral'].split('#')[0];
-      console.log('I have referral!', referralCode);
       const isAvailable = await props.dispatch(
         ReferralAction.getReferralById(referralCode)
       );
