@@ -195,13 +195,6 @@ const App = (props) => {
       );
       if (isAvailable) {
         props.dispatch(AuthActions.setInvitationCode(referralCode));
-        setTimeout(() => {
-          try {
-            document.getElementById('login-register-btn').click();
-          } catch (error) {
-            console.log(error);
-          }
-        }, 600);
       }
     }
 
@@ -308,7 +301,6 @@ const App = (props) => {
       const isTokenExpired = expiredToken < moment(dateNow).format('x');
       if (isTokenExpired) {
         handleReLogin();
-        // props.dispatch(AuthActions.refreshToken);
       }
     }
   }, [props.account]);
