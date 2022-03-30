@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import loadable from "@loadable/component";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import loadable from '@loadable/component';
+import { connect } from 'react-redux';
 // import { Button } from "reactstrap";
 // import { Link } from 'react-router-dom';
 // import Lottie from "lottie-react-web";
 // import emptyGif from "../assets/gif/empty-and-lost.json";
 
-import config from "../config";
+import config from '../config';
 
 const DetailRewords = loadable(() =>
-  import("../components/profile/DetailRewords")
+  import('../components/profile/DetailRewords')
 );
 const DetailProfile = loadable(() =>
-  import("../components/profile/DetailProfile")
+  import('../components/profile/DetailProfile')
 );
 
 class Profile extends Component {
@@ -22,18 +22,18 @@ class Profile extends Component {
     let isProfile = true;
 
     try {
-      if (window.location.hash.split("#")[1] === '/rewards') isProfile = false;
-    }catch(e){}
+      if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
+    } catch (e) {}
 
     this.state = {
       isProfile,
-      enableOrdering: false
+      enableOrdering: false,
     };
   }
   componentDidMount() {
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
-      document.getElementById("login-register-btn").click();
+      document.getElementById('login-register-btn').click();
       return false;
     }
   }
@@ -41,39 +41,45 @@ class Profile extends Component {
   componentDidUpdate = (prevProps, prevState) => {
     let isProfile = true;
     try {
-      if (window.location.hash.split("#")[1] === '/rewards') isProfile = false;
-      this.setState({isProfile});
-    }catch(e){}
+      if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
+      this.setState({ isProfile });
+    } catch (e) {}
 
     if (this.props !== prevProps) {
-      let enableOrdering = this.props.setting.find(items => { return items.settingKey === "EnableOrdering" })
+      let enableOrdering = this.props.setting.find((items) => {
+        return items.settingKey === 'EnableOrdering';
+      });
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
     }
-  }
+  };
 
   render() {
     let { isProfile } = this.state;
     if (!this.props.isLoggedIn) {
       return (
         <div
-          className="col-full"
+          className='col-full'
           style={{
-            marginTop: config.prefix === "emenu" ? 90 : 110,
+            marginTop: config.prefix === 'emenu' ? 90 : 110,
             marginBottom: 50,
             padding: 0,
           }}
         >
-          <div id="primary" className="content-area">
+          <div id='primary' className='content-area'>
             <div
-              className="stretch-full-width"
-              style={{ display: "flex", justifyContent: "center" }}
+              className='stretch-full-width'
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
-              <main id="main" className="site-main" style={{ width: "100%" }}>
+              <main id='main' className='site-main' style={{ width: '100%' }}>
                 <div>
-                  <img src={config.url_emptyImage} alt="is empty" style={{marginTop: 30}}/>
-                  <div style={{ textAlign: "center" }}>Please login first</div>
+                  <img
+                    src={config.url_emptyImage}
+                    alt='is empty'
+                    style={{ marginTop: 30 }}
+                  />
+                  <div style={{ textAlign: 'center' }}>Please login first</div>
                 </div>
               </main>
             </div>
@@ -83,14 +89,14 @@ class Profile extends Component {
     }
     return (
       <div
-        className="col-full"
+        className='col-full'
         style={{
-          marginTop: config.prefix === "emenu" ? 80 : 90,
+          marginTop: config.prefix === 'emenu' ? 80 : 90,
           marginBottom: 50,
         }}
       >
-        <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
             {/* <div
               style={{
                 flexDirection: "row",
@@ -119,9 +125,9 @@ class Profile extends Component {
               </Link>
             </div> */}
             <main
-              id="main"
-              className="site-main"
-              style={{ textAlign: "center" }}
+              id='main'
+              className='site-main'
+              style={{ textAlign: 'center' }}
             >
               {isProfile ? <DetailProfile /> : <DetailRewords />}
             </main>
