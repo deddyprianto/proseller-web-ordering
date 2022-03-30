@@ -103,7 +103,7 @@ class ModalPointsDetail extends Component {
                           fontSize: 18,
                           fontWeight: 'bold',
                           color: color.font,
-                          whiteSpace: 'pre',
+                          whiteSpace: 'pre-line',
                         }}
                       >
                         {campaignDescription}

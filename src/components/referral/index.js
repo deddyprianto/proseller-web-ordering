@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import SendIcon from '@material-ui/icons/Send';
 import ModalReferral from './ModalReferral';
 import DeleteIcon from '@material-ui/icons/Delete';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const Swal = require('sweetalert2');
 
@@ -230,6 +231,7 @@ class Referral extends Component {
     } = this.state;
     return (
       <div className='col-full' style={{ marginTop: 120 }}>
+        <LoadingOverlayCustom active={isLoading} spinner />
         <ModalReferral
           modeInvitation={modeInvitation}
           address={address}
@@ -382,7 +384,6 @@ class Referral extends Component {
             </main>
           </div>
         </div>
-        {isLoading ? Swal.showLoading() : Swal.close()}
       </div>
     );
   }
