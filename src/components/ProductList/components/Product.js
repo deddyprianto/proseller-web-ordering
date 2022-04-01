@@ -45,6 +45,8 @@ const mapDispatchToProps = (dispatch) => ({
 
 const Product = ({ item, ...props }) => {
   const [width] = useWindowSize();
+  const gadgetScreen = 600 > width;
+
   const useStyles = makeStyles({
     image: {
       display: 'flex',
@@ -56,9 +58,9 @@ const Product = ({ item, ...props }) => {
       marginRight: 5,
     },
     imageSize: {
-      height: 600 > width ? 75 : 180,
+      height: gadgetScreen ? 75 : 180,
       width: 'auto',
-      minWidth: 600 > width ? 75 : 180,
+      minWidth: gadgetScreen ? 75 : 180,
       borderRadius: 5,
     },
     typographyProductGroup: {
@@ -72,6 +74,8 @@ const Product = ({ item, ...props }) => {
       lineHeight: '17px',
       fontWeight: 600,
       color: props.color.font,
+      textAlign: 'start',
+      width: gadgetScreen && 200,
     },
     price: {
       paddingBottom: 6,
@@ -79,6 +83,7 @@ const Product = ({ item, ...props }) => {
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
+      color: props.color.font,
     },
     quantity: {
       fontSize: 14,
@@ -90,19 +95,27 @@ const Product = ({ item, ...props }) => {
     item: {
       padding: 10,
       display: 'flex',
+      alignItems: 'start',
       cursor: 'pointer',
+      textTransform: 'none',
+      minWidth: '100%',
+      height: 'auto',
+      justifyContent: 'start',
     },
     description: {
       maxHeight: 70,
       whiteSpace: 'pre-line',
       fontSize: 10,
       marginBottom: 0,
+      textAlign: 'start',
+      color: props.color.font,
+      width: gadgetScreen && 200,
     },
     button: {
       float: 'left',
       borderRadius: 5,
       width: 90,
-      height: 600 > width ? 26 : 40,
+      height: gadgetScreen ? 26 : 40,
       paddingLeft: 5,
       paddingRight: 5,
       backgroundColor: props.color.primary,
@@ -118,16 +131,17 @@ const Product = ({ item, ...props }) => {
       textTransform: 'none',
     },
     textUnavailable: {
-      fontSize: 26,
+      fontSize: 12,
       fontWeight: 600,
-      color: '#000000',
+      color: props.color.font,
+      textAlign: 'start',
     },
     itemBody: {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
       height: 'auto',
-      maxHeight: 180,
+      minHeight: gadgetScreen ? 75 : 180,
       width: '100%',
     },
     bold: {
@@ -143,9 +157,11 @@ const Product = ({ item, ...props }) => {
     },
     name: { display: 'flex' },
     priceAndButton: {
+      marginTop: 10,
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
+      width: gadgetScreen && 200,
     },
   });
   const classes = useStyles();
@@ -319,8 +335,9 @@ const Product = ({ item, ...props }) => {
         {item?.itemType === 'GROUP' || item?.itemType === 'CATEGORY' ? (
           renderGroupProducts()
         ) : (
-          <div
+          <Button
             className={classes.item}
+            disabled={item?.product?.orderingStatus === 'UNAVAILABLE'}
             onClick={() => {
               if (totalQty) {
                 handleOpenUpdateModal();
@@ -356,7 +373,7 @@ const Product = ({ item, ...props }) => {
               </div>
               {renderPriceAndButton()}
             </div>
-          </div>
+          </Button>
         )}
       </Box>
     </div>
