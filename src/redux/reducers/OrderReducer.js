@@ -68,7 +68,7 @@ export default function reducer(state = defaultState, action) {
     case 'SET_SELECTED_DELIVERY_PROVIDERS':
       localStorage.setItem(
         `${config.prefix}_delivery_providers`,
-        JSON.stringify(encryptor.encrypt(action.data))
+        JSON.stringify(encryptor.encrypt(action?.data))
       );
       return {
         ...state,

@@ -27,6 +27,9 @@ import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 
+import { CONSTANT } from '../helpers/';
+import moment from 'moment';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const mapStateToProps = (state) => {
@@ -205,8 +208,9 @@ const Cart = ({ ...props }) => {
       fontSize: '1.2rem',
       fontStyle: 'italic',
       fontWeight: 500,
-      marginTop: 1,
       color: props.color.textWarningColor,
+      maxWidth: 'fit-content',
+      marginX: 1,
     },
   };
 
@@ -215,6 +219,8 @@ const Cart = ({ ...props }) => {
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
+
+  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
@@ -225,6 +231,39 @@ const Cart = ({ ...props }) => {
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    const getDataTimeSlot = async () => {
+      let dateTime = new Date();
+      let maxDays = 90;
+
+      if (!isEmptyArray(props.defaultOutlet)) {
+        maxDays = props.defaultOutlet?.timeSlots[0]?.interval;
+      }
+
+      let payload = {
+        outletID: props.defaultOutlet.sortKey,
+        clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+        date: moment(dateTime).format('YYYY-MM-DD'),
+        maxDays: maxDays,
+        orderingMode: props.orderingMode,
+      };
+
+      const response = await props.dispatch(OrderAction.getTimeSlot(payload));
+
+      if (response.message === CONSTANT.TIME_SLOT_INVALID) {
+        setSelectTimeSlotAvailable(false);
+      } else {
+        setSelectTimeSlotAvailable(true);
+      }
+    };
+    if (
+      props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY ||
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
+    ) {
+      getDataTimeSlot();
+    }
+  }, [props.orderingMode]);
 
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
@@ -305,7 +344,7 @@ const Cart = ({ ...props }) => {
   };
 
   const handleRenderOrderingModeLabel = () => {
-    if (props.orderingModeDisplayName) {
+    if (props.orderingModeDisplayName !== 'null') {
       return props.orderingModeDisplayName;
     } else if (props.orderingMode) {
       return props.orderingMode;
@@ -315,21 +354,37 @@ const Cart = ({ ...props }) => {
   };
 
   const handleDisabled = () => {
-    if (props.orderingMode === 'DELIVERY') {
-      const isAllCompleted =
-        props.orderingMode &&
-        props.orderActionDate &&
-        props.orderActionTime &&
-        props.orderActionTimeSlot &&
-        props.deliveryAddress;
+    if (props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY) {
+      let isAllCompleted = false;
+      if (selectTimeSlotAvailable) {
+        isAllCompleted =
+          props.orderingMode &&
+          props.orderActionDate &&
+          props.orderActionTime &&
+          props.orderActionTimeSlot &&
+          props.deliveryAddress &&
+          !isEmptyObject(props.selectedDeliveryProvider) &&
+          !props.selectedDeliveryProvider.deliveryProviderError.status;
+      } else {
+        isAllCompleted =
+          props.orderingMode &&
+          props.deliveryAddress &&
+          !isEmptyObject(props.selectedDeliveryProvider) &&
+          !props.selectedDeliveryProvider.deliveryProviderError.status;
+      }
 
       return !isAllCompleted;
-    } else if (props.orderingMode === 'STOREPICKUP') {
-      const isAllCompleted =
-        props.orderingMode &&
-        props.orderActionDate &&
-        props.orderActionTime &&
-        props.orderActionTimeSlot;
+    } else if (props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
+      let isAllCompleted = false;
+      if (selectTimeSlotAvailable) {
+        isAllCompleted =
+          props.orderingMode &&
+          props.orderActionDate &&
+          props.orderActionTime &&
+          props.orderActionTimeSlot;
+      } else {
+        isAllCompleted = !!props.orderingMode;
+      }
 
       return !isAllCompleted;
     }
@@ -375,12 +430,35 @@ const Cart = ({ ...props }) => {
     );
   };
 
+  const renderDeliveryProviderError = () => {
+    if (props?.selectedDeliveryProvider?.deliveryProviderError?.status) {
+      return (
+        <Typography sx={styles.warningText}>
+          * {props.selectedDeliveryProvider.deliveryProviderError?.message}
+        </Typography>
+      );
+    } else {
+      if (isEmptyObject(props?.selectedDeliveryProvider)) {
+        return (
+          <Typography sx={styles.warningText}>
+            * Please Select Delivery Provider
+          </Typography>
+        );
+      } else {
+        return;
+      }
+    }
+  };
+
   const renderPickupDateTime = () => {
+    if (!selectTimeSlotAvailable) {
+      return;
+    }
     if (
-      (props.orderingMode === 'DELIVERY' &&
+      (props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
         props.deliveryAddress &&
         props.selectedDeliveryProvider) ||
-      props.orderingMode === 'STOREPICKUP'
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
     ) {
       return (
         <Paper variant='outlined' style={styles.rootPaper}>
@@ -459,9 +537,6 @@ const Cart = ({ ...props }) => {
           <div style={styles.rootMode}>
             <Box flexDirection='column'>
               <Typography style={styles.subTotal}>Delivery Address</Typography>
-              {props?.deliveryAddress
-                ? null
-                : renderWarning('delivery address.')}
             </Box>
             <Button
               style={styles.mode}
@@ -477,6 +552,7 @@ const Cart = ({ ...props }) => {
               </Typography>
             </Button>
           </div>
+          {props?.deliveryAddress ? null : renderWarning('delivery address.')}
         </Paper>
         {props?.deliveryAddress && (
           <Paper variant='outlined' style={styles.rootPaper}>
@@ -485,10 +561,8 @@ const Cart = ({ ...props }) => {
                 <Typography style={styles.subTotal}>
                   Delivery Provider
                 </Typography>
-                {props?.selectedDeliveryProvider
-                  ? null
-                  : renderWarning('delivery provider.')}
               </Box>
+
               <Button
                 style={styles.mode}
                 startIcon={<ContactsRoundedIcon style={styles.icon} />}
@@ -502,6 +576,7 @@ const Cart = ({ ...props }) => {
                 </Typography>
               </Button>
             </div>
+            {renderDeliveryProviderError()}
           </Paper>
         )}
       </>

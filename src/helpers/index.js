@@ -40,4 +40,7 @@ export const CONSTANT = {
   ORDERING_MODE_DELIVERY: 'DELIVERY',
   ORDERING_MODE_DINE_IN: 'DINEIN',
   ORDERING_MODE_TAKE_AWAY: 'TAKEAWAY',
+
+  //Time Slot
+  TIME_SLOT_INVALID: 'Invalid setup timeslot',
 };

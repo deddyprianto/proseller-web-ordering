@@ -620,10 +620,7 @@ class EditProfile extends Component {
       >
         <ModalEditAccount title={titleEditAccount} />
         <div id='primary' className='content-area'>
-          <div
-            // className="stretch-full-width"
-            style={{ display: 'flex', justifyContent: 'center' }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div
               style={{
                 flexDirection: 'row',

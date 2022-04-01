@@ -1,18 +1,12 @@
-import React, { Component } from "react";
-import { Col, Row } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
-import config from "../../config";
-import { connect } from "react-redux";
-import HistoryCard from "./HistoryCardPending";
-// import Lottie from 'lottie-react-web';
-// import emptyGif from '../../assets/gif/empty-and-lost.json';
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Col, Row } from 'reactstrap';
+import Shimmer from 'react-shimmer-effect';
+import config from '../../config';
+import { connect } from 'react-redux';
+import HistoryCard from './HistoryCardPending';
 
-import { CONSTANT } from "../../helpers";
-// import { constant } from "lodash";
-
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
-const Swal = require("sweetalert2");
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const Swal = require('sweetalert2');
 class HistoryPending extends Component {
   constructor(props) {
     super(props);
@@ -21,7 +15,7 @@ class HistoryPending extends Component {
       isLoading: false,
       dataPending: [],
       dataPendingLength: 0,
-      countryCode: "ID",
+      countryCode: 'ID',
     };
   }
 
@@ -30,10 +24,10 @@ class HistoryPending extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -50,12 +44,8 @@ class HistoryPending extends Component {
   };
 
   render() {
-    let {
-      loadingShow,
-      dataPending,
-      countryCode,
-      dataPendingLength,
-    } = this.props;
+    let { loadingShow, dataPending, countryCode, dataPendingLength } =
+      this.props;
     return (
       <div>
         {loadingShow ? (
@@ -69,22 +59,18 @@ class HistoryPending extends Component {
               <Col
                 key={keys}
                 sm={6}
-                data-toggle="modal"
-                data-target="#detail-inbox-modal"
+                data-toggle='modal'
+                data-target='#detail-inbox-modal'
                 onClick={() => this.handleDetail(items)}
               >
-                <Link
-                  to={items.isPaymentComplete ? "/history/detail" : "/basket"}
-                >
-                  <HistoryCard items={items} countryCode={countryCode} />
-                </Link>
+                <HistoryCard items={items} countryCode={countryCode} />
               </Col>
             ))}
             {dataPendingLength === 0 && (
               <div>
                 <img
                   src={config.url_emptyImage}
-                  alt="is empty"
+                  alt='is empty'
                   style={{ marginTop: 30 }}
                 />
                 <div>Data is empty</div>
