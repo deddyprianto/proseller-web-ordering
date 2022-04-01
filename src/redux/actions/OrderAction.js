@@ -421,8 +421,13 @@ function processAddCart(defaultOutlet, selectedItem) {
 
 function updateCartInfo(payload) {
   return async (dispatch) => {
-    await OrderingService.api('POST', payload, 'cart/updateCartInfo', 'Bearer');
     try {
+      await OrderingService.api(
+        'POST',
+        payload,
+        'cart/updateCartInfo',
+        'Bearer'
+      );
       console.log('in');
     } catch (e) {
       console.log(e);

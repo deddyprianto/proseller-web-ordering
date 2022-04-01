@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
-import moment from "moment";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 class InboxCard extends Component {
   constructor(props) {
@@ -16,9 +17,9 @@ class InboxCard extends Component {
     if (this.props.companyInfo) {
       if (price !== undefined) {
         const { currency } = this.props.companyInfo;
-        if (!price || price === "-") price = 0;
+        if (!price || price === '-') price = 0;
         let result = price.toLocaleString(currency.locale, {
-          style: "currency",
+          style: 'currency',
           currency: currency.code,
         });
         return result;
@@ -27,99 +28,106 @@ class InboxCard extends Component {
   };
 
   checkNameOutlet(outletName) {
-    let nameSplit = outletName.split(" ")
-    let nameMerge = ""
-    nameSplit.forEach(element => {
-      if (`${nameMerge} ${element}`.length > 20) return
-      nameMerge = `${nameMerge} ${element}`
+    let nameSplit = outletName.split(' ');
+    let nameMerge = '';
+    nameSplit.forEach((element) => {
+      if (`${nameMerge} ${element}`.length > 20) return;
+      nameMerge = `${nameMerge} ${element}`;
     });
-    return nameMerge
+    return nameMerge;
   }
 
   render() {
     const { items } = this.props;
-    let discount = 0
-    if(items.payments){
-      items.payments.forEach(items => {
-        if(items.paymentType === "voucher" || items.paymentType === "point"){
-          discount += items.paymentAmount
+    let discount = 0;
+    if (items.payments) {
+      items.payments.forEach((items) => {
+        if (items.paymentType === 'voucher' || items.paymentType === 'point') {
+          discount += items.paymentAmount;
         }
       });
     }
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-          border: "1px solid #CDCDCD",
-          padding: 10,
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderRadius: 5,
-          marginBottom: 10,
-          cursor: "pointer",
-          height: 80,
-        }}
-      >
+      <Link to={items.isPaymentComplete ? '/history/detail' : '/basket'}>
         <div
           style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'row',
+            boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+            border: '1px solid #CDCDCD',
+            padding: 10,
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderRadius: 5,
+            marginBottom: 10,
+            cursor: 'pointer',
+            height: 80,
           }}
         >
-          <ShoppingBasketIcon
-            className="border-theme"
-            style={{
-              fontSize: 50,
-              borderRadius: 5,
-              padding: 5,
-            }}
-          />
-          <div style={{ marginLeft: 10, textAlign: "left" }}>
-            <div
-              className="modal-title"
-              style={{ fontWeight: "bold", fontSize: 14, lineHeight: "17px" }}
-            >
-              {this.checkNameOutlet(items.outlet.name)}
-            </div>
-            <div
-              className="modal-title"
-              style={{
-                fontWeight: "bold",
-                fontSize: 12,
-                maxWidth: 170,
-                marginTop: 5,
-              }}
-            >
-              {items.status.replace(/_/g, " ")}
-            </div>
-            <div
-              className="modal-title"
-              style={{ fontWeight: "bold", fontSize: 10, lineHeight: "17px" }}
-            >
-              {`${items.queueNo} - ${items.details.length} items - ${this.getCurrency((items.totalNettAmount) - discount)}`}
-            </div>
-          </div>
-        </div>
-        <div>
           <div
-            className="font-color-theme"
             style={{
-              fontSize: 10,
-              textAlign: "right",
-              marginTop: 10,
-              width: "100%",
-              bottom: 10, right: 25,
-              position: "absolute",
-              fontStyle: "italic",
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
             }}
           >
-            {moment(items.createdOn).format("DD/MM/YY HH:mm")}
+            <ShoppingBasketIcon
+              className='border-theme'
+              style={{
+                fontSize: 50,
+                borderRadius: 5,
+                padding: 5,
+              }}
+            />
+            <div style={{ marginLeft: 10, textAlign: 'left' }}>
+              <div
+                className='modal-title'
+                style={{ fontWeight: 'bold', fontSize: 14, lineHeight: '17px' }}
+              >
+                {this.checkNameOutlet(items.outlet.name)}
+              </div>
+              <div
+                className='modal-title'
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 12,
+                  maxWidth: 170,
+                  marginTop: 5,
+                }}
+              >
+                {items.status.replace(/_/g, ' ')}
+              </div>
+              <div
+                className='modal-title'
+                style={{ fontWeight: 'bold', fontSize: 10, lineHeight: '17px' }}
+              >
+                {`${items.queueNo} - ${
+                  items.details.length
+                } items - ${this.getCurrency(
+                  items.totalNettAmount - discount
+                )}`}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div
+              className='font-color-theme'
+              style={{
+                fontSize: 10,
+                textAlign: 'right',
+                marginTop: 10,
+                width: '100%',
+                bottom: 10,
+                right: 25,
+                position: 'absolute',
+                fontStyle: 'italic',
+              }}
+            >
+              {moment(items.createdOn).format('DD/MM/YY HH:mm')}
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
     );
   }
 }

@@ -5,183 +5,148 @@ import MenuBasket from './menuBasket';
 
 export default class ViewCartBasket extends Component {
   roleBtnClear = () => {
-    let props = this.props.data
-    return ((
-      (props.dataBasket.status === "SUBMITTED" &&
-        (props.orderingMode && (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT"
-        ))
-      ) ||
-      (
-        props.dataBasket.status !== "PENDING" &&
-        props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE"
-      ) ||
-      (
-        props.dataBasket.orderingMode === "DELIVERY" &&
-        props.dataBasket.status !== "PENDING"
-      ) ||
-      props.dataBasket.status === "CONFIRMED" ||
-      props.dataBasket.status === "PROCESSING" ||
-      props.dataBasket.status === "READY_FOR_COLLECTION"
-    ) ? true : false)
-  }
+    let props = this.props.data;
+    return (props.dataBasket.status === 'SUBMITTED' &&
+      props.orderingMode &&
+      (props.orderingMode === 'TAKEAWAY' ||
+        props.orderingMode === 'STOREPICKUP' ||
+        props.orderingMode === 'STORECHECKOUT')) ||
+      (props.dataBasket.status !== 'PENDING' &&
+        props.dataBasket.orderingMode === 'DINEIN' &&
+        props.dataBasket.outlet.outletType === 'QUICKSERVICE') ||
+      (props.dataBasket.orderingMode === 'DELIVERY' &&
+        props.dataBasket.status !== 'PENDING') ||
+      props.dataBasket.status === 'CONFIRMED' ||
+      props.dataBasket.status === 'PROCESSING' ||
+      props.dataBasket.status === 'READY_FOR_COLLECTION'
+      ? true
+      : false;
+  };
 
   roleDisableNotPending = () => {
-    let props = this.props.data
-    return (props.dataBasket && props.dataBasket.status !== "PENDING" ? true : false)
-  }
+    let props = this.props.data;
+    return props.dataBasket && props.dataBasket.status !== 'PENDING'
+      ? true
+      : false;
+  };
 
   roleBtnSettle = () => {
-    let props = this.props.data
-    return ((!props.btnBasketOrder ||
-      props.storeDetail.orderingStatus === "UNAVAILABLE" ||
-      props.dataBasket.status === "PROCESSING" ||
-      props.dataBasket.status === "READY_FOR_COLLECTION" ||
-      (
-        props.dataBasket.status === "SUBMITTED" &&
-        props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "RESTO"
-      ) ||
-      (
-        // (this.props.isLoggedIn && props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ||
-        (props.dataBasket.status === "SUBMITTED" || props.dataBasket.status === "CONFIRMED") &&
-        (props.orderingMode && (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT"
-        ))
-      ) ||
-      (
-        props.dataBasket.status !== "PENDING" &&
-        props.dataBasket.status !== "PENDING_PAYMENT" &&
-        props.dataBasket.orderingMode === "DINEIN" &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE"
-      ) ||
-      (
-        props.dataBasket.orderingMode === "DELIVERY" &&
-        props.dataBasket.status !== "PENDING" &&
-        props.dataBasket.status !== "PENDING_PAYMENT"
-      ) ||
-      (
-        this.props.isLoggedIn &&
+    let props = this.props.data;
+    return !props.btnBasketOrder ||
+      props.storeDetail.orderingStatus === 'UNAVAILABLE' ||
+      props.dataBasket.status === 'PROCESSING' ||
+      props.dataBasket.status === 'READY_FOR_COLLECTION' ||
+      (props.dataBasket.status === 'SUBMITTED' &&
+        props.dataBasket.orderingMode === 'DINEIN' &&
+        props.dataBasket.outlet.outletType === 'RESTO') ||
+      // (this.props.isLoggedIn && props.selectedCard === null && (props.newTotalPrice === "0" ? props.totalPrice : props.newTotalPrice) > 0) ||
+      ((props.dataBasket.status === 'SUBMITTED' ||
+        props.dataBasket.status === 'CONFIRMED') &&
+        props.orderingMode &&
+        (props.orderingMode === 'TAKEAWAY' ||
+          props.orderingMode === 'STOREPICKUP' ||
+          props.orderingMode === 'STORECHECKOUT')) ||
+      (props.dataBasket.status !== 'PENDING' &&
+        props.dataBasket.status !== 'PENDING_PAYMENT' &&
+        props.dataBasket.orderingMode === 'DINEIN' &&
+        props.dataBasket.outlet.outletType === 'QUICKSERVICE') ||
+      (props.dataBasket.orderingMode === 'DELIVERY' &&
+        props.dataBasket.status !== 'PENDING' &&
+        props.dataBasket.status !== 'PENDING_PAYMENT') ||
+      (this.props.isLoggedIn &&
         !props.provaiderDelivery &&
         props.orderingMode &&
-        props.orderingMode === "DELIVERY"
-      )
-    ) ? true : false)
-  }
+        props.orderingMode === 'DELIVERY')
+      ? true
+      : false;
+  };
 
   roleOnClickSettle = () => {
-    let props = this.props.data
-    return ((
+    let props = this.props.data;
+    return (
       props.settle ||
       (props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        )
-      ) ||
-      (
-        props.orderingMode &&
-        props.orderingMode === "DINEIN" &&
+        (props.orderingMode === 'TAKEAWAY' ||
+          props.orderingMode === 'STOREPICKUP' ||
+          props.orderingMode === 'STORECHECKOUT' ||
+          props.orderingMode === 'DELIVERY')) ||
+      (props.orderingMode &&
+        props.orderingMode === 'DINEIN' &&
         props.dataBasket &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
-        props.dataBasket.outlet.enableTableScan === false
-      ) ||
-      (
-        props.dataBasket &&
-        props.dataBasket.status !== "PENDING"
-      )
-    ))
-  }
+        props.dataBasket.outlet.outletType === 'QUICKSERVICE' &&
+        props.dataBasket.outlet.enableTableScan === false) ||
+      (props.dataBasket && props.dataBasket.status !== 'PENDING')
+    );
+  };
 
   roleBackgroundSettle = () => {
-    let props = this.props.data
-    return ((props.settle ||
+    let props = this.props.data;
+    return (
+      props.settle ||
       (props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        )
-      ) ||
-      (
-        props.orderingMode &&
-        props.orderingMode === "DINEIN" &&
+        (props.orderingMode === 'TAKEAWAY' ||
+          props.orderingMode === 'STOREPICKUP' ||
+          props.orderingMode === 'STORECHECKOUT' ||
+          props.orderingMode === 'DELIVERY')) ||
+      (props.orderingMode &&
+        props.orderingMode === 'DINEIN' &&
         props.dataBasket &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
-        props.dataBasket.outlet.enableTableScan === false
-      ) ||
-      (
-        props.dataBasket &&
-        props.dataBasket.status !== "PENDING"
-      )
-    ))
-  }
+        props.dataBasket.outlet.outletType === 'QUICKSERVICE' &&
+        props.dataBasket.outlet.enableTableScan === false) ||
+      (props.dataBasket && props.dataBasket.status !== 'PENDING')
+    );
+  };
 
   roleIconSettle = () => {
-    let props = this.props.data
-    return ((props.settle ||
+    let props = this.props.data;
+    return (
+      props.settle ||
       (props.orderingMode &&
-        (
-          props.orderingMode === "TAKEAWAY" ||
-          props.orderingMode === "STOREPICKUP" ||
-          props.orderingMode === "STORECHECKOUT" ||
-          props.orderingMode === "DELIVERY"
-        )
-      ) ||
-      (
-        props.orderingMode &&
-        props.orderingMode === "DINEIN" &&
+        (props.orderingMode === 'TAKEAWAY' ||
+          props.orderingMode === 'STOREPICKUP' ||
+          props.orderingMode === 'STORECHECKOUT' ||
+          props.orderingMode === 'DELIVERY')) ||
+      (props.orderingMode &&
+        props.orderingMode === 'DINEIN' &&
         props.dataBasket &&
-        props.dataBasket.outlet.outletType === "QUICKSERVICE" &&
-        (
-          props.dataBasket.outlet.enableTableScan === false ||
-          props.dataBasket.outlet.enableTableScan === "-"
-        )
-      ) ||
-      (
-        props.dataBasket &&
-        props.dataBasket.status !== "PENDING"
-      ) ||
-      (
-        props.storeDetail &&
+        props.dataBasket.outlet.outletType === 'QUICKSERVICE' &&
+        (props.dataBasket.outlet.enableTableScan === false ||
+          props.dataBasket.outlet.enableTableScan === '-')) ||
+      (props.dataBasket && props.dataBasket.status !== 'PENDING') ||
+      (props.storeDetail &&
         props.storeDetail.enableTableScan !== false &&
-        props.scanTable
-      )
-    ))
-  }
+        props.scanTable)
+    );
+  };
 
   roleTitleSettle = () => {
-    return this.roleIconSettle()
-  }
+    return this.roleIconSettle();
+  };
 
   render() {
-    let props = this.props.data
+    let props = this.props.data;
     return (
-      <div style={{
-        marginLeft: (props.widthSelected >= 1200 ? 100 : 0),
-        marginRight: (props.widthSelected >= 1200 ? 100 : 0)
-      }}>
+      <div
+        style={{
+          marginLeft: props.widthSelected >= 1200 ? 100 : 0,
+          marginRight: props.widthSelected >= 1200 ? 100 : 0,
+        }}
+      >
         <Row>
-          <Col xs="12" sm="6">
+          <Col xs='12' sm='6'>
             <ItemsBasket
               data={this.props.data}
               dataBasket={this.props.dataBasket}
               countryCode={this.props.countryCode}
               getCurrency={(price) => this.props.getCurrency(price)}
-              handleSetState={(field, value) => this.props.handleSetState(field, value)}
+              handleSetState={(field, value) =>
+                this.props.handleSetState(field, value)
+              }
               handleClear={(dataBasket) => this.props.handleClear(dataBasket)}
               roleBtnClear={this.roleBtnClear()}
             />
           </Col>
-          <Col xs="12" sm="6">
+          <Col xs='12' sm='6'>
             <MenuBasket
               data={this.props.data}
               isLoggedIn={this.props.isLoggedIn}
@@ -208,34 +173,58 @@ export default class ViewCartBasket extends Component {
           </Col>
         </Row>
 
-        {
-          (props.dataBasket.status === "PROCESSING" ||
-          props.dataBasket.status === "READY_FOR_COLLECTION" ||
-          props.dataBasket.status === "READY_FOR_DELIVERY" ||
-          props.dataBasket.status === "ON_THE_WAY") &&
-          <div className="background-theme" style={{
-            padding: 10, width: "101%", marginLeft: (props.widthSelected >= 750 ? -65 : -15),
-            marginBottom: (props.widthSelected >= 1200 ? 0 : 45),
-            display: "flex", flexDirection: "column", alignItems: "left", position: "fixed", bottom: 0,
-            boxShadow: "1px -2px 2px rgba(128, 128, 128, 0.5)", justifyContent: "center",
-            paddingBottom: 20 
-          }}>
-
-            <div className="background-theme" style={{
-              padding: 10, display: "flex", flexDirection: "row", 
-              alignItems: 'center', justifyContent: "space-between"
-            }}>
-              <Button style={{
-                width: "100%", fontWeight: "bold", display: 'flex', 
-                justifyContent: "center", alignItems: "center", height: 50
-              }} onClick={() => this.props.setViewCart(false)}>
-                <i className="fa fa-shopping-cart" aria-hidden="true" style={{fontSize: 20, marginRight: 10}}/>
+        {(props.dataBasket.status === 'PROCESSING' ||
+          props.dataBasket.status === 'READY_FOR_COLLECTION' ||
+          props.dataBasket.status === 'READY_FOR_DELIVERY' ||
+          props.dataBasket.status === 'ON_THE_WAY') && (
+          <div
+            className='background-theme'
+            style={{
+              padding: 10,
+              width: '101%',
+              marginLeft: props.widthSelected >= 750 ? -65 : -15,
+              marginBottom: props.widthSelected >= 1200 ? 0 : 45,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'left',
+              position: 'fixed',
+              bottom: 0,
+              boxShadow: '1px -2px 2px rgba(128, 128, 128, 0.5)',
+              justifyContent: 'center',
+              paddingBottom: 20,
+            }}
+          >
+            <div
+              className='background-theme'
+              style={{
+                padding: 10,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Button
+                style={{
+                  width: '100%',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: 50,
+                }}
+                onClick={() => this.props.setViewCart(false)}
+              >
+                <i
+                  className='fa fa-shopping-cart'
+                  aria-hidden='true'
+                  style={{ fontSize: 20, marginRight: 10 }}
+                />
                 Waiting Order
               </Button>
             </div>
-
           </div>
-        }
+        )}
       </div>
     );
   }
