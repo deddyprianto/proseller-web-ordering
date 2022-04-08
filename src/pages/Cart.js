@@ -344,7 +344,7 @@ const Cart = ({ ...props }) => {
   };
 
   const handleRenderOrderingModeLabel = () => {
-    if (props.orderingModeDisplayName !== 'null') {
+    if (props.orderingModeDisplayName) {
       return props.orderingModeDisplayName;
     } else if (props.orderingMode) {
       return props.orderingMode;
@@ -364,13 +364,13 @@ const Cart = ({ ...props }) => {
           props.orderActionTimeSlot &&
           props.deliveryAddress &&
           !isEmptyObject(props.selectedDeliveryProvider) &&
-          !props.selectedDeliveryProvider.deliveryProviderError.status;
+          !props.selectedDeliveryProvider?.deliveryProviderError?.status;
       } else {
         isAllCompleted =
           props.orderingMode &&
           props.deliveryAddress &&
           !isEmptyObject(props.selectedDeliveryProvider) &&
-          !props.selectedDeliveryProvider.deliveryProviderError.status;
+          !props.selectedDeliveryProvider?.deliveryProviderError?.status;
       }
 
       return !isAllCompleted;
