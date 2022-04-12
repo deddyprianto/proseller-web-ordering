@@ -246,10 +246,7 @@ class ModalProduct extends Component {
   };
 
   processCart = async (e, manualOrderingMode = "") => {
-    console.log("Calling process cart... => ", this.state.isVariantSelected);
     const orderMode = this.props.orderingMode;
-    console.log(manualOrderingMode);
-
     try {
       if (
         this.props.selectedItem &&
@@ -336,6 +333,7 @@ class ModalProduct extends Component {
           OrderAction.processAddCart(defaultOutlet, selectedItem)
         );
         this.setState({ selectedItem: {} });
+        document.getElementById("detail-product-modal").click();
       } else {
         let response = await this.props.dispatch(
           OrderAction.processUpdateCart(basket, [{ ...selectedItem }])

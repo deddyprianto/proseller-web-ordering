@@ -25,8 +25,16 @@ import styles from './styles.module.css';
 import OrderingMode from './OrderingMode';
 import Typography from '@mui/material/Typography';
 
-const useStyles = (theme) => ({
+const useStyles = () => ({
   header: {
+    '@media (max-width: 980px)': {
+      paddingLeft: '3%',
+      paddingRight: '3%',
+    },
+    '@media (min-width: 1280px)': {
+      paddingLeft: '10%',
+      paddingRight: '10%',
+    },
     paddingTop: 5,
     paddingBottom: 5,
   },
@@ -446,7 +454,7 @@ class Header extends Component {
       <div>
         {!isLoggedIn && <LoginRegister />}
         <AppBar
-          className={clsx(classes.header, 'site-main')}
+          className={classes.header}
           style={{
             width: '-webkit-fill-available',
             marginBottom: '1rem',
