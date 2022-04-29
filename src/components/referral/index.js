@@ -71,7 +71,7 @@ class Referral extends Component {
     const domainName = window.location.host;
     this.setState({ isLoading: true });
     if (modeInvitation === 'email') {
-      payload = { email: address };
+      payload = { email: address, domain: domainName };
     } else {
       payload = { mobileNo: `+${mobileNo}`, domain: domainName };
     }
