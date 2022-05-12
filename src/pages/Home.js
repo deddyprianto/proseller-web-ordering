@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { useEffect, useState, useLayoutEffect } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import Banner from 'components/banner';
-import ProductList from 'components/productList';
-import OrderingRetail from '../components/ordering/indexRetail';
+import Banner from "components/banner";
+import ProductList from "components/ProductList";
+import OrderingRetail from "../components/ordering/indexRetail";
 
-import OutletSelection from './OutletSelection';
+import OutletSelection from "./OutletSelection";
 
-import { PromotionAction } from 'redux/actions/PromotionAction';
+import { PromotionAction } from "redux/actions/PromotionAction";
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -17,9 +17,9 @@ const useWindowSize = () => {
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight]);
     }
-    window.addEventListener('resize', updateSize);
+    window.addEventListener("resize", updateSize);
     updateSize();
-    return () => window.removeEventListener('resize', updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
   return size;
 };
@@ -44,14 +44,14 @@ const Home = ({ ...props }) => {
       paddingBottom: 100,
     },
     rootProduct: {
-      paddingLeft: gadgetScreen ? '3%' : '10%',
-      paddingRight: gadgetScreen ? '3%' : '10%',
+      paddingLeft: gadgetScreen ? "3%" : "10%",
+      paddingRight: gadgetScreen ? "3%" : "10%",
     },
   };
-  const isEmenu = window.location.hostname.includes('emenu');
+  const isEmenu = window.location.hostname.includes("emenu");
 
   const renderOrderingRetail = () => {
-    if (props.orderingSetting?.CategoryHeaderType === 'WITH_CATEGORY_PAGE') {
+    if (props.orderingSetting?.CategoryHeaderType === "WITH_CATEGORY_PAGE") {
       return <OrderingRetail history={props.history}></OrderingRetail>;
     } else {
       return <ProductList />;
@@ -59,7 +59,7 @@ const Home = ({ ...props }) => {
   };
   const renderProductListOrOutletSelection = () => {
     if (
-      props.setting?.outletSelection === 'MANUAL' &&
+      props.setting?.outletSelection === "MANUAL" &&
       !props.defaultOutlet?.id &&
       !isEmenu
     ) {

@@ -1,17 +1,17 @@
-import React, { useState, useLayoutEffect } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { useState, useLayoutEffect } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import config from 'config';
+import config from "config";
 
-import IconButton from '@mui/material/IconButton';
-import Typography from '@material-ui/core/Typography';
+import IconButton from "@mui/material/IconButton";
+import Typography from "@material-ui/core/Typography";
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import DeleteIcon from "@mui/icons-material/Delete";
+import { isEmptyArray } from "helpers/CheckEmpty";
 
-import ProductAddModal from '../../../components/ProductList/components/ProductAddModal';
-import ProductCartRemoveModal from '../../productCartList/components/ProductCartRemoveModal';
+import ProductAddModal from "../../../components/ProductList/components/ProductAddModal";
+import ProductCartRemoveModal from "../../productCartList/components/ProductCartRemoveModal";
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -19,9 +19,9 @@ const useWindowSize = () => {
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight]);
     }
-    window.addEventListener('resize', updateSize);
+    window.addEventListener("resize", updateSize);
     updateSize();
-    return () => window.removeEventListener('resize', updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
   return size;
 };
@@ -40,6 +40,10 @@ const mapDispatchToProps = (dispatch) => ({
 
 const ProductCart = ({ item, ...props }) => {
   const [width] = useWindowSize();
+  const itemIsUnavailable =
+    item.orderingStatus && item.orderingStatus === "UNAVAILABLE";
+  const itemIsOutOfStock =
+    item.product?.currentStock && item.quantity > item.product.currentStock;
   const styles = {
     textNote: {
       paddingTop: 10,
@@ -49,51 +53,56 @@ const ProductCart = ({ item, ...props }) => {
       fontSize: 12,
       color: props.color.primary,
     },
+    textStock: {
+      color: "red",
+      fontStyle: "italic",
+    },
     rootProductCart: {
-      position: 'relative',
+      position: "relative",
+      opacity: itemIsUnavailable || itemIsOutOfStock ? 0.5 : 1,
     },
     rootPrice: {
-      display: 'flex',
+      display: "flex",
     },
     buttonDelete: {
-      display: 'flex',
-      justifyContent: 'end',
+      display: "flex",
+      justifyContent: "end",
       color: props.color.primary,
-      '&:hover': {
+      "&:hover": {
         color: props.color.primary,
       },
-      position: 'absolute',
+      position: "absolute",
       right: 10,
       bottom: -2,
     },
     productModifierBody: {
-      display: 'flex',
+      display: "flex",
       paddingLeft: 4,
     },
     productModifierQuantity: {
-      fontStyle: 'italic',
+      fontStyle: "italic",
       fontSize: 10,
       color: props.color.primary,
     },
     productModifierName: {
-      fontStyle: 'italic',
+      fontStyle: "italic",
       fontSize: 10,
       paddingRight: 2,
       paddingLeft: 2,
     },
     productModifierTypography: {
-      fontStyle: 'italic',
+      fontStyle: "italic",
       fontSize: 10,
     },
     productModifierAddOn: {
-      fontStyle: 'italic',
+      fontStyle: "italic",
       fontSize: 10,
       paddingTop: 4,
     },
     image: {
-      display: 'flex',
+      display: "flex",
       width: 600 > width ? 120 : 180,
-      height: 'auto',
+      height: "auto",
       paddingLeft: 10,
       paddingRight: 10,
     },
@@ -105,7 +114,7 @@ const ProductCart = ({ item, ...props }) => {
     },
     typography: {
       fontSize: 12,
-      lineHeight: '17px',
+      lineHeight: "17px",
       fontWeight: 600,
     },
     price: {
@@ -113,7 +122,7 @@ const ProductCart = ({ item, ...props }) => {
       paddingBottom: 6,
       marginTop: 10,
       fontSize: 14,
-      lineHeight: '17px',
+      lineHeight: "17px",
       fontWeight: 600,
       color: props.color.primary,
     },
@@ -121,31 +130,31 @@ const ProductCart = ({ item, ...props }) => {
       paddingBottom: 6,
       marginTop: 10,
       fontSize: 14,
-      lineHeight: '17px',
+      lineHeight: "17px",
       fontWeight: 600,
       color: props.color.primary,
-      textDecorationLine: 'line-through',
+      textDecorationLine: "line-through",
     },
     quantity: {
       fontSize: 14,
-      lineHeight: '17px',
+      lineHeight: "17px",
       fontWeight: 600,
       paddingRight: 4,
       color: props.color.primary,
     },
     item: {
-      display: 'flex',
-      cursor: 'pointer',
-      width: '100%',
+      display: "flex",
+      cursor: "pointer",
+      width: "100%",
     },
     itemBody: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      height: 'auto',
-      width: '100%',
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      height: "auto",
+      width: "100%",
     },
-    name: { display: 'flex' },
+    name: { display: "flex" },
   };
 
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
@@ -172,7 +181,7 @@ const ProductCart = ({ item, ...props }) => {
   const handleCurrency = (price) => {
     if (props.companyInfo && price) {
       const result = price.toLocaleString(props.companyInfo.currency.locale, {
-        style: 'currency',
+        style: "currency",
         currency: props.companyInfo.currency.code,
       });
 
@@ -271,6 +280,20 @@ const ProductCart = ({ item, ...props }) => {
     );
   };
 
+  const renderProductStock = () => {
+    if (itemIsUnavailable) {
+      return <Typography style={styles.textStock}>Out of stock</Typography>;
+    }
+
+    if (itemIsOutOfStock) {
+      return (
+        <Typography style={styles.textStock}>
+          Only {item.product.currentStock} item(s) left
+        </Typography>
+      );
+    }
+  };
+
   return (
     <div style={styles.rootProductCart}>
       {isOpenAddModal && (
@@ -303,7 +326,7 @@ const ProductCart = ({ item, ...props }) => {
           <img
             style={styles.imageSize}
             src={renderImageProduct(item)}
-            alt={item?.product.name || ''}
+            alt={item?.product.name || ""}
             title={item?.product.name}
           />
         </div>
@@ -318,6 +341,7 @@ const ProductCart = ({ item, ...props }) => {
           {renderProductModifiers(item?.modifiers)}
           {renderNotes()}
           {renderPrice()}
+          {renderProductStock()}
         </div>
       </div>
       <IconButton
@@ -326,7 +350,7 @@ const ProductCart = ({ item, ...props }) => {
           handleOpenRemoveModal();
         }}
       >
-        <DeleteIcon fontSize='large' />
+        <DeleteIcon fontSize="large" />
       </IconButton>
     </div>
   );

@@ -1,12 +1,13 @@
-import { CONSTANT } from '../../helpers';
-import { OrderingService } from '../../Services/OrderingService';
-import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
-import config from '../../config';
+import { CONSTANT } from "../../helpers";
+import { OrderingService } from "../../Services/OrderingService";
+import { isEmptyArray, isEmptyObject } from "../../helpers/CheckEmpty";
+import config from "../../config";
 
-import { lsLoad } from '../../helpers/localStorage';
-import { CRMService } from '../../Services/CRMService';
+import { lsLoad } from "../../helpers/localStorage";
+import { CRMService } from "../../Services/CRMService";
+import Swal from "sweetalert2";
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 function setData(data, constant) {
@@ -21,19 +22,19 @@ function buildCart(payload = {}) {
     try {
       payload.orderingMode =
         localStorage.getItem(`${config.prefix}_ordering_mode`) ||
-        (window.location.hostname.includes('emenu') ? 'DINEIN' : 'DELIVERY');
+        (window.location.hostname.includes("emenu") ? "DINEIN" : "DELIVERY");
     } catch (error) {
       console.log(error);
     }
     const response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/build',
-      'Bearer'
+      "cart/build",
+      "Bearer"
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log('Status is ' + response.ResultCode || response.resultCode);
+      console.log("Status is " + response.ResultCode || response.resultCode);
       localStorage.removeItem(`${config.prefix}_offlineCart`);
       return dispatch(setData({}, CONSTANT.DATA_BASKET));
     }
@@ -68,10 +69,10 @@ function shareURL(tableNo, outletID, orderMode) {
     };
 
     const response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/generateshareurl/',
-      'Bearer'
+      "cart/generateshareurl/",
+      "Bearer"
     );
 
     if (response.data !== undefined) return response;
@@ -81,10 +82,10 @@ function shareURL(tableNo, outletID, orderMode) {
 
 function getSettingOrdering() {
   return async (dispatch) => {
-    let appType = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
+    let appType = config.prefix === "emenu" ? "eMenu" : "webOrdering";
     try {
       let response = await OrderingService.api(
-        'GET',
+        "GET",
         null,
         `orderingsetting/${appType}`
       );
@@ -96,7 +97,7 @@ function getSettingOrdering() {
         };
       }, {});
       dispatch({
-        type: 'SET_ORDERING_SETTINGS',
+        type: "SET_ORDERING_SETTINGS",
         data: settingObj,
       });
       if (data) {
@@ -105,61 +106,61 @@ function getSettingOrdering() {
         let primaryColor =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'PrimaryColor';
+            return items.settingKey === "PrimaryColor";
           });
         let secondaryColor =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'SecondaryColor';
+            return items.settingKey === "SecondaryColor";
           });
         let font =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'FontColor';
+            return items.settingKey === "FontColor";
           });
         let background =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'BackgroundColor';
+            return items.settingKey === "BackgroundColor";
           });
         let navigation =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'NavigationColor';
+            return items.settingKey === "NavigationColor";
           });
         let textButtonColor =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'TextButtonColor';
+            return items.settingKey === "TextButtonColor";
           });
         let textWarningColor =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'TextWarningColor';
+            return items.settingKey === "TextWarningColor";
           });
         let navigationFontColor =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'NavigationFontColor';
+            return items.settingKey === "NavigationFontColor";
           });
         let navigationIconSelectedColor =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'NavigationIconSelectedColor';
+            return items.settingKey === "NavigationIconSelectedColor";
           });
         let outletSelection =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'OutletSelection';
+            return items.settingKey === "OutletSelection";
           });
         let ProductPlaceholder =
           data &&
           data.settings.find((items) => {
-            return items.settingKey === 'ProductPlaceholder';
+            return items.settingKey === "ProductPlaceholder";
           });
 
         if (outletSelection === undefined) {
-          outletSelection = 'DEFAULT';
+          outletSelection = "DEFAULT";
         } else {
           outletSelection = outletSelection.settingValue;
         }
@@ -171,24 +172,24 @@ function getSettingOrdering() {
         }
 
         let payload = {
-          primary: primaryColor.settingValue || '#C00A27',
-          secondary: secondaryColor.settingValue || '#C00A27',
-          font: font.settingValue || '#808080',
-          background: background.settingValue || '#FFFFFF',
-          textButtonColor: textButtonColor.settingValue || '#FFFFFF',
-          textWarningColor: textWarningColor.settingValue || 'red',
+          primary: primaryColor.settingValue || "#C00A27",
+          secondary: secondaryColor.settingValue || "#C00A27",
+          font: font.settingValue || "#808080",
+          background: background.settingValue || "#FFFFFF",
+          textButtonColor: textButtonColor.settingValue || "#FFFFFF",
+          textWarningColor: textWarningColor.settingValue || "red",
           productPlaceholder: ProductPlaceholder || null,
-          navigationColor: navigation.settingValue || '#C00A27',
-          navigationFontColor: navigationFontColor.settingValue || '#FFFF',
+          navigationColor: navigation.settingValue || "#C00A27",
+          navigationFontColor: navigationFontColor.settingValue || "#FFFF",
           navigationIconSelectedColor:
-            navigationIconSelectedColor.settingValue || '#393939',
+            navigationIconSelectedColor.settingValue || "#393939",
         };
-        dispatch({ type: 'SET_THEME', payload });
+        dispatch({ type: "SET_THEME", payload });
         dispatch({
-          type: 'DATA_SETTING_ORDERING',
+          type: "DATA_SETTING_ORDERING",
           payload: data && data.settings,
         });
-        dispatch(setData(outletSelection, 'OUTLET_SELECTION'));
+        dispatch(setData(outletSelection, "OUTLET_SELECTION"));
       }
       return data;
     } catch (error) {}
@@ -210,17 +211,17 @@ function getCart(isSetData = true) {
     }
 
     const response = await OrderingService.api(
-      'GET',
+      "GET",
       null,
-      'cart/getcart',
-      'Bearer'
+      "cart/getcart",
+      "Bearer"
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
-    else if (response.data && response.data.message !== 'No details data') {
-      if (response.data.status === 'PENDING_PAYMENT') {
-        await OrderingService.api('DELETE', null, 'cart/delete', 'Bearer');
+    else if (response.data && response.data.message !== "No details data") {
+      if (response.data.status === "PENDING_PAYMENT") {
+        await OrderingService.api("DELETE", null, "cart/delete", "Bearer");
         return {};
       }
 
@@ -248,7 +249,7 @@ function processOfflineCart(payload, mode) {
       if (isEmptyObject(offlineCart) || isEmptyArray(offlineCart.details)) {
         return await dispatch(buildCart(payload));
       } else {
-        if (mode === 'Add') {
+        if (mode === "Add") {
           if (offlineCart.outletID === payload.outletID) {
             offlineCart.details.push(payload.details[0]);
             return await dispatch(buildCart(offlineCart));
@@ -279,13 +280,21 @@ function processOfflineCart(payload, mode) {
 function updateCart(payload) {
   return async (dispatch) => {
     const response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/updateitem',
-      'Bearer'
+      "cart/updateitem",
+      "Bearer"
     );
 
-    return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
+      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    } else {
+      Swal.fire(
+        "Oppss!",
+        response.data.message || "Failed to update item",
+        "error"
+      );
+    }
   };
 }
 
@@ -297,7 +306,7 @@ function processUpdateCart(product) {
     if (account) {
       await dispatch(updateCart(payload));
     } else {
-      await dispatch(processOfflineCart(payload, 'Update'));
+      await dispatch(processOfflineCart(payload, "Update"));
     }
   };
 }
@@ -310,7 +319,7 @@ function processRemoveCart(product) {
     if (account) {
       await dispatch(updateCart(payload));
     } else {
-      await dispatch(processOfflineCart(payload, 'Update'));
+      await dispatch(processOfflineCart(payload, "Update"));
     }
   };
 }
@@ -319,10 +328,10 @@ function moveCart(payload) {
   return async (dispatch) => {
     try {
       const response = await OrderingService.api(
-        'POST',
+        "POST",
         payload,
-        'cart/moveItem',
-        'Bearer'
+        "cart/moveItem",
+        "Bearer"
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
         return response;
@@ -340,10 +349,10 @@ function changeOrderingMode(payload) {
   return async (dispatch) => {
     if (account && payload.orderingMode) {
       let response = await OrderingService.api(
-        'POST',
+        "POST",
         payload,
-        'cart/changeOrderingMode',
-        'Bearer'
+        "cart/changeOrderingMode",
+        "Bearer"
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
         console.log(response);
@@ -360,10 +369,10 @@ function changeOrderingMode(payload) {
 function addCart(payload) {
   return async (dispatch) => {
     const response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/additem',
-      'Bearer'
+      "cart/additem",
+      "Bearer"
     );
 
     // IF First time add cart, then call change Ordering mode
@@ -385,6 +394,12 @@ function addCart(payload) {
 
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    } else {
+      Swal.fire(
+        "Oppss!",
+        response.data.message || "Failed to add item",
+        "error"
+      );
     }
   };
 }
@@ -402,7 +417,7 @@ function processAddCart(defaultOutlet, selectedItem) {
       quantity: selectedItem.quantity,
     };
 
-    if (selectedItem.remark !== '' || selectedItem.remark !== undefined)
+    if (selectedItem.remark !== "" || selectedItem.remark !== undefined)
       product.remark = selectedItem.remark;
 
     if (!isEmptyArray(selectedItem?.modifiers)) {
@@ -414,7 +429,7 @@ function processAddCart(defaultOutlet, selectedItem) {
     if (account) {
       await dispatch(addCart(payload));
     } else {
-      await dispatch(processOfflineCart(payload, 'Add'));
+      await dispatch(processOfflineCart(payload, "Add"));
     }
   };
 }
@@ -423,12 +438,12 @@ function updateCartInfo(payload) {
   return async (dispatch) => {
     try {
       await OrderingService.api(
-        'POST',
+        "POST",
         payload,
-        'cart/updateCartInfo',
-        'Bearer'
+        "cart/updateCartInfo",
+        "Bearer"
       );
-      console.log('in');
+      console.log("in");
     } catch (e) {
       console.log(e);
     }
@@ -453,10 +468,10 @@ function deleteCart(isDeleteServer = false) {
       }
     } else if (account) {
       const response = await OrderingService.api(
-        'DELETE',
+        "DELETE",
         null,
-        'cart/delete',
-        'Bearer'
+        "cart/delete",
+        "Bearer"
       );
       if (response.ResultCode >= 400 || response.resultCode >= 400)
         console.log(response);
@@ -469,10 +484,10 @@ function deleteCart(isDeleteServer = false) {
 function submitBasket(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/submit',
-      'Bearer'
+      "cart/submit",
+      "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -483,10 +498,10 @@ function submitBasket(payload) {
 function submitOrdering(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/settle',
-      'Bearer'
+      "cart/settle",
+      "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -497,10 +512,10 @@ function submitOrdering(payload) {
 function submitTakeAway(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/submitAndPay',
-      'Bearer'
+      "cart/submitAndPay",
+      "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -511,10 +526,10 @@ function submitTakeAway(payload) {
 function submitSettle(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/customer/settle',
-      'Bearer'
+      "cart/customer/settle",
+      "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -525,10 +540,10 @@ function submitSettle(payload) {
 function submitMembership(payload) {
   return async () => {
     let response = await CRMService.api(
-      'POST',
+      "POST",
       payload,
-      'sales/customer/submit',
-      'bearer'
+      "sales/customer/submit",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -538,20 +553,20 @@ function submitMembership(payload) {
 
 function getProvider(
   payload = {
-    take: '10',
+    take: "10",
     skip: 0,
-    sortBy: 'name',
-    sortDirection: 'ASC',
+    sortBy: "name",
+    sortDirection: "ASC",
   }
 ) {
   return async (dispatch) => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'delivery/providers',
-      'Bearer'
+      "delivery/providers",
+      "Bearer"
     );
-    dispatch({ type: 'SET_DELIVERY_PROVIDERS', payload: response.data });
+    dispatch({ type: "SET_DELIVERY_PROVIDERS", payload: response.data });
     return response.data;
   };
 }
@@ -559,10 +574,10 @@ function getProvider(
 function getCalculateFee(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'delivery/calculateFee',
-      'Bearer'
+      "delivery/calculateFee",
+      "Bearer"
     );
     try {
       if (response.data.dataProfider !== undefined) {
@@ -578,10 +593,10 @@ function getCalculateFee(payload) {
 function getCartPending(id) {
   return async () => {
     let response = await OrderingService.api(
-      'GET',
+      "GET",
       null,
       `cart/pending/${id}`,
-      'Bearer'
+      "Bearer"
     );
     return response;
   };
@@ -590,10 +605,10 @@ function getCartPending(id) {
 function getCartCompleted(id) {
   return async () => {
     let response = await OrderingService.api(
-      'GET',
+      "GET",
       null,
       `outlet/cart/getcompleted/${id}`,
-      'Bearer'
+      "Bearer"
     );
     return response;
   };
@@ -602,10 +617,10 @@ function getCartCompleted(id) {
 function cartUpdate(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'outlet/cart/update',
-      'Bearer'
+      "outlet/cart/update",
+      "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -615,7 +630,7 @@ function cartUpdate(payload) {
 
 function getTimeSlot(payload) {
   return async () => {
-    let response = await OrderingService.api('POST', payload, 'timeslot');
+    let response = await OrderingService.api("POST", payload, "timeslot");
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     return response;
@@ -625,10 +640,10 @@ function getTimeSlot(payload) {
 function submitAndPay(payload) {
   return async () => {
     let response = await OrderingService.api(
-      'POST',
+      "POST",
       payload,
-      'cart/submitAndPay',
-      'Bearer'
+      "cart/submitAndPay",
+      "Bearer"
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
