@@ -50,6 +50,7 @@ const ProductAddModal = ({
   product,
   width,
   selectedProduct,
+  basket,
   ...props
 }) => {
   const gadgetScreen = width < 600;
@@ -85,6 +86,13 @@ const ProductAddModal = ({
       color: props.color.primary,
       lineHeight: '17px',
       paddingLeft: gadgetScreen ? 0 : 10,
+    },
+    stock: {
+      color: 'red',
+      fontSize: 12,
+      fontStyle: 'italic',
+      marginTop: 10,
+      textAlign: 'right',
     },
     buttonIcon: {
       height: 35,
@@ -260,6 +268,13 @@ const ProductAddModal = ({
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
 
+  const [increaseQtyButtonDisabled, setIncreaseQtyButtonDisabled] =
+    useState(true);
+  const [decreaseQtyButtonDisabled, setDecreaseQtyButtonDisabled] =
+    useState(true);
+
+  const [stock, setStock] = useState({ manage: false, current: 0 });
+
   const handlePrice = ({ qty, totalPrice }) => {
     setTotalPrice(qty * totalPrice);
   };
@@ -401,20 +416,28 @@ const ProductAddModal = ({
       );
 
       if (!isEmptyObject(selectedProduct)) {
-        return setProductUpdate({
+        const productVariant = {
           id: selectedProduct.id,
           productID: `product::${productVariantFormated.id}`,
           retailPrice: productVariantFormated.retailPrice,
           remark: notes,
           quantity: qty,
           unitPrice: productVariantFormated.retailPrice,
-        });
+          ...(product.manageStock && {
+            currentStock: productVariantFormated.currentStock || 0,
+          }),
+        };
+
+        return setProductUpdate(productVariant);
       }
       return setProductAdd({
         productID: `product::${productVariantFormated.id}`,
         retailPrice: productVariantFormated.retailPrice,
         remark: notes,
         quantity: qty,
+        ...(product.manageStock && {
+          currentStock: productVariantFormated.currentStock || 0,
+        }),
       });
     }
 
@@ -458,6 +481,9 @@ const ProductAddModal = ({
           remark: notes,
           quantity: qty,
           unitPrice: product.retailPrice,
+          ...(product.manageStock && {
+            currentStock: product.currentStock || 0,
+          }),
         });
       }
 
@@ -466,6 +492,9 @@ const ProductAddModal = ({
         retailPrice: product.retailPrice,
         remark: notes,
         quantity: qty,
+        ...(product.manageStock && {
+          currentStock: product.currentStock || 0,
+        }),
       });
     }
   }, [
@@ -477,6 +506,60 @@ const ProductAddModal = ({
     selectedVariantOptions,
     selectedProductModifiers,
   ]);
+
+  useEffect(() => {
+    if (product?.manageStock) {
+      const productData = !isEmptyObject(selectedProduct)
+        ? productUpdate
+        : productAdd;
+
+      const currentItemQuantityInCart = basket?.details
+        ? basket.details.reduce((acc, item) => {
+            if (item.productID === productData.productID) {
+              return acc + item.quantity;
+            }
+            return acc;
+          }, 0)
+        : 0;
+      const currentStock = Math.max(
+        productData.currentStock - currentItemQuantityInCart,
+        0
+      );
+
+      setStock({ manage: true, current: currentStock });
+    } else {
+      setStock({ manage: false });
+    }
+  }, [basket, product, selectedProduct, productUpdate, productAdd]);
+
+  useEffect(() => {
+    if (stock.manage) {
+      if (qty >= stock.current) {
+        setIncreaseQtyButtonDisabled(true);
+      } else {
+        setIncreaseQtyButtonDisabled(false);
+      }
+      if (stock.current === 0) {
+        setDecreaseQtyButtonDisabled(true);
+      } else {
+        setDecreaseQtyButtonDisabled(false);
+      }
+    }
+  }, [stock, qty]);
+
+  useEffect(() => {
+    if (isLoading) {
+      setIncreaseQtyButtonDisabled(true);
+      setDecreaseQtyButtonDisabled(true);
+    } else {
+      setIncreaseQtyButtonDisabled(false);
+      setDecreaseQtyButtonDisabled(false);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    setQty(1);
+  }, [selectedVariantOptions]);
 
   const handleClear = () => {
     setQty(1);
@@ -547,6 +630,10 @@ const ProductAddModal = ({
 
       const productModifierAllTrue = productModifiers.every((v) => v === true);
       return !productModifierAllTrue;
+    }
+
+    if (stock.manage && stock.current < qty) {
+      return true;
     }
 
     if (!isLoading) {
@@ -1082,12 +1169,24 @@ const ProductAddModal = ({
 
         <div>{renderProductModifiers(product?.productModifiers)}</div>
 
+        <div>
+          <Typography style={styles.stock}>
+            {stock.manage
+              ? stock.current < qty
+                ? stock.current === 0
+                  ? 'Out of stock'
+                  : `Only ${stock.current} item(s) left`
+                : ''
+              : ''}
+          </Typography>
+        </div>
+
         <div>{renderSpecialInstruction()}</div>
       </DialogContent>
       <DialogActions style={styles.footer}>
         <IconButton
           style={styles.buttonIcon}
-          disabled={qty === 0 || isLoading}
+          disabled={qty === 0 || decreaseQtyButtonDisabled}
           onClick={() => {
             setQty(qty - 1);
           }}
@@ -1096,7 +1195,7 @@ const ProductAddModal = ({
         </IconButton>
         <Typography style={styles.qty}>{qty}</Typography>
         <IconButton
-          disabled={isLoading}
+          disabled={increaseQtyButtonDisabled}
           style={styles.buttonIcon}
           onClick={() => {
             setQty(qty + 1);

@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
 import ProductAddModal from '../../../components/ProductList/components/ProductAddModal';
-import ProductCartRemoveModal from '../../productCartList/components/ProductCartRemoveModal';
+import ProductCartRemoveModal from '../../ProductCartList/components/ProductCartRemoveModal';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -40,6 +40,10 @@ const mapDispatchToProps = (dispatch) => ({
 
 const ProductCart = ({ item, ...props }) => {
   const [width] = useWindowSize();
+  const itemIsUnavailable =
+    item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
+  const itemIsOutOfStock =
+    item.product?.currentStock && item.quantity > item.product.currentStock;
   const styles = {
     textNote: {
       paddingTop: 10,
@@ -49,8 +53,13 @@ const ProductCart = ({ item, ...props }) => {
       fontSize: 12,
       color: props.color.primary,
     },
+    textStock: {
+      color: 'red',
+      fontStyle: 'italic',
+    },
     rootProductCart: {
       position: 'relative',
+      opacity: itemIsUnavailable || itemIsOutOfStock ? 0.5 : 1,
     },
     rootPrice: {
       display: 'flex',
@@ -271,6 +280,20 @@ const ProductCart = ({ item, ...props }) => {
     );
   };
 
+  const renderProductStock = () => {
+    if (itemIsUnavailable) {
+      return <Typography style={styles.textStock}>Out of stock</Typography>;
+    }
+
+    if (itemIsOutOfStock) {
+      return (
+        <Typography style={styles.textStock}>
+          Only {item.product.currentStock} item(s) left
+        </Typography>
+      );
+    }
+  };
+
   return (
     <div style={styles.rootProductCart}>
       {isOpenAddModal && (
@@ -318,6 +341,7 @@ const ProductCart = ({ item, ...props }) => {
           {renderProductModifiers(item?.modifiers)}
           {renderNotes()}
           {renderPrice()}
+          {renderProductStock()}
         </div>
       </div>
       <IconButton

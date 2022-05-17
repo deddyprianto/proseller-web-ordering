@@ -5,6 +5,7 @@ import config from '../../config';
 
 import { lsLoad } from '../../helpers/localStorage';
 import { CRMService } from '../../Services/CRMService';
+import Swal from 'sweetalert2';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
@@ -285,7 +286,15 @@ function updateCart(payload) {
       'Bearer'
     );
 
-    return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
+      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    } else {
+      Swal.fire(
+        'Oppss!',
+        response.data.message || 'Failed to update item',
+        'error'
+      );
+    }
   };
 }
 
@@ -385,6 +394,12 @@ function addCart(payload) {
 
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    } else {
+      Swal.fire(
+        'Oppss!',
+        response.data.message || 'Failed to add item',
+        'error'
+      );
     }
   };
 }

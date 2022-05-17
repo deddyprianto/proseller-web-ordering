@@ -16,7 +16,7 @@ import SendIcon from '@mui/icons-material/Send';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 
-import ProductCartList from 'components/productCartList';
+import ProductCartList from 'components/ProductCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
 import LoadingAddCart from 'components/loading/LoadingAddCart';
@@ -354,6 +354,18 @@ const Cart = ({ ...props }) => {
   };
 
   const handleDisabled = () => {
+    const someItemIsUnavailable = !props.details?.every((item) => {
+      const itemIsUnavailable =
+        item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
+      const itemIsOutOfStock =
+        item.product?.currentStock && item.quantity > item.product.currentStock;
+      return itemIsUnavailable || itemIsOutOfStock;
+    });
+
+    if (someItemIsUnavailable) {
+      return someItemIsUnavailable;
+    }
+
     if (props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY) {
       let isAllCompleted = false;
       if (selectTimeSlotAvailable) {
