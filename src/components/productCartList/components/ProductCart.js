@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
 import ProductAddModal from '../../../components/ProductList/components/ProductAddModal';
-import ProductCartRemoveModal from '../../productCartList/components/ProductCartRemoveModal';
+import ProductCartRemoveModal from '../../ProductCartList/components/ProductCartRemoveModal';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
