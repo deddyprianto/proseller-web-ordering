@@ -1,42 +1,42 @@
-import React, { useEffect, useState, useLayoutEffect } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
-import config from "config";
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
+import config from 'config';
 
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import Badge from "@mui/material/Badge";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Badge from '@mui/material/Badge';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import CloseIcon from "@mui/icons-material/Close";
-import LoadingButton from "@mui/lab/LoadingButton";
-import Dialog from "@mui/material/Dialog";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CloseIcon from '@mui/icons-material/Close';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Dialog from '@mui/material/Dialog';
 
-import PointAddModal from "components/pointAddModal";
+import PointAddModal from 'components/pointAddModal';
 
-import { PaymentAction } from "redux/actions/PaymentAction";
-import { CampaignAction } from "redux/actions/CampaignAction";
-import { CustomerAction } from "redux/actions/CustomerAction";
-import { OrderAction } from "redux/actions/OrderAction";
-import { SVCAction } from "redux/actions/SVCAction";
+import { PaymentAction } from 'redux/actions/PaymentAction';
+import { CampaignAction } from 'redux/actions/CampaignAction';
+import { CustomerAction } from 'redux/actions/CustomerAction';
+import { OrderAction } from 'redux/actions/OrderAction';
+import { SVCAction } from 'redux/actions/SVCAction';
 
-import { isEmptyArray, isEmptyObject } from "helpers/CheckEmpty";
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 
-import MyVoucherWarningModal from "components/myVoucherList/components/MyVoucherWarningModal";
-import UseSVCPaymentDialog from "./SVC/components/UseSVCPaymentDialog";
+import MyVoucherWarningModal from 'components/myVoucherList/components/MyVoucherWarningModal';
+import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 
-import Sound_Effect from "../assets/sound/Sound_Effect.mp3";
-import ModalInfoTransferDialog from "components/payment/ModalInfoTransferDialog";
-import LoadingOverlayCustom from "components/loading/LoadingOverlay";
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
+import ModalInfoTransferDialog from 'components/payment/ModalInfoTransferDialog';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const deliveryLocal = encryptor.decrypt(
   JSON.parse(localStorage.getItem(`${config.prefix}_delivery_address`))
@@ -88,9 +88,9 @@ const useWindowSize = () => {
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight]);
     }
-    window.addEventListener("resize", updateSize);
+    window.addEventListener('resize', updateSize);
     updateSize();
-    return () => window.removeEventListener("resize", updateSize);
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
   return size;
 };
@@ -104,7 +104,7 @@ const Payment = ({ ...props }) => {
   const [selectedPoint, setSelectedPoint] = useState({});
   const [selectedVouchers, setSelectedVouchers] = useState([]);
   const [myVouchers, setMyVouchers] = useState([]);
-  const [warningMessage, setWarningMessage] = useState("");
+  const [warningMessage, setWarningMessage] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
   const [useSVCPayment, setUseSVCPayment] = useState({});
   const [checkSVCAvailable, setCheckSVCAvailable] = useState(false);
@@ -112,13 +112,13 @@ const Payment = ({ ...props }) => {
   const [openTransferDialog, setOpenTransferDialog] = useState(false);
   const [disableButtonAll, setDisableButtonAll] = useState(false);
   const [referenceNumberConfirmation, setReferenceNumberConfirmation] =
-    useState("");
+    useState('');
   const [
     openConfirmationDialogActionPayment,
     setOpenConfirmationDialogActionPayment,
   ] = useState(false);
 
-  const [urlConfirmationDialog, setUrlConfirmationDialog] = useState("");
+  const [urlConfirmationDialog, setUrlConfirmationDialog] = useState('');
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
@@ -127,56 +127,56 @@ const Payment = ({ ...props }) => {
   const styles = {
     root: {
       flexGrow: 1,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
       paddingTop: 20,
       paddingBottom: 12,
       paddingLeft: gadgetScreen ? 2 : 10,
       paddingRight: gadgetScreen ? 2 : 10,
     },
     outletName: {
-      width: "100%",
+      width: '100%',
       borderColor: props.color.primary,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "start",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'start',
     },
-    badge: { "& .MuiBadge-badge": { fontSize: 10, fontWeight: "bold" } },
+    badge: { '& .MuiBadge-badge': { fontSize: 10, fontWeight: 'bold' } },
     button: {
-      width: "100%",
+      width: '100%',
       height: 40,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      textTransform: "none",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      textTransform: 'none',
       margin: 10,
     },
     buttonVoucher: {
-      width: "100%",
+      width: '100%',
       height: 40,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
     },
 
     buttonPay: {
       borderRadius: 5,
-      width: "100%",
+      width: '100%',
       height: 40,
-      textTransform: "none",
+      textTransform: 'none',
       backgroundColor: props.color.primary,
     },
-    displayFlexAndAlignCenter: { display: "flex", alignItems: "center" },
+    displayFlexAndAlignCenter: { display: 'flex', alignItems: 'center' },
     divider: {
-      backgroundColor: "rgb(220, 220, 220)",
-      width: "100%",
+      backgroundColor: 'rgb(220, 220, 220)',
+      width: '100%',
       height: 1,
     },
     dividerOutletName: {
-      backgroundColor: "rgb(220, 220, 220)",
-      width: "100%",
+      backgroundColor: 'rgb(220, 220, 220)',
+      width: '100%',
       height: 1,
       marginTop: 10,
       marginBottom: 10,
@@ -210,27 +210,27 @@ const Payment = ({ ...props }) => {
       fontWeight: 600,
     },
     paper: {
-      width: "100%",
+      width: '100%',
       marginBottom: 10,
-      display: "flex",
-      alignItems: "center",
+      display: 'flex',
+      alignItems: 'center',
       backgroundColor: props.color.background,
     },
     paperPaymentMethod: {
-      width: "100%",
+      width: '100%',
       marginBottom: 10,
-      display: "flex",
+      display: 'flex',
       backgroundColor: props.color.background,
     },
     paperPaymentMethodInside: {
-      width: "100%",
-      display: "flex",
+      width: '100%',
+      display: 'flex',
       backgroundColor: props.color.background,
-      alignItems: "center",
+      alignItems: 'center',
     },
     warningText: {
-      fontSize: "1.2rem",
-      fontStyle: "italic",
+      fontSize: '1.2rem',
+      fontStyle: 'italic',
       fontWeight: 500,
       marginX: 2,
       marginY: 1,
@@ -238,19 +238,19 @@ const Payment = ({ ...props }) => {
       color: props.color.textWarningColor,
     },
     paperOutletName: {
-      borderRadius: "50%",
+      borderRadius: '50%',
       width: 40,
       height: 40,
       borderColor: props.color.primary,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       marginLeft: 10,
       marginRight: 10,
       backgroundColor: props.color.background,
     },
     paperVoucher: {
-      width: "100%",
+      width: '100%',
       marginBottom: 10,
       padding: 10,
       backgroundColor: props.color.background,
@@ -258,30 +258,30 @@ const Payment = ({ ...props }) => {
     typography: {
       color: props.color.primary,
       fontSize: 13,
-      textTransform: "none",
-      fontWeight: "bold",
+      textTransform: 'none',
+      fontWeight: 'bold',
     },
     typographyPrice: {
-      color: "black",
+      color: 'black',
       fontSize: 40,
       fontWeight: 600,
       marginTop: -5,
     },
     typographyCutPrice: {
-      color: "black",
+      color: 'black',
       fontSize: 16,
-      textDecorationLine: "line-through",
+      textDecorationLine: 'line-through',
     },
     typographyConfirmPayment: {
       color: props.color.primary,
       fontSize: 16,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       marginBottom: 10,
     },
     typographyPay: {
-      color: "white",
+      color: 'white',
       fontSize: 14,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
   };
 
@@ -295,13 +295,13 @@ const Payment = ({ ...props }) => {
       const getSalesReference = await props.dispatch(
         CustomerAction.getSalesByReference(referenceNumberConfirmation)
       );
-      if (getSalesReference?.data?.status === "COMPLETED") {
+      if (getSalesReference?.data?.status === 'COMPLETED') {
         setIsLoading(false);
         setOpenConfirmationDialogActionPayment(false);
         clearInterval(interval);
-        return history.push("/settleSuccess");
-      } else if (getSalesReference?.data?.status === "FAILED") {
-        setWarningMessage("Payment Failed, please try again.");
+        return history.push('/settleSuccess');
+      } else if (getSalesReference?.data?.status === 'FAILED') {
+        setWarningMessage('Payment Failed, please try again.');
         handleOpenWarningModal();
         setIsLoading(false);
         setOpenConfirmationDialogActionPayment(false);
@@ -321,7 +321,7 @@ const Payment = ({ ...props }) => {
   };
 
   const handleRemovePaymentCard = () => {
-    props.dispatch(PaymentAction.setData({}, "SET_SELECTED_PAYMENT_CARD"));
+    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
   };
 
   const handlePrice = () => {
@@ -375,7 +375,7 @@ const Payment = ({ ...props }) => {
     if (props.companyInfo?.companyId) {
       props.dispatch(
         CampaignAction.getCampaignPoints(
-          { history: "true" },
+          { history: 'true' },
           props.companyInfo?.companyId
         )
       );
@@ -406,7 +406,7 @@ const Payment = ({ ...props }) => {
     getSVCData();
     setTotalPrice(price);
     setUseSVCPayment(props.useSVC);
-    props.dispatch(PaymentAction.setData(price, "SET_TOTAL_PAYMENT_AMOUNT"));
+    props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PAYMENT_AMOUNT'));
     if (!isEmptyObject(props.selectedPaymentCard) && price === 0) {
       handleRemovePaymentCard();
     }
@@ -444,7 +444,7 @@ const Payment = ({ ...props }) => {
     if (props.companyInfo) {
       const result = price || 0;
       return result.toLocaleString(props.companyInfo.currency.locale, {
-        style: "currency",
+        style: 'currency',
         currency: props.companyInfo.currency.code,
       });
     }
@@ -482,10 +482,10 @@ const Payment = ({ ...props }) => {
 
   const handleSelectVoucher = () => {
     if (selectedVouchers[0]?.cannotBeMixed) {
-      setWarningMessage("This voucher cannot be mixed with other voucher");
+      setWarningMessage('This voucher cannot be mixed with other voucher');
       handleOpenWarningModal();
     } else {
-      history.push("/my-voucher");
+      history.push('/my-voucher');
     }
   };
 
@@ -493,17 +493,17 @@ const Payment = ({ ...props }) => {
     if (selectedPoint?.redeemValue) {
       return parseFloat(selectedPoint.redeemValue);
     }
-    return "Use";
+    return 'Use';
   };
 
   const handleRemovePoint = () => {
     setSelectedPoint({});
 
-    props.dispatch(PaymentAction.setData({}, "SELECT_POINT"));
+    props.dispatch(PaymentAction.setData({}, 'SELECT_POINT'));
   };
   const handleRemoveSVC = () => {
     setUseSVCPayment({});
-    props.dispatch(PaymentAction.setData({}, "USE_SVC"));
+    props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
   };
 
   const handleRemoveVoucher = (value) => {
@@ -511,7 +511,7 @@ const Payment = ({ ...props }) => {
       (setSelectedVoucher) => setSelectedVoucher.serialNumber !== value
     );
 
-    props.dispatch(PaymentAction.setData(result, "SELECT_VOUCHER"));
+    props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
     setSelectedVouchers(result);
   };
 
@@ -530,7 +530,7 @@ const Payment = ({ ...props }) => {
 
   useEffect(() => {
     const disableAnotherPaymentForManual = () => {
-      if (props.selectedPaymentCard.paymentID === "MANUAL_TRANSFER") {
+      if (props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER') {
         handleRemovePoint();
         handleRemoveSVC();
         handleRemoveVoucher();
@@ -546,10 +546,10 @@ const Payment = ({ ...props }) => {
   const renderPrice = () => {
     return (
       <Badge
-        badgeContent="SGD"
+        badgeContent='SGD'
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
+          vertical: 'top',
+          horizontal: 'left',
         }}
         sx={styles.badge}
       >
@@ -560,8 +560,8 @@ const Payment = ({ ...props }) => {
             </Typography>
           }
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
+            vertical: 'bottom',
+            horizontal: 'right',
           }}
           sx={styles.badge}
         >
@@ -574,15 +574,15 @@ const Payment = ({ ...props }) => {
   const renderOutletName = () => {
     return (
       <div style={styles.outletName}>
-        <Paper variant="outlined" style={styles.paperOutletName}>
+        <Paper variant='outlined' style={styles.paperOutletName}>
           <ShoppingCartIcon style={styles.iconShopping} />
         </Paper>
         <Typography
           style={{
             color: props.color.primary,
             fontSize: 13,
-            textTransform: "none",
-            fontWeight: "bold",
+            textTransform: 'none',
+            fontWeight: 'bold',
           }}
         >
           {props.basket?.outlet?.name}
@@ -596,7 +596,7 @@ const Payment = ({ ...props }) => {
       return selectedVouchers.map((selectedVoucher, index) => {
         return (
           <div key={index}>
-            <div style={styles.buttonVoucher} variant="outlined">
+            <div style={styles.buttonVoucher} variant='outlined'>
               <Typography style={styles.typography}>
                 {selectedVoucher.name}
               </Typography>
@@ -619,10 +619,10 @@ const Payment = ({ ...props }) => {
   const renderVoucher = () => {
     if (!isEmptyArray(myVouchers)) {
       return (
-        <Paper variant="outlined" style={styles.paperVoucher}>
+        <Paper variant='outlined' style={styles.paperVoucher}>
           <Button
             style={styles.buttonVoucher}
-            variant="outlined"
+            variant='outlined'
             disabled={handleDisableButton()}
             onClick={() => {
               handleSelectVoucher();
@@ -645,14 +645,14 @@ const Payment = ({ ...props }) => {
     const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
     const isTotalPoint = props.campaignPoint.totalPoint > 0;
 
-    if (pointToRebateRatio && pointToRebateRatio !== "0:0" && isTotalPoint) {
+    if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
       return (
-        <Paper variant="outlined" style={styles.paper}>
+        <Paper variant='outlined' style={styles.paper}>
           <Button
             style={styles.button}
             disabled={handleDisableButton()}
             onClick={handleOpenPointAddModal}
-            variant="outlined"
+            variant='outlined'
           >
             <div style={styles.displayFlexAndAlignCenter}>
               <LocalOfferIcon style={styles.icon} />
@@ -683,20 +683,20 @@ const Payment = ({ ...props }) => {
         props.useSVC?.paymentAmount
       )})`;
     } else {
-      return "Use Store Value Card";
+      return 'Use Store Value Card';
     }
   };
 
   const renderSVC = () => {
     if (checkSVCAvailable) {
       return (
-        <Paper variant="outlined" style={styles.paper}>
+        <Paper variant='outlined' style={styles.paper}>
           <Button
             style={styles.button}
-            variant="outlined"
+            variant='outlined'
             disabled={handleDisableSVCButton()}
             onClick={() => {
-              props.dispatch(PaymentAction.setData({}, "USE_SVC"));
+              props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
               setIsOpenSVC(true);
             }}
           >
@@ -728,16 +728,16 @@ const Payment = ({ ...props }) => {
   const renderPaymentDetail = () => {
     if (!isEmptyObject(props.selectedPaymentCard)) {
       const cardIssuer =
-        props.selectedPaymentCard?.details?.cardIssuer?.toUpperCase() || "";
+        props.selectedPaymentCard?.details?.cardIssuer?.toUpperCase() || '';
       const maskedAccountNumber =
-        props.selectedPaymentCard?.details?.maskedAccountNumber || "";
+        props.selectedPaymentCard?.details?.maskedAccountNumber || '';
 
-      if (props.selectedPaymentCard.paymentID === "MANUAL_TRANSFER") {
-        return "Manual Transfer";
+      if (props.selectedPaymentCard.paymentID === 'MANUAL_TRANSFER') {
+        return 'Manual Transfer';
       }
       return `${cardIssuer} ${maskedAccountNumber} (SGD ${handlePaymentCardPrice()})`;
     } else {
-      return "Payment With Card";
+      return 'Payment With Card';
     }
   };
 
@@ -751,17 +751,17 @@ const Payment = ({ ...props }) => {
     ) {
       const label = [];
       if (!isEmptyObject(props.useSVC)) {
-        label.push("Store Value Card");
+        label.push('Store Value Card');
       }
       if (!isEmptyArray(selectedVouchers)) {
-        label.push("Voucher");
+        label.push('Voucher');
       }
       if (!isEmptyObject(selectedPoint)) {
-        label.push("Points");
+        label.push('Points');
       }
       return (
         <Typography sx={styles.warningText}>
-          * You have selected full payment with {label.join(", ")}
+          * You have selected full payment with {label.join(', ')}
         </Typography>
       );
     } else {
@@ -788,10 +788,10 @@ const Payment = ({ ...props }) => {
     if (price < minPayment) {
       return (
         <Typography sx={styles.warningText}>
-          * Minimum Payment Using Card is{" "}
-          {new Intl.NumberFormat("en-SG", {
-            style: "currency",
-            currency: "SGD",
+          * Minimum Payment Using Card is{' '}
+          {new Intl.NumberFormat('en-SG', {
+            style: 'currency',
+            currency: 'SGD',
           }).format(minPayment)}
         </Typography>
       );
@@ -803,19 +803,19 @@ const Payment = ({ ...props }) => {
   const renderPaymentMethod = () => {
     return (
       <Box
-        flexDirection="column"
+        flexDirection='column'
         component={Paper}
-        variant="outlined"
+        variant='outlined'
         style={styles.paperPaymentMethod}
       >
         <Box style={styles.paperPaymentMethodInside}>
           <Button
             style={styles.button}
-            variant="outlined"
+            variant='outlined'
             component={Link}
-            textTransform="none"
+            textTransform='none'
             disabled={handleDisableButton()}
-            to="/payment-method"
+            to='/payment-method'
           >
             <div style={styles.displayFlexAndAlignCenter}>
               <CreditCardIcon style={styles.icon} />
@@ -864,14 +864,14 @@ const Payment = ({ ...props }) => {
       JSON.stringify(encryptor.encrypt(response.data))
     );
 
-    await props.dispatch(OrderAction.setData({}, "DATA_BASKET"));
+    await props.dispatch(OrderAction.setData({}, 'DATA_BASKET'));
     await props.dispatch(PaymentAction.clearAll());
-    await props.dispatch(OrderAction.setData({}, "REMOVE_ORDERING_MODE"));
+    await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
     await props.dispatch(
-      OrderAction.setData({}, "DELETE_ORDER_ACTION_TIME_SLOT")
+      OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
     );
     await props.dispatch(
-      OrderAction.setData({}, "SET_SELECTED_DELIVERY_PROVIDERS")
+      OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
     );
   };
 
@@ -879,7 +879,7 @@ const Payment = ({ ...props }) => {
   const handlePay = async () => {
     let isNeedConfirmation = false;
     const enableAutoConfirmation = props.settings.find((item) => {
-      return item.settingKey === "EnableAutoConfirmation";
+      return item.settingKey === 'EnableAutoConfirmation';
     });
 
     if (enableAutoConfirmation) {
@@ -892,18 +892,18 @@ const Payment = ({ ...props }) => {
       payments: [],
       isNeedConfirmation,
       payAtPOS: false,
-      tableNo: "-",
+      tableNo: '-',
       orderingMode: props.orderingMode,
       orderActionDate: props.orderActionDate,
       orderActionTime: props.orderActionTime,
       orderActionTimeSlot: props.orderActionTimeSlot,
     };
 
-    if (props.orderingMode === "DELIVERY") {
+    if (props.orderingMode === 'DELIVERY') {
       payload.deliveryAddress = props.deliveryAddress;
       payload.deliveryProvider = props.selectedDeliveryProvider.name;
       payload.deliveryProviderName = props.selectedDeliveryProvider.name;
-      payload.deliveryService = "-";
+      payload.deliveryService = '-';
       payload.deliveryProviderId = props.selectedDeliveryProvider.id;
       payload.deliveryFee = props.selectedDeliveryProvider.deliveryFee;
     }
@@ -932,7 +932,7 @@ const Payment = ({ ...props }) => {
         description: props.selectedPaymentCard.description,
         manual_transfer_image:
           props.selectedPaymentCard?.configurations?.filter(
-            (item) => item.name === "manual_transfer_image"
+            (item) => item.name === 'manual_transfer_image'
           )[0].value || null,
       };
 
@@ -947,16 +947,16 @@ const Payment = ({ ...props }) => {
     if (
       response &&
       response.resultCode === 200 &&
-      response?.data?.action?.type !== "url"
+      response?.data?.action?.type !== 'url'
     ) {
       handleAfterPaymentSuccess(payload, response);
       handleAudio();
 
-      return history.push("/settleSuccess");
+      return history.push('/settleSuccess');
     } else if (
       response &&
       response.resultCode === 200 &&
-      response?.data?.action?.type === "url"
+      response?.data?.action?.type === 'url'
     ) {
       setReferenceNumberConfirmation(response?.data?.referenceNo);
       setUrlConfirmationDialog(response.data.action.url);
@@ -1004,12 +1004,12 @@ const Payment = ({ ...props }) => {
     return (
       <LoadingButton
         loading={isLoading}
-        loadingPosition="center"
+        loadingPosition='center'
         style={styles.buttonPay}
-        variant="outlined"
+        variant='outlined'
         disabled={handleDisabledButtonPay()}
         onClick={() => {
-          if (props.selectedPaymentCard?.paymentID === "MANUAL_TRANSFER") {
+          if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
             setOpenTransferDialog(true);
           } else {
             handlePay();
@@ -1034,18 +1034,18 @@ const Payment = ({ ...props }) => {
         open={openConfirmationDialogActionPayment}
         onClose={() => handleCloseDialog()}
         fullWidth
-        maxWidth="xl"
+        maxWidth='xl'
         sx={{
-          "& .MuiDialog-paper": {
-            minHeight: "70%",
-            maxHeight: "70%",
+          '& .MuiDialog-paper': {
+            minHeight: '70%',
+            maxHeight: '70%',
             marginX: 0,
-            height: "-webkit-fill-available",
+            height: '-webkit-fill-available',
             zIndex: 1000001,
           },
         }}
       >
-        <iframe src={urlConfirmationDialog} width="100%" height="100%" />
+        <iframe src={urlConfirmationDialog} width='100%' height='100%' />
       </Dialog>
     );
   };
@@ -1055,7 +1055,7 @@ const Payment = ({ ...props }) => {
       <LoadingOverlayCustom
         active={isLoading}
         spinner
-        loadingText="Please Wait..."
+        loadingText='Please Wait...'
       />
       {openConfirmationDialogActionPayment ? dialogConfirmActionIframe() : null}
       <ModalInfoTransferDialog
@@ -1088,7 +1088,7 @@ const Payment = ({ ...props }) => {
         />
       )}
 
-      <Box component="div" sx={styles.root}>
+      <Box component='div' sx={styles.root}>
         <Typography style={styles.typographyConfirmPayment}>
           Confirm Payment
         </Typography>

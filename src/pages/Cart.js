@@ -1,36 +1,36 @@
-import React, { useState, useLayoutEffect, useEffect } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import config from "config";
-import { Link } from "react-router-dom";
-import _ from "lodash";
+import React, { useState, useLayoutEffect, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import config from 'config';
+import { Link } from 'react-router-dom';
+import _ from 'lodash';
 
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import ContactMailIcon from "@mui/icons-material/ContactMail";
-import SendIcon from "@mui/icons-material/Send";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import ContactsRoundedIcon from "@mui/icons-material/ContactsRounded";
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import SendIcon from '@mui/icons-material/Send';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 
-import ProductCartList from "components/productCartList";
-import OrderingModeDialog from "components/orderingModeDialog";
-import TimeSlotDialog from "components/timeSlot/TimeSlot";
-import LoadingAddCart from "components/loading/LoadingAddCart";
-import SelectProviderDialog from "./DeliveryAddress/components/SelectProviderDialog";
+import ProductCartList from 'components/productCartList';
+import OrderingModeDialog from 'components/orderingModeDialog';
+import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import LoadingAddCart from 'components/loading/LoadingAddCart';
+import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
 
-import { isEmptyArray, isEmptyObject } from "helpers/CheckEmpty";
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 
-import { PaymentAction } from "redux/actions/PaymentAction";
-import { OrderAction } from "redux/actions/OrderAction";
+import { PaymentAction } from 'redux/actions/PaymentAction';
+import { OrderAction } from 'redux/actions/OrderAction';
 
-import { CONSTANT } from "../helpers/";
-import moment from "moment";
+import { CONSTANT } from '../helpers/';
+import moment from 'moment';
 
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const mapStateToProps = (state) => {
   return {
@@ -60,9 +60,9 @@ const useWindowSize = () => {
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight]);
     }
-    window.addEventListener("resize", updateSize);
+    window.addEventListener('resize', updateSize);
     updateSize();
-    return () => window.removeEventListener("resize", updateSize);
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
   return size;
 };
@@ -85,7 +85,7 @@ const Cart = ({ ...props }) => {
       paddingLeft: 200,
       paddingRight: 200,
       paddingTop: 150,
-      display: "flex",
+      display: 'flex',
     },
     rootCartGadgetSize: {
       paddingLeft: 20,
@@ -94,22 +94,22 @@ const Cart = ({ ...props }) => {
       paddingBottom: 300,
     },
     cartGridRight: {
-      width: "100%",
+      width: '100%',
       paddingLeft: 10,
     },
     cartGridLeft: {
-      width: "100%",
+      width: '100%',
       paddingRight: 10,
     },
     rootInclusiveTax: {
-      display: "flex",
-      justifyContent: "space-between",
+      display: 'flex',
+      justifyContent: 'space-between',
       paddingLeft: 10,
       paddingRight: 10,
     },
     rootSubTotalItem: {
-      display: "flex",
-      justifyContent: "space-between",
+      display: 'flex',
+      justifyContent: 'space-between',
       paddingLeft: 10,
       paddingRight: 10,
       paddingTop: 10,
@@ -121,62 +121,62 @@ const Cart = ({ ...props }) => {
       paddingBottom: 10,
     },
     rootSubTotal: {
-      display: "flex",
-      justifyContent: "space-between",
+      display: 'flex',
+      justifyContent: 'space-between',
       padding: 10,
     },
     rootGrandTotal: {
-      display: "flex",
-      justifyContent: "space-between",
+      display: 'flex',
+      justifyContent: 'space-between',
       paddingRight: 10,
       paddingLeft: 10,
       paddingTop: 10,
     },
     grandTotal: {
-      fontWeight: "bold",
+      fontWeight: 'bold',
       color: props.color.primary,
       fontSize: 16,
     },
     subTotal: {
-      fontWeight: "bold",
-      color: "#808080",
+      fontWeight: 'bold',
+      color: '#808080',
       fontSize: 16,
     },
     totalDiscount: {
-      fontWeight: "bold",
-      color: "red",
+      fontWeight: 'bold',
+      color: 'red',
       fontSize: 16,
     },
     inclusiveTax: {
-      color: "#808080",
+      color: '#808080',
       fontSize: 12,
     },
     typography: {
-      color: "white",
+      color: 'white',
       fontSize: 12,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       marginY: 1,
     },
     icon: {
       height: 20,
       width: 20,
-      color: "white",
+      color: 'white',
     },
     button: {
       borderRadius: 5,
-      width: "100%",
+      width: '100%',
       height: 50,
-      textTransform: "none",
+      textTransform: 'none',
       backgroundColor: props.color.primary,
     },
     grandTotalGadgetScreen: {
-      width: "100%",
+      width: '100%',
       margin: 0,
-      top: "auto",
-      right: "auto",
+      top: 'auto',
+      right: 'auto',
       bottom: 70,
-      left: "auto",
-      position: "fixed",
+      left: 'auto',
+      position: 'fixed',
       padding: 10,
       backgroundColor: props.color.background,
     },
@@ -186,30 +186,30 @@ const Cart = ({ ...props }) => {
     emptyText: {
       marginTop: 10,
       fontSize: 14,
-      lineHeight: "17px",
+      lineHeight: '17px',
       fontWeight: 600,
     },
     rootMode: {
-      display: "flex",
-      justifyContent: "space-between",
+      display: 'flex',
+      justifyContent: 'space-between',
       padding: 10,
-      alignItems: "center",
-      alignContent: "center",
+      alignItems: 'center',
+      alignContent: 'center',
     },
     mode: {
       borderRadius: 5,
-      width: "50%",
+      width: '50%',
       height: 35,
-      textTransform: "none",
+      textTransform: 'none',
       padding: 0,
       backgroundColor: props.color.primary,
     },
     warningText: {
-      fontSize: "1.2rem",
-      fontStyle: "italic",
+      fontSize: '1.2rem',
+      fontStyle: 'italic',
       fontWeight: 500,
       color: props.color.textWarningColor,
-      maxWidth: "fit-content",
+      maxWidth: 'fit-content',
       marginX: 1,
     },
   };
@@ -244,7 +244,7 @@ const Cart = ({ ...props }) => {
       let payload = {
         outletID: props.defaultOutlet.sortKey,
         clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
-        date: moment(dateTime).format("YYYY-MM-DD"),
+        date: moment(dateTime).format('YYYY-MM-DD'),
         maxDays: maxDays,
         orderingMode: props.orderingMode,
       };
@@ -268,7 +268,7 @@ const Cart = ({ ...props }) => {
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
       if (!props.isLoggedIn) {
-        document.getElementById("login-register-btn").click();
+        document.getElementById('login-register-btn').click();
       } else if (
         !props.orderingMode &&
         !isEmptyArray(props.basket.details) &&
@@ -287,18 +287,18 @@ const Cart = ({ ...props }) => {
         `${config.prefix}_ordering_mode`
       );
       if (isEmptyArray(props.basket.details) && orderingModeLocal) {
-        await props.dispatch(OrderAction.setData({}, "REMOVE_ORDERING_MODE"));
+        await props.dispatch(OrderAction.setData({}, 'REMOVE_ORDERING_MODE'));
         await props.dispatch(
-          OrderAction.setData({}, "DELETE_ORDER_ACTION_TIME_SLOT")
+          OrderAction.setData({}, 'DELETE_ORDER_ACTION_TIME_SLOT')
         );
         await props.dispatch(
-          OrderAction.setData({}, "SET_SELECTED_DELIVERY_PROVIDERS")
+          OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
         );
         await props.dispatch(
-          OrderAction.setData({}, "SET_SELECTED_DELIVERY_PROVIDERS")
+          OrderAction.setData({}, 'SET_SELECTED_DELIVERY_PROVIDERS')
         );
         await props.dispatch(
-          OrderAction.setData(null, "SET_ORDERING_MODE_DISPlAY_NAME")
+          OrderAction.setData(null, 'SET_ORDERING_MODE_DISPlAY_NAME')
         );
         localStorage.removeItem(`${config.prefix}_delivery_providers`);
         localStorage.removeItem(`${config.prefix}_delivery_address`);
@@ -319,7 +319,7 @@ const Cart = ({ ...props }) => {
       const result = price?.toLocaleString(
         props?.companyInfo?.currency?.locale,
         {
-          style: "currency",
+          style: 'currency',
           currency: props?.companyInfo?.currency?.code,
         }
       );
@@ -340,7 +340,7 @@ const Cart = ({ ...props }) => {
   };
 
   const handleLogin = () => {
-    document.getElementById("login-register-btn").click();
+    document.getElementById('login-register-btn').click();
   };
 
   const handleRenderOrderingModeLabel = () => {
@@ -349,14 +349,14 @@ const Cart = ({ ...props }) => {
     } else if (props.orderingMode) {
       return props.orderingMode;
     } else {
-      return "Ordering Mode";
+      return 'Ordering Mode';
     }
   };
 
   const handleDisabled = () => {
     const someItemIsUnavailable = !props.details?.every((item) => {
       const itemIsUnavailable =
-        item.orderingStatus && item.orderingStatus === "UNAVAILABLE";
+        item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
       const itemIsOutOfStock =
         item.product?.currentStock && item.quantity > item.product.currentStock;
       return itemIsUnavailable || itemIsOutOfStock;
@@ -422,7 +422,7 @@ const Cart = ({ ...props }) => {
             deliveryAddress: props.deliveryAddress,
             deliveryProvider: props.selectedDeliveryProvider,
             storeDetail: props.defaultOutlet,
-            pointsToRebateRatio: "0:0",
+            pointsToRebateRatio: '0:0',
             orderingMode: props.orderingMode,
             orderActionDate: props.orderActionDate,
             orderActionTime: props.orderActionTime,
@@ -430,10 +430,10 @@ const Cart = ({ ...props }) => {
           })
         )
       );
-      props.history.push("/payment");
+      props.history.push('/payment');
     }
 
-    props.history.push("/payment");
+    props.history.push('/payment');
   };
 
   const renderWarning = (value) => {
@@ -473,26 +473,26 @@ const Cart = ({ ...props }) => {
       props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
     ) {
       return (
-        <Paper variant="outlined" style={styles.rootPaper}>
+        <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
-            <Box flexDirection="column">
+            <Box flexDirection='column'>
               <Typography style={styles.subTotal}>
                 Pickup Date & Time
               </Typography>
               {props?.orderActionTimeSlot
                 ? null
-                : renderWarning("Pickup Date & Time.")}
+                : renderWarning('Pickup Date & Time.')}
             </Box>
             <Button
               style={styles.mode}
               startIcon={<AccessTimeIcon style={styles.icon} />}
-              variant="outlined"
+              variant='outlined'
               onClick={() => {
                 setOpenTimeSlot(true);
               }}
             >
               {!_.isEmpty(props.orderActionTimeSlot) ? (
-                <Box flexDirection="column">
+                <Box flexDirection='column'>
                   <Typography style={styles.typography}>
                     {props.orderActionDate}
                   </Typography>
@@ -515,13 +515,13 @@ const Cart = ({ ...props }) => {
 
   const renderOrderingMode = () => {
     return (
-      <Paper variant="outlined" style={styles.rootPaper}>
+      <Paper variant='outlined' style={styles.rootPaper}>
         <div style={styles.rootMode}>
           <Typography style={styles.subTotal}>Ordering Mode</Typography>
           <Button
             style={styles.mode}
             startIcon={<SendIcon style={styles.icon} />}
-            variant="outlined"
+            variant='outlined'
             onClick={() => {
               if (!props.isLoggedIn) {
                 handleLogin();
@@ -540,36 +540,36 @@ const Cart = ({ ...props }) => {
   };
 
   const renderDeliveryAddress = () => {
-    if (props.orderingMode !== "DELIVERY") {
+    if (props.orderingMode !== 'DELIVERY') {
       return;
     }
     return (
       <>
-        <Paper variant="outlined" style={styles.rootPaper}>
+        <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
-            <Box flexDirection="column">
+            <Box flexDirection='column'>
               <Typography style={styles.subTotal}>Delivery Address</Typography>
             </Box>
             <Button
               style={styles.mode}
               startIcon={<ContactMailIcon style={styles.icon} />}
-              variant="outlined"
+              variant='outlined'
               component={Link}
-              to="/delivery-address"
+              to='/delivery-address'
             >
               <Typography sx={styles.typography}>
                 {props?.deliveryAddress
                   ? props?.deliveryAddress?.addressName
-                  : "Delivery Address"}
+                  : 'Delivery Address'}
               </Typography>
             </Button>
           </div>
-          {props?.deliveryAddress ? null : renderWarning("delivery address.")}
+          {props?.deliveryAddress ? null : renderWarning('delivery address.')}
         </Paper>
         {props?.deliveryAddress && (
-          <Paper variant="outlined" style={styles.rootPaper}>
+          <Paper variant='outlined' style={styles.rootPaper}>
             <div style={styles.rootMode}>
-              <Box flexDirection="column">
+              <Box flexDirection='column'>
                 <Typography style={styles.subTotal}>
                   Delivery Provider
                 </Typography>
@@ -578,13 +578,13 @@ const Cart = ({ ...props }) => {
               <Button
                 style={styles.mode}
                 startIcon={<ContactsRoundedIcon style={styles.icon} />}
-                variant="outlined"
+                variant='outlined'
                 onClick={() => setOpenSelectDeliveryProvider(true)}
               >
                 <Typography sx={styles.typography}>
                   {!isEmptyObject(props.selectedDeliveryProvider)
                     ? props?.selectedDeliveryProvider?.name
-                    : "Delivery Provider"}
+                    : 'Delivery Provider'}
                 </Typography>
               </Button>
             </div>
@@ -606,7 +606,7 @@ const Cart = ({ ...props }) => {
 
   const renderSubTotal = () => {
     return (
-      <Paper variant="outlined" style={styles.rootPaper}>
+      <Paper variant='outlined' style={styles.rootPaper}>
         <div>
           {props.basket?.totalDiscountAmount !== 0 && (
             <div style={styles.rootSubTotalItem}>
@@ -648,7 +648,7 @@ const Cart = ({ ...props }) => {
               </Typography>
             </div>
           )}
-          {props.orderingMode === "DELIVERY" && props.selectedDeliveryProvider && (
+          {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
             <>
               {props.selectedDeliveryProvider?.deliveryFee !== 0 && (
                 <div style={styles.rootSubTotalItem}>
@@ -661,7 +661,7 @@ const Cart = ({ ...props }) => {
                 </div>
               )}
               {props.selectedDeliveryProvider?.deliveryFee === 0 &&
-              props.orderingMode === "DELIVERY" ? (
+              props.orderingMode === 'DELIVERY' ? (
                 <div style={styles.rootSubTotalItem}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
                   <Typography style={styles.subTotal}>Free</Typography>
@@ -677,7 +677,7 @@ const Cart = ({ ...props }) => {
   const renderGrandTotal = () => {
     return (
       <Paper
-        variant={gadgetScreen ? "elevation" : "outlined"}
+        variant={gadgetScreen ? 'elevation' : 'outlined'}
         square={gadgetScreen}
         elevation={gadgetScreen ? 3 : 0}
         style={
@@ -707,7 +707,7 @@ const Cart = ({ ...props }) => {
           <Button
             style={styles.button}
             startIcon={<MonetizationOnIcon style={styles.icon} />}
-            variant="outlined"
+            variant='outlined'
             disabled={handleDisabled()}
             onClick={() => {
               if (props.isLoggedIn) {
@@ -761,7 +761,7 @@ const Cart = ({ ...props }) => {
     } else {
       return (
         <div style={styles.rootEmptyCart}>
-          <img src={config.url_emptyImage} alt="is empty" />
+          <img src={config.url_emptyImage} alt='is empty' />
           <Typography style={styles.emptyText}>Data is empty</Typography>
         </div>
       );
@@ -770,7 +770,7 @@ const Cart = ({ ...props }) => {
 
   return (
     <Box
-      component="div"
+      component='div'
       sx={{
         flexGrow: 1,
       }}
@@ -810,7 +810,7 @@ Cart.defaultProps = {
   deliveryAddress: {},
   defaultOutlet: {},
   orderingMode: {},
-  orderingModeDisplayName: "",
+  orderingModeDisplayName: '',
   orderActionDate: {},
   orderActionTime: {},
   orderActionTimeSlot: {},
