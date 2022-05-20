@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 
 import AddIcon from '@mui/icons-material/Add';
 
-import ProductCart from 'components/ProductCartList/components/ProductCart';
+import ProductCart from 'components/productCartList/components/ProductCart';
 
 const mapStateToProps = (state) => {
   return {

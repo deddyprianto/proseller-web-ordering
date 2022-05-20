@@ -16,7 +16,7 @@ import SendIcon from '@mui/icons-material/Send';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 
-import ProductCartList from 'components/ProductCartList';
+import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
 import LoadingAddCart from 'components/loading/LoadingAddCart';
