@@ -1,31 +1,31 @@
 /* eslint-disable react/prop-types */
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Col, Row } from "reactstrap";
-import QRCodeLogo from "../../assets/images/icon-qrcode.png";
-import profile from "../../assets/images/default-profile.png";
-import { ReferralAction } from "../../redux/actions/ReferralAction";
-import { CustomerAction } from "../../redux/actions/CustomerAction";
-import { MembershiplAction } from "../../redux/actions/MembershipAction";
-import { SVCAction } from "../../redux/actions/SVCAction";
-import ModalEditProfile from "./ModalEditProfile";
-import { Link } from "react-router-dom";
-import config from "../../config";
-import loadable from "@loadable/component";
-import moment from "moment";
-import { isEmptyArray } from "../../helpers/CheckEmpty";
-import Loading from "components/loading/Loading";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Col, Row } from 'reactstrap';
+import QRCodeLogo from '../../assets/images/icon-qrcode.png';
+import profile from '../../assets/images/default-profile.png';
+import { ReferralAction } from '../../redux/actions/ReferralAction';
+import { CustomerAction } from '../../redux/actions/CustomerAction';
+import { MembershiplAction } from '../../redux/actions/MembershipAction';
+import { SVCAction } from '../../redux/actions/SVCAction';
+import ModalEditProfile from './ModalEditProfile';
+import { Link } from 'react-router-dom';
+import config from '../../config';
+import loadable from '@loadable/component';
+import moment from 'moment';
+import { isEmptyArray } from '../../helpers/CheckEmpty';
+import Loading from 'components/loading/Loading';
 
-const ModalQRCode = loadable(() => import("./ModalQRCode"));
+const ModalQRCode = loadable(() => import('./ModalQRCode'));
 
 class DetailProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loadingShow: true,
-      referall: "0/0",
+      referall: '0/0',
       // TODO: Change window.location with reach router
-      isEmenu: window.location.hostname.includes("emenu"),
+      isEmenu: window.location.hostname.includes('emenu'),
       dataCustomer: {},
       memberships: [],
       svc: [],
@@ -91,11 +91,11 @@ class DetailProfile extends Component {
     try {
       const { dataCustomer } = this.state;
       const maxRanking = this.getMaxRanking();
-      if (dataCustomer.customerGroupLevel === maxRanking) return "Renew";
-      if (dataCustomer.customerGroupLevel === undefined) return "Renew";
-      return "Upgrade";
+      if (dataCustomer.customerGroupLevel === maxRanking) return 'Renew';
+      if (dataCustomer.customerGroupLevel === undefined) return 'Renew';
+      return 'Upgrade';
     } catch (e) {
-      return "Upgrade";
+      return 'Upgrade';
     }
   }
 
@@ -107,57 +107,57 @@ class DetailProfile extends Component {
 
     return (
       <div style={{ marginBottom: 10 }}>
-        {loadingShow && <Loading loadingType="code" />}
+        {loadingShow && <Loading loadingType='code' />}
         {!loadingShow && (
           <div>
             <div
-              className="profile-dashboard"
+              className='profile-dashboard'
               style={{
                 paddingTop: 20,
                 paddingBottom: 30,
-                textAlign: "center",
-                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
+                textAlign: 'center',
+                boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
               }}
             >
               <div
-                data-toggle="modal"
-                data-target="#qrcode-modal"
+                data-toggle='modal'
+                data-target='#qrcode-modal'
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   left: 15,
                   top: 19,
-                  backgroundColor: "#FFF",
+                  backgroundColor: '#FFF',
                   padding: 5,
                   borderBottomRightRadius: 5,
-                  cursor: "pointer",
+                  cursor: 'pointer',
                   borderTopRightRadius: 5,
                 }}
               >
                 <img
                   src={QRCodeLogo}
-                  alt="qrcode"
+                  alt='qrcode'
                   style={{ height: 40, width: 40 }}
                 />
               </div>
               <div style={{ width: 100 }}>
                 <img
                   src={account.defaultImageURL}
-                  alt="Profile"
+                  alt='Profile'
                   style={{
                     height: 100,
                     width: 100,
                     borderRadius: 5,
-                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                    objectFit: "cover",
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    objectFit: 'cover',
                   }}
                 />
               </div>
               <div
                 style={{
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   fontSize: 16,
                   marginTop: 10,
                 }}
@@ -169,25 +169,25 @@ class DetailProfile extends Component {
             </div>
 
             <div
-              className="background-theme"
+              className='background-theme'
               style={{
                 padding: 10,
                 marginTop: -15,
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
-                border: "1px solid #CDCDCD",
-                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                border: '1px solid #CDCDCD',
+                boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
               }}
             >
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 16, fontWeight: "bold" }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 16, fontWeight: 'bold' }}>
                   Membership
                 </div>
                 <div
-                  className="customer-group-name"
+                  className='customer-group-name'
                   style={{
                     fontSize: 27,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     paddingBottom: 10,
                   }}
                 >
@@ -195,31 +195,31 @@ class DetailProfile extends Component {
                 </div>
                 {dataCustomer.expiryCustomerGroup && (
                   <span
-                    className="font-color-theme"
-                    style={{ fontSize: 14, fontWeight: "bold" }}
+                    className='font-color-theme'
+                    style={{ fontSize: 14, fontWeight: 'bold' }}
                   >
-                    ( till{" "}
+                    ( till{' '}
                     {moment(dataCustomer.expiryCustomerGroup).format(
-                      "DD MMMM YYYY"
-                    )}{" "}
+                      'DD MMMM YYYY'
+                    )}{' '}
                     )
                   </span>
                 )}
               </div>
               {!isEmptyArray(memberships) && (
-                <Link to="/paid-membership">
+                <Link to='/paid-membership'>
                   <div
-                    className="customer-group-name"
+                    className='customer-group-name'
                     style={{
                       fontSize: 14,
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                     }}
                   >
-                    {this.getLabel()}{" "}
+                    {this.getLabel()}{' '}
                     <i
                       style={{ fontSize: 11 }}
-                      className="fa fa-chevron-right"
-                      aria-hidden="true"
+                      className='fa fa-chevron-right'
+                      aria-hidden='true'
                     />
                   </div>
                 </Link>
@@ -227,35 +227,35 @@ class DetailProfile extends Component {
             </div>
 
             <div
-              className="background-theme"
+              className='background-theme'
               style={{
                 padding: 10,
                 marginTop: 10,
                 borderRadius: 10,
-                border: "1px solid #CDCDCD",
-                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                cursor: "pointer",
+                border: '1px solid #CDCDCD',
+                boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                cursor: 'pointer',
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
-                <Link to="/edit-profile" style={{ width: "50%" }}>
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                <Link to='/edit-profile' style={{ width: '50%' }}>
                   <div
-                    className="font-color-theme"
+                    className='font-color-theme'
                     style={{
                       fontSize: 14,
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                     }}
                   >
-                    <i className="fa fa-user" aria-hidden="true" /> Edit Profile
+                    <i className='fa fa-user' aria-hidden='true' /> Edit Profile
                   </div>
                 </Link>
                 |
-                <Link to="/setting" style={{ width: "50%" }}>
+                <Link to='/setting' style={{ width: '50%' }}>
                   <div
-                    className="font-color-theme"
-                    style={{ fontSize: 14, fontWeight: "bold" }}
+                    className='font-color-theme'
+                    style={{ fontSize: 14, fontWeight: 'bold' }}
                   >
-                    <i className="fa fa-cog" aria-hidden="true" /> Setting
+                    <i className='fa fa-cog' aria-hidden='true' /> Setting
                   </div>
                 </Link>
               </div>
@@ -285,26 +285,54 @@ class DetailProfile extends Component {
 
     return (
       <div>
-        {loadingShow && <Loading loadingType="code" />}
+        {loadingShow && <Loading loadingType='code' />}
+
+        {orderingSetting.AdditionalLinkLabel &&
+          orderingSetting.AdditionalLinkURL && (
+            <a
+              href={orderingSetting.AdditionalLinkURL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div
+                className="background-theme"
+                style={{
+                  padding: 10,
+                  marginTop: 10,
+                  borderRadius: 10,
+                  border: "1px solid #CDCDCD",
+                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                  cursor: "pointer",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                    <i className="fa fa-circle" aria-hidden="true" />{" "}
+                    {orderingSetting.AdditionalLinkLabel}
+                  </div>
+                </div>
+              </div>
+            </a>
+          )}
 
         {!loadingShow && (
           <div>
             {svc.length > 0 && (
-              <Link to="/svc">
+              <Link to='/svc'>
                 <div
-                  className="background-theme"
+                  className='background-theme'
                   style={{
                     padding: 10,
                     marginTop: 10,
                     borderRadius: 10,
-                    border: "1px solid #CDCDCD",
-                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                    cursor: "pointer",
+                    border: '1px solid #CDCDCD',
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    cursor: 'pointer',
                   }}
                 >
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 15, fontWeight: "bold" }}>
-                      <i className="fa fa-money" aria-hidden="true" /> Store
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 15, fontWeight: 'bold' }}>
+                      <i className='fa fa-money' aria-hidden='true' /> Store
                       Value Card
                     </div>
                   </div>
@@ -312,24 +340,24 @@ class DetailProfile extends Component {
               </Link>
             )}
 
-            {referall.split("/")[1] !== "0" && (
-              <Link to="/referral">
+            {referall.split('/')[1] !== '0' && (
+              <Link to='/referral'>
                 <div
-                  className="background-theme"
+                  className='background-theme'
                   style={{
                     padding: 10,
                     borderRadius: 10,
                     marginTop: 10,
-                    border: "1px solid #CDCDCD",
-                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                    cursor: "pointer",
+                    border: '1px solid #CDCDCD',
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    cursor: 'pointer',
                   }}
                 >
-                  <div style={{ textAlign: "center" }}>
+                  <div style={{ textAlign: 'center' }}>
                     <div
                       style={{
                         fontSize: 14,
-                        fontWeight: "bold",
+                        fontWeight: 'bold',
                       }}
                     >
                       {`Referral ( ${referall} )`}
@@ -340,91 +368,63 @@ class DetailProfile extends Component {
             )}
 
             {isEmenu && (
-              <Link to="/rewards">
+              <Link to='/rewards'>
                 <div
-                  className="background-theme"
+                  className='background-theme'
                   style={{
                     padding: 10,
                     marginTop: 10,
                     borderRadius: 10,
-                    border: "1px solid #CDCDCD",
-                    boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                    cursor: "pointer",
+                    border: '1px solid #CDCDCD',
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    cursor: 'pointer',
                   }}
                 >
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                      <i className="fa fa-gift" aria-hidden="true" /> Rewards
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                      <i className='fa fa-gift' aria-hidden='true' /> Rewards
                     </div>
                   </div>
                 </div>
               </Link>
             )}
 
-            {orderingSetting.AdditionalLinkLabel &&
-              orderingSetting.AdditionalLinkURL && (
-                <a
-                  href={orderingSetting.AdditionalLinkURL}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <div
-                    className="background-theme"
-                    style={{
-                      padding: 10,
-                      marginTop: 10,
-                      borderRadius: 10,
-                      border: "1px solid #CDCDCD",
-                      boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                        <i className="fa fa-circle" aria-hidden="true" />{" "}
-                        {orderingSetting.AdditionalLinkLabel}
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              )}
-
-            <Link to="/profile/payment-method">
+            <Link to='/profile/payment-method'>
               <div
-                className="background-theme"
+                className='background-theme'
                 style={{
                   padding: 10,
                   marginTop: 10,
                   borderRadius: 10,
-                  border: "1px solid #CDCDCD",
-                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                  cursor: "pointer",
+                  border: '1px solid #CDCDCD',
+                  boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                  cursor: 'pointer',
                 }}
               >
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                    <i className="fa fa-credit-card-alt" aria-hidden="true" />{" "}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                    <i className='fa fa-credit-card-alt' aria-hidden='true' />{' '}
                     Payment Method
                   </div>
                 </div>
               </div>
             </Link>
 
-            <Link to="/profile/delivery-address">
+            <Link to='/profile/delivery-address'>
               <div
-                className="background-theme"
+                className='background-theme'
                 style={{
                   padding: 10,
                   marginTop: 10,
                   borderRadius: 10,
-                  border: "1px solid #CDCDCD",
-                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                  cursor: "pointer",
+                  border: '1px solid #CDCDCD',
+                  boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                  cursor: 'pointer',
                 }}
               >
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                    <i className="fa fa-home" aria-hidden="true" /> Delivery
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                    <i className='fa fa-home' aria-hidden='true' /> Delivery
                     Address
                   </div>
                 </div>
@@ -433,19 +433,19 @@ class DetailProfile extends Component {
 
             <div
               onClick={() => this.handleLogout()}
-              className="background-theme"
+              className='background-theme'
               style={{
                 padding: 10,
                 marginTop: 10,
                 borderRadius: 10,
-                border: "1px solid #CDCDCD",
-                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                cursor: "pointer",
+                border: '1px solid #CDCDCD',
+                boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                cursor: 'pointer',
               }}
             >
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 16, fontWeight: "bold" }}>
-                  <i className="fa fa-sign-out" aria-hidden="true" /> Logout
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 16, fontWeight: 'bold' }}>
+                  <i className='fa fa-sign-out' aria-hidden='true' /> Logout
                 </div>
               </div>
             </div>
