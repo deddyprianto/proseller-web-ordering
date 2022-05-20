@@ -281,10 +281,39 @@ class DetailProfile extends Component {
 
   viewRightPage(loadingShow) {
     let { referall, isEmenu, svc } = this.state;
+    const { orderingSetting } = this.props;
 
     return (
       <div>
         {loadingShow && <Loading loadingType='code' />}
+
+        {orderingSetting.AdditionalLinkLabel &&
+          orderingSetting.AdditionalLinkURL && (
+            <a
+              href={orderingSetting.AdditionalLinkURL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div
+                className="background-theme"
+                style={{
+                  padding: 10,
+                  marginTop: 10,
+                  borderRadius: 10,
+                  border: "1px solid #CDCDCD",
+                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                  cursor: "pointer",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                    <i className="fa fa-circle" aria-hidden="true" />{" "}
+                    {orderingSetting.AdditionalLinkLabel}
+                  </div>
+                </div>
+              </div>
+            </a>
+          )}
 
         {!loadingShow && (
           <div>
@@ -445,6 +474,7 @@ class DetailProfile extends Component {
 const mapStateToProps = (state) => {
   return {
     account: state.auth.account.idToken.payload,
+    orderingSetting: state.order.orderingSetting,
     qrcode: state.auth.account.accessToken.qrcode,
   };
 };
