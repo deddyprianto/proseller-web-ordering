@@ -8,23 +8,25 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
 import ProductAddModal from './ProductAddModal';
+
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
+    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
@@ -39,13 +41,13 @@ const ProductUpdateModal = ({
   width,
   ...props
 }) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const styles = {
     backgroundColor: {
       backgroundColor: props.color.background,
     },
     productRoot: {
-      marginLeft: 10,
-      marginRight: 10,
       marginTop: 20,
     },
     productBody: {
@@ -79,25 +81,23 @@ const ProductUpdateModal = ({
       fontSize: 10,
       paddingTop: 4,
     },
-    divider: {
-      marginLeft: 10,
-      marginRight: 10,
-    },
+    divider: {},
     buttonEdit: {
       display: 'flex',
       alignItems: 'center',
     },
     iconEdit: {
-      height: 14,
-      width: 14,
+      height: 10,
+      width: 10,
       color: props.color.primary,
+      marginRight: 5,
     },
     textEdit: {
-      fontSize: 14,
-      lineHeight: '17px',
-      fontWeight: 600,
-      color: props.color.primary,
       textTransform: 'none',
+      fontWeight: '700',
+      fontSize: '10px',
+      lineHeight: '13px',
+      color: '#4386A1',
     },
     header: {
       display: 'flex',
@@ -106,7 +106,8 @@ const ProductUpdateModal = ({
     typography: {
       fontSize: 12,
       lineHeight: '17px',
-      color: '#808080',
+      // color: '#808080',
+      color: '#000000',
       fontWeight: 600,
     },
     imageSize: {
@@ -117,7 +118,8 @@ const ProductUpdateModal = ({
     productName: {
       width: '100%',
       fontSize: 26,
-      color: props.color.primary,
+      // color: props.color.primary,
+      color: 'black',
       lineHeight: '30px',
       fontWeight: 600,
       paddingBottom: 10,
@@ -132,21 +134,25 @@ const ProductUpdateModal = ({
       paddingLeft: 600 > width ? 0 : 10,
     },
     buttonIcon: {
-      height: 35,
-      width: 35,
+      height: 15,
+      width: 20,
       backgroundColor: props.color.primary,
       borderRadius: 5,
-      padding: 10,
-      marginLeft: 10,
+      // padding: 10,
       marginRight: 10,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      color: '#ffffff',
+
+      padding: '3.75px',
+      gap: '7.5px',
     },
     icon: {
-      height: 25,
-      width: 25,
-      color: 'white',
+      height: 20,
+      width: 20,
+      // color: 'white',
+      color: '#8A8D8E',
     },
     price: {
       fontSize: 12,
@@ -156,13 +162,24 @@ const ProductUpdateModal = ({
       color: props.color.primary,
     },
     quantity: {
-      fontSize: 14,
-      lineHeight: '17px',
+      fontSize: '7.5px',
       fontWeight: 600,
-      paddingRight: 4,
-      color: props.color.primary,
+      color: '#FFFFFF',
+      backgroundColor: '#4386A1',
+      height: '17px',
+      lineHeight: '9px',
+      width: '17px',
+      borderRadius: '20%',
+      marginRight: 4,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
-    fullWidth: { width: '100%' },
+    fullWidth: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+    },
     footer: {
       display: 'flex',
       flexDirection: 'row',
@@ -173,7 +190,7 @@ const ProductUpdateModal = ({
 
     addText: {
       color: 'white',
-      fontWeight: 600,
+      fontWeight: 500,
       fontSize: 14,
       textTransform: 'none',
     },
@@ -190,6 +207,21 @@ const ProductUpdateModal = ({
       justifyContent: 'center',
     },
     displayFlex: { display: 'flex' },
+    dialog: {
+      position: 'fixed',
+      bottom: 0,
+      top: '50%',
+      borderRadius: 10,
+    },
+    dialogContent: { backgroundColor: '#D0D0D0' },
+    dialogActions: { backgroundColor: '#D0D0D0' },
+    itemAlreadyInCartText: {
+      fontStyle: 'bold',
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '18px',
+      color: '#000000',
+    },
   };
 
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
@@ -314,7 +346,7 @@ const ProductUpdateModal = ({
               {renderProductModifiers(product?.modifiers)}
               <div style={styles.productBody}>
                 <Typography style={styles.price}>
-                  {handleCurrency(product?.grossAmount)}
+                  {handleCurrency(product?.nettAmount)}
                 </Typography>
                 <Button
                   style={styles.buttonEdit}
@@ -353,42 +385,38 @@ const ProductUpdateModal = ({
         onClose={() => {
           handleClose();
         }}
+        fullScreen={fullScreen}
         fullWidth
-        maxWidth='sm'
+        maxWidth='md'
+        style={styles.dialog}
       >
-        <div style={styles.backgroundColor}>
-          <DialogContent>
-            <div style={styles.header}>
-              <div style={styles.fullWidth}>
-                <Typography style={styles.productName}>
-                  This item in cart
-                </Typography>
-              </div>
+        <DialogContent style={styles.dialogContent}>
+          <div style={styles.header}>
+            <div style={styles.fullWidth}>
+              <Typography style={styles.itemAlreadyInCartText}>
+                This item already in cart
+              </Typography>
+
+              <CloseIcon
+                onClick={() => {
+                  handleClose();
+                }}
+                style={styles.icon}
+              />
             </div>
-            <div>{renderProducts()}</div>
-          </DialogContent>
-
-          <DialogActions style={styles.footer}>
-            <Button
-              style={styles.addButton}
-              onClick={() => {
-                handleOpenAddModal();
-              }}
-            >
-              <AddIcon style={styles.icon} />
-              <Typography style={styles.addText}>Make Another</Typography>
-            </Button>
-
-            <IconButton
-              style={styles.buttonIcon}
-              onClick={() => {
-                handleClose();
-              }}
-            >
-              <CloseIcon style={styles.icon} />
-            </IconButton>
-          </DialogActions>
-        </div>
+          </div>
+          <div>{renderProducts()}</div>
+        </DialogContent>
+        <DialogActions style={styles.dialogActions}>
+          <Button
+            style={styles.addButton}
+            onClick={() => {
+              handleOpenAddModal();
+            }}
+          >
+            <Typography style={styles.addText}>Make Another</Typography>
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
@@ -400,6 +428,7 @@ ProductUpdateModal.defaultProps = {
   companyInfo: {},
   handleClose: null,
   product: {},
+  defaultOutlet: {},
   color: {},
   dispatch: null,
   width: 600,
@@ -409,6 +438,7 @@ ProductUpdateModal.propTypes = {
   basket: PropTypes.object,
   color: PropTypes.object,
   companyInfo: PropTypes.object,
+  defaultOutlet: PropTypes.object,
   dispatch: PropTypes.func,
   handleClose: PropTypes.func,
   open: PropTypes.bool,

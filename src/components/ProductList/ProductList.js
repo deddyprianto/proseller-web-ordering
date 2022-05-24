@@ -92,6 +92,7 @@ const ProductList = ({ ...props }) => {
     paper: {
       maxHeight: 100,
       overflow: 'auto',
+      backgroundColor: '#D0D0D0',
     },
     categoryName: {
       color: 'black',
@@ -111,14 +112,16 @@ const ProductList = ({ ...props }) => {
     color: black;
     cursor: pointer;
     font-size: 11px;
-    font-weight: bold;
+    font-weight: 700;
     background-color: transparent;
     width: 100%;
-    height: 50px;
+    height: 58px;
     border-radius: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 8px;
+    line-height: 16px;
 
     &:hover {
       background-color: ${props?.color?.primary
@@ -156,25 +159,23 @@ const ProductList = ({ ...props }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [products, setProducts] = useState([]);
+  const [outlet, setOutlet] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
   const handleFetchCategoryProduct = async ({ outlet }) => {
-    if (!isEmptyObject(outlet)) {
-      const categories = await props.dispatch(
-        ProductAction.fetchCategoryProduct({
-          outlet,
-          orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
-            ? props.orderingMode
-            : '',
-        })
-      );
+    const orderingMode = props.orderingMode | '';
+    const categories = await props.dispatch(
+      ProductAction.fetchCategoryProduct({
+        outlet,
+        orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
+          ? orderingMode
+          : '',
+      })
+    );
 
-      const results = categories?.data || [];
-
-      setCategories(results);
-      setSelectedCategory(results[0]);
-    }
+    const results = categories?.data || [];
+    return results;
   };
 
   useEffect(() => {
@@ -194,15 +195,19 @@ const ProductList = ({ ...props }) => {
     try {
       const loadData = async () => {
         props.dispatch(OrderAction.getCart());
-        await handleFetchCategoryProduct({
+        const categories = await handleFetchCategoryProduct({
           outlet: props.defaultOutlet,
         });
+
+        setOutlet(props.defaultOutlet);
+        setCategories(categories);
+        setSelectedCategory(categories[0]);
       };
       loadData();
     } catch (e) {
       console.log(e);
     }
-  }, [props.defaultOutlet]);
+  }, []);
 
   useEffect(() => {
     try {
@@ -210,18 +215,14 @@ const ProductList = ({ ...props }) => {
         setIsLoading(true);
         if (!isEmptyObject(selectedCategory)) {
           const products = await props.dispatch(
-            ProductAction.fetchProduct(
-              selectedCategory,
-              props.defaultOutlet,
-              0,
-              200
-            )
+            ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
           );
 
           setProducts(products.data);
-          props.dispatch(
-            ProductAction.setData(products, CONSTANT.LIST_CATEGORY)
-          );
+          props.dispatch({
+            type: CONSTANT.LIST_CATEGORY,
+            data: products,
+          });
         }
         setIsLoading(false);
       };
@@ -292,7 +293,13 @@ const ProductList = ({ ...props }) => {
   const renderTabList = () => {
     const categoryTabList = categories.slice(limitCategoryTabHeader);
     return (
-      <Box sx={{ border: isMore ? 1 : 0, borderColor: '#D0D0D0' }}>
+      <Box
+        sx={{
+          border: isMore ? 1 : 0,
+          borderColor: '#D0D0D0',
+          marginBottom: -5,
+        }}
+      >
         <Collapse in={isMore}>
           <Paper style={styles.paper}>
             {categoryTabList.map((category, index) => {

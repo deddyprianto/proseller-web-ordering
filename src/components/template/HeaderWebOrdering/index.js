@@ -25,6 +25,11 @@ import styles from './styles.module.css';
 import OrderingMode from './OrderingMode';
 import Typography from '@mui/material/Typography';
 
+import cart from '../../../../src/assets/images/cart.svg';
+
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import PlaceIcon from '@mui/icons-material/Place';
+
 const useStyles = () => ({
   header: {
     '@media (max-width: 980px)': {
@@ -65,10 +70,23 @@ const useStyles = () => ({
 
 const boxStyle = {
   outletWarpStyle: {
-    width: { xs: 200, md: 400, lg: 200 },
+    // width: { xs: 200, md: 400, lg: 200 },
     overflowX: 'auto',
     whiteSpace: 'nowrap',
     my: '0.5rem',
+    marginLeft: 2,
+    marginRight: 2,
+  },
+};
+
+const badgeStyles = {
+  badge: {
+    '& .MuiBadge-badge': {
+      fontSize: 10,
+      fontWeight: 'bold',
+      marginRight: 1,
+      marginTop: 1,
+    },
   },
 };
 
@@ -407,7 +425,7 @@ class Header extends Component {
                 <Typography
                   variant='h5'
                   fontWeight={700}
-                  className={clsx([classes.outletText, 'color'])}
+                  className={clsx([classes.outlethText, 'color'])}
                 >
                   {this.props.defaultOutlet.name}
                 </Typography>
@@ -507,9 +525,28 @@ class Header extends Component {
                   </Link>
                 </Grid>
                 <Grid item>
-                  {this.state.showOutletSelection && defaultOutlet.name !== '-'
+                  {/* {this.state.showOutletSelection && defaultOutlet.name !== '-'
                     ? displayOutletInfo(outlets, defaultOutlet)
-                    : null}
+                    : null} */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 15,
+                      marginBottom: 15,
+                      color: this.props.color.primary,
+                    }}
+                  >
+                    <PlaceIcon />
+                    <Typography>
+                      {this.state.showOutletSelection &&
+                      defaultOutlet.name !== '-'
+                        ? displayOutletInfo(outlets, defaultOutlet)
+                        : null}
+                    </Typography>
+                    <ChevronRightIcon />
+                  </div>
                   {this.state.showOrderingMode && (
                     <div className={styles.outlet}>
                       {this.props.orderingMode === 'DINEIN' && (
@@ -801,25 +838,18 @@ class Header extends Component {
             >
               {enableOrdering && (
                 <Link id='cart-icon' to='/cart'>
-                  <div
-                    style={{
-                      border: `1px solid ${this.props.color.font}`,
-                      borderRadius: 40,
-                      height: 40,
-                      width: 40,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      color: this.props.color.font,
-                    }}
-                    data-toggle='modal'
-                    data-target='#basket-modal'
+                  <Badge
+                    color='info'
+                    badgeContent={basketLength}
+                    sx={badgeStyles.badge}
                   >
-                    <Badge color='info' badgeContent={basketLength}>
-                      <FontAwesomeIcon icon={faShoppingBasket} />
-                    </Badge>
-                  </div>
+                    {/* <FontAwesomeIcon icon={faShoppingBasket} /> */}
+                    <img
+                      src={cart}
+                      alt='cart'
+                      style={{ width: 35, height: 35 }}
+                    />
+                  </Badge>
                 </Link>
               )}
             </Grid>
