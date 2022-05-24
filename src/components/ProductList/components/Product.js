@@ -110,8 +110,13 @@ const Product = ({ item, ...props }) => {
       fontStyle: 'normal',
       fontWeight: 500,
       fontSize: '12px',
-      lineHeight: '15px',
       color: isUnavailable ? '#8A8D8E' : '#000000',
+      maxWidth: 200,
+      display: '-webkit-box',
+      WebkitLineClamp: 3,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+      minHeight: 56,
     },
     button: {
       borderRadius: 5,
@@ -397,8 +402,8 @@ const Product = ({ item, ...props }) => {
                 gutterBottom={false}
                 className={classes.description}
               >
-                {/* {item?.product?.description} */}
-                {add3Dots(item?.product?.description, 150)}
+                {item?.product?.description}
+                {/* {add3Dots(item?.product?.description, 200)} */}
               </Typography>
               <Typography className={classes.price}>
                 {isUnavailable
