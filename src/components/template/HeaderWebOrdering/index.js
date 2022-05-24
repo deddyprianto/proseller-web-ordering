@@ -525,28 +525,25 @@ class Header extends Component {
                   </Link>
                 </Grid>
                 <Grid item>
-                  {/* {this.state.showOutletSelection && defaultOutlet.name !== '-'
-                    ? displayOutletInfo(outlets, defaultOutlet)
-                    : null} */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginTop: 15,
-                      marginBottom: 15,
-                      color: this.props.color.primary,
-                    }}
-                  >
-                    <PlaceIcon />
-                    <Typography>
-                      {this.state.showOutletSelection &&
-                      defaultOutlet.name !== '-'
-                        ? displayOutletInfo(outlets, defaultOutlet)
-                        : null}
-                    </Typography>
-                    <ChevronRightIcon />
-                  </div>
+                  {this.state.showOutletSelection &&
+                  defaultOutlet.name !== '-' ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 15,
+                        marginBottom: 15,
+                        color: this.props.color.primary,
+                      }}
+                    >
+                      <PlaceIcon />
+                      <Typography>
+                        {displayOutletInfo(outlets, defaultOutlet)}
+                      </Typography>
+                      <ChevronRightIcon />
+                    </div>
+                  ) : null}
                   {this.state.showOrderingMode && (
                     <div className={styles.outlet}>
                       {this.props.orderingMode === 'DINEIN' && (
