@@ -48,6 +48,12 @@ const Banner = () => {
           <img src={item.defaultImageURL} alt={item.name} width='100%' />
         </Link>
       );
+    } else if (item.url) {
+      return (
+        <a href={item.url} target='_blank' rel='noopener noreferrer'>
+          <img src={item.defaultImageURL} alt={item.name} width='100%' />
+        </a>
+      );
     } else {
       return <img src={item.defaultImageURL} alt={item.name} width='100%' />;
     }
