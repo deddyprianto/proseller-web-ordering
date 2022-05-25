@@ -84,8 +84,8 @@ const badgeStyles = {
     '& .MuiBadge-badge': {
       fontSize: 10,
       fontWeight: 'bold',
-      marginRight: 1,
-      marginTop: 1,
+      marginRight: 0.5,
+      marginTop: 0.8,
     },
   },
 };
