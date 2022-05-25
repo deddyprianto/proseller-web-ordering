@@ -81,7 +81,7 @@ const Product = ({ item, ...props }) => {
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '18px',
-      color: '#4386A1',
+      color: isUnavailable ? 'red' : '#4386A1',
     },
     quantity: {
       fontSize: '7.5px',
@@ -103,20 +103,15 @@ const Product = ({ item, ...props }) => {
       cursor: 'pointer',
     },
     description: {
-      maxHeight: 70,
       whiteSpace: 'pre-line',
       marginBottom: 0,
-      marginTop: 5,
-      fontStyle: 'normal',
       fontWeight: 500,
       fontSize: '12px',
       color: isUnavailable ? '#8A8D8E' : '#000000',
-      maxWidth: 200,
       display: '-webkit-box',
       WebkitLineClamp: 3,
       WebkitBoxOrient: 'vertical',
       overflow: 'hidden',
-      minHeight: 56,
     },
     button: {
       borderRadius: 5,
@@ -126,11 +121,8 @@ const Product = ({ item, ...props }) => {
         backgroundColor: props.color.primary,
       },
       height: '25px',
-      // width: 80,
       width: width > 600 ? 100 : 80,
-
       display: 'flex',
-
       // marginTop: 600 > width ? 100 : 0,
       marginTop: width > 600 ? 10 : 0,
     },
@@ -197,7 +189,7 @@ const Product = ({ item, ...props }) => {
     disabledProduct: {
       pointerEvents: 'none',
       opacity: 0.4,
-      filter: 'grayscale(90%)',
+      // filter: 'grayscale(90%)',
     },
     productNameText: {
       fontStyle: 'normal',
@@ -211,14 +203,6 @@ const Product = ({ item, ...props }) => {
   const [totalQty, setTotalQty] = useState(0);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
-
-  const add3Dots = (string, limit) => {
-    var dots = '...';
-    if (string?.length > limit) {
-      string = string.substring(0, limit) + dots;
-    }
-    return string;
-  };
 
   const handleProductItemIds = (item) => {
     let items = [];
@@ -403,7 +387,6 @@ const Product = ({ item, ...props }) => {
                 className={classes.description}
               >
                 {item?.product?.description}
-                {/* {add3Dots(item?.product?.description, 200)} */}
               </Typography>
               <Typography className={classes.price}>
                 {isUnavailable

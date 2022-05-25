@@ -72,14 +72,6 @@ const ProductAddModal = ({
     },
     productName: {
       width: '100%',
-      // fontSize: 26,
-      // color: props.color.primary,
-      // lineHeight: '30px',
-      // fontWeight: 600,
-      // paddingBottom: 10,
-      // paddingLeft: gadgetScreen ? 0 : 10,
-      // paddingTop: gadgetScreen && 10,
-
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '18px',
@@ -92,12 +84,6 @@ const ProductAddModal = ({
       color: '#4386A1',
     },
     productDescription: {
-      // width: '100%',
-      // fontSize: 16,
-      // color: props.color.primary,
-      // lineHeight: '17px',
-      // paddingLeft: gadgetScreen ? 0 : 10,
-
       fontWeight: '500',
       fontSize: '12px',
       lineHeight: '15px',
@@ -129,11 +115,6 @@ const ProductAddModal = ({
     },
     fullWidth: { width: '100%' },
     addText: {
-      // color: 'white',
-      // fontWeight: 600,
-      // fontSize: 14,
-      // textTransform: 'none',
-
       fontWeight: 500,
       fontSize: '12px',
       lineHeight: '15px',
@@ -170,9 +151,6 @@ const ProductAddModal = ({
       justifyContent: 'space-between',
     },
     optionTitle: {
-      // fontSize: 16,
-      // color: props.color.font,
-
       fontWeight: 500,
       fontSize: '12px',
       lineHeight: '15px',
@@ -184,21 +162,12 @@ const ProductAddModal = ({
       color: props.color.font,
     },
     optionPriceGadgetScreen: {
-      // paddingRight: 20,
-      // fontSize: 16,
-      // color: props.color.font,
-
       fontWeight: 500,
       fontSize: '10px',
       lineHeight: '13px',
       color: '#8A8D8E',
     },
     title: {
-      // padding: 10,
-      // fontWeight: 600,
-      // fontSize: 16,
-      // color: props.color.primary,
-
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '18px',
@@ -206,11 +175,6 @@ const ProductAddModal = ({
       marginRight: 15,
     },
     title2: {
-      // padding: 10,
-      // fontWeight: 600,
-      // fontSize: 13,
-      // color: props.color.font,
-
       fontWeight: 400,
       fontSize: '10px',
       lineHeight: '15px',
@@ -270,8 +234,23 @@ const ProductAddModal = ({
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
-      top: '10px',
-      right: '2px',
+      top: 0,
+      right: 0,
+    },
+    buttonIconClose: {
+      height: 33,
+      width: 33,
+      backgroundColor: props.color.primary,
+      borderRadius: 5,
+      padding: 10,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconClose: {
+      height: 25,
+      width: 25,
+      color: 'white',
     },
     imageAndButtonCloseGadgetSize: {
       position: 'relative',
@@ -1134,14 +1113,14 @@ const ProductAddModal = ({
       return (
         <div style={styles.buttonCloseGadgetSize}>
           <IconButton
-            style={styles.buttonIcon}
+            style={styles.buttonIconClose}
             disabled={isLoading}
             onClick={() => {
               handleClear();
               handleClose();
             }}
           >
-            <CloseIcon style={styles.icon} />
+            <CloseIcon style={styles.iconClose} />
           </IconButton>
         </div>
       );
