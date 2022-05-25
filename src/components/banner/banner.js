@@ -52,6 +52,9 @@ const Banner = () => {
             alt={item.name}
             width='100%'
             height={300}
+            style={{
+              borderRadius: 10,
+            }}
           />
         </Link>
       );
@@ -62,14 +65,13 @@ const Banner = () => {
           alt={item.name}
           width='100%'
           height={300}
+          style={{
+            borderRadius: 10,
+          }}
         />
       );
     }
   };
-
-  // const style = {
-
-  // }
 
   return (
     <div className={style.sliderWrapper}>
