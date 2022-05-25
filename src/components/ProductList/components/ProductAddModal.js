@@ -234,8 +234,8 @@ const ProductAddModal = ({
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
-      top: 0,
-      right: 0,
+      top: 8,
+      right: 8,
     },
     buttonIconClose: {
       height: 33,
