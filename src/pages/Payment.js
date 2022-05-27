@@ -997,7 +997,7 @@ const Payment = ({ ...props }) => {
     if (totalPrice < minPayment) {
       return true;
     }
-    return true;
+    return false;
   };
 
   const renderButtonPay = () => {
