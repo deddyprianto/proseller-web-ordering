@@ -71,9 +71,9 @@ const useStyles = () => ({
 const boxStyle = {
   outletWarpStyle: {
     // width: { xs: 200, md: 400, lg: 200 },
-    overflowX: 'auto',
-    whiteSpace: 'nowrap',
-    my: '0.5rem',
+    // overflowX: 'auto',
+    // whiteSpace: 'nowrap',
+    // my: '0.5rem',
     marginLeft: 2,
     marginRight: 2,
   },
@@ -425,7 +425,8 @@ class Header extends Component {
                 <Typography
                   variant='h5'
                   fontWeight={700}
-                  className={clsx([classes.outlethText, 'color'])}
+                  fontSize={12}
+                  className={clsx([classes.outletText, 'color'])}
                 >
                   {this.props.defaultOutlet.name}
                 </Typography>
