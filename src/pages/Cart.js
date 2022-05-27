@@ -354,12 +354,12 @@ const Cart = ({ ...props }) => {
   };
 
   const handleDisabled = () => {
-    const someItemIsUnavailable = !props.details?.every((item) => {
+    const someItemIsUnavailable = !props.basket?.details.every((item) => {
       const itemIsUnavailable =
         item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
-      const itemIsOutOfStock =
+      const itemHasStock =
         item.product?.currentStock && item.quantity > item.product.currentStock;
-      return itemIsUnavailable || itemIsOutOfStock;
+      return itemIsUnavailable || !itemHasStock;
     });
 
     if (someItemIsUnavailable) {
