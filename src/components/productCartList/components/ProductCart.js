@@ -303,6 +303,7 @@ const ProductCart = ({ item, ...props }) => {
           handleClose={handleCloseAddModal}
           product={item.product}
           selectedProduct={item}
+          isUpdateCart={true}
         />
       )}
 
