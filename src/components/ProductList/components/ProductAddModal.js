@@ -602,7 +602,11 @@ const ProductAddModal = ({
   }, [isLoading]);
 
   useEffect(() => {
-    setQty(1);
+    if (selectedProduct?.quantity) {
+      setQty(selectedProduct?.quantity);
+    } else {
+      setQty(1);
+    }
   }, [selectedVariantOptions]);
 
   const handleClear = () => {
@@ -693,9 +697,9 @@ const ProductAddModal = ({
       await props.dispatch(OrderAction.processUpdateCart(productUpdate));
       if (props.deliveryProviderSelected) {
         const payloadCalculateFee = {
-          outletId: props.basket.outlet.id,
-          cartID: props.basket.cartID,
-          deliveryAddress: props.deliveryAddress,
+          outletId: props?.basket?.outlet?.id,
+          cartID: props?.basket?.cartID,
+          deliveryAddress: props?.deliveryAddress,
         };
 
         const responseCalculateFee = await props.dispatch(
