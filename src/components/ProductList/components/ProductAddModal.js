@@ -697,9 +697,9 @@ const ProductAddModal = ({
       await props.dispatch(OrderAction.processUpdateCart(productUpdate));
       if (props.deliveryProviderSelected) {
         const payloadCalculateFee = {
-          outletId: props?.basket?.outlet?.id,
-          cartID: props?.basket?.cartID,
-          deliveryAddress: props?.deliveryAddress,
+          outletId: basket.outlet.id,
+          cartID: basket.cartID,
+          deliveryAddress: props.deliveryAddress,
         };
 
         const responseCalculateFee = await props.dispatch(
