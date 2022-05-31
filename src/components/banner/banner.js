@@ -14,7 +14,7 @@ import 'swiper/modules/pagination/pagination.scss'; // Pagination module
 
 import style from './pagination.scss';
 
-import SwiperCore, { Pagination, Navigation } from 'swiper';
+import SwiperCore, { Pagination, Navigation, Autoplay } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
 
@@ -76,6 +76,7 @@ const Banner = () => {
   return (
     <div className={style.sliderWrapper}>
       <Swiper
+        modules={[Autoplay]}
         style={{
           '--swiper-navigation-color': '#DCDCDC',
           '--swiper-pagination-color': '#DCDCDC',
@@ -94,8 +95,8 @@ const Banner = () => {
         spaceBetween={30}
         loop
         autoplay={{
-          delay: 2500,
-          disableOnInteraction: true,
+          delay: 3500,
+          disableOnInteraction: false,
         }}
         pagination={{
           clickable: true,
