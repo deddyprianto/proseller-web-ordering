@@ -463,7 +463,7 @@ const Cart = ({ ...props }) => {
   };
 
   const renderPickupDateTime = () => {
-    if (!selectTimeSlotAvailable) {
+    if (!selectTimeSlotAvailable || props.orderingMode !== 'STOREPICKUP') {
       return;
     }
     if (
