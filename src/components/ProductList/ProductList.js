@@ -90,7 +90,7 @@ const ProductList = ({ ...props }) => {
       backgroundColor: '#D0D0D0',
     },
     paper: {
-      maxHeight: 100,
+      maxHeight: 500,
       overflow: 'auto',
       backgroundColor: '#D0D0D0',
     },
