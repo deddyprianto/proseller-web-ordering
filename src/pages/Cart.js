@@ -462,8 +462,8 @@ const Cart = ({ ...props }) => {
     }
   };
 
-  const renderPickupDateTime = () => {
-    if (!selectTimeSlotAvailable || props.orderingMode !== 'STOREPICKUP') {
+  const renderDateTime = () => {
+    if (!selectTimeSlotAvailable) {
       return;
     }
     if (
@@ -477,11 +477,16 @@ const Cart = ({ ...props }) => {
           <div style={styles.rootMode}>
             <Box flexDirection='column'>
               <Typography style={styles.subTotal}>
-                Pickup Date & Time
+                {!isEmptyObject(props?.orderActionTimeSlot) ??
+                props?.orderingMode === 'STOREPICKUP'
+                  ? 'Pickup Date & Time'
+                  : 'Delivery Date & Time'}
               </Typography>
-              {props?.orderActionTimeSlot
+              {!isEmptyObject(props?.orderActionTimeSlot)
                 ? null
-                : renderWarning('Pickup Date & Time.')}
+                : props.orderingMode === 'STOREPICKUP'
+                ? renderWarning('Pickup Date & Time.')
+                : renderWarning('Delivery Date & Time.')}
             </Box>
             <Button
               style={styles.mode}
@@ -732,7 +737,7 @@ const Cart = ({ ...props }) => {
             <ProductCartList />
             {renderOrderingMode()}
             {renderDeliveryAddress()}
-            {renderPickupDateTime()}
+            {renderDateTime()}
             {renderSubTotal()}
           </div>
           {renderGrandTotal()}
@@ -747,7 +752,7 @@ const Cart = ({ ...props }) => {
         <div style={styles.cartGridRight}>
           {renderOrderingMode()}
           {renderDeliveryAddress()}
-          {renderPickupDateTime()}
+          {renderDateTime()}
           {renderSubTotal()}
           {renderGrandTotal()}
         </div>
