@@ -350,10 +350,7 @@ class Header extends Component {
     } else {
       return (
         <div className={useStyles.outletStyle}>
-          <LocationOnOutlinedIcon
-            className='color'
-            style={{ fontSize: 22, marginBottom: -5 }}
-          />
+          <LocationOnOutlinedIcon className='color' style={{ fontSize: 22 }} />
           <span className='color' style={{ fontSize: 12 }}>
             <select
               className={`${styles.outletNameSelect} color`}
@@ -429,6 +426,7 @@ class Header extends Component {
                   className={clsx([classes.outletText, 'color'])}
                 >
                   {this.props.defaultOutlet.name}
+                  {/* lorem ipsum dolor sir amet yeah */}
                 </Typography>
               </Box>
             </Box>
@@ -495,9 +493,9 @@ class Header extends Component {
             {/* logo & outlet */}
             <Grid
               item
-              xs={6}
-              sm={6}
-              md={6}
+              xs={8}
+              sm={8}
+              md={8}
               lg={3}
               order={{ lg: 1, xs: 2, sm: 2, md: 2 }}
               container
@@ -534,7 +532,7 @@ class Header extends Component {
                         flexDirection: 'row',
                         alignItems: 'center',
                         marginTop: 15,
-                        marginBottom: 15,
+                        // marginBottom: 15,
                         color: this.props.color.primary,
                       }}
                     >
@@ -590,9 +588,9 @@ class Header extends Component {
             {/* nav */}
             <Grid
               item
-              xs={3}
-              sm={3}
-              md={2}
+              xs={1}
+              sm={1}
+              md={1}
               lg={7}
               order={{ xs: 1, sm: 1, md: 1 }}
               container
@@ -818,9 +816,9 @@ class Header extends Component {
             {/* cart */}
             <Grid
               item
-              xs={3}
-              sm={3}
-              md={2}
+              xs={1}
+              sm={1}
+              md={1}
               lg={2}
               order={{ xs: 3, sm: 3, md: 3 }}
               container

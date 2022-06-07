@@ -85,7 +85,7 @@ const Banner = () => {
           '--swiper-pagination-bullet-height': '6px',
           '--swiper-pagination-bullet-vertical-gap': '2em',
           '--swiper-pagination-bullet-active-width': '20px',
-          marginTop: '9em',
+          marginTop: '7em',
           display: 'flex',
           alignItems: 'center',
           height: 'auto',
