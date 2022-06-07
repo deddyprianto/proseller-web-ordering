@@ -477,14 +477,13 @@ const Cart = ({ ...props }) => {
           <div style={styles.rootMode}>
             <Box flexDirection='column'>
               <Typography style={styles.subTotal}>
-                {!isEmptyObject(props?.orderActionTimeSlot) ??
-                props?.orderingMode === 'STOREPICKUP'
+                {props?.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
                   ? 'Pickup Date & Time'
                   : 'Delivery Date & Time'}
               </Typography>
               {!isEmptyObject(props?.orderActionTimeSlot)
                 ? null
-                : props.orderingMode === 'STOREPICKUP'
+                : props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
                 ? renderWarning('Pickup Date & Time.')
                 : renderWarning('Delivery Date & Time.')}
             </Box>
