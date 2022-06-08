@@ -426,7 +426,6 @@ class Header extends Component {
                   className={clsx([classes.outletText, 'color'])}
                 >
                   {this.props.defaultOutlet.name}
-                  {/* lorem ipsum dolor sir amet yeah */}
                 </Typography>
               </Box>
             </Box>
@@ -493,9 +492,9 @@ class Header extends Component {
             {/* logo & outlet */}
             <Grid
               item
-              xs={8}
-              sm={8}
-              md={8}
+              xs={10}
+              sm={10}
+              md={10}
               lg={3}
               order={{ lg: 1, xs: 2, sm: 2, md: 2 }}
               container
