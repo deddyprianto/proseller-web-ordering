@@ -74,8 +74,8 @@ const boxStyle = {
     // overflowX: 'auto',
     // whiteSpace: 'nowrap',
     // my: '0.5rem',
-    marginLeft: 2,
-    marginRight: 2,
+    marginLeft: 0.8,
+    marginRight: 0.8,
   },
 };
 
