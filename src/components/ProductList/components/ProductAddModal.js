@@ -72,20 +72,22 @@ const ProductAddModal = ({
     },
     productName: {
       width: '100%',
-      fontSize: 26,
-      color: props.color.primary,
-      lineHeight: '30px',
-      fontWeight: 600,
-      paddingBottom: 10,
-      paddingLeft: gadgetScreen ? 0 : 10,
-      paddingTop: gadgetScreen && 10,
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '18px',
+      color: '#000000',
+    },
+    productPrice: {
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '18px',
+      color: '#4386A1',
     },
     productDescription: {
-      width: '100%',
-      fontSize: 16,
-      color: props.color.primary,
-      lineHeight: '17px',
-      paddingLeft: gadgetScreen ? 0 : 10,
+      fontWeight: '500',
+      fontSize: '12px',
+      lineHeight: '15px',
+      color: '#000000',
     },
     stock: {
       color: 'red',
@@ -95,8 +97,8 @@ const ProductAddModal = ({
       textAlign: 'right',
     },
     buttonIcon: {
-      height: 35,
-      width: 35,
+      height: 18,
+      width: 18,
       backgroundColor: props.color.primary,
       borderRadius: 5,
       padding: 10,
@@ -107,16 +109,16 @@ const ProductAddModal = ({
       justifyContent: 'center',
     },
     icon: {
-      height: 25,
-      width: 25,
+      height: 18,
+      width: 18,
       color: 'white',
     },
     fullWidth: { width: '100%' },
     addText: {
-      color: 'white',
-      fontWeight: 600,
-      fontSize: 14,
-      textTransform: 'none',
+      fontWeight: 500,
+      fontSize: '12px',
+      lineHeight: '15px',
+      color: '#FFFFFF',
     },
     addButton: {
       height: 35,
@@ -133,11 +135,13 @@ const ProductAddModal = ({
     paper: {
       marginTop: 30,
       backgroundColor: props.color.background,
+      border: 'none',
     },
     modifierHeader: {
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
+      marginBottom: 10,
     },
     modifierOption: {
       width: '100%',
@@ -147,8 +151,10 @@ const ProductAddModal = ({
       justifyContent: 'space-between',
     },
     optionTitle: {
-      fontSize: 16,
-      color: props.color.font,
+      fontWeight: 500,
+      fontSize: '12px',
+      lineHeight: '15px',
+      color: '#000000',
     },
     optionPrice: {
       paddingRight: 20,
@@ -156,24 +162,28 @@ const ProductAddModal = ({
       color: props.color.font,
     },
     optionPriceGadgetScreen: {
-      paddingRight: 20,
-      fontSize: 16,
-      color: props.color.font,
+      fontWeight: 500,
+      fontSize: '10px',
+      lineHeight: '13px',
+      color: '#8A8D8E',
     },
     title: {
-      padding: 10,
-      fontWeight: 600,
-      fontSize: 16,
-      color: props.color.primary,
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '18px',
+      color: '#000000',
+      marginRight: 15,
     },
     title2: {
-      padding: 10,
-      fontWeight: 600,
-      fontSize: 13,
-      color: props.color.font,
+      fontWeight: 400,
+      fontSize: '10px',
+      lineHeight: '15px',
+      display: 'flex',
+      alignItems: 'center',
+      color: '#B7B7B7',
     },
     qty: {
-      fontSize: 26,
+      fontSize: 18,
       color: props.color.primary,
       lineHeight: '30px',
       fontWeight: 600,
@@ -183,6 +193,13 @@ const ProductAddModal = ({
     radioSize: {
       '& .MuiSvgIcon-root': {
         fontSize: 24,
+      },
+    },
+    radioSizeModifier: {
+      '& .MuiSvgIcon-root': {
+        fontSize: 24,
+        color: '#667080',
+        borderRadius: '3px',
       },
     },
     buttonIconProductModifier: {
@@ -208,13 +225,32 @@ const ProductAddModal = ({
       lineHeight: '30px',
       fontWeight: 600,
     },
-    rootMofidierOptions: { display: 'flex', marginRight: 10 },
+    rootMofidierOptions: {
+      display: 'flex',
+      marginRight: 10,
+      alignItems: 'center',
+    },
 
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
-      top: '10px',
-      right: '2px',
+      top: 8,
+      right: 8,
+    },
+    buttonIconClose: {
+      height: 33,
+      width: 33,
+      backgroundColor: props.color.primary,
+      borderRadius: 5,
+      padding: 10,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconClose: {
+      height: 25,
+      width: 25,
+      color: 'white',
     },
     imageAndButtonCloseGadgetSize: {
       position: 'relative',
@@ -226,6 +262,7 @@ const ProductAddModal = ({
       flexDirection: 'row',
       alignItems: 'center',
       paddingTop: 20,
+      marginBottom: 15,
     },
     specialInstructionTypography: {
       fontSize: 16,
@@ -237,14 +274,15 @@ const ProductAddModal = ({
       minHeight: 100,
       minWidth: '100%',
       maxWidth: '100%',
-      borderRadius: 5,
+      border: '1px solid #D0D0D0',
+      borderRadius: '4px',
     },
 
     footer: {
       display: 'flex',
-      flexDirection: 'row',
+      flexDirection: 'column',
       justifyContent: 'start',
-      backgroundColor: '#657482',
+      backgroundColor: '#D0D0D0',
       alignItems: 'center',
       alignContents: 'center',
       padding: 10,
@@ -254,6 +292,12 @@ const ProductAddModal = ({
       flexDirection: 'column',
       justifyContent: 'end',
       alignItems: 'end',
+    },
+    itemQty: {
+      fontWeight: 500,
+      fontSize: '12px',
+      lineHeight: '15px',
+      color: '#000000',
     },
   };
 
@@ -558,7 +602,11 @@ const ProductAddModal = ({
   }, [isLoading]);
 
   useEffect(() => {
-    setQty(1);
+    if (selectedProduct?.quantity) {
+      setQty(selectedProduct?.quantity);
+    } else {
+      setQty(1);
+    }
   }, [selectedVariantOptions]);
 
   const handleClear = () => {
@@ -649,8 +697,8 @@ const ProductAddModal = ({
       await props.dispatch(OrderAction.processUpdateCart(productUpdate));
       if (props.deliveryProviderSelected) {
         const payloadCalculateFee = {
-          outletId: props.basket.outlet.id,
-          cartID: props.basket.cartID,
+          outletId: basket.outlet.id,
+          cartID: basket.cartID,
           deliveryAddress: props.deliveryAddress,
         };
 
@@ -815,7 +863,7 @@ const ProductAddModal = ({
       return (
         <div key={index}>
           <FormControlLabel
-            style={styles.marginLeft}
+            // style={styles.marginLeft}
             value={option}
             control={<Radio sx={styles.radioSize} />}
             label={<Typography style={styles.optionTitle}>{option}</Typography>}
@@ -826,9 +874,7 @@ const ProductAddModal = ({
               });
             }}
           />
-          {variant.options.length - 1 !== index && (
-            <Divider style={styles.divider} />
-          )}
+          {variant.options.length - 1 !== index && <Divider />}
         </div>
       );
     });
@@ -841,7 +887,7 @@ const ProductAddModal = ({
         return (
           <Paper key={index} variant='outlined' style={styles.paper}>
             <Typography style={styles.title}>{variant.optionName}</Typography>
-
+            <Divider style={{ marginTop: 10 }} />
             <RadioGroup defaultValue={selectedVariantOptions[index]?.value}>
               {renderVariantOptions(variant)}
             </RadioGroup>
@@ -954,9 +1000,9 @@ const ProductAddModal = ({
   const renderAddAndRemoveButtonAndPrice = ({ modifier, productModifier }) => {
     const renderButtonAndPrice = (
       <>
-        <Typography style={styles.optionPriceGadgetScreen}>
+        {/* <Typography style={styles.optionPriceGadgetScreen}>
           {handleCurrency(modifier.price)}
-        </Typography>
+        </Typography> */}
         {renderAddAndRemoveButtonProductModifierOptions({
           modifierProductId: modifier.productID,
           max: productModifier.modifier.max,
@@ -980,12 +1026,12 @@ const ProductAddModal = ({
           <div key={index}>
             <div style={styles.modifierOption}>
               <FormControlLabel
-                style={styles.marginLeft}
+                // style={styles.marginLeft}
                 value={modifier.productID}
                 checked={isCheckedCheckbox(modifier)}
                 control={
                   <Checkbox
-                    sx={styles.radioSize}
+                    sx={styles.radioSizeModifier}
                     name={modifier.productID}
                     onChange={() => {
                       handleModifierOptionSelected({
@@ -1004,15 +1050,20 @@ const ProductAddModal = ({
                   />
                 }
                 label={
-                  <Typography style={styles.optionTitle}>
-                    {modifier.name}
-                  </Typography>
+                  <>
+                    <Typography style={styles.optionTitle}>
+                      {modifier.name}
+                    </Typography>
+                    <Typography style={styles.optionPriceGadgetScreen}>
+                      {handleCurrency(modifier.price)}
+                    </Typography>
+                  </>
                 }
               />
               {renderAddAndRemoveButtonAndPrice({ modifier, productModifier })}
             </div>
             {productModifier.modifier.details.length - 1 !== index && (
-              <Divider style={styles.divider} />
+              <Divider />
             )}
           </div>
         );
@@ -1066,14 +1117,14 @@ const ProductAddModal = ({
       return (
         <div style={styles.buttonCloseGadgetSize}>
           <IconButton
-            style={styles.buttonIcon}
+            style={styles.buttonIconClose}
             disabled={isLoading}
             onClick={() => {
               handleClear();
               handleClose();
             }}
           >
-            <CloseIcon style={styles.icon} />
+            <CloseIcon style={styles.iconClose} />
           </IconButton>
         </div>
       );
@@ -1103,7 +1154,11 @@ const ProductAddModal = ({
         }}
       >
         <Typography style={styles.addText}>
-          {isLoading ? 'Loading.....' : handleCurrency(totalPrice)}
+          {isLoading
+            ? 'Loading.....'
+            : !isEmptyObject(selectedProduct)
+            ? 'Update Cart'
+            : 'Add to Cart'}
         </Typography>
       </Button>
     );
@@ -1154,9 +1209,22 @@ const ProductAddModal = ({
           </div>
 
           <div style={styles.fullWidth}>
-            <Typography style={styles.productName}>
-              {product.name} {variantName}
-            </Typography>
+            <div
+              style={{
+                display: 'flex',
+                marginTop: 15,
+                marginBottom: 15,
+              }}
+            >
+              <Typography style={styles.productName}>
+                {product.name} {variantName}{' '}
+              </Typography>
+              <Typography style={styles.productPrice}>
+                {' '}
+                {handleCurrency(totalPrice)}
+              </Typography>
+            </div>
+
             <Typography style={styles.productDescription}>
               {product.description}
             </Typography>
@@ -1184,25 +1252,38 @@ const ProductAddModal = ({
         <div>{renderSpecialInstruction()}</div>
       </DialogContent>
       <DialogActions style={styles.footer}>
-        <IconButton
-          style={styles.buttonIcon}
-          disabled={qty === 0 || decreaseQtyButtonDisabled}
-          onClick={() => {
-            setQty(qty - 1);
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            marginBottom: 10,
           }}
         >
-          <RemoveIcon style={styles.icon} />
-        </IconButton>
-        <Typography style={styles.qty}>{qty}</Typography>
-        <IconButton
-          disabled={increaseQtyButtonDisabled}
-          style={styles.buttonIcon}
-          onClick={() => {
-            setQty(qty + 1);
-          }}
-        >
-          <AddIcon style={styles.icon} />
-        </IconButton>
+          <Typography style={styles.itemQty}>Item Quantity</Typography>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton
+              style={styles.buttonIcon}
+              disabled={qty === 0 || decreaseQtyButtonDisabled}
+              onClick={() => {
+                setQty(qty - 1);
+              }}
+            >
+              <RemoveIcon style={styles.icon} />
+            </IconButton>
+            <Typography style={styles.qty}>{qty}</Typography>
+            <IconButton
+              disabled={increaseQtyButtonDisabled}
+              style={styles.buttonIcon}
+              onClick={() => {
+                setQty(qty + 1);
+              }}
+            >
+              <AddIcon style={styles.icon} />
+            </IconButton>
+          </div>
+        </div>
         {renderTotalPriceOrRemove()}
       </DialogActions>
     </Dialog>

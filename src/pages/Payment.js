@@ -413,7 +413,7 @@ const Payment = ({ ...props }) => {
   }, [
     props.useSVC,
     selectedPoint,
-    selectedVouchers,
+    props.selectedVoucher,
     props.selectedPoint,
     totalPrice,
     props.basket,
@@ -506,12 +506,12 @@ const Payment = ({ ...props }) => {
     props.dispatch(PaymentAction.setData({}, 'USE_SVC'));
   };
 
-  const handleRemoveVoucher = (value) => {
+  const handleRemoveVoucher = async (value) => {
     const result = selectedVouchers.filter(
-      (setSelectedVoucher) => setSelectedVoucher.serialNumber !== value
+      (selectedVoucher) => selectedVoucher.serialNumber !== value
     );
 
-    props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
+    await props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
     setSelectedVouchers(result);
   };
 
@@ -997,7 +997,7 @@ const Payment = ({ ...props }) => {
     if (totalPrice < minPayment) {
       return true;
     }
-    return true;
+    return false;
   };
 
   const renderButtonPay = () => {

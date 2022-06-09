@@ -1,17 +1,17 @@
 // CaseID   Name    date        description
 // 0001     Troy    18/08/2021  Remove Show Link|show all description
 
-import React, { Component } from "react";
-import { Col, Row } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
-import { connect } from "react-redux";
-import _ from "lodash";
+import React, { Component } from 'react';
+import { Col, Row } from 'reactstrap';
+import Shimmer from 'react-shimmer-effect';
+import { connect } from 'react-redux';
+import _ from 'lodash';
 
-import { OutletAction } from "../redux/actions/OutletAction";
-import { OrderAction } from "../redux/actions/OrderAction";
-import config from "../config";
+import { OutletAction } from '../redux/actions/OutletAction';
+import { OrderAction } from '../redux/actions/OrderAction';
+import config from '../config';
 
-const Swal = require("sweetalert2");
+const Swal = require('sweetalert2');
 class OutletSelection extends Component {
   constructor(props) {
     super(props);
@@ -29,10 +29,10 @@ class OutletSelection extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -68,8 +68,8 @@ class OutletSelection extends Component {
       ) {
         Swal.fire({
           title: `Change Outlet ?`,
-          text: "You will delete your cart at the previous outlet.",
-          icon: "warning",
+          text: 'You will delete your cart at the previous outlet.',
+          icon: 'warning',
           confirmButtonText: `Sure`,
           showCancelButton: true,
         }).then(async (data) => {
@@ -92,17 +92,17 @@ class OutletSelection extends Component {
       const { ShowOrderingModeModalFirst } = this.props.setting;
       if (this.props.orderingModes.length === 1) {
         await this.props.dispatch({
-          type: "SET_ORDERING_MODE",
+          type: 'SET_ORDERING_MODE',
           payload: this.props.orderingModes[0],
         });
       } else if (
         ShowOrderingModeModalFirst &&
         this.props.orderingModes.length > 1
       ) {
-        document.getElementById("open-modal-ordering-mode").click();
+        document.getElementById('open-modal-ordering-mode').click();
       } else {
         this.props.dispatch({
-          type: "REMOVE_ORDERING_MODE",
+          type: 'REMOVE_ORDERING_MODE',
         });
       }
     }
@@ -126,13 +126,13 @@ class OutletSelection extends Component {
   render() {
     let { loadingShow, outlets } = this.state;
     return (
-      <div className="" style={{ marginTop: 120, marginBottom: 50 }}>
-        <div id="primary" className="content-area">
-          <div className="">
+      <div className='' style={{ marginTop: 135, marginBottom: 50 }}>
+        <div id='primary' className='content-area'>
+          <div className=''>
             <main
-              id="main"
-              className="site-main"
-              style={{ textAlign: "center", paddingBottom: 40 }}
+              id='main'
+              className='site-main'
+              style={{ textAlign: 'center', paddingBottom: 40 }}
             >
               {loadingShow ? (
                 <Row>
@@ -146,58 +146,58 @@ class OutletSelection extends Component {
                       <div
                         style={{
                           backgroundColor:
-                            items.orderingStatus !== "UNAVAILABLE"
+                            items.orderingStatus !== 'UNAVAILABLE'
                               ? null
-                              : "#ecf0f1",
+                              : '#ecf0f1',
                           opacity:
-                            items.orderingStatus !== "UNAVAILABLE" ? 1 : 0.6,
-                          boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.2)",
-                          border: "1px solid #CDCDCD",
+                            items.orderingStatus !== 'UNAVAILABLE' ? 1 : 0.6,
+                          boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.2)',
+                          border: '1px solid #CDCDCD',
                           padding: 10,
-                          cursor: "pointer",
-                          display: "flex",
-                          flexDirection: "row",
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'row',
                           margin: 5,
                           borderRadius: 5,
                         }}
                       >
                         <div
                           style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            width: "100%",
-                            textAlign: "left",
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            width: '100%',
+                            textAlign: 'left',
                           }}
                         >
                           <div
                             style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
                             }}
                           >
                             <div
-                              className={"customer-group-name"}
+                              className={'customer-group-name'}
                               style={{
-                                fontWeight: "bold",
+                                fontWeight: 'bold',
                                 fontSize: 14,
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
                               }}
                               onClick={() =>
-                                items.orderingStatus !== "UNAVAILABLE"
+                                items.orderingStatus !== 'UNAVAILABLE'
                                   ? this.checkCartExist(items)
                                   : false
                               }
                             >
                               <div>
                                 {items.outletStatus === true &&
-                                items.orderingStatus === "AVAILABLE" ? (
+                                items.orderingStatus === 'AVAILABLE' ? (
                                   <div
                                     style={{
-                                      backgroundColor: "#2ecc71",
-                                      display: "inline-block",
+                                      backgroundColor: '#2ecc71',
+                                      display: 'inline-block',
                                       borderRadius: 7,
                                     }}
                                   >
@@ -209,14 +209,14 @@ class OutletSelection extends Component {
                                         fontSize: 12,
                                       }}
                                     >
-                                      <b style={{ color: "white" }}>Open</b>
+                                      <b style={{ color: 'white' }}>Open</b>
                                     </p>
                                   </div>
                                 ) : (
                                   <div
                                     style={{
-                                      backgroundColor: "#e74c3c",
-                                      display: "inline-block",
+                                      backgroundColor: '#e74c3c',
+                                      display: 'inline-block',
                                       borderRadius: 7,
                                     }}
                                   >
@@ -228,7 +228,7 @@ class OutletSelection extends Component {
                                         fontSize: 12,
                                       }}
                                     >
-                                      <b style={{ color: "white" }}>Closed</b>
+                                      <b style={{ color: 'white' }}>Closed</b>
                                     </p>
                                   </div>
                                 )}
@@ -238,10 +238,10 @@ class OutletSelection extends Component {
                               </div>
                               {items.distance && (
                                 <div>
-                                  <i className="fa fa-map-marker"></i>
-                                  {"  "}
+                                  <i className='fa fa-map-marker'></i>
+                                  {'  '}
                                   <span
-                                    className="font-color-theme"
+                                    className='font-color-theme'
                                     style={{ fontSize: 11 }}
                                   >
                                     {items.distance}
@@ -250,10 +250,10 @@ class OutletSelection extends Component {
                               )}
                             </div>
                             {items.remark && (
-                              <div style={{ fontSize: "80%" }}>
+                              <div style={{ fontSize: '80%' }}>
                                 <span
                                   onClick={() =>
-                                    items.orderingStatus !== "UNAVAILABLE"
+                                    items.orderingStatus !== 'UNAVAILABLE'
                                       ? this.checkCartExist(items)
                                       : false
                                   }
@@ -295,7 +295,7 @@ class OutletSelection extends Component {
                 <div>
                   <img
                     src={config.url_emptyImage}
-                    alt="is empty"
+                    alt='is empty'
                     style={{ marginTop: 30 }}
                   />
                   <div>Data is empty</div>
