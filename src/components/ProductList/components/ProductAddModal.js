@@ -51,7 +51,6 @@ const ProductAddModal = ({
   width,
   selectedProduct,
   basket,
-  isUpdateCart,
   ...props
 }) => {
   const gadgetScreen = width < 600;
@@ -1157,7 +1156,7 @@ const ProductAddModal = ({
         <Typography style={styles.addText}>
           {isLoading
             ? 'Loading.....'
-            : isUpdateCart
+            : !isEmptyObject(selectedProduct)
             ? 'Update Cart'
             : 'Add to Cart'}
         </Typography>
@@ -1302,7 +1301,6 @@ ProductAddModal.defaultProps = {
   dispatch: null,
   width: 600,
   selectedProduct: {},
-  isUpdateCart: false,
 };
 
 ProductAddModal.propTypes = {
@@ -1316,7 +1314,6 @@ ProductAddModal.propTypes = {
   product: PropTypes.object,
   selectedProduct: PropTypes.object,
   width: PropTypes.number,
-  isUpdateCart: PropTypes.bool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductAddModal);

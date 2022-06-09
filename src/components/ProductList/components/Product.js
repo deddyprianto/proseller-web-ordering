@@ -133,11 +133,6 @@ const Product = ({ item, ...props }) => {
       fontSize: '10px',
       lineHeight: '13px',
     },
-    textUnavailable: {
-      fontSize: 26,
-      fontWeight: 600,
-      color: '#000000',
-    },
     itemBody: {
       display: 'flex',
       flexDirection: 'column',
@@ -157,11 +152,8 @@ const Product = ({ item, ...props }) => {
       width: 5,
       color: '#FFFFFF',
     },
-    name: { display: 'flex' },
-    priceAndButton: {
+    name: {
       display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
     },
     box: {
       display: 'flex',
@@ -198,6 +190,7 @@ const Product = ({ item, ...props }) => {
       lineHeight: '15px',
     },
   });
+
   const classes = useStyles();
 
   const [totalQty, setTotalQty] = useState(0);
@@ -289,29 +282,6 @@ const Product = ({ item, ...props }) => {
       return config.image_placeholder;
     }
   };
-
-  // const renderPriceAndButton = () => {
-  //   if (item?.product?.orderingStatus === 'UNAVAILABLE') {
-  //     return (
-  //       <Typography className={classes.textUnavailable}>UNAVAILABLE</Typography>
-  //     );
-  //   }
-  //   return (
-  //     <div className={classes.priceAndButton}>
-  //       <Typography className={classes.price}>
-  //         {handleCurrency(item?.product?.retailPrice)}
-  //       </Typography>
-  //       <Button
-  //         className={classes.button}
-  //         startIcon={<AddIcon className={classes.icon} />}
-  //       >
-  //         <Typography className={classes.textButton}>
-  //           {totalQty ? 'update' : 'Add'}
-  //         </Typography>
-  //       </Button>
-  //     </div>
-  //   );
-  // };
 
   const renderGroupProducts = () => {
     return (

@@ -346,7 +346,7 @@ const ProductUpdateModal = ({
               {renderProductModifiers(product?.modifiers)}
               <div style={styles.productBody}>
                 <Typography style={styles.price}>
-                  {handleCurrency(product?.nettAmount)}
+                  {handleCurrency(product?.grossAmount)}
                 </Typography>
                 <Button
                   style={styles.buttonEdit}

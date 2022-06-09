@@ -85,6 +85,11 @@ const ProductList = ({ ...props }) => {
   }));
 
   const styles = {
+    tabList: {
+      border: isMore ? 1 : 0,
+      borderColor: '#D0D0D0',
+      marginBottom: -5,
+    },
     tabMore: {
       color: props?.color?.primary,
       backgroundColor: '#D0D0D0',
@@ -293,13 +298,7 @@ const ProductList = ({ ...props }) => {
   const renderTabList = () => {
     const categoryTabList = categories.slice(limitCategoryTabHeader);
     return (
-      <Box
-        sx={{
-          border: isMore ? 1 : 0,
-          borderColor: '#D0D0D0',
-          marginBottom: -5,
-        }}
-      >
+      <Box sx={styles.tabList}>
         <Collapse in={isMore}>
           <Paper style={styles.paper}>
             {categoryTabList.map((category, index) => {
