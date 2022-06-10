@@ -98,23 +98,19 @@ const FooterWebOrdering = () => {
       right: 0,
       height: '4.6em',
       zIndex: 10,
-      // backgroundColor: allState.theme.color.navigationColor,
-      backgroundColor: '#D0D0D0',
+      backgroundColor: allState.theme.color.navigationColor,
     },
     bottomNav: {
       height: 70,
       marginY: '0.7rem',
-      // backgroundColor: allState.theme.color.navigationColor,
-      backgroundColor: '#D0D0D0',
+      backgroundColor: allState.theme.color.navigationColor,
       '& .Mui-selected': {
-        // color: allState.theme.color.navigationIconSelectedColor,
-        color: '#000000',
+        color: allState.theme.color.navigationIconSelectedColor,
         fontWeight: 700,
       },
       '& .MuiBottomNavigationAction-root': {
         fontSize: '2.3rem',
-        // color: allState.theme.color.navigationFontColor,
-        color: '#8A8D8E',
+        color: allState.theme.color.navigationFontColor,
       },
       '& .MuiBottomNavigationAction-label': {
         fontSize: '1.1rem',
@@ -198,11 +194,11 @@ const FooterWebOrdering = () => {
                 to={menu.path}
                 icon={iconCheck(
                   menu.text,
-                  // value === index
-                  //   ? allState.theme.color.navigationIconSelectedColor
-                  //   : allState.theme.color.navigationFontColor
+                  value === index
+                    ? allState.theme.color.navigationIconSelectedColor
+                    : allState.theme.color.navigationFontColor
 
-                  value === index ? '#000000' : '#8A8D8E'
+                  // value === index ? '#000000' : '#8A8D8E'
                 )}
               />
             );
