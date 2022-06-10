@@ -75,19 +75,19 @@ const ProductAddModal = ({
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '18px',
-      color: '#000000',
+      color: props.color.font,
     },
     productPrice: {
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '18px',
-      color: '#4386A1',
+      color: props.color.primary,
     },
     productDescription: {
       fontWeight: '500',
       fontSize: '12px',
       lineHeight: '15px',
-      color: '#000000',
+      color: props.color.font,
     },
     stock: {
       color: 'red',

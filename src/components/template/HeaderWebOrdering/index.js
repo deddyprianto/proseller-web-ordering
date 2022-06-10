@@ -836,7 +836,16 @@ class Header extends Component {
                   <Badge
                     color='info'
                     badgeContent={basketLength}
-                    sx={badgeStyles.badge}
+                    // sx={badgeStyles.badge}
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        fontSize: 10,
+                        fontWeight: 'bold',
+                        marginRight: 0.5,
+                        marginTop: 0.8,
+                        backgroundColor: this.props.color.primary,
+                      },
+                    }}
                   >
                     {/* <FontAwesomeIcon icon={faShoppingBasket} /> */}
                     <img

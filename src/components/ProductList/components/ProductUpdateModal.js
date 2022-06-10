@@ -164,8 +164,8 @@ const ProductUpdateModal = ({
     quantity: {
       fontSize: '7.5px',
       fontWeight: 600,
-      color: '#FFFFFF',
-      backgroundColor: '#4386A1',
+      color: props.color.font,
+      backgroundColor: props.color.primary,
       height: '17px',
       lineHeight: '9px',
       width: '17px',
