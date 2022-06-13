@@ -305,11 +305,7 @@ const Product = ({ item, ...props }) => {
 
   const renderQuantityProduct = () => {
     if (totalQty) {
-      return (
-        <Typography className={classes.quantity}>
-          {totalQty}xnknknknknk
-        </Typography>
-      );
+      return <Typography className={classes.quantity}>{totalQty}x</Typography>;
     }
     return;
   };
