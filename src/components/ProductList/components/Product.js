@@ -86,7 +86,7 @@ const Product = ({ item, ...props }) => {
     quantity: {
       fontSize: '7.5px',
       fontWeight: 600,
-      color: props.color.font,
+      color: props.color.textButtonColor,
       backgroundColor: props.color.primary,
       height: '17px',
       lineHeight: '9px',
@@ -305,7 +305,11 @@ const Product = ({ item, ...props }) => {
 
   const renderQuantityProduct = () => {
     if (totalQty) {
-      return <Typography className={classes.quantity}>{totalQty}x</Typography>;
+      return (
+        <Typography className={classes.quantity}>
+          {totalQty}xnknknknknk
+        </Typography>
+      );
     }
     return;
   };
