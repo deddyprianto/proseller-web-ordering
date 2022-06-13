@@ -86,7 +86,7 @@ const Product = ({ item, ...props }) => {
     quantity: {
       fontSize: '7.5px',
       fontWeight: 600,
-      color: props.color.font,
+      color: props.color.textButtonColor,
       backgroundColor: props.color.primary,
       height: '17px',
       lineHeight: '9px',
