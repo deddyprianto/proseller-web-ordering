@@ -12,6 +12,7 @@ import { lsLoad, lsStore } from '../../helpers/localStorage';
 
 import config from '../../config';
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import moment from 'moment';
 
 const regEmail =
   /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -46,8 +47,7 @@ const LoginRegister = (props) => {
   const [btnSend, setBtnSend] = useState(true);
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
-  const [counter, setCounter] = useState('00');
-  const [counterMinutes, setCounterMinutes] = useState('00');
+  const [countdownInterval, setCountdownInterval] = useState(0);
   const [sendCounter, setSendCounter] = useState(0);
   const [txtOtp, setTxtOtp] = useState('');
   const [btnSubmit, setBtnSubmit] = useState(false);
@@ -82,56 +82,35 @@ const LoginRegister = (props) => {
     (setting) => setting.settingKey === 'RegistrationEmailMandatory'
   );
 
-  useEffect(() => {
-    setErrorPhone('');
-    const otpData = lsLoad(config.prefix + '_otp') || null;
-    if (otpData) {
-      const waitTime = method === 'phone' ? 60 : 300;
-      const countdown =
-        waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
-      if (countdown > 0) {
-        const counterMinutesCountdown = Math.floor(countdown / 60);
-        const counterCountdown = countdown % 60;
+  const countdown = () => {
+    let second = 59;
+    let minute = sendCounter >= 2 ? 4 : 0;
 
-        setBtnSend(false);
-        setSendCounter(otpData.counter || 0);
-        setMinutes(counterMinutesCountdown);
-        setCounterMinutes(`${counterMinutesCountdown}`);
-        setSeconds(counterCountdown);
-        setCounter(`${counterCountdown}`);
+    setSeconds(second);
+    setMinutes(minute);
 
-        let secondsTimer = counterCountdown;
-        let timer = setInterval(() => {
-          secondsTimer = secondsTimer - 1;
-          let counterTimer =
-            secondsTimer.toString().length < 2
-              ? '0' + secondsTimer
-              : secondsTimer;
+    let interval = setInterval(() => {
+      second = second - 1;
+      setSeconds(second);
 
-          setCounter(counterTimer);
-          setSeconds(secondsTimer);
-
-          if (secondsTimer === 0) {
-            let minutesTimer = minutes - 1;
-            let counterMinutesTimer =
-              minutesTimer.toString().length < 2
-                ? '0' + minutesTimer
-                : minutesTimer;
-
-            setCounterMinutes(counterMinutesTimer);
-            setMinutes(minutesTimer);
-            setSeconds(59);
-            setCounter('59');
-
-            if (minutesTimer < 0 && secondsTimer === 0) {
-              clearInterval(timer);
-              setBtnSend(true);
-            }
-          }
-        }, 1000);
+      if (second === 0) {
+        if (!minute && !second) {
+          setBtnSend(true);
+          clearInterval(interval);
+        } else {
+          second = 60;
+          minute = minute - 1;
+          setMinutes(minute);
+        }
       }
+    }, 1000);
+
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
     }
-  }, [method]);
+
+    setCountdownInterval(interval);
+  };
 
   useEffect(() => {
     Swal.showLoading();
@@ -203,6 +182,44 @@ const LoginRegister = (props) => {
 
     Swal.close();
   }, [props]);
+
+  const handleSendOTP = async (sendBy = 'SMSOTP') => {
+    if (!enableRegisterWithPassword) {
+      let payloadResponseOtp = payloadResponse;
+      let phoneNumberOtp = phoneNumber;
+      let sendCounterOtp = sendCounter + 1;
+      if (phoneNumberOtp.charAt(0) !== '+')
+        phoneNumberOtp = '+' + phoneNumberOtp.trim();
+
+      setSendCounter(sendCounterOtp);
+      setBtnSend(false);
+
+      const otpLastTry = new Date();
+      lsStore(config.prefix + '_otp', {
+        lastTry: otpLastTry,
+        counterTimer: sendCounterOtp,
+      });
+
+      countdown();
+
+      try {
+        const payload = { phoneNumber: phoneNumberOtp, sendBy };
+
+        if (sendCounter > 2) {
+          payload.email = payloadResponseOtp.email;
+        }
+
+        let response = await props.dispatch(AuthActions.sendOtp(payload));
+        response = response.Data;
+
+        if (response.status === false) {
+          throw response.status;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   const handleInput = (jenis, data) => {
     if (jenis) {
@@ -458,111 +475,6 @@ const LoginRegister = (props) => {
     }
 
     await Swal.close();
-  };
-
-  const handleSendOTP = async (sendBy = 'SMSOTP') => {
-    if (!enableRegisterWithPassword) {
-      let payloadResponseOtp = payloadResponse;
-      let phoneNumberOtp = phoneNumber;
-      let sendCounterOtp = sendCounter + 1;
-      if (phoneNumberOtp.charAt(0) !== '+')
-        phoneNumberOtp = '+' + phoneNumberOtp.trim();
-
-      setSendCounter(sendCounterOtp);
-      setBtnSend(false);
-
-      if (sendCounter <= 2) {
-        const countdown = 59;
-        const counterMinutesCountDown = Math.floor(countdown / 60);
-        const counterCountDown = countdown % 60;
-
-        setSendCounter(sendCounterOtp);
-        setMinutes(counterMinutesCountDown);
-        setCounterMinutes(`${counterMinutesCountDown}`);
-        setSeconds(counterCountDown);
-        setCounter(`${counterCountDown}`);
-
-        let secondsTimer = counterCountDown;
-
-        let timer = setInterval(() => {
-          secondsTimer = secondsTimer - 1;
-          const counterTimer =
-            secondsTimer.toString().length < 2
-              ? '0' + secondsTimer
-              : secondsTimer;
-
-          setCounter(counterTimer);
-          setSeconds(secondsTimer);
-
-          if (secondsTimer === 0) {
-            clearInterval(timer);
-
-            setBtnSend(true);
-          }
-        }, 1000);
-      } else {
-        setSendCounter(sendCounterOtp);
-        setMinutes(4);
-        setCounterMinutes('04');
-        setSeconds(59);
-        setCounter('59');
-
-        let secondsTimer = 0;
-        let minutesTimer = 0;
-
-        let timer = setInterval(() => {
-          secondsTimer = secondsTimer - 1;
-          let counterTimer =
-            secondsTimer.toString().length < 2
-              ? '0' + secondsTimer
-              : secondsTimer;
-
-          setCounter(counterTimer);
-          setSeconds(secondsTimer);
-
-          if (secondsTimer === 0) {
-            minutesTimer = minutesTimer - 1;
-            let counterMinutesTimer =
-              minutesTimer.toString().length < 2
-                ? '0' + minutesTimer
-                : minutesTimer;
-
-            setCounterMinutes(counterMinutesTimer);
-            setMinutes(minutesTimer);
-            setCounter('59');
-            setSeconds(59);
-
-            if (minutesTimer < 0 && seconds === 0) {
-              clearInterval(timer);
-              setBtnSend(true);
-            }
-          }
-        }, 1000);
-      }
-
-      const otpLastTry = new Date();
-      lsStore(config.prefix + '_otp', {
-        lastTry: otpLastTry,
-        counterTimer: sendCounterOtp,
-      });
-
-      try {
-        const payload = { phoneNumber: phoneNumberOtp, sendBy };
-
-        if (sendCounter > 2) {
-          payload.push({ email: payloadResponseOtp.email });
-        }
-
-        let response = await props.dispatch(AuthActions.sendOtp(payload));
-        response = response.Data;
-
-        if (response.status === false) {
-          throw response.status;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
   };
 
   const handleMobileLogin = async (withOtp) => {
@@ -829,17 +741,9 @@ const LoginRegister = (props) => {
 
   const handleSendEmailOTP = async () => {
     if (!enableRegisterWithPassword) {
-      const countdown = 299;
-      const counterMinutesOtp = Math.floor(countdown / 60);
-      const minutesOtp = 4;
-      const counterOtp = countdown % 60;
       const otpLastTry = new Date();
 
       setBtnSend(false);
-      setMinutes(minutesOtp);
-      setCounterMinutes(counterMinutesOtp);
-      setSeconds(counter);
-      setCounter(`${counter}`);
 
       setSendCounter(sendCounter + 1);
       lsStore(config.prefix + '_otp', {
@@ -847,38 +751,7 @@ const LoginRegister = (props) => {
         counter: sendCounter + 1,
       });
 
-      let secondsTimer = counterOtp;
-      let minutesTimer = minutesOtp;
-
-      var timer = setInterval(() => {
-        secondsTimer = secondsTimer - 1;
-        let counterTimer =
-          secondsTimer.toString().length < 2
-            ? '0' + secondsTimer
-            : secondsTimer;
-
-        setSeconds(secondsTimer);
-        setCounter(counterTimer);
-
-        if (secondsTimer === 0) {
-          minutesTimer = minutesTimer - 1;
-          let counterMinutesTimer =
-            minutesTimer.toString().length < 2
-              ? '0' + minutesTimer
-              : minutesTimer;
-
-          setCounter('59');
-          setSeconds(59);
-          setMinutes(minutesTimer);
-          setCounterMinutes(counterMinutesTimer);
-
-          if (minutesTimer < 0 && secondsTimer === 0) {
-            setBtnSend(true);
-            clearInterval(timer);
-          }
-        }
-      }, 1000);
-
+      countdown();
       try {
         let payload = { email };
         let response = await props.dispatch(AuthActions.sendOtp(payload));
@@ -1105,6 +978,7 @@ const LoginRegister = (props) => {
     setSignUpSuccess(false);
     setBtnSubmit(false);
   };
+
   return (
     <div>
       <div
@@ -1135,8 +1009,8 @@ const LoginRegister = (props) => {
               otpTimer={{
                 isSending: !btnSend,
                 sendCounter: sendCounter,
-                counterMinutes: counterMinutes,
-                counter: counter,
+                counterMinutes: moment(minutes, 'mm').format('mm'),
+                counter: moment(seconds, 'ss').format('ss'),
               }}
               enableSMSOTP={enableSMSOTP}
               enableWhatsappOTP={enableWhatsappOTP}
@@ -1162,8 +1036,8 @@ const LoginRegister = (props) => {
               otpTimer={{
                 isSending: !btnSend,
                 sendCounter: sendCounter,
-                counterMinutes: counterMinutes,
-                counter: counter,
+                counterMinutes: moment(minutes, 'mm').format('mm'),
+                counter: moment(seconds, 'ss').format('ss'),
               }}
               errorPhone={errorPhone}
               errorEmail={errorEmail}
