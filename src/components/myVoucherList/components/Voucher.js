@@ -153,7 +153,7 @@ const Voucher = ({ item, quantity, ...props }) => {
   const [basket, setBasket] = useState([]);
 
   useEffect(() => {
-    setSelectedVouchers(props.selectedVoucher);
+    setSelectedVouchers([...props.selectedVoucher]);
     setBasket(props.basket?.details);
   }, [props.selectedVoucher]);
 
@@ -213,7 +213,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     return isMinPurchaseAmount;
   };
 
-  const handleSpesificProductCondition = () => {
+  const handleSpecificProductCondition = () => {
     const isVoucherProduct = props.basket?.details.find(
       (detail) => detail.product.id === item.appliedItems[0].value
     );
@@ -225,7 +225,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     return isVoucherProduct || false;
   };
 
-  const handleSpesificCategoryCondition = () => {
+  const handleSpecificCategoryCondition = () => {
     const isVoucherCategory = props.basket?.details.find(
       (detail) => detail.product.categoryID === item.appliedItems[0].value
     );
@@ -259,11 +259,11 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const handleTermsAndConditions = (value) => {
     if (value?.appliedTo === 'CATEGORY') {
-      return handleSpesificCategoryCondition();
+      return handleSpecificCategoryCondition();
     }
 
     if (value?.appliedTo === 'PRODUCT') {
-      return handleSpesificProductCondition();
+      return handleSpecificProductCondition();
     }
 
     if (value?.minPurchaseAmount) {
@@ -329,14 +329,15 @@ const Voucher = ({ item, quantity, ...props }) => {
   const handleSelectVoucher = () => {
     const isTemsAndConditions = handleTermsAndConditions(item);
     if (isTemsAndConditions) {
-      const result = selectedVouchers;
-
+      let result = [];
       const discount = handleDiscount({
         type: item.voucherType,
         value: item.voucherValue,
         appliedTo: item.appliedTo,
         appliedItems: item.appliedItems,
       });
+
+      result = selectedVouchers;
 
       result.push({
         name: item.name,

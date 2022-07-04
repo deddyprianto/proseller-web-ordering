@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Banner from 'components/banner';
-import ProductList from 'components/productList';
+import ProductList from 'components/ProductList';
 import OrderingRetail from '../components/ordering/indexRetail';
 
 import OutletSelection from './OutletSelection';

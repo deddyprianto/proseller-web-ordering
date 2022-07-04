@@ -140,11 +140,12 @@ class MyVoucher extends Component {
                       fontSize: 12,
                       borderRadius: 0,
                       borderBottomLeftRadius: 10,
+                      borderTopRightRadius: 10,
                       right: 15,
                       fontWeight: "bold",
                     }}
                   >
-                    {item.totalRedeem + "x"}
+                    {`${item.totalRedeem?? 1}x`}
                   </div>
 
                   <img

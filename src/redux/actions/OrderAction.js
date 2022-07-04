@@ -82,116 +82,114 @@ function shareURL(tableNo, outletID, orderMode) {
 function getSettingOrdering() {
   return async (dispatch) => {
     let appType = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
-    try {
-      let response = await OrderingService.api(
-        'GET',
-        null,
-        `orderingsetting/${appType}`
-      );
-      let data = await response.data;
-      const settingObj = data.settings.reduce((acc, setting) => {
-        return {
-          ...acc,
-          [setting.settingKey]: setting.settingValue,
-        };
-      }, {});
-      dispatch({
-        type: 'SET_ORDERING_SETTINGS',
-        data: settingObj,
-      });
-      if (data) {
-        data = config.getSettingOrdering(data);
+    let response = await OrderingService.api(
+      'GET',
+      null,
+      `orderingsetting/${appType}`
+    );
+    let data = await response.data;
+    const settingObj = data.settings.reduce((acc, setting) => {
+      return {
+        ...acc,
+        [setting.settingKey]: setting.settingValue,
+      };
+    }, {});
+    dispatch({
+      type: 'SET_ORDERING_SETTINGS',
+      data: settingObj,
+    });
+    if (data) {
+      data = config.getSettingOrdering(data);
 
-        let primaryColor =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'PrimaryColor';
-          });
-        let secondaryColor =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'SecondaryColor';
-          });
-        let font =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'FontColor';
-          });
-        let background =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'BackgroundColor';
-          });
-        let navigation =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'NavigationColor';
-          });
-        let textButtonColor =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'TextButtonColor';
-          });
-        let textWarningColor =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'TextWarningColor';
-          });
-        let navigationFontColor =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'NavigationFontColor';
-          });
-        let navigationIconSelectedColor =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'NavigationIconSelectedColor';
-          });
-        let outletSelection =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'OutletSelection';
-          });
-        let ProductPlaceholder =
-          data &&
-          data.settings.find((items) => {
-            return items.settingKey === 'ProductPlaceholder';
-          });
-
-        if (outletSelection === undefined) {
-          outletSelection = 'DEFAULT';
-        } else {
-          outletSelection = outletSelection.settingValue;
-        }
-
-        if (ProductPlaceholder === undefined) {
-          ProductPlaceholder = null;
-        } else {
-          ProductPlaceholder = ProductPlaceholder.settingValue;
-        }
-
-        let payload = {
-          primary: primaryColor.settingValue || '#C00A27',
-          secondary: secondaryColor.settingValue || '#C00A27',
-          font: font.settingValue || '#808080',
-          background: background.settingValue || '#FFFFFF',
-          textButtonColor: textButtonColor.settingValue || '#FFFFFF',
-          textWarningColor: textWarningColor.settingValue || 'red',
-          productPlaceholder: ProductPlaceholder || null,
-          navigationColor: navigation.settingValue || '#C00A27',
-          navigationFontColor: navigationFontColor.settingValue || '#FFFF',
-          navigationIconSelectedColor:
-            navigationIconSelectedColor.settingValue || '#393939',
-        };
-        dispatch({ type: 'SET_THEME', payload });
-        dispatch({
-          type: 'DATA_SETTING_ORDERING',
-          payload: data && data.settings,
+      let primaryColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'PrimaryColor';
         });
-        dispatch(setData(outletSelection, 'OUTLET_SELECTION'));
+      let secondaryColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'SecondaryColor';
+        });
+      let font =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'FontColor';
+        });
+      let background =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'BackgroundColor';
+        });
+      let navigation =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'NavigationColor';
+        });
+      let textButtonColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'TextButtonColor';
+        });
+      let textWarningColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'TextWarningColor';
+        });
+      let navigationFontColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'NavigationFontColor';
+        });
+      let navigationIconSelectedColor =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'NavigationIconSelectedColor';
+        });
+      let outletSelection =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'OutletSelection';
+        });
+      let ProductPlaceholder =
+        data &&
+        data.settings.find((items) => {
+          return items.settingKey === 'ProductPlaceholder';
+        });
+
+      if (outletSelection === undefined) {
+        outletSelection = 'DEFAULT';
+      } else {
+        outletSelection = outletSelection.settingValue;
       }
-      return data;
-    } catch (error) {}
+
+      if (ProductPlaceholder === undefined) {
+        ProductPlaceholder = null;
+      } else {
+        ProductPlaceholder = ProductPlaceholder.settingValue;
+      }
+
+      let payload = {
+        primary: primaryColor.settingValue || '#C00A27',
+        secondary: secondaryColor.settingValue || '#C00A27',
+        font: font.settingValue || '#808080',
+        background: background.settingValue || '#FFFFFF',
+        textButtonColor: textButtonColor.settingValue || '#FFFFFF',
+        textWarningColor: textWarningColor.settingValue || 'red',
+        productPlaceholder: ProductPlaceholder || null,
+        navigationColor: navigation.settingValue || '#D0D0D0',
+        navigationFontColor: navigationFontColor.settingValue || '#FFFF',
+        navigationIconSelectedColor:
+          navigationIconSelectedColor.settingValue || '#393939',
+      };
+      dispatch({ type: 'SET_THEME', payload });
+      dispatch({
+        type: 'DATA_SETTING_ORDERING',
+        payload: data && data.settings,
+      });
+      dispatch(setData(outletSelection, 'OUTLET_SELECTION'));
+    }
+    return data;
   };
 }
 
@@ -421,13 +419,8 @@ function processAddCart(defaultOutlet, selectedItem) {
 
 function updateCartInfo(payload) {
   return async (dispatch) => {
+    await OrderingService.api('POST', payload, 'cart/updateCartInfo', 'Bearer');
     try {
-      await OrderingService.api(
-        'POST',
-        payload,
-        'cart/updateCartInfo',
-        'Bearer'
-      );
       console.log('in');
     } catch (e) {
       console.log(e);
@@ -672,6 +665,7 @@ function checkOfflineCart() {
         });
 
         await dispatch(addCart(payload));
+
         await dispatch(getCart());
 
         localStorage.removeItem(`${config.prefix}_offlineCart`);
@@ -684,30 +678,30 @@ function checkOfflineCart() {
 
 export const OrderAction = {
   addCart,
-  buildCart,
-  cartUpdate,
-  changeOrderingMode,
-  checkOfflineCart,
-  deleteCart,
-  getCalculateFee,
   getCart,
-  getCartCompleted,
-  getCartPending,
-  getProvider,
-  getSettingOrdering,
-  getTimeSlot,
-  moveCart,
-  processAddCart,
-  processRemoveCart,
-  processUpdateCart,
-  setData,
-  shareURL,
-  submitAndPay,
-  submitBasket,
-  submitMembership,
-  submitOrdering,
-  submitSettle,
-  submitTakeAway,
+  checkOfflineCart,
   updateCart,
+  processAddCart,
+  processUpdateCart,
+  processRemoveCart,
+  deleteCart,
+  submitBasket,
+  submitOrdering,
+  submitTakeAway,
+  getProvider,
+  getCalculateFee,
+  submitSettle,
+  getCartPending,
+  getCartCompleted,
+  cartUpdate,
+  shareURL,
+  setData,
+  submitAndPay,
+  changeOrderingMode,
+  buildCart,
+  getSettingOrdering,
+  moveCart,
+  getTimeSlot,
+  submitMembership,
   updateCartInfo,
 };

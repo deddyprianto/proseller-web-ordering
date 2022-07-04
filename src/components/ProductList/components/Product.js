@@ -11,7 +11,8 @@ import Box from '@mui/material/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
@@ -45,23 +46,21 @@ const mapDispatchToProps = (dispatch) => ({
 
 const Product = ({ item, ...props }) => {
   const [width] = useWindowSize();
-  const gadgetScreen = 600 > width;
+
+  const isUnavailable = item?.product?.orderingStatus === 'UNAVAILABLE';
 
   const useStyles = makeStyles({
     image: {
       display: 'flex',
       justifyContent: 'center',
-      width: 180,
-      height: 'auto',
-      alignItems: 'center',
-      padding: 0,
-      marginRight: 5,
+      height: 100,
+      filter: isUnavailable ? 'grayscale(90%)' : '',
     },
     imageSize: {
-      height: gadgetScreen ? 75 : 180,
-      width: 'auto',
-      minWidth: gadgetScreen ? 75 : 180,
+      height: 600 > width ? 80 : 100,
+      minWidth: 600 > width ? 80 : 100,
       borderRadius: 5,
+      width: 80,
     },
     typographyProductGroup: {
       fontSize: 16,
@@ -73,75 +72,73 @@ const Product = ({ item, ...props }) => {
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
-      color: props.color.font,
-      textAlign: 'start',
-      width: gadgetScreen && 200,
+      color: isUnavailable ? '#8A8D8E' : props.color.font,
     },
     price: {
       paddingBottom: 6,
       marginTop: 10,
-      fontSize: 14,
-      lineHeight: '17px',
-      fontWeight: 600,
-      color: props.color.font,
+      fontStyle: 'normal',
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '18px',
+      color: isUnavailable ? 'red' : props.color.font,
     },
     quantity: {
-      fontSize: 14,
-      lineHeight: '17px',
+      fontSize: '7.5px',
       fontWeight: 600,
-      paddingRight: 4,
-      color: props.color.primary,
+      color: props.color.textButtonColor,
+      backgroundColor: props.color.primary,
+      height: '17px',
+      lineHeight: '9px',
+      width: '17px',
+      borderRadius: '20%',
+      marginRight: 4,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     item: {
-      padding: 10,
+      padding: 5,
       display: 'flex',
-      alignItems: 'start',
       cursor: 'pointer',
-      textTransform: 'none',
-      minWidth: '100%',
-      height: 'auto',
-      justifyContent: 'start',
     },
     description: {
-      maxHeight: 70,
       whiteSpace: 'pre-line',
-      fontSize: 10,
       marginBottom: 0,
-      textAlign: 'start',
-      color: props.color.font,
-      width: gadgetScreen && 200,
+      fontWeight: 500,
+      fontSize: '12px',
+      color: isUnavailable ? 'red' : props.color.font,
+      display: '-webkit-box',
+      WebkitLineClamp: 3,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
     },
     button: {
-      float: 'left',
       borderRadius: 5,
-      width: 90,
-      height: gadgetScreen ? 26 : 40,
-      paddingLeft: 5,
-      paddingRight: 5,
-      backgroundColor: props.color.primary,
+      backgroundColor: isUnavailable ? '#D0D0D0' : props.color.primary,
       '&:hover': {
         color: '#000000',
         backgroundColor: props.color.primary,
       },
+      height: '25px',
+      width: width > 600 ? 100 : 80,
+      display: 'flex',
+      // marginTop: 600 > width ? 100 : 0,
+      marginTop: width > 600 ? 10 : 0,
     },
     textButton: {
       color: '#FFFFFF',
-      fontSize: 12,
-      fontWeight: 600,
       textTransform: 'none',
-    },
-    textUnavailable: {
-      fontSize: 12,
-      fontWeight: 600,
-      color: props.color.font,
-      textAlign: 'start',
+      fontWeight: 700,
+      fontSize: '10px',
+      lineHeight: '13px',
     },
     itemBody: {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
       height: 'auto',
-      minHeight: gadgetScreen ? 75 : 180,
+      maxHeight: 180,
       width: '100%',
     },
     bold: {
@@ -151,19 +148,49 @@ const Product = ({ item, ...props }) => {
       marginTop: 10,
     },
     icon: {
-      height: 10,
-      width: 10,
+      height: 5,
+      width: 5,
       color: '#FFFFFF',
     },
-    name: { display: 'flex' },
-    priceAndButton: {
-      marginTop: 10,
+    name: {
+      display: 'flex',
+    },
+    box: {
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center',
-      width: gadgetScreen && 200,
+      height: '170px',
+      padding: '17px',
+      marginBottom: 5,
+    },
+    boxLeft: {
+      flexBasis: '85%',
+      marginRight: 15,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+    },
+    boxRight: {
+      textAlign: 'center',
+      flexBasis: '15%',
+
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      paddingBottom: 5,
+    },
+    disabledProduct: {
+      pointerEvents: 'none',
+      opacity: 0.4,
+      // filter: 'grayscale(90%)',
+    },
+    productNameText: {
+      fontStyle: 'normal',
+      fontWeight: 700,
+      fontSize: '12px',
+      lineHeight: '15px',
     },
   });
+
   const classes = useStyles();
 
   const [totalQty, setTotalQty] = useState(0);
@@ -256,29 +283,6 @@ const Product = ({ item, ...props }) => {
     }
   };
 
-  const renderPriceAndButton = () => {
-    if (item?.product?.orderingStatus === 'UNAVAILABLE') {
-      return (
-        <Typography className={classes.textUnavailable}>UNAVAILABLE</Typography>
-      );
-    }
-    return (
-      <div className={classes.priceAndButton}>
-        <Typography className={classes.price}>
-          {handleCurrency(item?.product?.retailPrice)}
-        </Typography>
-        <Button
-          className={classes.button}
-          startIcon={<CheckCircleOutlineIcon className={classes.icon} />}
-        >
-          <Typography className={classes.textButton}>
-            {totalQty ? 'update' : 'Add'}
-          </Typography>
-        </Button>
-      </div>
-    );
-  };
-
   const renderGroupProducts = () => {
     return (
       <div className={classes.item}>
@@ -307,7 +311,7 @@ const Product = ({ item, ...props }) => {
   };
 
   return (
-    <div>
+    <div className={isUnavailable ? classes.disabledProduct : ''}>
       {isOpenAddModal && (
         <ProductAddModal
           open={isOpenAddModal}
@@ -330,50 +334,79 @@ const Product = ({ item, ...props }) => {
         sx={{
           boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
           border: '1px solid rgba(128, 128, 128, 0.5)',
+          borderRadius: '16px',
+          backgroundColor: '#F2F2F2',
         }}
+        className={classes.box}
       >
         {item?.itemType === 'GROUP' || item?.itemType === 'CATEGORY' ? (
           renderGroupProducts()
         ) : (
-          <Button
-            className={classes.item}
-            disabled={item?.product?.orderingStatus === 'UNAVAILABLE'}
-            onClick={() => {
-              if (totalQty) {
-                handleOpenUpdateModal();
-              } else {
-                handleOpenAddModal();
-              }
-            }}
-          >
-            <div className={classes.image}>
-              <img
-                className={classes.imageSize}
-                src={renderImageProduct(item)}
-                alt={item?.product?.name || ''}
-                title={item?.product?.name}
-              />
-            </div>
-            <div className={classes.itemBody}>
-              <div>
-                <div className={classes.name}>
-                  {renderQuantityProduct()}
-                  <Typography className={classes.typography}>
-                    {item?.product?.name}
-                  </Typography>
-                </div>
-                <Typography
-                  paragraph
-                  noWrap
-                  gutterBottom={false}
-                  className={classes.description}
-                >
-                  {item?.product?.description}
+          <>
+            <div className={classes.boxLeft}>
+              <div className={classes.name}>
+                {renderQuantityProduct()}
+                <Typography className={classes.productNameText}>
+                  {item?.product?.name}
                 </Typography>
               </div>
-              {renderPriceAndButton()}
+              <Typography
+                paragraph
+                noWrap
+                gutterBottom={false}
+                className={classes.description}
+              >
+                {item?.product?.description}
+              </Typography>
+              <Typography className={classes.price}>
+                {isUnavailable
+                  ? 'Sold Out'
+                  : handleCurrency(item?.product?.retailPrice)}
+              </Typography>
             </div>
-          </Button>
+            <div className={classes.boxRight}>
+              <div className={classes.image}>
+                <img
+                  className={classes.imageSize}
+                  src={renderImageProduct(item)}
+                  alt={item?.product?.name || ''}
+                  title={item?.product?.name}
+                />
+              </div>
+              <Button
+                className={classes.button}
+                startIcon={
+                  totalQty ? (
+                    <EditIcon
+                      className={classes.icon}
+                      style={{
+                        fontSize: 12,
+                      }}
+                    />
+                  ) : (
+                    <AddIcon
+                      className={classes.icon}
+                      style={{
+                        fontSize: 15,
+                      }}
+                    />
+                  )
+                }
+                onClick={() => {
+                  if (totalQty) {
+                    handleOpenUpdateModal();
+                  } else {
+                    handleOpenAddModal();
+                  }
+                }}
+                disabled={isUnavailable}
+              >
+                <Typography className={classes.textButton}>
+                  {totalQty ? 'Update' : 'Add'}
+                </Typography>
+              </Button>
+            </div>
+          </>
         )}
       </Box>
     </div>

@@ -12,9 +12,27 @@ import 'swiper/swiper.scss';
 import 'swiper/modules/navigation/navigation.scss'; // Navigation module
 import 'swiper/modules/pagination/pagination.scss'; // Pagination module
 
-import SwiperCore, { Pagination, Navigation } from 'swiper';
+import style from './pagination.scss';
+import SwiperCore, { Pagination, Navigation, Autoplay } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
+
+const styles = {
+  swiper: {
+    '--swiper-navigation-color': '#DCDCDC',
+    '--swiper-pagination-color': '#DCDCDC',
+    '--swiper-pagination-bullet-size': '6px',
+    '--swiper-pagination-bullet-width': '6px',
+    '--swiper-pagination-bullet-height': '6px',
+    '--swiper-pagination-bullet-vertical-gap': '2em',
+    '--swiper-pagination-bullet-active-width': '20px',
+    marginTop: '7em',
+    display: 'flex',
+    alignItems: 'center',
+    height: 'auto',
+    marginBottom: '1em',
+  },
+};
 
 const Banner = () => {
   const [banners, setBanners] = useState([]);
@@ -45,42 +63,62 @@ const Banner = () => {
           to={`/promotions-detail/${promotionId}`}
           rel='noopener noreferrer'
         >
-          <img src={item.defaultImageURL} alt={item.name} width='100%' />
+          <img
+            src={item.defaultImageURL}
+            alt={item.name}
+            width='100%'
+            height={300}
+            style={{
+              borderRadius: 10,
+            }}
+          />
         </Link>
       );
+    } else if (item.url) {
+      return (
+        <a href={item.url} target='_blank' rel='noopener noreferrer'>
+          <img src={item.defaultImageURL} alt={item.name} width='100%' />
+        </a>
+      );
     } else {
-      return <img src={item.defaultImageURL} alt={item.name} width='100%' />;
+      return (
+        <img
+          src={item.defaultImageURL}
+          alt={item.name}
+          width='100%'
+          height={300}
+          style={{
+            borderRadius: 10,
+          }}
+        />
+      );
     }
   };
 
   return (
-    <Swiper
-      style={{
-        '--swiper-navigation-color': '#DCDCDC	',
-        '--swiper-pagination-color': '#DCDCDC	',
-        '--swiper-pagination-bullet-vertical-gap': '2em',
-        marginTop: '5.5em',
-        paddingTop: '1rem',
-        paddingBottom: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-      slidesPerView={1}
-      spaceBetween={30}
-      loop
-      autoplay={{
-        delay: 2500,
-        disableOnInteraction: true,
-      }}
-      pagination={{
-        clickable: true,
-      }}
-      navigation
-    >
-      {banners.map((item, index) => {
-        return <SwiperSlide key={index}>{renderBannerItem(item)}</SwiperSlide>;
-      })}
-    </Swiper>
+    <div className={style.sliderWrapper}>
+      <Swiper
+        modules={[Autoplay]}
+        style={styles.swiper}
+        slidesPerView={1}
+        spaceBetween={30}
+        loop
+        autoplay={{
+          delay: 3500,
+          disableOnInteraction: false,
+        }}
+        pagination={{
+          clickable: true,
+        }}
+        autoHeight
+      >
+        {banners.map((item, index) => {
+          return (
+            <SwiperSlide key={index}>{renderBannerItem(item)}</SwiperSlide>
+          );
+        })}
+      </Swiper>
+    </div>
   );
 };
 

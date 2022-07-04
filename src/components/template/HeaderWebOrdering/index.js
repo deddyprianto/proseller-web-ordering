@@ -25,6 +25,11 @@ import styles from './styles.module.css';
 import OrderingMode from './OrderingMode';
 import Typography from '@mui/material/Typography';
 
+import cart from '../../../../src/assets/images/cart.svg';
+
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import PlaceIcon from '@mui/icons-material/Place';
+
 const useStyles = () => ({
   header: {
     '@media (max-width: 980px)': {
@@ -65,10 +70,23 @@ const useStyles = () => ({
 
 const boxStyle = {
   outletWarpStyle: {
-    width: { xs: 200, md: 400, lg: 200 },
-    overflowX: 'auto',
-    whiteSpace: 'nowrap',
-    my: '0.5rem',
+    // width: { xs: 200, md: 400, lg: 200 },
+    // overflowX: 'auto',
+    // whiteSpace: 'nowrap',
+    // my: '0.5rem',
+    marginLeft: 0.8,
+    marginRight: 0.8,
+  },
+};
+
+const badgeStyles = {
+  badge: {
+    '& .MuiBadge-badge': {
+      fontSize: 10,
+      fontWeight: 'bold',
+      marginRight: 0.5,
+      marginTop: 0.8,
+    },
   },
 };
 
@@ -332,10 +350,7 @@ class Header extends Component {
     } else {
       return (
         <div className={useStyles.outletStyle}>
-          <LocationOnOutlinedIcon
-            className='color'
-            style={{ fontSize: 22, marginBottom: -5 }}
-          />
+          <LocationOnOutlinedIcon className='color' style={{ fontSize: 22 }} />
           <span className='color' style={{ fontSize: 12 }}>
             <select
               className={`${styles.outletNameSelect} color`}
@@ -407,6 +422,7 @@ class Header extends Component {
                 <Typography
                   variant='h5'
                   fontWeight={700}
+                  fontSize={12}
                   className={clsx([classes.outletText, 'color'])}
                 >
                   {this.props.defaultOutlet.name}
@@ -476,9 +492,9 @@ class Header extends Component {
             {/* logo & outlet */}
             <Grid
               item
-              xs={6}
-              sm={6}
-              md={6}
+              xs={10}
+              sm={10}
+              md={10}
               lg={3}
               order={{ lg: 1, xs: 2, sm: 2, md: 2 }}
               container
@@ -507,9 +523,25 @@ class Header extends Component {
                   </Link>
                 </Grid>
                 <Grid item>
-                  {this.state.showOutletSelection && defaultOutlet.name !== '-'
-                    ? displayOutletInfo(outlets, defaultOutlet)
-                    : null}
+                  {this.state.showOutletSelection &&
+                  defaultOutlet.name !== '-' ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 15,
+                        // marginBottom: 15,
+                        color: this.props.color.primary,
+                      }}
+                    >
+                      <PlaceIcon />
+                      <Typography>
+                        {displayOutletInfo(outlets, defaultOutlet)}
+                      </Typography>
+                      <ChevronRightIcon />
+                    </div>
+                  ) : null}
                   {this.state.showOrderingMode && (
                     <div className={styles.outlet}>
                       {this.props.orderingMode === 'DINEIN' && (
@@ -555,9 +587,9 @@ class Header extends Component {
             {/* nav */}
             <Grid
               item
-              xs={3}
-              sm={3}
-              md={2}
+              xs={1}
+              sm={1}
+              md={1}
               lg={7}
               order={{ xs: 1, sm: 1, md: 1 }}
               container
@@ -597,7 +629,7 @@ class Header extends Component {
                   onClick={() => this.handleNavigation()}
                   color={this.props.color.font}
                 >
-                  <FontAwesomeIcon icon={faBars} size='25x' />
+                  <FontAwesomeIcon icon={faBars} size='lg' />
                 </Box>
 
                 <div
@@ -783,9 +815,9 @@ class Header extends Component {
             {/* cart */}
             <Grid
               item
-              xs={3}
-              sm={3}
-              md={2}
+              xs={1}
+              sm={1}
+              md={1}
               lg={2}
               order={{ xs: 3, sm: 3, md: 3 }}
               container
@@ -801,25 +833,27 @@ class Header extends Component {
             >
               {enableOrdering && (
                 <Link id='cart-icon' to='/cart'>
-                  <div
-                    style={{
-                      border: `1px solid ${this.props.color.font}`,
-                      borderRadius: 40,
-                      height: 40,
-                      width: 40,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      color: this.props.color.font,
+                  <Badge
+                    color='info'
+                    badgeContent={basketLength}
+                    // sx={badgeStyles.badge}
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        fontSize: 10,
+                        fontWeight: 'bold',
+                        marginRight: 0.5,
+                        marginTop: 0.8,
+                        backgroundColor: this.props.color.primary,
+                      },
                     }}
-                    data-toggle='modal'
-                    data-target='#basket-modal'
                   >
-                    <Badge color='info' badgeContent={basketLength}>
-                      <FontAwesomeIcon icon={faShoppingBasket} />
-                    </Badge>
-                  </div>
+                    {/* <FontAwesomeIcon icon={faShoppingBasket} /> */}
+                    <img
+                      src={cart}
+                      alt='cart'
+                      style={{ width: 35, height: 35 }}
+                    />
+                  </Badge>
                 </Link>
               )}
             </Grid>

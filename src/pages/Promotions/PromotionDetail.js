@@ -15,7 +15,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Product from 'components/productList/components/Product';
+import Product from 'components/ProductList/components/Product';
 
 const PromotionDetail = () => {
   const { id } = useParams();

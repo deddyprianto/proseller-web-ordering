@@ -354,6 +354,18 @@ const Cart = ({ ...props }) => {
   };
 
   const handleDisabled = () => {
+    const someItemIsUnavailable = !props.basket?.details.every((item) => {
+      const itemIsUnavailable =
+        item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
+      const itemHasStock =
+        item.product?.currentStock && item.quantity > item.product.currentStock;
+      return itemIsUnavailable || !itemHasStock;
+    });
+
+    if (someItemIsUnavailable) {
+      return someItemIsUnavailable;
+    }
+
     if (props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY) {
       let isAllCompleted = false;
       if (selectTimeSlotAvailable) {
@@ -450,26 +462,55 @@ const Cart = ({ ...props }) => {
     }
   };
 
-  const renderPickupDateTime = () => {
-    if (!selectTimeSlotAvailable) {
-      return;
+  const renderDateTimeValue = () => {
+    if (!isEmptyObject(props.orderActionTimeSlot)) {
+      return (
+        <Box flexDirection='column'>
+          <Typography style={styles.typography}>
+            {props.orderActionDate}
+          </Typography>
+          <Typography style={styles.typography}>
+            {props.orderActionTimeSlot}
+          </Typography>
+        </Box>
+      );
+    } else {
+      return (
+        <Typography style={styles.typography}>Select Date & Time</Typography>
+      );
     }
-    if (
-      (props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
-        props.deliveryAddress &&
-        props.selectedDeliveryProvider) ||
-      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
-    ) {
+  };
+
+  const renderDateTime = () => {
+    const isStorePickUp =
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP &&
+      selectTimeSlotAvailable;
+
+    const isDelivery =
+      props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
+      props.deliveryAddress &&
+      props.selectedDeliveryProvider &&
+      selectTimeSlotAvailable;
+
+    const orderingModeLabel = isStorePickUp
+      ? 'Pickup Date & Time'
+      : 'Delivery Date & Time';
+
+    const orderingModeWarning = !isEmptyObject(props?.orderActionTimeSlot)
+      ? null
+      : isStorePickUp
+      ? renderWarning('Pickup Date & Time.')
+      : renderWarning('Delivery Date & Time.');
+
+    if (isDelivery || isStorePickUp) {
       return (
         <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
             <Box flexDirection='column'>
               <Typography style={styles.subTotal}>
-                Pickup Date & Time
+                {orderingModeLabel}
               </Typography>
-              {props?.orderActionTimeSlot
-                ? null
-                : renderWarning('Pickup Date & Time.')}
+              {orderingModeWarning}
             </Box>
             <Button
               style={styles.mode}
@@ -479,20 +520,7 @@ const Cart = ({ ...props }) => {
                 setOpenTimeSlot(true);
               }}
             >
-              {!_.isEmpty(props.orderActionTimeSlot) ? (
-                <Box flexDirection='column'>
-                  <Typography style={styles.typography}>
-                    {props.orderActionDate}
-                  </Typography>
-                  <Typography style={styles.typography}>
-                    {props.orderActionTimeSlot}
-                  </Typography>
-                </Box>
-              ) : (
-                <Typography style={styles.typography}>
-                  Select Date & Time
-                </Typography>
-              )}
+              {renderDateTimeValue()}
             </Button>
           </div>
         </Paper>
@@ -720,7 +748,7 @@ const Cart = ({ ...props }) => {
             <ProductCartList />
             {renderOrderingMode()}
             {renderDeliveryAddress()}
-            {renderPickupDateTime()}
+            {renderDateTime()}
             {renderSubTotal()}
           </div>
           {renderGrandTotal()}
@@ -735,7 +763,7 @@ const Cart = ({ ...props }) => {
         <div style={styles.cartGridRight}>
           {renderOrderingMode()}
           {renderDeliveryAddress()}
-          {renderPickupDateTime()}
+          {renderDateTime()}
           {renderSubTotal()}
           {renderGrandTotal()}
         </div>

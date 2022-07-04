@@ -59,7 +59,7 @@ const Loading = ({ loadingType }) => {
   switch (loadingType) {
     case 'NestedList':
       return (
-        <Box sx={{ width: '100%', textAlign: 'center' }}>
+        <Box sx={{ width: '100%', textAlign: 'center', marginTop: 5 }}>
           <NestedList viewBox='10 -10 350 250' />
         </Box>
       );
