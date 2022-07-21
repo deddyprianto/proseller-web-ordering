@@ -10,7 +10,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import config from '../../config';
 
 const HeaderEmenu = loadable(() => import('./HeaderEmenu'));
-const HeaderWebOrdering = loadable(() => import('./HeaderWebOrdering'));
+const HeaderWebOrdering = loadable(() => import('./headerWebOrdering'));
 const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
@@ -74,6 +74,7 @@ class Layout extends Component {
     if (isLoggedIn) {
       Promise.all([
         this.props.dispatch(InboxAction.getBroadcast({ take: 5, skip: 0 })),
+        this.props.dispatch(HistoryAction.getBasketPending()),
       ]);
     }
 
