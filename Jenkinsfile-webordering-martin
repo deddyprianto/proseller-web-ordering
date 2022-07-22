@@ -1,9 +1,10 @@
 pipeline {
     agent any
     stages {
-        stage('NPM Install') {
+        stage('Installing Package') {
             steps {
-                sh 'npm install'
+                sh 'yarn add node-sass'
+                sh 'yarn'
             }
         }
         stage('Build & Deploy') {

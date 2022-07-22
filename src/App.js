@@ -58,6 +58,8 @@ const App = (props) => {
   } = props;
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
+  console.log('Add New Deployment Script');
+
   const [enableOrdering, setEnableOrdering] = useState(false);
   const domainNameExist = props.domainName && props.domainName.length > 0;
   const initialDomainNameExists = domainNameExist;
