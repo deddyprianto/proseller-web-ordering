@@ -3,8 +3,6 @@ pipeline {
     stages {
         stage('Installing Package') {
             steps {
-                sh 'rm package-lock.json'
-                sh 'rm yarn.lock'
                 sh 'yarn'
             }
         }
