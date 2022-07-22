@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+    stages {
+        stage('NPM Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Build & Deploy') {
+            steps {
+                withAWS(credentials: 'aws-demo', region: 'ap-southeast-1') {
+                    sh 'npm run webordering.proseller-demo.com --silent'
+                }
+            }
+        }
+    }
+}
