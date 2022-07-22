@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Installing Package') {
             steps {
-                sh 'yarn add node-sass'
+                sh 'yarn add node-sass@4.14.1'
                 sh 'yarn'
             }
         }
