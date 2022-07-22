@@ -4,7 +4,7 @@ pipeline {
         stage('Installing Package') {
             steps {
                 sh 'rm package-lock.json'
-                sh 'yarn add node-sass@4.14.1'
+                sh 'rm yarn.lock'
                 sh 'yarn'
             }
         }
