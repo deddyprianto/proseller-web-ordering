@@ -15,8 +15,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import HistoryIcon from '@mui/icons-material/History';
 import MailIcon from '@mui/icons-material/Mail';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import { useSelector } from 'react-redux';
 
-const useStyles = () => ({
+const useStyles = (theme) => ({
   icon: {
     color: 'black',
     cursor: 'pointer',
@@ -26,7 +27,7 @@ const useStyles = () => ({
   box: {
     width: 250,
     height: '100%',
-    backgroundColor: '#8A8D8E',
+    backgroundColor: theme.navigationColor,
   },
   listIcon: {
     color: 'white',
@@ -40,7 +41,8 @@ const useStyles = () => ({
 });
 
 const Sidebar = () => {
-  const styles = useStyles();
+  const theme = useSelector((state) => state.theme.color);
+  const styles = useStyles(theme);
   const [open, setOpen] = React.useState(false);
   const handleUpdateOpen = (open) => {
     setOpen(open);
