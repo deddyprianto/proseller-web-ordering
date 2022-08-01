@@ -1,6 +1,4 @@
-// CaseID   Name    date        description
-// 0001     Troy    18/08/2021  Remove Show Link|show all description
-
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { Col, Row } from 'reactstrap';
 import Shimmer from 'react-shimmer-effect';
@@ -47,7 +45,9 @@ class OutletSelection extends Component {
       if (cart && cart.data) {
         await this.setState({ cart: cart.data });
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
     await this.setState({ outlets: response });
     const showMore = response.reduce((acc, outlet) => {
       return {
@@ -67,10 +67,10 @@ class OutletSelection extends Component {
         this.state.cart.outlet.id !== outlet.id
       ) {
         Swal.fire({
-          title: `Change Outlet ?`,
+          title: 'Change Outlet ?',
           text: 'You will delete your cart at the previous outlet.',
           icon: 'warning',
-          confirmButtonText: `Sure`,
+          confirmButtonText: 'Sure',
           showCancelButton: true,
         }).then(async (data) => {
           if (data.isConfirmed) {
@@ -82,7 +82,9 @@ class OutletSelection extends Component {
       } else {
         this.handleSelectOutlet(outlet);
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   handleSelectOutlet = async (outlet) => {
@@ -109,7 +111,9 @@ class OutletSelection extends Component {
     await this.setState({ loadingShow: false });
     try {
       this.props.history.goBack();
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   handleShowMoreClick = async (id) => {
@@ -125,8 +129,9 @@ class OutletSelection extends Component {
 
   render() {
     let { loadingShow, outlets } = this.state;
+    const getLogo = this.props.getSpaceLogo;
     return (
-      <div className='' style={{ marginTop: 135, marginBottom: 50 }}>
+      <div style={{ marginTop: !getLogo ? 70 : 100, marginBottom: 50 }}>
         <div id='primary' className='content-area'>
           <div className=''>
             <main
@@ -177,7 +182,7 @@ class OutletSelection extends Component {
                             }}
                           >
                             <div
-                              className={'customer-group-name'}
+                              className='customer-group-name'
                               style={{
                                 fontWeight: 'bold',
                                 fontSize: 14,
@@ -310,12 +315,13 @@ class OutletSelection extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
     orderingModes: state.order.orderingModes,
     orderingMode: state.order.orderingMode,
     setting: state.order.orderingSetting,
+    getSpaceLogo: state.getSpaceLogo.logo,
   };
 };
 
