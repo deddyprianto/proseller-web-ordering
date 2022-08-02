@@ -15,6 +15,7 @@ import theme from './ThemeReducer';
 import voucher from './VoucherReducer';
 import payment from './PaymentReducer';
 import svc from './SVCReducer';
+import getSpaceLogo from './LogoReducer';
 
 const rootReducer = combineReducers({
   auth,
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   voucher,
   payment,
   svc,
+  getSpaceLogo,
 });
 
 export default rootReducer;
