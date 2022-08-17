@@ -116,7 +116,7 @@ function getDomainName() {
     const domainName =
       window.location.hostname !== 'localhost'
         ? window.location.hostname
-        : 'ordering-homesharmony-demo.proseller.io';
+        : 'ordering-happywalker-demo.proseller.io';
     // : 'ordering-acemart-demo.proseller.io';
     // 'ordering-qa-retail.proseller-demo.com';
     try {
