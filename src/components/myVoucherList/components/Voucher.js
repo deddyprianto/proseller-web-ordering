@@ -214,11 +214,13 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const handleSpecificProductCondition = () => {
-    const isVoucherProduct = props.basket?.details.find(
-      (detail) => detail.product.id === item.appliedItems[0].value
-    );
+    const isVoucherProduct = item.appliedItems.filter((appliedItem) => {
+      return props.basket?.details.find(
+        (detail) => detail.product.id === appliedItem.value
+      );
+    });
 
-    if (!isVoucherProduct) {
+    if (isEmptyArray(isVoucherProduct)) {
       setMessage('Spesific Product required');
       handleOpenModal();
     }
