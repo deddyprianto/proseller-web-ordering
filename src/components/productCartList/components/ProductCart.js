@@ -259,11 +259,11 @@ const ProductCart = ({ item, ...props }) => {
   };
 
   const renderPrice = () => {
-    if (!isEmptyArray(item.promotions)) {
+    if (item?.totalDiscAmount) {
       return (
         <div style={styles.rootPrice}>
           <Typography style={styles.price}>
-            {handleCurrency(item?.amountAfterDisc)}
+            {handleCurrency(item?.totalDiscAmount)}
           </Typography>
           <Typography style={styles.priceDiscount}>
             {handleCurrency(item?.grossAmount)}
