@@ -159,6 +159,14 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const getPricesByCategory = () => {
     let result = [];
+    const specificCategory = handleSpecificCategoryCondition();
+
+    if (!isEmptyArray(specificCategory)) {
+      specificCategory.forEach((item) => {
+        result.push(item.unitPrice);
+      });
+      return result;
+    }
 
     if (!isEmptyArray(basket)) {
       basket.forEach((item) => {
@@ -168,13 +176,13 @@ const Voucher = ({ item, quantity, ...props }) => {
 
     return result;
   };
+
   const handleSpecificProductCondition = () => {
     const isVoucherProduct = props.basket?.details.filter((detail) => {
       return item.appliedItems.find(
         (appliedItem) => appliedItem.value === detail.product.id
       );
     });
-    console.log(item);
     if (isEmptyArray(isVoucherProduct)) {
       setMessage('Spesific Product required');
       handleOpenModal();
@@ -234,12 +242,14 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const handleSpecificCategoryCondition = () => {
-    const isVoucherCategory = props.basket?.details.find(
-      (detail) => detail.product.categoryID === item.appliedItems[0].value
-    );
+    const isVoucherCategory = props.basket?.details.filter((detail) => {
+      return item.appliedItems.find(
+        (appliedItem) => appliedItem.value === detail.product.categoryID
+      );
+    });
 
     if (!isVoucherCategory) {
-      setMessage('Spesific Category required');
+      setMessage('Specific Category required');
       handleOpenModal();
     }
     return isVoucherCategory || false;
@@ -331,6 +341,24 @@ const Voucher = ({ item, quantity, ...props }) => {
     return result;
   };
 
+  const handleSpecificCategories = ({ appliedItems, value }) => {
+    let result = 0;
+    let prices = getPricesByCategory(appliedItems);
+
+    if (item.applyToLowestItem) {
+      const min = Math.min(prices);
+      prices = [min];
+    }
+
+    prices.forEach((price) => {
+      const percentageResult = (price * value) / 100;
+      const amount = handleCapAmount(percentageResult);
+      result = result + amount;
+    });
+
+    return result;
+  };
+
   const handleDiscount = ({ type, value, appliedTo, appliedItems }) => {
     let discount = 0;
     if (type === 'discAmount') {
@@ -348,15 +376,17 @@ const Voucher = ({ item, quantity, ...props }) => {
 
     if (!isEmptyArray(appliedItems) && appliedTo === 'PRODUCT') {
       const amount = handleSpecificProducts({ appliedItems, value });
-      console.log('first', amount);
       discount = amount;
     }
 
+    if (!isEmptyArray(appliedItems) && appliedTo === 'CATEGORY') {
+      const amount = handleSpecificCategories({ appliedItems, value });
+      discount = amount;
+    }
     return discount;
   };
 
   const handleSelectVoucher = () => {
-    console.log('dedd', item);
     const isTemsAndConditions = handleTermsAndConditions(item);
     if (isTemsAndConditions) {
       let result = [];
