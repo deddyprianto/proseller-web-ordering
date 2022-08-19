@@ -15,6 +15,7 @@ import { isEmptyArray } from 'helpers/CheckEmpty';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 
 import MyVoucherWarningModal from './MyVoucherWarningModal';
+import PicVoucherDefault from '../../../assets/images/voucher-icon.png';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -82,7 +83,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     },
 
     iconDescription: {
-      marginTop: 2,
+      paddingTop: '7px',
       marginRight: 2,
       fontSize: 12,
       display: 'flex',
@@ -96,9 +97,6 @@ const Voucher = ({ item, quantity, ...props }) => {
       color: props.color.font,
     },
     image: {
-      height: '100%',
-
-      width: '100%',
       maxWidth: gadgetScreen ? 120 : 160,
       borderBottomLeftRadius: 19,
       borderTopLeftRadius: 19,
@@ -123,6 +121,7 @@ const Voucher = ({ item, quantity, ...props }) => {
       WebkitBoxOrient: 'vertical',
       overflow: 'hidden',
       minHeight: 56,
+      paddingTop: '5px',
     },
     typographyDiscount: {
       color: props.color.primary,
@@ -364,7 +363,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     } else if (props?.color?.productPlaceholder) {
       return props.color.productPlaceholder;
     } else {
-      return config.image_placeholder;
+      return PicVoucherDefault;
     }
   };
 
