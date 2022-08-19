@@ -168,17 +168,37 @@ const Voucher = ({ item, quantity, ...props }) => {
 
     return result;
   };
+  const handleSpecificProductCondition = () => {
+    const isVoucherProduct = props.basket?.details.filter((detail) => {
+      return item.appliedItems.find(
+        (appliedItem) => appliedItem.value === detail.product.id
+      );
+    });
+    console.log(item);
+    if (isEmptyArray(isVoucherProduct)) {
+      setMessage('Spesific Product required');
+      handleOpenModal();
+    }
+    return isVoucherProduct || false;
+  };
 
   const getPricesByProduct = () => {
+    const specificProducts = handleSpecificProductCondition();
     let result = [];
 
+    if (!isEmptyArray(specificProducts)) {
+      specificProducts.forEach((item) => {
+        result.push(item.unitPrice);
+      });
+      return result;
+    }
     if (!isEmptyArray(basket)) {
       basket.forEach((item) => {
         result.push(item.unitPrice);
       });
-    }
 
-    return result;
+      return result;
+    }
   };
 
   const getPrices = () => {
@@ -211,20 +231,6 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
 
     return isMinPurchaseAmount;
-  };
-
-  const handleSpecificProductCondition = () => {
-    const isVoucherProduct = item.appliedItems.filter((appliedItem) => {
-      return props.basket?.details.find(
-        (detail) => detail.product.id === appliedItem.value
-      );
-    });
-
-    if (isEmptyArray(isVoucherProduct)) {
-      setMessage('Spesific Product required');
-      handleOpenModal();
-    }
-    return isVoucherProduct || false;
   };
 
   const handleSpecificCategoryCondition = () => {
@@ -309,6 +315,21 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
     return discount;
   };
+  const handleSpecificProducts = ({ appliedItems, value }) => {
+    let result = 0;
+    let prices = getPricesByProduct(appliedItems);
+    if (item.applyToLowestItem) {
+      const min = Math.min(...prices);
+      prices = [min];
+    }
+    prices.forEach((price) => {
+      const percentageResult = (price * value) / 100;
+      const amount = handleCapAmount(percentageResult);
+      result = result + amount;
+    });
+
+    return result;
+  };
 
   const handleDiscount = ({ type, value, appliedTo, appliedItems }) => {
     let discount = 0;
@@ -325,10 +346,17 @@ const Voucher = ({ item, quantity, ...props }) => {
       discount = amount;
     }
 
+    if (!isEmptyArray(appliedItems) && appliedTo === 'PRODUCT') {
+      const amount = handleSpecificProducts({ appliedItems, value });
+      console.log('first', amount);
+      discount = amount;
+    }
+
     return discount;
   };
 
   const handleSelectVoucher = () => {
+    console.log('dedd', item);
     const isTemsAndConditions = handleTermsAndConditions(item);
     if (isTemsAndConditions) {
       let result = [];
