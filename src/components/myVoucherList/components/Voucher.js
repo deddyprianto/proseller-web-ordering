@@ -159,6 +159,14 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const getPricesByCategory = () => {
     let result = [];
+    const specificCategory = handleSpecificCategoryCondition();
+
+    if (!isEmptyArray(specificCategory)) {
+      specificCategory.forEach((item) => {
+        result.push(item.unitPrice);
+      });
+      return result;
+    }
 
     if (!isEmptyArray(basket)) {
       basket.forEach((item) => {
@@ -169,16 +177,36 @@ const Voucher = ({ item, quantity, ...props }) => {
     return result;
   };
 
+  const handleSpecificProductCondition = () => {
+    const isVoucherProduct = props.basket?.details.filter((detail) => {
+      return item.appliedItems.find(
+        (appliedItem) => appliedItem.value === detail.product.id
+      );
+    });
+    if (isEmptyArray(isVoucherProduct)) {
+      setMessage('Spesific Product required');
+      handleOpenModal();
+    }
+    return isVoucherProduct || false;
+  };
+
   const getPricesByProduct = () => {
+    const specificProducts = handleSpecificProductCondition();
     let result = [];
 
+    if (!isEmptyArray(specificProducts)) {
+      specificProducts.forEach((item) => {
+        result.push(item.unitPrice);
+      });
+      return result;
+    }
     if (!isEmptyArray(basket)) {
       basket.forEach((item) => {
         result.push(item.unitPrice);
       });
-    }
 
-    return result;
+      return result;
+    }
   };
 
   const getPrices = () => {
@@ -213,27 +241,15 @@ const Voucher = ({ item, quantity, ...props }) => {
     return isMinPurchaseAmount;
   };
 
-  const handleSpecificProductCondition = () => {
-    const isVoucherProduct = item.appliedItems.filter((appliedItem) => {
-      return props.basket?.details.find(
-        (detail) => detail.product.id === appliedItem.value
+  const handleSpecificCategoryCondition = () => {
+    const isVoucherCategory = props.basket?.details.filter((detail) => {
+      return item.appliedItems.find(
+        (appliedItem) => appliedItem.value === detail.product.categoryID
       );
     });
 
-    if (isEmptyArray(isVoucherProduct)) {
-      setMessage('Spesific Product required');
-      handleOpenModal();
-    }
-    return isVoucherProduct || false;
-  };
-
-  const handleSpecificCategoryCondition = () => {
-    const isVoucherCategory = props.basket?.details.find(
-      (detail) => detail.product.categoryID === item.appliedItems[0].value
-    );
-
     if (!isVoucherCategory) {
-      setMessage('Spesific Category required');
+      setMessage('Specific Category required');
       handleOpenModal();
     }
     return isVoucherCategory || false;
@@ -309,6 +325,39 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
     return discount;
   };
+  const handleSpecificProducts = ({ appliedItems, value }) => {
+    let result = 0;
+    let prices = getPricesByProduct(appliedItems);
+    if (item.applyToLowestItem) {
+      const min = Math.min(...prices);
+      prices = [min];
+    }
+    prices.forEach((price) => {
+      const percentageResult = (price * value) / 100;
+      const amount = handleCapAmount(percentageResult);
+      result = result + amount;
+    });
+
+    return result;
+  };
+
+  const handleSpecificCategories = ({ appliedItems, value }) => {
+    let result = 0;
+    let prices = getPricesByCategory(appliedItems);
+
+    if (item.applyToLowestItem) {
+      const min = Math.min(...prices);
+      prices = [min];
+    }
+
+    prices.forEach((price) => {
+      const percentageResult = (price * value) / 100;
+      const amount = handleCapAmount(percentageResult);
+      result = result + amount;
+    });
+
+    return result;
+  };
 
   const handleDiscount = ({ type, value, appliedTo, appliedItems }) => {
     let discount = 0;
@@ -325,6 +374,15 @@ const Voucher = ({ item, quantity, ...props }) => {
       discount = amount;
     }
 
+    if (!isEmptyArray(appliedItems) && appliedTo === 'PRODUCT') {
+      const amount = handleSpecificProducts({ appliedItems, value });
+      discount = amount;
+    }
+
+    if (!isEmptyArray(appliedItems) && appliedTo === 'CATEGORY') {
+      const amount = handleSpecificCategories({ appliedItems, value });
+      discount = amount;
+    }
     return discount;
   };
 

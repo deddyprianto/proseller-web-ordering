@@ -418,6 +418,7 @@ const Payment = ({ ...props }) => {
     totalPrice,
     props.basket,
     props.companyInfo,
+    selectedVouchers,
   ]);
 
   const handleOpenPointAddModal = () => {
