@@ -346,7 +346,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     let prices = getPricesByCategory(appliedItems);
 
     if (item.applyToLowestItem) {
-      const min = Math.min(prices);
+      const min = Math.min(...prices);
       prices = [min];
     }
 
