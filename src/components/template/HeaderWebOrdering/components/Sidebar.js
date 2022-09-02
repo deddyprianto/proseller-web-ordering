@@ -14,8 +14,11 @@ import ArrowBack from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import HistoryIcon from '@mui/icons-material/History';
 import MailIcon from '@mui/icons-material/Mail';
+import { Link } from 'react-router-dom';
+
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = (theme) => ({
   icon: {
@@ -41,12 +44,20 @@ const useStyles = (theme) => ({
 });
 
 const Sidebar = () => {
+  const history = useHistory();
   const theme = useSelector((state) => state.theme.color);
+  const { isLoggedIn } = useSelector((state) => state.auth);
   const styles = useStyles(theme);
   const [open, setOpen] = React.useState(false);
   const handleUpdateOpen = (open) => {
     setOpen(open);
   };
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.reload();
+    history.push('/');
+  };
+  console.log('dedd', isLoggedIn);
 
   return (
     <div>
@@ -89,10 +100,12 @@ const Sidebar = () => {
                 <ListItemIcon style={styles.listIcon}>
                   <LibraryBooksIcon sx={{ width: 20, height: 20 }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary='Menu'
-                  primaryTypographyProps={styles.primaryTypographyProps}
-                />
+                <Link to='/'>
+                  <ListItemText
+                    primary='Menu'
+                    primaryTypographyProps={styles.primaryTypographyProps}
+                  />
+                </Link>
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -100,10 +113,12 @@ const Sidebar = () => {
                 <ListItemIcon style={styles.listIcon}>
                   <PersonIcon sx={{ width: 20, height: 20 }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary='Profile'
-                  primaryTypographyProps={styles.primaryTypographyProps}
-                />
+                <Link to='/profile'>
+                  <ListItemText
+                    primary='Profile'
+                    primaryTypographyProps={styles.primaryTypographyProps}
+                  />
+                </Link>
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -111,10 +126,12 @@ const Sidebar = () => {
                 <ListItemIcon style={styles.listIcon}>
                   <HistoryIcon sx={{ width: 20, height: 20 }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary='History'
-                  primaryTypographyProps={styles.primaryTypographyProps}
-                />
+                <Link to='/history'>
+                  <ListItemText
+                    primary='History'
+                    primaryTypographyProps={styles.primaryTypographyProps}
+                  />
+                </Link>
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -122,10 +139,12 @@ const Sidebar = () => {
                 <ListItemIcon style={styles.listIcon}>
                   <MailIcon sx={{ width: 20, height: 20 }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary='Inbox'
-                  primaryTypographyProps={styles.primaryTypographyProps}
-                />
+                <Link to='/inbox'>
+                  <ListItemText
+                    primary='Inbox'
+                    primaryTypographyProps={styles.primaryTypographyProps}
+                  />
+                </Link>
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -133,22 +152,26 @@ const Sidebar = () => {
                 <ListItemIcon style={styles.listIcon}>
                   <ConfirmationNumberIcon sx={{ width: 20, height: 20 }} />
                 </ListItemIcon>
-                <ListItemText
-                  primary='Voucher'
-                  primaryTypographyProps={styles.primaryTypographyProps}
-                />
+                <Link to='/voucher'>
+                  <ListItemText
+                    primary='Voucher'
+                    primaryTypographyProps={styles.primaryTypographyProps}
+                  />
+                </Link>
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton
-                data-toggle='modal'
-                data-target='#login-register-modal'
+                onClick={isLoggedIn && handleLogout}
+                data-toggle={!isLoggedIn && 'modal'}
+                data-target={!isLoggedIn && '#login-register-modal'}
               >
                 <ListItemIcon style={styles.listIcon}>
                   <LoginIcon sx={{ width: 20, height: 20 }} />
                 </ListItemIcon>
+
                 <ListItemText
-                  primary='LogIn / SignUp'
+                  primary={isLoggedIn ? 'Logout' : 'LogIn / SignUp'}
                   primaryTypographyProps={styles.primaryTypographyProps}
                 />
               </ListItemButton>
