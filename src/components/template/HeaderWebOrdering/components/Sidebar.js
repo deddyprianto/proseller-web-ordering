@@ -57,7 +57,6 @@ const Sidebar = () => {
     window.location.reload();
     history.push('/');
   };
-  console.log('dedd', isLoggedIn);
 
   return (
     <div>
