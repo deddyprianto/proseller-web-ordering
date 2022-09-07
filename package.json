@@ -34,7 +34,7 @@
     "lodash": "^4.17.19",
     "lottie-react-web": "^2.2.2",
     "moment": "^2.27.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "4.14.1",
     "password-generation": "^1.1.0",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
@@ -97,13 +97,10 @@
     "cutbutchery-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://cutbutchery-webordering --acl public-read",
     "popejaithai-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://popejaithai-webordering --acl public-read",
     "staple-webordering": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 --profile prod sync build/ s3://staple-webordering --acl public-read",
-    "demo-qa": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 --profile demo sync build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
-    "demo-revamp": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 --profile demo sync build/ s3://qa-demo-revamp --acl public-read",
-    "martin-demo-retail": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 --profile demo sync build/ s3://martin-webordering --acl public-read",
-    "roy-demo-retail": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 --profile demo sync build/ s3://roy-webordering --acl public-read",
-    "webordering.proseller-demo.com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 sync --profile demo build/ s3://ew-demo-web-ordering-1-2 --acl public-read",
-    "webordering-demo.proseller-demo.io": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering-demo.proseller-demo.io react-scripts build && aws s3 sync --profile default build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
-    "webordering.proseller-dev.com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e dev react-scripts build && aws s3 sync --profile dev build/ s3://ew-dev-web-ordering-1-0 --acl public-read"
+    "webordering-martin": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 sync build/ s3://martin-webordering --acl public-read",
+    "webordering-roy": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 sync build/ s3://martin-webordering --acl public-read",
+    "webordering.proseller-demo.com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 sync build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
+    "webordering-demo.proseller.io": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering-demo.proseller.io react-scripts build && aws s3 sync build/ s3://ew-demo-web-ordering-1-2 --acl public-read"
   },
   "eslintConfig": {
     "extends": "react-app"

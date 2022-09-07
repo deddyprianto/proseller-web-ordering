@@ -225,6 +225,7 @@ const Cart = ({ ...props }) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      await props.dispatch(OrderAction.getCart());
       await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
