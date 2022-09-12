@@ -319,6 +319,26 @@ const ProductAddModal = ({
 
   const [stock, setStock] = useState({ manage: false, current: 0 });
 
+  useEffect(() => {
+    if (product) {
+      let arrFinalData = [];
+      product.productModifiers.forEach((modifier) => {
+        if (modifier.modifier.max === 1) {
+          const data = modifier.modifier.details[0];
+          const objData = {
+            modifierProductId: data.productID,
+            modifierId: modifier.modifierID,
+            qty: 1,
+            price: data.price,
+            name: data.name,
+          };
+          arrFinalData.push(objData);
+        }
+      });
+      setSelectedProductModifiers(arrFinalData);
+    }
+  }, []);
+
   const handlePrice = ({ qty, totalPrice }) => {
     setTotalPrice(qty * totalPrice);
   };
