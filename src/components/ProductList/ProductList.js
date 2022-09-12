@@ -351,7 +351,7 @@ const ProductList = ({ ...props }) => {
 
     if (!isEmptyArray(categories) && !isLoading) {
       return (
-        <div>
+        <div style={{ paddingTop: '50px' }}>
           <img src={config.url_emptyImage} alt='is empty' />
           <Typography style={styles.typography}>
             Oppss.. Item Not Found.
