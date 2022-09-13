@@ -33,7 +33,6 @@ class Profile extends Component {
   componentDidMount() {
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
-      document.getElementById('login-register-btn').click();
       return false;
     }
   }
