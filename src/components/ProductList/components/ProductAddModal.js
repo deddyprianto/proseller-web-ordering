@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import { connect } from 'react-redux';
 
 import config from 'config';
@@ -1165,23 +1165,27 @@ const ProductAddModal = ({
   };
 
   const renderSpecialInstruction = () => {
-    return (
-      <div>
-        <div style={styles.rootSpecialInstruction}>
-          <Typography style={styles.specialInstructionTypography}>
-            Special Instruction
-          </Typography>
-          <Typography style={styles.optionalTypography}>Optional</Typography>
+    if (props.defaultOutlet.enableItemSpecialInstructions) {
+      return (
+        <div>
+          <div style={styles.rootSpecialInstruction}>
+            <Typography style={styles.specialInstructionTypography}>
+              Special Instruction
+            </Typography>
+            <Typography style={styles.optionalTypography}>Optional</Typography>
+          </div>
+          <textarea
+            style={styles.specialInstructionInput}
+            value={notes}
+            onChange={(event) => {
+              setNotes(event.target.value);
+            }}
+          />
         </div>
-        <textarea
-          style={styles.specialInstructionInput}
-          value={notes}
-          onChange={(event) => {
-            setNotes(event.target.value);
-          }}
-        />
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   return (

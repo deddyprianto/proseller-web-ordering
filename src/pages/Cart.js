@@ -220,11 +220,12 @@ const Cart = ({ ...props }) => {
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
 
-  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(true);
+  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      await props.dispatch(OrderAction.getCart());
       await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
@@ -251,7 +252,7 @@ const Cart = ({ ...props }) => {
 
       const response = await props.dispatch(OrderAction.getTimeSlot(payload));
 
-      if (response.message === CONSTANT.TIME_SLOT_INVALID) {
+      if (!isEmptyArray(response?.data)) {
         setSelectTimeSlotAvailable(false);
       } else {
         setSelectTimeSlotAvailable(true);
