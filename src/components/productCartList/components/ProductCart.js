@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
-import ProductAddModal from '../../../components/ProductList/components/ProductAddModal';
+import ProductAddModal from '../../../components/productList/components/ProductAddModal';
 import ProductCartRemoveModal from '../../productCartList/components/ProductCartRemoveModal';
 
 const useWindowSize = () => {
@@ -259,11 +259,11 @@ const ProductCart = ({ item, ...props }) => {
   };
 
   const renderPrice = () => {
-    if (!isEmptyArray(item.promotions)) {
+    if (item?.totalDiscAmount) {
       return (
         <div style={styles.rootPrice}>
           <Typography style={styles.price}>
-            {handleCurrency(item?.amountAfterDisc)}
+            {handleCurrency(item?.totalDiscAmount)}
           </Typography>
           <Typography style={styles.priceDiscount}>
             {handleCurrency(item?.grossAmount)}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import { connect } from 'react-redux';
 
 import config from 'config';
@@ -318,6 +318,26 @@ const ProductAddModal = ({
     useState(true);
 
   const [stock, setStock] = useState({ manage: false, current: 0 });
+
+  useEffect(() => {
+    if (product) {
+      let arrFinalData = [];
+      product.productModifiers.forEach((modifier) => {
+        if (modifier.modifier.max === 1) {
+          const data = modifier.modifier.details[0];
+          const objData = {
+            modifierProductId: data.productID,
+            modifierId: modifier.modifierID,
+            qty: 1,
+            price: data.price,
+            name: data.name,
+          };
+          arrFinalData.push(objData);
+        }
+      });
+      setSelectedProductModifiers(arrFinalData);
+    }
+  }, []);
 
   const handlePrice = ({ qty, totalPrice }) => {
     setTotalPrice(qty * totalPrice);
@@ -1165,23 +1185,27 @@ const ProductAddModal = ({
   };
 
   const renderSpecialInstruction = () => {
-    return (
-      <div>
-        <div style={styles.rootSpecialInstruction}>
-          <Typography style={styles.specialInstructionTypography}>
-            Special Instruction
-          </Typography>
-          <Typography style={styles.optionalTypography}>Optional</Typography>
+    if (props.defaultOutlet.enableItemSpecialInstructions) {
+      return (
+        <div>
+          <div style={styles.rootSpecialInstruction}>
+            <Typography style={styles.specialInstructionTypography}>
+              Special Instruction
+            </Typography>
+            <Typography style={styles.optionalTypography}>Optional</Typography>
+          </div>
+          <textarea
+            style={styles.specialInstructionInput}
+            value={notes}
+            onChange={(event) => {
+              setNotes(event.target.value);
+            }}
+          />
         </div>
-        <textarea
-          style={styles.specialInstructionInput}
-          value={notes}
-          onChange={(event) => {
-            setNotes(event.target.value);
-          }}
-        />
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   return (

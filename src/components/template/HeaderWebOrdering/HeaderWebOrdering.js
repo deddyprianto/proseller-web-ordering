@@ -30,7 +30,7 @@ const useStyles = () => {
       width: '100%',
       zIndex: 999,
       backgroundColor: '#f2f2f2',
-      paddingTop: '8px',
+      paddingTop: '1px',
       paddingBottom: '8px',
     },
     wrapNavbar: {
