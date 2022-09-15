@@ -24,6 +24,7 @@ import { MasterDataAction } from 'redux/actions/MasterDataAction';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import config from 'config';
 import Loading from 'components/loading/Loading';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -447,7 +448,7 @@ const PaymentMethodPage = () => {
           },
         }}
       >
-        <iframe src={paymentURL} width='100%' height='100%' />
+        <iframe src={paymentURL} scrolling='no' width='100%' height='950' />
       </Dialog>
     );
   };
@@ -621,7 +622,7 @@ const PaymentMethodPage = () => {
         </DialogTitle>
         <DialogContent sx={style.dialogContent}>
           <Typography sx={style.warningText}>
-            You're not reach the minimum payment. The minimum payment is{' '}
+            You&apos;re not reach the minimum payment. The minimum payment is{' '}
             {new Intl.NumberFormat('en-SG', {
               style: 'currency',
               currency: 'SGD',
@@ -647,7 +648,7 @@ const PaymentMethodPage = () => {
   };
 
   return (
-    <Box>
+    <LoadingOverlayCustom active={isLoading} spinner>
       {dialogAlertMinimumPayment()}
       {dialogConfirmation()}
       {dialogIframe()}
@@ -684,7 +685,7 @@ const PaymentMethodPage = () => {
           )}
         </Box>
       </Box>
-    </Box>
+    </LoadingOverlayCustom>
   );
 };
 

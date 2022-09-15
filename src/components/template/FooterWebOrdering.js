@@ -12,6 +12,7 @@ import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 import { useSelector } from 'react-redux';
 
 const FooterWebOrdering = () => {
+  const [enableOrdering, setEnableOrdering] = useState();
   const allState = useSelector((state) => state);
 
   const [value, setValue] = useState(0);
@@ -119,7 +120,6 @@ const FooterWebOrdering = () => {
     },
   };
 
-  const [enableOrdering, setEnableOrdering] = useState(true);
   const isLoggedIn = allState.auth.isLoggedIn;
 
   const iconCheck = (iconName, iconColor) => {
@@ -142,7 +142,7 @@ const FooterWebOrdering = () => {
         return items.settingKey === 'EnableOrdering';
       });
       if (enableOrderingCheck) {
-        setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
+        setEnableOrdering(enableOrderingCheck.settingValue);
       }
     };
     enableOrderingChecker();
@@ -161,7 +161,7 @@ const FooterWebOrdering = () => {
           sx={style.bottomNav}
         >
           {allState?.theme?.menu?.navBar?.map((menu, index) => {
-            if (!enableOrdering && menu.showWhenOrderingEnabled) {
+            if (!enableOrdering && menu.showOnOrderingEnabled) {
               return null;
             }
             if (!isLoggedIn && menu.loggedInOnly) {
@@ -197,7 +197,6 @@ const FooterWebOrdering = () => {
                   value === index
                     ? allState.theme.color.navigationIconSelectedColor
                     : allState.theme.color.navigationFontColor
-
                   // value === index ? '#000000' : '#8A8D8E'
                 )}
               />

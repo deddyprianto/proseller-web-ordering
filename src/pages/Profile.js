@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 import { connect } from 'react-redux';
 // import { Button } from "reactstrap";
@@ -15,6 +16,17 @@ const DetailProfile = loadable(() =>
   import('../components/profile/DetailProfile')
 );
 
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.auth.isLoggedIn,
+    setting: state.order.setting,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
 class Profile extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +35,9 @@ class Profile extends Component {
 
     try {
       if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
 
     this.state = {
       isProfile,
@@ -33,16 +47,19 @@ class Profile extends Component {
   componentDidMount() {
     let { isLoggedIn } = this.props;
     if (!isLoggedIn) {
+      // document.getElementById('login-register-btn').click();
       return false;
     }
   }
 
-  componentDidUpdate = (prevProps, prevState) => {
+  componentDidUpdate(prevProps) {
     let isProfile = true;
     try {
       if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
       this.setState({ isProfile });
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
 
     if (this.props !== prevProps) {
       let enableOrdering = this.props.setting.find((items) => {
@@ -52,7 +69,7 @@ class Profile extends Component {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
     }
-  };
+  }
 
   render() {
     let { isProfile } = this.state;
@@ -137,15 +154,14 @@ class Profile extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    isLoggedIn: state.auth.isLoggedIn,
-    setting: state.order.setting,
-  };
+Profile.defaultProps = {
+  isLoggedIn: false,
+  setting: {},
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
+Profile.propTypes = {
+  isLoggedIn: PropTypes.bool,
+  setting: PropTypes.object,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
