@@ -1,8 +1,11 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { AuthActions } from '../../redux/actions/AuthAction';
-import Shimmer from 'react-shimmer-effect';
+
 import config from '../../config';
 import { CustomerAction } from '../../redux/actions/CustomerAction';
 import { CONSTANT } from '../../helpers';
@@ -10,6 +13,8 @@ import { lsLoad, lsStore } from '../../helpers/localStorage';
 import CustomFields from './CustomFields';
 import ModalEditAccount from './ModalEditAccount';
 import { Button } from 'reactstrap';
+import Loading from 'components/loading/Loading';
+import LoadingOverlay from 'react-loading-overlay';
 
 let Swal = require('sweetalert2');
 let encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -43,17 +48,14 @@ class EditProfile extends Component {
         { value: '2000-12-01', lable: 'December' },
       ],
       editName: false,
-
       editEmail: false,
       emailUsed: true,
       emailCheckTimeout: null,
       checkingEmail: false,
-
       editPhoneNumber: false,
       phoneCheckTimeout: null,
       phoneUsed: true,
       checkingPhone: false,
-
       editPassword: false,
       newPassword: '',
       oldPassword: '',
@@ -65,14 +67,13 @@ class EditProfile extends Component {
       showRePassword: false,
       isDisableBirthDate: false,
       errorName: '',
-
       defaultError: {},
       defaultEdit: {},
       titleEditAccount: { display: 'Account', field: 'phoneNumber' },
     };
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     let dataCustomer = await this.props.dispatch(
       CustomerAction.getCustomerProfile()
     );
@@ -87,9 +88,9 @@ class EditProfile extends Component {
     if (mandatoryField.resultCode === 200)
       this.setState({ mandatoryField: mandatoryField.data.fields });
     this.setState({ loadingShow: false });
-  };
+  }
 
-  componentDidUpdate = async (prevProps) => {
+  async componentDidUpdate(prevProps) {
     if (prevProps.fields !== this.props.fields) {
       let minimumAge = this.props.setting.find((items) => {
         return items.settingKey === 'MinimumAge';
@@ -125,9 +126,9 @@ class EditProfile extends Component {
 
       this.setState({ defaultError });
     }
-  };
+  }
 
-  validationField = (field, value) => {
+  validationField(field, value) {
     if (field === 'newName') field = 'name';
     if (field === 'newPhoneNumber') field = 'phoneNumber';
     if (field === 'newEmail') field = 'email';
@@ -176,16 +177,15 @@ class EditProfile extends Component {
       if (
         !(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(value) && value.length >= 8)
       ) {
-        defaultError[
-          field
-        ] = `Minimum password is 8 characters consisting of an uppercase, lowercase and number`;
+        defaultError[field] =
+          'Minimum password is 8 characters consisting of an uppercase, lowercase and number';
         result = false;
       } else defaultError[field] = '';
     }
 
     if (field === 'retypeNewPassword') {
       if (this.state.newPassword === this.state.retypeNewPassword) {
-        defaultError[field] = `Retype password is different from new password`;
+        defaultError[field] = 'Retype password is different from new password';
         result = false;
       } else defaultError[field] = '';
     }
@@ -193,12 +193,10 @@ class EditProfile extends Component {
     defaultEdit[field] = true;
     this.setState({ defaultError, defaultEdit });
     return { status: result, displayName: mandatoryData.displayName };
-  };
+  }
 
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
-    this.validationField(field, value);
-
     dataCustomer[field] = value;
     dataCustomer.address = `${dataCustomer.street || ''}, ${
       dataCustomer.unitNo || ''
@@ -206,12 +204,10 @@ class EditProfile extends Component {
     this.setState({ dataCustomer, isLoading: false, touched: true });
   };
 
-  handleUpdateProfile = async () => {
+  async handleUpdateProfile() {
     this.setState({ isLoading: true });
-
     if (this.state.defaultEdit.password) {
       const { oldPassword, newPassword, retypeNewPassword } = this.state;
-
       if (oldPassword === '' || newPassword === '') {
         Swal.fire({
           icon: 'info',
@@ -230,7 +226,6 @@ class EditProfile extends Component {
         this.setState({ isLoading: false });
         return;
       }
-
       const payloadEditProfile = {
         oldPassword,
         newPassword,
@@ -252,7 +247,6 @@ class EditProfile extends Component {
     }
 
     let payload = { username: this.state.dataCustomer.username };
-
     this.props.fields &&
       this.props.fields.forEach((field) => {
         payload[field.fieldName] =
@@ -271,58 +265,99 @@ class EditProfile extends Component {
       payload.newPhoneNumber = this.state.dataCustomer.phoneNumber;
     if (this.state.defaultEdit.email)
       payload.newEmail = this.state.dataCustomer.email;
-
     let listName = '';
     for (const key in payload) {
       let check = this.validationField(key, payload[key]);
       if (!check.status) listName += check.displayName + ', ';
     }
+    const nricField = payload['nric(last4digits)'];
+    if (
+      payload.birthDate === '' ||
+      payload.gender === '' ||
+      payload.outletsignup === '' ||
+      payload.street === '' ||
+      payload.unitNo === '' ||
+      nricField === ''
+    ) {
+      let objNotice = {};
+      if (payload.birthDate === '') {
+        objNotice = { ...objNotice, Birthdate: payload.birthDate };
+      }
+      if (payload.gender === '') {
+        objNotice = { ...objNotice, Gender: payload.gender };
+      }
+      if (payload.outletsignup === '') {
+        objNotice = { ...objNotice, 'Outlet Sign UP': payload.outletsignup };
+      }
+      if (payload.street === '') {
+        objNotice = { ...objNotice, Street: payload.street };
+      }
+      if (payload.unitNo === '') {
+        objNotice = { ...objNotice, 'Unit No.': payload.unitNo };
+      }
+      if (payload['nric(last4digits)'] === '') {
+        objNotice = {
+          ...objNotice,
+          'NRIC (Last 4 Digits)': payload['nric(last4digits)'],
+        };
+      }
 
-    if (listName !== '') {
-      listName = listName.substr(0, listName.length - 2);
+      const nameField = Object.keys(objNotice);
+
+      const elementArrayPassed = nameField.map((item, index) => {
+        if (nameField.length === 1) {
+          return `${item}`;
+        } else if (nameField.length - 1 === index) {
+          return `and ${item}`;
+        } else if (nameField.length === 2) {
+          return `${item}`;
+        } else {
+          return `${item},`;
+        }
+      });
+
       Swal.fire({
         icon: 'warning',
-        timer: 1500,
-        title: `${listName} is required`,
-        showConfirmButton: false,
+        title: 'Warning Field',
+        text: `Field ${elementArrayPassed.join(' ')} must be fulfilled.`,
+        showConfirmButton: true,
       });
-      return;
-    }
-
-    account.idToken.payload = this.state.dataCustomer;
-    let response = await this.props.dispatch(
-      CustomerAction.updateCustomerProfile(payload)
-    );
-    console.log(response);
-    if (response.ResultCode === 200) {
-      await this.props.dispatch(
-        AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN)
-      );
-      lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
-      let message = 'Profile Updated';
-      if (this.state.editPassword) message = 'Profile & Password Updated';
-
-      Swal.fire({
-        icon: 'success',
-        timer: 2000,
-        title: message,
-        showConfirmButton: false,
-      });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     } else {
-      Swal.fire({
-        icon: 'error',
-        timer: 1500,
-        title: response.message,
-        showConfirmButton: false,
-      });
+      account.idToken.payload = this.state.dataCustomer;
+      let response = await this.props.dispatch(
+        CustomerAction.updateCustomerProfile(payload)
+      );
+      if (response.ResultCode === 200) {
+        await this.props.dispatch(
+          AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN)
+        );
+        lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
+        let message = 'Profile Updated';
+        if (this.state.editPassword) message = 'Profile & Password Updated';
+
+        Swal.fire({
+          icon: 'success',
+          timer: 2000,
+          title: message,
+          showConfirmButton: false,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          timer: 1500,
+          title: response.message,
+          showConfirmButton: false,
+        });
+      }
+      this.setState({ isLoading: false });
     }
     this.setState({ isLoading: false });
-  };
+  }
 
-  clearData = () => {
+  clearData() {
     let defaultEdit = this.state.defaultEdit;
     defaultEdit['password'] = false;
 
@@ -334,9 +369,9 @@ class EditProfile extends Component {
       validatePass: false,
       textValidate: '',
     });
-  };
+  }
 
-  toggleEditPassword = () => {
+  toggleEditPassword() {
     let defaultEdit = this.state.defaultEdit;
     defaultEdit['password'] = !defaultEdit['password'];
 
@@ -348,28 +383,11 @@ class EditProfile extends Component {
       validatePass: false,
       textValidate: '',
     });
-  };
-
-  viewShimmer = (isHeight = 100) => {
-    return (
-      <Shimmer>
-        <div
-          style={{
-            width: '100%',
-            height: isHeight,
-            alignSelf: 'center',
-            borderRadius: '8px',
-            marginBottom: 10,
-          }}
-        />
-      </Shimmer>
-    );
-  };
+  }
 
   viewPassword() {
     let { defaultError, showOldPassword, showNewPassword, showRePassword } =
       this.state;
-
     return (
       <Row>
         <div
@@ -382,7 +400,7 @@ class EditProfile extends Component {
           }}
         />
         <Col sm={6}>
-          <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
+          <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide '>
             <label style={{ fontSize: 14 }}>Old Password</label>
             <div style={{ display: 'flex' }}>
               <input
@@ -425,7 +443,6 @@ class EditProfile extends Component {
                 className='text text-warning-theme small'
                 style={{ lineHeight: '15px', marginTop: 5 }}
               >
-                {' '}
                 <em>{defaultError['oldPassword']}</em>{' '}
               </div>
             )}
@@ -594,7 +611,7 @@ class EditProfile extends Component {
     }
   }
 
-  checkLoginSetting = () => {
+  checkLoginSetting() {
     try {
       const { setting } = this.props;
       const find = setting.find(
@@ -606,76 +623,96 @@ class EditProfile extends Component {
     } catch (e) {
       return true;
     }
-  };
+  }
+  handledisableButton(payload) {
+    if (payload.birthDate === '') {
+      return true;
+    } else if (payload.gender === '') {
+      return true;
+    } else if (payload.outletsignup === '') {
+      return true;
+    } else if (payload.street === '') {
+      return true;
+    } else if (!payload.unitNo) {
+      return true;
+    } else if (payload['nric(last4digits)'] === '') {
+      return true;
+    } else {
+      return false;
+    }
+  }
   render() {
-    let { loadingShow, titleEditAccount } = this.state;
+    let { loadingShow, titleEditAccount, isLoading, dataCustomer } = this.state;
     return (
-      <div
-        className='col-full'
-        style={{
-          marginTop: config.prefix === 'emenu' ? 120 : 140,
-          marginBottom: 50,
-          padding: 0,
-        }}
-      >
-        <ModalEditAccount title={titleEditAccount} />
-        <div id='primary' className='content-area'>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div
-              style={{
-                flexDirection: 'row',
-                position: 'fixed',
-                zIndex: 10,
-                width: '100%',
-                marginTop: -60,
-                boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
-                display: 'flex',
-                height: 40,
-                left: 0,
-                right: 0,
-              }}
-              className='background-theme'
-            >
+      <LoadingOverlay active={isLoading} spinner text='Loading...'>
+        <div
+          className='col-full'
+          style={{
+            marginTop: config.prefix === 'emenu' ? 120 : 140,
+            marginBottom: 50,
+            padding: 0,
+          }}
+        >
+          <ModalEditAccount title={titleEditAccount} />
+          <div id='primary' className='content-area'>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <div
-                style={{ marginLeft: 10, fontSize: 16 }}
-                onClick={() => this.props.history.goBack()}
+                style={{
+                  flexDirection: 'row',
+                  position: 'fixed',
+                  zIndex: 10,
+                  width: '100%',
+                  marginTop: -60,
+                  boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+                  display: 'flex',
+                  height: 40,
+                  left: 0,
+                  right: 0,
+                }}
+                className='background-theme'
               >
-                <i className='fa fa-chevron-left'></i> Back
-              </div>
-            </div>
-            <main id='main' className='site-main' style={{ width: '100%' }}>
-              {loadingShow && (
-                <Row>
-                  <Col sm={6}>{this.viewShimmer()}</Col>
-                  <Col sm={6}>{this.viewShimmer()}</Col>
-                </Row>
-              )}
-              {!loadingShow && (
-                <div style={{ marginTop: -20 }}>
-                  {this.viewPage(this.props.fields)}
-                  <Button
-                    className='button'
-                    style={{
-                      width: '100%',
-                      marginTop: 20,
-                      borderRadius: 5,
-                      height: 50,
-                    }}
-                    onClick={() => this.handleUpdateProfile()}
-                  >
-                    <i className='fa fa-floppy-o' aria-hidden='true' /> Update
-                  </Button>
+                <div
+                  style={{ marginLeft: 10, fontSize: 16 }}
+                  onClick={() => this.props.history.goBack()}
+                >
+                  <i className='fa fa-chevron-left'></i> Back
                 </div>
-              )}
-            </main>
+              </div>
+              <main id='main' className='site-main' style={{ width: '100%' }}>
+                {loadingShow && <Loading loadingType='NestedList' />}
+                {!loadingShow && (
+                  <div style={{ marginTop: -20 }}>
+                    {this.viewPage(this.props.fields)}
+                    <Button
+                      disabled={this.handledisableButton(dataCustomer)}
+                      className='button'
+                      style={{
+                        width: '100%',
+                        marginTop: 20,
+                        borderRadius: 5,
+                        height: 50,
+                      }}
+                      onClick={() => this.handleUpdateProfile()}
+                    >
+                      <i
+                        className='fa fa-floppy-o'
+                        aria-hidden='true'
+                        style={{ paddingRight: '5px' }}
+                      />
+                      Update
+                    </Button>
+                  </div>
+                )}
+              </main>
+            </div>
           </div>
         </div>
-      </div>
+      </LoadingOverlay>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     account: state.auth.account.idToken.payload,
     fields: state.customer.fields,
