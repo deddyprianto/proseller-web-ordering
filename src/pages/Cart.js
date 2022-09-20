@@ -1,9 +1,9 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -220,12 +220,11 @@ const Cart = ({ ...props }) => {
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
 
-  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
+  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      await props.dispatch(OrderAction.getCart());
       await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
@@ -251,8 +250,7 @@ const Cart = ({ ...props }) => {
       };
 
       const response = await props.dispatch(OrderAction.getTimeSlot(payload));
-
-      if (!isEmptyArray(response?.data)) {
+      if (response.message === CONSTANT.TIME_SLOT_INVALID) {
         setSelectTimeSlotAvailable(false);
       } else {
         setSelectTimeSlotAvailable(true);
@@ -268,9 +266,7 @@ const Cart = ({ ...props }) => {
 
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
-      if (!props.isLoggedIn) {
-        document.getElementById('login-register-btn').click();
-      } else if (
+      if (
         !props.orderingMode &&
         !isEmptyArray(props.basket.details) &&
         props.isLoggedIn
@@ -484,9 +480,7 @@ const Cart = ({ ...props }) => {
 
   const renderDateTime = () => {
     const isStorePickUp =
-      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP &&
-      selectTimeSlotAvailable;
-
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
     const isDelivery =
       props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
       props.deliveryAddress &&
@@ -581,7 +575,23 @@ const Cart = ({ ...props }) => {
               </Typography>
             </Button>
           </div>
-          {props?.deliveryAddress ? null : renderWarning('delivery address.')}
+          {props.deliveryAddress ? (
+            <Typography
+              sx={{
+                fontSize: '1.5rem',
+                fontStyle: 'italic',
+                fontWeight: 'bold',
+                color: props.color.primary,
+                maxWidth: 'fit-content',
+                marginX: 1,
+              }}
+            >
+              {props.deliveryAddress.street} # {props.deliveryAddress.unitNo} -{' '}
+              {props.deliveryAddress.city} - {props.deliveryAddress.postalCode}
+            </Typography>
+          ) : (
+            renderWarning('delivery address.')
+          )}
         </Paper>
         {props?.deliveryAddress && (
           <Paper variant='outlined' style={styles.rootPaper}>
