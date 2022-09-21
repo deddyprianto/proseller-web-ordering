@@ -10,7 +10,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import config from '../../config';
 
 const HeaderEmenu = loadable(() => import('./HeaderEmenu'));
-const HeaderWebOrdering = loadable(() => import('./headerWebOrdering'));
+const HeaderWebOrdering = loadable(() => import('./HeaderWebOrdering'));
 const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
