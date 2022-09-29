@@ -510,7 +510,7 @@ const ProductAddModal = ({
         selectedProductModifiers
       );
 
-      const price = totalPrice / qty;
+      const price = totalPrice / qty || 0;
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
@@ -636,7 +636,8 @@ const ProductAddModal = ({
     setSelectedProductModifiers([]);
   };
 
-  const handleCurrency = (price) => {
+  const handleCurrency = (value) => {
+    const price = value || 0;
     const result = price.toLocaleString(props.companyInfo.currency.locale, {
       style: 'currency',
       currency: props.companyInfo.currency.code,

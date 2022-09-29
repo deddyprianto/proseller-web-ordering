@@ -239,7 +239,8 @@ const ProductUpdateModal = ({
     setSelectedProductBasketUpdate({});
   };
 
-  const handleCurrency = (price) => {
+  const handleCurrency = (value) => {
+    const price = value ? value : 0;
     const result = price.toLocaleString(props.companyInfo.currency.locale, {
       style: 'currency',
       currency: props.companyInfo.currency.code,
