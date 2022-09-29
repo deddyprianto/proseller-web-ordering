@@ -323,7 +323,12 @@ const ProductAddModal = ({
     if (product) {
       let arrFinalData = [];
       product.productModifiers.forEach((modifier) => {
-        if (modifier.modifier.max === 1) {
+        console.log(':GILA', product.productModifiers);
+        if (
+          modifier?.modifier?.max === 1 &&
+          modifier?.modifier?.min === 1 &&
+          modifier?.modifier?.details?.length === 1
+        ) {
           const data = modifier.modifier.details[0];
           const objData = {
             modifierProductId: data.productID,
@@ -510,7 +515,7 @@ const ProductAddModal = ({
         selectedProductModifiers
       );
 
-      const price = totalPrice / qty;
+      const price = totalPrice / qty || 0;
 
       if (!isEmptyObject(selectedProduct)) {
         return setProductUpdate({
@@ -636,7 +641,8 @@ const ProductAddModal = ({
     setSelectedProductModifiers([]);
   };
 
-  const handleCurrency = (price) => {
+  const handleCurrency = (value) => {
+    const price = value || 0;
     const result = price.toLocaleString(props.companyInfo.currency.locale, {
       style: 'currency',
       currency: props.companyInfo.currency.code,
