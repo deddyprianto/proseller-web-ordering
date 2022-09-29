@@ -5,10 +5,13 @@ import { connect } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import OrderingRetail from '../components/ordering/indexRetail';
-
+import { useHistory } from 'react-router-dom';
+import { OutletAction } from 'redux/actions/OutletAction';
 import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
+
+const base64 = require('base-64');
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -37,6 +40,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Home = ({ ...props }) => {
+  const history = useHistory();
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   const styles = {
@@ -49,6 +53,33 @@ const Home = ({ ...props }) => {
     },
   };
   const isEmenu = window.location.hostname.includes('emenu');
+  const isLanding = window.location.href.includes('landing');
+
+  useEffect(() => {
+    const loadData = async () => {
+      const href = window.location.href;
+      const hrefSplit = href.split('input=');
+      const key = hrefSplit[1];
+
+      const keyDecoded = base64.decode(decodeURI(key));
+      const keyDecodedSplit = keyDecoded.split('::');
+      const outletId = keyDecodedSplit[1];
+      console.log('GILA', outletId);
+
+      if (outletId) {
+        const outletById = await props.dispatch(
+          OutletAction.getOutletById(outletId)
+        );
+        if (outletById) {
+          await props.dispatch(OutletAction.setDefaultOutlet(outletById));
+          history.push('/');
+        }
+      }
+    };
+    if (isLanding) {
+      loadData();
+    }
+  }, [window.location.href, isLanding]);
 
   const renderOrderingRetail = () => {
     if (props.orderingSetting?.CategoryHeaderType === 'WITH_CATEGORY_PAGE') {

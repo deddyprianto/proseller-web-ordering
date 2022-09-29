@@ -145,6 +145,7 @@ class Layout extends Component {
         <div id='content' className='site-content'>
           <Switch>
             {enableOrdering && <Route exact path='/' component={Home} />}
+            {enableOrdering && <Route exact path='/landing' component={Home} />}
             {enableOrdering && (
               <Route exact path='/outlets' component={OutletSelection} />
             )}
