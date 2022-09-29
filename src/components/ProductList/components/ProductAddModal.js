@@ -437,7 +437,7 @@ const ProductAddModal = ({
 
       const result = Object.values(productModifierMerged);
 
-      totalPrice = totalPrice + product.retailPrice;
+      totalPrice = totalPrice + (product.retailPrice || 0);
 
       handlePrice({
         qty,
@@ -447,7 +447,7 @@ const ProductAddModal = ({
       return result;
     }
 
-    totalPrice = totalPrice + product.retailPrice;
+    totalPrice = totalPrice + (product.retailPrice || 0);
     handlePrice({
       qty,
       totalPrice,
@@ -546,10 +546,10 @@ const ProductAddModal = ({
         return setProductUpdate({
           id: selectedProduct.id,
           productID: `product::${product.id}`,
-          retailPrice: product.retailPrice,
+          retailPrice: product.retailPrice || 0,
           remark: notes,
           quantity: qty,
-          unitPrice: product.retailPrice,
+          unitPrice: product.retailPrice || 0,
           ...(product.manageStock && {
             currentStock: product.currentStock || 0,
           }),
@@ -558,7 +558,7 @@ const ProductAddModal = ({
 
       return setProductAdd({
         productID: `product::${product.id}`,
-        retailPrice: product.retailPrice,
+        retailPrice: product.retailPrice || 0,
         remark: notes,
         quantity: qty,
         ...(product.manageStock && {
