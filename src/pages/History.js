@@ -1,12 +1,12 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
 import loadable from '@loadable/component';
 import { HistoryAction } from '../redux/actions/HistoryAction';
 import { MasterDataAction } from '../redux/actions/MasterDataAction';
-// import Lottie from "lottie-react-web";
-// import emptyGif from "../assets/gif/empty-and-lost.json";
 import config from '../config';
+import LoadingOverlay from 'react-loading-overlay';
 
 const HistoryTransaction = loadable(() =>
   import('../components/history/HistoryTransaction')
@@ -14,13 +14,11 @@ const HistoryTransaction = loadable(() =>
 const HistoryPending = loadable(() =>
   import('../components/history/HistoryPending')
 );
-const Swal = require('sweetalert2');
 
 class History extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loadingShow: true,
       isLoading: false,
       isTransaction: true,
       dataPending: [],
@@ -29,21 +27,17 @@ class History extends Component {
     };
   }
 
-  componentDidMount = async () => {
-    Swal.fire({
-      allowOutsideClick: false,
-      onOpen: () => {
-        Swal.showLoading();
-      },
-    });
+  async componentDidMount() {
+    this.setState({ isLoading: true });
 
     localStorage.removeItem(`${config.prefix}_dataBasket`);
-    // localStorage.removeItem(`${config.prefix}_scanTable`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
     try {
       document.getElementsByClassName('modal-backdrop')[0].remove();
-    } catch (error) {}
+    } catch (e) {
+      console.log(e);
+    }
 
     if (!this.props.isLoggedIn) return;
 
@@ -55,34 +49,31 @@ class History extends Component {
     let infoCompany = await this.props.dispatch(
       MasterDataAction.getInfoCompany()
     );
-    this.setState({ countryCode: infoCompany.countryCode, loadingShow: false });
-    Swal.close();
-  };
+    this.setState({
+      countryCode: infoCompany.countryCode,
+      isLoading: false,
+    });
+  }
 
-  getDataBasketPending = async () => {
-    let response = await this.props.dispatch(HistoryAction.getBasketPending());
+  async getDataBasketPending() {
+    let response = await this.props.dispatch(
+      HistoryAction.getBasketPending({
+        take: 1000,
+        skip: 0,
+      })
+    );
     if (response.resultCode === 200) {
-      console.log(response.data);
       this.setState(response.data);
-      this.setState({ loadingShow: false });
       if (response.data.dataPendingLength > 0) {
         this.setState({ isTransaction: false });
       }
     }
-  };
-
-  componentWillUnmount = () => {
-    // clearInterval(this.timeGetBasket);
-  };
+  }
 
   render() {
-    let {
-      countryCode,
-      dataPendingLength,
-      dataPending,
-      isTransaction,
-      loadingShow,
-    } = this.state;
+    let { countryCode, dataPendingLength, dataPending, isTransaction } =
+      this.state;
+
     if (!this.props.isLoggedIn) {
       return (
         <div
@@ -108,8 +99,8 @@ class History extends Component {
                       style={{ marginTop: 30 }}
                     />
                     <button
-                      data-toggle={'modal'}
-                      data-target={'#login-register-modal'}
+                      data-toggle='modal'
+                      data-target='#login-register-modal'
                       type='button'
                       style={{ padding: 10, marginTop: 40 }}
                     >
@@ -123,69 +114,74 @@ class History extends Component {
         </div>
       );
     }
+
     return (
-      <div
-        className='col-full'
-        style={{
-          marginTop: config.prefix === 'emenu' ? 100 : 135,
-          marginBottom: 50,
-        }}
-      >
-        <div id='primary' className='content-area'>
-          <div className='stretch-full-width'>
-            <div
-              style={{
-                flexDirection: 'row',
-                position: 'fixed',
-                zIndex: 10,
-                width: '100%',
-                marginTop: -60,
-              }}
-            >
-              <Button
-                className={isTransaction ? 'use-select' : 'un-select'}
-                style={{ height: 50, fontWeight: 'bold' }}
-                onClick={() => this.setState({ isTransaction: true })}
+      <LoadingOverlay active={this.state.isLoading} spinner text='Loading...'>
+        <div
+          className='col-full'
+          style={{
+            marginTop: config.prefix === 'emenu' ? 100 : 0,
+            marginBottom: 50,
+          }}
+        >
+          <div id='primary' className='content-area'>
+            <div className='stretch-full-width'>
+              <div
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  marginTop: '65px',
+                }}
               >
-                Orders
-              </Button>
-              <Button
-                className={!isTransaction ? 'use-select' : 'un-select'}
-                style={{ height: 50, fontWeight: 'bold' }}
-                onClick={() => this.setState({ isTransaction: false })}
-              >
-                {`Pending Orders ${
-                  dataPendingLength > 0 ? `(${dataPendingLength})` : ''
-                }`}
-              </Button>
-            </div>
-            <main
-              id='main'
-              className='site-main'
-              style={{ textAlign: 'center', paddingBottom: 40 }}
-            >
-              <div style={{ marginTop: 20 }}>
-                {!loadingShow && isTransaction && (
-                  <HistoryTransaction countryCode={countryCode} />
-                )}
-                {!loadingShow && !isTransaction && (
-                  <HistoryPending
-                    dataPending={dataPending}
-                    dataPendingLength={dataPendingLength}
-                    countryCode={countryCode}
-                    loadingShow={loadingShow}
-                  />
-                )}
+                <Button
+                  className={isTransaction ? 'use-select' : 'un-select'}
+                  style={{ height: 50, fontWeight: 'bold' }}
+                  onClick={() => this.setState({ isTransaction: true })}
+                >
+                  Orders
+                </Button>
+                <Button
+                  className={!isTransaction ? 'use-select' : 'un-select'}
+                  style={{ height: 50, fontWeight: 'bold' }}
+                  onClick={() => {
+                    this.setState({ isTransaction: false });
+                  }}
+                >
+                  {`Pending Orders ${
+                    dataPendingLength > 0 ? `(${dataPendingLength})` : ''
+                  }`}
+                </Button>
               </div>
-            </main>
+              <main
+                id='main'
+                className='site-main'
+                style={{
+                  textAlign: 'center',
+                  marginTop: '10px',
+                }}
+              >
+                <div>
+                  {isTransaction && (
+                    <HistoryTransaction countryCode={countryCode} />
+                  )}
+                  {!isTransaction && (
+                    <HistoryPending
+                      dataPending={dataPending}
+                      dataPendingLength={dataPendingLength}
+                      countryCode={countryCode}
+                    />
+                  )}
+                </div>
+              </main>
+            </div>
           </div>
         </div>
-      </div>
+      </LoadingOverlay>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
   };
