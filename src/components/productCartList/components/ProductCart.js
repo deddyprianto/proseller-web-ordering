@@ -10,8 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
+import ProductAddModal from '../../../components/productList/components/ProductAddModal';
 import ProductCartRemoveModal from '../../productCartList/components/ProductCartRemoveModal';
-import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
