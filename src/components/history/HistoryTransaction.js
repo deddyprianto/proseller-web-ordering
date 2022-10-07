@@ -1,144 +1,86 @@
-import React, { Component } from 'react';
-import { Col, Row } from 'reactstrap';
-import Shimmer from 'react-shimmer-effect';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+
+import Grid from '@mui/material/Grid';
+import Loading from 'components/loading/Loading';
 import { HistoryAction } from '../../redux/actions/HistoryAction';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import Lottie from 'lottie-react-web';
-import loadingGif from '../../assets/gif/loading.json';
-import HistoryCard from './HistoryCard';
-import ModalDetailHistory from './ModalDetailHistory';
 import config from '../../config';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import HistoryCard from './HistoryCardPending';
+import ModalDetailHistory from './ModalDetailHistory';
 
-class HistoryTransaction extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loadingShow: true,
-      isLoading: false,
-      dataTransaction: [],
-      detailTransaction: {},
-      dataTransactionLength: 0,
-      countryCode: 'ID',
+const HistoryTransaction = ({ countryCode }) => {
+  const [data, setData] = useState([]);
+  const [detailData, setDetailData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      let response = await dispatch(
+        HistoryAction.getTransaction({
+          take: 1000,
+          skip: 0,
+        })
+      );
+      if (response.ResultCode === 200) {
+        setData(response.data);
+      }
+      setIsLoading(false);
     };
+    loadData();
+  }, []);
+
+  if (isLoading) return <Loading loadingType='NestedList' />;
+
+  if (data.length === 0 && !isLoading) {
+    return (
+      <>
+        <img src={config.url_emptyImage} alt='is empty' />
+        <div>Data is empty</div>
+      </>
+    );
   }
 
-  viewShimmer = (isHeight = 100) => {
-    return (
-      <Shimmer>
-        <div
-          style={{
-            width: '100%',
-            height: isHeight,
-            alignSelf: 'center',
-            borderRadius: '8px',
-            marginBottom: 10,
-          }}
-        />
-      </Shimmer>
-    );
-  };
-
-  componentDidMount = async () => {
-    let response = await this.props.dispatch(
-      HistoryAction.getTransaction({ take: 14, skip: 0 })
-    );
-    if (response.ResultCode === 200) this.setState(response.Data);
-    this.setState({ loadingShow: false });
-  };
-
-  fetchMoreData = async () => {
-    let response = await this.props.dispatch(
-      HistoryAction.getTransaction({
-        skip: 0,
-        take: this.state.dataTransaction.length + 14,
-      })
-    );
-    if (response.ResultCode === 200) this.setState(response.Data);
-  };
-
-  render() {
-    let {
-      loadingShow,
-      dataTransactionLength,
-      dataTransaction,
-      detailTransaction,
-    } = this.state;
-    let { countryCode } = this.props;
-    return (
-      <LoadingOverlayCustom active={this.state.isLoading} spinner>
-        <ModalDetailHistory
-          detail={detailTransaction}
-          countryCode={countryCode}
-        />
-        <InfiniteScroll
-          style={{
-            marginLeft: -20,
-            paddingLeft: 20,
-            marginRight: -20,
-            paddingRight: 20,
-          }}
-          dataLength={dataTransaction.length}
-          next={this.fetchMoreData}
-          hasMore={
-            dataTransactionLength === dataTransaction.length ? false : true
-          }
-          loader={
-            <Lottie
-              options={{ animationData: loadingGif }}
-              style={{ height: 50 }}
-            />
-          }
-        >
-          {loadingShow ? (
-            <Row>
-              <Col sm={6}>{this.viewShimmer(50)}</Col>
-              <Col sm={6}>{this.viewShimmer(50)}</Col>
-            </Row>
-          ) : (
-            <Row>
-              {dataTransaction.map((items, keys) => (
-                <Col
-                  key={keys}
-                  sm={6}
-                  data-toggle='modal'
-                  data-target='#detail-transaction-modal'
-                  onClick={() => this.setState({ detailTransaction: items })}
-                >
-                  <HistoryCard items={items} countryCode={countryCode} />
-                </Col>
-              ))}
-              {dataTransactionLength === 0 && (
-                <div>
-                  {/* <Lottie
-                      options={{ animationData: emptyGif }}
-                      style={{ height: 250 }}
-                    /> */}
-                  <img
-                    src={config.url_emptyImage}
-                    alt='is empty'
-                    style={{ marginTop: 30 }}
-                  />
-                  <div>Data is empty</div>
-                </div>
-              )}
-            </Row>
-          )}
-        </InfiniteScroll>
-      </LoadingOverlayCustom>
-    );
-  }
-}
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    account: state.auth.account.idToken.payload,
-  };
+  return (
+    <>
+      <ModalDetailHistory detail={detailData} countryCode />
+      <Grid
+        container
+        direction='row'
+        justifyContent='space-between'
+        alignItems='center'
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 4, md: 12 }}
+      >
+        {data.map((items, index) => {
+          return (
+            <Grid
+              item
+              xs={4}
+              md={6}
+              key={index}
+              data-toggle='modal'
+              data-target='#detail-transaction-modal'
+              onClick={() => setDetailData(items)}
+            >
+              <HistoryCard items={items} countryCode={countryCode} />
+            </Grid>
+          );
+        })}
+      </Grid>
+    </>
+  );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
+HistoryTransaction.defaultProps = {
+  countryCode: 'ID',
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(HistoryTransaction);
+HistoryTransaction.propTypes = {
+  countryCode: PropTypes.string,
+};
+
+export default HistoryTransaction;
