@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import loadable from "@loadable/component";
 import { connect } from "react-redux";
 // import config from "../config";
-import { CampaignAction } from '../redux/actions/CampaignAction';
+import { CampaignAction } from "../redux/actions/CampaignAction";
 
 const MySVC = loadable(() => import("../components/svc/MySVC"));
 // const BuySVC = loadable(() => import("../components/svc/BuySVC"));
@@ -15,24 +15,28 @@ class StoreValueCard extends Component {
     this.state = {
       isMySVC: true,
       loadingShow: true,
-      dataStampsRasio: "0:0",
       dataStamps: {},
       campaignStampsAnnouncement: false,
       stampsDetail: {},
       totalPoint: 0,
       campaignPointActive: {},
       campaignPointAnnouncement: false,
-      detailPoint: null
+      detailPoint: null,
     };
   }
 
   componentDidMount = async () => {
-    await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "true" }, this.props.account.companyId));
-  }
+    await this.props.dispatch(
+      CampaignAction.getCampaignPoints(
+        { history: "true" },
+        this.props.account.companyId
+      )
+    );
+  };
 
-  componentDidUpdate(prevProps){
-    if(prevProps.pointData !== this.props.pointData){
-      this.setState(this.props.pointData)
+  componentDidUpdate(prevProps) {
+    if (prevProps.pointData !== this.props.pointData) {
+      this.setState(this.props.pointData);
     }
   }
 
@@ -59,14 +63,12 @@ class StoreValueCard extends Component {
                 display: "flex",
                 height: 40,
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
               className="background-theme"
             >
-              <Link to={'/profile'}>
-                <div
-                  style={{ marginLeft: 10, fontSize: 16 }}
-                >
+              <Link to={"/profile"}>
+                <div style={{ marginLeft: 10, fontSize: 16 }}>
                   <i className="fa fa-chevron-left"></i> Back
                 </div>
               </Link>
@@ -118,7 +120,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 

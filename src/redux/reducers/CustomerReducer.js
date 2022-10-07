@@ -1,8 +1,9 @@
-import { CONSTANT } from '../../helpers';
+import { CONSTANT } from "../../helpers";
 const defaultState = {
   isOpen: true,
   myVoucher: null,
   fields: null,
+  stamps: null,
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -21,12 +22,17 @@ export default function reducer(state = defaultState, action) {
         ...state,
         fields: action.data,
       };
-    case 'SET_DEFAULT_PHONE_NUMBER':
+    case CONSTANT.GET_CAMPAIGN_STAMPS:
+      return {
+        ...state,
+        stamps: action.payload,
+      };
+    case "SET_DEFAULT_PHONE_NUMBER":
       return {
         ...state,
         defaultPhoneNumber: action.data,
       };
-    case 'SET_DEFAULT_EMAIL':
+    case "SET_DEFAULT_EMAIL":
       return {
         ...state,
         defaultEmail: action.data,

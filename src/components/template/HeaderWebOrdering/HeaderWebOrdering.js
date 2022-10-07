@@ -1,86 +1,86 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, withRouter, useHistory } from 'react-router-dom';
-import Badge from '@mui/material/Badge';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import Typography from '@mui/material/Typography';
-import PlaceIcon from '@mui/icons-material/Place';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ShoppingBasket from '@mui/icons-material/ShoppingBasket';
-import { CONSTANT } from '../../../helpers';
-import config from '../../../config';
-import { OutletAction } from '../../../redux/actions/OutletAction';
-import LoginRegister from '../../login-register';
-import useMobileSize from 'hooks/useMobileSize';
-import Sidebar from './components/Sidebar';
-import { getLogoInfo } from '../../../redux/actions/LogoAction';
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, withRouter, useHistory } from "react-router-dom";
+import Badge from "@mui/material/Badge";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Typography from "@mui/material/Typography";
+import PlaceIcon from "@mui/icons-material/Place";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ShoppingBasket from "@mui/icons-material/ShoppingBasket";
+import { CONSTANT } from "../../../helpers";
+import config from "../../../config";
+import { OutletAction } from "../../../redux/actions/OutletAction";
+import LoginRegister from "../../login-register";
+import useMobileSize from "hooks/useMobileSize";
+import Sidebar from "./components/Sidebar";
+import { getLogoInfo } from "../../../redux/actions/LogoAction";
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = () => {
   const { color } = useSelector((state) => state.theme);
   const mobileSize = useMobileSize();
   const result = {
     container: {
-      display: 'flex',
-      justifyContent: 'center',
-      position: 'fixed',
+      display: "flex",
+      justifyContent: "center",
+      position: "fixed",
       top: 0,
-      width: '100%',
+      width: "100%",
       zIndex: 999,
-      backgroundColor: '#f2f2f2',
-      paddingTop: '1px',
-      paddingBottom: '8px',
+      backgroundColor: "#f2f2f2",
+      paddingTop: "1px",
+      paddingBottom: "8px",
     },
     wrapNavbar: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '80%',
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "80%",
     },
     wrapNavbarForMobile: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '95%',
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "95%",
     },
     wrapList: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       marginBottom: 0,
     },
     childList: {
-      paddingTop: '1rem',
+      paddingTop: "1rem",
     },
     wrapOutletName: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingTop: '10px',
-      width: '100%',
-      color: '#4D86A0',
-      marginTop: '2px',
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingTop: "10px",
+      width: "100%",
+      color: "#4D86A0",
+      marginTop: "2px",
     },
     colorIconMenu: {
-      color: 'black',
-      cursor: 'pointer',
+      color: "black",
+      cursor: "pointer",
     },
     outlet: {
-      fontWeight: 'bold',
-      textAlign: 'center',
+      fontWeight: "bold",
+      textAlign: "center",
       fontSize: 12,
-      display: 'inline-flex',
-      align: 'center',
+      display: "inline-flex",
+      align: "center",
     },
     outletText: {
-      className: 'color',
-      fontSize: '13px',
-      textAlign: 'center',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
+      className: "color",
+      fontSize: "13px",
+      textAlign: "center",
+      textOverflow: "ellipsis",
+      overflow: "hidden",
     },
     outletWarpStyle: {
       marginLeft: 0.8,
@@ -94,17 +94,17 @@ const useStyles = () => {
       paddingTop: 4,
       paddingBottom: 4,
       borderRadius: 10,
-      fontSize: '13px',
+      fontSize: "13px",
     },
     iconBasket: {
       fontSize: 10,
-      fontWeight: 'bold',
+      fontWeight: "bold",
       marginRight: 3,
       marginTop: 5,
       color: color.primary,
     },
     logoAndOuletName: {
-      width: mobileSize ? 'fit-content' : '9.5em',
+      width: mobileSize ? "fit-content" : "9.5em",
       height: 50,
     },
   };
@@ -119,7 +119,7 @@ const HeaderWebOrdering = () => {
   const dispatch = useDispatch();
 
   const [enableOrdering, setEnableOrdering] = useState(true);
-  const [logo, setLogo] = useState('');
+  const [logo, setLogo] = useState("");
   const [basketLength, setBasketLength] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
@@ -128,12 +128,12 @@ const HeaderWebOrdering = () => {
 
   const handleAllowedURL = (url) => {
     const allowedOriginUrl =
-      'https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com';
+      "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com";
     const getOriginUrlImg = new URL(url).origin;
     if (allowedOriginUrl === getOriginUrlImg) {
       return url;
     } else {
-      return '';
+      return "";
     }
   };
 
@@ -147,9 +147,9 @@ const HeaderWebOrdering = () => {
     }
   };
   const dispatchActionOrderingStatus = (dispatch) => {
-    if (defaultOutlet.orderingStatus === 'UNAVAILABLE' && outlets.length > 1) {
+    if (defaultOutlet.orderingStatus === "UNAVAILABLE" && outlets.length > 1) {
       const firstAvailableOutlet = outlets.find(
-        (outlet) => outlet.orderingStatus === 'AVAILABLE'
+        (outlet) => outlet.orderingStatus === "AVAILABLE"
       );
       if (firstAvailableOutlet) {
         dispatch({
@@ -161,7 +161,7 @@ const HeaderWebOrdering = () => {
   };
   const handleUpdateEnableOrdering = (setEnableOrdering) => {
     const enableOrdering = setting?.find((items) => {
-      return items.settingKey === 'EnableOrdering';
+      return items.settingKey === "EnableOrdering";
     });
     if (enableOrdering) {
       setEnableOrdering(enableOrdering);
@@ -172,7 +172,7 @@ const HeaderWebOrdering = () => {
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
     const logoCompany = setting.find((items) => {
-      return items.settingKey === 'Logo';
+      return items.settingKey === "Logo";
     });
     dispatch(OutletAction.fetchAllOutlet(true));
     dispatchActionOrderingStatus(dispatch);
@@ -181,7 +181,7 @@ const HeaderWebOrdering = () => {
   }, [setting]);
 
   useEffect(() => {
-    if (history.location.pathname === '/') {
+    if (history.location.pathname === "/") {
       setShowOutletSelection(true);
     } else {
       setShowOutletSelection(false);
@@ -200,7 +200,7 @@ const HeaderWebOrdering = () => {
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
-    history.push('/');
+    history.push("/");
   };
 
   const renderOutletNamed = () => {
@@ -211,10 +211,10 @@ const HeaderWebOrdering = () => {
       return (
         <div
           style={styles.wrapOutletName}
-          onClick={() => history.push('./outlets')}
+          onClick={() => history.push("./outlets")}
         >
-          <PlaceIcon sx={{ fontSize: '17px' }} />
-          <Typography sx={{ fontSize: '15px', fontWeight: 'bold' }}>
+          <PlaceIcon sx={{ fontSize: "17px" }} />
+          <Typography sx={{ fontSize: "15px", fontWeight: "bold" }}>
             {defaultOutlet?.name}
           </Typography>
           <ChevronRightIcon />
@@ -224,11 +224,11 @@ const HeaderWebOrdering = () => {
       return (
         <Typography
           sx={{
-            fontSize: '15px',
-            marginTop: '7px',
-            fontWeight: 'bold',
-            color: '#4D86A0',
-            textAlign: 'center',
+            fontSize: "15px",
+            marginTop: "7px",
+            fontWeight: "bold",
+            color: "#4D86A0",
+            textAlign: "center",
           }}
         >
           Choose Outlet
@@ -241,7 +241,7 @@ const HeaderWebOrdering = () => {
     if (enableOrdering) {
       return (
         <ListItem>
-          <Link to='/'>Menu</Link>
+          <Link to="/">Menu</Link>
         </ListItem>
       );
     }
@@ -251,7 +251,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn || !enableOrdering) {
       return (
         <ListItem>
-          <Link to='/profile'>Profile</Link>
+          <Link to="/profile">Profile</Link>
         </ListItem>
       );
     }
@@ -260,7 +260,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn) {
       return (
         <ListItem>
-          <Link to='/history'>History</Link>
+          <Link to="/history">History</Link>
         </ListItem>
       );
     }
@@ -269,7 +269,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn) {
       return (
         <ListItem>
-          <Link to='/inbox'>Inbox</Link>
+          <Link to="/inbox">Inbox</Link>
         </ListItem>
       );
     }
@@ -278,7 +278,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn) {
       return (
         <ListItem>
-          <Link to='/voucher'>Voucher</Link>
+          <Link to="/voucher">Voucher</Link>
         </ListItem>
       );
     }
@@ -286,8 +286,8 @@ const HeaderWebOrdering = () => {
   const linkLogout = () => {
     if (isLoggedIn) {
       return (
-        <ListItem data-toggle='modal' onClick={handleLogout}>
-          <Typography style={{ color: 'red', fontSize: '15px' }}>
+        <ListItem data-toggle="modal" onClick={handleLogout}>
+          <Typography style={{ color: "red", fontSize: "15px" }}>
             Logout
           </Typography>
         </ListItem>
@@ -297,11 +297,11 @@ const HeaderWebOrdering = () => {
   const modalLogin = () => {
     if (!isLoggedIn) {
       return (
-        <ListItem data-toggle='modal' data-target='#login-register-modal'>
+        <ListItem data-toggle="modal" data-target="#login-register-modal">
           <input
-            type='submit'
-            name='login'
-            value='LogIn / SignUp'
+            type="submit"
+            name="login"
+            value="LogIn / SignUp"
             style={styles.input}
           />
         </ListItem>
@@ -311,9 +311,9 @@ const HeaderWebOrdering = () => {
   const renderBasket = () => {
     if (enableOrdering) {
       return (
-        <Link id='cart-icon' to='/cart'>
+        <Link id="cart-icon" to="/cart">
           <Badge
-            color='info'
+            color="info"
             badgeContent={basketLength}
             style={styles.iconBasket}
           >
@@ -321,14 +321,14 @@ const HeaderWebOrdering = () => {
               style={{
                 width: 35,
                 height: 35,
-                borderRadius: '50%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                border: '1px solid rgb(0 0 0)',
+                borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "1px solid rgb(0 0 0)",
               }}
             >
-              <ShoppingBasket sx={{ width: 25, height: 25, color: 'black' }} />
+              <ShoppingBasket sx={{ width: 25, height: 25, color: "black" }} />
             </div>
           </Badge>
         </Link>
@@ -344,15 +344,15 @@ const HeaderWebOrdering = () => {
   const renderLogoAndOutletNamed = () => (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       {logo && (
-        <Link>
-          <img style={styles.logoAndOuletName} src={logo} />
+        <Link to="/">
+          <img style={styles.logoAndOuletName} alt={"Logo"} src={logo} />
         </Link>
       )}
       {renderOutletNamed()}

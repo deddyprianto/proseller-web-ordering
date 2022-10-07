@@ -1,14 +1,14 @@
-import { CONSTANT } from '../../helpers';
-import { CRMService } from '../../Services/CRMService';
-import _ from 'lodash';
+import { CONSTANT } from "../../helpers";
+import { CRMService } from "../../Services/CRMService";
+import _ from "lodash";
 
-function getCampaignStamps(payload = null) {
+function getCampaignStampsOld(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       payload,
-      'customer/stamps',
-      'bearer'
+      "customer/stamps",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -43,7 +43,7 @@ function getCampaignStamps(payload = null) {
         };
         stampsTrueItem = _.filter(
           response.Data.stamps.stampsItem,
-          _.iteratee(['stampsStatus', true])
+          _.iteratee(["stampsStatus", true])
         );
 
         let dataStampsRatio = `${stampsTrueItem.length}":"${response.Data.stamps.stampsItem.length}`;
@@ -51,22 +51,23 @@ function getCampaignStamps(payload = null) {
 
         if (
           response.Data.trigger &&
-          response.Data.trigger.campaignTrigger === 'COMPLETE_PROFILE' &&
+          response.Data.trigger.campaignTrigger === "COMPLETE_PROFILE" &&
           !response.Data.trigger.status
         ) {
           campaignStampsAnnouncement = true;
         }
 
+        let stampsImage = "";
+
         if (
           dataStamps &&
           dataStampsRatio &&
           dataStamps.length > 0 &&
-          dataStamps[0][dataStampsRatio.split(':')[0]] &&
-          dataStamps[0][dataStampsRatio.split(':')[0]].reward
+          dataStamps[0][dataStampsRatio.split(":")[0]] &&
+          dataStamps[0][dataStampsRatio.split(":")[0]].reward
         ) {
-          let image =
-            dataStamps[0][dataStampsRatio.split(':')[0]].reward.imageURL;
-          this.setState({ image });
+          stampsImage =
+            dataStamps[0][dataStampsRatio.split(":")[0]].reward.imageURL;
         }
 
         response.Data = {
@@ -74,21 +75,71 @@ function getCampaignStamps(payload = null) {
           dataStamps,
           campaignStampsAnnouncement,
           stampsDetail,
+          ...(stampsImage && { stampsImage }),
         };
       }
     }
-    dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_STAMPS));
+    dispatch(setData(response, CONSTANT.GET_CAMPAIGN_STAMPS));
     return response;
+  };
+}
+
+function getCampaignStamps() {
+  return async (dispatch) => {
+    const response = await CRMService.api(
+      "GET",
+      null,
+      "customer/stamps",
+      "bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log("Error on getCampaignStamps:", response);
+      dispatch(setData(null, CONSTANT.GET_CAMPAIGN_STAMPS));
+    }
+
+    if (
+      response.data &&
+      response.data.stamps &&
+      response.data.stamps.stampsItem
+    ) {
+      const { stamps, expiryDate, trigger } = response.data;
+      const { stampsTitle, stampsDesc, stampsSubTitle, stampsItem } = stamps;
+      const totalStampsEarned = stampsItem.reduce((acc, item) => {
+        if (item.stampsStatus === true) {
+          return acc + 1;
+        }
+        return acc;
+      }, 0);
+
+      const campaignStampsAnnouncement =
+        trigger &&
+        trigger.campaignTrigger === "COMPLETE_PROFILE" &&
+        !trigger.status;
+
+      const stampsImage = stampsItem[totalStampsEarned - 1].reward.imageURL;
+
+      const payload = {
+        totalStampsEarned,
+        stampsTitle,
+        stampsDesc,
+        stampsSubTitle,
+        expiryDate,
+        stampsItem,
+        campaignStampsAnnouncement,
+        ...(stampsImage && { stampsImage }),
+      };
+      dispatch({ type: CONSTANT.GET_CAMPAIGN_STAMPS, payload });
+    }
   };
 }
 
 function getCampaignPoints(payload = null, companyId = null) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       payload,
-      'customer/point',
-      'bearer'
+      "customer/point",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -97,21 +148,21 @@ function getCampaignPoints(payload = null, companyId = null) {
         ? response.Data.totalPoint
         : 0;
       let campaignPointActive = response.Data.campaignActive;
-      let pointsToRebateRatio = response.Data.pointsToRebateRatio || '0:0';
+      let pointsToRebateRatio = response.Data.pointsToRebateRatio || "0:0";
       let campaignPointAnnouncement = false;
 
       let response_ = await dispatch(getCampaignByPoints({ companyId }));
-      let netSpendToPoint = '0:0';
-      let roundingOptions = 'INTEGER';
+      let netSpendToPoint = "0:0";
+      let roundingOptions = "INTEGER";
       if (response_.ResultCode === 200 && response_.Data.length > 0) {
         response_ = response_.Data[0];
         roundingOptions = response_.points.roundingOptions;
         netSpendToPoint =
           response_.points.netSpendToPoint0 === undefined
-            ? '0:0'
+            ? "0:0"
             : `${response_.points.netSpendToPoint0}:${response_.points.netSpendToPoint1}`;
       }
-      let history = _.groupBy(response.Data.history, 'expiryDate');
+      let history = _.groupBy(response.Data.history, "expiryDate");
       let historyGroup = [];
       _.forEach(history, (group) => {
         let pointBalance = 0;
@@ -138,7 +189,7 @@ function getCampaignPoints(payload = null, companyId = null) {
 
       if (
         response.Data.trigger &&
-        response.Data.trigger.campaignTrigger === 'COMPLETE_PROFILE' &&
+        response.Data.trigger.campaignTrigger === "COMPLETE_PROFILE" &&
         !response.Data.trigger.status
       ) {
         campaignPointAnnouncement = true;
@@ -154,7 +205,7 @@ function getCampaignPoints(payload = null, companyId = null) {
         campaignPointAnnouncement,
         detailPoint,
         pointsToRebateRatio,
-        xstep: roundingOptions === 'DECIMAL' ? 0.01 : 1,
+        xstep: roundingOptions === "DECIMAL" ? 0.01 : 1,
       };
     }
     dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_POINTS));
@@ -165,10 +216,10 @@ function getCampaignPoints(payload = null, companyId = null) {
 function getCampaignByPoints(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       payload,
-      'campaign/points',
-      'bearer'
+      "campaign/points",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
