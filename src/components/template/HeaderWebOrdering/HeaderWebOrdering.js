@@ -20,6 +20,7 @@ const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = () => {
   const { color } = useSelector((state) => state.theme);
+
   const mobileSize = useMobileSize();
   const result = {
     container: {
@@ -30,7 +31,7 @@ const useStyles = () => {
       width: '100%',
       zIndex: 999,
       backgroundColor: '#f2f2f2',
-      paddingTop: '1px',
+      paddingTop: '8px',
       paddingBottom: '8px',
     },
     wrapNavbar: {
@@ -125,6 +126,14 @@ const HeaderWebOrdering = () => {
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { defaultOutlet, outlets } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
+  const [mode, setMode] = useState();
+
+  useEffect(() => {
+    const isGuestMode = localStorage.getItem('settingGuestMode');
+    if (isGuestMode === 'GuestMode') {
+      setMode(isGuestMode);
+    }
+  }, [localStorage]);
 
   const handleAllowedURL = (url) => {
     const allowedOriginUrl =
@@ -318,6 +327,12 @@ const HeaderWebOrdering = () => {
             style={styles.iconBasket}
           >
             <div
+              data-toggle='modal'
+              data-target={
+                mode === 'GuestMode' || isLoggedIn
+                  ? ''
+                  : '#login-register-modal'
+              }
               style={{
                 width: 35,
                 height: 35,

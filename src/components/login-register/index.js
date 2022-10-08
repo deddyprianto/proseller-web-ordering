@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import 'react-phone-input-2/lib/style.css';
 import { connect } from 'react-redux';
@@ -11,8 +12,7 @@ import SignUp from './Signup';
 import { lsLoad, lsStore } from '../../helpers/localStorage';
 
 import config from '../../config';
-import { isEmptyArray } from 'helpers/CheckEmpty';
-import moment from 'moment';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const regEmail =
   /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -43,11 +43,12 @@ const LoginRegister = (props) => {
   const [method, setMethod] = useState('phone' || props.defaultEmail);
   const [userStatus, setUserStatus] = useState('NOT_CHECKED');
   const [payloadResponse, setPayloadResponse] = useState({});
-
+  const [guessCheckout, setGuessCheckout] = useState();
   const [btnSend, setBtnSend] = useState(true);
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
-  const [countdownInterval, setCountdownInterval] = useState(0);
+  const [counter, setCounter] = useState('00');
+  const [counterMinutes, setCounterMinutes] = useState('00');
   const [sendCounter, setSendCounter] = useState(0);
   const [txtOtp, setTxtOtp] = useState('');
   const [btnSubmit, setBtnSubmit] = useState(false);
@@ -75,51 +76,78 @@ const LoginRegister = (props) => {
   const [errorName, setErrorName] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
+  //   const [errorBirthdate, setErrorBirthDate] = useState("");
   const [errorPhone, setErrorPhone] = useState('');
   const [inputs, setInputs] = useState({});
-
-  const [settingFilterEmail] = props.setting.filter(
-    (setting) => setting.settingKey === 'RegistrationEmailMandatory'
-  );
-
-  const countdown = () => {
-    let second = 59;
-    let minute = sendCounter >= 2 ? 4 : 0;
-
-    setSeconds(second);
-    setMinutes(minute);
-
-    let interval = setInterval(() => {
-      second = second - 1;
-      setSeconds(second);
-
-      if (second === 0) {
-        if (!minute && !second) {
-          setBtnSend(true);
-          clearInterval(interval);
-        } else {
-          second = 60;
-          minute = minute - 1;
-          setMinutes(minute);
-        }
-      }
-    }, 1000);
-
-    if (countdownInterval) {
-      clearInterval(countdownInterval);
-    }
-
-    setCountdownInterval(interval);
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    Swal.showLoading();
+    setErrorPhone('');
+    setErrorEmail('');
+    const otpData = lsLoad(config.prefix + '_otp') || null;
+    if (otpData) {
+      const waitTime = method === 'phone' ? 60 : 300;
+      const countdown =
+        waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
+      if (countdown > 0) {
+        const counterMinutesCountdown = Math.floor(countdown / 60);
+        const counterCountdown = countdown % 60;
+
+        setBtnSend(false);
+        setSendCounter(otpData.counter || 0);
+        setMinutes(counterMinutesCountdown);
+        setCounterMinutes(`${counterMinutesCountdown}`);
+        setSeconds(counterCountdown);
+        setCounter(`${counterCountdown}`);
+
+        let secondsTimer = counterCountdown;
+        let timer = setInterval(() => {
+          secondsTimer = secondsTimer - 1;
+          let counterTimer =
+            secondsTimer.toString().length < 2
+              ? '0' + secondsTimer
+              : secondsTimer;
+
+          setCounter(counterTimer);
+          setSeconds(secondsTimer);
+
+          if (secondsTimer === 0) {
+            let minutesTimer = minutes - 1;
+            let counterMinutesTimer =
+              minutesTimer.toString().length < 2
+                ? '0' + minutesTimer
+                : minutesTimer;
+
+            setCounterMinutes(counterMinutesTimer);
+            setMinutes(minutesTimer);
+            setSeconds(59);
+            setCounter('59');
+
+            if (minutesTimer < 0 && secondsTimer === 0) {
+              clearInterval(timer);
+              setBtnSend(true);
+            }
+          }
+        }, 1000);
+      }
+    }
+  }, [method]);
+
+  useEffect(() => {
+    setIsLoading(true);
     if (props) {
       const enableRegisterWithPassword = props.setting.find((items) => {
         return items.settingKey === 'EnableRegisterWithPassword';
       });
       if (enableRegisterWithPassword) {
         setEnableRegisterWithPassword(enableRegisterWithPassword.settingValue);
+      }
+      const settingGuestCheckout = props.setting.find((items) => {
+        return items.settingKey === 'GuestMode';
+      });
+
+      if (settingGuestCheckout?.settingValue) {
+        setGuessCheckout(settingGuestCheckout.settingKey);
       }
 
       const loginByEmail = props.setting.find((items) => {
@@ -129,6 +157,7 @@ const LoginRegister = (props) => {
       });
       if (loginByEmail) {
         setLoginByEmail(true);
+        setMethod('email');
       }
 
       const loginByMobile = props.setting.find((items) => {
@@ -138,6 +167,7 @@ const LoginRegister = (props) => {
       });
       if (loginByMobile) {
         setLoginByMobile(true);
+        setMethod('phone');
       }
 
       const mobileOTP = props.setting.find((items) => {
@@ -180,53 +210,15 @@ const LoginRegister = (props) => {
       }
     }
 
-    Swal.close();
+    setIsLoading(false);
   }, [props]);
-
-  const handleSendOTP = async (sendBy = 'SMSOTP') => {
-    if (!enableRegisterWithPassword) {
-      let payloadResponseOtp = payloadResponse;
-      let phoneNumberOtp = phoneNumber;
-      let sendCounterOtp = sendCounter + 1;
-      if (phoneNumberOtp.charAt(0) !== '+')
-        phoneNumberOtp = '+' + phoneNumberOtp.trim();
-
-      setSendCounter(sendCounterOtp);
-      setBtnSend(false);
-
-      const otpLastTry = new Date();
-      lsStore(config.prefix + '_otp', {
-        lastTry: otpLastTry,
-        counterTimer: sendCounterOtp,
-      });
-
-      countdown();
-
-      try {
-        const payload = { phoneNumber: phoneNumberOtp, sendBy };
-
-        if (sendCounter > 2) {
-          payload.email = payloadResponseOtp.email;
-        }
-
-        let response = await props.dispatch(AuthActions.sendOtp(payload));
-        response = response.Data;
-
-        if (response.status === false) {
-          throw response.status;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
 
   const handleInput = (jenis, data) => {
     if (jenis) {
       setInputs({ ...inputs, [jenis]: data });
     }
     switch (jenis) {
-      case 'phoneNumber':
+      case 'phoneNumber': {
         const number = data.trim();
         setPhoneNumber(data);
         if (number && number.length > 7) {
@@ -240,6 +232,7 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         }
         break;
+      }
 
       case 'txtOtp':
         setTxtOtp(data);
@@ -264,7 +257,7 @@ const LoginRegister = (props) => {
         if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
           setBtnSubmit(false);
           setErrorPassword(
-            `Password must contain 1 uppercase, 1 lowercase, and 1 special character`
+            'Password must contain 1 uppercase, 1 lowercase, and 1 special character'
           );
           return;
         } else {
@@ -273,7 +266,7 @@ const LoginRegister = (props) => {
         }
         break;
 
-      case 'email':
+      case 'email': {
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
@@ -291,6 +284,7 @@ const LoginRegister = (props) => {
           setBtnSubmit(true);
         }
         break;
+      }
 
       default:
         if (data) {
@@ -314,18 +308,14 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         } else if (/^[A-Za-z\s]+$/.test(data)) {
           setErrorName('');
-          if (!settingFilterEmail.settingValue) {
-            setBtnSubmit(true);
-          } else {
-            setBtnSubmit(false);
-          }
+          setBtnSubmit(true);
         } else {
           setErrorName('Name is alphabets only');
           setBtnSubmit(false);
         }
         break;
 
-      case 'phoneNumber':
+      case 'phoneNumber': {
         const number = data.trim();
         setPhoneNumber(data);
         if (number && number.length > 7) {
@@ -339,6 +329,7 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         }
         break;
+      }
 
       case 'txtOtp':
         setTxtOtp(data);
@@ -359,7 +350,7 @@ const LoginRegister = (props) => {
           setBtnSubmit(false);
         } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
           setErrorPassword(
-            `Password must contain 1 uppercase, 1 lowercase, and 1 special character`
+            'Password must contain 1 uppercase, 1 lowercase, and 1 special character'
           );
           setBtnSubmit(false);
         } else {
@@ -368,35 +359,26 @@ const LoginRegister = (props) => {
         }
         break;
 
-      case 'email':
-        let email = data.toLowerCase().trim();
+      case 'email': {
+        const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
 
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
         if (email === '') {
-          if (settingFilterEmail.settingValue) {
-            setErrorEmail('Email is required');
-            setBtnSubmit(false);
-          } else {
-            setErrorEmail('');
-            setBtnSubmit(true);
-          }
+          setErrorEmail('Email is required');
+          setBtnSubmit(false);
           return;
-        } else if (!checkEmail && email) {
-          if (settingFilterEmail.settingValue) {
-            setErrorEmail('Email not valid');
-            setBtnSubmit(false);
-          }
+        } else if (!checkEmail) {
           setErrorEmail('Email not valid');
           setBtnSubmit(false);
         } else {
           setErrorEmail('');
           setBtnSubmit(true);
         }
-
         break;
+      }
 
       case 'birthDate':
         setBirthDate(data);
@@ -417,8 +399,113 @@ const LoginRegister = (props) => {
     }
   };
 
-  const handleMobileCheck = async (countryCode) => {
-    await Swal.showLoading();
+  const handleSendOTP = async (sendBy = 'SMSOTP') => {
+    if (!enableRegisterWithPassword) {
+      let payloadResponseOtp = payloadResponse;
+      let phoneNumberOtp = phoneNumber;
+      let sendCounterOtp = sendCounter + 1;
+      if (phoneNumberOtp.charAt(0) !== '+')
+        phoneNumberOtp = '+' + phoneNumberOtp.trim();
+
+      setSendCounter(sendCounterOtp);
+      setBtnSend(false);
+
+      if (sendCounter <= 2) {
+        const countdown = 59;
+        const counterMinutesCountDown = Math.floor(countdown / 60);
+        const counterCountDown = countdown % 60;
+
+        setSendCounter(sendCounterOtp);
+        setMinutes(counterMinutesCountDown);
+        setCounterMinutes(`${counterMinutesCountDown}`);
+        setSeconds(counterCountDown);
+        setCounter(`${counterCountDown}`);
+
+        let secondsTimer = counterCountDown;
+
+        let timer = setInterval(() => {
+          secondsTimer = secondsTimer - 1;
+          const counterTimer =
+            secondsTimer.toString().length < 2
+              ? '0' + secondsTimer
+              : secondsTimer;
+
+          setCounter(counterTimer);
+          setSeconds(secondsTimer);
+
+          if (secondsTimer === 0) {
+            clearInterval(timer);
+
+            setBtnSend(true);
+          }
+        }, 1000);
+      } else {
+        setSendCounter(sendCounterOtp);
+        setMinutes(4);
+        setCounterMinutes('04');
+        setSeconds(59);
+        setCounter('59');
+
+        let secondsTimer = 0;
+        let minutesTimer = 0;
+
+        let timer = setInterval(() => {
+          secondsTimer = secondsTimer - 1;
+          let counterTimer =
+            secondsTimer.toString().length < 2
+              ? '0' + secondsTimer
+              : secondsTimer;
+
+          setCounter(counterTimer);
+          setSeconds(secondsTimer);
+
+          if (secondsTimer === 0) {
+            minutesTimer = minutesTimer - 1;
+            let counterMinutesTimer =
+              minutesTimer.toString().length < 2
+                ? '0' + minutesTimer
+                : minutesTimer;
+
+            setCounterMinutes(counterMinutesTimer);
+            setMinutes(minutesTimer);
+            setCounter('59');
+            setSeconds(59);
+
+            if (minutesTimer < 0 && seconds === 0) {
+              clearInterval(timer);
+              setBtnSend(true);
+            }
+          }
+        }, 1000);
+      }
+
+      const otpLastTry = new Date();
+      lsStore(config.prefix + '_otp', {
+        lastTry: otpLastTry,
+        counterTimer: sendCounterOtp,
+      });
+
+      try {
+        const payload = { phoneNumber: phoneNumberOtp, sendBy };
+
+        if (sendCounter > 2) {
+          payload.push({ email: payloadResponseOtp.email });
+        }
+
+        let response = await props.dispatch(AuthActions.sendOtp(payload));
+        response = response.Data;
+
+        if (response.status === false) {
+          throw response.status;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const handleMobileCheck = async () => {
+    setIsLoading(true);
 
     let response = await props.dispatch(AuthActions.check({ phoneNumber }));
 
@@ -451,7 +538,7 @@ const LoginRegister = (props) => {
         setPayloadResponse(response.data);
         setBtnSubmit(false);
 
-        await Swal.close();
+        setIsLoading(false);
       }
     } else {
       if (max_retries < 5) {
@@ -474,11 +561,11 @@ const LoginRegister = (props) => {
       }
     }
 
-    await Swal.close();
+    await setIsLoading(false);
   };
 
   const handleMobileLogin = async (withOtp) => {
-    Swal.showLoading();
+    setIsLoading(true);
 
     try {
       let payload = { phoneNumber: payloadResponse.phoneNumber };
@@ -521,6 +608,7 @@ const LoginRegister = (props) => {
       );
       lsStore(config.prefix + '_offlineCart', offlineCart, true);
       const url = window.location.href.split('?')[0];
+      setIsLoading(false);
       window.location.replace(url);
       window.location.reload();
     } catch (err) {
@@ -558,17 +646,17 @@ const LoginRegister = (props) => {
       mandatory.push({ fieldName: 'email', displayName: 'Email' });
       mandatory.push({ fieldName: 'password', displayName: 'Password' });
 
-      const customFields = !isEmptyArray(fields)
-        ? fields.reduce((acc, field) => {
-            if (!field.signUpField) {
-              return { ...acc };
-            }
-            return {
-              ...acc,
-              [field.fieldName]: inputs[field.fieldName] || '',
-            };
-          })
-        : [];
+      const customFields =
+        fields &&
+        fields.reduce((acc, field) => {
+          if (!field.signUpField) {
+            return { ...acc };
+          }
+          return {
+            ...acc,
+            [field.fieldName]: inputs[field.fieldName] || '',
+          };
+        });
 
       if (customFields) {
         delete customFields.displayName;
@@ -590,7 +678,7 @@ const LoginRegister = (props) => {
 
       let payload = {
         name,
-        email: email || 'phonenumber@proseller.io',
+        email,
         password: enableRegisterWithPassword ? password : randomPassword,
         referralCode,
         birthDate,
@@ -641,7 +729,7 @@ const LoginRegister = (props) => {
         }
       }
 
-      Swal.showLoading();
+      setIsLoading(true);
 
       const response = await props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
@@ -677,14 +765,14 @@ const LoginRegister = (props) => {
             }
           }
 
-          Swal.close();
+          setIsLoading(false);
 
           setPayloadResponse(payload);
           setBtnSubmit(false);
           setSendCounter(0);
           setBtnSend(false);
         } catch (error) {
-          Swal.close();
+          setIsLoading(false);
         }
       }
     } catch (err) {
@@ -703,8 +791,79 @@ const LoginRegister = (props) => {
 
   // Email login mode
 
+  const handleSendEmailOTP = async () => {
+    setIsLoading(true);
+    if (!enableRegisterWithPassword) {
+      const countdown = 299;
+      const counterMinutesOtp = Math.floor(countdown / 60);
+      const minutesOtp = 4;
+      const counterOtp = countdown % 60;
+      const otpLastTry = new Date();
+
+      setBtnSend(false);
+      setMinutes(minutesOtp);
+      setCounterMinutes(counterMinutesOtp);
+      setSeconds(counter);
+      setCounter(`${counter}`);
+
+      setSendCounter(sendCounter + 1);
+      lsStore(config.prefix + '_otp', {
+        lastTry: otpLastTry,
+        counter: sendCounter + 1,
+      });
+
+      let secondsTimer = counterOtp;
+      let minutesTimer = minutesOtp;
+
+      var timer = setInterval(() => {
+        secondsTimer = secondsTimer - 1;
+        let counterTimer =
+          secondsTimer.toString().length < 2
+            ? '0' + secondsTimer
+            : secondsTimer;
+
+        setSeconds(secondsTimer);
+        setCounter(counterTimer);
+
+        if (secondsTimer === 0) {
+          minutesTimer = minutesTimer - 1;
+          let counterMinutesTimer =
+            minutesTimer.toString().length < 2
+              ? '0' + minutesTimer
+              : minutesTimer;
+
+          setCounter('59');
+          setSeconds(59);
+          setMinutes(minutesTimer);
+          setCounterMinutes(counterMinutesTimer);
+
+          if (minutesTimer < 0 && secondsTimer === 0) {
+            setBtnSend(true);
+            clearInterval(timer);
+          }
+        }
+      }, 1000);
+
+      try {
+        let payload = { email };
+        let response = await props.dispatch(AuthActions.sendOtp(payload));
+
+        response = response.Data;
+
+        if (response.status === false) {
+          throw response.status;
+        }
+      } catch (error) {
+        setIsLoading(false);
+
+        setBtnSend(false);
+      }
+    }
+    setIsLoading(false);
+  };
+
   const handleEmailCheck = async () => {
-    Swal.showLoading();
+    setIsLoading(true);
 
     if (email) {
       let response = await props.dispatch(AuthActions.check({ email }));
@@ -717,7 +876,7 @@ const LoginRegister = (props) => {
         setUserStatus('NOT_REGISTERED');
         setPayloadResponse({ email });
         setBtnSubmit(false);
-        Swal.close();
+        setIsLoading(false);
       } else {
         if (response.data.status === 'SUSPENDED') {
           Swal.fire(
@@ -727,7 +886,6 @@ const LoginRegister = (props) => {
           );
           return;
         } else {
-          Swal.close();
           setUserStatus('REGISTERED');
           setPayloadResponse(response.data);
           setBtnSubmit(false);
@@ -736,39 +894,11 @@ const LoginRegister = (props) => {
       }
     }
 
-    Swal.close();
-  };
-
-  const handleSendEmailOTP = async () => {
-    if (!enableRegisterWithPassword) {
-      const otpLastTry = new Date();
-
-      setBtnSend(false);
-
-      setSendCounter(sendCounter + 1);
-      lsStore(config.prefix + '_otp', {
-        lastTry: otpLastTry,
-        counter: sendCounter + 1,
-      });
-
-      countdown();
-      try {
-        let payload = { email };
-        let response = await props.dispatch(AuthActions.sendOtp(payload));
-
-        response = response.Data;
-
-        if (response.status === false) {
-          throw response.status;
-        }
-      } catch (error) {
-        setBtnSend(false);
-      }
-    }
+    setIsLoading(false);
   };
 
   const handleEmailLogin = async (withOtp) => {
-    Swal.showLoading();
+    setIsLoading(true);
     try {
       let payload = { email: payloadResponse.email };
 
@@ -815,8 +945,7 @@ const LoginRegister = (props) => {
       window.location.replace(url);
       window.location.reload();
     } catch (err) {
-      //
-      Swal.close();
+      setIsLoading(false);
       let error = 'Please try again.';
       if (err.message) {
         error = err.message;
@@ -827,6 +956,7 @@ const LoginRegister = (props) => {
 
   const handleEmailRegister = async () => {
     try {
+      setIsLoading(true);
       const fields = props.fields || [];
       let mandatory = [];
       mandatory = fields.filter((items) => {
@@ -919,13 +1049,14 @@ const LoginRegister = (props) => {
         }
       }
 
-      Swal.showLoading();
+      setIsLoading(false);
       let response = await props.dispatch(
         AuthActions.register(payload, enableRegisterWithPassword)
       );
       response = response.Data;
 
       if (response.message) {
+        setIsLoading(false);
         Swal.fire('Oppss!', response.message, 'error');
       } else {
         if (enableRegisterWithPassword) {
@@ -940,6 +1071,7 @@ const LoginRegister = (props) => {
         }
 
         try {
+          setIsLoading(true);
           setPayloadResponse(payload);
           setBtnSubmit(false);
           setSendCounter(2);
@@ -951,12 +1083,13 @@ const LoginRegister = (props) => {
             await handleSendEmailOTP();
           }
 
-          Swal.close();
+          setIsLoading(false);
         } catch (error) {
-          Swal.close();
+          setIsLoading(false);
         }
       }
     } catch (err) {
+      setIsLoading(false);
       let error = 'Please try again.';
       if (
         err.response &&
@@ -980,7 +1113,7 @@ const LoginRegister = (props) => {
   };
 
   return (
-    <div>
+    <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
       <div
         className='modal fade'
         id='login-register-modal'
@@ -989,7 +1122,13 @@ const LoginRegister = (props) => {
         aria-labelledby='exampleModalCenterTitle'
         aria-hidden='true'
       >
-        <div className='modal-dialog modal-dialog-centered' role='document'>
+        <div
+          className='modal-dialog modal-dialog-centered'
+          role='document'
+          style={{
+            justifyContent: 'center',
+          }}
+        >
           {userStatus === 'REGISTERED' ? (
             <Login
               method={method}
@@ -1009,8 +1148,8 @@ const LoginRegister = (props) => {
               otpTimer={{
                 isSending: !btnSend,
                 sendCounter: sendCounter,
-                counterMinutes: moment(minutes, 'mm').format('mm'),
-                counter: moment(seconds, 'ss').format('ss'),
+                counterMinutes: counterMinutes,
+                counter: counter,
               }}
               enableSMSOTP={enableSMSOTP}
               enableWhatsappOTP={enableWhatsappOTP}
@@ -1036,8 +1175,8 @@ const LoginRegister = (props) => {
               otpTimer={{
                 isSending: !btnSend,
                 sendCounter: sendCounter,
-                counterMinutes: moment(minutes, 'mm').format('mm'),
-                counter: moment(seconds, 'ss').format('ss'),
+                counterMinutes: counterMinutes,
+                counter: counter,
               }}
               errorPhone={errorPhone}
               errorEmail={errorEmail}
@@ -1048,7 +1187,7 @@ const LoginRegister = (props) => {
               enableSMSOTP={enableSMSOTP}
               enableWhatsappOTP={enableWhatsappOTP}
               minimumAge={minimumAge}
-            />
+            ></SignUp>
           ) : (
             <Portal
               color={props.color.background}
@@ -1066,11 +1205,12 @@ const LoginRegister = (props) => {
               loginByMobile={loginByMobile}
               enableOrdering={enableOrdering}
               companyInfo={props.companyInfo}
+              settingGuessCheckout={guessCheckout}
             />
           )}
         </div>
       </div>
-    </div>
+    </LoadingOverlayCustom>
   );
 };
 
