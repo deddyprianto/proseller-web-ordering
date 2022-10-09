@@ -1,12 +1,15 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Button } from "reactstrap";
-
-import styles from "./styles.module.css";
-
-import cx from "classnames";
-import PasswordField from "../PasswordField";
-import OtpField from "../OtpField";
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Button } from 'reactstrap';
+import { useHistory } from 'react-router-dom';
+import styles from './styles.module.css';
+import cx from 'classnames';
+import PasswordField from '../PasswordField';
+import OtpField from '../OtpField';
+import LoadingOverlay from 'react-loading-overlay';
+import { useSelector, useDispatch } from 'react-redux';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Login = ({
   method,
@@ -21,40 +24,54 @@ const Login = ({
   enablePassword,
   enableSMSOTP,
   enableWhatsappOTP,
-  enableOrdering
+  enableOrdering,
 }) => {
+  const matches = useMediaQuery('(max-width:1200px)');
+  const dispatch = useDispatch();
+  const basketGuestCo = useSelector((state) => state.guestCheckoutCart.data);
+  const history = useHistory();
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
+  const [isLoading, setIsLoading] = useState(false);
+  const guestMode = localStorage.getItem('settingGuestMode');
+  const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+
   return (
-    <div className="modal-content" style={{ width: "100%" }}>
+    <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div
-        className="modal-header"
-        style={{ display: "flex", justifyContent: "center" }}
+        className='modal-content'
+        style={{
+          width: matches ? '95vw' : '100%',
+        }}
       >
-        <button
-          type="button"
-          className={cx("close", styles.backButton)}
-          onClick={handleBackButtonClick}
+        <div
+          className='modal-header'
+          style={{ display: 'flex', justifyContent: 'center' }}
         >
-          <i className="fa fa-chevron-left"></i>
-        </button>
-        <h5 className={cx("modal-title", styles.modalTitle)}>
-          {method === "phone" ? "Mobile Sign In" : "Email Sign In"}
-        </h5>
-        <button
-          type="button"
-          disabled={!enableOrdering}
-          className={cx("close", styles.closeButton)}
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div className="modal-body">
-        <p className="text-muted">{`Sign in to ${username}`}</p>
-        {enablePassword ? (
-          <PasswordField handleChange={handleChange}></PasswordField>
-        ) : (
+          <button
+            type='button'
+            className={cx('close', styles.backButton)}
+            onClick={handleBackButtonClick}
+          >
+            <i className='fa fa-chevron-left'></i>
+          </button>
+          <h5 className={cx('modal-title', styles.modalTitle)}>
+            {method === 'phone' ? 'Mobile Sign In' : 'Email Sign In'}
+          </h5>
+          <button
+            type='button'
+            disabled={!enableOrdering}
+            className={cx('close', styles.closeButton)}
+            data-dismiss='modal'
+            aria-label='Close'
+          >
+            <span aria-hidden='true'>×</span>
+          </button>
+        </div>
+        <div className='modal-body'>
+          <p className='text-muted'>{`Sign in to ${username}`}</p>
+          {enablePassword ? (
+            <PasswordField handleChange={handleChange}></PasswordField>
+          ) : (
             <OtpField
               method={method}
               sendEmailOtp={sendOtpToEmail}
@@ -68,34 +85,65 @@ const Login = ({
               enableWhatsappOTP={enableWhatsappOTP}
             ></OtpField>
           )}
-        <Button
-          disabled={isSubmitting}
-          className="button"
-          style={{ width: "100%", marginTop: 10, borderRadius: 5, height: 50 }}
-          onClick={() => handleSubmit(!enablePassword)}
-        >
-          Submit
-        </Button>
+          <Button
+            disabled={isSubmitting}
+            className='button'
+            style={{
+              width: '100%',
+              marginTop: 10,
+              borderRadius: 5,
+              height: 50,
+            }}
+            onClick={() => {
+              if (guestMode && idGuestCheckout) {
+                setIsLoading(true);
+                localStorage.removeItem('settingGuestMode');
+                localStorage.removeItem('idGuestCheckout');
+                handleSubmit(!enablePassword);
+                setIsLoading(false);
+                history.push('/');
+              } else {
+                setIsLoading(true);
+                handleSubmit(!enablePassword);
+              }
+            }}
+          >
+            Submit
+          </Button>
+        </div>
       </div>
-    </div>
+    </LoadingOverlay>
   );
 };
 
-Login.propTypes = {
-  method: PropTypes.oneOf(["phone", "email"]).isRequired,
-  handleBackButtonClick: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func,
-  handleChange: PropTypes.func,
-  sendOtpToPhone: PropTypes.func,
-  sendOtpToEmail: PropTypes.func,
-  username: PropTypes.string.isRequired,
-  otpTimer: PropTypes.object,
-  isSubmitting: PropTypes.bool,
-  enablePassword: PropTypes.bool,
+Login.defaultProps = {
+  handleSubmit: null,
+  handleChange: null,
+  sendOtpToPhone: null,
+  sendOtpToEmail: null,
+
+  otpTimer: {},
+  isSubmitting: false,
+  enablePassword: false,
+  enableSMSOTP: false,
+  enableWhatsappOTP: false,
+  enableOrdering: false,
 };
 
-Login.defaultProps = {
-  method: "phone",
+Login.propTypes = {
+  enableOrdering: PropTypes.bool,
+  enablePassword: PropTypes.bool,
+  enableSMSOTP: PropTypes.bool,
+  enableWhatsappOTP: PropTypes.bool,
+  handleBackButtonClick: PropTypes.func.isRequired,
+  handleChange: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  isSubmitting: PropTypes.bool,
+  method: PropTypes.oneOf(['phone', 'email']).isRequired,
+  otpTimer: PropTypes.object,
+  sendOtpToEmail: PropTypes.func,
+  sendOtpToPhone: PropTypes.func,
+  username: PropTypes.string.isRequired,
 };
 
 export default Login;

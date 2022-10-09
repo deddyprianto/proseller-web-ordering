@@ -15,6 +15,7 @@ const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
 const Cart = loadable(() => import('../../pages/Cart'));
+const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
 const Payment = loadable(() => import('pages/Payment'));
 const MyVoucher = loadable(() => import('pages/MyVoucher'));
 const Profile = loadable(() => import('../../pages/Profile'));
@@ -137,6 +138,7 @@ class Layout extends Component {
   }
 
   render() {
+    const isGuestMode = localStorage.getItem('settingGuestMode');
     const { isLoggedIn } = this.props;
     const { isEmenu, enableOrdering } = this.state;
     return (
@@ -145,12 +147,18 @@ class Layout extends Component {
         <div id='content' className='site-content'>
           <Switch>
             {enableOrdering && <Route exact path='/' component={Home} />}
-            {enableOrdering && <Route exact path='/landing' component={Home} />}
             {enableOrdering && (
               <Route exact path='/outlets' component={OutletSelection} />
             )}
             {enableOrdering && <Route exact path='/signIn' component={Home} />}
             {enableOrdering && <Route exact path='/cart' component={Cart} />}
+            {enableOrdering && (
+              <Route
+                exact
+                path='/cartguestcheckout'
+                component={CartGuestCheckout}
+              />
+            )}
             {/* TODO: component basket will remove later */}
             {enableOrdering && (
               <Route exact path='/basket' component={Basket} />
@@ -188,7 +196,7 @@ class Layout extends Component {
             {isLoggedIn && (
               <Route exact path='/payment-method' component={PaymentMethod} />
             )}
-            {isLoggedIn && (
+            {(isLoggedIn || isGuestMode === 'GuestMode') && (
               <Route
                 exact
                 path='/delivery-address'

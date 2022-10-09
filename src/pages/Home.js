@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
+import { useDispatch } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import OrderingRetail from '../components/ordering/indexRetail';
 import { useHistory } from 'react-router-dom';
-import { OutletAction } from 'redux/actions/OutletAction';
 import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
-
-const base64 = require('base-64');
+import { CONSTANT } from 'helpers';
+import { isEmptyObject } from 'helpers/CheckEmpty';
+import { OrderAction } from 'redux/actions/OrderAction';
+import Swal from 'sweetalert2';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -31,7 +32,8 @@ const mapStateToProps = (state) => {
   return {
     setting: state.order,
     defaultOutlet: state.outlet.defaultOutlet,
-    orderingSetting: state.order.orderingSetting,
+    isLoggedIn: state.auth.isLoggedIn,
+    orderingMode: state.order.orderingMode,
   };
 };
 
@@ -42,6 +44,7 @@ const mapDispatchToProps = (dispatch) => ({
 const Home = ({ ...props }) => {
   const history = useHistory();
   const [width] = useWindowSize();
+  const dispatch = useDispatch();
   const gadgetScreen = width < 980;
   const styles = {
     root: {
@@ -53,44 +56,63 @@ const Home = ({ ...props }) => {
     },
   };
   const isEmenu = window.location.hostname.includes('emenu');
-  const isLanding = window.location.href.includes('landing');
+
+  useEffect(() => {
+    if (isEmptyObject(props.defaultOutlet)) {
+      history.push('/outlets');
+    }
+  }, [props.defaultOutlet]);
 
   useEffect(() => {
     const loadData = async () => {
-      const href = window.location.href;
-      const hrefSplit = href.split('input=');
-      const key = hrefSplit[1];
-
-      const keyDecoded = base64.decode(decodeURI(key));
-      const keyDecodedSplit = keyDecoded.split('::');
-      const outletId = keyDecodedSplit[1];
-      console.log('GILA', outletId);
-
-      if (outletId) {
-        const outletById = await props.dispatch(
-          OutletAction.getOutletById(outletId)
-        );
-        if (outletById) {
-          await props.dispatch(OutletAction.setDefaultOutlet(outletById));
-          history.push('/');
-        }
-      }
+      // TODO: need explain for this
+      await props.dispatch(PromotionAction.fetchPromotion());
     };
-    if (isLanding) {
-      loadData();
-    }
-  }, [window.location.href, isLanding]);
+    loadData();
+  }, []);
 
-  const renderOrderingRetail = () => {
-    if (props.orderingSetting?.CategoryHeaderType === 'WITH_CATEGORY_PAGE') {
-      return <OrderingRetail history={props.history}></OrderingRetail>;
-    } else {
-      return <ProductList />;
+  useEffect(() => {
+    if (props.orderingMode) {
+      props.dispatch({
+        type: 'SET_ORDERING_MODE',
+        payload: '',
+      });
     }
-  };
+    const isOfflineCartGuestCO = JSON.parse(
+      localStorage.getItem('BASKET_GUESTCHECKOUT')
+    );
+
+    const saveGuestCheckoutOfflineCart = async () => {
+      Swal.showLoading();
+      const response = await dispatch(
+        OrderAction.addCartFromGuestCOtoCartLogin(isOfflineCartGuestCO)
+      );
+      Swal.hideLoading();
+      if (response.type === 'DATA_BASKET') {
+        localStorage.removeItem('BASKET_GUESTCHECKOUT');
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Saving',
+        text: 'We are saving your previously Cart!',
+      });
+    };
+
+    if (isOfflineCartGuestCO && props.isLoggedIn) {
+      saveGuestCheckoutOfflineCart();
+    }
+  }, []);
+
+  useEffect(() => {
+    const isGuestMode = localStorage.getItem('settingGuestMode');
+    if (isGuestMode === 'GuestMode') {
+      dispatch({ type: CONSTANT.SAVE_GUESTMODE_STATE, payload: isGuestMode });
+    }
+  }, [localStorage.getItem('settingGuestMode')]);
+
   const renderProductListOrOutletSelection = () => {
     if (
-      props.setting?.outletSelection === 'MANUAL' &&
+      props.setting.outletSelection === 'MANUAL' &&
       !props.defaultOutlet?.id &&
       !isEmenu
     ) {
@@ -99,7 +121,7 @@ const Home = ({ ...props }) => {
       return (
         <div style={styles.rootProduct}>
           <Banner />
-          {renderOrderingRetail()}
+          <ProductList />
         </div>
       );
     }

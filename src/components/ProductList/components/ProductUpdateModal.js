@@ -14,7 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 
 import ProductAddModal from './ProductAddModal';
 
@@ -27,6 +27,10 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
     defaultOutlet: state.outlet.defaultOutlet,
+    mode: state.guestCheckoutCart.mode,
+    basketGuestCo: state.guestCheckoutCart.data,
+    basketGuestCoResponse: state.guestCheckoutCart.response,
+    editResponse: state.guestCheckoutCart.saveEditResponse,
   };
 };
 
@@ -283,18 +287,64 @@ const ProductUpdateModal = ({
     return productItemInBasket;
   };
 
+  const handleProductVariantsGuestCO = () => {
+    const productItemInBasket = handleProductVariantInBasket({
+      basketDetails:
+        props.basketGuestCo?.details?.length >= 1
+          ? props.basketGuestCo.details
+          : props.basketGuestCoResponse?.details,
+      product,
+    });
+    return productItemInBasket;
+  };
+
   useEffect(() => {
     if (!isEmptyArray(product.variants)) {
       const items = handleProductVariants();
       setProductInBasket(items);
     } else {
-      const items = props.basket?.details?.filter(
-        (item) => item.product.id === product.id
-      );
-
-      setProductInBasket(items);
+      if (!isEmptyObject(props.basket)) {
+        const items = props.basket?.details?.filter(
+          (item) => item.product.id === product.id
+        );
+        setProductInBasket(items);
+      }
     }
   }, [props.basket, product]);
+
+  useEffect(() => {
+    if (props.mode === 'GuestMode') {
+      if (!isEmptyArray(product.variants)) {
+        const items = handleProductVariantsGuestCO();
+        setProductInBasket(items);
+      } else {
+        if (!isEmptyObject(props.basketGuestCoResponse)) {
+          const items = props.basketGuestCoResponse?.details?.filter(
+            (item) => item.product.id === product.id
+          );
+          setProductInBasket(items);
+        } else if (props.basketGuestCo.message !== 'Cart it empty.') {
+          const items = props.basketGuestCo?.details?.filter(
+            (item) => item.product.id === product.id
+          );
+          setProductInBasket(items);
+        }
+
+        if (!isEmptyObject(props.editResponse)) {
+          const items = props.editResponse?.details?.filter(
+            (item) => item.product.id === product.id
+          );
+          setProductInBasket(items);
+        }
+      }
+    }
+  }, [
+    props.mode,
+    product.variants,
+    props.basketGuestCo,
+    props.basketGuestCoResponse,
+    props.editResponse,
+  ]);
 
   const renderProductModifierItems = (items) => {
     const productModifierItems = items.map((item, index) => {
@@ -332,6 +382,42 @@ const ProductUpdateModal = ({
   const renderProducts = () => {
     if (!isEmptyArray(productInBasket)) {
       const result = productInBasket.map((product, index) => {
+        return (
+          <div key={index}>
+            <div style={styles.productRoot}>
+              <div style={styles.displayFlex}>
+                <Typography style={styles.quantity}>
+                  {product?.quantity}x
+                </Typography>
+                <Typography style={styles.typography}>
+                  {product?.product?.name}
+                </Typography>
+              </div>
+
+              {renderProductModifiers(product?.modifiers)}
+              <div style={styles.productBody}>
+                <Typography style={styles.price}>
+                  {handleCurrency(product?.grossAmount)}
+                </Typography>
+                <Button
+                  style={styles.buttonEdit}
+                  onClick={() => {
+                    handleOpenAddModal(product);
+                  }}
+                >
+                  <EditIcon style={styles.iconEdit} />
+                  <Typography style={styles.textEdit}>Edit</Typography>
+                </Button>
+              </div>
+            </div>
+            <Divider style={styles.divider} />
+          </div>
+        );
+      });
+
+      return result;
+    } else if (props.mode === 'GuestMode') {
+      const result = productInBasket?.map((product, index) => {
         return (
           <div key={index}>
             <div style={styles.productRoot}>
