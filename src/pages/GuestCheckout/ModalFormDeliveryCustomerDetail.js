@@ -31,6 +31,8 @@ import {
 } from 'reactstrap';
 import iconDown from 'assets/images/IconDown.png';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import SearchInput, { createFilter } from 'react-search-input';
+import search from 'assets/images/search.png';
 
 const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
   const addressPlaceHolderForm = useSelector(
@@ -44,6 +46,7 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
   const initialCodePhone = '+65';
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [valueSearchCode, setValueSearchCode] = useState('');
   const color = useSelector((state) => state.theme.color);
   const [postalCode, setPostalCode] = useState('');
   const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
@@ -147,6 +150,9 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
       return 1;
     }
   });
+  const filteredPhoneCode = optionCodePhone.filter(
+    createFilter(valueSearchCode)
+  );
 
   const handleCheckHavePostalCode = useCallback(() => {
     if (pinnedLocation?.userLocation) {
@@ -341,29 +347,55 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
                       width: '100%',
                       backgroundColor: 'transparent',
                       display: 'flex',
-                      justifyContent: 'space-between',
+                      justifyContent: 'space-around',
                       alignItems: 'center',
                       fontWeight: 500,
                       fontSize: '16px',
-                      opacity: 0.5,
+                      color: color.font,
                     }}
                   >
-                    <div style={{ marginLeft: '-5px' }}>{phoneCountryCode}</div>
-                    <img src={iconDown} />
+                    {phoneCountryCode}
+                    <img src={iconDown} style={{ marginLeft: '5px' }} />
                   </DropdownToggle>
                   <DropdownMenu
                     style={{
-                      width: matches ? '75vw' : '100%',
+                      width: matches ? '80vw' : '27.5vw',
                       borderRadius: '10px',
                       paddingLeft: '10px',
-                      height: '200px',
+                      height: '235px',
                       overflowY: 'auto',
-                      marginTop: '10px',
+                      marginTop: '5px',
                     }}
                   >
-                    {optionCodePhone.map((item, i) => {
+                    <div
+                      style={{
+                        width: '97%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        border: '1px solid #ddd',
+                        borderRadius: '10px',
+                        justifyContent: 'space-between',
+                        margin: '5px 0px',
+                      }}
+                    >
+                      <div style={{ width: '100%' }}>
+                        <SearchInput
+                          placeholder='Search for country code'
+                          style={{
+                            width: '100%',
+                            padding: '10px',
+                            marginLeft: '5px',
+                            border: 'none',
+                            outline: 'none',
+                          }}
+                          onChange={(e) => setValueSearchCode(e)}
+                        />
+                      </div>
+                      <img src={search} style={{ marginRight: '10px' }} />
+                    </div>
+                    {filteredPhoneCode.map((item, i) => {
                       const getPhoneCodeFromStr = item.substring(
-                        item.indexOf(':') + 2
+                        item.indexOf(':') + 1
                       );
                       return (
                         <DropdownItem
@@ -385,6 +417,8 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
                         >
                           <p
                             style={{
+                              padding: '0px 0px 7px 0px',
+                              margin: 0,
                               cursor: 'pointer',
                               color: i === 0 ? color.primary : 'black',
                             }}

@@ -49,6 +49,8 @@ import {
 import Drawer from '@mui/material/Drawer';
 import iconDown from 'assets/images/IconDown.png';
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
+import SearchInput, { createFilter } from 'react-search-input';
+import search from 'assets/images/search.png';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -65,6 +67,7 @@ const useWindowSize = () => {
 
 const CartGuestCheckout = () => {
   const [productSpecific, setProductSpecific] = useState();
+  const [valueSearchCode, setValueSearchCode] = useState('');
   const [productDetailSpesific, setProductDetailSpesific] = useState();
   const [productEditModal, setProductEditModal] = useState(false);
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
@@ -96,9 +99,6 @@ const CartGuestCheckout = () => {
   );
   const addressTakeAway = useSelector(
     (state) => state.guestCheckoutCart.addressTakeAway
-  );
-  const addressPickup = useSelector(
-    (state) => state.guestCheckoutCart.addressPickup
   );
   const providerGuestCheckout = useSelector(
     (state) => state.guestCheckoutCart.providerGuestCheckout
@@ -247,7 +247,7 @@ const CartGuestCheckout = () => {
       bottom: 70,
       left: 'auto',
       position: 'fixed',
-      padding: 10,
+      padding: '0px 10px',
       backgroundColor: color.background,
     },
     grandTotalFullScreen: {
@@ -271,8 +271,7 @@ const CartGuestCheckout = () => {
     rootInclusiveTax: {
       display: 'flex',
       justifyContent: 'space-between',
-      paddingLeft: 10,
-      paddingRight: 10,
+      marginBottom: '5px',
     },
     inclusiveTax: {
       color: '#808080',
@@ -307,6 +306,9 @@ const CartGuestCheckout = () => {
       return 1;
     }
   });
+  const filteredPhoneCode = optionCodePhone.filter(
+    createFilter(valueSearchCode)
+  );
 
   const validationSchemaForGuestCheckout = yup.object({
     name: yup.string().required('Please enter your Name'),
@@ -348,7 +350,7 @@ const CartGuestCheckout = () => {
   const validateEmailRegex =
     /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
   let email = formik.values.email;
-  const formTakeAway = validateEmailRegex.test(email);
+  const formRegexMail = validateEmailRegex.test(email);
 
   const handlePaymentGuestMode = async () => {
     if (orderingModeGuestCheckout === 'DELIVERY') {
@@ -386,6 +388,46 @@ const CartGuestCheckout = () => {
       }
       setIsLoading(false);
     } else if (orderingModeGuestCheckout === 'TAKEAWAY') {
+      const finalVal = () => {
+        const convertPhoneNumberTostring = formik.values.phoneNo.toString();
+        let val = convertPhoneNumberTostring.split();
+        val.unshift(phoneCountryCode);
+        return { ...formik.values, phoneNo: val.join('') };
+      };
+      const objectSubmitCart = {
+        cartID: basket.cartID,
+        outletID: basket.outletID,
+        guestID: basket.guestID,
+        customerDetails: {
+          name: finalVal().name,
+          email: finalVal().email,
+          phoneNumber: finalVal().phoneNo,
+        },
+        payments: [
+          {
+            paymentType: companyInfo.paymentTypes[0].paymentID,
+            paymentID: companyInfo.paymentTypes[0].paymentID,
+          },
+        ],
+        deliveryAddress: {},
+        orderingMode: orderingModeGuestCheckout,
+        tableNo: '-',
+        clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+        orderActionDate: date ? date : new Date().toISOString().split('T')[0],
+        orderActionTime: time
+          ? time
+          : new Date().getHours() + ':' + new Date().getMinutes(),
+        orderActionTimeSlot: timeslot ? timeslot : null,
+      };
+      setIsLoading(true);
+      const response = await dispatch(
+        OrderAction.paymentGuestMode(objectSubmitCart)
+      );
+      if (response.resultCode === 200) {
+        window.location.href = response.data.url;
+      }
+      setIsLoading(false);
+    } else if (orderingModeGuestCheckout === 'STOREPICKUP') {
       const finalVal = () => {
         const convertPhoneNumberTostring = formik.values.phoneNo.toString();
         let val = convertPhoneNumberTostring.split();
@@ -878,7 +920,7 @@ const CartGuestCheckout = () => {
           </div>
         </div>
 
-        {orderingModeGuestCheckout === 'DINEIN' && (
+        {orderingModeGuestCheckout === 'STOREPICKUP' && (
           <div style={{ marginTop: '20px' }}>
             <hr
               style={{
@@ -914,12 +956,12 @@ const CartGuestCheckout = () => {
       : reqDelivery && reqProvider;
 
     const isTakeAwayActive = availableTime
-      ? formTakeAway && reqTimeSlot
-      : formTakeAway;
+      ? formRegexMail && reqTimeSlot
+      : formRegexMail;
 
     const isPickUpActive = availableTime
-      ? formTakeAway && reqTimeSlot
-      : formTakeAway;
+      ? formRegexMail && reqTimeSlot
+      : formRegexMail;
 
     switch (key) {
       case 'DELIVERY':
@@ -934,7 +976,7 @@ const CartGuestCheckout = () => {
         } else {
           return true;
         }
-      case 'PICKUP':
+      case 'STOREPICKUP':
         if (isPickUpActive) {
           return false;
         } else {
@@ -1179,7 +1221,7 @@ const CartGuestCheckout = () => {
         return (
           <div
             key={item.name}
-            sx={{
+            style={{
               marginBottom: '10px',
               width: '100%',
             }}
@@ -1709,27 +1751,53 @@ const CartGuestCheckout = () => {
                         width: '100%',
                         backgroundColor: 'transparent',
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'space-around',
                         alignItems: 'center',
                         fontWeight: 500,
                         fontSize: '16px',
-                        opacity: 0.5,
+                        color: color.font,
                       }}
                     >
-                      <div>{phoneCountryCode}</div>
-                      <img src={iconDown} />
+                      {phoneCountryCode}
+                      <img src={iconDown} style={{ marginLeft: '5px' }} />
                     </DropdownToggle>
                     <DropdownMenu
                       style={{
-                        width: matches ? '82vw' : '100%',
+                        width: matches ? '80vw' : '27.5vw',
                         borderRadius: '10px',
                         paddingLeft: '10px',
-                        height: '200px',
+                        height: '235px',
                         overflowY: 'auto',
-                        marginTop: '10px',
+                        marginTop: '5px',
                       }}
                     >
-                      {optionCodePhone.map((item, i) => {
+                      <div
+                        style={{
+                          width: '97%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          border: '1px solid #ddd',
+                          borderRadius: '10px',
+                          justifyContent: 'space-between',
+                          margin: '5px 0px',
+                        }}
+                      >
+                        <div style={{ width: '100%' }}>
+                          <SearchInput
+                            placeholder='Search for country code'
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              marginLeft: '5px',
+                              border: 'none',
+                              outline: 'none',
+                            }}
+                            onChange={(e) => setValueSearchCode(e)}
+                          />
+                        </div>
+                        <img src={search} style={{ marginRight: '10px' }} />
+                      </div>
+                      {filteredPhoneCode.map((item, i) => {
                         const getPhoneCodeFromStr = item.substring(
                           item.indexOf(':') + 1
                         );
@@ -1753,6 +1821,8 @@ const CartGuestCheckout = () => {
                           >
                             <p
                               style={{
+                                padding: '0px 0px 7px 0px',
+                                margin: 0,
                                 cursor: 'pointer',
                                 color: i === 0 ? color.primary : 'black',
                               }}
@@ -1831,7 +1901,7 @@ const CartGuestCheckout = () => {
   };
 
   const renderFormPickUpStore = () => {
-    const isStorePickUp = orderingModeGuestCheckout === 'DINEIN';
+    const isStorePickUp = orderingModeGuestCheckout === 'STOREPICKUP';
     const nameField = addressTakeAway?.deliveryAddress.name;
     const splitPhoneNo = addressTakeAway?.deliveryAddress.phoneNo;
     const phoneNoField = splitPhoneNo?.split(phoneCountryCode)[1];
@@ -1954,27 +2024,53 @@ const CartGuestCheckout = () => {
                         width: '100%',
                         backgroundColor: 'transparent',
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'space-around',
                         alignItems: 'center',
                         fontWeight: 500,
                         fontSize: '16px',
-                        opacity: 0.5,
+                        color: color.font,
                       }}
                     >
-                      <div>{phoneCountryCode}</div>
-                      <img src={iconDown} />
+                      {phoneCountryCode}
+                      <img src={iconDown} style={{ marginLeft: '5px' }} />
                     </DropdownToggle>
                     <DropdownMenu
                       style={{
-                        width: matches ? '82vw' : '100%',
+                        width: matches ? '80vw' : '27.5vw',
                         borderRadius: '10px',
                         paddingLeft: '10px',
-                        height: '200px',
+                        height: '235px',
                         overflowY: 'auto',
-                        marginTop: '10px',
+                        marginTop: '5px',
                       }}
                     >
-                      {optionCodePhone.map((item, i) => {
+                      <div
+                        style={{
+                          width: '97%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          border: '1px solid #ddd',
+                          borderRadius: '10px',
+                          justifyContent: 'space-between',
+                          margin: '5px 0px',
+                        }}
+                      >
+                        <div style={{ width: '100%' }}>
+                          <SearchInput
+                            placeholder='Search for country code'
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              marginLeft: '5px',
+                              border: 'none',
+                              outline: 'none',
+                            }}
+                            onChange={(e) => setValueSearchCode(e)}
+                          />
+                        </div>
+                        <img src={search} style={{ marginRight: '10px' }} />
+                      </div>
+                      {filteredPhoneCode.map((item, i) => {
                         const getPhoneCodeFromStr = item.substring(
                           item.indexOf(':') + 1
                         );
@@ -1998,6 +2094,8 @@ const CartGuestCheckout = () => {
                           >
                             <p
                               style={{
+                                padding: '0px 0px 7px 0px',
+                                margin: 0,
                                 cursor: 'pointer',
                                 color: i === 0 ? color.primary : 'black',
                               }}
