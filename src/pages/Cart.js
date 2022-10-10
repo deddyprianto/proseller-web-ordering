@@ -268,7 +268,7 @@ const Cart = ({ ...props }) => {
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
       if (!props.isLoggedIn) {
-        console.log('Your are not login');
+        console.log('You are not login');
       } else if (
         !props.orderingMode &&
         !isEmptyArray(props.basket.details) &&

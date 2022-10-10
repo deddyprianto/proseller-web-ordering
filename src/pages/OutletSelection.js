@@ -69,7 +69,7 @@ class OutletSelection extends Component {
       ) {
         Swal.fire({
           title: 'Change Outlet ?',
-          text: 'You will delete your cart at the previous outlet LOL.',
+          text: 'You will delete your cart at the previous outlet.',
           icon: 'warning',
           confirmButtonText: 'Sure',
           showCancelButton: true,
