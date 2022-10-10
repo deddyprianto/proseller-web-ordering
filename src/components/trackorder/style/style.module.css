@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap');
+
+.container {  
+  display: grid;
+  grid-template-columns: 1.1fr;
+  grid-template-rows: 100px 1fr 130px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "."
+    "."
+    ".";
+  height: 100vh;
+}
+
+.containerHeader{
+  position: relative;
+  width: '100%';
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  margin-top: 25%;
+}
+.containerMain{
+  margin-top: 5rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.containerMain > img{
+  margin: 30px 0;
+}
+.title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  justify-self: center;
+}
+.title2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+  letter-spacing: 0.2px;
+  padding: 10px;
+}
+.title3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+.containerInput{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+}
+.borderInput{
+  width: 100%;
+  border: 1px solid rgb(212 212 216);
+  border-radius: 10px;
+  background-color: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.borderInput > input{
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+.bottomFooter{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  
+}
+
+@media (min-width: 1200px) { 
+  .container {  
+    display: grid;
+    grid-template-columns: 1.1fr;
+    grid-template-rows: 100px 1fr 100px;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "."
+      "."
+      ".";
+    height: 100vh;
+  }
+
+ }
