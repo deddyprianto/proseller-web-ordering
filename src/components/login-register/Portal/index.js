@@ -155,7 +155,7 @@ const Portal = ({
                     width: matches ? '80vw' : '27.5vw',
                     borderRadius: '10px',
                     paddingLeft: '10px',
-                    height: '200px',
+                    height: '235px',
                     overflowY: 'auto',
                     marginTop: '5px',
                   }}
@@ -168,7 +168,7 @@ const Portal = ({
                       border: '1px solid #ddd',
                       borderRadius: '10px',
                       justifyContent: 'space-between',
-                      margin: '10px 0px',
+                      margin: '5px 0px',
                     }}
                   >
                     <div style={{ width: '100%' }}>
@@ -210,6 +210,8 @@ const Portal = ({
                       >
                         <p
                           style={{
+                            padding: '0px 0px 7px 0px',
+                            margin: 0,
                             cursor: 'pointer',
                             color: i === 0 ? backgroundTheme.primary : 'black',
                           }}
@@ -402,7 +404,7 @@ const Portal = ({
             </button>
           )}
           <p style={{ fontSize: '14px', color: '#8D8D8D' }}>
-            To Register or Login, please enter your mobile number.
+            To Login or Register, please enter your mobile number.
           </p>
         </div>
         <div
