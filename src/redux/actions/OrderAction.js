@@ -214,7 +214,7 @@ function getCart(isSetData = true) {
       'cart/getcart',
       'Bearer'
     );
-  console.log('asd =>', response);
+    
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== 'No details data') {
