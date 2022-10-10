@@ -22,6 +22,7 @@ const Profile = loadable(() => import('../../pages/Profile'));
 const ListMembership = loadable(() => import('../../pages/ListMembership'));
 const DetailMembership = loadable(() => import('../../pages/DetailMembership'));
 const History = loadable(() => import('../../pages/History'));
+const ThankyouPage = loadable(() => import('../../pages/ThankyouPage'));
 const Inbox = loadable(() => import('../../pages/Inbox'));
 const Voucher = loadable(() => import('../../pages/Voucher'));
 const Map = loadable(() => import('../../pages/Map/Map'));
@@ -172,6 +173,9 @@ class Layout extends Component {
                 path='/profile/delivery-address'
                 component={DeliveryAddress}
               />
+            )}
+            {isGuestMode === 'GuestMode' && (
+              <Route exact path='/thankyoupage' component={ThankyouPage} />
             )}
             {(isLoggedIn || !enableOrdering) && (
               <Route
