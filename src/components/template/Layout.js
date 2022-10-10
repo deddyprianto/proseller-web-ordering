@@ -10,7 +10,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import config from '../../config';
 
 const HeaderEmenu = loadable(() => import('./HeaderEmenu'));
-const HeaderWebOrdering = loadable(() => import('./headerWebOrdering'));
+const HeaderWebOrdering = loadable(() => import('./HeaderWebOrdering'));
 const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
@@ -145,6 +145,7 @@ class Layout extends Component {
         <div id='content' className='site-content'>
           <Switch>
             {enableOrdering && <Route exact path='/' component={Home} />}
+            {enableOrdering && <Route exact path='/landing' component={Home} />}
             {enableOrdering && (
               <Route exact path='/outlets' component={OutletSelection} />
             )}
