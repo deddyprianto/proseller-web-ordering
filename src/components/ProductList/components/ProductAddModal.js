@@ -1,7 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import PropTypes, { element } from 'prop-types';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
 import config from 'config';
 
 import Button from '@mui/material/Button';
@@ -55,7 +55,17 @@ const ProductAddModal = ({
 }) => {
   const gadgetScreen = width < 600;
   const theme = useTheme();
+  const [mode, setMode] = useState();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [idGuestCheckout, setIdGuestCheckout] = useState();
+
+  useEffect(() => {
+    const isGuestCheckout = localStorage.getItem('settingGuestMode');
+    const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+    setIdGuestCheckout(idGuestCheckout);
+    setMode(isGuestCheckout);
+  }, [localStorage]);
+
   const styles = {
     backgroundColor: {
       backgroundColor: props.color.background,
@@ -234,8 +244,8 @@ const ProductAddModal = ({
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
-      top: 8,
-      right: 8,
+      top: 0,
+      right: 0,
     },
     buttonIconClose: {
       height: 33,
@@ -254,8 +264,8 @@ const ProductAddModal = ({
     },
     imageAndButtonCloseGadgetSize: {
       position: 'relative',
-      left: 0,
-      top: 0,
+      display: 'flex',
+      justifyContent: 'center',
     },
     rootSpecialInstruction: {
       display: 'flex',
@@ -301,7 +311,7 @@ const ProductAddModal = ({
     },
   };
 
-  const [variantName, setVariantName] = useState('');
+  const [variantName, setVariantName] = useState();
   const [qty, setQty] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -695,13 +705,12 @@ const ProductAddModal = ({
               qtyModifierSelected =
                 qtyModifierSelected + selectedProductModifier.qty;
           });
-
-          const result = qtyModifierSelected >= productModifier.modifier?.min;
+          const isMinZero = productModifier.modifier?.min || 0;
+          const result = qtyModifierSelected >= isMinZero;
           qtyModifierSelected = 0;
           return result;
         }
       );
-
       const productModifierAllTrue = productModifiers.every((v) => v === true);
       return !productModifierAllTrue;
     }
@@ -761,6 +770,25 @@ const ProductAddModal = ({
     handleClear();
   };
 
+  const handleAddOrUpdateProductModeGuest = async () => {
+    setIsLoading(true);
+    if (!isEmptyObject(selectedProduct)) {
+      await props.dispatch(
+        OrderAction.processUpdateCartGuestMode(idGuestCheckout, productUpdate)
+      );
+    } else {
+      await props.dispatch(
+        OrderAction.addCartToGuestMode(
+          idGuestCheckout,
+          props.defaultOutlet,
+          productAdd
+        )
+      );
+    }
+    setIsLoading(false);
+    handleClose();
+    handleClear();
+  };
   const handleDisabledCheckbox = ({ modifier, max, productModifier }) => {
     let qtyTotal = 0;
 
@@ -982,17 +1010,18 @@ const ProductAddModal = ({
   };
 
   const renderTermsAndConditionsProductModifiers = (productModifier) => {
-    if (
-      productModifier?.modifier?.min === 0 &&
-      productModifier?.modifier?.max === 0
-    ) {
+    const isMinZero =
+      productModifier?.modifier?.min === 0 || !productModifier?.modifier?.min;
+    const isMaxZero =
+      productModifier?.modifier?.max === 0 || !productModifier?.modifier?.max;
+    const isMinMoreThenZero = productModifier?.modifier?.min > 0;
+    const isMaxLessThenZero = productModifier?.modifier?.max > 0;
+
+    if (isMinZero && isMaxZero) {
       return <Typography style={styles.title2}>Optional</Typography>;
     }
 
-    if (
-      productModifier?.modifier?.min > 0 &&
-      productModifier?.modifier?.max === 0
-    ) {
+    if (isMinMoreThenZero && isMaxZero) {
       return (
         <Typography style={styles.title2}>
           Min {productModifier.modifier.min}
@@ -1000,10 +1029,7 @@ const ProductAddModal = ({
       );
     }
 
-    if (
-      productModifier?.modifier?.min === 0 &&
-      productModifier?.modifier?.max > 0
-    ) {
+    if (isMinZero && isMaxLessThenZero) {
       return (
         <Typography style={styles.title2}>
           Max {productModifier.modifier.max}
@@ -1011,10 +1037,7 @@ const ProductAddModal = ({
       );
     }
 
-    if (
-      productModifier?.modifier?.min > 0 &&
-      productModifier?.modifier?.max > 0
-    ) {
+    if (isMinMoreThenZero && isMaxLessThenZero) {
       return (
         <Typography style={styles.title2}>
           Min {productModifier.modifier.min}, Max {productModifier.modifier.max}
@@ -1176,7 +1199,11 @@ const ProductAddModal = ({
         style={styles.addButton}
         disabled={handleDisabledAddProductButton()}
         onClick={() => {
-          handleAddOrUpdateProduct();
+          if (mode === 'GuestMode') {
+            handleAddOrUpdateProductModeGuest();
+          } else {
+            handleAddOrUpdateProduct();
+          }
         }}
       >
         <Typography style={styles.addText}>
@@ -1191,7 +1218,7 @@ const ProductAddModal = ({
   };
 
   const renderSpecialInstruction = () => {
-    if (props.defaultOutlet.enableItemSpecialInstructions) {
+    if (props.defaultOutlet.enableOrderSpecialInstructions) {
       return (
         <div>
           <div style={styles.rootSpecialInstruction}>
@@ -1212,6 +1239,12 @@ const ProductAddModal = ({
     } else {
       return null;
     }
+  };
+  const removeLastCharFromStr = () => {
+    const data = product.name.split(' ');
+    console.log('dedd =>', data);
+    data.pop();
+    return data.join(' ');
   };
 
   return (
@@ -1331,6 +1364,8 @@ ProductAddModal.defaultProps = {
   dispatch: null,
   width: 600,
   selectedProduct: {},
+  deliveryProviderSelected: {},
+  deliveryAddress: {},
 };
 
 ProductAddModal.propTypes = {
@@ -1338,6 +1373,8 @@ ProductAddModal.propTypes = {
   color: PropTypes.object,
   companyInfo: PropTypes.object,
   defaultOutlet: PropTypes.object,
+  deliveryAddress: PropTypes.object,
+  deliveryProviderSelected: PropTypes.object,
   dispatch: PropTypes.func,
   handleClose: PropTypes.func,
   open: PropTypes.bool,

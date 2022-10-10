@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap');
+
+.myFont{
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.dropDownMenu{
+  border: none !important;
+  border-radius: 7px !important;
+  background-color: transparent !important;
+
+}
+.placeholderDropDown{
+  padding-left: 5px !important;
+}
+.arrowIcon{
+  margin-top: 5% !important;
+}
+.menuDropDown{
+  width: 82vw !important;
+  border-radius: 10px;
+}
+@media (min-width: 1200px) { 
+  .menuDropDown{
+    width: 100% !important;
+  }
+  .phoneField {
+    height: 40px;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    margin-left: 5px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 100%;
+  }
+ }

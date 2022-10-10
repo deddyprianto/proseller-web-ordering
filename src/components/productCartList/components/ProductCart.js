@@ -10,8 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
-import ProductAddModal from '../../../components/productList/components/ProductAddModal';
-import ProductCartRemoveModal from '../../productCartList/components/ProductCartRemoveModal';
+import ProductAddModal from 'components/ProductList/components/ProductAddModal';
+import ProductCartRemoveModal from 'components/productCartList/components/ProductCartRemoveModal';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -40,10 +40,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 const ProductCart = ({ item, ...props }) => {
   const [width] = useWindowSize();
-  const itemIsUnavailable =
-    item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
-  const itemIsOutOfStock =
-    item.product?.currentStock && item.quantity > item.product.currentStock;
   const styles = {
     textNote: {
       paddingTop: 10,
@@ -53,13 +49,8 @@ const ProductCart = ({ item, ...props }) => {
       fontSize: 12,
       color: props.color.primary,
     },
-    textStock: {
-      color: 'red',
-      fontStyle: 'italic',
-    },
     rootProductCart: {
       position: 'relative',
-      opacity: itemIsUnavailable || itemIsOutOfStock ? 0.5 : 1,
     },
     rootPrice: {
       display: 'flex',
@@ -118,7 +109,6 @@ const ProductCart = ({ item, ...props }) => {
       fontWeight: 600,
     },
     price: {
-      paddingRight: 10,
       paddingBottom: 6,
       marginTop: 10,
       fontSize: 14,
@@ -127,6 +117,7 @@ const ProductCart = ({ item, ...props }) => {
       color: props.color.primary,
     },
     priceDiscount: {
+      paddingRight: 10,
       paddingBottom: 6,
       marginTop: 10,
       fontSize: 14,
@@ -253,20 +244,40 @@ const ProductCart = ({ item, ...props }) => {
   const renderNotes = () => {
     if (item.remark) {
       return (
-        <Typography style={styles.textNote}>Note: {item.remark}</Typography>
+        <table>
+          <tr>
+            <td
+              style={{
+                textAlign: 'left',
+                width: '100%',
+                display: '-webkit-box',
+                WebkitLineClamp: '3',
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                padding: 0,
+                margin: 0,
+                paddingTop: 10,
+                fontSize: 12,
+              }}
+            >
+              Note: {item.remark}
+            </td>
+          </tr>
+        </table>
       );
     }
   };
 
   const renderPrice = () => {
-    if (item?.totalDiscAmount) {
+    if (item?.totalDiscAmount !== 0) {
       return (
         <div style={styles.rootPrice}>
-          <Typography style={styles.price}>
-            {handleCurrency(item?.totalDiscAmount)}
-          </Typography>
           <Typography style={styles.priceDiscount}>
             {handleCurrency(item?.grossAmount)}
+          </Typography>
+          <Typography style={styles.price}>
+            {/* TODO: need re-review */}
+            {handleCurrency(item?.totalDiscAmount)}
           </Typography>
         </div>
       );
@@ -278,20 +289,6 @@ const ProductCart = ({ item, ...props }) => {
         </Typography>
       </div>
     );
-  };
-
-  const renderProductStock = () => {
-    if (itemIsUnavailable) {
-      return <Typography style={styles.textStock}>Out of stock</Typography>;
-    }
-
-    if (itemIsOutOfStock) {
-      return (
-        <Typography style={styles.textStock}>
-          Only {item.product.currentStock} item(s) left
-        </Typography>
-      );
-    }
   };
 
   return (
@@ -341,7 +338,6 @@ const ProductCart = ({ item, ...props }) => {
           {renderProductModifiers(item?.modifiers)}
           {renderNotes()}
           {renderPrice()}
-          {renderProductStock()}
         </div>
       </div>
       <IconButton
