@@ -14,8 +14,6 @@ import { lsLoad, lsStore } from '../../helpers/localStorage';
 import config from '../../config';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
-const regEmail =
-  /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2');
 
@@ -217,6 +215,7 @@ const LoginRegister = (props) => {
     if (jenis) {
       setInputs({ ...inputs, [jenis]: data });
     }
+
     switch (jenis) {
       case 'phoneNumber': {
         const number = data.trim();
@@ -228,7 +227,7 @@ const LoginRegister = (props) => {
           setErrorPhone('');
           setBtnSubmit(false);
         } else {
-          setErrorPhone('PhoneNumber not valid');
+          setErrorPhone('Phone Number not valid');
           setBtnSubmit(false);
         }
         break;
@@ -267,8 +266,10 @@ const LoginRegister = (props) => {
         break;
 
       case 'email': {
-        const email = data.toLowerCase().trim();
-        const checkEmail = regEmail.test(String(email).toLowerCase());
+        const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+        const email = data;
+        const checkEmail = regEmail.test(email);
 
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
@@ -325,7 +326,7 @@ const LoginRegister = (props) => {
           setErrorPhone('');
           setBtnSubmit(false);
         } else {
-          setErrorPhone('PhoneNumber not valid');
+          setErrorPhone('Phone Number not valid');
           setBtnSubmit(false);
         }
         break;
@@ -360,9 +361,9 @@ const LoginRegister = (props) => {
         break;
 
       case 'email': {
+        const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
-
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
@@ -872,11 +873,11 @@ const LoginRegister = (props) => {
       if (response.status === false) {
         // Fetch Custom & Mandatory Fields
         await props.dispatch(CustomerAction.mandatoryField());
-        setMethod('email');
         setUserStatus('NOT_REGISTERED');
         setPayloadResponse({ email });
         setBtnSubmit(false);
         setIsLoading(false);
+        setMethod('email');
       } else {
         if (response.data.status === 'SUSPENDED') {
           Swal.fire(
@@ -1212,6 +1213,6 @@ const LoginRegister = (props) => {
       </div>
     </LoadingOverlayCustom>
   );
-};
+};;
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginRegister);
