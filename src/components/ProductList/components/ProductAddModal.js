@@ -337,7 +337,6 @@ const ProductAddModal = ({
     if (product) {
       let arrFinalData = [];
       product.productModifiers.forEach((modifier) => {
-        console.log(':GILA', product.productModifiers);
         if (
           modifier?.modifier?.max === 1 &&
           modifier?.modifier?.min === 1 &&
