@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -19,7 +20,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-
+import { useHistory } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
@@ -37,6 +38,8 @@ const mapStateToProps = (state) => {
     companyInfo: state.masterdata.companyInfo.data,
     deliveryProviderSelected: state.order.selectedDeliveryProvider,
     deliveryAddress: state.order.deliveryAddress,
+    basketGuestCO: state.guestCheckoutCart.data,
+    refreshData: state.guestCheckoutCart.refreshData,
   };
 };
 
@@ -53,6 +56,7 @@ const ProductAddModal = ({
   basket,
   ...props
 }) => {
+  const history = useHistory();
   const gadgetScreen = width < 600;
   const theme = useTheme();
   const [mode, setMode] = useState();
@@ -770,6 +774,29 @@ const ProductAddModal = ({
     handleClear();
   };
 
+  const removeProductGuestMode = async () => {
+    setIsLoading(true);
+    const response = await props.dispatch(
+      OrderAction.processRemoveCartGuestCheckoutMode(
+        props.basketGuestCO.guestID,
+        selectedProduct
+      )
+    );
+    if (response?.resultCode === 200) {
+      props.dispatch({
+        type: CONSTANT.GUEST_MODE_BASKET,
+        payload: { message: 'Cart it empty.' },
+      });
+      handleClose();
+      handleClear();
+      setIsLoading(false);
+      history.push('/');
+    } else {
+      alert('Failed');
+    }
+    setIsLoading(false);
+  };
+
   const handleAddOrUpdateProductModeGuest = async () => {
     setIsLoading(true);
     if (!isEmptyObject(selectedProduct)) {
@@ -1186,7 +1213,13 @@ const ProductAddModal = ({
         <Button
           style={styles.addButton}
           onClick={() => {
-            handleAddOrUpdateProduct();
+            if (mode === 'GuestMode') {
+              console.log('dedd =>', 'delete from guest co');
+              removeProductGuestMode();
+            } else {
+              console.log('dedd =>', 'deleted not from guest co');
+              handleAddOrUpdateProduct();
+            }
           }}
         >
           <Typography style={styles.addText}>Remove</Typography>
