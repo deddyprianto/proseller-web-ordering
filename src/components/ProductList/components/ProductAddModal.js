@@ -1214,10 +1214,8 @@ const ProductAddModal = ({
           style={styles.addButton}
           onClick={() => {
             if (mode === 'GuestMode') {
-              console.log('dedd =>', 'delete from guest co');
               removeProductGuestMode();
             } else {
-              console.log('dedd =>', 'deleted not from guest co');
               handleAddOrUpdateProduct();
             }
           }}
