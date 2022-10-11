@@ -1,11 +1,30 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/button-has-type */
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input } from 'reactstrap';
-
-import PhoneInput from 'react-phone-input-2';
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+} from 'reactstrap';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useHistory, useLocation } from 'react-router-dom';
+import countryCodes from 'country-codes-list';
 import cx from 'classnames';
-
+import LoadingOverlay from 'react-loading-overlay';
+import { useSelector, useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import IconButton from '../../../assets/images/VectorButton.png';
+import iconDown from '../../../assets/images/IconDown.png';
+import Swal from 'sweetalert2';
 import styles from './styles.module.css';
+import { OrderAction } from 'redux/actions/OrderAction';
+import config from 'config';
+import search from 'assets/images/search.png';
+import SearchInput, { createFilter } from 'react-search-input';
 
 const Portal = ({
   method,
@@ -20,12 +39,22 @@ const Portal = ({
   color,
   loginByMobile,
   loginByEmail,
+  settingGuessCheckout,
 }) => {
+  const dispatch = useDispatch();
+  const backgroundTheme = useSelector((state) => state.theme.color);
+  const history = useHistory();
+  const location = useLocation();
+  const mode = useSelector((state) => state.guestCheckoutCart.mode);
+  const matches = useMediaQuery('(max-width:1200px)');
   const initialCountry = (companyInfo && companyInfo.countryCode) || 'SG';
   const initialCodePhone = '+65';
-
   const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
   const [value, setValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [valueSearchCode, setValueSearchCode] = useState('');
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   useEffect(() => {
     if (initialCountry === 'ID') setPhoneCountryCode('+62');
@@ -37,51 +66,179 @@ const Portal = ({
   }, [value, phoneCountryCode, companyInfo]);
 
   useEffect(() => {
+    if (document.querySelector('#phoneInput')) {
+      document
+        .querySelector('#phoneInput')
+        .addEventListener('keypress', (evt) => {
+          if (
+            (evt.which != 8 && evt.which != 0 && evt.which < 48) ||
+            evt.which > 57
+          ) {
+            evt.preventDefault();
+          }
+        });
+    }
     setValue('');
   }, [method]);
+
+  // const myCountryCodesObject = countryCodes.customList(
+  //   'countryCode',
+  //   '+{countryCallingCode}'
+  // );
+  const myCountryCodesObject = countryCodes.customList(
+    'countryCode',
+    '{countryNameEn}: +{countryCallingCode}'
+  );
+
+  const optionCodePhone = Object.keys(myCountryCodesObject).map(
+    (key) => myCountryCodesObject[key]
+  );
+  // const finalOptionCodePhone = optionCodePhone.map((item) =>
+  //   item.replace(/(.*): (.*?)/g, '')
+  // );
+  optionCodePhone.sort((a, b) => {
+    let item = a.substring(a.indexOf(':') + 2);
+    if (item === initialCodePhone) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+
+  const filteredPhoneCode = optionCodePhone.filter(
+    createFilter(valueSearchCode)
+  );
 
   const renderPhone = () => {
     return (
       <>
-        <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-          <label htmlFor='email'>
-            Enter your Mobile Number
-            <span className='required'>*</span>
-          </label>
-          <div className={styles.fieldGroup}>
-            <div className={styles.phoneCountryCodeGroup}>
-              <PhoneInput
-                country={initialCountry}
-                value={phoneCountryCode}
-                enableSearch={true}
-                autoFormat={false}
-                onChange={(e) => {
-                  setPhoneCountryCode(`+${e}`);
-                }}
-                onKeyDown={() => document.getElementById('phoneInput').focus()}
-                disableSearchIcon
-                inputStyle={{
-                  width: 0,
-                  border: `1px solid ${color}`,
-                  backgroundColor: color,
-                  height: 40,
-                  outline: 'none',
-                  boxShadow: 'none',
-                }}
-                dropdownStyle={{
-                  color: '#808080',
-                }}
-              ></PhoneInput>
-              <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
+        <div
+          style={{
+            width: '100%',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              border: '1px solid rgba(141, 141, 141, 0.44)',
+              borderRadius: '7px',
+              boxShadow:
+                '0px 0px 0.2px rgba(0, 0, 0, 0.02),\n  0px 0px 0.5px rgba(0, 0, 0, 0.028),\n  0px 0px 0.9px rgba(0, 0, 0, 0.035),\n  0px 0px 1.6px rgba(0, 0, 0, 0.042),\n  0px 0px 2.9px rgba(0, 0, 0, 0.05),\n  0px 0px 7px rgba(0, 0, 0, 0.07)',
+            }}
+          >
+            <div style={{ width: '25%' }}>
+              <Dropdown
+                isOpen={dropdownOpen}
+                toggle={toggle}
+                direction='down'
+                className={styles.dropDownMenu}
+                size='100px'
+              >
+                <DropdownToggle
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'transparent',
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    fontWeight: 500,
+                    fontSize: '16px',
+                  }}
+                >
+                  {phoneCountryCode}
+                  <img src={iconDown} />
+                </DropdownToggle>
+                <DropdownMenu
+                  style={{
+                    width: matches ? '80vw' : '27.5vw',
+                    borderRadius: '10px',
+                    paddingLeft: '10px',
+                    height: '235px',
+                    overflowY: 'auto',
+                    marginTop: '5px',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '97%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      border: '1px solid #ddd',
+                      borderRadius: '10px',
+                      justifyContent: 'space-between',
+                      margin: '5px 0px',
+                    }}
+                  >
+                    <div style={{ width: '100%' }}>
+                      <SearchInput
+                        placeholder='Search for country code'
+                        style={{
+                          width: '100%',
+                          padding: '10px',
+                          marginLeft: '5px',
+                          border: 'none',
+                          outline: 'none',
+                        }}
+                        onChange={(e) => setValueSearchCode(e)}
+                      />
+                    </div>
+                    <img src={search} style={{ marginRight: '10px' }} />
+                  </div>
+                  {filteredPhoneCode.map((item, i) => {
+                    const getPhoneCodeFromStr = item.substring(
+                      item.indexOf(':') + 1
+                    );
+                    return (
+                      <DropdownItem
+                        style={{
+                          cursor: 'pointer',
+                          fontFamily: 'Plus Jakarta Sans',
+                          color: 'black',
+                          fontWeight: 500,
+                          fontSize: '16px',
+                          padding: '5px 0 0 0',
+                          margin: 0,
+                          opacity: 0.9,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        header
+                        key={item}
+                      >
+                        <p
+                          style={{
+                            padding: '0px 0px 7px 0px',
+                            margin: 0,
+                            cursor: 'pointer',
+                            color: i === 0 ? backgroundTheme.primary : 'black',
+                          }}
+                          onClick={() => {
+                            setPhoneCountryCode(getPhoneCodeFromStr);
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          {item}
+                        </p>
+                        <hr style={{ width: '95%' }} />
+                      </DropdownItem>
+                    );
+                  })}
+                </DropdownMenu>
+              </Dropdown>
             </div>
-            <Input
+            <input
               id='phoneInput'
               value={value}
+              type='number'
+              placeholder='Phone Number'
               className={styles.phoneField}
               onChange={(e) => {
                 setValue(e.target.value.replace(/[^0-9]/g, ''));
               }}
-            ></Input>
+            ></input>
           </div>
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
@@ -89,6 +246,7 @@ const Portal = ({
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
           onClick={() => {
+            setIsLoading(true);
             handlePhoneCheck();
           }}
         >
@@ -99,7 +257,7 @@ const Portal = ({
             className={cx('modal-title', styles.switchMethodButton)}
             onClick={() => handleMethodChange('email')}
           >
-            Use Email Address to Sign In / Sign Up
+            Use Email Address to Login / Register
           </div>
         )}
       </>
@@ -109,8 +267,8 @@ const Portal = ({
   const renderEmail = () => {
     return (
       <>
-        <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-          <label htmlFor='email'>
+        <div>
+          <label htmlFor='email' style={{ fontSize: '14px' }}>
             Enter your Email Address
             <span className='required'>*</span>
           </label>
@@ -122,7 +280,11 @@ const Portal = ({
                 'woocommerce-Input woocommerce-Input--text input-text',
                 styles.emailField
               )}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+                console.log('dedd =>', regEmail.test(e.target.value));
+                setValue(e.target.value);
+              }}
             ></input>
           </div>
         </div>
@@ -139,7 +301,7 @@ const Portal = ({
             className={cx('modal-title', styles.switchMethodButton)}
             onClick={() => handleMethodChange('phone')}
           >
-            Use Mobile Number to Sign In / Sign Up
+            Use Email Address to Login / Register
           </div>
         )}
       </>
@@ -152,47 +314,179 @@ const Portal = ({
     }
     return renderEmail();
   };
+  const handleMergeOfflineCart = () => {
+    const isOfflineCart = JSON.parse(
+      localStorage.getItem(`${config.prefix}_offlineCart`)
+    );
+    if (isOfflineCart) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const handleGuestCheckoutMode = async () => {
+    const idGuestCheckout = uuidv4();
+    if (!mode) {
+      localStorage.setItem('settingGuestMode', settingGuessCheckout);
+      localStorage.setItem('idGuestCheckout', idGuestCheckout);
+      if (handleMergeOfflineCart()) {
+        Swal.showLoading();
+        await dispatch(
+          OrderAction.addOfflineCartToGuestModeCart(idGuestCheckout)
+        );
+        Swal.hideLoading();
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Guest Mode Chooses',
+        text: 'You already in guest mode!',
+      }).then((res) => {
+        if (res.isConfirmed) {
+          if (location.pathname === '/outlets') {
+            history.push('/outlets');
+          } else if (location.pathname === '/') {
+            history.push('/');
+          } else {
+            history.push('/cartguestcheckout');
+          }
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops...',
+        text: 'You have done press this button!',
+      });
+    }
+  };
 
   return (
-    <div className='modal-content' style={{ width: '100%' }}>
-      <div className={cx('modal-header', styles.modalHeader)}>
-        <h5 className={cx('modal-title', styles.modalTitle)}>
-          {method === 'phone' ? 'Mobile' : 'Email'} Log In / Sign Up
-        </h5>
-        <button
-          type='button'
-          className='close'
-          data-dismiss='modal'
-          aria-label='Close'
-          disabled={!enableOrdering}
+    <LoadingOverlay active={isLoading} spinner text='Loading...'>
+      <div
+        className='modal-content'
+        style={{
+          justifyContent: 'center',
+          width: matches ? '90vw' : '30vw',
+        }}
+      >
+        <div
           style={{
-            position: 'absolute',
-            right: 10,
-            top: 16,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            paddingTop: '20px',
+            paddingLeft: '15px',
           }}
         >
-          <span aria-hidden='true' className={styles.closeButton}>
-            ×
-          </span>
-        </button>
+          <h5
+            style={{ fontSize: '24px', fontWeight: 500 }}
+            className={cx('modal-title', styles.modalTitle)}
+          >
+            Welcome!
+          </h5>
+          {location.pathname !== '/cart' && (
+            <button
+              type='button'
+              className='close'
+              data-dismiss='modal'
+              aria-label='Close'
+              disabled={!enableOrdering}
+              style={{
+                position: 'absolute',
+                right: 10,
+                top: 16,
+              }}
+            >
+              <span aria-hidden='true' className={styles.closeButton}>
+                ×
+              </span>
+            </button>
+          )}
+          <p style={{ fontSize: '14px', color: '#8D8D8D' }}>
+            To Login or Register, please enter your mobile number.
+          </p>
+        </div>
+        <div
+          style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            maxWidth: 'min(1280px, 100% - 30px)',
+          }}
+        >
+          {handleRenderByMethod(method)}
+          {settingGuessCheckout === 'GuestMode' && (
+            <>
+              <hr style={{ opacity: 0.5, marginTop: '25px' }} />
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <button
+                  aria-label='Close'
+                  data-dismiss='modal'
+                  onClick={handleGuestCheckoutMode}
+                  style={{
+                    marginTop: '20px',
+                    marginBottom: '20px',
+                    padding: '8px',
+                    borderRadius: '50px',
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    backgroundColor: '#4386A133',
+                    color: '#4386A1',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '70%',
+                  }}
+                  className={styles.myFont}
+                >
+                  <span>
+                    <img src={IconButton} width={14.4} height={19.2} />
+                  </span>
+                  <div style={{ marginLeft: '5px' }}>Guest Checkout</div>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
-
-      <div className='modal-body'>{handleRenderByMethod(method)}</div>
-    </div>
+    </LoadingOverlay>
   );
 };
 
-Portal.propTypes = {
-  initialMethod: PropTypes.oneOf(['phone', 'email']).isRequired,
-  handleMethodChange: PropTypes.func,
-  handleChange: PropTypes.func,
-  handleEmailCheck: PropTypes.func,
-  handlePhoneCheck: PropTypes.func,
-  error: PropTypes.string,
+Portal.defaultProps = {
+  handleMethodChange: null,
+  handleChange: null,
+  handleEmailCheck: null,
+  handlePhoneCheck: null,
+  error: '',
+  isSubmitting: false,
+  enableOrdering: false,
+  companyInfo: {},
+  color: '',
+  loginByMobile: false,
+  loginByEmail: false,
 };
 
-Portal.defaultProps = {
-  initialMethod: 'phone',
+Portal.propTypes = {
+  color: PropTypes.string,
+  companyInfo: PropTypes.object,
+  enableOrdering: PropTypes.bool,
+  error: PropTypes.string,
+  handleChange: PropTypes.func,
+  handleEmailCheck: PropTypes.func,
+  handleMethodChange: PropTypes.func,
+  handlePhoneCheck: PropTypes.func,
+  isSubmitting: PropTypes.bool,
+  loginByEmail: PropTypes.bool,
+  loginByMobile: PropTypes.bool,
+  method: PropTypes.oneOf(['phone', 'email']).isRequired,
 };
 
 export default Portal;

@@ -224,7 +224,20 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
   };
 }
 
+function getOutletById(id) {
+  return async () => {
+    const data = await MasterDataService.api('GET', null, `outlets/get/${id}`);
+
+    if (data?.resultCode === 200) {
+      return data?.data;
+    } else {
+      return null;
+    }
+  };
+}
+
 export const OutletAction = {
+  getOutletById,
   fetchDefaultOutlet,
   fetchAllOutlet,
   fetchSingleOutlet,

@@ -43,11 +43,11 @@ function getBasket() {
   };
 }
 
-function getBasketPending() {
+function getBasketPending(payload = {}) {
   return async (dispatch) => {
     let response = await OrderingService.api(
       'POST',
-      null,
+      payload,
       'cart/pending',
       'Bearer'
     );

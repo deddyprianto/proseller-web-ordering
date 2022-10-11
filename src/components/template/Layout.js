@@ -15,12 +15,15 @@ const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
 const Cart = loadable(() => import('../../pages/Cart'));
+const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
 const Payment = loadable(() => import('pages/Payment'));
 const MyVoucher = loadable(() => import('pages/MyVoucher'));
 const Profile = loadable(() => import('../../pages/Profile'));
 const ListMembership = loadable(() => import('../../pages/ListMembership'));
 const DetailMembership = loadable(() => import('../../pages/DetailMembership'));
 const History = loadable(() => import('../../pages/History'));
+const ThankyouPage = loadable(() => import('../../pages/ThankyouPage'));
+const TrackOrder = loadable(() => import('../../pages/TrackOrder'));
 const Inbox = loadable(() => import('../../pages/Inbox'));
 const Voucher = loadable(() => import('../../pages/Voucher'));
 const Map = loadable(() => import('../../pages/Map/Map'));
@@ -137,6 +140,7 @@ class Layout extends Component {
   }
 
   render() {
+    const isGuestMode = localStorage.getItem('settingGuestMode');
     const { isLoggedIn } = this.props;
     const { isEmenu, enableOrdering } = this.state;
     return (
@@ -150,6 +154,13 @@ class Layout extends Component {
             )}
             {enableOrdering && <Route exact path='/signIn' component={Home} />}
             {enableOrdering && <Route exact path='/cart' component={Cart} />}
+            {enableOrdering && (
+              <Route
+                exact
+                path='/cartguestcheckout'
+                component={CartGuestCheckout}
+              />
+            )}
             {/* TODO: component basket will remove later */}
             {enableOrdering && (
               <Route exact path='/basket' component={Basket} />
@@ -164,6 +175,10 @@ class Layout extends Component {
                 component={DeliveryAddress}
               />
             )}
+            {isGuestMode === 'GuestMode' && (
+              <Route exact path='/thankyoupage' component={ThankyouPage} />
+            )}
+            <Route exact path='/trackorder' component={TrackOrder} />
             {(isLoggedIn || !enableOrdering) && (
               <Route
                 exact
@@ -187,7 +202,7 @@ class Layout extends Component {
             {isLoggedIn && (
               <Route exact path='/payment-method' component={PaymentMethod} />
             )}
-            {isLoggedIn && (
+            {(isLoggedIn || isGuestMode === 'GuestMode') && (
               <Route
                 exact
                 path='/delivery-address'

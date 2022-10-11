@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { OutletAction } from '../redux/actions/OutletAction';
 import { OrderAction } from '../redux/actions/OrderAction';
 import config from '../config';
+import { CONSTANT } from 'helpers';
 
 const Swal = require('sweetalert2');
 class OutletSelection extends Component {
@@ -79,6 +80,36 @@ class OutletSelection extends Component {
           }
         });
         return false;
+      } else if (
+        !this.props.guestCheckoutCart.message ||
+        this.props.guestCheckoutCartResponse
+      ) {
+        Swal.fire({
+          title: 'Change Outlet in Guest Mode?',
+          text: 'You will delete your cart at the previous outlet in GuestMode.',
+          icon: 'warning',
+          confirmButtonText: 'Sure',
+          showCancelButton: true,
+        }).then(async (data) => {
+          if (data.isConfirmed) {
+            this.setState({ isLoading: true });
+            await this.props.dispatch(
+              OrderAction.deleteCartGuestMode(
+                this.props.guestCheckoutCart?.guestID ||
+                  this.props.guestCheckoutCartResponse?.guestID
+              )
+            );
+            this.props.dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+            this.props.dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+            this.props.dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+            this.props.dispatch({
+              type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+              payload: {},
+            });
+            this.setState({ isLoading: false });
+            this.handleSelectOutlet(outlet);
+          }
+        });
       } else {
         this.handleSelectOutlet(outlet);
       }
@@ -322,6 +353,9 @@ const mapStateToProps = (state) => {
     orderingMode: state.order.orderingMode,
     setting: state.order.orderingSetting,
     getSpaceLogo: state.getSpaceLogo.logo,
+    guestCheckoutCart: state.guestCheckoutCart.data,
+    guestCheckoutCartResponse: state.guestCheckoutCart.response,
+    mode: state.guestCheckoutCart.mode,
   };
 };
 

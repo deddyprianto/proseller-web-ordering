@@ -20,6 +20,7 @@ const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = () => {
   const { color } = useSelector((state) => state.theme);
+
   const mobileSize = useMobileSize();
   const result = {
     container: {
@@ -30,7 +31,7 @@ const useStyles = () => {
       width: '100%',
       zIndex: 999,
       backgroundColor: '#f2f2f2',
-      paddingTop: '1px',
+      paddingTop: '8px',
       paddingBottom: '8px',
     },
     wrapNavbar: {
@@ -51,6 +52,7 @@ const useStyles = () => {
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 0,
+      width: '50%',
     },
     childList: {
       paddingTop: '1rem',
@@ -97,7 +99,7 @@ const useStyles = () => {
       fontSize: '13px',
     },
     iconBasket: {
-      fontSize: 10,
+      fontSize: 20,
       fontWeight: 'bold',
       marginRight: 3,
       marginTop: 5,
@@ -121,10 +123,34 @@ const HeaderWebOrdering = () => {
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [logo, setLogo] = useState('');
   const [basketLength, setBasketLength] = useState(0);
+  const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { defaultOutlet, outlets } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
+  const [mode, setMode] = useState();
+  const [guessCheckout, setGuessCheckout] = useState();
+  const responseGuestCheckOut = useSelector(
+    (state) => state.guestCheckoutCart.response
+  );
+  const data = useSelector((state) => state.guestCheckoutCart.data);
+
+  useEffect(() => {
+    const isGuestMode = localStorage.getItem('settingGuestMode');
+    if (isGuestMode === 'GuestMode') {
+      setMode(isGuestMode);
+    }
+  }, [localStorage.getItem('settingGuestMode')]);
+
+  useEffect(() => {
+    const settingGuestCheckout = setting.find((items) => {
+      return items.settingKey === 'GuestMode';
+    });
+
+    if (settingGuestCheckout?.settingValue) {
+      setGuessCheckout(settingGuestCheckout.settingKey);
+    }
+  }, [setting]);
 
   const handleAllowedURL = (url) => {
     const allowedOriginUrl =
@@ -167,6 +193,7 @@ const HeaderWebOrdering = () => {
       setEnableOrdering(enableOrdering);
     }
   };
+
   useEffect(() => {
     const infoCompany = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
@@ -189,14 +216,29 @@ const HeaderWebOrdering = () => {
   }, [history.location.pathname]);
 
   useEffect(() => {
-    let basketLength = 0;
-    if (basket && basket.details) {
-      basket.details.forEach((cart) => {
-        basketLength += cart.quantity;
-      });
+    if (mode === 'GuestMode') {
+      let basketLength = 0;
+      if (responseGuestCheckOut && responseGuestCheckOut.details) {
+        responseGuestCheckOut.details.forEach((cart) => {
+          basketLength += cart.quantity;
+        });
+      } else if (data && data.details) {
+        data.details.forEach((cart) => {
+          basketLength += cart.quantity;
+        });
+      }
+      setBasketLengthGuestCheckout(basketLength);
+    } else {
+      let basketLength = 0;
+      if (basket && basket.details) {
+        basket.details.forEach((cart) => {
+          basketLength += cart.quantity;
+        });
+      }
+      setBasketLength(basketLength);
     }
-    setBasketLength(basketLength);
-  }, [basket]);
+  }, [basket, mode, responseGuestCheckOut, data]);
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
@@ -211,7 +253,7 @@ const HeaderWebOrdering = () => {
       return (
         <div
           style={styles.wrapOutletName}
-          onClick={() => history.push('./outlets')}
+          onClick={() => history.push('/outlets')}
         >
           <PlaceIcon sx={{ fontSize: '17px' }} />
           <Typography sx={{ fontSize: '15px', fontWeight: 'bold' }}>
@@ -242,6 +284,15 @@ const HeaderWebOrdering = () => {
       return (
         <ListItem>
           <Link to='/'>Menu</Link>
+        </ListItem>
+      );
+    }
+  };
+  const linkTrackOrder = () => {
+    if (!isLoggedIn && guessCheckout) {
+      return (
+        <ListItem>
+          <Link to='/trackorder'>Track Order</Link>
         </ListItem>
       );
     }
@@ -308,16 +359,28 @@ const HeaderWebOrdering = () => {
       );
     }
   };
+
   const renderBasket = () => {
     if (enableOrdering) {
       return (
-        <Link id='cart-icon' to='/cart'>
+        <Link
+          id='cart-icon'
+          to={mode === 'GuestMode' ? '/cartguestcheckout' : '/cart'}
+        >
           <Badge
             color='info'
-            badgeContent={basketLength}
+            badgeContent={
+              mode === 'GuestMode' ? basketLengthGuestCheckout : basketLength
+            }
             style={styles.iconBasket}
           >
             <div
+              data-toggle='modal'
+              data-target={
+                mode === 'GuestMode' || isLoggedIn
+                  ? ''
+                  : '#login-register-modal'
+              }
               style={{
                 width: 35,
                 height: 35,
@@ -338,7 +401,7 @@ const HeaderWebOrdering = () => {
 
   const renderSiderBar = () => {
     if (mobileSize) {
-      return <Sidebar />;
+      return <Sidebar guessCheckout={guessCheckout} />;
     }
   };
   const renderLogoAndOutletNamed = () => (
@@ -363,6 +426,7 @@ const HeaderWebOrdering = () => {
       return (
         <List style={styles.wrapList}>
           {linkMenu()}
+          {linkTrackOrder()}
           {linkProfile()}
           {linkHistory()}
           {linkInbox()}
@@ -394,7 +458,6 @@ const HeaderWebOrdering = () => {
       </div>
     );
   };
-
   return (
     <>
       {renderLoginRegister()}

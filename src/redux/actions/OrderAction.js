@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { CONSTANT } from '../../helpers';
 import { OrderingService } from '../../Services/OrderingService';
 import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
@@ -213,7 +214,7 @@ function getCart(isSetData = true) {
       'cart/getcart',
       'Bearer'
     );
-
+    
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== 'No details data') {
@@ -237,6 +238,25 @@ function getCart(isSetData = true) {
     return response;
   };
 }
+const getCartGuestMode = (idGuestCheckout) => {
+  return async (dispatch) => {
+    const response = await OrderingService.api(
+      'GET',
+      null,
+      `guest/cart/${idGuestCheckout}`
+    );
+    if (response.resultCode >= 400) {
+      return response;
+    } else {
+      localStorage.setItem(
+        'BASKET_GUESTCHECKOUT',
+        JSON.stringify(response.data)
+      );
+      dispatch({ type: CONSTANT.GUEST_MODE_BASKET, payload: response.data });
+      return response.data;
+    }
+  };
+};
 
 function processOfflineCart(payload, mode) {
   return async (dispatch) => {
@@ -313,6 +333,28 @@ function processRemoveCart(product) {
   };
 }
 
+function processRemoveCartGuestCheckoutMode(guestID, itemDetails) {
+  return async () => {
+    let payload = [];
+    payload.push({
+      id: itemDetails.id,
+      productID: itemDetails.productID,
+      unitPrice: itemDetails.unitPrice,
+      quantity: 0,
+    });
+    const response = await OrderingService.api(
+      'PUT',
+      payload,
+      `guest/cart/update-item/${guestID}`
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      return response;
+    } else {
+      return response;
+    }
+  };
+}
+
 function moveCart(payload) {
   return async (dispatch) => {
     try {
@@ -355,6 +397,26 @@ function changeOrderingMode(payload) {
   };
 }
 
+function changeOrderingModeForGuestCheckout(payload) {
+  return async (dispatch) => {
+    if (payload.orderingMode) {
+      let response = await OrderingService.api(
+        'POST',
+        payload,
+        'cart/changeOrderingMode',
+        'Bearer'
+      );
+      if (response.ResultCode >= 400 || response.resultCode >= 400) {
+        return response;
+      }
+      const result = await dispatch(getCartGuestMode(payload.guestID));
+      return result;
+    } else {
+      return { resultCode: 400 };
+    }
+  };
+}
+
 function addCart(payload) {
   return async (dispatch) => {
     const response = await OrderingService.api(
@@ -378,9 +440,8 @@ function addCart(payload) {
         }
       }
     } catch (e) {
-      // console.log(e);
+      console.log(e);
     }
-
     if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
       return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
@@ -393,15 +454,15 @@ function processAddCart(defaultOutlet, selectedItem) {
       outletID: `outlet::${defaultOutlet.id}`,
       details: [],
     };
-
     let product = {
       productID: selectedItem.productID,
       unitPrice: selectedItem?.product?.retailPrice || selectedItem.retailPrice,
       quantity: selectedItem.quantity,
     };
 
-    if (selectedItem.remark !== '' || selectedItem.remark !== undefined)
+    if (selectedItem.remark !== '' || selectedItem.remark !== undefined) {
       product.remark = selectedItem.remark;
+    }
 
     if (!isEmptyArray(selectedItem?.modifiers)) {
       product.modifiers = selectedItem.modifiers;
@@ -601,19 +662,53 @@ function cartUpdate(payload) {
       'Bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
-    return response;
+      return response;
   };
 }
 
 function getTimeSlot(payload) {
   return async () => {
     let response = await OrderingService.api('POST', payload, 'timeslot');
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
       console.log(response);
-    return response;
+    } else {
+      return response;
+    }
   };
 }
+
+function getTrackOrder(refNo) {
+  return async (dispatch) => {
+    let response = await OrderingService.api(
+      'GET',
+      null,
+      `order/track/${refNo}`
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log(response);
+      return response;
+    } else {
+      dispatch({ type: CONSTANT.TRACKORDER, payload: response });
+      return response;
+    }
+  };
+}
+
+const paymentGuestMode = (submitCart) => {
+  return async (dispatch) => {
+    let response = await OrderingService.api(
+      'POST',
+      submitCart,
+      'guest/cart/request-payment'
+    );
+    if (response.resultCode >= 400 || response.resultCode >= 400) {
+      console.log(response);
+    } else {
+      dispatch({ type: CONSTANT.URL_PAYMENT, payload: response.data });
+      return response;
+    }
+  };
+};
 
 function submitAndPay(payload) {
   return async () => {
@@ -638,7 +733,6 @@ function checkOfflineCart() {
       const account = encryptor.decrypt(
         lsLoad(`${config.prefix}_account`, true)
       );
-
       const getOfflineCart = localStorage.getItem(
         `${config.prefix}_offlineCart`
       );
@@ -676,6 +770,172 @@ function checkOfflineCart() {
   };
 }
 
+const addOfflineCartToGuestModeCart = (guestID) => {
+  return async (dispatch) => {
+    const isOfflineCart = JSON.parse(
+      localStorage.getItem(`${config.prefix}_offlineCart`)
+    );
+    for (let i = 0; i < isOfflineCart.details.length; i++) {
+      const response = await OrderingService.api(
+        'POST',
+        {
+          guestID: `guest::${guestID}`,
+          outletID: isOfflineCart.outletID,
+          details: [
+            {
+              productID: isOfflineCart.details[i]?.productID,
+              unitPrice: isOfflineCart.details[i]?.grossAmount,
+              quantity: isOfflineCart.details[i]?.quantity,
+              remark: isOfflineCart.details[i]?.remark,
+              modifiers: isOfflineCart.details[i]?.modifiers,
+            },
+          ],
+        },
+        'guest/cart/add-item'
+      );
+      if (response.status === 'SUCCESS') {
+        localStorage.removeItem('webordering_offlineCart');
+        dispatch(setData({}, CONSTANT.DATA_BASKET));
+        dispatch({ type: CONSTANT.GUESTMODE, payload: response.data });
+        dispatch({
+          type: CONSTANT.OUTLET_RESPONSE,
+          payload: response.data.outlet,
+        });
+      }
+    }
+  };
+};
+
+const addCartToGuestMode = (guestID, defaultOutlet, selectedItem) => {
+  return async (dispatch) => {
+    let payload = {
+      guestID: `guest::${guestID}`,
+      outletID: defaultOutlet.sortKey,
+      details: [],
+    };
+    let product = {
+      productID: selectedItem.productID,
+      unitPrice: selectedItem?.product?.retailPrice || selectedItem.retailPrice,
+      quantity: selectedItem.quantity,
+      modifiers: selectedItem.modifiers,
+    };
+
+    if (selectedItem.remark !== '' || selectedItem.remark !== undefined) {
+      product.remark = selectedItem.remark;
+    }
+    payload.details.push(product);
+    let response = await OrderingService.api(
+      'POST',
+      payload,
+      'guest/cart/add-item'
+    );
+    if (response.status === 'SUCCESS') {
+      dispatch({ type: CONSTANT.GUESTMODE, payload: response.data });
+      dispatch({
+        type: CONSTANT.OUTLET_RESPONSE,
+        payload: response.data.outlet,
+      });
+    }
+    return response;
+  };
+};
+
+const processUpdateCartGuestMode = (guestID, productUpdate) => {
+  return async (dispatch) => {
+    const idGuest = `guest::${guestID}`;
+    let payload = [
+      {
+        id: productUpdate.id,
+        productID: productUpdate.productID,
+        unitPrice: productUpdate.unitPrice,
+        quantity: productUpdate.quantity,
+        modifiers: productUpdate.modifiers || [],
+        remark: productUpdate.remark || '',
+      },
+    ];
+
+    const response = await OrderingService.api(
+      'PUT',
+      payload,
+      `guest/cart/update-item/${idGuest}`
+    );
+    if (response.status === 'SUCCESS') {
+      console.log('dedd =>', response);
+      dispatch({
+        type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+        payload: response.data,
+      });
+    }
+  };
+};
+
+const clearResponse = () => {
+  return async (dispatch) => {
+    dispatch({ type: CONSTANT.GUESTMODE, payload: null });
+  };
+};
+
+const saveDateGuest = (payload) => {
+  return async (dispatch) => {
+    dispatch({ type: CONSTANT.SAVE_DATE, payload: payload });
+  };
+};
+const saveTimeGuest = (payload) => {
+  return async (dispatch) => {
+    dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: payload });
+  };
+};
+const saveTimeSlotGuest = (payload) => {
+  return async (dispatch) => {
+    dispatch({ type: CONSTANT.SAVE_TIME, payload: payload });
+  };
+};
+
+const deleteCartGuestMode = (idGuestCheckout) => {
+  return async (dispatch) => {
+    const response = await OrderingService.api(
+      'DELETE',
+      null,
+      `guest/cart/delete/${idGuestCheckout}`
+    );
+    if (response) {
+      dispatch({
+        type: CONSTANT.GUEST_MODE_BASKET,
+        payload: { message: 'Cart it empty.' },
+      });
+      dispatch({ type: CONSTANT.GUESTMODE, payload: null });
+      dispatch({
+        type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
+        payload: { deliveryAddress: null },
+      });
+    }
+  };
+};
+
+const addCartFromGuestCOtoCartLogin = (basketGuestCo) => {
+  return async (dispatch) => {
+    let res;
+    for (let i = 0; i < basketGuestCo.details.length; i++) {
+      let payload = {
+        outletID: basketGuestCo.outletID,
+        details: [
+          {
+            productID: basketGuestCo.details[i]?.productID,
+            unitPrice: basketGuestCo.details[i]?.grossAmount,
+            quantity: basketGuestCo.details[i]?.quantity,
+            remark: basketGuestCo.details[i]?.remark,
+            modifiers: basketGuestCo.details[i]?.modifiers,
+          },
+        ],
+      };
+      if (account) {
+        const response = await dispatch(addCart(payload));
+        res = response;
+      }
+    }
+    return res;
+  };
+};
 export const OrderAction = {
   addCart,
   getCart,
@@ -704,4 +964,18 @@ export const OrderAction = {
   getTimeSlot,
   submitMembership,
   updateCartInfo,
+  getTrackOrder,
+  addCartToGuestMode,
+  getCartGuestMode,
+  paymentGuestMode,
+  changeOrderingModeForGuestCheckout,
+  processRemoveCartGuestCheckoutMode,
+  saveDateGuest,
+  saveTimeGuest,
+  saveTimeSlotGuest,
+  clearResponse,
+  addOfflineCartToGuestModeCart,
+  deleteCartGuestMode,
+  processUpdateCartGuestMode,
+  addCartFromGuestCOtoCartLogin,
 };

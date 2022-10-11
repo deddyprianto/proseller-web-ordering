@@ -1,21 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 
 import { useSelector } from 'react-redux';
 
 const FooterWebOrdering = () => {
-  const [enableOrdering, setEnableOrdering] = useState();
+  const location = useLocation();
   const allState = useSelector((state) => state);
-
+  const navBar = useSelector((state) => state.theme.menu.navBar);
+  const [newNavbar, setNewNavbar] = useState([]);
   const [value, setValue] = useState(0);
+  const { setting } = useSelector((state) => state.order);
+  const [guessCheckout, setGuessCheckout] = useState();
+
+  useEffect(() => {
+    const settingGuestCheckout = setting.find((items) => {
+      return items.settingKey === 'GuestMode';
+    });
+
+    if (settingGuestCheckout?.settingValue) {
+      setGuessCheckout(settingGuestCheckout.settingKey);
+    }
+  }, [setting]);
 
   const menuIcon = (color) => {
     return (
@@ -90,6 +102,24 @@ const FooterWebOrdering = () => {
       </svg>
     );
   };
+  const trackIcon = (color) => {
+    return (
+      <svg
+        width='25'
+        height='24'
+        viewBox='0 0 512 512'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M147.941 94.1746L72.071 132.11L256.394 231.951L332.265 194.016L147.941 94.1746ZM42.667 164.706V351.997C42.667 360.077 47.2324 367.464 54.4598 371.078L234.823 461.259C234.72 460.409 234.667 459.544 234.667 458.667V268.706L42.667 164.706ZM277.177 461.259L457.541 371.078C464.768 367.464 469.334 360.077 469.334 351.997V173.184L394.667 210.518V266.667C394.667 278.449 385.115 288 373.333 288C361.551 288 352 278.449 352 266.667V231.851L277.333 269.185V458.667C277.333 459.544 277.28 460.41 277.177 461.259ZM448.004 136.147L265.541 44.9154C259.535 41.9125 252.466 41.9125 246.46 44.9154L194.524 70.8831L378.847 170.725L448.004 136.147Z'
+          fill={color}
+        />
+      </svg>
+    );
+  };
 
   const style = {
     paper: {
@@ -120,11 +150,28 @@ const FooterWebOrdering = () => {
     },
   };
 
+  const [enableOrdering, setEnableOrdering] = useState(true);
   const isLoggedIn = allState.auth.isLoggedIn;
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      if (guessCheckout) {
+        const spliceData = navBar;
+        spliceData.splice(5, 0, { text: 'TrackOrder', path: '/trackorder' });
+        setNewNavbar(spliceData);
+      } else {
+        setNewNavbar(navBar);
+      }
+    } else {
+      setNewNavbar(navBar);
+    }
+  }, [guessCheckout]);
 
   const iconCheck = (iconName, iconColor) => {
     if (iconName === 'Menu') {
       return menuIcon(iconColor);
+    } else if (iconName === 'TrackOrder') {
+      return trackIcon(iconColor);
     } else if (iconName === 'History') {
       return historyIcon(iconColor);
     } else if (iconName === 'Profile') {
@@ -142,16 +189,31 @@ const FooterWebOrdering = () => {
         return items.settingKey === 'EnableOrdering';
       });
       if (enableOrderingCheck) {
-        setEnableOrdering(enableOrderingCheck.settingValue);
+        setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
       }
     };
     enableOrderingChecker();
   }, []);
 
   const matches = useMediaQuery('(max-width:1200px)');
+
+  const displayBottomNavigation = () => {
+    if (location.pathname === '/thankyoupage') {
+      return 'none';
+    } else if (location.pathname === '/ordertrackhistory') {
+      return 'none';
+    } else {
+      return '';
+    }
+  };
+
   if (matches) {
     return (
-      <Paper sx={style.paper} elevation={5}>
+      <Paper
+        sx={style.paper}
+        elevation={5}
+        style={{ display: displayBottomNavigation() }}
+      >
         <BottomNavigation
           showLabels
           value={value}
@@ -160,8 +222,8 @@ const FooterWebOrdering = () => {
           }}
           sx={style.bottomNav}
         >
-          {allState?.theme?.menu?.navBar?.map((menu, index) => {
-            if (!enableOrdering && menu.showOnOrderingEnabled) {
+          {newNavbar.map((menu, index) => {
+            if (!enableOrdering && menu.showWhenOrderingEnabled) {
               return null;
             }
             if (!isLoggedIn && menu.loggedInOnly) {
@@ -175,16 +237,20 @@ const FooterWebOrdering = () => {
                   label='LOGIN'
                   data-toggle='modal'
                   data-target='#login-register-modal'
+                  sx={{ color: 'white' }}
                   icon={
                     <FontAwesomeIcon
                       icon={faSignInAlt}
-                      style={{ fontSize: 13 }}
+                      style={{ fontSize: 20 }}
                     />
                   }
                 />
               );
             }
-            if (isLoggedIn && menu.loggedInOnly === false) return null;
+
+            if (isLoggedIn && menu.loggedInOnly === false) {
+              return null;
+            }
             return (
               <BottomNavigationAction
                 key={index}
@@ -197,6 +263,7 @@ const FooterWebOrdering = () => {
                   value === index
                     ? allState.theme.color.navigationIconSelectedColor
                     : allState.theme.color.navigationFontColor
+
                   // value === index ? '#000000' : '#8A8D8E'
                 )}
               />

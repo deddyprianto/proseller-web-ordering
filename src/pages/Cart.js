@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -19,7 +18,6 @@ import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
-import LoadingAddCart from 'components/loading/LoadingAddCart';
 import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
 
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
@@ -29,6 +27,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from '../helpers/';
 import moment from 'moment';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -76,8 +75,8 @@ const Cart = ({ ...props }) => {
       paddingBottom: 10,
       backgroundColor: props.color.background,
     },
+    paddingLeft: 10,
     rootEmptyCart: {
-      paddingLeft: 10,
       paddingRight: 10,
       paddingTop: 150,
     },
@@ -225,6 +224,7 @@ const Cart = ({ ...props }) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      await props.dispatch(OrderAction.getCart());
       await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
@@ -250,7 +250,8 @@ const Cart = ({ ...props }) => {
       };
 
       const response = await props.dispatch(OrderAction.getTimeSlot(payload));
-      if (response.message === CONSTANT.TIME_SLOT_INVALID) {
+
+      if (!response) {
         setSelectTimeSlotAvailable(false);
       } else {
         setSelectTimeSlotAvailable(true);
@@ -266,7 +267,9 @@ const Cart = ({ ...props }) => {
 
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
-      if (
+      if (!props.isLoggedIn) {
+        console.log('You are not login');
+      } else if (
         !props.orderingMode &&
         !isEmptyArray(props.basket.details) &&
         props.isLoggedIn
@@ -480,7 +483,9 @@ const Cart = ({ ...props }) => {
 
   const renderDateTime = () => {
     const isStorePickUp =
-      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP &&
+      selectTimeSlotAvailable;
+
     const isDelivery =
       props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
       props.deliveryAddress &&
@@ -575,7 +580,7 @@ const Cart = ({ ...props }) => {
               </Typography>
             </Button>
           </div>
-          {props.deliveryAddress ? (
+          {props?.deliveryAddress ? (
             <Typography
               sx={{
                 fontSize: '1.5rem',
@@ -586,8 +591,28 @@ const Cart = ({ ...props }) => {
                 marginX: 1,
               }}
             >
-              {props.deliveryAddress.street} # {props.deliveryAddress.unitNo} -{' '}
-              {props.deliveryAddress.city} - {props.deliveryAddress.postalCode}
+              <span>
+                <table>
+                  <tr>
+                    <td
+                      style={{
+                        textAlign: 'left',
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '3',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                    >
+                      {props.deliveryAddress.street}
+                    </td>
+                  </tr>
+                </table>
+              </span>
+              # {props.deliveryAddress.unitNo} - {props.deliveryAddress.city} -{' '}
+              {props.deliveryAddress.postalCode}
             </Typography>
           ) : (
             renderWarning('delivery address.')
@@ -796,36 +821,36 @@ const Cart = ({ ...props }) => {
   };
 
   return (
-    <Box
-      component='div'
-      sx={{
-        flexGrow: 1,
-      }}
-    >
-      {isLoading && <LoadingAddCart />}
+    <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+      <Box
+        component='div'
+        sx={{
+          flexGrow: 1,
+        }}
+      >
+        {openSelectDeliveryProvider && (
+          <SelectProviderDialog
+            open={openSelectDeliveryProvider}
+            onClose={() => setOpenSelectDeliveryProvider(false)}
+          />
+        )}
 
-      {openSelectDeliveryProvider && (
-        <SelectProviderDialog
-          open={openSelectDeliveryProvider}
-          onClose={() => setOpenSelectDeliveryProvider(false)}
-        />
-      )}
+        {openOrderingMode && (
+          <OrderingModeDialog
+            open={openOrderingMode}
+            onClose={() => handleCloseOrderingMode()}
+          />
+        )}
+        {openTimeSlot && (
+          <TimeSlotDialog
+            open={openTimeSlot}
+            onClose={() => handleCloseTimeSlot()}
+          />
+        )}
 
-      {openOrderingMode && (
-        <OrderingModeDialog
-          open={openOrderingMode}
-          onClose={() => handleCloseOrderingMode()}
-        />
-      )}
-      {openTimeSlot && (
-        <TimeSlotDialog
-          open={openTimeSlot}
-          onClose={() => handleCloseTimeSlot()}
-        />
-      )}
-
-      {renderCartOrEmpty()}
-    </Box>
+        {renderCartOrEmpty()}
+      </Box>
+    </LoadingOverlayCustom>
   );
 };
 
