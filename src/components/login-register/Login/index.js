@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Button } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import styles from './styles.module.css';
@@ -9,7 +10,6 @@ import PasswordField from '../PasswordField';
 import OtpField from '../OtpField';
 import LoadingOverlay from 'react-loading-overlay';
 import { useSelector, useDispatch } from 'react-redux';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Login = ({
   method,
@@ -34,13 +34,14 @@ const Login = ({
   const [isLoading, setIsLoading] = useState(false);
   const guestMode = localStorage.getItem('settingGuestMode');
   const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+  const isMatchesWithResponsive = matches ? '92vw' : '100%';
 
   return (
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div
         className='modal-content'
         style={{
-          width: matches ? '95vw' : '100%',
+          width: isMatchesWithResponsive,
         }}
       >
         <div

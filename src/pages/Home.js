@@ -88,7 +88,7 @@ const Home = ({ ...props }) => {
         OrderAction.addCartFromGuestCOtoCartLogin(isOfflineCartGuestCO)
       );
       Swal.hideLoading();
-      if (response.type === 'DATA_BASKET') {
+      if (response?.type === 'DATA_BASKET') {
         localStorage.removeItem('BASKET_GUESTCHECKOUT');
       }
       Swal.fire({
@@ -97,8 +97,11 @@ const Home = ({ ...props }) => {
         text: 'We are saving your previously Cart!',
       });
     };
-
-    if (isOfflineCartGuestCO && props.isLoggedIn) {
+    const isOfflineCartGuestCOExist =
+      isOfflineCartGuestCO &&
+      isOfflineCartGuestCO?.message !== 'Cart it empty.' &&
+      props.isLoggedIn;
+    if (isOfflineCartGuestCOExist) {
       saveGuestCheckoutOfflineCart();
     }
   }, []);
