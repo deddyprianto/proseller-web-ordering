@@ -49,12 +49,15 @@ const Portal = ({
   const matches = useMediaQuery('(max-width:1200px)');
   const initialCountry = (companyInfo && companyInfo.countryCode) || 'SG';
   const initialCodePhone = '+65';
-  const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
   const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [valueSearchCode, setValueSearchCode] = useState('');
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
+  const toggle = () => {
+    setDropdownOpen((prevState) => !prevState);
+    setValueSearchCode('');
+  };
 
   useEffect(() => {
     if (initialCountry === 'ID') setPhoneCountryCode('+62');
@@ -96,9 +99,10 @@ const Portal = ({
   // const finalOptionCodePhone = optionCodePhone.map((item) =>
   //   item.replace(/(.*): (.*?)/g, '')
   // );
+
   optionCodePhone.sort((a, b) => {
     let item = a.substring(a.indexOf(':') + 2);
-    if (item === initialCodePhone) {
+    if (item === phoneCountryCode) {
       return -1;
     } else {
       return 1;
@@ -145,10 +149,11 @@ const Portal = ({
                     alignItems: 'center',
                     fontWeight: 500,
                     fontSize: '16px',
+                    color: backgroundTheme.primary,
                   }}
                 >
                   {phoneCountryCode}
-                  <img src={iconDown} />
+                  <img src={iconDown} style={{ marginLeft: '10px' }} />
                 </DropdownToggle>
                 <DropdownMenu
                   style={{
@@ -213,10 +218,16 @@ const Portal = ({
                             padding: '0px 0px 7px 0px',
                             margin: 0,
                             cursor: 'pointer',
-                            color: i === 0 ? backgroundTheme.primary : 'black',
+                            color: valueSearchCode
+                              ? 'black'
+                              : i === 0
+                              ? backgroundTheme.primary
+                              : 'black',
                           }}
                           onClick={() => {
-                            setPhoneCountryCode(getPhoneCodeFromStr);
+                            setPhoneCountryCode(
+                              getPhoneCodeFromStr.split(' ')[1]
+                            );
                             setDropdownOpen(false);
                           }}
                         >
