@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -84,10 +81,6 @@ const Portal = ({
     setValue('');
   }, [method]);
 
-  // const myCountryCodesObject = countryCodes.customList(
-  //   'countryCode',
-  //   '+{countryCallingCode}'
-  // );
   const myCountryCodesObject = countryCodes.customList(
     'countryCode',
     '{countryNameEn}: +{countryCallingCode}'
@@ -96,9 +89,6 @@ const Portal = ({
   const optionCodePhone = Object.keys(myCountryCodesObject).map(
     (key) => myCountryCodesObject[key]
   );
-  // const finalOptionCodePhone = optionCodePhone.map((item) =>
-  //   item.replace(/(.*): (.*?)/g, '')
-  // );
 
   optionCodePhone.sort((a, b) => {
     let item = a.substring(a.indexOf(':') + 2);
@@ -293,7 +283,6 @@ const Portal = ({
               )}
               onChange={(e) => {
                 const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-                console.log('dedd =>', regEmail.test(e.target.value));
                 setValue(e.target.value);
               }}
             ></input>
