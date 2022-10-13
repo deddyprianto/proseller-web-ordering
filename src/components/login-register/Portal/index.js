@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -49,12 +46,15 @@ const Portal = ({
   const matches = useMediaQuery('(max-width:1200px)');
   const initialCountry = (companyInfo && companyInfo.countryCode) || 'SG';
   const initialCodePhone = '+65';
-  const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
   const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [valueSearchCode, setValueSearchCode] = useState('');
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
+  const toggle = () => {
+    setDropdownOpen((prevState) => !prevState);
+    setValueSearchCode('');
+  };
 
   useEffect(() => {
     if (initialCountry === 'ID') setPhoneCountryCode('+62');
@@ -81,10 +81,6 @@ const Portal = ({
     setValue('');
   }, [method]);
 
-  // const myCountryCodesObject = countryCodes.customList(
-  //   'countryCode',
-  //   '+{countryCallingCode}'
-  // );
   const myCountryCodesObject = countryCodes.customList(
     'countryCode',
     '{countryNameEn}: +{countryCallingCode}'
@@ -93,12 +89,10 @@ const Portal = ({
   const optionCodePhone = Object.keys(myCountryCodesObject).map(
     (key) => myCountryCodesObject[key]
   );
-  // const finalOptionCodePhone = optionCodePhone.map((item) =>
-  //   item.replace(/(.*): (.*?)/g, '')
-  // );
+
   optionCodePhone.sort((a, b) => {
     let item = a.substring(a.indexOf(':') + 2);
-    if (item === initialCodePhone) {
+    if (item === phoneCountryCode) {
       return -1;
     } else {
       return 1;
@@ -145,10 +139,11 @@ const Portal = ({
                     alignItems: 'center',
                     fontWeight: 500,
                     fontSize: '16px',
+                    color: backgroundTheme.primary,
                   }}
                 >
                   {phoneCountryCode}
-                  <img src={iconDown} />
+                  <img src={iconDown} style={{ marginLeft: '10px' }} />
                 </DropdownToggle>
                 <DropdownMenu
                   style={{
@@ -213,10 +208,16 @@ const Portal = ({
                             padding: '0px 0px 7px 0px',
                             margin: 0,
                             cursor: 'pointer',
-                            color: i === 0 ? backgroundTheme.primary : 'black',
+                            color: valueSearchCode
+                              ? 'black'
+                              : i === 0
+                              ? backgroundTheme.primary
+                              : 'black',
                           }}
                           onClick={() => {
-                            setPhoneCountryCode(getPhoneCodeFromStr);
+                            setPhoneCountryCode(
+                              getPhoneCodeFromStr.split(' ')[1]
+                            );
                             setDropdownOpen(false);
                           }}
                         >
@@ -282,7 +283,6 @@ const Portal = ({
               )}
               onChange={(e) => {
                 const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-                console.log('dedd =>', regEmail.test(e.target.value));
                 setValue(e.target.value);
               }}
             ></input>
