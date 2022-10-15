@@ -22,6 +22,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import config from 'config';
 import search from 'assets/images/search.png';
 import SearchInput, { createFilter } from 'react-search-input';
+import { CONSTANT } from 'helpers';
 
 const Portal = ({
   method,
@@ -55,6 +56,13 @@ const Portal = ({
     setDropdownOpen((prevState) => !prevState);
     setValueSearchCode('');
   };
+
+  useEffect(() => {
+    const isGuestMode = localStorage.getItem('settingGuestMode');
+    if (isGuestMode === 'GuestMode') {
+      dispatch({ type: CONSTANT.SAVE_GUESTMODE_STATE, payload: isGuestMode });
+    }
+  }, [localStorage.getItem('settingGuestMode')]);
 
   useEffect(() => {
     if (initialCountry === 'ID') setPhoneCountryCode('+62');
@@ -354,9 +362,14 @@ const Portal = ({
       });
     } else {
       Swal.fire({
-        icon: 'warning',
-        title: 'Oops...',
-        text: 'You have done press this button!',
+        icon: 'info',
+        title: 'You are currently using guest checkout mode',
+        allowOutsideClick: false,
+        confirmButtonText: 'Ok',
+        confirmButtonColor: backgroundTheme.primary,
+        customClass: {
+          confirmButton: styles.buttonSweetAlert,
+        },
       });
     }
   };
