@@ -291,6 +291,7 @@ const Portal = ({
               )}
               onChange={(e) => {
                 const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+                console.log('dedd =>', regEmail.test(e.target.value));
                 setValue(e.target.value);
               }}
             ></input>
@@ -346,9 +347,16 @@ const Portal = ({
         Swal.hideLoading();
       }
       Swal.fire({
-        icon: 'success',
-        title: 'Guest Mode Chooses',
-        text: 'You already in guest mode!',
+        icon: 'info',
+        iconColor: '#333',
+        title: 'You are currently using guest checkout mode',
+        allowOutsideClick: false,
+        confirmButtonText: 'Ok',
+        confirmButtonColor: backgroundTheme.primary,
+        customClass: {
+          confirmButton: styles.buttonSweetAlert,
+          icon: styles.customIconColor,
+        },
       }).then((res) => {
         if (res.isConfirmed) {
           if (location.pathname === '/outlets') {
@@ -365,11 +373,13 @@ const Portal = ({
         icon: 'info',
         title: 'You are currently using guest checkout mode',
         allowOutsideClick: false,
-        confirmButtonText: 'Ok',
+        confirmButtonText: 'Oke',
         confirmButtonColor: backgroundTheme.primary,
         customClass: {
           confirmButton: styles.buttonSweetAlert,
+          icon: styles.customIconColor,
         },
+        iconColor: '#000',
       });
     }
   };
