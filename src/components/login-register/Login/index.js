@@ -8,7 +8,6 @@ import styles from './styles.module.css';
 import cx from 'classnames';
 import PasswordField from '../PasswordField';
 import OtpField from '../OtpField';
-import LoadingOverlay from 'react-loading-overlay';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Login = ({
@@ -36,83 +35,78 @@ const Login = ({
   const isMatchesWithResponsive = matches ? '92vw' : '100%';
 
   return (
-    <LoadingOverlay active={isLoading} spinner text='Loading...'>
+    <div
+      className='modal-content'
+      style={{
+        width: isMatchesWithResponsive,
+      }}
+    >
       <div
-        className='modal-content'
-        style={{
-          width: isMatchesWithResponsive,
-        }}
+        className='modal-header'
+        style={{ display: 'flex', justifyContent: 'center' }}
       >
-        <div
-          className='modal-header'
-          style={{ display: 'flex', justifyContent: 'center' }}
+        <button
+          type='button'
+          className={cx('close', styles.backButton)}
+          onClick={handleBackButtonClick}
         >
-          <button
-            type='button'
-            className={cx('close', styles.backButton)}
-            onClick={handleBackButtonClick}
-          >
-            <i className='fa fa-chevron-left'></i>
-          </button>
-          <h5 className={cx('modal-title', styles.modalTitle)}>
-            {method === 'phone' ? 'Mobile Sign In' : 'Email Sign In'}
-          </h5>
-          <button
-            type='button'
-            disabled={!enableOrdering}
-            className={cx('close', styles.closeButton)}
-            data-dismiss='modal'
-            aria-label='Close'
-          >
-            <span aria-hidden='true'>×</span>
-          </button>
-        </div>
-        <div className='modal-body'>
-          <p className='text-muted'>{`Sign in to ${username}`}</p>
-          {enablePassword ? (
-            <PasswordField handleChange={handleChange}></PasswordField>
-          ) : (
-            <OtpField
-              method={method}
-              sendEmailOtp={sendOtpToEmail}
-              sendPhoneOtp={sendOtpToPhone}
-              handleChange={handleChange}
-              sendCounter={sendCounter}
-              counterMinutes={counterMinutes}
-              counter={counter}
-              isSending={isSending}
-              enableSMSOTP={enableSMSOTP}
-              enableWhatsappOTP={enableWhatsappOTP}
-            ></OtpField>
-          )}
-          <Button
-            disabled={isSubmitting}
-            className='button'
-            style={{
-              width: '100%',
-              marginTop: 10,
-              borderRadius: 5,
-              height: 50,
-            }}
-            onClick={() => {
-              if (guestMode && idGuestCheckout) {
-                setIsLoading(true);
-                localStorage.removeItem('settingGuestMode');
-                localStorage.removeItem('idGuestCheckout');
-                handleSubmit(!enablePassword);
-                setIsLoading(false);
-                history.push('/');
-              } else {
-                setIsLoading(true);
-                handleSubmit(!enablePassword);
-              }
-            }}
-          >
-            Submit
-          </Button>
-        </div>
+          <i className='fa fa-chevron-left'></i>
+        </button>
+        <h5 className={cx('modal-title', styles.modalTitle)}>
+          {method === 'phone' ? 'Mobile Sign In' : 'Email Sign In'}
+        </h5>
+        <button
+          type='button'
+          disabled={!enableOrdering}
+          className={cx('close', styles.closeButton)}
+          data-dismiss='modal'
+          aria-label='Close'
+        >
+          <span aria-hidden='true'>×</span>
+        </button>
       </div>
-    </LoadingOverlay>
+      <div className='modal-body'>
+        <p className='text-muted'>{`Sign in to ${username}`}</p>
+        {enablePassword ? (
+          <PasswordField handleChange={handleChange}></PasswordField>
+        ) : (
+          <OtpField
+            method={method}
+            sendEmailOtp={sendOtpToEmail}
+            sendPhoneOtp={sendOtpToPhone}
+            handleChange={handleChange}
+            sendCounter={sendCounter}
+            counterMinutes={counterMinutes}
+            counter={counter}
+            isSending={isSending}
+            enableSMSOTP={enableSMSOTP}
+            enableWhatsappOTP={enableWhatsappOTP}
+          ></OtpField>
+        )}
+        <Button
+          disabled={isSubmitting}
+          className='button'
+          style={{
+            width: '100%',
+            marginTop: 10,
+            borderRadius: 5,
+            height: 50,
+          }}
+          onClick={() => {
+            if (guestMode && idGuestCheckout) {
+              localStorage.removeItem('settingGuestMode');
+              localStorage.removeItem('idGuestCheckout');
+              handleSubmit(!enablePassword);
+              history.push('/');
+            } else {
+              handleSubmit(!enablePassword);
+            }
+          }}
+        >
+          Submit
+        </Button>
+      </div>
+    </div>
   );
 };
 

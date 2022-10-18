@@ -12,6 +12,7 @@ import { PromotionAction } from 'redux/actions/PromotionAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
+import { CONSTANT } from 'helpers';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -88,7 +89,7 @@ const Home = ({ ...props }) => {
         OrderAction.addCartFromGuestCOtoCartLogin(isOfflineCartGuestCO)
       );
       Swal.hideLoading();
-      if (response??.type === 'DATA_BASKET') {
+      if (response?.type === 'DATA_BASKET') {
         localStorage.removeItem('BASKET_GUESTCHECKOUT');
       }
       Swal.fire({
