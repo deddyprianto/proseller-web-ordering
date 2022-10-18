@@ -4,12 +4,10 @@ import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
-import OrderingRetail from '../components/ordering/indexRetail';
 import { useHistory } from 'react-router-dom';
 import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
-import { CONSTANT } from 'helpers';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
@@ -105,13 +103,6 @@ const Home = ({ ...props }) => {
       saveGuestCheckoutOfflineCart();
     }
   }, []);
-
-  useEffect(() => {
-    const isGuestMode = localStorage.getItem('settingGuestMode');
-    if (isGuestMode === 'GuestMode') {
-      dispatch({ type: CONSTANT.SAVE_GUESTMODE_STATE, payload: isGuestMode });
-    }
-  }, [localStorage.getItem('settingGuestMode')]);
 
   const renderProductListOrOutletSelection = () => {
     if (
