@@ -310,7 +310,7 @@ const Portal = ({
             className={cx('modal-title', styles.switchMethodButton)}
             onClick={() => handleMethodChange('phone')}
           >
-            Use Email Address to Login / Register
+            Use Phone Number to Login / Register
           </div>
         )}
       </>
@@ -427,7 +427,9 @@ const Portal = ({
             </button>
           )}
           <p style={{ fontSize: '14px', color: '#8D8D8D' }}>
-            To Login or Register, please enter your mobile number.
+            {`To Login or Register, please enter your ${
+              method === 'phone' ? 'Phone number' : 'Email'
+            }.`}
           </p>
         </div>
         <div

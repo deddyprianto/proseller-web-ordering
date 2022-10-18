@@ -619,6 +619,7 @@ const LoginRegister = (props) => {
       }
       Swal.fire('Oppss!', error, 'error');
     }
+    setIsLoading(false);
   };
 
   const getAge = (DOB) => {
@@ -953,6 +954,7 @@ const LoginRegister = (props) => {
       }
       Swal.fire('Oppss!', error, 'error');
     }
+    setIsLoading(false);
   };
 
   const handleEmailRegister = async () => {
@@ -1213,6 +1215,6 @@ const LoginRegister = (props) => {
       </div>
     </LoadingOverlayCustom>
   );
-};;
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginRegister);

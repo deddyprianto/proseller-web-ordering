@@ -40,6 +40,7 @@ const mapStateToProps = (state) => {
     deliveryAddress: state.order.deliveryAddress,
     basketGuestCO: state.guestCheckoutCart.data,
     refreshData: state.guestCheckoutCart.refreshData,
+    basketUpdate: state.order.basketUpdate,
   };
 };
 
@@ -56,6 +57,7 @@ const ProductAddModal = ({
   basket,
   ...props
 }) => {
+  console.log('dedd =>', props.defaultOutlet);
   const history = useHistory();
   const gadgetScreen = width < 600;
   const theme = useTheme();
@@ -733,11 +735,17 @@ const ProductAddModal = ({
     setIsLoading(true);
     if (!isEmptyObject(selectedProduct)) {
       await props.dispatch(OrderAction.processUpdateCart(productUpdate));
+
+      props.dispatch({
+        type: CONSTANT.DATA_BASKET_UPDATE,
+        data: !props.basketUpdate,
+      });
+
       if (props.deliveryProviderSelected) {
         const payloadCalculateFee = {
           outletId: basket.outlet.id,
           cartID: basket.cartID,
-          deliveryAddress: props.deliveryAddress,
+          deliveryAddress: props.deliveryAddress || props.defaultOutlet,
         };
 
         const responseCalculateFee = await props.dispatch(
@@ -1272,9 +1280,14 @@ const ProductAddModal = ({
   };
   const removeLastCharFromStr = () => {
     const data = product.name.split(' ');
-    console.log('dedd =>', data);
-    data.pop();
-    return data.join(' ');
+    const isLastIndexHasLength1 = data.at(-1).length <= 2;
+
+    if (isLastIndexHasLength1) {
+      data.pop();
+      return data.join(' ');
+    } else {
+      return data.join(' ');
+    }
   };
 
   return (
@@ -1310,10 +1323,11 @@ const ProductAddModal = ({
               }}
             >
               <Typography style={styles.productName}>
-                {product.name} {variantName}{' '}
+                {variantName
+                  ? `${removeLastCharFromStr()} ${variantName}`
+                  : product.name}
               </Typography>
               <Typography style={styles.productPrice}>
-                {' '}
                 {handleCurrency(totalPrice)}
               </Typography>
             </div>

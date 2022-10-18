@@ -31,7 +31,6 @@ const Login = ({
   const basketGuestCo = useSelector((state) => state.guestCheckoutCart.data);
   const history = useHistory();
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
-  const [isLoading, setIsLoading] = useState(false);
   const guestMode = localStorage.getItem('settingGuestMode');
   const idGuestCheckout = localStorage.getItem('idGuestCheckout');
   const isMatchesWithResponsive = matches ? '92vw' : '100%';

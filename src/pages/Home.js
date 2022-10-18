@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -32,6 +33,7 @@ const mapStateToProps = (state) => {
     defaultOutlet: state.outlet.defaultOutlet,
     isLoggedIn: state.auth.isLoggedIn,
     orderingMode: state.order.orderingMode,
+    basketGuestCo: state.guestCheckoutCart.data,
   };
 };
 
@@ -86,7 +88,7 @@ const Home = ({ ...props }) => {
         OrderAction.addCartFromGuestCOtoCartLogin(isOfflineCartGuestCO)
       );
       Swal.hideLoading();
-      if (response?.type === 'DATA_BASKET') {
+      if (response??.type === 'DATA_BASKET') {
         localStorage.removeItem('BASKET_GUESTCHECKOUT');
       }
       Swal.fire({
@@ -95,10 +97,20 @@ const Home = ({ ...props }) => {
         text: 'We are saving your previously Cart!',
       });
     };
+    const isBasketEmpty = props.basketGuestCo.message === 'Cart it empty.';
+
     const isOfflineCartGuestCOExist =
       isOfflineCartGuestCO &&
       isOfflineCartGuestCO?.message !== 'Cart it empty.' &&
       props.isLoggedIn;
+
+    if (isBasketEmpty) {
+      dispatch({
+        type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+        payload: '',
+      });
+    }
+
     if (isOfflineCartGuestCOExist) {
       saveGuestCheckoutOfflineCart();
     }

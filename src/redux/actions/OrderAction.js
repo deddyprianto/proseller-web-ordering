@@ -303,7 +303,8 @@ function updateCart(payload) {
       'Bearer'
     );
 
-    return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    return response; 
   };
 }
 

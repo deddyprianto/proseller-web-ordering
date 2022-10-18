@@ -33,7 +33,7 @@ import OrderingModeDialogGuestCheckout from 'components/orderingModeDialog/Order
 import config from 'config';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
-import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import TimeSlotDialog from 'components/timeSlot/TimeSlotGuestCo';
 import ModalFormDeliveryCustomerDetail from './ModalFormDeliveryCustomerDetail';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -211,7 +211,8 @@ const CartGuestCheckout = () => {
   }, [orderingModeGuestCheckout]);
 
   useEffect(() => {
-    if (basket.message === 'Cart it empty.' || orderingModeGuestCheckout) {
+    const isBasketEmpty = basket.message === 'Cart it empty.';
+    if (isBasketEmpty || orderingModeGuestCheckout) {
       setOpenOrderingMode(false);
     } else {
       setOpenOrderingMode(true);
@@ -836,8 +837,19 @@ const CartGuestCheckout = () => {
                             )
                           );
                           if (response?.resultCode === 200) {
+                            // if (response?.data?.message === 'Cart deleted') {
+                            //   Swal.fire(
+                            //     'Deleted!',
+                            //     response.message,
+                            //     'success'
+                            //   );
+                            //   history.push('/');
+                            //   return;
+                            // }
+                            // console.log('dedd =>', 'refresh')
                             setRefreshData(!refreshData);
                             Swal.fire('Deleted!', response.message, 'success');
+
                             dispatch({
                               type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
                               payload: {},
@@ -2232,6 +2244,7 @@ const CartGuestCheckout = () => {
                     fontSize: '13px',
                     color: '#8A8D8E',
                     fontWeight: 500,
+                    textAlign: 'center',
                   }}
                   className={fontStyleCustom.myFont}
                 >
@@ -2239,7 +2252,7 @@ const CartGuestCheckout = () => {
                 </Typography>
                 <Typography
                   style={{
-                    textAlign: 'right',
+                    textAlign: 'center',
                     fontSize: '13px',
                     color: '#8A8D8E',
                     fontWeight: 500,

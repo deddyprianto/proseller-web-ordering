@@ -529,7 +529,7 @@ const DeliveryAddress = () => {
                   sx={style.buttonAddAddress}
                   onClick={() => {
                     setModalDeliveryAddressOpen(true);
-                    handleAdd();
+                    // handleAdd();
                   }}
                   className='btn-ordering'
                   startIcon={<Add />}

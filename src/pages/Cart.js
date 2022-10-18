@@ -18,6 +18,7 @@ import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
 
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
@@ -27,7 +28,6 @@ import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from '../helpers/';
 import moment from 'moment';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -45,6 +45,7 @@ const mapStateToProps = (state) => {
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
     selectedDeliveryProvider: state.order.selectedDeliveryProvider,
+    basketUpdate: state.order.basketUpdate,
   };
 };
 
@@ -75,8 +76,8 @@ const Cart = ({ ...props }) => {
       paddingBottom: 10,
       backgroundColor: props.color.background,
     },
-    paddingLeft: 10,
     rootEmptyCart: {
+      paddingLeft: 10,
       paddingRight: 10,
       paddingTop: 150,
     },
@@ -219,7 +220,7 @@ const Cart = ({ ...props }) => {
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
 
-  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(true);
+  const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -230,7 +231,7 @@ const Cart = ({ ...props }) => {
     };
 
     loadData();
-  }, []);
+  }, [props.basketUpdate, props.basket?.details?.length]);
 
   useEffect(() => {
     const getDataTimeSlot = async () => {
@@ -259,7 +260,8 @@ const Cart = ({ ...props }) => {
     };
     if (
       props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY ||
-      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP ||
+      props.orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY
     ) {
       getDataTimeSlot();
     }
@@ -267,9 +269,7 @@ const Cart = ({ ...props }) => {
 
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
-      if (!props.isLoggedIn) {
-        console.log('You are not login');
-      } else if (
+      if (
         !props.orderingMode &&
         !isEmptyArray(props.basket.details) &&
         props.isLoggedIn
@@ -399,6 +399,19 @@ const Cart = ({ ...props }) => {
       }
 
       return !isAllCompleted;
+    } else if (props.orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY) {
+      let isAllCompleted = false;
+      if (selectTimeSlotAvailable) {
+        isAllCompleted =
+          props.orderingMode &&
+          props.orderActionDate &&
+          props.orderActionTime &&
+          props.orderActionTimeSlot;
+      } else {
+        isAllCompleted = !!props.orderingMode;
+      }
+
+      return !isAllCompleted;
     }
 
     return !props.orderingMode;
@@ -483,9 +496,9 @@ const Cart = ({ ...props }) => {
 
   const renderDateTime = () => {
     const isStorePickUp =
-      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP &&
-      selectTimeSlotAvailable;
-
+      props.orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
+    const isTakeAway =
+      props.orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY && true;
     const isDelivery =
       props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
       props.deliveryAddress &&
@@ -494,6 +507,8 @@ const Cart = ({ ...props }) => {
 
     const orderingModeLabel = isStorePickUp
       ? 'Pickup Date & Time'
+      : isTakeAway
+      ? 'Take Away Date & Time'
       : 'Delivery Date & Time';
 
     const orderingModeWarning = !isEmptyObject(props?.orderActionTimeSlot)
@@ -502,7 +517,7 @@ const Cart = ({ ...props }) => {
       ? renderWarning('Pickup Date & Time.')
       : renderWarning('Delivery Date & Time.');
 
-    if (isDelivery || isStorePickUp) {
+    if (isDelivery || isStorePickUp || selectTimeSlotAvailable) {
       return (
         <Paper variant='outlined' style={styles.rootPaper}>
           <div style={styles.rootMode}>
@@ -580,7 +595,7 @@ const Cart = ({ ...props }) => {
               </Typography>
             </Button>
           </div>
-          {props?.deliveryAddress ? (
+          {props.deliveryAddress ? (
             <Typography
               sx={{
                 fontSize: '1.5rem',

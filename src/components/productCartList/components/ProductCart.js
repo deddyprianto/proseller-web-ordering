@@ -277,7 +277,7 @@ const ProductCart = ({ item, ...props }) => {
           </Typography>
           <Typography style={styles.price}>
             {/* TODO: need re-review */}
-            {handleCurrency(item?.totalDiscAmount)}
+            {handleCurrency(item?.amountAfterDisc)}
           </Typography>
         </div>
       );
