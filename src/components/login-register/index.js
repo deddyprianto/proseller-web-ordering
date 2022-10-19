@@ -740,6 +740,7 @@ const LoginRegister = (props) => {
 
       if (responseMessage) {
         Swal.fire('Oppss!', responseMessage, 'error');
+        setIsLoading(false);
       } else {
         enableRegisterWithPassword &&
           lsStore(
