@@ -671,75 +671,76 @@ const Cart = ({ ...props }) => {
     return props.basket?.totalGrossAmount;
   };
 
-  const renderSubTotal = () => {
-    return (
-      <Paper variant='outlined' style={styles.rootPaper}>
-        <div>
-          {props.basket?.totalDiscountAmount !== 0 && (
-            <div style={styles.rootSubTotalItem}>
-              <Typography style={styles.subTotal}>Subtotal b/f disc</Typography>
-              <Typography style={styles.subTotal}>
-                {handleCurrency(props.basket?.totalGrossAmount)}
-              </Typography>
-            </div>
-          )}
-          {props.basket?.exclusiveTax !== 0 && (
-            <div style={styles.rootSubTotalItem}>
-              <Typography style={styles.subTotal}>Tax</Typography>
-              <Typography style={styles.subTotal}>
-                {handleCurrency(props.basket.exclusiveTax)}
-              </Typography>
-            </div>
-          )}
-          {props.basket?.totalDiscountAmount !== 0 && (
-            <div style={styles.rootSubTotalItem}>
-              <Typography style={styles.totalDiscount}>Discount</Typography>
-              <Typography style={styles.totalDiscount}>
-                - {handleCurrency(props.basket.totalDiscountAmount)}
-              </Typography>
-            </div>
-          )}
-          {props.basket?.totalGrossAmount !== 0 && (
-            <div style={styles.rootSubTotalItem}>
-              <Typography style={styles.subTotal}>Subtotal</Typography>
-              <Typography style={styles.subTotal}>
-                {handleCurrency(handleSubtotal())}
-              </Typography>
-            </div>
-          )}
-          {props.basket.totalSurchargeAmount !== 0 && (
-            <div style={styles.rootSubTotalItem}>
-              <Typography style={styles.subTotal}>Surcharge Amount</Typography>
-              <Typography style={styles.subTotal}>
-                {handleCurrency(props.basket.totalSurchargeAmount)}
-              </Typography>
-            </div>
-          )}
-          {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
-            <>
-              {props.selectedDeliveryProvider?.deliveryFee !== 0 && (
+const renderSubTotal = () => {
+  return (
+    <Paper variant='outlined' style={styles.rootPaper}>
+      <div>
+        {props.basket?.totalDiscountAmount !== 0 && (
+          <div style={styles.rootSubTotalItem}>
+            <Typography style={styles.subTotal}>Subtotal b/f disc</Typography>
+            <Typography style={styles.subTotal}>
+              {handleCurrency(props.basket?.totalGrossAmount)}
+            </Typography>
+          </div>
+        )}
+        {props.basket?.exclusiveTax !== 0 && (
+          <div style={styles.rootSubTotalItem}>
+            <Typography style={styles.subTotal}>Tax</Typography>
+            <Typography style={styles.subTotal}>
+              {handleCurrency(props.basket.exclusiveTax)}
+            </Typography>
+          </div>
+        )}
+        {props.basket?.totalDiscountAmount !== 0 && (
+          <div style={styles.rootSubTotalItem}>
+            <Typography style={styles.totalDiscount}>Discount</Typography>
+            <Typography style={styles.totalDiscount}>
+              - {handleCurrency(props.basket.totalDiscountAmount)}
+            </Typography>
+          </div>
+        )}
+        {props.basket?.totalGrossAmount !== 0 && (
+          <div style={styles.rootSubTotalItem}>
+            <Typography style={styles.subTotal}>Subtotal</Typography>
+            <Typography style={styles.subTotal}>
+              {handleCurrency(handleSubtotal())}
+            </Typography>
+          </div>
+        )}
+        {props.basket.totalSurchargeAmount !== 0 && (
+          <div style={styles.rootSubTotalItem}>
+            <Typography style={styles.subTotal}>Surcharge Amount</Typography>
+            <Typography style={styles.subTotal}>
+              {handleCurrency(props.basket.totalSurchargeAmount)}
+            </Typography>
+          </div>
+        )}
+
+        {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
+          <>
+            {props.basket?.provider &&
+              props.basket?.provider?.deliveryFee !== 0 && (
                 <div style={styles.rootSubTotalItem}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
                   <Typography style={styles.subTotal}>
-                    {handleCurrency(
-                      props.selectedDeliveryProvider?.deliveryFee
-                    )}
+                    {handleCurrency(props.basket?.provider?.deliveryFee)}
                   </Typography>
                 </div>
               )}
-              {props.selectedDeliveryProvider?.deliveryFee === 0 &&
-              props.orderingMode === 'DELIVERY' ? (
-                <div style={styles.rootSubTotalItem}>
-                  <Typography style={styles.subTotal}>Delivery Fee</Typography>
-                  <Typography style={styles.subTotal}>Free</Typography>
-                </div>
-              ) : null}
-            </>
-          )}
-        </div>
-      </Paper>
-    );
-  };
+
+            {props.basket.provider.deliveryFee === 0 &&
+            props.orderingMode === 'DELIVERY' ? (
+              <div style={styles.rootSubTotalItem}>
+                <Typography style={styles.subTotal}>Delivery Fee</Typography>
+                <Typography style={styles.subTotal}>Free</Typography>
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
+    </Paper>
+  );
+};
 
   const renderGrandTotal = () => {
     return (
