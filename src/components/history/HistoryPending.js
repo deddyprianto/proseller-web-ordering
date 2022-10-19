@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import HistoryCard from './HistoryCardPending';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
-const HistoryPending = ({ countryCode, dataPending, dataPendingLength }) => {
+const HistoryPending = ({ dataPending, dataPendingLength }) => {
   const setLocalStorageItem = (items) => {
     localStorage.setItem(
       `${config.prefix}_dataBasket`,
@@ -42,7 +42,7 @@ const HistoryPending = ({ countryCode, dataPending, dataPendingLength }) => {
               to={items.isPaymentComplete ? '/history/detail' : '/basket'}
               onClick={() => setLocalStorageItem(items)}
             >
-              <HistoryCard items={items} countryCode={countryCode} />
+              <HistoryCard items={items} />
             </Link>
           </Grid>
         );
@@ -52,13 +52,11 @@ const HistoryPending = ({ countryCode, dataPending, dataPendingLength }) => {
 };
 
 HistoryPending.defaultProps = {
-  countryCode: 'ID',
   dataPending: [],
   dataPendingLength: 0,
 };
 
 HistoryPending.propTypes = {
-  countryCode: PropTypes.string,
   dataPending: PropTypes.arrayOf(PropTypes.object),
   dataPendingLength: PropTypes.string,
 };

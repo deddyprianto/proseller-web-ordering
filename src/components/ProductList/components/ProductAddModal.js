@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -57,7 +55,6 @@ const ProductAddModal = ({
   basket,
   ...props
 }) => {
-  console.log('dedd =>', props.defaultOutlet);
   const history = useHistory();
   const gadgetScreen = width < 600;
   const theme = useTheme();

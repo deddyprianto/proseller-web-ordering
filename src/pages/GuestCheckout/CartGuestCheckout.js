@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import { useSelector, useDispatch } from 'react-redux';
@@ -837,16 +836,6 @@ const CartGuestCheckout = () => {
                             )
                           );
                           if (response?.resultCode === 200) {
-                            // if (response?.data?.message === 'Cart deleted') {
-                            //   Swal.fire(
-                            //     'Deleted!',
-                            //     response.message,
-                            //     'success'
-                            //   );
-                            //   history.push('/');
-                            //   return;
-                            // }
-                            // console.log('dedd =>', 'refresh')
                             setRefreshData(!refreshData);
                             Swal.fire('Deleted!', response.message, 'success');
 

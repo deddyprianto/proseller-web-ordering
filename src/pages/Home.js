@@ -95,7 +95,7 @@ const Home = ({ ...props }) => {
       Swal.fire({
         icon: 'success',
         title: 'Saving',
-        text: 'We are saving your previously Cart!',
+        text: 'We are saving your previous Cart!',
       });
     };
     const isBasketEmpty = props.basketGuestCo.message === 'Cart it empty.';
