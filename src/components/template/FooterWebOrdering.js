@@ -223,7 +223,7 @@ const FooterWebOrdering = () => {
           sx={style.bottomNav}
         >
           {newNavbar.map((menu, index) => {
-            if (!enableOrdering && menu.showWhenOrderingEnabled) {
+            if (!enableOrdering && menu.showOnOrderingEnabled) {
               return null;
             }
             if (!isLoggedIn && menu.loggedInOnly) {
