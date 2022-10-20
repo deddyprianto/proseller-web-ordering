@@ -334,7 +334,11 @@ class ModalEditAccount extends Component {
           'Success!',
           response.message || response.Data.message || 'Confirmation success!',
           'success'
-        );
+        ).then((res) => {
+          if (res.isConfirmed) {
+            window.location.reload();
+          }
+        });
 
         if (
           (account.idToken.payload.username.includes('+') &&

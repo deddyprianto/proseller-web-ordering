@@ -153,7 +153,7 @@ class SettleSuccess extends Component {
     if (settleSuccess && settleSuccess.payments) {
       settleSuccess.payments.forEach((items) => {
         if (items.paymentType === 'voucher' || items.paymentType === 'point') {
-          discount += items.paymentAmount;
+          discount += items.usedAmount || items.paymentAmount;
         }
       });
     }

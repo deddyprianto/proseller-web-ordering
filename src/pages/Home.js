@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -11,6 +12,7 @@ import { PromotionAction } from 'redux/actions/PromotionAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
+import { CONSTANT } from 'helpers';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -32,6 +34,7 @@ const mapStateToProps = (state) => {
     defaultOutlet: state.outlet.defaultOutlet,
     isLoggedIn: state.auth.isLoggedIn,
     orderingMode: state.order.orderingMode,
+    basketGuestCo: state.guestCheckoutCart.data,
   };
 };
 
@@ -92,13 +95,23 @@ const Home = ({ ...props }) => {
       Swal.fire({
         icon: 'success',
         title: 'Saving',
-        text: 'We are saving your previously Cart!',
+        text: 'We are saving your previous Cart!',
       });
     };
+    const isBasketEmpty = props.basketGuestCo.message === 'Cart it empty.';
+
     const isOfflineCartGuestCOExist =
       isOfflineCartGuestCO &&
       isOfflineCartGuestCO?.message !== 'Cart it empty.' &&
       props.isLoggedIn;
+
+    if (isBasketEmpty) {
+      dispatch({
+        type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+        payload: '',
+      });
+    }
+
     if (isOfflineCartGuestCOExist) {
       saveGuestCheckoutOfflineCart();
     }

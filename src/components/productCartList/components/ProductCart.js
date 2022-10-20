@@ -268,28 +268,29 @@ const ProductCart = ({ item, ...props }) => {
     }
   };
 
-  const renderPrice = () => {
-    if (item?.totalDiscAmount !== 0) {
-      return (
-        <div style={styles.rootPrice}>
-          <Typography style={styles.priceDiscount}>
-            {handleCurrency(item?.grossAmount)}
-          </Typography>
-          <Typography style={styles.price}>
-            {/* TODO: need re-review */}
-            {handleCurrency(item?.totalDiscAmount)}
-          </Typography>
-        </div>
-      );
-    }
+const renderPrice = () => {
+  if (item?.totalDiscAmount !== 0) {
     return (
       <div style={styles.rootPrice}>
-        <Typography style={styles.price}>
+        <Typography style={styles.priceDiscount}>
           {handleCurrency(item?.grossAmount)}
+        </Typography>
+        <Typography style={styles.price}>
+          {!handleCurrency(item?.amountAfterDisc)
+            ? 'SGD 0.00'
+            : handleCurrency(item?.amountAfterDisc)}
         </Typography>
       </div>
     );
-  };
+  }
+  return (
+    <div style={styles.rootPrice}>
+      <Typography style={styles.price}>
+        {handleCurrency(item?.grossAmount)}
+      </Typography>
+    </div>
+  );
+};
 
   return (
     <div style={styles.rootProductCart}>

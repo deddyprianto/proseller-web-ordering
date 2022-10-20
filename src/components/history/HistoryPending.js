@@ -1,97 +1,64 @@
-import React, { Component } from 'react';
-import { Col, Row } from 'reactstrap';
-import Shimmer from 'react-shimmer-effect';
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import Grid from '@mui/material/Grid';
+
 import config from '../../config';
-import { connect } from 'react-redux';
+
+import { Link } from 'react-router-dom';
 import HistoryCard from './HistoryCardPending';
-
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const Swal = require('sweetalert2');
-class HistoryPending extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loadingShow: true,
-      isLoading: false,
-      dataPending: [],
-      dataPendingLength: 0,
-      countryCode: 'ID',
-    };
-  }
 
-  viewShimmer = (isHeight = 100) => {
-    return (
-      <Shimmer>
-        <div
-          style={{
-            width: '100%',
-            height: isHeight,
-            alignSelf: 'center',
-            borderRadius: '8px',
-            marginBottom: 10,
-          }}
-        />
-      </Shimmer>
-    );
-  };
-
-  handleDetail = (items) => {
+const HistoryPending = ({ dataPending, dataPendingLength }) => {
+  const setLocalStorageItem = (items) => {
     localStorage.setItem(
       `${config.prefix}_dataBasket`,
       JSON.stringify(encryptor.encrypt(items))
     );
-    // this.props.dispatch({ type: CONSTANT.DATA_BASKET, data: items });
   };
 
-  render() {
-    let { loadingShow, dataPending, countryCode, dataPendingLength } =
-      this.props;
+  if (dataPendingLength === 0) {
     return (
-      <div>
-        {loadingShow ? (
-          <Row>
-            <Col sm={6}>{this.viewShimmer(50)}</Col>
-            <Col sm={6}>{this.viewShimmer(50)}</Col>
-          </Row>
-        ) : (
-          <Row>
-            {dataPending.map((items, keys) => (
-              <Col
-                key={keys}
-                sm={6}
-                data-toggle='modal'
-                data-target='#detail-inbox-modal'
-                onClick={() => this.handleDetail(items)}
-              >
-                <HistoryCard items={items} countryCode={countryCode} />
-              </Col>
-            ))}
-            {dataPendingLength === 0 && (
-              <div>
-                <img
-                  src={config.url_emptyImage}
-                  alt='is empty'
-                  style={{ marginTop: 30 }}
-                />
-                <div>Data is empty</div>
-              </div>
-            )}
-          </Row>
-        )}
-        {this.state.isLoading ? Swal.showLoading() : Swal.close()}
-      </div>
+      <>
+        <img src={config.url_emptyImage} alt='is empty' />
+        <div>Data is empty</div>
+      </>
     );
   }
-}
 
-const mapStateToProps = (state) => {
-  return {
-    account: state.auth.account.idToken.payload,
-  };
+  return (
+    <Grid
+      container
+      direction='row'
+      justifyContent='space-between'
+      alignItems='center'
+      spacing={{ xs: 2, md: 3 }}
+      columns={{ xs: 4, md: 12 }}
+    >
+      {dataPending.map((items, index) => {
+        return (
+          <Grid item xs={4} md={6} key={index}>
+            <Link
+              to={items.isPaymentComplete ? '/history/detail' : '/basket'}
+              onClick={() => setLocalStorageItem(items)}
+            >
+              <HistoryCard items={items} />
+            </Link>
+          </Grid>
+        );
+      })}
+    </Grid>
+  );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
+HistoryPending.defaultProps = {
+  dataPending: [],
+  dataPendingLength: 0,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(HistoryPending);
+HistoryPending.propTypes = {
+  dataPending: PropTypes.arrayOf(PropTypes.object),
+  dataPendingLength: PropTypes.string,
+};
+
+export default HistoryPending;
