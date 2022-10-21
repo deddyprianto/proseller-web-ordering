@@ -30,12 +30,12 @@ const useStyles = (theme) => ({
     backgroundColor: theme.navigationColor,
   },
   listIcon: {
-    color: 'white',
+    color: theme.navigationIconSelectedColor,
   },
   primaryTypographyProps: {
     fontSize: 15,
     letterSpacing: 0,
-    color: 'white',
+    color: theme.navigationFontColor,
     fontWeight: 600,
   },
 });
@@ -269,7 +269,7 @@ const Sidebar = ({ guessCheckout }) => {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon style={styles.listIcon}>
-                  {trackIcon('white')}
+                  {trackIcon(theme.navigationIconSelectedColor)}
                 </ListItemIcon>
                 <Link to='/trackorder'>
                   <ListItemText
