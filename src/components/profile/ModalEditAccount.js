@@ -162,7 +162,7 @@ class ModalEditAccount extends Component {
     }
 
     return (
-      <div>
+      <LoadingOverlay active={this.state.isLoading} spinner>
         <div style={{ marginBottom: 10 }}>Enter your new Phone Number</div>
         <div className={styles.fieldGroup}>
           <div className={styles.phoneCountryCodeGroup}>
@@ -196,12 +196,11 @@ class ModalEditAccount extends Component {
             type='number'
             id='phoneInputEdit'
             value={newPhoneNumber}
-            style={{ marginLeft: '25px' }}
             className={styles.phoneField}
             onChange={(e) => this.setState({ newPhoneNumber: e.target.value })}
           />
         </div>
-      </div>
+      </LoadingOverlay>
     );
   }
 
@@ -257,7 +256,7 @@ class ModalEditAccount extends Component {
     }
 
     return (
-      <div>
+      <LoadingOverlay active={this.state.isLoading} spinner>
         <div style={{ marginBottom: 10 }}>Enter your new Email</div>
         <div className={styles.fieldGroup}>
           <Input
@@ -267,7 +266,7 @@ class ModalEditAccount extends Component {
             onChange={(e) => this.setState({ newEmail: e.target.value })}
           ></Input>
         </div>
-      </div>
+      </LoadingOverlay>
     );
   }
 
@@ -422,93 +421,93 @@ class ModalEditAccount extends Component {
   render() {
     let { isWaitingOTP } = this.state;
     return (
-      <LoadingOverlay active={this.state.isLoading} spinner text='Loading...'>
-        <div>
-          {this.props.title && (
+      <div>
+        {this.props.title && (
+          <div
+            className='modal fade'
+            tabIndex={-1}
+            id='edit-account-modal'
+            role='dialog'
+            aria-labelledby='exampleModalCenterTitle'
+            aria-hidden='true'
+          >
             <div
-              className='modal fade'
-              id='edit-account-modal'
-              tabIndex={-1}
-              role='dialog'
-              aria-labelledby='exampleModalCenterTitle'
-              aria-hidden='true'
+              className='modal-dialog modal-dialog-centered'
+              role='document'
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <div
-                className='modal-dialog modal-dialog-centered'
-                role='document'
-                style={{ display: 'flex', justifyContent: 'center' }}
+                className='modal-content'
+                style={{ width: '100%', marginTop: 100, marginBottom: 100 }}
               >
                 <div
-                  className='modal-content'
-                  style={{ width: '100%', marginTop: 100, marginBottom: 100 }}
+                  className='modal-header'
+                  style={{ display: 'flex', justifyContent: 'center' }}
                 >
-                  <div
-                    className='modal-header'
-                    style={{ display: 'flex', justifyContent: 'center' }}
+                  <h5
+                    className='modal-title'
+                    id='exampleModalLabel'
+                    style={{ fontSize: 16 }}
+                  >{`Edit ${this.props.title.display}`}</h5>
+                  <button
+                    type='button'
+                    className='close'
+                    data-dismiss='modal'
+                    aria-label='Close'
+                    style={{
+                      position: 'absolute',
+                      right: 10,
+                      top: 16,
+                    }}
                   >
-                    <h5
-                      className='modal-title'
-                      id='exampleModalLabel'
-                      style={{ fontSize: 16 }}
-                    >{`Edit ${this.props.title.display}`}</h5>
-                    <button
-                      type='button'
-                      className='close'
-                      data-dismiss='modal'
-                      aria-label='Close'
-                      style={{
-                        position: 'absolute',
-                        right: 10,
-                        top: 16,
-                      }}
-                    >
-                      <span aria-hidden='true' style={{ fontSize: 30 }}>
-                        ×
-                      </span>
-                    </button>
-                  </div>
-                  <div className='modal-body'>
-                    {this.props.title.field === 'email'
-                      ? this.viewEmail()
-                      : this.viewPhoneNumber()}
+                    <span aria-hidden='true' style={{ fontSize: 30 }}>
+                      ×
+                    </span>
+                  </button>
+                </div>
+                <div className='modal-body'>
+                  {this.props.title.field === 'email'
+                    ? this.viewEmail()
+                    : this.viewPhoneNumber()}
 
-                    {this.state.isSame && (
-                      <div className='text text-warning-theme small'>
-                        <em>{`${this.props.title.display} same as the previous`}</em>
-                      </div>
-                    )}
+                  {this.state.isSame && (
+                    <div className='text text-warning-theme small'>
+                      <em>{`${this.props.title.display} same as the previous`}</em>
+                    </div>
+                  )}
 
-                    {this.state.isUsed && (
-                      <div className='text text-warning-theme small'>
-                        <em>{`${this.props.title.display} already used`}</em>
-                      </div>
-                    )}
+                  {this.state.isUsed && (
+                    <div className='text text-warning-theme small'>
+                      <em>{`${this.props.title.display} already used`}</em>
+                    </div>
+                  )}
 
-                    {this.state.isWrong && (
-                      <div className='text text-warning-theme small'>
-                        <em>{`${this.props.title.display} is wrong format`}</em>
-                      </div>
-                    )}
+                  {this.state.isWrong && (
+                    <div className='text text-warning-theme small'>
+                      <em>
+                        {`You have entered an invalid ${this.props.title.display}, please try again. `}
+                      </em>
+                    </div>
+                  )}
 
-                    <Button
-                      className={cx('button', styles.submitButton)}
-                      style={{ marginTop: 20 }}
-                      onClick={() =>
-                        this.props.title.field === 'phoneNumber'
-                          ? this.submitPhoneNumber(isWaitingOTP)
-                          : this.submitEmail(isWaitingOTP)
-                      }
-                    >
-                      <i className='fa fa-paper-plane' aria-hidden='true' />{' '}
-                      {isWaitingOTP ? 'Confirm' : 'Submit'}
-                    </Button>
-                  </div>
+                  <Button
+                    className={cx('button', styles.submitButton)}
+                    style={{ marginTop: 20 }}
+                    onClick={() =>
+                      this.props.title.field === 'phoneNumber'
+                        ? this.submitPhoneNumber(isWaitingOTP)
+                        : this.submitEmail(isWaitingOTP)
+                    }
+                  >
+                    <i className='fa fa-paper-plane' aria-hidden='true' />
+                    {isWaitingOTP ? 'Confirm' : 'Submit'}
+                  </Button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </LoadingOverlay>
+          </div>
+        )}
+      </div>
     );
   }
 }

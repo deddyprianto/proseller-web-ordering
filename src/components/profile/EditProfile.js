@@ -197,6 +197,8 @@ class EditProfile extends Component {
 
   handleChange = (field, value) => {
     let dataCustomer = this.state.dataCustomer;
+    this.validationField(field, value);
+
     dataCustomer[field] = value;
     dataCustomer.address = `${dataCustomer.street || ''}, ${
       dataCustomer.unitNo || ''
@@ -725,3 +727,4 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);
+
