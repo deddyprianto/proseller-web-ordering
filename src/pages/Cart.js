@@ -716,27 +716,30 @@ const renderSubTotal = () => {
           </div>
         )}
 
-        {props.orderingMode === 'DELIVERY' && props.selectedDeliveryProvider && (
-          <>
-            {props.basket?.provider &&
-              props.basket?.provider?.deliveryFee !== 0 && (
+        {props.orderingMode === 'DELIVERY' &&
+          !isEmptyObject(props.selectedDeliveryProvider) && (
+            <>
+              {props.basket?.provider &&
+                props.basket?.provider?.deliveryFee !== 0 && (
+                  <div style={styles.rootSubTotalItem}>
+                    <Typography style={styles.subTotal}>
+                      Delivery Fee
+                    </Typography>
+                    <Typography style={styles.subTotal}>
+                      {handleCurrency(props.basket?.provider?.deliveryFee)}
+                    </Typography>
+                  </div>
+                )}
+
+              {props.basket.provider.deliveryFee === 0 &&
+              props.orderingMode === 'DELIVERY' ? (
                 <div style={styles.rootSubTotalItem}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>
-                  <Typography style={styles.subTotal}>
-                    {handleCurrency(props.basket?.provider?.deliveryFee)}
-                  </Typography>
+                  <Typography style={styles.subTotal}>Free</Typography>
                 </div>
-              )}
-
-            {props.basket.provider.deliveryFee === 0 &&
-            props.orderingMode === 'DELIVERY' ? (
-              <div style={styles.rootSubTotalItem}>
-                <Typography style={styles.subTotal}>Delivery Fee</Typography>
-                <Typography style={styles.subTotal}>Free</Typography>
-              </div>
-            ) : null}
-          </>
-        )}
+              ) : null}
+            </>
+          )}
       </div>
     </Paper>
   );
