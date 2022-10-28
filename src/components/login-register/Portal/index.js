@@ -301,7 +301,10 @@ const Portal = ({
         <Button
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
-          onClick={() => handleEmailCheck()}
+          onClick={() => {
+            setIsLoading(true);
+            handleEmailCheck();
+          }}
         >
           Next
         </Button>
