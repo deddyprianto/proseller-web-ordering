@@ -14,6 +14,7 @@ function GuestCheckoutCart(
     providerGuestCheckout: null,
     openOrderingMode: false,
     trackorder: {},
+    resetBottomNav: null,
   },
   action
 ) {
@@ -56,6 +57,8 @@ function GuestCheckoutCart(
       return { ...state, openOrderingMode: action.payload };
     case CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT:
       return { ...state, saveEditResponse: action.payload };
+    case CONSTANT.RESET_BOTTOM_NAVIGATION:
+      return { ...state, resetBottomNav: action.payload };
     default:
       return state;
   }

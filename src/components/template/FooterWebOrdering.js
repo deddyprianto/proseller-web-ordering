@@ -14,6 +14,9 @@ const FooterWebOrdering = () => {
   const location = useLocation();
   const allState = useSelector((state) => state);
   const navBar = useSelector((state) => state.theme.menu.navBar);
+  const resetBottomNav = useSelector(
+    (state) => state.guestCheckoutCart.resetBottomNav
+  );
   const [newNavbar, setNewNavbar] = useState([]);
   const [value, setValue] = useState(0);
   const { setting } = useSelector((state) => state.order);
@@ -29,6 +32,12 @@ const FooterWebOrdering = () => {
     }
   }, [setting]);
 
+  useEffect(() => {
+    if (resetBottomNav === 0) {
+      setValue(0);
+    }
+  }, [location.pathname]);
+  
   const menuIcon = (color) => {
     return (
       <svg width='25' height='24' viewBox='0 0 19 18'>

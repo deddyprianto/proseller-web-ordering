@@ -8,13 +8,14 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconChecklis from '../../assets/images/checkIconTransparent.png';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import VectorDown from '../../assets/images/VectorDown.png';
 import { useHistory } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Drawer from '@mui/material/Drawer';
 import config from 'config';
+import { CONSTANT } from 'helpers';
 
 const renderGrandTotalForGuestCheckMode = ({
   history,
@@ -22,6 +23,8 @@ const renderGrandTotalForGuestCheckMode = ({
   handleCurrency,
   setOpenDrawerBottom,
   trackorderBasket,
+  dispatch,
+  resetBottomNav,
 }) => {
   return (
     <div
@@ -70,7 +73,13 @@ const renderGrandTotalForGuestCheckMode = ({
       </div>
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
         <button
-          onClick={() => history.push('/')}
+          onClick={() => {
+            dispatch({
+              type: CONSTANT.RESET_BOTTOM_NAVIGATION,
+              payload: 0,
+            });
+            history.push('/');
+          }}
           style={{
             backgroundColor: color.primary,
             width: '80%',
@@ -684,6 +693,7 @@ const renderCartProduct = (basket) => {
 };
 
 const OrderTrackHistory = () => {
+  const dispatch = useDispatch();
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
   const [expandAccordionTimeLine, setExpandAccordionTimeLine] = useState(true);
   const [expandAccordionProductList, setExpandAccordionProductList] =
@@ -693,7 +703,9 @@ const OrderTrackHistory = () => {
   const basket = useSelector((state) => state.guestCheckoutCart);
   const color = useSelector((state) => state.theme.color);
   const matches = useMediaQuery('(min-width:1200px)');
-
+  const resetBottomNav = useSelector(
+    (state) => state.guestCheckoutCart.resetBottomNav
+  );
   const handleCurrency = (price) => {
     if (companyInfo?.companyInfo?.data) {
       const result = price?.toLocaleString(
@@ -1027,6 +1039,8 @@ const OrderTrackHistory = () => {
             handleCurrency: handleCurrency,
             setOpenDrawerBottom: setOpenDrawerBottom,
             trackorderBasket: basket?.trackorder,
+            dispatch: dispatch,
+            resetBottomNav: resetBottomNav,
           })}
         </div>
       </div>
