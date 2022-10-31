@@ -59,6 +59,8 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const ProductList = ({ ...props }) => {
+  const [isMore, setIsMore] = useState(false);
+
   const useStyles = makeStyles(() => ({
     appBar: {
       background: '#03aacf',
@@ -160,7 +162,6 @@ const ProductList = ({ ...props }) => {
 
   const classes = useStyles();
   const [width] = useWindowSize();
-  const [isMore, setIsMore] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [products, setProducts] = useState([]);
@@ -168,17 +169,16 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
-  const handleFetchCategoryProduct = async ({ outlet }) => {
+  const handleFetchCategoryProduct = async (outlet) => {
     const orderingMode = props.orderingMode | '';
     const categories = await props.dispatch(
       ProductAction.fetchCategoryProduct({
-        outlet,
+        outlet: outlet.outlet,
         orderingMode: props.orderingSetting?.ShowOrderingModeModalFirst
           ? orderingMode
           : '',
       })
     );
-
     const results = categories?.data || [];
     return results;
   };

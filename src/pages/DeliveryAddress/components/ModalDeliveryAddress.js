@@ -27,6 +27,7 @@ import MapAtom from '../../../pages/Map/MapAtom';
 import config from '../../../config';
 import { MasterDataAction } from 'redux/actions/MasterDataAction';
 import { CustomerAction } from 'redux/actions/CustomerAction';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const ModalDeliveryAddress = ({
   initialValue,
@@ -148,6 +149,9 @@ const ModalDeliveryAddress = ({
       .matches(/^[0-9]+$/, 'Please enter a valid postal code')
       .min(6, 'Postal code must be exactly 6 digits')
       .max(6, 'Postal code must be exactly 6 digits'),
+    unitNo: yup
+      .string()
+      .matches(/^[a-z0-9.-]*$/, 'Please enter a valid unit number'),
   });
 
   useEffect(() => {
@@ -235,7 +239,7 @@ const ModalDeliveryAddress = ({
       addressName: isCreate ? '' : addressDelivery[indexEdit].addressName,
       streetName: isCreate
         ? streetName
-          ? streetName
+          ? streetName.substring(0, 140)
           : ''
         : addressDelivery[indexEdit].streetName,
       unitNo: isCreate ? '' : addressDelivery[indexEdit].unitNo,
@@ -281,158 +285,160 @@ const ModalDeliveryAddress = ({
       aria-labelledby='scroll-dialog-title'
       aria-describedby='scroll-dialog-description'
     >
-      <DialogTitle sx={style.dialogBorderBottom}>
-        <Box sx={style.boxTitle}>
-          <div />
-          <Typography
-            id='tkb-dialog-title'
-            className='color'
-            sx={style.typographyTitle}
-          >
-            Delivery Address
-          </Typography>
-          <IconButton
-            aria-label='close'
-            size='large'
-            onClick={() => {
-              onClose();
-            }}
-            sx={style.iconCloseStyle}
-          >
-            <CloseRoundedIcon fontSize='inherit' />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-      <form onSubmit={formik.handleSubmit} autoComplete='off' noValidate>
-        <DialogContent sx={style.dialogContentStyle}>
-          <Box sx={style.boxPadding}>
-            <Typography fontSize={12} fontWeight='500' color='#666'>
-              Address Name <span className='required'>*</span>
+      <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+        <DialogTitle sx={style.dialogBorderBottom}>
+          <Box sx={style.boxTitle}>
+            <div />
+            <Typography
+              id='tkb-dialog-title'
+              className='color'
+              sx={style.typographyTitle}
+            >
+              Delivery Address
             </Typography>
-            <Box
-              disabled={isLoading}
-              name='addressName'
-              component={InputBase}
-              fullWidth
-              border='1px solid #ccc'
-              borderRadius={1}
-              height={30}
-              fontSize='1.2rem'
-              margin='dense'
-              sx={style.addressInput}
-              value={formik.values.addressName || ''}
-              size='small'
-              onChange={formik.handleChange}
-            />
-            {initialValue?.optionAddressName.map((item, index) => {
-              return (
-                <Chip
-                  size='small'
-                  sx={style.chipStyle}
-                  onClick={() =>
-                    formik.setFieldValue('addressName', item.value)
-                  }
-                  key={index}
-                  label={item.label}
-                />
-              );
-            })}
+            <IconButton
+              aria-label='close'
+              size='large'
+              onClick={() => {
+                onClose();
+              }}
+              sx={style.iconCloseStyle}
+            >
+              <CloseRoundedIcon fontSize='inherit' />
+            </IconButton>
           </Box>
-          {renderErrorMessage(formik.errors.addressName)}
-          <Box sx={style.boxPadding}>
-            <Typography fontSize={12} fontWeight='500' color='#666'>
-              Street Name <span className='required'>*</span>
-            </Typography>
-            <Box
-              disabled={isLoading}
-              name='streetName'
-              component={InputBase}
+        </DialogTitle>
+        <form onSubmit={formik.handleSubmit} autoComplete='off' noValidate>
+          <DialogContent sx={style.dialogContentStyle}>
+            <Box sx={style.boxPadding}>
+              <Typography fontSize={12} fontWeight='500' color='#666'>
+                Address Name <span className='required'>*</span>
+              </Typography>
+              <Box
+                disabled={isLoading}
+                name='addressName'
+                component={InputBase}
+                fullWidth
+                border='1px solid #ccc'
+                borderRadius={1}
+                height={30}
+                fontSize='1.2rem'
+                margin='dense'
+                sx={style.addressInput}
+                value={formik.values.addressName || ''}
+                size='small'
+                onChange={formik.handleChange}
+              />
+              {initialValue?.optionAddressName.map((item, index) => {
+                return (
+                  <Chip
+                    size='small'
+                    sx={style.chipStyle}
+                    onClick={() =>
+                      formik.setFieldValue('addressName', item.value)
+                    }
+                    key={index}
+                    label={item.label}
+                  />
+                );
+              })}
+            </Box>
+            {renderErrorMessage(formik.errors.addressName)}
+            <Box sx={style.boxPadding}>
+              <Typography fontSize={12} fontWeight='500' color='#666'>
+                Street Name <span className='required'>*</span>
+              </Typography>
+              <Box
+                disabled={isLoading}
+                name='streetName'
+                component={InputBase}
+                fullWidth
+                margin='dense'
+                sx={style.inputBaseMargin}
+                size='small'
+                value={formik.values.streetName || ''}
+                onChange={formik.handleChange}
+              />
+            </Box>
+            <Box sx={style.boxPadding}>
+              <Typography fontSize={12} fontWeight='500' color='#666'>
+                Unit Number <span className='required'>*</span>
+              </Typography>
+              <Box
+                disabled={isLoading}
+                name='unitNo'
+                component={InputBase}
+                fullWidth
+                margin='dense'
+                sx={style.inputBaseMargin}
+                input
+                size='small'
+                type='text'
+                value={formik.values.unitNo || ''}
+                onChange={formik.handleChange}
+              />
+            </Box>
+            <Box sx={style.boxPadding}>
+              <Typography fontSize={12} fontWeight='500' color='#666'>
+                Postal code <span className='required'>*</span>
+              </Typography>
+              <Box
+                name='postalCode'
+                component={InputBase}
+                fullWidth
+                margin='dense'
+                disabled={!isCreate || isLoading || postalCode}
+                sx={style.inputBaseMargin}
+                size='small'
+                value={formik.values.postalCode || ''}
+                onChange={formik.handleChange}
+              />
+              {renderErrorMessage(formik.errors.postalCode)}
+            </Box>
+            <div
+              className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'
+              style={{ marginTop: 10 }}
+            >
+              <label style={{ fontSize: 12 }}>
+                Pin Location <span className='required'>*</span>
+              </label>
+              <LinkRouter to='/map'>
+                {isCreate ? (
+                  <MapAtom
+                    name='coordinate'
+                    coordinate={pinnedLocation}
+                    alreadyPinned
+                    color={color}
+                  />
+                ) : (
+                  <MapAtom
+                    name='coordinate'
+                    coordinate={{
+                      latitude: formik.values.coordinate?.latitude,
+                      longitude: formik.values.coordinate?.longitude,
+                    }}
+                    alreadyPinned
+                    color={color}
+                  />
+                )}
+              </LinkRouter>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <LoadingButton
               fullWidth
-              margin='dense'
-              sx={style.inputBaseMargin}
-              size='small'
-              value={formik.values.streetName || ''}
-              onChange={formik.handleChange}
-            />
-          </Box>
-          <Box sx={style.boxPadding}>
-            <Typography fontSize={12} fontWeight='500' color='#666'>
-              Unit Number <span className='required'>*</span>
-            </Typography>
-            <Box
-              disabled={isLoading}
-              name='unitNo'
-              component={InputBase}
-              fullWidth
-              margin='dense'
-              sx={style.inputBaseMargin}
-              input
-              size='small'
-              type='number'
-              value={formik.values.unitNo || ''}
-              onChange={formik.handleChange}
-            />
-          </Box>
-          <Box sx={style.boxPadding}>
-            <Typography fontSize={12} fontWeight='500' color='#666'>
-              Postal code <span className='required'>*</span>
-            </Typography>
-            <Box
-              name='postalCode'
-              component={InputBase}
-              fullWidth
-              margin='dense'
-              disabled={!isCreate || isLoading || postalCode}
-              sx={style.inputBaseMargin}
-              size='small'
-              value={formik.values.postalCode || ''}
-              onChange={formik.handleChange}
-            />
-            {renderErrorMessage(formik.errors.postalCode)}
-          </Box>
-          <div
-            className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'
-            style={{ marginTop: 10 }}
-          >
-            <label style={{ fontSize: 12 }}>
-              Pin Location <span className='required'>*</span>
-            </label>
-            <LinkRouter to='/map'>
-              {isCreate ? (
-                <MapAtom
-                  name='coordinate'
-                  coordinate={pinnedLocation}
-                  alreadyPinned
-                  color={color}
-                />
-              ) : (
-                <MapAtom
-                  name='coordinate'
-                  coordinate={{
-                    latitude: formik.values.coordinate?.latitude,
-                    longitude: formik.values.coordinate?.longitude,
-                  }}
-                  alreadyPinned
-                  color={color}
-                />
-              )}
-            </LinkRouter>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <LoadingButton
-            fullWidth
-            sx={style.saveAddress}
-            variant='contained'
-            startIcon={<SaveIcon />}
-            type='submit'
-            loading={isLoading}
-            loadingPosition='start'
-          >
-            Save Address
-          </LoadingButton>
-        </DialogActions>
-      </form>
+              sx={style.saveAddress}
+              variant='contained'
+              startIcon={<SaveIcon />}
+              type='submit'
+              loading={isLoading}
+              loadingPosition='start'
+            >
+              Save Address
+            </LoadingButton>
+          </DialogActions>
+        </form>
+      </LoadingOverlayCustom>
     </Dialog>
   );
 };

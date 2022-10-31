@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import filter from 'lodash/filter';
 import indexOf from 'lodash/indexOf';
 
@@ -37,6 +37,7 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
+    guestCheckoutCartBasket: state.guestCheckoutCart,
   };
 };
 
@@ -107,7 +108,7 @@ const Product = ({ item, ...props }) => {
       marginBottom: 0,
       fontWeight: 500,
       fontSize: '12px',
-      color: isUnavailable ? 'red' : props.color.font,
+      color: isUnavailable ? '#8A8D8E' : props.color.font,
       display: '-webkit-box',
       WebkitLineClamp: 3,
       WebkitBoxOrient: 'vertical',
@@ -196,7 +197,7 @@ const Product = ({ item, ...props }) => {
   const [totalQty, setTotalQty] = useState(0);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
-
+  const mode = useSelector((state) => state.guestCheckoutCart.mode);
   const handleProductItemIds = (item) => {
     let items = [];
     if (item?.product) {
@@ -222,17 +223,44 @@ const Product = ({ item, ...props }) => {
     }
     return [];
   };
+  const handleProductItemsInBasketGuestCo = ({ basketDetails, item }) => {
+    const productItemIds = handleProductItemIds(item);
+    if (!isEmptyArray(productItemIds)) {
+      const result = filter(
+        basketDetails,
+        (basketDetail) =>
+          indexOf(productItemIds, basketDetail.product.id) !== -1
+      );
+      return result;
+    }
+    return [];
+  };
 
   const handleQuantityProduct = () => {
     let totalQty = 0;
-    const productItemInBasket = handleProductItemsInBasket({
-      basketDetails: props.basket.details,
-      item,
-    });
+    if (mode === 'GuestMode') {
+      const productItemInBasketGuestCo = handleProductItemsInBasketGuestCo({
+        basketDetails:
+          props.guestCheckoutCartBasket?.response?.details?.length >= 1
+            ? props.guestCheckoutCartBasket.response?.details
+            : props.guestCheckoutCartBasket.data?.details,
+        item,
+      });
 
-    productItemInBasket.forEach((item) => {
-      totalQty = totalQty + item.quantity;
-    });
+      productItemInBasketGuestCo.forEach((item) => {
+        totalQty = totalQty + item.quantity;
+      });
+    } else {
+      console.log('dedd =>', 'not RUN');
+      const productItemInBasket = handleProductItemsInBasket({
+        basketDetails: props.basket.details,
+        item,
+      });
+
+      productItemInBasket.forEach((item) => {
+        totalQty = totalQty + item.quantity;
+      });
+    }
 
     return totalQty;
   };
@@ -240,7 +268,12 @@ const Product = ({ item, ...props }) => {
   useEffect(() => {
     const totalQtyProductInBasket = handleQuantityProduct();
     setTotalQty(totalQtyProductInBasket);
-  }, [item, props.basket]);
+  }, [
+    item,
+    props.basket,
+    props.guestCheckoutCartBasket.data?.details,
+    props.guestCheckoutCartBasket.response?.details,
+  ]);
 
   const handleOpenAddModal = () => {
     setIsOpenAddModal(true);
@@ -420,6 +453,7 @@ Product.defaultProps = {
   productConfig: {},
   companyInfo: {},
   item: {},
+  guestCheckoutCartBasket: {},
 };
 
 Product.propTypes = {
@@ -427,6 +461,7 @@ Product.propTypes = {
   color: PropTypes.object,
   companyInfo: PropTypes.object,
   dispatch: PropTypes.func,
+  guestCheckoutCartBasket: PropTypes.object,
   item: PropTypes.object,
   productConfig: PropTypes.object,
 };
