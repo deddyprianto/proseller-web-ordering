@@ -392,6 +392,7 @@ const ModalDeliveryAddress = ({
                 size='small'
                 value={formik.values.postalCode || ''}
                 onChange={formik.handleChange}
+                type='number'
               />
               {renderErrorMessage(formik.errors.postalCode)}
             </Box>

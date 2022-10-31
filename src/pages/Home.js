@@ -1,18 +1,18 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
-import OrderingRetail from '../components/ordering/indexRetail';
 import { useHistory } from 'react-router-dom';
 import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
-import { CONSTANT } from 'helpers';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
+import { CONSTANT } from 'helpers';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -34,6 +34,7 @@ const mapStateToProps = (state) => {
     defaultOutlet: state.outlet.defaultOutlet,
     isLoggedIn: state.auth.isLoggedIn,
     orderingMode: state.order.orderingMode,
+    basketGuestCo: state.guestCheckoutCart.data,
   };
 };
 
@@ -88,27 +89,33 @@ const Home = ({ ...props }) => {
         OrderAction.addCartFromGuestCOtoCartLogin(isOfflineCartGuestCO)
       );
       Swal.hideLoading();
-      if (response.type === 'DATA_BASKET') {
+      if (response?.type === 'DATA_BASKET') {
         localStorage.removeItem('BASKET_GUESTCHECKOUT');
       }
       Swal.fire({
         icon: 'success',
         title: 'Saving',
-        text: 'We are saving your previously Cart!',
+        text: 'We are saving your previous Cart!',
       });
     };
+    const isBasketEmpty = props.basketGuestCo.message === 'Cart it empty.';
 
-    if (isOfflineCartGuestCO && props.isLoggedIn) {
+    const isOfflineCartGuestCOExist =
+      isOfflineCartGuestCO &&
+      isOfflineCartGuestCO?.message !== 'Cart it empty.' &&
+      props.isLoggedIn;
+
+    if (isBasketEmpty) {
+      dispatch({
+        type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+        payload: '',
+      });
+    }
+
+    if (isOfflineCartGuestCOExist) {
       saveGuestCheckoutOfflineCart();
     }
   }, []);
-
-  useEffect(() => {
-    const isGuestMode = localStorage.getItem('settingGuestMode');
-    if (isGuestMode === 'GuestMode') {
-      dispatch({ type: CONSTANT.SAVE_GUESTMODE_STATE, payload: isGuestMode });
-    }
-  }, [localStorage.getItem('settingGuestMode')]);
 
   const renderProductListOrOutletSelection = () => {
     if (

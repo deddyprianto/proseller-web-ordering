@@ -162,10 +162,10 @@ class DetailProfile extends Component {
                   marginTop: 10,
                 }}
               >
-                {account.name}
+                {dataCustomer.name}
               </div>
-              <div>{account.phoneNumber}</div>
-              <div>{account.email}</div>
+              <div>{dataCustomer.phoneNumber}</div>
+              <div>{dataCustomer.email}</div>
             </div>
 
             <div

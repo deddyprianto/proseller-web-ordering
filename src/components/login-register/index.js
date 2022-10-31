@@ -620,6 +620,7 @@ const LoginRegister = (props) => {
       }
       Swal.fire("Oppss!", error, "error");
     }
+    setIsLoading(false);
   };
 
   const getAge = (DOB) => {
@@ -740,6 +741,7 @@ const LoginRegister = (props) => {
 
       if (responseMessage) {
         Swal.fire("Oppss!", responseMessage, "error");
+        setIsLoading(false);
       } else {
         enableRegisterWithPassword &&
           lsStore(
@@ -954,6 +956,7 @@ const LoginRegister = (props) => {
       }
       Swal.fire("Oppss!", error, "error");
     }
+    setIsLoading(false);
   };
 
   const handleEmailRegister = async () => {

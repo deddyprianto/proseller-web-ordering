@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import { useSelector, useDispatch } from 'react-redux';
@@ -33,7 +32,7 @@ import OrderingModeDialogGuestCheckout from 'components/orderingModeDialog/Order
 import config from 'config';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
-import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import TimeSlotDialog from 'components/timeSlot/TimeSlotGuestCo';
 import ModalFormDeliveryCustomerDetail from './ModalFormDeliveryCustomerDetail';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -211,7 +210,8 @@ const CartGuestCheckout = () => {
   }, [orderingModeGuestCheckout]);
 
   useEffect(() => {
-    if (basket.message === 'Cart it empty.' || orderingModeGuestCheckout) {
+    const isBasketEmpty = basket.message === 'Cart it empty.';
+    if (isBasketEmpty || orderingModeGuestCheckout) {
       setOpenOrderingMode(false);
     } else {
       setOpenOrderingMode(true);
@@ -428,6 +428,46 @@ const CartGuestCheckout = () => {
       }
       setIsLoading(false);
     } else if (orderingModeGuestCheckout === 'STOREPICKUP') {
+      const finalVal = () => {
+        const convertPhoneNumberTostring = formik.values.phoneNo.toString();
+        let val = convertPhoneNumberTostring.split();
+        val.unshift(phoneCountryCode);
+        return { ...formik.values, phoneNo: val.join('') };
+      };
+      const objectSubmitCart = {
+        cartID: basket.cartID,
+        outletID: basket.outletID,
+        guestID: basket.guestID,
+        customerDetails: {
+          name: finalVal().name,
+          email: finalVal().email,
+          phoneNumber: finalVal().phoneNo,
+        },
+        payments: [
+          {
+            paymentType: companyInfo.paymentTypes[0].paymentID,
+            paymentID: companyInfo.paymentTypes[0].paymentID,
+          },
+        ],
+        deliveryAddress: {},
+        orderingMode: orderingModeGuestCheckout,
+        tableNo: '-',
+        clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+        orderActionDate: date ? date : new Date().toISOString().split('T')[0],
+        orderActionTime: time
+          ? time
+          : new Date().getHours() + ':' + new Date().getMinutes(),
+        orderActionTimeSlot: timeslot ? timeslot : null,
+      };
+      setIsLoading(true);
+      const response = await dispatch(
+        OrderAction.paymentGuestMode(objectSubmitCart)
+      );
+      if (response.resultCode === 200) {
+        window.location.href = response.data.url;
+      }
+      setIsLoading(false);
+    } else if (orderingModeGuestCheckout === 'DINEIN') {
       const finalVal = () => {
         const convertPhoneNumberTostring = formik.values.phoneNo.toString();
         let val = convertPhoneNumberTostring.split();
@@ -838,6 +878,7 @@ const CartGuestCheckout = () => {
                           if (response?.resultCode === 200) {
                             setRefreshData(!refreshData);
                             Swal.fire('Deleted!', response.message, 'success');
+
                             dispatch({
                               type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
                               payload: {},
@@ -963,6 +1004,10 @@ const CartGuestCheckout = () => {
       ? formRegexMail && reqTimeSlot
       : formRegexMail;
 
+    const isDineInActive = availableTime
+      ? formRegexMail && reqTimeSlot
+      : formRegexMail;
+
     switch (key) {
       case 'DELIVERY':
         if (isDeliveryActive) {
@@ -978,6 +1023,12 @@ const CartGuestCheckout = () => {
         }
       case 'STOREPICKUP':
         if (isPickUpActive) {
+          return false;
+        } else {
+          return true;
+        }
+      case 'DINEIN':
+        if (isDineInActive) {
           return false;
         } else {
           return true;
@@ -1900,6 +1951,275 @@ const CartGuestCheckout = () => {
     }
   };
 
+  const renderFormDineIn = () => {
+    const isDineIn = orderingModeGuestCheckout === 'DINEIN';
+    if (isDineIn) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '20px 5px',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <div>
+            <h1 style={{ fontSize: '16px' }}>Customer Detail</h1>
+            <div
+              style={{
+                display: 'flex',
+              }}
+            >
+              <div style={{ width: '30px', paddingTop: '5px' }}>
+                <img src={iconSeru} />
+              </div>
+              <p
+                style={{
+                  color: '#8A8D8E',
+                  margin: 0,
+                  padding: 0,
+                  fontSize: '14px',
+                }}
+              >
+                We will not collect mobile number and email data from this
+                transaction.
+              </p>
+            </div>
+          </div>
+          <form
+            onSubmit={formik.handleSubmit}
+            autoComplete='off'
+            noValidate
+            style={{ padding: '0 5px' }}
+          >
+            <Box sx={{ marginTop: '1rem' }}>
+              <Typography
+                className={fontStyleCustom.myFont}
+                fontSize={12}
+                fontWeight='500'
+                color='#666'
+                marginBottom='10px'
+              >
+                Name <span className='required'>*</span>
+              </Typography>
+              <Box
+                disabled={isLoading}
+                name='name'
+                component={InputBase}
+                fullWidth
+                border='1px solid #ccc'
+                borderRadius='7px'
+                height={30}
+                fontSize='1.2rem'
+                margin='dense'
+                sx={{
+                  paddingX: '1rem',
+                  paddingTop: '2rem',
+                  paddingBottom: '2rem',
+                  marginBottom: '0.5rem',
+                  color: 'black',
+                }}
+                value={formik.values.name || ''}
+                size='small'
+                placeholder='Your Name'
+                onChange={formik.handleChange}
+              />
+            </Box>
+            {renderErrorMessage(formik.errors.name)}
+            <Box sx={{ marginTop: '1rem' }}>
+              <Typography
+                className={fontStyleCustom.myFont}
+                fontSize={12}
+                fontWeight='500'
+                color='#666'
+              >
+                Phone Number <span className='required'>*</span>
+              </Typography>
+              <div
+                style={{
+                  border: '1px solid rgba(141, 141, 141, 0.44)',
+                  borderRadius: '7px',
+                  display: 'flex',
+                  marginBottom: '1rem',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <div
+                  style={{
+                    width: '35%',
+                    border: 0,
+                    borderRadius: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Dropdown
+                    isOpen={dropdownOpen}
+                    toggle={toggle}
+                    direction='down'
+                    className={fontStyleCustom.dropDownMenu}
+                    size='100px'
+                  >
+                    <DropdownToggle
+                      style={{
+                        width: '100%',
+                        backgroundColor: 'transparent',
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                        alignItems: 'center',
+                        fontWeight: 500,
+                        fontSize: '16px',
+                        color: 'gray',
+                      }}
+                    >
+                      {phoneCountryCode}
+                      <img src={iconDown} style={{ marginLeft: '5px' }} />
+                    </DropdownToggle>
+                    <DropdownMenu
+                      style={{
+                        width: matches ? '80vw' : '27.5vw',
+                        borderRadius: '10px',
+                        paddingLeft: '10px',
+                        height: '235px',
+                        overflowY: 'auto',
+                        marginTop: '5px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '97%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          border: '1px solid #ddd',
+                          borderRadius: '10px',
+                          justifyContent: 'space-between',
+                          margin: '5px 0px',
+                        }}
+                      >
+                        <div style={{ width: '100%' }}>
+                          <SearchInput
+                            placeholder='Search for country code'
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              marginLeft: '5px',
+                              border: 'none',
+                              outline: 'none',
+                            }}
+                            onChange={(e) => setValueSearchCode(e)}
+                          />
+                        </div>
+                        <img src={search} style={{ marginRight: '10px' }} />
+                      </div>
+                      {filteredPhoneCode.map((item, i) => {
+                        const getPhoneCodeFromStr = item.substring(
+                          item.indexOf(':') + 1
+                        );
+                        return (
+                          <DropdownItem
+                            style={{
+                              cursor: 'pointer',
+                              fontFamily: 'Plus Jakarta Sans',
+                              color: 'black',
+                              fontWeight: 500,
+                              fontSize: '16px',
+                              padding: '5px 0 0 0',
+                              margin: 0,
+                              opacity: 0.9,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                            header
+                            key={item}
+                          >
+                            <p
+                              style={{
+                                padding: '0px 0px 7px 0px',
+                                margin: 0,
+                                cursor: 'pointer',
+                                color: i === 0 ? color.primary : 'black',
+                              }}
+                              onClick={() => {
+                                setPhoneCountryCode(getPhoneCodeFromStr);
+                                setDropdownOpen(false);
+                              }}
+                            >
+                              {item}
+                            </p>
+                            <hr style={{ width: '95%' }} />
+                          </DropdownItem>
+                        );
+                      })}
+                    </DropdownMenu>
+                  </Dropdown>
+                </div>
+                <Box
+                  disabled={isLoading}
+                  name='phoneNo'
+                  component={InputBase}
+                  fullWidth
+                  height={30}
+                  fontSize='1.2rem'
+                  margin='dense'
+                  sx={{
+                    paddingTop: '2.5rem',
+                    paddingBottom: '2rem',
+                  }}
+                  value={formik.values.phoneNo || ''}
+                  size='small'
+                  placeholder='Phone Number'
+                  onChange={formik.handleChange}
+                  type='number'
+                />
+              </div>
+            </Box>
+            {renderErrorMessage(formik.errors.phoneNo)}
+            <Box sx={{ marginTop: '1rem' }}>
+              <Typography
+                className={fontStyleCustom.myFont}
+                fontSize={12}
+                fontWeight='500'
+                color='#666'
+                marginBottom='10px'
+              >
+                Email <span className='required'>*</span>
+              </Typography>
+              <Box
+                disabled={isLoading}
+                name='email'
+                component={InputBase}
+                fullWidth
+                border='1px solid #ccc'
+                borderRadius='7px'
+                height={30}
+                fontSize='1.2rem'
+                margin='dense'
+                sx={{
+                  paddingX: '1rem',
+                  paddingTop: '2rem',
+                  paddingBottom: '2rem',
+                  marginBottom: '0.5rem',
+                }}
+                value={formik.values.email || ''}
+                size='small'
+                placeholder='Your Email'
+                onChange={formik.handleChange}
+              />
+            </Box>
+            {renderErrorMessage(formik.errors.email)}
+          </form>
+        </div>
+      );
+    }
+  };
+
   const renderFormPickUpStore = () => {
     const isStorePickUp = orderingModeGuestCheckout === 'STOREPICKUP';
     const nameField = addressTakeAway?.deliveryAddress.name;
@@ -2028,7 +2348,7 @@ const CartGuestCheckout = () => {
                         alignItems: 'center',
                         fontWeight: 500,
                         fontSize: '16px',
-                        color: color.font,
+                        color: 'gray',
                       }}
                     >
                       {phoneCountryCode}
@@ -2232,6 +2552,7 @@ const CartGuestCheckout = () => {
                     fontSize: '13px',
                     color: '#8A8D8E',
                     fontWeight: 500,
+                    textAlign: 'center',
                   }}
                   className={fontStyleCustom.myFont}
                 >
@@ -2239,7 +2560,7 @@ const CartGuestCheckout = () => {
                 </Typography>
                 <Typography
                   style={{
-                    textAlign: 'right',
+                    textAlign: 'center',
                     fontSize: '13px',
                     color: '#8A8D8E',
                     fontWeight: 500,
@@ -2272,6 +2593,7 @@ const CartGuestCheckout = () => {
             {renderFormTakeAway()}
             {renderFormPickUpStore()}
             {renderFormCustomerDetail()}
+            {renderFormDineIn()}
             {renderDeliveryProvider('Choose Delivery Provider')}
             {renderTimeSlot()}
           </div>
@@ -2309,6 +2631,7 @@ const CartGuestCheckout = () => {
               {renderFormTakeAway()}
               {renderFormPickUpStore()}
               {renderFormCustomerDetail()}
+              {renderFormDineIn()}
               {renderDeliveryProvider('Choose Delivery Provider')}
               {renderTimeSlot()}
               {renderTotal()}
