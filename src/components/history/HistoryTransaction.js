@@ -18,17 +18,21 @@ const HistoryTransaction = ({ countryCode }) => {
 
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
-      let response = await dispatch(
-        HistoryAction.getTransaction({
-          take: 1000,
-          skip: 0,
-        })
-      );
-      if (response.ResultCode === 200) {
-        setData(response.data);
+      try {
+        setIsLoading(true);
+        let response = await dispatch(
+          HistoryAction.getTransaction({
+            take: 1000,
+            skip: 0,
+          })
+        );
+        if (response.ResultCode === 200) {
+          setData(response.data);
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
       }
-      setIsLoading(false);
     };
     loadData();
   }, []);
