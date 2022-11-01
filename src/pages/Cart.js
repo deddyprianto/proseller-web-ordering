@@ -731,7 +731,7 @@ const renderSubTotal = () => {
                   </div>
                 )}
 
-              {props.basket.provider.deliveryFee === 0 &&
+              {props.basket?.provider?.deliveryFee === 0 &&
               props.orderingMode === 'DELIVERY' ? (
                 <div style={styles.rootSubTotalItem}>
                   <Typography style={styles.subTotal}>Delivery Fee</Typography>

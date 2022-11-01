@@ -64,7 +64,10 @@ const ProductCartList = ({ ...props }) => {
   };
 
   const renderBasketItems = () => {
-    const result = props.basket.details.map((item, key) => (
+    const sortItemForPriceHighest = props.basket.details.sort(
+      (a, b) => b.unitPrice - a.unitPrice
+    );
+    const result = sortItemForPriceHighest.map((item, key) => (
       <div key={key}>
         <ProductCart item={item} />
         <div style={styles.divider} />
