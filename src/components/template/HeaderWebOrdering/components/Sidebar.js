@@ -23,6 +23,8 @@ const useStyles = (theme) => ({
     cursor: 'pointer',
     paddingLeft: '8px',
     paddingRight: '8px',
+    width: '100%',
+    height: '100%',
   },
   box: {
     width: 250,
@@ -309,7 +311,7 @@ const Sidebar = ({ guessCheckout }) => {
     }
   };
   return (
-    <div>
+    <div style={{ width: '30px', height: '30px' }}>
       <FontAwesomeIcon
         onClick={() => handleUpdateOpen(true)}
         style={styles.icon}
