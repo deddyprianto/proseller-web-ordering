@@ -1106,6 +1106,12 @@ const ProductAddModal = ({
           <div key={index}>
             <div style={styles.modifierOption}>
               <FormControlLabel
+                disabled={
+                  modifier.orderingStatus === 'UNAVAILABLE' ? true : false
+                }
+                sx={{
+                  opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
+                }}
                 // style={styles.marginLeft}
                 value={modifier.productID}
                 checked={isCheckedCheckbox(modifier)}
