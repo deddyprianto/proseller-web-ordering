@@ -12,6 +12,7 @@ export const jsonToQueryString = function (json) {
 };
 
 export const CONSTANT = {
+  LOADING_ON_MODAL_REGISTER: 'LOADING_ON_MODAL_REGISTER',
   KEY_LOADER_TOGGLE: 'LOADER_TOGGLE',
   KEY_ISLOGIN: 'islogin',
   KEY_PROMOTION: 'PROMOTION_BANNER',
