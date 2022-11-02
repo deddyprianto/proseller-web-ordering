@@ -443,12 +443,10 @@ const PaymentMethodPage = () => {
           '& .MuiDialog-paper': {
             minHeight: '70%',
             maxHeight: '70%',
-            marginX: 0,
-            height: '-webkit-fill-available',
           },
         }}
       >
-        <iframe src={paymentURL} scrolling='no' width='100%' height='950' />
+        <iframe src={paymentURL} width='100%' height='950px' onScroll={false} />
       </Dialog>
     );
   };
