@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 // import { Button } from "reactstrap";
-import loadable from "@loadable/component";
-import { connect } from "react-redux";
+import loadable from '@loadable/component';
+import { connect } from 'react-redux';
 // import config from "../config";
-import { CampaignAction } from "../redux/actions/CampaignAction";
+import { CampaignAction } from '../redux/actions/CampaignAction';
 
-const MySVC = loadable(() => import("../components/svc/MySVC"));
+const MySVC = loadable(() => import('../components/svc/MySVC'));
 // const BuySVC = loadable(() => import("../components/svc/BuySVC"));
 
 class StoreValueCard extends Component {
@@ -28,7 +28,7 @@ class StoreValueCard extends Component {
   componentDidMount = async () => {
     await this.props.dispatch(
       CampaignAction.getCampaignPoints(
-        { history: "true" },
+        { history: 'true' },
         this.props.account.companyId
       )
     );
@@ -44,32 +44,32 @@ class StoreValueCard extends Component {
     // let {isMySVC, totalPoint} = this.state;
     return (
       <div
-        className="col-full"
+        className='col-full'
         style={{
           // marginTop: config.prefix === "emenu" ? 100 : 160,
           marginTop: 100,
           // marginBottom: 20,
         }}
       >
-        <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -40,
-                display: "flex",
+                display: 'flex',
                 height: 40,
-                justifyContent: "space-between",
-                alignItems: "center",
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
-              className="background-theme"
+              className='background-theme'
             >
-              <Link to={"/profile"}>
+              <Link to={'/profile'}>
                 <div style={{ marginLeft: 10, fontSize: 16 }}>
-                  <i className="fa fa-chevron-left"></i> Back
+                  <i className='fa fa-chevron-left'></i> Back
                 </div>
               </Link>
             </div>
@@ -98,9 +98,9 @@ class StoreValueCard extends Component {
               </Button>
             </div> */}
             <main
-              id="main"
-              className="site-main"
-              style={{ textAlign: "center" }}
+              id='main'
+              className='site-main'
+              style={{ textAlign: 'center' }}
             >
               <div style={{ marginTop: 20 }}>
                 <MySVC history={this.props.history} />

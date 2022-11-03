@@ -1,43 +1,43 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Col, Row, Button } from "reactstrap";
-import Shimmer from "react-shimmer-effect";
-import { CampaignAction } from "../../redux/actions/CampaignAction";
-import ModalPointsDetail from "./ModalPointsDetail";
-import ModalStampsDetail from "./ModalStampsDetail";
-import ModalEditProfile from "./ModalEditProfile";
-import { Link } from "react-router-dom";
-import DefaultStampsImage from "./DefaultStampsImage";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Col, Row, Button } from 'reactstrap';
+import Shimmer from 'react-shimmer-effect';
+import { CampaignAction } from '../../redux/actions/CampaignAction';
+import ModalPointsDetail from './ModalPointsDetail';
+import ModalStampsDetail from './ModalStampsDetail';
+import ModalEditProfile from './ModalEditProfile';
+import { Link } from 'react-router-dom';
+import DefaultStampsImage from './DefaultStampsImage';
 
 const Stamps = ({ items, image, showDetails }) => {
   console.log(items);
   return (
     <div>
-      <div style={{ color: "#FFF", fontWeight: "bold", paddingTop: 10 }}>
+      <div style={{ color: '#FFF', fontWeight: 'bold', paddingTop: 10 }}>
         My Stamps
       </div>
       <div
         style={{
           marginTop: 20,
           marginBottom: 20,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         {image ? (
           <div>
-            <img src={image} alt="Stamps" />
+            <img src={image} alt='Stamps' />
           </div>
         ) : (
           <DefaultStampsImage stampsItem={items} />
         )}
         <Button
-          size="sm"
-          color="ghost-warning"
+          size='sm'
+          color='ghost-warning'
           style={{
-            fontWeight: "bold",
+            fontWeight: 'bold',
             width: 150,
             marginBottom: 20,
           }}
@@ -59,8 +59,8 @@ class RewardsDetail extends Component {
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
-      pointIcon: "",
-      isEmenu: window.location.hostname.includes("emenu"),
+      pointIcon: '',
+      isEmenu: window.location.hostname.includes('emenu'),
       showStampsDetail: false,
     };
   }
@@ -70,14 +70,14 @@ class RewardsDetail extends Component {
 
     let response = await this.props.dispatch(
       CampaignAction.getCampaignPoints(
-        { history: "true" },
+        { history: 'true' },
         this.props.account.companyId
       )
     );
     if (response.ResultCode === 200) this.setState(response.Data);
 
     let pointIcon = this.props.setting.find((items) => {
-      return items.settingKey === "PointIcon";
+      return items.settingKey === 'PointIcon';
     });
     if (pointIcon) this.setState({ pointIcon: pointIcon.settingValue });
 
@@ -90,10 +90,10 @@ class RewardsDetail extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -117,20 +117,20 @@ class RewardsDetail extends Component {
           stamps.stampsItem &&
           stamps.stampsItem.length > 0 && (
             <div
-              className="profile-dashboard"
+              className='profile-dashboard'
               style={{
-                boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
+                boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
                 borderBottomRightRadius: 20,
                 borderBottomLeftRadius: 20,
-                border: "0px solid rgba(128, 128, 128, 0.5)",
+                border: '0px solid rgba(128, 128, 128, 0.5)',
               }}
             >
               {stamps.campaignStampsAnnouncement ? (
-                <div style={{ width: "100%", textAlign: "center" }}>
+                <div style={{ width: '100%', textAlign: 'center' }}>
                   <div
                     style={{
                       marginBottom: 10,
-                      color: "#FFF",
+                      color: '#FFF',
                       paddingTop: 10,
                       paddingLeft: 10,
                       paddingRight: 10,
@@ -139,14 +139,14 @@ class RewardsDetail extends Component {
                     Please complete your profile information to collect stamps
                   </div>
                   <Button
-                    color="warning"
+                    color='warning'
                     style={{
-                      color: "#FFF",
-                      fontWeight: "bold",
+                      color: '#FFF',
+                      fontWeight: 'bold',
                       marginBottom: 10,
                     }}
-                    data-toggle="modal"
-                    data-target="#edit-profile-modal"
+                    data-toggle='modal'
+                    data-target='#edit-profile-modal'
                   >
                     Complete Now
                   </Button>
@@ -177,12 +177,12 @@ class RewardsDetail extends Component {
     return (
       <div>
         {isEmenu && (
-          <Link to="/profile">
+          <Link to='/profile'>
             <div
-              className="background-theme"
-              style={{ marginLeft: 10, fontSize: 16, textAlign: "left" }}
+              className='background-theme'
+              style={{ marginLeft: 10, fontSize: 16, textAlign: 'left' }}
             >
-              <i className="fa fa-chevron-left"></i> Back
+              <i className='fa fa-chevron-left'></i> Back
             </div>
           </Link>
         )}
@@ -195,15 +195,15 @@ class RewardsDetail extends Component {
         {!loadingShow && campaignPointActive && totalPoint !== 0 && (
           <div
             style={{
-              boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-              border: "1px solid #CDCDCD",
+              boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+              border: '1px solid #CDCDCD',
             }}
           >
             {campaignPointAnnouncement ? (
               <div
                 style={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                   marginTop: 20,
                   paddingBottom: 10,
                 }}
@@ -211,7 +211,7 @@ class RewardsDetail extends Component {
                 <div
                   style={{
                     marginBottom: 10,
-                    color: "#c00a27",
+                    color: '#c00a27',
                     paddingTop: 10,
                     paddingLeft: 10,
                     paddingRight: 10,
@@ -221,10 +221,10 @@ class RewardsDetail extends Component {
                   points
                 </div>
                 <Button
-                  color="warning"
-                  style={{ color: "#FFF", fontWeight: "bold" }}
-                  data-toggle="modal"
-                  data-target="#edit-profile-modal"
+                  color='warning'
+                  style={{ color: '#FFF', fontWeight: 'bold' }}
+                  data-toggle='modal'
+                  data-target='#edit-profile-modal'
                 >
                   Complete Now
                 </Button>
@@ -232,35 +232,35 @@ class RewardsDetail extends Component {
             ) : (
               <div
                 style={{
-                  width: "100%",
-                  textAlign: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: '100%',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
-                {pointIcon && pointIcon !== "" && (
+                {pointIcon && pointIcon !== '' && (
                   <img
                     src={pointIcon}
-                    alt="my point"
-                    style={{ height: 100, objectFit: "contain", marginTop: 10 }}
+                    alt='my point'
+                    style={{ height: 100, objectFit: 'contain', marginTop: 10 }}
                   />
                 )}
                 <div
                   style={{
-                    textAlign: "center",
-                    fontWeight: "bold",
+                    textAlign: 'center',
+                    fontWeight: 'bold',
                     paddingTop: 10,
                   }}
                 >
                   My Points
                 </div>
                 <div
-                  className="text-value"
+                  className='text-value'
                   style={{
                     fontSize: 42,
-                    textAlign: "center",
+                    textAlign: 'center',
                     marginBottom: 20,
                     marginTop: 10,
                   }}
@@ -269,13 +269,13 @@ class RewardsDetail extends Component {
                 </div>
                 {pendingPoints && pendingPoints > 0 ? (
                   <div
-                    className="text text-warning-theme"
+                    className='text text-warning-theme'
                     style={{
                       fontSize: 14,
-                      border: "1px solid #DCDCDC",
+                      border: '1px solid #DCDCDC',
                       borderRadius: 5,
                       padding: 5,
-                      lineHeight: "17px",
+                      lineHeight: '17px',
                       marginTop: 10,
                       marginBottom: 20,
                       marginLeft: 10,
@@ -286,16 +286,16 @@ class RewardsDetail extends Component {
                   </div>
                 ) : null}
                 <Button
-                  size="sm"
-                  color="ghost-warning"
+                  size='sm'
+                  color='ghost-warning'
                   style={{
                     marginTop: -4,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     width: 150,
                     marginBottom: 20,
                   }}
-                  data-toggle="modal"
-                  data-target="#points-detail-modal"
+                  data-toggle='modal'
+                  data-target='#points-detail-modal'
                 >
                   Learn More
                 </Button>
@@ -306,21 +306,21 @@ class RewardsDetail extends Component {
 
         {!loadingShow && (
           <div>
-            <Link to="/voucher">
+            <Link to='/voucher'>
               <div
-                className="background-theme"
+                className='background-theme'
                 style={{
                   padding: 10,
                   marginTop: 30,
                   borderRadius: 10,
-                  border: "1px solid #CDCDCD",
-                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                  cursor: "pointer",
+                  border: '1px solid #CDCDCD',
+                  boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                  cursor: 'pointer',
                 }}
               >
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                    <i className="fa fa-gift" aria-hidden="true" /> My Rewards
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                    <i className='fa fa-gift' aria-hidden='true' /> My Rewards
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { CONSTANT } from "../../helpers";
+import { CONSTANT } from '../../helpers';
 const defaultState = {
   data: {},
 };
