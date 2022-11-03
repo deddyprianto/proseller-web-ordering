@@ -1,40 +1,74 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row, Button } from 'reactstrap';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
 import Shimmer from 'react-shimmer-effect';
 import { CampaignAction } from '../../redux/actions/CampaignAction';
 import ModalPointsDetail from './ModalPointsDetail';
 import ModalStampsDetail from './ModalStampsDetail';
 import ModalEditProfile from './ModalEditProfile';
 import { Link } from 'react-router-dom';
+import DefaultStampsImage from './DefaultStampsImage';
 
-class DetailRewords extends Component {
+const Stamps = ({ items, image, showDetails }) => {
+  console.log(items);
+  return (
+    <div>
+      <div style={{ color: '#FFF', fontWeight: 'bold', paddingTop: 10 }}>
+        My Stamps
+      </div>
+      <div
+        style={{
+          marginTop: 20,
+          marginBottom: 20,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        {image ? (
+          <div>
+            <img src={image} alt='Stamps' />
+          </div>
+        ) : (
+          <DefaultStampsImage stampsItem={items} />
+        )}
+        <Button
+          size='sm'
+          color='ghost-warning'
+          style={{
+            fontWeight: 'bold',
+            width: 150,
+            marginBottom: 20,
+          }}
+          onClick={() => showDetails()}
+        >
+          More Detail
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+class RewardsDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loadingShow: true,
-      dataStampsRasio: '0:0',
-      dataStamps: {},
-      campaignStampsAnnouncement: false,
-      stampsDetail: {},
       totalPoint: 0,
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
       pointIcon: '',
       isEmenu: window.location.hostname.includes('emenu'),
+      showStampsDetail: false,
     };
   }
 
   componentDidMount = async () => {
-    let response = await this.props.dispatch(
-      CampaignAction.getCampaignStamps()
-    );
-    if (response.ResultCode === 200) this.setState(response.Data);
+    this.props.dispatch(CampaignAction.getCampaignStamps());
 
-    response = await this.props.dispatch(
+    let response = await this.props.dispatch(
       CampaignAction.getCampaignPoints(
         { history: 'true' },
         this.props.account.companyId
@@ -68,7 +102,7 @@ class DetailRewords extends Component {
   };
 
   viewLeftPage = (loadingShow) => {
-    let { dataStamps, campaignStampsAnnouncement } = this.state;
+    const { stamps } = this.props;
 
     return (
       <div style={{ marginBottom: 10 }}>
@@ -78,136 +112,60 @@ class DetailRewords extends Component {
             {this.viewShimmer(50)}
           </div>
         )}
-        {!loadingShow && dataStamps && dataStamps.length > 0 && (
-          <div
-            className='profile-dashboard'
-            style={{
-              boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
-              borderBottomRightRadius: 20,
-              borderBottomLeftRadius: 20,
-              border: '0px solid rgba(128, 128, 128, 0.5)',
-            }}
-          >
-            {campaignStampsAnnouncement ? (
-              <div style={{ width: '100%', textAlign: 'center' }}>
-                <div
-                  style={{
-                    marginBottom: 10,
-                    color: '#FFF',
-                    paddingTop: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}
-                >
-                  Please complete your profile information to collect stamps
-                </div>
-                <Button
-                  color='warning'
-                  style={{
-                    color: '#FFF',
-                    fontWeight: 'bold',
-                    marginBottom: 10,
-                  }}
-                  data-toggle='modal'
-                  data-target='#edit-profile-modal'
-                >
-                  Complete Now
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <div
-                  style={{ color: '#FFF', fontWeight: 'bold', paddingTop: 10 }}
-                >
-                  My Stamps
-                </div>
-                <div
-                  style={{
-                    marginTop: 20,
-                    marginBottom: 20,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  {dataStamps.map((items, keys) => (
-                    <div
-                      key={keys}
-                      style={{
-                        marginBottom: 10,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        width: 50 * items.length,
-                      }}
-                    >
-                      {items.map((item, key) =>
-                        item.stampsStatus === '-' ? (
-                          <div
-                            key={key}
-                            style={{
-                              height: 40,
-                              width: 40,
-                              borderRadius: 40,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: '#FFF',
-                            }}
-                          >
-                            <StarBorderIcon
-                              className='customer-group-name'
-                              style={{ fontSize: 20 }}
-                            />
-                          </div>
-                        ) : (
-                          <div
-                            key={key}
-                            style={{
-                              height: 40,
-                              width: 40,
-                              borderRadius: 40,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: '#FFF',
-                            }}
-                          >
-                            <StarIcon
-                              style={{ color: '#ffa41b', fontSize: 20 }}
-                            />
-                          </div>
-                        )
-                      )}
-                    </div>
-                  ))}
-                  <Button
-                    size='sm'
-                    color='ghost-warning'
+        {!loadingShow &&
+          stamps &&
+          stamps.stampsItem &&
+          stamps.stampsItem.length > 0 && (
+            <div
+              className='profile-dashboard'
+              style={{
+                boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                borderBottomRightRadius: 20,
+                borderBottomLeftRadius: 20,
+                border: '0px solid rgba(128, 128, 128, 0.5)',
+              }}
+            >
+              {stamps.campaignStampsAnnouncement ? (
+                <div style={{ width: '100%', textAlign: 'center' }}>
+                  <div
                     style={{
-                      marginTop: -4,
+                      marginBottom: 10,
+                      color: '#FFF',
+                      paddingTop: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                    }}
+                  >
+                    Please complete your profile information to collect stamps
+                  </div>
+                  <Button
+                    color='warning'
+                    style={{
+                      color: '#FFF',
                       fontWeight: 'bold',
-                      width: 150,
-                      marginBottom: 20,
+                      marginBottom: 10,
                     }}
                     data-toggle='modal'
-                    data-target='#stamps-detail-modal'
+                    data-target='#edit-profile-modal'
                   >
-                    More Detail
+                    Complete Now
                   </Button>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              ) : (
+                <Stamps
+                  items={stamps.stampsItem}
+                  image={stamps.stampsImage}
+                  showDetails={() => this.setState({ showStampsDetail: true })}
+                ></Stamps>
+              )}
+            </div>
+          )}
       </div>
     );
   };
 
   viewRightPage = (loadingShow) => {
-    let {
+    const {
       campaignPointActive,
       totalPoint,
       campaignPointAnnouncement,
@@ -374,14 +332,9 @@ class DetailRewords extends Component {
   };
 
   render() {
-    let {
-      loadingShow,
-      dataStamps,
-      stampsDetail,
-      image,
-      detailPoint,
-      pendingPoints,
-    } = this.state;
+    const { loadingShow, detailPoint, pendingPoints, showStampsDetail } =
+      this.state;
+    const { stamps } = this.props;
     return (
       <div>
         <ModalPointsDetail
@@ -389,11 +342,14 @@ class DetailRewords extends Component {
           pendingPoints={pendingPoints}
           campaignDescription={this.props.campaign.campaignDescription}
         />
-        <ModalStampsDetail
-          data={dataStamps}
-          detail={stampsDetail}
-          image={image}
-        />
+        {stamps && showStampsDetail && (
+          <ModalStampsDetail
+            data={stamps.stampsItem}
+            detail={stamps}
+            image={stamps.stampsImage}
+            closeModal={() => this.setState({ showStampsDetail: false })}
+          />
+        )}
         <ModalEditProfile />
         <Row>
           <Col sm={6}>{this.viewLeftPage(loadingShow)}</Col>
@@ -409,6 +365,7 @@ const mapStateToProps = (state, ownProps) => {
     account: state.auth.account.idToken.payload,
     setting: state.order.setting,
     campaign: state.campaign.data,
+    stamps: state.customer.stamps,
   };
 };
 
@@ -416,4 +373,4 @@ const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailRewords);
+export default connect(mapStateToProps, mapDispatchToProps)(RewardsDetail);

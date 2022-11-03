@@ -3,6 +3,7 @@ const defaultState = {
   isOpen: true,
   myVoucher: null,
   fields: null,
+  stamps: null,
   showLoadingOnModal: false,
 };
 export default function reducer(state = defaultState, action) {
@@ -21,6 +22,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         fields: action.data,
+      };
+    case CONSTANT.GET_CAMPAIGN_STAMPS:
+      return {
+        ...state,
+        stamps: action.payload,
       };
     case 'SET_DEFAULT_PHONE_NUMBER':
       return {

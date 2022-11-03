@@ -16,7 +16,6 @@ class Voucher extends Component {
     this.state = {
       isMyVoucher: true,
       loadingShow: true,
-      dataStampsRasio: '0:0',
       dataStamps: {},
       campaignStampsAnnouncement: false,
       stampsDetail: {},

@@ -414,8 +414,8 @@ const HeaderWebOrdering = () => {
       }}
     >
       {logo && (
-        <Link>
-          <img style={styles.logoAndOuletName} src={logo} />
+        <Link to='/'>
+          <img style={styles.logoAndOuletName} alt={'Logo'} src={logo} />
         </Link>
       )}
       {renderOutletNamed()}

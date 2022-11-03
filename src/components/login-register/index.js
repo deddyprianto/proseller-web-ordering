@@ -32,6 +32,7 @@ const mapStateToProps = (state) => ({
   defaultPhoneNumber: state.customer.defaultPhoneNumber,
   defaultEmail: state.customer.defaultEmail,
   referralCode: state.auth.invitationCode,
+  orderingSetting: state.order.orderingSetting,
 });
 
 const mapDispatchToProps = (dispatch) => ({

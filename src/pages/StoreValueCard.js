@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 // import { Button } from "reactstrap";
-import loadable from "@loadable/component";
-import { connect } from "react-redux";
+import loadable from '@loadable/component';
+import { connect } from 'react-redux';
 // import config from "../config";
 import { CampaignAction } from '../redux/actions/CampaignAction';
 
-const MySVC = loadable(() => import("../components/svc/MySVC"));
+const MySVC = loadable(() => import('../components/svc/MySVC'));
 // const BuySVC = loadable(() => import("../components/svc/BuySVC"));
 
 class StoreValueCard extends Component {
@@ -15,24 +15,28 @@ class StoreValueCard extends Component {
     this.state = {
       isMySVC: true,
       loadingShow: true,
-      dataStampsRasio: "0:0",
       dataStamps: {},
       campaignStampsAnnouncement: false,
       stampsDetail: {},
       totalPoint: 0,
       campaignPointActive: {},
       campaignPointAnnouncement: false,
-      detailPoint: null
+      detailPoint: null,
     };
   }
 
   componentDidMount = async () => {
-    await this.props.dispatch(CampaignAction.getCampaignPoints({ history: "true" }, this.props.account.companyId));
-  }
+    await this.props.dispatch(
+      CampaignAction.getCampaignPoints(
+        { history: 'true' },
+        this.props.account.companyId
+      )
+    );
+  };
 
-  componentDidUpdate(prevProps){
-    if(prevProps.pointData !== this.props.pointData){
-      this.setState(this.props.pointData)
+  componentDidUpdate(prevProps) {
+    if (prevProps.pointData !== this.props.pointData) {
+      this.setState(this.props.pointData);
     }
   }
 
@@ -40,34 +44,32 @@ class StoreValueCard extends Component {
     // let {isMySVC, totalPoint} = this.state;
     return (
       <div
-        className="col-full"
+        className='col-full'
         style={{
           // marginTop: config.prefix === "emenu" ? 100 : 160,
           marginTop: 100,
           // marginBottom: 20,
         }}
       >
-        <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -40,
-                display: "flex",
+                display: 'flex',
                 height: 40,
-                justifyContent: "space-between",
-                alignItems: "center"
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
-              className="background-theme"
+              className='background-theme'
             >
               <Link to={'/profile'}>
-                <div
-                  style={{ marginLeft: 10, fontSize: 16 }}
-                >
-                  <i className="fa fa-chevron-left"></i> Back
+                <div style={{ marginLeft: 10, fontSize: 16 }}>
+                  <i className='fa fa-chevron-left'></i> Back
                 </div>
               </Link>
             </div>
@@ -96,9 +98,9 @@ class StoreValueCard extends Component {
               </Button>
             </div> */}
             <main
-              id="main"
-              className="site-main"
-              style={{ textAlign: "center" }}
+              id='main'
+              className='site-main'
+              style={{ textAlign: 'center' }}
             >
               <div style={{ marginTop: 20 }}>
                 <MySVC history={this.props.history} />
@@ -118,7 +120,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 

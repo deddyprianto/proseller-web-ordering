@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 
 import config from '../config';
 
-const DetailRewords = loadable(() =>
-  import('../components/profile/DetailRewords')
+const RewardsDetail = loadable(() =>
+  import('../components/profile/RewardsDetail')
 );
 const DetailProfile = loadable(() =>
   import('../components/profile/DetailProfile')
@@ -53,20 +53,22 @@ class Profile extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    let isProfile = true;
-    try {
-      if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
-      this.setState({ isProfile });
-    } catch (e) {
-      console.log(e);
-    }
-
     if (this.props !== prevProps) {
       let enableOrdering = this.props.setting.find((items) => {
         return items.settingKey === 'EnableOrdering';
       });
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
+      }
+      if (this.props.location.pathname !== prevProps.location.pathname) {
+        let isProfile = true;
+        try {
+          if (window.location.hash.split('#')[1] === '/rewards')
+            isProfile = false;
+          this.setState({ isProfile });
+        } catch (e) {
+          console.log(e);
+        }
       }
     }
   }
@@ -145,7 +147,7 @@ class Profile extends Component {
               className='site-main'
               style={{ textAlign: 'center' }}
             >
-              {isProfile ? <DetailProfile /> : <DetailRewords />}
+              {isProfile ? <DetailProfile /> : <RewardsDetail />}
             </main>
           </div>
         </div>
@@ -156,12 +158,12 @@ class Profile extends Component {
 
 Profile.defaultProps = {
   isLoggedIn: false,
-  setting: {},
+  setting: [],
 };
 
 Profile.propTypes = {
   isLoggedIn: PropTypes.bool,
-  setting: PropTypes.object,
+  setting: PropTypes.array,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

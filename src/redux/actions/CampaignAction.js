@@ -2,83 +2,52 @@ import { CONSTANT } from '../../helpers';
 import { CRMService } from '../../Services/CRMService';
 import _ from 'lodash';
 
-function getCampaignStamps(payload = null) {
+function getCampaignStamps() {
   return async (dispatch) => {
-    let response = await CRMService.api(
+    const response = await CRMService.api(
       'GET',
-      payload,
+      null,
       'customer/stamps',
       'bearer'
     );
-    if (response.ResultCode >= 400 || response.resultCode >= 400)
-      console.log(response);
-    else {
-      if (
-        response.Data &&
-        response.Data.stamps &&
-        response.Data.stamps.stampsItem
-      ) {
-        let dataStamps = [],
-          isi = [],
-          stampsTrueItem,
-          stampsDetail;
-        for (let i = 1; i <= response.Data.stamps.stampsItem.length; i++) {
-          isi.push(response.Data.stamps.stampsItem[i - 1]);
-          if (i % 5 === 0) {
-            dataStamps.push(isi);
-            isi = [];
-          }
-          if (i === response.Data.stamps.stampsItem.length) {
-            if (isi.length > 0) dataStamps.push(isi);
-          }
-        }
-        stampsDetail = {
-          stampsTitle: response.Data.stamps.stampsTitle,
-          stampsDesc: response.Data.stamps.stampsDesc,
-          stampsSubTitle: response.Data.stamps.stampsSubTitle,
-          maxStampsItemPerVisit: response.Data.stamps.maxStampsItemPerVisit,
-          todayStampsCount: response.Data.stamps.todayStampsCount,
-          maxStampsPerDay: response.Data.stamps.maxStampsPerDay,
-          expiryDate: response.Data.expiryDate,
-        };
-        stampsTrueItem = _.filter(
-          response.Data.stamps.stampsItem,
-          _.iteratee(['stampsStatus', true])
-        );
-
-        let dataStampsRatio = `${stampsTrueItem.length}":"${response.Data.stamps.stampsItem.length}`;
-        let campaignStampsAnnouncement = false;
-
-        if (
-          response.Data.trigger &&
-          response.Data.trigger.campaignTrigger === 'COMPLETE_PROFILE' &&
-          !response.Data.trigger.status
-        ) {
-          campaignStampsAnnouncement = true;
-        }
-
-        if (
-          dataStamps &&
-          dataStampsRatio &&
-          dataStamps.length > 0 &&
-          dataStamps[0][dataStampsRatio.split(':')[0]] &&
-          dataStamps[0][dataStampsRatio.split(':')[0]].reward
-        ) {
-          let image =
-            dataStamps[0][dataStampsRatio.split(':')[0]].reward.imageURL;
-          this.setState({ image });
-        }
-
-        response.Data = {
-          dataStampsRasio: dataStampsRatio,
-          dataStamps,
-          campaignStampsAnnouncement,
-          stampsDetail,
-        };
-      }
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log('Error on getCampaignStamps:', response);
+      dispatch(setData(null, CONSTANT.GET_CAMPAIGN_STAMPS));
     }
-    dispatch(setData(response, CONSTANT.KEY_GET_CAMPAIGN_STAMPS));
-    return response;
+
+    if (
+      response.data &&
+      response.data.stamps &&
+      response.data.stamps.stampsItem
+    ) {
+      const { stamps, expiryDate, trigger } = response.data;
+      const { stampsTitle, stampsDesc, stampsSubTitle, stampsItem } = stamps;
+      const totalStampsEarned = stampsItem.reduce((acc, item) => {
+        if (item.stampsStatus === true) {
+          return acc + 1;
+        }
+        return acc;
+      }, 0);
+
+      const campaignStampsAnnouncement =
+        trigger &&
+        trigger.campaignTrigger === 'COMPLETE_PROFILE' &&
+        !trigger.status;
+
+      const stampsImage = stampsItem[totalStampsEarned - 1].reward.imageURL;
+
+      const payload = {
+        totalStampsEarned,
+        stampsTitle,
+        stampsDesc,
+        stampsSubTitle,
+        expiryDate,
+        stampsItem,
+        campaignStampsAnnouncement,
+        ...(stampsImage && { stampsImage }),
+      };
+      dispatch({ type: CONSTANT.GET_CAMPAIGN_STAMPS, payload });
+    }
   };
 }
 
