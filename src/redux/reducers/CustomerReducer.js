@@ -4,6 +4,7 @@ const defaultState = {
   myVoucher: null,
   fields: null,
   stamps: null,
+  showLoadingOnModal: false,
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -37,6 +38,8 @@ export default function reducer(state = defaultState, action) {
         ...state,
         defaultEmail: action.data,
       };
+    case CONSTANT.LOADING_ON_MODAL_REGISTER:
+      return { ...state, showLoadingOnModal: action.data };
     default:
       return state;
   }

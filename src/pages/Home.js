@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import { useHistory } from 'react-router-dom';
+import { OutletAction } from 'redux/actions/OutletAction';
 import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
@@ -13,6 +14,8 @@ import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
 import { CONSTANT } from 'helpers';
+
+const base64 = require('base-64');
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -57,6 +60,33 @@ const Home = ({ ...props }) => {
     },
   };
   const isEmenu = window.location.hostname.includes('emenu');
+
+  const isLanding = window.location.href.includes('landing');
+
+  useEffect(() => {
+    const loadData = async () => {
+      const href = window.location.href;
+      const hrefSplit = href.split('input=');
+      const key = hrefSplit[1];
+
+      const keyDecoded = base64.decode(decodeURI(key));
+      const keyDecodedSplit = keyDecoded.split('::');
+      const outletId = keyDecodedSplit[1];
+
+      if (outletId) {
+        const outletById = await props.dispatch(
+          OutletAction.getOutletById(outletId)
+        );
+        if (outletById) {
+          await props.dispatch(OutletAction.setDefaultOutlet(outletById));
+          history.push('/');
+        }
+      }
+    };
+    if (isLanding) {
+      loadData();
+    }
+  }, [window.location.href, isLanding]);
 
   useEffect(() => {
     if (isEmptyObject(props.defaultOutlet)) {

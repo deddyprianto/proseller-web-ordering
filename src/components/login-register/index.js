@@ -13,6 +13,7 @@ import { lsLoad, lsStore } from '../../helpers/localStorage';
 
 import config from '../../config';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { CONSTANT } from 'helpers';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2');
@@ -960,6 +961,10 @@ const LoginRegister = (props) => {
   };
 
   const handleEmailRegister = async () => {
+    props.dispatch({
+      type: CONSTANT.LOADING_ON_MODAL_REGISTER,
+      data: true,
+    });
     try {
       setIsLoading(true);
       const fields = props.fields || [];
@@ -1106,6 +1111,10 @@ const LoginRegister = (props) => {
       }
       Swal.fire('Oppss!', error, 'error');
     }
+    props.dispatch({
+      type: CONSTANT.LOADING_ON_MODAL_REGISTER,
+      data: false,
+    });
   };
 
   const handleClear = () => {

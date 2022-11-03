@@ -301,7 +301,10 @@ const Portal = ({
         <Button
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
-          onClick={() => handleEmailCheck()}
+          onClick={() => {
+            setIsLoading(true);
+            handleEmailCheck();
+          }}
         >
           Next
         </Button>
@@ -373,7 +376,7 @@ const Portal = ({
         icon: 'info',
         title: 'You are currently using guest checkout mode',
         allowOutsideClick: false,
-        confirmButtonText: 'Oke',
+        confirmButtonText: 'Ok',
         confirmButtonColor: backgroundTheme.primary,
         customClass: {
           confirmButton: styles.buttonSweetAlert,
