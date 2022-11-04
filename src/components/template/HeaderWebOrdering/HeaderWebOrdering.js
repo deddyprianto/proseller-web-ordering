@@ -106,7 +106,7 @@ const useStyles = () => {
       color: color.primary,
     },
     logoAndOuletName: {
-      width: mobileSize ? 'fit-content' : '9.5em',
+      width: mobileSize ? '125px' : '9.5em',
       height: 50,
     },
   };
