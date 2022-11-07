@@ -9,8 +9,10 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlay from 'react-loading-overlay';
 import ArrowLeftIcons from 'assets/images/panah.png';
 import IconsWrong from 'assets/images/IconsWrong.png';
+import screen from 'hooks/useWindowSize';
 
 const TrackOrder = () => {
+  const responsiveDesign = screen();
   const [isLoading, setIsLoading] = useState(false);
   const inputFieldRef = useRef(null);
   const dispatch = useDispatch();
@@ -93,7 +95,16 @@ const TrackOrder = () => {
   };
   const headerTrackOrder = () => {
     return (
-      <div className={style.containerHeader}>
+      <div
+        style={{
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateRows: '1fr',
+          paddingTop: matches ? '20px' : '7.5rem',
+          marginTop: matches ? '20px' : '0px',
+        }}
+      >
         {trackOrderNotif && renderNotif()}
         <img
           style={{ paddingLeft: '10px' }}
@@ -111,14 +122,31 @@ const TrackOrder = () => {
           width: matches ? '30%' : '100%',
           marginLeft: 'auto',
           marginRight: 'auto',
-          backgroundColor: 'white',
-          borderRadius: '8px',
+          height: matches ? '100vh' : '85vh',
           boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         }}
       >
-        <div className={style.container}>
-          {headerTrackOrder()}
-          <div className={style.containerMain}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: matches ? '1fr 100px' : '1fr 65px',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."\n    "."',
+            height: matches ? '100vh' : '100%',
+          }}
+        >
+          <div
+            style={{
+              marginTop: matches && '5rem',
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'column',
+              overflowY: 'auto',
+            }}
+          >
+            {headerTrackOrder()}
             <img
               src={TrackOrderIcon}
               alt='icon search'
@@ -139,7 +167,20 @@ const TrackOrder = () => {
               </div>
             </div>
           </div>
-          <div className={style.bottomFooter}>
+
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: matches
+                ? 'flex-end'
+                : responsiveDesign.height < 600
+                ? 'center'
+                : 'flex-start',
+              marginBottom: matches ? '5px' : '0px',
+            }}
+          >
             <button
               style={{
                 backgroundColor: color.primary,
@@ -151,13 +192,13 @@ const TrackOrder = () => {
                 color: 'white',
                 padding: '10px',
                 cursor: 'pointer',
-                marginBottom: '10px',
               }}
               onClick={handleTrackOrder}
             >
               Track Order
             </button>
           </div>
+          <div style={{ width: '100%', height: '100%' }} />
         </div>
       </div>
     </LoadingOverlay>

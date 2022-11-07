@@ -9,8 +9,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 
 import { useSelector } from 'react-redux';
+import screen from 'hooks/useWindowSize';
 
 const FooterWebOrdering = () => {
+  const responsiveDesign = screen();
   const location = useLocation();
   const allState = useSelector((state) => state);
   const navBar = useSelector((state) => state.theme.menu.navBar);
@@ -37,7 +39,7 @@ const FooterWebOrdering = () => {
       setValue(0);
     }
   }, [location.pathname]);
-  
+
   const menuIcon = (color) => {
     return (
       <svg width='25' height='24' viewBox='0 0 19 18'>
@@ -139,6 +141,7 @@ const FooterWebOrdering = () => {
       height: '4.6em',
       zIndex: 10,
       backgroundColor: allState.theme.color.navigationColor,
+      display: responsiveDesign.height < 500 && 'none',
     },
     bottomNav: {
       height: 70,

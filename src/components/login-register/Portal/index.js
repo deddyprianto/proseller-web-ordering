@@ -354,7 +354,7 @@ const Portal = ({
         iconColor: '#333',
         title: 'You are currently using guest checkout mode',
         allowOutsideClick: false,
-        confirmButtonText: 'Ok',
+        confirmButtonText: 'OK',
         confirmButtonColor: backgroundTheme.primary,
         customClass: {
           confirmButton: styles.buttonSweetAlert,
@@ -376,7 +376,7 @@ const Portal = ({
         icon: 'info',
         title: 'You are currently using guest checkout mode',
         allowOutsideClick: false,
-        confirmButtonText: 'Ok',
+        confirmButtonText: 'OK',
         confirmButtonColor: backgroundTheme.primary,
         customClass: {
           confirmButton: styles.buttonSweetAlert,

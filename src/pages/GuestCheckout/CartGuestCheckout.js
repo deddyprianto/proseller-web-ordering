@@ -50,6 +50,7 @@ import iconDown from 'assets/images/IconDown.png';
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import SearchInput, { createFilter } from 'react-search-input';
 import search from 'assets/images/search.png';
+import screen from 'hooks/useWindowSize';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -65,6 +66,7 @@ const useWindowSize = () => {
 };
 
 const CartGuestCheckout = () => {
+  const responsiveDesign = screen();
   const [productSpecific, setProductSpecific] = useState();
   const [valueSearchCode, setValueSearchCode] = useState('');
   const [productDetailSpesific, setProductDetailSpesific] = useState();
@@ -244,7 +246,7 @@ const CartGuestCheckout = () => {
       margin: 0,
       top: 'auto',
       right: 'auto',
-      bottom: 70,
+      bottom: responsiveDesign.height < 500 ? 0 : 70,
       left: 'auto',
       position: 'fixed',
       padding: '0px 10px',
