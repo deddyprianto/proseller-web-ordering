@@ -130,7 +130,9 @@ const TrackOrder = () => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: matches ? '1fr 100px' : '1fr 65px',
+            gridTemplateRows: matches
+              ? '1fr 100px'
+              : `1fr ${responsiveDesign.height < 600 ? '45px' : '65px'}`,
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '"."\n    "."\n    "."',
