@@ -963,203 +963,195 @@ const ThankYoutPage = () => {
   };
 
   return (
-    <div style={{ width: '100vw' }}>
+    <div
+      style={{
+        width: matches ? '40%' : '100%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        backgroundColor: 'white',
+        height: '92vh',
+      }}
+    >
       <div
         style={{
-          width: matches ? '40%' : '100%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          backgroundColor: 'white',
-          borderRadius: '8px',
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gridTemplateRows: '1fr 70px',
+          width: '100%',
+          height: '100%',
         }}
       >
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr',
-            gridTemplateRows: '1fr 70px',
-            gap: '0px 0px',
-            height: '100vh',
             width: '100%',
-            rowGap: '10px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            overflowY: 'auto',
+            backgroundColor: 'white',
+            padding: '0 10px',
           }}
         >
-          <div
-            style={{
-              width: '100%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              overflowY: 'auto',
-              backgroundColor: 'white',
-              padding: '0 10px',
-            }}
-          >
-            {renderStatusCheck(
-              copyToClipboard,
-              setCopyToClipboard,
-              setShowModalIfCopied,
-              showModalIfCopied,
-              color,
-              basket?.trackorder
-            )}
-            {renderCartProduct(basket?.trackorder, color)}
+          {renderStatusCheck(
+            copyToClipboard,
+            setCopyToClipboard,
+            setShowModalIfCopied,
+            showModalIfCopied,
+            color,
+            basket?.trackorder
+          )}
+          {renderCartProduct(basket?.trackorder, color)}
 
-            {renderCartProductList(
-              basket?.trackorder,
-              handleCurrency,
-              color,
-              setExpandAccordion,
-              expandAccordion,
-              matches
-            )}
-          </div>
-
-          <div
-            style={{
-              backgroundColor: 'white',
-              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-              width: '100%',
-            }}
-          >
-            {renderGrandTotalForGuestCheckMode(
-              history,
-              color,
-              handleCurrency,
-              setOpenDrawerBottom,
-              basket?.trackorder
-            )}
-          </div>
+          {renderCartProductList(
+            basket?.trackorder,
+            handleCurrency,
+            color,
+            setExpandAccordion,
+            expandAccordion,
+            matches
+          )}
         </div>
-        {showModal && (
-          <Dialog
-            open={showModal}
-            onClose={() => setShowModal(false)}
-            aria-labelledby='alert-dialog-title'
-            aria-describedby='alert-dialog-description'
-          >
-            <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
-              <DialogTitle
-                id='alert-dialog-title'
-                style={{ display: 'flex', justifyContent: 'center' }}
-              >
-                <p style={{ fontSize: '16px', fontWeight: 700 }}>
-                  Order Placed
+
+        <div
+          style={{
+            backgroundColor: 'white',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            width: '100%',
+          }}
+        >
+          {renderGrandTotalForGuestCheckMode(
+            history,
+            color,
+            handleCurrency,
+            setOpenDrawerBottom,
+            basket?.trackorder
+          )}
+        </div>
+      </div>
+      {showModal && (
+        <Dialog
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+            <DialogTitle
+              id='alert-dialog-title'
+              style={{ display: 'flex', justifyContent: 'center' }}
+            >
+              <p style={{ fontSize: '16px', fontWeight: 700 }}>Order Placed</p>
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id='alert-dialog-description'>
+                <p className={style.title} style={{ textAlign: 'center' }}>
+                  Your order has been placed. Please copy the Ref No. below to
+                  tracking your order
                 </p>
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id='alert-dialog-description'>
-                  <p className={style.title} style={{ textAlign: 'center' }}>
-                    Your order has been placed. Please copy the Ref No. below to
-                    tracking your order
-                  </p>
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions
-                style={{ display: 'flex', flexDirection: 'column' }}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions style={{ display: 'flex', flexDirection: 'column' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  flexDirection: 'column',
+                }}
               >
                 <div
                   style={{
                     display: 'flex',
                     justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    flexDirection: 'column',
                   }}
                 >
+                  <p
+                    style={{
+                      color: color.primary,
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      margin: 0,
+                      padding: 0,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {basket?.trackorder?.data?.transactionRefNo}
+                  </p>
+                  <div style={{ marginLeft: '10px' }}>
+                    <CopyToClipboard
+                      text={basket?.trackorder?.data?.transactionRefNo}
+                      onCopy={(text, result) => {
+                        setCopyToClipboard(text);
+                        setShowModalIfCopied(result);
+                      }}
+                    >
+                      <img src={IconCopy} />
+                    </CopyToClipboard>
+                  </div>
+                </div>
+                {showModalIfCopied && (
                   <div
                     style={{
                       display: 'flex',
                       justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: '5px',
                     }}
                   >
+                    <div>
+                      <img
+                        src={IconCheckClipBoard}
+                        width={20}
+                        height={20}
+                        style={{ marginRight: '5px' }}
+                      />
+                    </div>
                     <p
                       style={{
-                        color: color.primary,
+                        fontSize: '14px',
                         fontWeight: 700,
-                        fontSize: '16px',
                         margin: 0,
                         padding: 0,
-                        textAlign: 'center',
+                        color: 'green',
                       }}
                     >
-                      {basket?.trackorder?.data?.transactionRefNo}
+                      Ref No has been copied
                     </p>
-                    <div style={{ marginLeft: '10px' }}>
-                      <CopyToClipboard
-                        text={basket?.trackorder?.data?.transactionRefNo}
-                        onCopy={(text, result) => {
-                          setCopyToClipboard(text);
-                          setShowModalIfCopied(result);
-                        }}
-                      >
-                        <img src={IconCopy} />
-                      </CopyToClipboard>
-                    </div>
                   </div>
-                  {showModalIfCopied && (
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginTop: '5px',
-                      }}
-                    >
-                      <div>
-                        <img
-                          src={IconCheckClipBoard}
-                          width={20}
-                          height={20}
-                          style={{ marginRight: '5px' }}
-                        />
-                      </div>
-                      <p
-                        style={{
-                          fontSize: '14px',
-                          fontWeight: 700,
-                          margin: 0,
-                          padding: 0,
-                          color: 'green',
-                        }}
-                      >
-                        Ref No has been copied
-                      </p>
-                    </div>
-                  )}
-                </div>
+                )}
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                }}
+              >
                 <div
+                  onClick={() => setShowModal(false)}
                   style={{
-                    width: '100%',
+                    marginTop: '20px',
+                    backgroundColor: color.primary,
+                    borderRadius: '10px',
+                    width: '97%',
+                    padding: '5px 0',
+                    textAlign: 'center',
+                    color: 'white',
                   }}
                 >
-                  <div
-                    onClick={() => setShowModal(false)}
-                    style={{
-                      marginTop: '20px',
-                      backgroundColor: color.primary,
-                      borderRadius: '10px',
-                      width: '97%',
-                      padding: '5px 0',
-                      textAlign: 'center',
-                      color: 'white',
-                    }}
-                  >
-                    Done
-                  </div>
+                  Done
                 </div>
-              </DialogActions>
-            </LoadingOverlayCustom>
-          </Dialog>
-        )}
-        <Drawer
-          anchor='bottom'
-          open={openDrawerBottom}
-          onClose={() => setOpenDrawerBottom((prev) => !prev)}
-        >
-          {renderSubtotalForGuestCheckMode()}
-        </Drawer>
-        {showConfetti && <Confetti />}
-      </div>
+              </div>
+            </DialogActions>
+          </LoadingOverlayCustom>
+        </Dialog>
+      )}
+      <Drawer
+        anchor='bottom'
+        open={openDrawerBottom}
+        onClose={() => setOpenDrawerBottom((prev) => !prev)}
+      >
+        {renderSubtotalForGuestCheckMode()}
+      </Drawer>
+      {showConfetti && <Confetti />}
     </div>
   );
 };
