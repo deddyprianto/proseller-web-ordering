@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -61,13 +62,15 @@ const ProductRemoveCartModal = ({
       paddingTop: 20,
     },
   };
-
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRemoveProductInCart = async () => {
     setIsLoading(true);
     await props.dispatch(OrderAction.processRemoveCart(selectedProductRemove));
-
+    if (props.basket.details.length === 1) {
+      history.push('/');
+    }
     setIsLoading(false);
     handleClose();
   };

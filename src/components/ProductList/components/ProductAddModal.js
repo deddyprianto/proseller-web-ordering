@@ -39,6 +39,7 @@ const mapStateToProps = (state) => {
     basketGuestCO: state.guestCheckoutCart.data,
     refreshData: state.guestCheckoutCart.refreshData,
     basketUpdate: state.order.basketUpdate,
+    isCartDeleted: state.guestCheckoutCart.isCartDeleted,
   };
 };
 
@@ -767,6 +768,11 @@ const ProductAddModal = ({
           );
         }
       }
+      if (!isEmptyObject(basket)) {
+        if (basket.details.length === 1) {
+          history.push('/');
+        }
+      }
     } else {
       await props.dispatch(
         OrderAction.processAddCart(props.defaultOutlet, productAdd)
@@ -788,13 +794,16 @@ const ProductAddModal = ({
     );
     if (response?.resultCode === 200) {
       props.dispatch({
-        type: CONSTANT.GUEST_MODE_BASKET,
-        payload: { message: 'Cart it empty.' },
+        type: CONSTANT.IS_CART_DELETED,
+        payload: !props.isCartDeleted,
       });
       handleClose();
       handleClear();
       setIsLoading(false);
-      history.push('/');
+
+      if (props.basketGuestCO.details.length === 1) {
+        history.push('/');
+      }
     } else {
       alert('Failed');
     }

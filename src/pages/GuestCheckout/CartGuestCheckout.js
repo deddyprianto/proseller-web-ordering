@@ -65,6 +65,9 @@ const useWindowSize = () => {
 };
 
 const CartGuestCheckout = () => {
+  const [showErrorName, setShowErrorName] = useState(false);
+  const [showErrorPhone, setShowErrorPhone] = useState(false);
+  const [showErrorEmail, setShowErrorEmail] = useState(false);
   const [productSpecific, setProductSpecific] = useState();
   const [valueSearchCode, setValueSearchCode] = useState('');
   const [productDetailSpesific, setProductDetailSpesific] = useState();
@@ -108,6 +111,9 @@ const CartGuestCheckout = () => {
   );
   const modalDeliveryAddress = useSelector(
     (state) => state.guestCheckoutCart.modalDeliveryAddress
+  );
+  const isCartDeleted = useSelector(
+    (state) => state.guestCheckoutCart.isCartDeleted
   );
 
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -157,6 +163,7 @@ const CartGuestCheckout = () => {
     refreshData,
     saveEditResponse,
     orderingModeGuestCheckout,
+    isCartDeleted,
   ]);
 
   useEffect(() => {
@@ -394,39 +401,57 @@ const CartGuestCheckout = () => {
         val.unshift(phoneCountryCode);
         return { ...formik.values, phoneNo: val.join('') };
       };
-      const objectSubmitCart = {
-        cartID: basket.cartID,
-        outletID: basket.outletID,
-        guestID: basket.guestID,
-        customerDetails: {
-          name: finalVal().name,
-          email: finalVal().email,
-          phoneNumber: finalVal().phoneNo,
-        },
-        payments: [
-          {
-            paymentType: companyInfo.paymentTypes[0].paymentID,
-            paymentID: companyInfo.paymentTypes[0].paymentID,
-          },
-        ],
-        deliveryAddress: {},
-        orderingMode: orderingModeGuestCheckout,
-        tableNo: '-',
-        clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-        orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-        orderActionTime: time
-          ? time
-          : new Date().getHours() + ':' + new Date().getMinutes(),
-        orderActionTimeSlot: timeslot ? timeslot : null,
-      };
-      setIsLoading(true);
-      const response = await dispatch(
-        OrderAction.paymentGuestMode(objectSubmitCart)
-      );
-      if (response.resultCode === 200) {
-        window.location.href = response.data.url;
+
+      if (formik.values.name === '') {
+        setShowErrorName(true);
+      } else {
+        setShowErrorName(false);
       }
-      setIsLoading(false);
+      if (formik.values.phoneNo === '') {
+        setShowErrorPhone(true);
+      } else {
+        setShowErrorPhone(false);
+      }
+      if (formik.values.email === '') {
+        setShowErrorEmail(true);
+      } else {
+        setShowErrorEmail(false);
+      }
+      if (formik.values.name && formik.values.phoneNo && formik.values.email) {
+        const objectSubmitCart = {
+          cartID: basket.cartID,
+          outletID: basket.outletID,
+          guestID: basket.guestID,
+          customerDetails: {
+            name: finalVal().name,
+            email: finalVal().email,
+            phoneNumber: finalVal().phoneNo,
+          },
+          payments: [
+            {
+              paymentType: companyInfo.paymentTypes[0].paymentID,
+              paymentID: companyInfo.paymentTypes[0].paymentID,
+            },
+          ],
+          deliveryAddress: {},
+          orderingMode: orderingModeGuestCheckout,
+          tableNo: '-',
+          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
+          orderActionTime: time
+            ? time
+            : new Date().getHours() + ':' + new Date().getMinutes(),
+          orderActionTimeSlot: timeslot ? timeslot : null,
+        };
+        setIsLoading(true);
+        const response = await dispatch(
+          OrderAction.paymentGuestMode(objectSubmitCart)
+        );
+        if (response.resultCode === 200) {
+          window.location.href = response.data.url;
+        }
+        setIsLoading(false);
+      }
     } else if (orderingModeGuestCheckout === 'STOREPICKUP') {
       const finalVal = () => {
         const convertPhoneNumberTostring = formik.values.phoneNo.toString();
@@ -434,39 +459,56 @@ const CartGuestCheckout = () => {
         val.unshift(phoneCountryCode);
         return { ...formik.values, phoneNo: val.join('') };
       };
-      const objectSubmitCart = {
-        cartID: basket.cartID,
-        outletID: basket.outletID,
-        guestID: basket.guestID,
-        customerDetails: {
-          name: finalVal().name,
-          email: finalVal().email,
-          phoneNumber: finalVal().phoneNo,
-        },
-        payments: [
-          {
-            paymentType: companyInfo.paymentTypes[0].paymentID,
-            paymentID: companyInfo.paymentTypes[0].paymentID,
-          },
-        ],
-        deliveryAddress: {},
-        orderingMode: orderingModeGuestCheckout,
-        tableNo: '-',
-        clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-        orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-        orderActionTime: time
-          ? time
-          : new Date().getHours() + ':' + new Date().getMinutes(),
-        orderActionTimeSlot: timeslot ? timeslot : null,
-      };
-      setIsLoading(true);
-      const response = await dispatch(
-        OrderAction.paymentGuestMode(objectSubmitCart)
-      );
-      if (response.resultCode === 200) {
-        window.location.href = response.data.url;
+      if (formik.values.name === '') {
+        setShowErrorName(true);
+      } else {
+        setShowErrorName(false);
       }
-      setIsLoading(false);
+      if (formik.values.phoneNo === '') {
+        setShowErrorPhone(true);
+      } else {
+        setShowErrorPhone(false);
+      }
+      if (formik.values.email === '') {
+        setShowErrorEmail(true);
+      } else {
+        setShowErrorEmail(false);
+      }
+      if (formik.values.name && formik.values.phoneNo && formik.values.email) {
+        const objectSubmitCart = {
+          cartID: basket.cartID,
+          outletID: basket.outletID,
+          guestID: basket.guestID,
+          customerDetails: {
+            name: finalVal().name,
+            email: finalVal().email,
+            phoneNumber: finalVal().phoneNo,
+          },
+          payments: [
+            {
+              paymentType: companyInfo.paymentTypes[0].paymentID,
+              paymentID: companyInfo.paymentTypes[0].paymentID,
+            },
+          ],
+          deliveryAddress: {},
+          orderingMode: orderingModeGuestCheckout,
+          tableNo: '-',
+          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
+          orderActionTime: time
+            ? time
+            : new Date().getHours() + ':' + new Date().getMinutes(),
+          orderActionTimeSlot: timeslot ? timeslot : null,
+        };
+        setIsLoading(true);
+        const response = await dispatch(
+          OrderAction.paymentGuestMode(objectSubmitCart)
+        );
+        if (response.resultCode === 200) {
+          window.location.href = response.data.url;
+        }
+        setIsLoading(false);
+      }
     } else if (orderingModeGuestCheckout === 'DINEIN') {
       const finalVal = () => {
         const convertPhoneNumberTostring = formik.values.phoneNo.toString();
@@ -474,39 +516,56 @@ const CartGuestCheckout = () => {
         val.unshift(phoneCountryCode);
         return { ...formik.values, phoneNo: val.join('') };
       };
-      const objectSubmitCart = {
-        cartID: basket.cartID,
-        outletID: basket.outletID,
-        guestID: basket.guestID,
-        customerDetails: {
-          name: finalVal().name,
-          email: finalVal().email,
-          phoneNumber: finalVal().phoneNo,
-        },
-        payments: [
-          {
-            paymentType: companyInfo.paymentTypes[0].paymentID,
-            paymentID: companyInfo.paymentTypes[0].paymentID,
-          },
-        ],
-        deliveryAddress: {},
-        orderingMode: orderingModeGuestCheckout,
-        tableNo: '-',
-        clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-        orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-        orderActionTime: time
-          ? time
-          : new Date().getHours() + ':' + new Date().getMinutes(),
-        orderActionTimeSlot: timeslot ? timeslot : null,
-      };
-      setIsLoading(true);
-      const response = await dispatch(
-        OrderAction.paymentGuestMode(objectSubmitCart)
-      );
-      if (response.resultCode === 200) {
-        window.location.href = response.data.url;
+      if (formik.values.name === '') {
+        setShowErrorName(true);
+      } else {
+        setShowErrorName(false);
       }
-      setIsLoading(false);
+      if (formik.values.phoneNo === '') {
+        setShowErrorPhone(true);
+      } else {
+        setShowErrorPhone(false);
+      }
+      if (formik.values.email === '') {
+        setShowErrorEmail(true);
+      } else {
+        setShowErrorEmail(false);
+      }
+      if (formik.values.name && formik.values.phoneNo && formik.values.email) {
+        const objectSubmitCart = {
+          cartID: basket.cartID,
+          outletID: basket.outletID,
+          guestID: basket.guestID,
+          customerDetails: {
+            name: finalVal().name,
+            email: finalVal().email,
+            phoneNumber: finalVal().phoneNo,
+          },
+          payments: [
+            {
+              paymentType: companyInfo.paymentTypes[0].paymentID,
+              paymentID: companyInfo.paymentTypes[0].paymentID,
+            },
+          ],
+          deliveryAddress: {},
+          orderingMode: orderingModeGuestCheckout,
+          tableNo: '-',
+          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
+          orderActionTime: time
+            ? time
+            : new Date().getHours() + ':' + new Date().getMinutes(),
+          orderActionTimeSlot: timeslot ? timeslot : null,
+        };
+        setIsLoading(true);
+        const response = await dispatch(
+          OrderAction.paymentGuestMode(objectSubmitCart)
+        );
+        if (response.resultCode === 200) {
+          window.location.href = response.data.url;
+        }
+        setIsLoading(false);
+      }
     }
     localStorage.removeItem(`${config.prefix}_locationPinned`);
   };
@@ -883,6 +942,9 @@ const CartGuestCheckout = () => {
                               type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
                               payload: {},
                             });
+                            if (basket.details.length === 1) {
+                              history.push('/');
+                            }
                           } else {
                             Swal.fire('Cancelled!', response, 'error');
                           }
@@ -1761,7 +1823,7 @@ const CartGuestCheckout = () => {
                 onChange={formik.handleChange}
               />
             </Box>
-            {renderErrorMessage(formik.errors.name)}
+            {showErrorName && renderErrorMessage('Please enter your Name')}
             <Box sx={{ marginTop: '1rem' }}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -1911,7 +1973,9 @@ const CartGuestCheckout = () => {
                 />
               </div>
             </Box>
-            {renderErrorMessage(formik.errors.phoneNo)}
+            {showErrorPhone &&
+              renderErrorMessage('Please enter your PhoneNumber')}
+
             <Box sx={{ marginTop: '1rem' }}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -1944,7 +2008,7 @@ const CartGuestCheckout = () => {
                 onChange={formik.handleChange}
               />
             </Box>
-            {renderErrorMessage(formik.errors.email)}
+            {showErrorEmail && renderErrorMessage('Please enter your Email')}
           </form>
         </div>
       );
@@ -2030,7 +2094,7 @@ const CartGuestCheckout = () => {
                 onChange={formik.handleChange}
               />
             </Box>
-            {renderErrorMessage(formik.errors.name)}
+            {showErrorName && renderErrorMessage('Please enter your Name')}
             <Box sx={{ marginTop: '1rem' }}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -2180,7 +2244,8 @@ const CartGuestCheckout = () => {
                 />
               </div>
             </Box>
-            {renderErrorMessage(formik.errors.phoneNo)}
+            {showErrorPhone &&
+              renderErrorMessage('Please enter your PhoneNumber')}
             <Box sx={{ marginTop: '1rem' }}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -2213,7 +2278,7 @@ const CartGuestCheckout = () => {
                 onChange={formik.handleChange}
               />
             </Box>
-            {renderErrorMessage(formik.errors.email)}
+            {showErrorEmail && renderErrorMessage('Please enter your Email')}
           </form>
         </div>
       );
@@ -2303,7 +2368,8 @@ const CartGuestCheckout = () => {
                 onChange={formik.handleChange}
               />
             </Box>
-            {renderErrorMessage(formik.errors.name)}
+            {showErrorName && renderErrorMessage('Please enter your Name')}
+
             <Box sx={{ marginTop: '1rem' }}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -2456,7 +2522,8 @@ const CartGuestCheckout = () => {
                 />
               </div>
             </Box>
-            {renderErrorMessage(formik.errors.phoneNo)}
+            {showErrorPhone &&
+              renderErrorMessage('Please enter your PhoneNumber')}
             <Box sx={{ marginTop: '1rem' }}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -2490,7 +2557,7 @@ const CartGuestCheckout = () => {
                 onChange={formik.handleChange}
               />
             </Box>
-            {renderErrorMessage(formik.errors.email)}
+            {showErrorEmail && renderErrorMessage('Please enter your Email')}
           </form>
         </div>
       );

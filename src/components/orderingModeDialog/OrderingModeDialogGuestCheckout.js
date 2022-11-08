@@ -21,7 +21,7 @@ import fontStyles from './style/styles.module.css';
 import Image2 from '../../assets/images/2.png';
 import Image3 from '../../assets/images/3.png';
 import Image4 from '../../assets/images/4.png';
-import Image5 from '../../assets/images/5.png';
+import Image5 from '../../assets/images/Table.png';
 
 const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
   const color = useSelector((state) => state.theme.color);
