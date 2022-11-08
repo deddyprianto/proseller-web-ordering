@@ -168,12 +168,12 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '200px',
+                  width: '76px',
                   margin: '0px 5px',
                   backgroundColor: `${color.primary}90`,
                 }
               : {
-                  height: '70px',
+                  height: '80px',
                   borderRadius: 10,
                   padding: '10px 0px',
                   color: color.primary,
@@ -184,8 +184,8 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '200px',
-                  margin: '0px 5px',
+                  width: '76px',
+                  margin: '0px 10px',
                   backgroundColor:
                     orderingModeActive === item
                       ? `${color.primary}90`
@@ -230,7 +230,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           style={{
             width: '100%',
             display: 'flex',
-            justifyContent: 'space-around',
+            justifyContent: 'center',
           }}
         >
           {renderButton()}

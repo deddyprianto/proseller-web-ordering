@@ -158,6 +158,9 @@ const CartGuestCheckout = () => {
       }
     };
     fetchBasket();
+    setShowErrorName(false);
+    setShowErrorPhone(false);
+    setShowErrorEmail(false);
   }, [
     idGuestCheckout,
     refreshData,
@@ -217,7 +220,7 @@ const CartGuestCheckout = () => {
   }, [orderingModeGuestCheckout]);
 
   useEffect(() => {
-    const isBasketEmpty = basket.message === 'Cart it empty.';
+    const isBasketEmpty = basket?.message === 'Cart it empty.';
     if (isBasketEmpty || orderingModeGuestCheckout) {
       setOpenOrderingMode(false);
     } else {
@@ -401,22 +404,6 @@ const CartGuestCheckout = () => {
         val.unshift(phoneCountryCode);
         return { ...formik.values, phoneNo: val.join('') };
       };
-
-      if (formik.values.name === '') {
-        setShowErrorName(true);
-      } else {
-        setShowErrorName(false);
-      }
-      if (formik.values.phoneNo === '') {
-        setShowErrorPhone(true);
-      } else {
-        setShowErrorPhone(false);
-      }
-      if (formik.values.email === '') {
-        setShowErrorEmail(true);
-      } else {
-        setShowErrorEmail(false);
-      }
       if (formik.values.name && formik.values.phoneNo && formik.values.email) {
         const objectSubmitCart = {
           cartID: basket.cartID,
@@ -459,21 +446,6 @@ const CartGuestCheckout = () => {
         val.unshift(phoneCountryCode);
         return { ...formik.values, phoneNo: val.join('') };
       };
-      if (formik.values.name === '') {
-        setShowErrorName(true);
-      } else {
-        setShowErrorName(false);
-      }
-      if (formik.values.phoneNo === '') {
-        setShowErrorPhone(true);
-      } else {
-        setShowErrorPhone(false);
-      }
-      if (formik.values.email === '') {
-        setShowErrorEmail(true);
-      } else {
-        setShowErrorEmail(false);
-      }
       if (formik.values.name && formik.values.phoneNo && formik.values.email) {
         const objectSubmitCart = {
           cartID: basket.cartID,
@@ -943,6 +915,10 @@ const CartGuestCheckout = () => {
                               payload: {},
                             });
                             if (basket.details.length === 1) {
+                              dispatch({
+                                type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+                                payload: '',
+                              });
                               history.push('/');
                             }
                           } else {
@@ -1053,22 +1029,24 @@ const CartGuestCheckout = () => {
     const reqProvider = providerGuestCheckout;
     const reqTimeSlot = timeslot;
     const reqAvailableTime = availableTime;
+    const requiredForm =
+      formik.values.name && formik.values.phoneNo && formRegexMail;
 
     const isDeliveryActive = availableTime
       ? reqTimeSlot && reqAvailableTime && reqProvider
       : reqDelivery && reqProvider;
 
     const isTakeAwayActive = availableTime
-      ? formRegexMail && reqTimeSlot
-      : formRegexMail;
+      ? requiredForm && reqTimeSlot
+      : requiredForm;
 
     const isPickUpActive = availableTime
-      ? formRegexMail && reqTimeSlot
-      : formRegexMail;
+      ? requiredForm && reqTimeSlot
+      : requiredForm;
 
     const isDineInActive = availableTime
-      ? formRegexMail && reqTimeSlot
-      : formRegexMail;
+      ? requiredForm && reqTimeSlot
+      : requiredForm;
 
     switch (key) {
       case 'DELIVERY':
@@ -1970,6 +1948,13 @@ const CartGuestCheckout = () => {
                   placeholder='Phone Number'
                   onChange={formik.handleChange}
                   type='number'
+                  onClick={() => {
+                    if (formik.values.name === '') {
+                      setShowErrorName(true);
+                    } else {
+                      setShowErrorName(false);
+                    }
+                  }}
                 />
               </div>
             </Box>
@@ -1987,6 +1972,13 @@ const CartGuestCheckout = () => {
                 Email <span className='required'>*</span>
               </Typography>
               <Box
+                onClick={() => {
+                  if (formik.values.phoneNo === '') {
+                    setShowErrorPhone(true);
+                  } else {
+                    setShowErrorPhone(false);
+                  }
+                }}
                 disabled={isLoading}
                 name='email'
                 component={InputBase}
@@ -2241,6 +2233,13 @@ const CartGuestCheckout = () => {
                   placeholder='Phone Number'
                   onChange={formik.handleChange}
                   type='number'
+                  onClick={() => {
+                    if (formik.values.name === '') {
+                      setShowErrorName(true);
+                    } else {
+                      setShowErrorName(false);
+                    }
+                  }}
                 />
               </div>
             </Box>
@@ -2276,6 +2275,13 @@ const CartGuestCheckout = () => {
                 size='small'
                 placeholder='Your Email'
                 onChange={formik.handleChange}
+                onClick={() => {
+                  if (formik.values.phoneNo === '') {
+                    setShowErrorPhone(true);
+                  } else {
+                    setShowErrorPhone(false);
+                  }
+                }}
               />
             </Box>
             {showErrorEmail && renderErrorMessage('Please enter your Email')}

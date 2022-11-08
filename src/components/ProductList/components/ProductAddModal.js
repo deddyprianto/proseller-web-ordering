@@ -802,6 +802,10 @@ const ProductAddModal = ({
       setIsLoading(false);
 
       if (props.basketGuestCO.details.length === 1) {
+        props.dispatch({
+          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+          payload: '',
+        });
         history.push('/');
       }
     } else {
