@@ -47,7 +47,7 @@ import {
 } from 'reactstrap';
 import Drawer from '@mui/material/Drawer';
 import iconDown from 'assets/images/IconDown.png';
-import ProductAddModal from 'components/productList/components/ProductAddModal';
+import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import SearchInput, { createFilter } from 'react-search-input';
 import search from 'assets/images/search.png';
 import screen from 'hooks/useWindowSize';
