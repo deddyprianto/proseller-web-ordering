@@ -67,7 +67,9 @@ const useWindowSize = () => {
 
 const CartGuestCheckout = () => {
   const responsiveDesign = screen();
-
+  const [showErrorName, setShowErrorName] = useState(false);
+  const [showErrorPhone, setShowErrorPhone] = useState(false);
+  const [showErrorEmail, setShowErrorEmail] = useState(false);
   const [productSpecific, setProductSpecific] = useState();
   const [valueSearchCode, setValueSearchCode] = useState('');
   const [productDetailSpesific, setProductDetailSpesific] = useState();
