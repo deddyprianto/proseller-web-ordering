@@ -142,12 +142,11 @@ const Cart = ({ ...props }) => {
       fontSize: 16,
     },
     subTotal: {
-      fontWeight: 700,
-      color: '#808080',
+      fontWeight: 500,
       fontSize: 16,
     },
     totalDiscount: {
-      fontWeight: 'bold',
+      fontWeight: 500,
       color: 'red',
       fontSize: 16,
     },
