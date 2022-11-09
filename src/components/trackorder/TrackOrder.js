@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import TrackOrderIcon from '../../assets/images/searchtrackorder.png';
 import style from './style/style.module.css';
 import { useHistory } from 'react-router-dom';
@@ -20,6 +20,14 @@ const TrackOrder = () => {
   const [trackOrderNotif, setTrackOrderNotif] = useState(false);
   const [messageNotif, setMessageNotif] = useState('');
 
+  useEffect(() => {
+    if (trackOrderNotif) {
+      setTimeout(() => {
+        setTrackOrderNotif(false);
+      }, 2000);
+    }
+  }, [trackOrderNotif]);
+
   const handleTrackOrder = async () => {
     if (!inputFieldRef.current.value) {
       setTrackOrderNotif(!trackOrderNotif);
@@ -28,10 +36,16 @@ const TrackOrder = () => {
       );
     } else {
       setIsLoading(true);
+      const wordsRegex = /^\b(?:\w|-)+\b$/;
       let response = await dispatch(
         OrderAction.getTrackOrder(inputFieldRef.current.value)
       );
       if (response?.resultCode === 404) {
+        setTrackOrderNotif(!trackOrderNotif);
+        setMessageNotif(
+          'You’ve entered wrong Ref. No., please enter the correct one.'
+        );
+      } else if (!wordsRegex.test(inputFieldRef.current.value)) {
         setTrackOrderNotif(!trackOrderNotif);
         setMessageNotif(
           'You’ve entered wrong Ref. No., please enter the correct one.'
