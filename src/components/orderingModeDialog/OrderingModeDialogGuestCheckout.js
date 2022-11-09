@@ -21,7 +21,7 @@ import fontStyles from './style/styles.module.css';
 import Image2 from '../../assets/images/2.png';
 import Image3 from '../../assets/images/3.png';
 import Image4 from '../../assets/images/4.png';
-import Image5 from '../../assets/images/5.png';
+import Image5 from '../../assets/images/Table.png';
 
 const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
   const color = useSelector((state) => state.theme.color);
@@ -168,12 +168,12 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '200px',
+                  width: '76px',
                   margin: '0px 5px',
                   backgroundColor: `${color.primary}90`,
                 }
               : {
-                  height: '70px',
+                  height: '80px',
                   borderRadius: 10,
                   padding: '10px 0px',
                   color: color.primary,
@@ -184,8 +184,8 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '200px',
-                  margin: '0px 5px',
+                  width: '76px',
+                  margin: '0px 10px',
                   backgroundColor:
                     orderingModeActive === item
                       ? `${color.primary}90`
@@ -230,7 +230,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           style={{
             width: '100%',
             display: 'flex',
-            justifyContent: 'space-around',
+            justifyContent: 'center',
           }}
         >
           {renderButton()}
