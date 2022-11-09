@@ -103,12 +103,6 @@ const Home = ({ ...props }) => {
   }, []);
 
   useEffect(() => {
-    if (props.orderingMode) {
-      props.dispatch({
-        type: 'SET_ORDERING_MODE',
-        payload: '',
-      });
-    }
     const isOfflineCartGuestCO = JSON.parse(
       localStorage.getItem('BASKET_GUESTCHECKOUT')
     );
