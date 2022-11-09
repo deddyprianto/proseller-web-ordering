@@ -2,26 +2,26 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
-import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Grid from '@mui/material/Grid';
 
-import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
-import ArticleIcon from '@mui/icons-material/Article';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
+import fontStyles from './style/styles.module.css';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { CONSTANT } from 'helpers';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import Image2 from 'assets/images/2.png';
+import Image3 from 'assets/images/3.png';
+import Image4 from 'assets/images/4.png';
+import Image5 from '../../assets/images/Table.png';
 
 const OrderingModeDialog = ({ open, onClose }) => {
+  const [orderingModeActive, setOrderingModeActive] = useState();
+  const [itemOrderingMode, setItemOrderingMode] = useState({});
   const colorState = useSelector((state) => state.theme.color);
   const defaultOutlet = useSelector((state) => state.order.basket.outlet);
   const selectedDeliveryProvider = useSelector(
@@ -29,6 +29,10 @@ const OrderingModeDialog = ({ open, onClose }) => {
   );
 
   const orderingMode = useSelector((state) => state.order.orderingMode);
+  const useStyles = makeStyles(() => ({
+    paper: { minWidth: '350px' },
+  }));
+  const classes = useStyles();
 
   const style = {
     buttonJustBrowsing: {
@@ -79,6 +83,11 @@ const OrderingModeDialog = ({ open, onClose }) => {
     iconAlign: {
       textAlign: 'right',
     },
+    dialogContent: {
+      '& .MuiDialogContent-root': {
+        paddingBottom: 0,
+      },
+    },
   };
 
   const dispatch = useDispatch();
@@ -91,6 +100,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
 
   useEffect(() => {
     const getOrderingModes = async () => {
+      setIsLoading(true);
       const data = await dispatch(
         OutletAction?.fetchSingleOutlet(defaultOutlet)
       );
@@ -100,21 +110,25 @@ const OrderingModeDialog = ({ open, onClose }) => {
             isEnabledFieldName: 'enableStorePickUp',
             name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
             displayName: data.storePickUpName || null,
+            img: Image3,
           },
           {
             isEnabledFieldName: 'enableDelivery',
             name: CONSTANT.ORDERING_MODE_DELIVERY,
             displayName: data.deliveryName || null,
+            img: Image2,
           },
           {
             isEnabledFieldName: 'enableTakeAway',
             name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
             displayName: data.takeAwayName || null,
+            img: Image4,
           },
           {
             isEnabledFieldName: 'enableDineIn',
             name: CONSTANT.ORDERING_MODE_DINE_IN,
             displayName: data.dineInName || null,
+            img: Image5,
           },
         ];
         //TODO: Please remove the function after update from backend
@@ -129,65 +143,10 @@ const OrderingModeDialog = ({ open, onClose }) => {
 
         await setOrderingModes(orderingModesMapped);
       }
+      setIsLoading(false);
     };
     getOrderingModes();
   }, []);
-
-  const iconCheck = (item) => {
-    if (item.name === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
-      return (
-        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={style.iconAlign}>
-            <StoreMallDirectoryIcon />
-          </Grid>
-          <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>
-              {item.displayName || item.name}
-            </div>
-          </Grid>
-        </Grid>
-      );
-    } else if (item.name === CONSTANT.ORDERING_MODE_CHECKOUT) {
-      return (
-        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={style.iconAlign}>
-            <LocalMallIcon />
-          </Grid>
-          <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>
-              {item.displayName || item.name}
-            </div>
-          </Grid>
-        </Grid>
-      );
-    } else if (item.name === CONSTANT.ORDERING_MODE_DELIVERY) {
-      return (
-        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={style.iconAlign}>
-            <DeliveryDiningIcon />
-          </Grid>
-          <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>
-              {item.displayName || item.name}
-            </div>
-          </Grid>
-        </Grid>
-      );
-    } else {
-      return (
-        <Grid container spacing={1} marginLeft={{ xs: 0, sm: 2 }}>
-          <Grid item xs={4} sx={style.iconAlign}>
-            <ArticleIcon />
-          </Grid>
-          <Grid item xs={8} sx={style.gridIconCheck}>
-            <div style={style.divInsideGirdIconCheck}>
-              {item.displayName || item.name}
-            </div>
-          </Grid>
-        </Grid>
-      );
-    }
-  };
 
   const handleConfirmOrderingMode = async (value) => {
     setIsLoading(true);
@@ -219,46 +178,131 @@ const OrderingModeDialog = ({ open, onClose }) => {
   const renderButton = () => {
     return orderingModes.map((item, index) => {
       return (
-        <Box sx={style.boxContent} key={index}>
-          <LoadingButton
-            sx={orderingMode === item ? style.buttonSelected : style.button}
-            loadingPosition='start'
-            loading={isLoading}
-            onClick={() => handleConfirmOrderingMode(item)}
+        <div
+          onClick={() => {
+            setItemOrderingMode(item);
+            setOrderingModeActive(item);
+          }}
+          style={
+            item.name === orderingMode
+              ? {
+                  height: '80px',
+                  borderRadius: 10,
+                  padding: '10px 0px',
+                  color: colorState.primary,
+                  fontWeight: 500,
+                  fontSize: 14,
+                  border: '1px solid #4386A1',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '76px',
+                  margin: '0px 5px',
+                  backgroundColor: `${colorState.primary}90`,
+                }
+              : {
+                  height: '80px',
+                  borderRadius: 10,
+                  padding: '10px 0px',
+                  color: colorState.primary,
+                  fontWeight: 500,
+                  fontSize: 14,
+                  border: '1px solid #4386A1',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '76px',
+                  margin: '0px 10px',
+                  backgroundColor:
+                    orderingModeActive === item
+                      ? `${colorState.primary}90`
+                      : 'white',
+                }
+          }
+          className={fontStyles.myFont}
+          key={index}
+        >
+          <h1
+            style={{
+              color: '#4386A1',
+              fontSize: '13px',
+            }}
           >
-            {iconCheck(item)}
-          </LoadingButton>
-        </Box>
+            {item.name}
+          </h1>
+          <img src={item.img} width={25} height={25} alt='myLogo' />
+        </div>
       );
     });
   };
 
   return (
-    <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
-      <DialogTitle sx={style.dialogTitle}>
-        <Typography
-          fontSize={20}
-          fontWeight={700}
-          className='color'
-          textAlign='center'
+    <Dialog
+      fullWidth
+      maxWidth='xs'
+      open={open}
+      onClose={onClose}
+      classes={{ paper: classes.paper }}
+    >
+      <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+        <DialogTitle sx={style.dialogTitle}>
+          <Typography
+            className={fontStyles.myFont}
+            fontSize={16}
+            fontWeight={700}
+            textAlign='center'
+          >
+            Ordering Mode
+          </Typography>
+        </DialogTitle>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
         >
-          Ordering Mode
-        </Typography>
-      </DialogTitle>
-      <DialogContent
-        sx={{
-          '& .MuiDialogContent-root': {
-            paddingBottom: 0,
-          },
-        }}
-      >
-        {renderButton()}
-      </DialogContent>
-      <DialogActions sx={{ justifyContent: 'center' }}>
-        <Button sx={style.buttonJustBrowsing} onClick={onClose}>
-          Back
-        </Button>
-      </DialogActions>
+          {renderButton()}
+        </div>
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            width: '100%',
+            marginTop: '20px',
+          }}
+        >
+          <button
+            onClick={onClose}
+            className={fontStyles.myFont}
+            style={{
+              backgroundColor: 'white',
+              border: '1px solid #4386A1',
+              color: '#4386A1',
+              width: '50%',
+              paddingTop: '10px',
+              paddingBottom: '10px',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
+            className={fontStyles.myFont}
+            style={{
+              color: 'white',
+              width: '50%',
+              paddingTop: '10px',
+              paddingBottom: '10px',
+            }}
+          >
+            Confirm
+          </button>
+        </DialogActions>
+      </LoadingOverlayCustom>
     </Dialog>
   );
 };

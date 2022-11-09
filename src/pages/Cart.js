@@ -233,6 +233,12 @@ const Cart = ({ ...props }) => {
   const [dataCalculateFee, setDataCalculateFee] = useState();
 
   useEffect(() => {
+    if (props.orderingMode !== 'DELIVERY') {
+      props.dispatch({ type: 'SET_DELIVERY_ADDRESS', data: null });
+    }
+  }, [props.orderingMode]);
+
+  useEffect(() => {
     const getDataProviderListAndFee = async () => {
       if (props.deliveryAddress) {
         setIsLoading(true);
@@ -520,88 +526,88 @@ const Cart = ({ ...props }) => {
       props.selectedDeliveryProvider &&
       selectTimeSlotAvailable;
 
-    const orderingModeLabel = isStorePickUp
-      ? 'Pickup Date & Time'
-      : isTakeAway
-      ? 'Take Away Date & Time'
-      : 'Delivery Date & Time';
-
     const orderingModeWarning = !isEmptyObject(props?.orderActionTimeSlot)
       ? null
       : isStorePickUp
       ? renderWarning('Pickup Date & Time.')
       : renderWarning('Delivery Date & Time.');
 
-    if (isDelivery || isStorePickUp || selectTimeSlotAvailable) {
-      return (
-        <div
-          onClick={() => {
-            setOpenTimeSlot(true);
-          }}
-          style={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-            marginTop: '10px',
-            marginBottom: '10px',
-            padding: '15px 5px',
-          }}
-        >
+    if (selectTimeSlotAvailable) {
+      if (isDelivery || isStorePickUp || isTakeAway) {
+        return (
           <div
+            onClick={() => {
+              setOpenTimeSlot(true);
+            }}
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              width: '100%',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              marginTop: '10px',
+              marginBottom: '10px',
+              padding: '15px 5px',
             }}
           >
-            <Box flexDirection='column'>
-              <Typography
-                className={fontStyleCustom.myFont}
-                style={{
-                  fontWeight: 700,
-                  fontSize: '14px',
-                }}
-              >
-                Choose Date & Time
-              </Typography>
-            </Box>
             <div
               style={{
                 display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                marginRight: '10px',
               }}
             >
-              <div>
+              <Box flexDirection='column'>
                 <Typography
-                  style={{
-                    fontSize: '13px',
-                    color: '#8A8D8E',
-                    fontWeight: 500,
-                    textAlign: 'center',
-                  }}
                   className={fontStyleCustom.myFont}
-                >
-                  {props.orderActionTimeSlot && props.orderActionDate}
-                </Typography>
-                <Typography
                   style={{
-                    textAlign: 'center',
-                    fontSize: '13px',
-                    color: '#8A8D8E',
-                    fontWeight: 500,
+                    fontWeight: 700,
+                    fontSize: '14px',
                   }}
-                  className={fontStyleCustom.myFont}
                 >
-                  {props.orderActionTimeSlot}
+                  Choose Date & Time
                 </Typography>
+              </Box>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginRight: '10px',
+                }}
+              >
+                <div>
+                  <Typography
+                    style={{
+                      fontSize: '13px',
+                      color: '#8A8D8E',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                    }}
+                    className={fontStyleCustom.myFont}
+                  >
+                    {props.orderActionTimeSlot && props.orderActionDate}
+                  </Typography>
+                  <Typography
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '13px',
+                      color: '#8A8D8E',
+                      fontWeight: 500,
+                    }}
+                    className={fontStyleCustom.myFont}
+                  >
+                    {props.orderActionTimeSlot}
+                  </Typography>
+                </div>
+                <img
+                  src={iconRight}
+                  alt='myIcon'
+                  style={{ marginLeft: '5px' }}
+                />
               </div>
-              <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
             </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
     return;
   };
@@ -904,14 +910,17 @@ const Cart = ({ ...props }) => {
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
             marginTop: '10px',
             marginBottom: '10px',
-            padding: '10px',
             display: 'flex',
-            justifyContent: 'space-around',
             alignItems: 'center',
           }}
         >
           <Accordion
-            sx={{ boxShadow: 'none' }}
+            sx={{
+              boxShadow: 'none',
+              padding: 0,
+              margin: 0,
+              width: '100%',
+            }}
             expanded={openAccordion}
             onChange={() => setOpenAccordion(!openAccordion)}
           >
