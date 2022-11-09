@@ -145,13 +145,15 @@ const ModalDeliveryAddress = ({
     addressName: yup.string().required('Please enter Address Name.'),
     postalCode: yup
       .string()
-      .required()
+      .required('Please enter Postal code')
       .matches(/^[0-9]+$/, 'Please enter a valid postal code')
       .min(6, 'Postal code must be exactly 6 digits')
       .max(6, 'Postal code must be exactly 6 digits'),
     unitNo: yup
       .string()
+      .required('Please enter Unit Number')
       .matches(/^[a-z0-9.-]*$/, 'Please enter a valid unit number'),
+    streetName: yup.string().required('Please enter Street Name'),
   });
 
   useEffect(() => {
@@ -193,8 +195,9 @@ const ModalDeliveryAddress = ({
 
     if (response.ResultCode === 200) {
       const getDeliveryAddress = getDataDeliveryAddress();
-      if (getDeliveryAddress) await handleSelected(finalValues);
-      else {
+      if (getDeliveryAddress) {
+        await handleSelected(finalValues);
+      } else {
         dispatch({ type: 'SET_DELIVERY_ADDRESS', payload: currentAddresses });
       }
       Swal.fire({
@@ -253,6 +256,7 @@ const ModalDeliveryAddress = ({
         ? pinnedLocation
         : addressDelivery[indexEdit].coordinate,
     },
+    validateOnChange: false,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
       setLoading(true);
@@ -360,6 +364,8 @@ const ModalDeliveryAddress = ({
                 onChange={formik.handleChange}
               />
             </Box>
+            {renderErrorMessage(formik.errors.streetName)}
+
             <Box sx={style.boxPadding}>
               <Typography fontSize={12} fontWeight='500' color='#666'>
                 Unit Number <span className='required'>*</span>
@@ -378,6 +384,8 @@ const ModalDeliveryAddress = ({
                 onChange={formik.handleChange}
               />
             </Box>
+            {renderErrorMessage(formik.errors.unitNo)}
+
             <Box sx={style.boxPadding}>
               <Typography fontSize={12} fontWeight='500' color='#666'>
                 Postal code <span className='required'>*</span>
