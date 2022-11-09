@@ -125,14 +125,13 @@ const TrackOrder = () => {
           width: matches ? '30%' : '100%',
           marginLeft: 'auto',
           marginRight: 'auto',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+          height: matches ? '100vh' : '90vh',
+          overflowY: 'auto',
         }}
       >
         <div className={style.container}>
-          {headerTrackOrder()}
           <div className={style.containerMain}>
+            {headerTrackOrder()}
             <img
               src={TrackOrderIcon}
               alt='icon search'
@@ -165,13 +164,13 @@ const TrackOrder = () => {
                 color: 'white',
                 padding: '10px',
                 cursor: 'pointer',
-                marginBottom: '10px',
               }}
               onClick={handleTrackOrder}
             >
               Track Order
             </button>
           </div>
+          <div style={{ width: '100%', height: '100%' }} />
         </div>
       </div>
     </LoadingOverlay>
