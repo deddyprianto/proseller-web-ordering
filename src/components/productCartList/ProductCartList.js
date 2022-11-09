@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-
-import AddIcon from '@mui/icons-material/Add';
+import addIcon from 'assets/images/add.png';
+import { useHistory } from 'react-router-dom';
 
 import ProductCart from 'components/productCartList/components/ProductCart';
+import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import Button from '@mui/material/Button';
 
 const mapStateToProps = (state) => {
   return {
@@ -18,6 +17,7 @@ const mapStateToProps = (state) => {
 };
 
 const ProductCartList = ({ ...props }) => {
+  const history = useHistory();
   const styles = {
     basketHeader: {
       display: 'flex',
@@ -62,6 +62,72 @@ const ProductCartList = ({ ...props }) => {
       marginBottom: 10,
     },
   };
+  const renderTitleNameForCart = () => {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateRows: '1fr',
+          gap: '0px 0px',
+          gridTemplateAreas: '". . ."',
+          marginBottom: '20px',
+        }}
+      >
+        <img src={IconsArrowLeft} onClick={() => history.push('/')} />
+        <div
+          style={{
+            fontSize: '16px',
+            fontWeight: 700,
+            justifySelf: 'center',
+          }}
+          className={fontStyleCustom.myFont}
+        >
+          Cart
+        </div>
+      </div>
+    );
+  };
+  const renderLabelNeedAnythingElse = () => {
+    return (
+      <div
+        className={fontStyleCustom.myFont}
+        style={{
+          marginBottom: '30px',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div>
+          <div style={{ fontSize: '16px', fontWeight: 700 }}>
+            Need anything else?
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 500 }}>
+            Add other dishes, if you want.
+          </div>
+        </div>
+        <div>
+          <Button
+            onClick={() => history.push('/')}
+            startIcon={<img src={addIcon} alt='addIcon' />}
+            sx={{
+              backgroundColor: props.color.primary,
+              borderRadius: '10px',
+              width: '120px',
+              height: '40px',
+              color: 'white',
+              fontSize: '12px',
+            }}
+          >
+            Add More
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   const renderBasketItems = () => {
     const sortItemForPriceHighest = props.basket.details.sort(
@@ -70,33 +136,16 @@ const ProductCartList = ({ ...props }) => {
     const result = sortItemForPriceHighest.map((item, key) => (
       <div key={key}>
         <ProductCart item={item} />
-        <div style={styles.divider} />
       </div>
     ));
     return result;
   };
 
-  const renderBasketHeader = () => {
-    return (
-      <div style={styles.basketHeader}>
-        <div style={styles.outletName}>{props.basket.outlet.name}</div>
-        <Link to='/'>
-          <Button
-            style={styles.button}
-            startIcon={<AddIcon style={styles.icon} />}
-            variant='outlined'
-          >
-            <Typography style={styles.typography}>Add Items</Typography>
-          </Button>
-        </Link>
-      </div>
-    );
-  };
-
   return (
     <div>
-      {renderBasketHeader()}
-      <div style={styles.divider4} />
+      {renderTitleNameForCart()}
+      {renderLabelNeedAnythingElse()}
+      <h1 style={{ fontSize: '16px' }}>Items</h1>
       {renderBasketItems()}
     </div>
   );
