@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
 import { useHistory } from 'react-router-dom';
+import _ from 'lodash';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -10,10 +11,6 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import ContactMailIcon from '@mui/icons-material/ContactMail';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
-
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
@@ -31,6 +28,12 @@ import Drawer from '@mui/material/Drawer';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import IconDown from 'assets/images/VectorDown.png';
 import iconRight from 'assets/images/iconRight.png';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import circleActive from 'assets/images/bulatActive.png';
+import iconVespa from 'assets/images/2.png';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -99,7 +102,6 @@ const Cart = ({ ...props }) => {
     },
     cartGridRight: {
       width: '100%',
-      paddingLeft: 10,
     },
     cartGridLeft: {
       width: '100%',
@@ -182,7 +184,9 @@ const Cart = ({ ...props }) => {
       backgroundColor: props.color.background,
     },
     grandTotalFullScreen: {
-      backgroundColor: props.color.background,
+      padding: 0,
+      margin: 0,
+      backgroundColor: 'red',
     },
     emptyText: {
       marginTop: 10,
@@ -214,7 +218,9 @@ const Cart = ({ ...props }) => {
       marginX: 1,
     },
   };
+  const [dataDeliveryProvider, setDataDeliveryProvider] = useState('');
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
@@ -223,6 +229,33 @@ const Cart = ({ ...props }) => {
     useState(false);
 
   const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
+
+  const [dataCalculateFee, setDataCalculateFee] = useState();
+
+  useEffect(() => {
+    const getDataProviderListAndFee = async () => {
+      if (props.deliveryAddress) {
+        setIsLoading(true);
+        let payload = {
+          outletId: props.basket?.outlet?.id,
+          cartID: props.basket?.cartID,
+          deliveryAddress: props.deliveryAddress,
+        };
+
+        let responseCalculateFee = await props.dispatch(
+          OrderAction.getCalculateFee(payload)
+        );
+
+        if (!_.isEmpty(responseCalculateFee)) {
+          setDataCalculateFee(responseCalculateFee);
+        }
+
+        setIsLoading(false);
+      }
+    };
+
+    getDataProviderListAndFee();
+  }, [props.deliveryAddress]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -501,26 +534,73 @@ const Cart = ({ ...props }) => {
 
     if (isDelivery || isStorePickUp || selectTimeSlotAvailable) {
       return (
-        <Paper variant='outlined' style={styles.rootPaper}>
-          <div style={styles.rootMode}>
+        <div
+          onClick={() => {
+            setOpenTimeSlot(true);
+          }}
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '15px 5px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Box flexDirection='column'>
-              <Typography style={styles.subTotal}>
-                {orderingModeLabel}
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                }}
+              >
+                Choose Date & Time
               </Typography>
-              {orderingModeWarning}
             </Box>
-            <Button
-              style={styles.mode}
-              startIcon={<AccessTimeIcon style={styles.icon} />}
-              variant='outlined'
-              onClick={() => {
-                setOpenTimeSlot(true);
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '10px',
               }}
             >
-              {renderDateTimeValue()}
-            </Button>
+              <div>
+                <Typography
+                  style={{
+                    fontSize: '13px',
+                    color: '#8A8D8E',
+                    fontWeight: 500,
+                    textAlign: 'center',
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {props.orderActionTimeSlot && props.orderActionDate}
+                </Typography>
+                <Typography
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '13px',
+                    color: '#8A8D8E',
+                    fontWeight: 500,
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {props.orderActionTimeSlot}
+                </Typography>
+              </div>
+              <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+            </div>
           </div>
-        </Paper>
+        </div>
       );
     }
     return;
@@ -699,114 +779,178 @@ const Cart = ({ ...props }) => {
       </div>
     );
   };
+  const handleSelectDeliveryProvider = async (value) => {
+    setIsLoading(true);
 
-  // const renderDeliveryAddress = () => {
-  //   if (props.orderingMode !== 'DELIVERY') {
-  //     return;
-  //   }
-  //   return (
-  //     <>
-  //       <div
-  //         style={{
-  //           width: '100%',
-  //           backgroundColor: 'white',
-  //           borderRadius: '8px',
-  //           boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-  //           marginTop: '10px',
-  //           marginBottom: '10px',
-  //           padding: '20px 0px',
-  //         }}
-  //       >
-  //         <div
-  //           style={{
-  //             display: 'flex',
-  //             justifyContent: 'space-between',
-  //             alignItems: 'center',
-  //           }}
-  //         >
-  //           <Box flexDirection='column'>
-  //             <Typography style={styles.subTotal}>Delivery Address</Typography>
-  //           </Box>
-  //           <Button
-  //             style={styles.mode}
-  //             startIcon={<ContactMailIcon style={styles.icon} />}
-  //             variant='outlined'
-  //             component={Link}
-  //             to='/delivery-address'
-  //           >
-  //             <Typography sx={styles.typography}>
-  //               {props?.deliveryAddress
-  //                 ? props?.deliveryAddress?.addressName
-  //                 : 'Delivery Address'}
-  //             </Typography>
-  //           </Button>
-  //         </div>
-  //         {props.deliveryAddress ? (
-  //           <Typography
-  //             sx={{
-  //               fontSize: '1.5rem',
-  //               fontStyle: 'italic',
-  //               fontWeight: 'bold',
-  //               color: props.color.primary,
-  //               maxWidth: 'fit-content',
-  //               marginX: 1,
-  //             }}
-  //           >
-  //             <span>
-  //               <table>
-  //                 <tr>
-  //                   <td
-  //                     style={{
-  //                       textAlign: 'left',
-  //                       width: '100%',
-  //                       display: '-webkit-box',
-  //                       WebkitLineClamp: '3',
-  //                       WebkitBoxOrient: 'vertical',
-  //                       overflow: 'hidden',
-  //                       padding: 0,
-  //                       margin: 0,
-  //                     }}
-  //                   >
-  //                     {props.deliveryAddress.street}
-  //                   </td>
-  //                 </tr>
-  //               </table>
-  //             </span>
-  //             # {props.deliveryAddress.unitNo} - {props.deliveryAddress.city} -{' '}
-  //             {props.deliveryAddress.postalCode}
-  //           </Typography>
-  //         ) : (
-  //           renderWarning('delivery address.')
-  //         )}
-  //       </div>
-  //       {props?.deliveryAddress && (
-  //         <Paper variant='outlined' style={styles.rootPaper}>
-  //           <div style={styles.rootMode}>
-  //             <Box flexDirection='column'>
-  //               <Typography style={styles.subTotal}>
-  //                 Delivery Provider
-  //               </Typography>
-  //             </Box>
+    await props.dispatch({
+      type: 'SET_SELECTED_DELIVERY_PROVIDERS',
+      payload: value,
+    });
 
-  //             <Button
-  //               style={styles.mode}
-  //               startIcon={<ContactsRoundedIcon style={styles.icon} />}
-  //               variant='outlined'
-  //               onClick={() => setOpenSelectDeliveryProvider(true)}
-  //             >
-  //               <Typography sx={styles.typography}>
-  //                 {!isEmptyObject(props.selectedDeliveryProvider)
-  //                   ? props?.selectedDeliveryProvider?.name
-  //                   : 'Delivery Provider'}
-  //               </Typography>
-  //             </Button>
-  //           </div>
-  //           {renderDeliveryProviderError()}
-  //         </Paper>
-  //       )}
-  //     </>
-  //   );
-  // };
+    const response = await props.dispatch(
+      OrderAction.changeOrderingMode({
+        orderingMode: 'DELIVERY',
+        provider: value,
+      })
+    );
+
+    await props.dispatch(
+      OrderAction.setData(response.data, CONSTANT.DATA_BASKET)
+    );
+
+    setIsLoading(false);
+    setOpenSelectDeliveryProvider(false);
+  };
+
+  const renderButtonProvider = () => {
+    if (!dataCalculateFee) {
+      return (
+        <Typography
+          className={fontStyleCustom.myFont}
+          style={{
+            color: props.color.primary,
+            textAlign: 'center',
+            fontWeight: 700,
+            fontSize: '14px',
+          }}
+        >
+          {!props.deliveryAddress
+            ? 'Please fill your form customer detail'
+            : 'Loading...'}
+        </Typography>
+      );
+    } else {
+      return dataCalculateFee?.dataProvider?.map((item) => {
+        const conditionName = dataDeliveryProvider === item.name ? true : false;
+        return (
+          <div
+            key={item.name}
+            style={{
+              marginBottom: '10px',
+              width: '100%',
+            }}
+          >
+            <div
+              onClick={() => {
+                handleSelectDeliveryProvider(item);
+                setDataDeliveryProvider(item.name);
+                setOpenAccordion(false);
+              }}
+              style={{
+                backgroundColor: conditionName ? '#4386A133' : 'white',
+                border: '1px solid #4386A1',
+                borderRadius: '10px',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px',
+              }}
+            >
+              <img src={iconVespa} alt='vespa' style={{ flex: 0 }} />
+
+              <div style={{ flex: 1, paddingLeft: '10px' }}>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={{
+                    fontSize: '14px',
+                    color: '#4386A1',
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.name}
+                </Typography>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={{
+                    fontSize: '14px',
+                    color: '#4386A1',
+                    fontWeight: 700,
+                  }}
+                >{`(SGD ${item?.deliveryFee})`}</Typography>
+              </div>
+              <div style={{ flex: 0 }}>
+                <div
+                  style={{
+                    borderRadius: '100%',
+                    border: '1px solid #4386A1',
+                    width: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {conditionName && (
+                    <img src={circleActive} width={11} height={11} />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      });
+    }
+  };
+
+  const renderDeliveryProvider = (name) => {
+    if (props.deliveryAddress) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '10px',
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}
+        >
+          <Accordion
+            sx={{ boxShadow: 'none' }}
+            expanded={openAccordion}
+            onChange={() => setOpenAccordion(!openAccordion)}
+          >
+            <AccordionSummary
+              sx={{ padding: '0', margin: '0' }}
+              expandIcon={
+                <ExpandMoreIcon
+                  sx={{ width: '20px', height: '20px', marginRight: '10px' }}
+                />
+              }
+              aria-controls='panel1a-content'
+              id='panel1a-header'
+            >
+              <div
+                style={{
+                  width: gadgetScreen ? '80vw' : '35vw',
+                }}
+              >
+                <Typography
+                  style={{
+                    fontSize: '14px',
+                    color: 'black',
+                    fontWeight: 700,
+                    paddingLeft: '5px',
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {name}
+                </Typography>
+              </div>
+            </AccordionSummary>
+            <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
+              {renderButtonProvider()}
+            </AccordionDetails>
+          </Accordion>
+        </div>
+      );
+    }
+  };
 
   const handleSubtotal = () => {
     if (props.basket?.totalDiscountAmount !== 0) {
@@ -1090,16 +1234,25 @@ const Cart = ({ ...props }) => {
   const renderTotal = () => {
     return (
       <Paper
-        variant={gadgetScreen ? 'elevation' : 'outlined'}
+        variant='elevation'
         square={gadgetScreen}
-        elevation={gadgetScreen ? 3 : 0}
-        style={
+        elevation={gadgetScreen ? 3 : 3}
+        sx={
           gadgetScreen
             ? styles.grandTotalGadgetScreen
-            : styles.grandTotalFullScreen
+            : {
+                padding: 0,
+                margin: 0,
+              }
         }
       >
-        <div style={styles.rootGrandTotal}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: gadgetScreen ? '0px 10px' : '0px',
+          }}
+        >
           <div
             style={{
               width: '30%',
@@ -1210,24 +1363,47 @@ const Cart = ({ ...props }) => {
             <ProductCartList />
             {renderOrderingMode()}
             {renderDeliveryAddress()}
-            {/* {renderDateTime()} */}
-            {/* {renderSubTotal()} */}
+            {renderDeliveryProvider('Choose Delivery Provider')}
+            {renderDateTime()}
           </div>
           {renderTotal()}
         </>
       );
     }
     return (
-      <div style={styles.rootCart}>
-        <div style={styles.cartGridLeft}>
-          <ProductCartList />
-        </div>
-        <div style={styles.cartGridRight}>
-          {renderOrderingMode()}
-          {renderDeliveryAddress()}
-          {renderDateTime()}
-          {renderSubTotal()}
-          {renderGrandTotal()}
+      <div style={{ width: '100vw' }}>
+        <div
+          style={{
+            width: '45%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            height: '99.3vh',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '1fr 85px',
+            gap: '0px 15px',
+            gridTemplateAreas: '"."\n    "."',
+          }}
+        >
+          <div
+            style={{
+              marginTop: '15%',
+              padding: '0px 10px',
+              overflowY: 'auto',
+            }}
+          >
+            <ProductCartList />
+            <div style={styles.cartGridRight}>
+              {renderOrderingMode()}
+              {renderDeliveryAddress()}
+              {renderDeliveryProvider('Choose Delivery Provider')}
+              {renderDateTime()}
+            </div>
+          </div>
+          {renderTotal()}
         </div>
       </div>
     );
