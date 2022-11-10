@@ -112,10 +112,7 @@ const ModalDeliveryAddress = ({
     },
     errorMessage: { lineHeight: '15px', marginTop: 1 },
   };
-  let {
-    addressDelivery, // address delivery is array of address
-    indexEdit,
-  } = initialValue;
+
   const dispatch = useDispatch();
 
   const state = useSelector((state) => state);
@@ -235,26 +232,41 @@ const ModalDeliveryAddress = ({
     }
   };
 
+  const stringMust140Length = (str) => str?.substring(0, 140);
   const formik = useFormik({
     enableReinitialize: true,
     validationSchema: validationSchema,
+
     initialValues: {
-      addressName: isCreate ? '' : addressDelivery[indexEdit].addressName,
-      streetName: isCreate
-        ? streetName
-          ? streetName.substring(0, 140)
-          : ''
-        : addressDelivery[indexEdit].streetName,
-      unitNo: isCreate ? '' : addressDelivery[indexEdit].unitNo,
+      addressName:
+        (isCreate && '') ||
+        state.customer.placeholderAddressCustomer?.addressName ||
+        state.customer.placeholderForEditAddressCustomer?.addressName,
+
+      streetName:
+        (isCreate && '') ||
+        stringMust140Length(streetName) ||
+        stringMust140Length(
+          state.customer.placeholderAddressCustomer?.streetName
+        ) ||
+        stringMust140Length(
+          state.customer.placeholderForEditAddressCustomer?.streetName
+        ),
+
+      unitNo:
+        (isCreate && '') ||
+        state.customer.placeholderAddressCustomer?.unitNo ||
+        state.customer.placeholderForEditAddressCustomer?.unitNo,
+
       postalCode:
-        isCreate && postalCode
-          ? postalCode
-          : !isCreate
-          ? addressDelivery[indexEdit].postalCode
-          : '',
+        (isCreate && '') ||
+        postalCode ||
+        state.customer.placeholderAddressCustomer?.postalCode ||
+        state.customer.placeholderForEditAddressCustomer?.postalCode,
+
       coordinate: isCreate
         ? pinnedLocation
-        : addressDelivery[indexEdit].coordinate,
+        : state.customer.placeholderAddressCustomer?.coordinate,
     },
     validateOnChange: false,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
@@ -271,6 +283,7 @@ const ModalDeliveryAddress = ({
       setLoading(false);
       setSubmitting(false);
       resetForm();
+      window.location.reload();
     },
   });
 
@@ -304,6 +317,8 @@ const ModalDeliveryAddress = ({
               aria-label='close'
               size='large'
               onClick={() => {
+                localStorage.removeItem(`${config.prefix}_locationPinned`);
+                formik.resetForm();
                 onClose();
               }}
               sx={style.iconCloseStyle}
@@ -414,6 +429,7 @@ const ModalDeliveryAddress = ({
               <LinkRouter to='/map'>
                 {isCreate ? (
                   <MapAtom
+                    valueFields={formik.values}
                     name='coordinate'
                     coordinate={pinnedLocation}
                     alreadyPinned
