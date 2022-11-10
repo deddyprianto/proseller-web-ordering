@@ -2,7 +2,8 @@ import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import _ from 'lodash';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -10,11 +11,6 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import ContactMailIcon from '@mui/icons-material/ContactMail';
-import SendIcon from '@mui/icons-material/Send';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
-
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlot';
@@ -28,6 +24,16 @@ import { OrderAction } from 'redux/actions/OrderAction';
 
 import { CONSTANT } from '../helpers/';
 import moment from 'moment';
+import Drawer from '@mui/material/Drawer';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import IconDown from 'assets/images/VectorDown.png';
+import iconRight from 'assets/images/iconRight.png';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import circleActive from 'assets/images/bulatActive.png';
+import iconVespa from 'assets/images/2.png';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -68,6 +74,7 @@ const useWindowSize = () => {
 };
 
 const Cart = ({ ...props }) => {
+  const history = useHistory();
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   const styles = {
@@ -95,7 +102,6 @@ const Cart = ({ ...props }) => {
     },
     cartGridRight: {
       width: '100%',
-      paddingLeft: 10,
     },
     cartGridLeft: {
       width: '100%',
@@ -128,9 +134,7 @@ const Cart = ({ ...props }) => {
     rootGrandTotal: {
       display: 'flex',
       justifyContent: 'space-between',
-      paddingRight: 10,
-      paddingLeft: 10,
-      paddingTop: 10,
+      padding: '0px 10px',
     },
     grandTotal: {
       fontWeight: 'bold',
@@ -138,12 +142,11 @@ const Cart = ({ ...props }) => {
       fontSize: 16,
     },
     subTotal: {
-      fontWeight: 'bold',
-      color: '#808080',
+      fontWeight: 500,
       fontSize: 16,
     },
     totalDiscount: {
-      fontWeight: 'bold',
+      fontWeight: 500,
       color: 'red',
       fontSize: 16,
     },
@@ -177,11 +180,12 @@ const Cart = ({ ...props }) => {
       bottom: 70,
       left: 'auto',
       position: 'fixed',
-      padding: 10,
       backgroundColor: props.color.background,
     },
     grandTotalFullScreen: {
-      backgroundColor: props.color.background,
+      padding: 0,
+      margin: 0,
+      backgroundColor: 'red',
     },
     emptyText: {
       marginTop: 10,
@@ -213,6 +217,9 @@ const Cart = ({ ...props }) => {
       marginX: 1,
     },
   };
+  const [dataDeliveryProvider, setDataDeliveryProvider] = useState('');
+  const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
@@ -221,6 +228,39 @@ const Cart = ({ ...props }) => {
     useState(false);
 
   const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
+
+  const [dataCalculateFee, setDataCalculateFee] = useState();
+
+  useEffect(() => {
+    if (props.orderingMode !== 'DELIVERY') {
+      props.dispatch({ type: 'SET_DELIVERY_ADDRESS', data: null });
+    }
+  }, [props.orderingMode]);
+
+  useEffect(() => {
+    const getDataProviderListAndFee = async () => {
+      if (props.deliveryAddress) {
+        setIsLoading(true);
+        let payload = {
+          outletId: props.basket?.outlet?.id,
+          cartID: props.basket?.cartID,
+          deliveryAddress: props.deliveryAddress,
+        };
+
+        let responseCalculateFee = await props.dispatch(
+          OrderAction.getCalculateFee(payload)
+        );
+
+        if (!_.isEmpty(responseCalculateFee)) {
+          setDataCalculateFee(responseCalculateFee);
+        }
+
+        setIsLoading(false);
+      }
+    };
+
+    getDataProviderListAndFee();
+  }, [props.deliveryAddress]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -455,26 +495,6 @@ const Cart = ({ ...props }) => {
     );
   };
 
-  const renderDeliveryProviderError = () => {
-    if (props?.selectedDeliveryProvider?.deliveryProviderError?.status) {
-      return (
-        <Typography sx={styles.warningText}>
-          * {props.selectedDeliveryProvider.deliveryProviderError?.message}
-        </Typography>
-      );
-    } else {
-      if (isEmptyObject(props?.selectedDeliveryProvider)) {
-        return (
-          <Typography sx={styles.warningText}>
-            * Please Select Delivery Provider
-          </Typography>
-        );
-      } else {
-        return;
-      }
-    }
-  };
-
   const renderDateTimeValue = () => {
     if (!isEmptyObject(props.orderActionTimeSlot)) {
       return (
@@ -505,68 +525,165 @@ const Cart = ({ ...props }) => {
       props.selectedDeliveryProvider &&
       selectTimeSlotAvailable;
 
-    const orderingModeLabel = isStorePickUp
-      ? 'Pickup Date & Time'
-      : isTakeAway
-      ? 'Take Away Date & Time'
-      : 'Delivery Date & Time';
-
     const orderingModeWarning = !isEmptyObject(props?.orderActionTimeSlot)
       ? null
       : isStorePickUp
       ? renderWarning('Pickup Date & Time.')
       : renderWarning('Delivery Date & Time.');
 
-    if (isDelivery || isStorePickUp || selectTimeSlotAvailable) {
-      return (
-        <Paper variant='outlined' style={styles.rootPaper}>
-          <div style={styles.rootMode}>
-            <Box flexDirection='column'>
-              <Typography style={styles.subTotal}>
-                {orderingModeLabel}
-              </Typography>
-              {orderingModeWarning}
-            </Box>
-            <Button
-              style={styles.mode}
-              startIcon={<AccessTimeIcon style={styles.icon} />}
-              variant='outlined'
-              onClick={() => {
-                setOpenTimeSlot(true);
+    if (selectTimeSlotAvailable) {
+      if (isDelivery || isStorePickUp || isTakeAway) {
+        return (
+          <div
+            onClick={() => {
+              setOpenTimeSlot(true);
+            }}
+            style={{
+              width: '100%',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              marginTop: '10px',
+              marginBottom: '10px',
+              padding: '15px 5px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              {renderDateTimeValue()}
-            </Button>
+              <Box flexDirection='column'>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={{
+                    fontWeight: 700,
+                    fontSize: '14px',
+                  }}
+                >
+                  Choose Date & Time
+                </Typography>
+              </Box>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginRight: '10px',
+                }}
+              >
+                <div>
+                  <Typography
+                    style={{
+                      fontSize: '13px',
+                      color: '#8A8D8E',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                    }}
+                    className={fontStyleCustom.myFont}
+                  >
+                    {props.orderActionTimeSlot && props.orderActionDate}
+                  </Typography>
+                  <Typography
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '13px',
+                      color: '#8A8D8E',
+                      fontWeight: 500,
+                    }}
+                    className={fontStyleCustom.myFont}
+                  >
+                    {props.orderActionTimeSlot}
+                  </Typography>
+                </div>
+                <img
+                  src={iconRight}
+                  alt='myIcon'
+                  style={{ marginLeft: '5px' }}
+                />
+              </div>
+            </div>
           </div>
-        </Paper>
-      );
+        );
+      }
     }
     return;
   };
 
   const renderOrderingMode = () => {
     return (
-      <Paper variant='outlined' style={styles.rootPaper}>
-        <div style={styles.rootMode}>
-          <Typography style={styles.subTotal}>Ordering Mode</Typography>
-          <Button
-            style={styles.mode}
-            startIcon={<SendIcon style={styles.icon} />}
-            variant='outlined'
-            onClick={() => {
-              if (!props.isLoggedIn) {
-                handleLogin();
-              } else {
-                handleOpenOrderingMode();
-              }
+      <div
+        onClick={() => {
+          if (!props.isLoggedIn) {
+            handleLogin();
+          } else {
+            handleOpenOrderingMode();
+          }
+        }}
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+          marginTop: '10px',
+          marginBottom: '10px',
+          padding: '20px 5px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <Typography
+            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
+            className={fontStyleCustom.myFont}
+          >
+            Ordering Mode
+          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginRight: '10px',
             }}
           >
-            <Typography style={styles.typography}>
+            <Typography
+              style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
+              className={fontStyleCustom.myFont}
+            >
               {handleRenderOrderingModeLabel()}
             </Typography>
-          </Button>
+            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+          </div>
         </div>
-      </Paper>
+
+        {props.orderingMode === 'STOREPICKUP' && (
+          <div style={{ marginTop: '20px' }}>
+            <hr
+              style={{
+                backgroundColor: '#8A8D8E',
+                opacity: 0.5,
+              }}
+            />
+            <div
+              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
+            >
+              Outlet Address
+            </div>
+            <div
+              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
+            >
+              {props.defaultOutlet?.address}, {props.defaultOutlet?.city} -{' '}
+              {props.defaultOutlet?.postalCode}
+            </div>
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -575,91 +692,272 @@ const Cart = ({ ...props }) => {
       return;
     }
     return (
-      <>
-        <Paper variant='outlined' style={styles.rootPaper}>
-          <div style={styles.rootMode}>
-            <Box flexDirection='column'>
-              <Typography style={styles.subTotal}>Delivery Address</Typography>
-            </Box>
-            <Button
-              style={styles.mode}
-              startIcon={<ContactMailIcon style={styles.icon} />}
-              variant='outlined'
-              component={Link}
-              to='/delivery-address'
-            >
-              <Typography sx={styles.typography}>
-                {props?.deliveryAddress
-                  ? props?.deliveryAddress?.addressName
-                  : 'Delivery Address'}
-              </Typography>
-            </Button>
-          </div>
-          {props.deliveryAddress ? (
+      <div
+        onClick={() => {
+          history.push('/delivery-address');
+        }}
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+          marginTop: '10px',
+          marginBottom: '10px',
+          padding: '20px 0px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            style={{
+              fontSize: '14px',
+              marginLeft: '5px',
+              color: 'black',
+              fontWeight: 700,
+            }}
+            className={fontStyleCustom.myFont}
+          >
+            Delivery Address
+          </Typography>
+          <img src={iconRight} alt='myIcon' style={{ marginRight: '10px' }} />
+        </div>
+        <div
+          style={{
+            width: '100%',
+            padding: '0px 3px',
+          }}
+        >
+          {props.deliveryAddress && (
             <Typography
-              sx={{
-                fontSize: '1.5rem',
-                fontStyle: 'italic',
-                fontWeight: 'bold',
-                color: props.color.primary,
-                maxWidth: 'fit-content',
-                marginX: 1,
+              className={fontStyleCustom.myFont}
+              style={{
+                fontSize: '15px',
+                color: '#8A8D8E',
+                marginLeft: '5px',
+                lineHeight: 2,
               }}
             >
-              <span>
-                <table>
-                  <tr>
-                    <td
-                      style={{
-                        textAlign: 'left',
-                        width: '100%',
-                        display: '-webkit-box',
-                        WebkitLineClamp: '3',
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        padding: 0,
-                        margin: 0,
-                      }}
-                    >
-                      {props.deliveryAddress.street}
-                    </td>
-                  </tr>
-                </table>
-              </span>
-              # {props.deliveryAddress.unitNo} - {props.deliveryAddress.city} -{' '}
-              {props.deliveryAddress.postalCode}
+              <hr
+                style={{
+                  marginTop: '20px',
+                  backgroundColor: '#8A8D8E',
+                  opacity: 0.2,
+                }}
+              />
+              <table>
+                <tr>
+                  <td style={{ padding: 0, margin: 0 }}>
+                    {props.deliveryAddress.street}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style={{
+                      textAlign: 'left',
+                      width: '100%',
+                      display: '-webkit-box',
+                      WebkitLineClamp: '3',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      padding: 0,
+                      margin: 0,
+                    }}
+                  >
+                    {props.deliveryAddress.addressName},
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, margin: 0 }}>
+                    {props.deliveryAddress.unitNo}, {props.deliveryAddress.city}
+                    ,{props.deliveryAddress.postalCode}
+                  </td>
+                </tr>
+              </table>
             </Typography>
-          ) : (
-            renderWarning('delivery address.')
           )}
-        </Paper>
-        {props?.deliveryAddress && (
-          <Paper variant='outlined' style={styles.rootPaper}>
-            <div style={styles.rootMode}>
-              <Box flexDirection='column'>
-                <Typography style={styles.subTotal}>
-                  Delivery Provider
-                </Typography>
-              </Box>
-
-              <Button
-                style={styles.mode}
-                startIcon={<ContactsRoundedIcon style={styles.icon} />}
-                variant='outlined'
-                onClick={() => setOpenSelectDeliveryProvider(true)}
-              >
-                <Typography sx={styles.typography}>
-                  {!isEmptyObject(props.selectedDeliveryProvider)
-                    ? props?.selectedDeliveryProvider?.name
-                    : 'Delivery Provider'}
-                </Typography>
-              </Button>
-            </div>
-            {renderDeliveryProviderError()}
-          </Paper>
-        )}
-      </>
+        </div>
+      </div>
     );
+  };
+  const handleSelectDeliveryProvider = async (value) => {
+    setIsLoading(true);
+
+    await props.dispatch({
+      type: 'SET_SELECTED_DELIVERY_PROVIDERS',
+      payload: value,
+    });
+
+    const response = await props.dispatch(
+      OrderAction.changeOrderingMode({
+        orderingMode: 'DELIVERY',
+        provider: value,
+      })
+    );
+
+    await props.dispatch(
+      OrderAction.setData(response.data, CONSTANT.DATA_BASKET)
+    );
+
+    setIsLoading(false);
+    setOpenSelectDeliveryProvider(false);
+  };
+
+  const renderButtonProvider = () => {
+    if (!dataCalculateFee) {
+      return (
+        <Typography
+          className={fontStyleCustom.myFont}
+          style={{
+            color: props.color.primary,
+            textAlign: 'center',
+            fontWeight: 700,
+            fontSize: '14px',
+          }}
+        >
+          {!props.deliveryAddress
+            ? 'Please fill your form customer detail'
+            : 'Loading...'}
+        </Typography>
+      );
+    } else {
+      return dataCalculateFee?.dataProvider?.map((item) => {
+        const conditionName = dataDeliveryProvider === item.name ? true : false;
+        return (
+          <div
+            key={item.name}
+            style={{
+              marginBottom: '10px',
+              width: '100%',
+            }}
+          >
+            <div
+              onClick={() => {
+                handleSelectDeliveryProvider(item);
+                setDataDeliveryProvider(item.name);
+                setOpenAccordion(false);
+              }}
+              style={{
+                backgroundColor: conditionName ? '#4386A133' : 'white',
+                border: '1px solid #4386A1',
+                borderRadius: '10px',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px',
+              }}
+            >
+              <img src={iconVespa} alt='vespa' style={{ flex: 0 }} />
+
+              <div style={{ flex: 1, paddingLeft: '10px' }}>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={{
+                    fontSize: '14px',
+                    color: '#4386A1',
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.name}
+                </Typography>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={{
+                    fontSize: '14px',
+                    color: '#4386A1',
+                    fontWeight: 700,
+                  }}
+                >{`(SGD ${item?.deliveryFee})`}</Typography>
+              </div>
+              <div style={{ flex: 0 }}>
+                <div
+                  style={{
+                    borderRadius: '100%',
+                    border: '1px solid #4386A1',
+                    width: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {conditionName && (
+                    <img src={circleActive} width={11} height={11} />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      });
+    }
+  };
+
+  const renderDeliveryProvider = (name) => {
+    if (props.deliveryAddress) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Accordion
+            sx={{
+              boxShadow: 'none',
+              padding: 0,
+              margin: 0,
+              width: '100%',
+            }}
+            expanded={openAccordion}
+            onChange={() => setOpenAccordion(!openAccordion)}
+          >
+            <AccordionSummary
+              sx={{ padding: '0', margin: '0' }}
+              expandIcon={
+                <ExpandMoreIcon
+                  sx={{ width: '20px', height: '20px', marginRight: '10px' }}
+                />
+              }
+              aria-controls='panel1a-content'
+              id='panel1a-header'
+            >
+              <div
+                style={{
+                  width: gadgetScreen ? '80vw' : '35vw',
+                }}
+              >
+                <Typography
+                  style={{
+                    fontSize: '14px',
+                    color: 'black',
+                    fontWeight: 700,
+                    paddingLeft: '5px',
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {name}
+                </Typography>
+              </div>
+            </AccordionSummary>
+            <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
+              {renderButtonProvider()}
+            </AccordionDetails>
+          </Accordion>
+        </div>
+      );
+    }
   };
 
   const handleSubtotal = () => {
@@ -671,79 +969,349 @@ const Cart = ({ ...props }) => {
     return props.basket?.totalGrossAmount;
   };
 
-const renderSubTotal = () => {
-  return (
-    <Paper variant='outlined' style={styles.rootPaper}>
-      <div>
-        {props.basket?.totalDiscountAmount !== 0 && (
-          <div style={styles.rootSubTotalItem}>
-            <Typography style={styles.subTotal}>Subtotal b/f disc</Typography>
-            <Typography style={styles.subTotal}>
-              {handleCurrency(props.basket?.totalGrossAmount)}
-            </Typography>
+  const renderSubTotal = () => {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '10px 0px',
+          }}
+        >
+          <div style={{ width: '100%', textAlign: 'center', fontWeight: 700 }}>
+            Total Details
           </div>
-        )}
-        {props.basket?.exclusiveTax !== 0 && (
-          <div style={styles.rootSubTotalItem}>
-            <Typography style={styles.subTotal}>Tax</Typography>
-            <Typography style={styles.subTotal}>
-              {handleCurrency(props.basket.exclusiveTax)}
-            </Typography>
+          <div
+            onClick={() => setOpenDrawerBottom(false)}
+            style={{ marginRight: '10px', fontWeight: 700 }}
+          >
+            X
           </div>
-        )}
-        {props.basket?.totalDiscountAmount !== 0 && (
-          <div style={styles.rootSubTotalItem}>
-            <Typography style={styles.totalDiscount}>Discount</Typography>
-            <Typography style={styles.totalDiscount}>
-              - {handleCurrency(props.basket.totalDiscountAmount)}
-            </Typography>
-          </div>
-        )}
-        {props.basket?.totalGrossAmount !== 0 && (
-          <div style={styles.rootSubTotalItem}>
-            <Typography style={styles.subTotal}>Subtotal</Typography>
-            <Typography style={styles.subTotal}>
-              {handleCurrency(handleSubtotal())}
-            </Typography>
-          </div>
-        )}
-        {props.basket.totalSurchargeAmount !== 0 && (
-          <div style={styles.rootSubTotalItem}>
-            <Typography style={styles.subTotal}>Surcharge Amount</Typography>
-            <Typography style={styles.subTotal}>
-              {handleCurrency(props.basket.totalSurchargeAmount)}
-            </Typography>
-          </div>
-        )}
+        </div>
+        <div style={{ width: '100%' }}>
+          <hr
+            style={{
+              backgroundColor: '#D6D6D6',
+              padding: 0,
+              margin: 0,
+              opacity: 0.5,
+            }}
+          />
+        </div>
 
-        {props.orderingMode === 'DELIVERY' &&
-          !isEmptyObject(props.selectedDeliveryProvider) && (
+        <div
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            marginBottom: '10px',
+            padding: '10px',
+          }}
+        >
+          {props.basket?.totalDiscountAmount !== 0 && (
             <>
-              {props.basket?.provider &&
-                props.basket?.provider?.deliveryFee !== 0 && (
+              <div style={styles.rootSubTotalItem}>
+                <Typography
+                  style={styles.subTotal}
+                  className={fontStyleCustom.myFont}
+                >
+                  Subtotal b/f disc
+                </Typography>
+                <Typography style={styles.subTotal}>
+                  {handleCurrency(props.basket?.totalGrossAmount)}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <hr
+                  style={{
+                    backgroundColor: '#D6D6D6',
+                    width: '95%',
+                    opacity: 0.5,
+                  }}
+                />
+              </div>
+            </>
+          )}
+
+          {props.basket?.exclusiveTax !== 0 && (
+            <>
+              <div style={styles.rootSubTotalItem}>
+                <Typography style={styles.subTotal}>Tax</Typography>
+                <Typography style={styles.subTotal}>
+                  {handleCurrency(props.basket.exclusiveTax)}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <hr
+                  style={{
+                    backgroundColor: '#D6D6D6',
+                    width: '95%',
+                    opacity: 0.5,
+                  }}
+                />
+              </div>
+            </>
+          )}
+          {props.basket?.totalDiscountAmount !== 0 && (
+            <>
+              <div style={styles.rootSubTotalItem}>
+                <Typography style={styles.totalDiscount}>Discount</Typography>
+                <Typography style={styles.totalDiscount}>
+                  - {handleCurrency(props.basket.totalDiscountAmount)}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <hr
+                  style={{
+                    backgroundColor: '#D6D6D6',
+                    width: '95%',
+                    opacity: 0.5,
+                  }}
+                />
+              </div>
+            </>
+          )}
+          {props.basket?.totalGrossAmount !== 0 && (
+            <>
+              <div style={styles.rootSubTotalItem}>
+                <Typography style={styles.subTotal}>Subtotal</Typography>
+                <Typography style={styles.subTotal}>
+                  {handleCurrency(handleSubtotal())}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <hr
+                  style={{
+                    backgroundColor: '#D6D6D6',
+                    width: '95%',
+                    opacity: 0.5,
+                  }}
+                />
+              </div>
+            </>
+          )}
+          {props.basket.totalSurchargeAmount !== 0 && (
+            <>
+              <div style={styles.rootSubTotalItem}>
+                <Typography style={styles.subTotal}>
+                  Surcharge Amount
+                </Typography>
+                <Typography style={styles.subTotal}>
+                  {handleCurrency(props.basket.totalSurchargeAmount)}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <hr
+                  style={{
+                    backgroundColor: '#D6D6D6',
+                    width: '95%',
+                    opacity: 0.5,
+                  }}
+                />
+              </div>
+            </>
+          )}
+
+          {props.orderingMode === 'DELIVERY' &&
+            !isEmptyObject(props.selectedDeliveryProvider) && (
+              <>
+                {props.basket?.provider &&
+                  props.basket?.provider?.deliveryFee !== 0 && (
+                    <div style={styles.rootSubTotalItem}>
+                      <Typography style={styles.subTotal}>
+                        Delivery Fee
+                      </Typography>
+                      <Typography style={styles.subTotal}>
+                        {handleCurrency(props.basket?.provider?.deliveryFee)}
+                      </Typography>
+                    </div>
+                  )}
+
+                {props.basket?.provider?.deliveryFee === 0 &&
+                props.orderingMode === 'DELIVERY' ? (
                   <div style={styles.rootSubTotalItem}>
                     <Typography style={styles.subTotal}>
                       Delivery Fee
                     </Typography>
-                    <Typography style={styles.subTotal}>
-                      {handleCurrency(props.basket?.provider?.deliveryFee)}
-                    </Typography>
+                    <Typography style={styles.subTotal}>Free</Typography>
                   </div>
-                )}
-
-              {props.basket?.provider?.deliveryFee === 0 &&
-              props.orderingMode === 'DELIVERY' ? (
-                <div style={styles.rootSubTotalItem}>
-                  <Typography style={styles.subTotal}>Delivery Fee</Typography>
-                  <Typography style={styles.subTotal}>Free</Typography>
+                ) : null}
+                <div
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <hr
+                    style={{
+                      backgroundColor: '#D6D6D6',
+                      width: '95%',
+                      opacity: 0.5,
+                    }}
+                  />
                 </div>
-              ) : null}
-            </>
-          )}
+              </>
+            )}
+        </div>
       </div>
-    </Paper>
-  );
-};
+    );
+  };
+  const renderButtonDisable = () => {
+    return (
+      <div
+        style={{
+          paddingTop: 15,
+          paddingRight: 10,
+          paddingLeft: 10,
+          paddingBottom: 10,
+          width: '70%',
+        }}
+      >
+        <Button
+          onClick={() => {
+            if (props.isLoggedIn) {
+              handleConfirmAndPay();
+            } else {
+              handleLogin();
+            }
+          }}
+          disabled={handleDisabled()}
+          style={{
+            backgroundColor: props.color.primary,
+            borderRadius: '15px',
+            padding: '20px',
+            width: '100%',
+          }}
+        >
+          <Typography
+            className={fontStyleCustom.myFont}
+            sx={{
+              fontWeight: 500,
+              fontSize: '14px',
+              color: 'white',
+            }}
+          >
+            Payment
+          </Typography>
+        </Button>
+      </div>
+    );
+  };
+
+  const renderTotal = () => {
+    return (
+      <Paper
+        variant='elevation'
+        square={gadgetScreen}
+        elevation={gadgetScreen ? 3 : 3}
+        sx={
+          gadgetScreen
+            ? styles.grandTotalGadgetScreen
+            : {
+                padding: 0,
+                margin: 0,
+              }
+        }
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: gadgetScreen ? '0px 10px' : '0px',
+          }}
+        >
+          <div
+            style={{
+              width: '30%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              paddingLeft: gadgetScreen ? '0px' : '10px',
+            }}
+          >
+            <Typography
+              className={fontStyleCustom.myFont}
+              sx={{ fontWeight: 500, fontSize: '14px' }}
+            >
+              GRAND TOTAL
+            </Typography>
+            <div
+              onClick={() => setOpenDrawerBottom(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Typography
+                className={fontStyleCustom.myFont}
+                sx={{ fontWeight: 700, fontSize: '14px' }}
+              >
+                {handleCurrency(props.basket?.totalNettAmount)}
+              </Typography>
+              <img
+                src={IconDown}
+                style={{ marginLeft: '10px' }}
+                alt='myIcon'
+                width={12}
+                height={10}
+              />
+            </div>
+          </div>
+
+          {renderButtonDisable()}
+        </div>
+
+        {props.basket?.inclusiveTax !== 0 && (
+          <div style={styles.rootInclusiveTax}>
+            <Typography style={styles.inclusiveTax}>
+              {handleCurrency(props.basket?.inclusiveTax)}
+            </Typography>
+          </div>
+        )}
+      </Paper>
+    );
+  };
 
   const renderGrandTotal = () => {
     return (
@@ -803,24 +1371,47 @@ const renderSubTotal = () => {
             <ProductCartList />
             {renderOrderingMode()}
             {renderDeliveryAddress()}
+            {renderDeliveryProvider('Choose Delivery Provider')}
             {renderDateTime()}
-            {renderSubTotal()}
           </div>
-          {renderGrandTotal()}
+          {renderTotal()}
         </>
       );
     }
     return (
-      <div style={styles.rootCart}>
-        <div style={styles.cartGridLeft}>
-          <ProductCartList />
-        </div>
-        <div style={styles.cartGridRight}>
-          {renderOrderingMode()}
-          {renderDeliveryAddress()}
-          {renderDateTime()}
-          {renderSubTotal()}
-          {renderGrandTotal()}
+      <div style={{ width: '100vw' }}>
+        <div
+          style={{
+            width: '45%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            height: '99.3vh',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '1fr 85px',
+            gap: '0px 15px',
+            gridTemplateAreas: '"."\n    "."',
+          }}
+        >
+          <div
+            style={{
+              marginTop: '15%',
+              padding: '0px 10px',
+              overflowY: 'auto',
+            }}
+          >
+            <ProductCartList />
+            <div style={styles.cartGridRight}>
+              {renderOrderingMode()}
+              {renderDeliveryAddress()}
+              {renderDeliveryProvider('Choose Delivery Provider')}
+              {renderDateTime()}
+            </div>
+          </div>
+          {renderTotal()}
         </div>
       </div>
     );
@@ -866,6 +1457,13 @@ const renderSubTotal = () => {
             onClose={() => handleCloseTimeSlot()}
           />
         )}
+        <Drawer
+          anchor='bottom'
+          open={openDrawerBottom}
+          onClose={() => setOpenDrawerBottom((prev) => !prev)}
+        >
+          {renderSubTotal()}
+        </Drawer>
 
         {renderCartOrEmpty()}
       </Box>

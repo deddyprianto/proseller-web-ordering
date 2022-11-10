@@ -133,7 +133,7 @@ const TrackOrder = () => {
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div
         style={{
-          width: matches ? '30%' : '100%',
+          width: matches ? '40%' : '100%',
           marginLeft: 'auto',
           marginRight: 'auto',
           height: matches ? '100vh' : '85vh',

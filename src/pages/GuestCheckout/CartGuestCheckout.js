@@ -67,7 +67,9 @@ const useWindowSize = () => {
 
 const CartGuestCheckout = () => {
   const responsiveDesign = screen();
-
+  const [showErrorName, setShowErrorName] = useState(false);
+  const [showErrorPhone, setShowErrorPhone] = useState(false);
+  const [showErrorEmail, setShowErrorEmail] = useState(false);
   const [productSpecific, setProductSpecific] = useState();
   const [valueSearchCode, setValueSearchCode] = useState('');
   const [productDetailSpesific, setProductDetailSpesific] = useState();
@@ -243,6 +245,7 @@ const CartGuestCheckout = () => {
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
+      textAlign: 'center',
     },
     rootEmptyCart: {
       paddingLeft: 10,
@@ -262,6 +265,7 @@ const CartGuestCheckout = () => {
     },
     grandTotalFullScreen: {
       backgroundColor: color.background,
+      marginBottom: '10px',
     },
     rootGrandTotal: {
       display: 'flex',
@@ -748,7 +752,7 @@ const CartGuestCheckout = () => {
                   }}
                 >
                   {itemDetails?.quantity}x
-                </div>
+                </div> 
                 <div
                   style={{
                     fontWeight: 'bold',
@@ -759,6 +763,7 @@ const CartGuestCheckout = () => {
                   {itemDetails?.product.name}
                 </div>
               </div>
+
               <ul
                 style={{
                   color: '#8A8D8E',
@@ -2682,7 +2687,7 @@ const CartGuestCheckout = () => {
             marginLeft: 'auto',
             marginRight: 'auto',
             backgroundColor: 'white',
-            height: '100vh',
+            height: '99vh',
             borderRadius: '8px',
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
             overflowY: 'auto',
@@ -2722,9 +2727,29 @@ const CartGuestCheckout = () => {
       );
     } else {
       return (
-        <div style={styles.rootEmptyCart}>
-          <img src={config.url_emptyImage} alt='is empty' />
-          <Typography style={styles.emptyText}>Data is empty</Typography>
+        <div style={{ width: '100vw' }}>
+          <div
+            style={{
+              width: gadgetScreen ? '100%' : '40%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              backgroundColor: 'white',
+              height: '99vh',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              overflowY: 'auto',
+            }}
+          >
+            <div
+              style={{
+                marginTop: '20%',
+                padding: '0px 10px',
+              }}
+            >
+              <img src={config.url_emptyImage} alt='is empty' />
+              <Typography style={styles.emptyText}>Data is empty</Typography>
+            </div>
+          </div>
         </div>
       );
     }
