@@ -289,7 +289,7 @@ const ModalDeliveryAddress = ({
   });
 
   useEffect(() => {
-    if (state.customer.placeholderForEditAddressCustomer) {
+    if (state.customer.placeholderForEditAddressCustomer && !isCreate) {
       dispatch({
         type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT,
         data: {
