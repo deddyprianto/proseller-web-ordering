@@ -18,10 +18,12 @@ const MapContainer = (props) => {
       {alreadyPinned ? (
         <div
           onClick={() => {
-            dispatch({
-              type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER,
-              data: payload,
-            });
+           if (payload) {
+             dispatch({
+               type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER,
+               data: payload,
+             });
+           }
           }}
           style={{
             left: '50%',
