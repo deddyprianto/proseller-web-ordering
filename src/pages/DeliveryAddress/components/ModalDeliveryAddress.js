@@ -28,6 +28,7 @@ import config from '../../../config';
 import { MasterDataAction } from 'redux/actions/MasterDataAction';
 import { CustomerAction } from 'redux/actions/CustomerAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { CONSTANT } from 'helpers';
 
 const ModalDeliveryAddress = ({
   initialValue,
@@ -286,6 +287,24 @@ const ModalDeliveryAddress = ({
       window.location.reload();
     },
   });
+
+  useEffect(() => {
+    if (state.customer.placeholderForEditAddressCustomer) {
+      dispatch({
+        type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT,
+        data: {
+          streetName: formik.values.streetName,
+          isDisabledPostalCode: true,
+          unitNo: formik.values.unitNo,
+          address: formik.values.addressName,
+          city: 'Singapore',
+          street: 'Aft City Hall Stn Exit B, Singapore',
+          postalCode: formik.values.postalCode,
+          addressName: formik.values.addressName,
+        },
+      });
+    }
+  }, [formik.values]);
 
   return (
     <Dialog
