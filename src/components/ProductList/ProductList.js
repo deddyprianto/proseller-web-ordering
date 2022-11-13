@@ -286,7 +286,24 @@ const ProductList = ({ ...props }) => {
                 setIsMore(false);
               }}
             >
-              {category.name}
+              <table>
+                <tr>
+                  <td
+                    style={{
+                      textAlign: 'center',
+                      width: '100%',
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      padding: 0,
+                      margin: 0,
+                    }}
+                  >
+                    {category.name}
+                  </td>
+                </tr>
+              </table>
             </Tab>
           );
         })}
