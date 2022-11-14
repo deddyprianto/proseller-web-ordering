@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Shimmer from 'react-shimmer-effect';
 import Swal from 'sweetalert2';
 
 import Box from '@mui/material/Box';
@@ -21,6 +20,7 @@ import ModalDeliveryAddress from './components/ModalDeliveryAddress';
 import validationPostalCode from 'helpers/PostalCodeCheck';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { CONSTANT } from 'helpers';
 
 const DeliveryAddress = () => {
   const history = useHistory();
@@ -72,7 +72,7 @@ const DeliveryAddress = () => {
       position: 'fixed',
       zIndex: 10,
       width: 'auto',
-      marginTop: 2,
+      marginTop: '1px',
       boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
       display: 'flex',
       height: 40,
@@ -100,9 +100,6 @@ const DeliveryAddress = () => {
   const [optionsCity, setOptionsCity] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState({});
   const [onSuccess, setOnSuccess] = useState(false);
-  const [deliveryAddressUpdateItems, setDeliveryAddressUpdateItems] = useState(
-    {}
-  );
 
   const [modalDeliveryAddressOpen, setModalDeliveryAddressOpen] =
     useState(false);
@@ -369,7 +366,7 @@ const DeliveryAddress = () => {
           state.deliveryAddress &&
           state.deliveryAddress.address === data.address
         ) {
-          dispatch({ type: 'SET_DELIVERY_ADDRESS', data: null });
+          dispatch({ type: 'SET_DELIVERY_ADDRESS', payload: null });
         }
         const addressDeliveryFiltered = addressDelivery.filter(function (a) {
           return a.address !== data.address;
@@ -408,8 +405,6 @@ const DeliveryAddress = () => {
 
   const handleSelected = async (items) => {
     await dispatch(OrderAction.setData(items, 'SET_DELIVERY_ADDRESS'));
-
-    history.goBack();
   };
 
   const handleChange = (field, value) => {
@@ -463,7 +458,6 @@ const DeliveryAddress = () => {
             hidden: countryCode === undefined || countryCode === 'SG',
             color: state.theme.color,
             companyInfo: state.companyInfo,
-            deliveryAddressUpdateItems,
           }}
           getDataDeliveryAddress={() => getDataDeliveryAddress()}
           onSuccess={() => {
@@ -632,8 +626,11 @@ const DeliveryAddress = () => {
                                   <Button
                                     sx={style.editButton}
                                     onClick={() => {
+                                      dispatch({
+                                        type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT,
+                                        data: items,
+                                      });
                                       setIsCreate(false);
-                                      setDeliveryAddressUpdateItems(items);
                                       setModalDeliveryAddressOpen(true);
                                       setIndexEdit(index);
                                     }}
