@@ -294,11 +294,8 @@ const ModalDeliveryAddress = ({
         type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT,
         data: {
           streetName: formik.values.streetName,
-          isDisabledPostalCode: true,
           unitNo: formik.values.unitNo,
           address: formik.values.addressName,
-          city: 'Singapore',
-          street: 'Aft City Hall Stn Exit B, Singapore',
           postalCode: formik.values.postalCode,
           addressName: formik.values.addressName,
         },
@@ -336,6 +333,10 @@ const ModalDeliveryAddress = ({
               aria-label='close'
               size='large'
               onClick={() => {
+                dispatch({
+                  type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT,
+                  data: {},
+                });
                 localStorage.removeItem(`${config.prefix}_locationPinned`);
                 formik.resetForm();
                 onClose();
