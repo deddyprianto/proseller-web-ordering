@@ -430,7 +430,7 @@ const ModalDeliveryAddress = ({
                 component={InputBase}
                 fullWidth
                 margin='dense'
-                disabled={!isCreate || isLoading || postalCode}
+                disabled={isLoading || postalCode}
                 sx={style.inputBaseMargin}
                 size='small'
                 value={formik.values.postalCode || ''}
