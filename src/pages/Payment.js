@@ -566,7 +566,16 @@ const Payment = ({ ...props }) => {
           }}
           sx={styles.badge}
         >
-          <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+          <h1
+            style={{
+              color: 'black',
+              fontSize: 40,
+              fontWeight: 600,
+              marginTop: -5,
+            }}
+          >
+            {totalPrice}
+          </h1>
         </Badge>
       </Badge>
     );
