@@ -441,8 +441,10 @@ const PaymentMethodPage = () => {
         maxWidth='xl'
         sx={{
           '& .MuiDialog-paper': {
-            minHeight: '70%',
-            maxHeight: '70%',
+            minHeight: '100%',
+            maxHeight: '100%',
+            minWidth: '100%',
+            maxWidth: '100%',
           },
         }}
       >
