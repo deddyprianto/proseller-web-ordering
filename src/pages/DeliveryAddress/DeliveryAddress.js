@@ -405,6 +405,7 @@ const DeliveryAddress = () => {
 
   const handleSelected = async (items) => {
     await dispatch(OrderAction.setData(items, 'SET_DELIVERY_ADDRESS'));
+    history.goBack();
   };
 
   const handleChange = (field, value) => {
