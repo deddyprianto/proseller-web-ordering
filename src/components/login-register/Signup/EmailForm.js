@@ -186,14 +186,35 @@ const EmailForm = ({
             </div>
           </>
         )}
-        <Button
-          disabled={isSubmitting || agreeTC || !isTCAvailable}
-          className='button'
-          style={{ width: '100%', marginTop: 10, borderRadius: 5, height: 50 }}
-          onClick={() => handleSubmit()}
-        >
-          Create Account
-        </Button>
+        {isTCAvailable ? (
+          <Button
+            disabled={isSubmitting || agreeTC || !isTCAvailable}
+            className='button'
+            style={{
+              width: '100%',
+              marginTop: 10,
+              borderRadius: 5,
+              height: 50,
+            }}
+            onClick={() => handleSubmit()}
+          >
+            Create Account
+          </Button>
+        ) : (
+          <Button
+            disabled={isSubmitting}
+            className='button'
+            style={{
+              width: '100%',
+              marginTop: 10,
+              borderRadius: 5,
+              height: 50,
+            }}
+            onClick={() => handleSubmit()}
+          >
+            Create Account
+          </Button>
+        )}
       </div>
     </LoadingOverlayCustom>
   );
