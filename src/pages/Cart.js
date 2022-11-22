@@ -263,6 +263,13 @@ const Cart = ({ ...props }) => {
   }, [props.deliveryAddress]);
 
   useEffect(() => {
+    props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       await props.dispatch(OrderAction.getCart());

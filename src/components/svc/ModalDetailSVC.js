@@ -17,14 +17,14 @@ class ModalDetailSVC extends Component {
     };
   }
 
-  handlePurchaseSVC = async () => {
+  handlePurchaseSVC = async (itemSvc) => {
     let { dataDetail } = this.props;
     let { detailPurchase, count } = this.state;
     const { backupOutlet, defaultOutlet } = this.props;
 
-    let outlet = defaultOutlet
+    let outlet = defaultOutlet;
     if (outlet === undefined || outlet.id === undefined) {
-      outlet = backupOutlet
+      outlet = backupOutlet;
     }
 
     const payload = {
@@ -52,21 +52,24 @@ class ModalDetailSVC extends Component {
       },
       paySVC: true,
     };
-
+    this.props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: itemSvc,
+    });
     localStorage.setItem(
       `${config.prefix}_dataSettle`,
       JSON.stringify(encryptor.encrypt(payload))
     );
-    this.props.history.push("/payment");
+    this.props.history.push('/payment');
   };
 
   findTax = async (dataDetail) => {
     const { count } = this.state;
     const { backupOutlet, defaultOutlet } = this.props;
 
-    let outlet = defaultOutlet
+    let outlet = defaultOutlet;
     if (outlet === undefined || outlet.id === undefined) {
-      outlet = backupOutlet
+      outlet = backupOutlet;
     }
 
     let returnData = {
@@ -324,7 +327,7 @@ class ModalDetailSVC extends Component {
                         type='button'
                         disabled={count < 1}
                         className='btn btn-block btn-footer'
-                        onClick={() => this.handlePurchaseSVC()}
+                        onClick={() => this.handlePurchaseSVC(dataDetail)}
                       >
                         <b className='text-btn-theme'>
                           Purchase {getCurrency(detailPurchase.totalNettAmount)}
