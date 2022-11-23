@@ -274,7 +274,29 @@ const Voucher = ({ item, quantity, ...props }) => {
     return !isSpesificVoucherSelected || false;
   };
 
+  const handleCanNotUseWithPromoItem = () => {
+    setMessage('Can not use for product with promotion');
+    handleOpenModal();
+    return false;
+  };
+
   const handleTermsAndConditions = (value) => {
+    if (value?.validity?.canNotUseWithPromoItem) {
+      console.log(props.basket.details);
+      const hasPromoItem = props?.basket?.details?.find((item) => {
+        console.log(item);
+        return (
+          item.promotions &&
+          item.promotions.length > 0 &&
+          item.isPromotionApplied
+        );
+      });
+      console.log(hasPromoItem);
+      if (hasPromoItem) {
+        return handleCanNotUseWithPromoItem();
+      }
+    }
+
     if (value?.appliedTo === 'CATEGORY') {
       return handleSpecificCategoryCondition();
     }
