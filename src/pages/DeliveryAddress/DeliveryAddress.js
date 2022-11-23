@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Shimmer from 'react-shimmer-effect';
 import Swal from 'sweetalert2';
 
 import Box from '@mui/material/Box';
@@ -20,6 +19,8 @@ import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import ModalDeliveryAddress from './components/ModalDeliveryAddress';
 import validationPostalCode from 'helpers/PostalCodeCheck';
 import { OrderAction } from 'redux/actions/OrderAction';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { CONSTANT } from 'helpers';
 
 const DeliveryAddress = () => {
   const history = useHistory();
@@ -71,12 +72,16 @@ const DeliveryAddress = () => {
       position: 'fixed',
       zIndex: 10,
       width: 'auto',
-      marginTop: 2,
+      marginTop: '1px',
       boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
       display: 'flex',
       height: 40,
       left: 0,
       right: 0,
+    },
+    mainBox: {
+      mt: 10,
+      mb: 10,
     },
   };
 
@@ -95,9 +100,6 @@ const DeliveryAddress = () => {
   const [optionsCity, setOptionsCity] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState({});
   const [onSuccess, setOnSuccess] = useState(false);
-  const [deliveryAddressUpdateItems, setDeliveryAddressUpdateItems] = useState(
-    {}
-  );
 
   const [modalDeliveryAddressOpen, setModalDeliveryAddressOpen] =
     useState(false);
@@ -403,7 +405,6 @@ const DeliveryAddress = () => {
 
   const handleSelected = async (items) => {
     await dispatch(OrderAction.setData(items, 'SET_DELIVERY_ADDRESS'));
-
     history.goBack();
   };
 
@@ -434,254 +435,242 @@ const DeliveryAddress = () => {
     getDataDeliveryAddress();
   }, [onSuccess]);
 
-  if (loading) {
-    return (
-      <Shimmer>
-        <div
-          style={{
-            width: '100%',
-            height: 300,
-            alignSelf: 'center',
-            borderRadius: '8px',
-            marginBottom: 10,
+  return (
+    <LoadingOverlayCustom active={loading} spinner>
+      <Box className='site-main' sx={style.mainBox}>
+        <ModalDeliveryAddress
+          open={modalDeliveryAddressOpen}
+          onClose={() => {
+            handleUpdateDialogClose();
+          }}
+          isCreate={isCreate}
+          handleChange={(field, value) => handleChange(field, value)}
+          handleSelected={(update) => handleSelected(update)}
+          initialValue={{
+            optionAddressName,
+            getDeliveryAddress,
+            handleSelected,
+            addressDelivery,
+            deliveryAddress: state.order.deliveryAddress,
+            optionsProvince,
+            optionsCity,
+            countryCode,
+            indexEdit,
+            hidden: countryCode === undefined || countryCode === 'SG',
+            color: state.theme.color,
+            companyInfo: state.companyInfo,
+          }}
+          getDataDeliveryAddress={() => getDataDeliveryAddress()}
+          onSuccess={() => {
+            setOnSuccess(true);
+            handleUpdateDialogClose();
+          }}
+          onCreateError={(err) => {
+            console.log(err);
+            handleUpdateDialogClose();
           }}
         />
-      </Shimmer>
-    );
-  }
 
-  return (
-    <Box
-      className='site-main'
-      sx={{
-        mt: 10,
-        mb: 10,
-      }}
-    >
-      <ModalDeliveryAddress
-        open={modalDeliveryAddressOpen}
-        onClose={() => {
-          handleUpdateDialogClose();
-        }}
-        isCreate={isCreate}
-        handleChange={(field, value) => handleChange(field, value)}
-        handleSelected={(update) => handleSelected(update)}
-        initialValue={{
-          optionAddressName,
-          getDeliveryAddress,
-          handleSelected,
-          addressDelivery,
-          deliveryAddress: state.order.deliveryAddress,
-          optionsProvince,
-          optionsCity,
-          countryCode,
-          indexEdit,
-          hidden: countryCode === undefined || countryCode === 'SG',
-          color: state.theme.color,
-          companyInfo: state.companyInfo,
-          deliveryAddressUpdateItems,
-        }}
-        getDataDeliveryAddress={() => getDataDeliveryAddress()}
-        onSuccess={() => {
-          setOnSuccess(true);
-          handleUpdateDialogClose();
-        }}
-        onCreateError={(err) => {
-          console.log(err);
-          handleUpdateDialogClose();
-        }}
-      />
-
-      <Box className='content-area'>
-        <Box className='background-theme' component='div' sx={style.boxContent}>
-          <div
-            style={{ marginLeft: 10, fontSize: 16 }}
-            onClick={() => history.goBack()}
+        <Box className='content-area'>
+          <Box
+            className='background-theme'
+            component='div'
+            sx={style.boxContent}
           >
-            <i className='fa fa-chevron-left'></i> Back
-          </div>
-        </Box>
+            <div
+              style={{ marginLeft: 10, fontSize: 16 }}
+              onClick={() => history.goBack()}
+            >
+              <i className='fa fa-chevron-left'></i> Back
+            </div>
+          </Box>
 
-        <Box className='site-main' sx={{ marginY: 2, marginX: 1 }}>
-          <Grid
-            container
-            direction='row'
-            justifyContent='space-between'
-            alignItems='center'
-            spacing={2}
-          >
+          <Box className='site-main' sx={{ marginY: 2, marginX: 1 }}>
             <Grid
               container
               direction='row'
-              columnSpacing={2}
-              rowSpacing={1}
+              justifyContent='space-between'
               alignItems='center'
-              mt={8}
-              ml={0}
+              spacing={2}
             >
-              <Grid item xs={6}>
-                <Typography fontSize={16} fontWeight={700} className='color'>
-                  Delivery Address
-                </Typography>
-              </Grid>
-              <Grid item xs={6} textAlign='right'>
-                <Button
-                  sx={style.buttonAddAddress}
-                  onClick={() => {
-                    setModalDeliveryAddressOpen(true);
-                  }}
-                  className='btn-ordering'
-                  startIcon={<Add />}
-                >
-                  Add New Address
-                </Button>
-              </Grid>
-              {addressDelivery?.length > 0
-                ? addressDelivery?.map((items, index) => {
-                    return (
-                      <Grid item xs={12} sm={6} key={index}>
-                        <Card
-                          sx={{
-                            maxWidth: '100%',
-                            boxShadow: 'rgb(128 128 128 / 50%) 1px 2px 5px',
-                            cursor: 'pointer',
-                            marginTop: 2,
-                            border:
-                              state?.order?.deliveryAddress?.address ===
-                              items?.address
-                                ? `2px solid ${state.theme.color.primary}`
-                                : 'none',
-                          }}
-                        >
-                          <CardContent>
-                            <Typography
-                              variant='h5'
-                              fontWeight='bold'
-                              color={state.theme.color.primary}
-                              gutterBottom
-                            >
-                              {items.addressName}
-                            </Typography>
-                            <Typography
-                              color='#666'
-                              fontSize={14}
-                              fontWeight={700}
-                            >
-                              {items.recipient}
-                            </Typography>
-                            <Typography
-                              variant='body2'
-                              color='#666'
-                              fontSize={12}
-                              fontWeight={400}
-                              lineHeight={2}
-                            >
-                              {items.street || items.streetName}
-                            </Typography>
-                            <Typography
-                              variant='body2'
-                              color='#666'
-                              fontSize={12}
-                              fontWeight={400}
-                              lineHeight={2}
-                            >
-                              {items.unitNo}
-                            </Typography>
-                            <Typography
-                              variant='body2'
-                              color='#666'
-                              fontSize={12}
-                              fontWeight={400}
-                              lineHeight={2}
-                            >
-                              {items.city}
-                            </Typography>
-                            <Typography
-                              variant='body2'
-                              color='#666'
-                              fontSize={12}
-                              fontWeight={400}
-                              lineHeight={2}
-                            >
-                              {items.postalCode}
-                            </Typography>
-                            {items.coordinate ? (
-                              <div>
-                                <i
-                                  style={style.iconPined}
-                                  className='fa fa-map-pin'
-                                />{' '}
-                                <span
-                                  style={style.locationPinText}
-                                  className='customer-group-name'
-                                >
-                                  Location Already Pinned
-                                </span>
-                              </div>
-                            ) : (
-                              <div>
-                                <i
-                                  style={style.iconStyle}
-                                  className='fa fa-map-pin'
-                                />{' '}
-                                <span style={style.locationNotPin}>
-                                  Location Not Pinned
-                                </span>
-                              </div>
-                            )}
-                          </CardContent>
-                          <CardActions>
-                            <Grid
-                              container
-                              direction='row'
-                              justifyContent='space-between'
-                              alignItems='center'
-                              spacing={2}
-                            >
-                              <Grid item xs={6} md={6}>
-                                <Button
-                                  sx={style.editButton}
-                                  onClick={() => {
-                                    setIsCreate(false);
-                                    setDeliveryAddressUpdateItems(items);
-                                    setModalDeliveryAddressOpen(true);
-                                    setIndexEdit(index);
-                                  }}
-                                >
-                                  Edit
-                                </Button>
-                              </Grid>
-                              <Grid item xs={6} md={6}>
-                                {!profileMatch ? (
-                                  <Button
-                                    sx={style.button}
-                                    onClick={() => handleSelected(items)}
-                                    variant='outlined'
+              <Grid
+                container
+                direction='row'
+                columnSpacing={2}
+                rowSpacing={1}
+                alignItems='center'
+                mt={8}
+                ml={0}
+              >
+                <Grid item xs={6}>
+                  <Typography fontSize={16} fontWeight={700} className='color'>
+                    Delivery Address
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} textAlign='right'>
+                  <Button
+                    sx={style.buttonAddAddress}
+                    onClick={() => {
+                      setModalDeliveryAddressOpen(true);
+                    }}
+                    className='btn-ordering'
+                    startIcon={<Add />}
+                  >
+                    Add New Address
+                  </Button>
+                </Grid>
+                {addressDelivery?.length > 0
+                  ? addressDelivery?.map((items, index) => {
+                      return (
+                        <Grid item xs={12} sm={6} key={index}>
+                          <Card
+                            // TODO: dont used inline css
+                            sx={{
+                              maxWidth: '100%',
+                              boxShadow: 'rgb(128 128 128 / 50%) 1px 2px 5px',
+                              cursor: 'pointer',
+                              marginTop: 2,
+                              border:
+                                state?.order?.deliveryAddress?.address ===
+                                items?.address
+                                  ? // TODO: ask gilang
+                                    `2px solid ${state.theme.color.primary}`
+                                  : 'none',
+                            }}
+                          >
+                            <CardContent>
+                              <Typography
+                                variant='h5'
+                                fontWeight='bold'
+                                color={state.theme.color.primary}
+                                gutterBottom
+                              >
+                                {items.addressName}
+                              </Typography>
+                              <Typography
+                                color='#666'
+                                fontSize={14}
+                                fontWeight={700}
+                              >
+                                {items.recipient}
+                              </Typography>
+                              <Typography
+                                variant='body2'
+                                color='#666'
+                                fontSize={12}
+                                fontWeight={400}
+                                lineHeight={2}
+                              >
+                                {items.street || items.streetName}
+                              </Typography>
+                              <Typography
+                                variant='body2'
+                                color='#666'
+                                fontSize={12}
+                                fontWeight={400}
+                                lineHeight={2}
+                              >
+                                {items.unitNo}
+                              </Typography>
+                              <Typography
+                                variant='body2'
+                                color='#666'
+                                fontSize={12}
+                                fontWeight={400}
+                                lineHeight={2}
+                              >
+                                {items.city}
+                              </Typography>
+                              <Typography
+                                variant='body2'
+                                color='#666'
+                                fontSize={12}
+                                fontWeight={400}
+                                lineHeight={2}
+                              >
+                                {items.postalCode}
+                              </Typography>
+                              {items.coordinate ? (
+                                <div>
+                                  <i
+                                    style={style.iconPined}
+                                    className='fa fa-map-pin'
+                                  />{' '}
+                                  <span
+                                    style={style.locationPinText}
+                                    className='customer-group-name'
                                   >
-                                    Select
-                                  </Button>
-                                ) : (
+                                    Location Already Pinned
+                                  </span>
+                                </div>
+                              ) : (
+                                <div>
+                                  <i
+                                    style={style.iconStyle}
+                                    className='fa fa-map-pin'
+                                  />{' '}
+                                  <span style={style.locationNotPin}>
+                                    Location Not Pinned
+                                  </span>
+                                </div>
+                              )}
+                            </CardContent>
+                            <CardActions>
+                              <Grid
+                                container
+                                direction='row'
+                                justifyContent='space-between'
+                                alignItems='center'
+                                spacing={2}
+                              >
+                                <Grid item xs={6} md={6}>
                                   <Button
-                                    sx={style.button}
-                                    variant='outlined'
-                                    onClick={() => handleDelete(items)}
+                                    sx={style.editButton}
+                                    onClick={() => {
+                                      dispatch({
+                                        type: CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT,
+                                        data: items,
+                                      });
+                                      setIsCreate(false);
+                                      setModalDeliveryAddressOpen(true);
+                                      setIndexEdit(index);
+                                    }}
                                   >
-                                    Delete
+                                    Edit
                                   </Button>
-                                )}
+                                </Grid>
+                                <Grid item xs={6} md={6}>
+                                  {!profileMatch ? (
+                                    <Button
+                                      sx={style.button}
+                                      onClick={() => handleSelected(items)}
+                                      variant='outlined'
+                                    >
+                                      Select
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      sx={style.button}
+                                      variant='outlined'
+                                      onClick={() => handleDelete(items)}
+                                    >
+                                      Delete
+                                    </Button>
+                                  )}
+                                </Grid>
                               </Grid>
-                            </Grid>
-                          </CardActions>
-                        </Card>
-                      </Grid>
-                    );
-                  })
-                : null}
+                            </CardActions>
+                          </Card>
+                        </Grid>
+                      );
+                    })
+                  : null}
+              </Grid>
             </Grid>
-          </Grid>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </LoadingOverlayCustom>
   );
 };
 

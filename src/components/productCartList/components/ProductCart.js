@@ -3,15 +3,20 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import config from 'config';
+import Button from '@mui/material/Button';
 
 import IconButton from '@mui/material/IconButton';
 import Typography from '@material-ui/core/Typography';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import ProductCartRemoveModal from 'components/productCartList/components/ProductCartRemoveModal';
+
+import editIcon from 'assets/images/edit.png';
+import TagPromotion from 'assets/images/Tag.png';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -48,6 +53,7 @@ const ProductCart = ({ item, ...props }) => {
     textPromotion: {
       fontSize: 12,
       color: props.color.primary,
+      paddingLeft: '5px',
     },
     rootProductCart: {
       position: 'relative',
@@ -232,9 +238,18 @@ const ProductCart = ({ item, ...props }) => {
     if (!isEmptyArray(item.promotions)) {
       const promotions = item.promotions.map((promotion, index) => {
         return (
-          <Typography key={index} style={styles.textPromotion}>
-            - {promotion.name}
-          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              padding: '5px',
+            }}
+            key={promotion}
+          >
+            <img src={TagPromotion} width={15} />
+            <Typography style={styles.textPromotion}>
+              {promotion.name}
+            </Typography>
+          </div>
         );
       });
       return promotions;
@@ -268,59 +283,184 @@ const ProductCart = ({ item, ...props }) => {
     }
   };
 
-const renderPrice = () => {
-  if (item?.totalDiscAmount !== 0) {
+  const renderPrice = () => {
+    if (item?.totalDiscAmount !== 0) {
+      return (
+        <div style={styles.rootPrice}>
+          <Typography style={styles.priceDiscount}>
+            {handleCurrency(item?.grossAmount)}
+          </Typography>
+          <Typography style={styles.price}>
+            {!handleCurrency(item?.amountAfterDisc)
+              ? 'SGD 0.00'
+              : handleCurrency(item?.amountAfterDisc)}
+          </Typography>
+        </div>
+      );
+    }
     return (
       <div style={styles.rootPrice}>
-        <Typography style={styles.priceDiscount}>
-          {handleCurrency(item?.grossAmount)}
-        </Typography>
         <Typography style={styles.price}>
-          {!handleCurrency(item?.amountAfterDisc)
-            ? 'SGD 0.00'
-            : handleCurrency(item?.amountAfterDisc)}
+          {handleCurrency(item?.grossAmount)}
         </Typography>
       </div>
     );
-  }
-  return (
-    <div style={styles.rootPrice}>
-      <Typography style={styles.price}>
-        {handleCurrency(item?.grossAmount)}
-      </Typography>
-    </div>
-  );
-};
+  };
 
   return (
-    <div style={styles.rootProductCart}>
-      {isOpenAddModal && (
-        <ProductAddModal
-          open={isOpenAddModal}
-          width={width}
-          handleClose={handleCloseAddModal}
-          product={item.product}
-          selectedProduct={item}
-        />
-      )}
-
-      {isOpenRemoveModal && (
-        <ProductCartRemoveModal
-          open={isOpenRemoveModal}
-          width={width}
-          handleClose={handleCloseRemoveModal}
-          product={item.product}
-          selectedProductRemove={item}
-        />
-      )}
-
+    <div
+      style={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+      }}
+    >
       <div
-        style={styles.item}
-        onClick={() => {
-          handleOpenAddModal();
+        style={{
+          maxWidth: 'min(1280px, 100% - 20px)',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          display: 'grid',
+          gridTemplateColumns: '1.6fr 0.4fr',
+          gridTemplateRows: '1fr',
+          gap: '0px 0px',
+          gridTemplateAreas: '". ."',
         }}
       >
-        <div style={styles.image}>
+        {isOpenAddModal && (
+          <ProductAddModal
+            open={isOpenAddModal}
+            width={width}
+            handleClose={handleCloseAddModal}
+            product={item.product}
+            selectedProduct={item}
+          />
+        )}
+
+        {isOpenRemoveModal && (
+          <ProductCartRemoveModal
+            open={isOpenRemoveModal}
+            width={width}
+            handleClose={handleCloseRemoveModal}
+            product={item.product}
+            selectedProductRemove={item}
+          />
+        )}
+        <div style={{ width: '100%' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '8px',
+            }}
+          >
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                backgroundColor: props.color.primary,
+                borderRadius: '5px',
+                color: 'white',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {item.quantity}x
+            </div>
+
+            <div
+              style={{
+                fontWeight: 'bold',
+                marginLeft: '5px',
+                fontSize: '14px',
+                lineHeight: 1.4,
+              }}
+            >
+              {item?.product.name} ({handleCurrency(item.product.retailPrice)})
+            </div>
+
+            {/* <div style={styles.itemBody}>
+
+              {renderPromotion()}
+              {renderProductModifiers(item?.modifiers)}
+              {renderNotes()}
+              {renderPrice()}
+            </div> */}
+          </div>
+          <ul
+            style={{
+              color: '#8A8D8E',
+              fontSize: '13px',
+              padding: 0,
+              margin: 0,
+              listStyle: 'none',
+            }}
+          >
+            <li style={{ marginTop: '10px' }}>{renderPromotion()}</li>
+            <hr style={{ opacity: 0.5 }} />
+            <li>
+              Add-On:
+              {item?.modifiers?.map((items) => {
+                return items?.modifier?.details.map((item) => {
+                  return (
+                    <ul key={item?.name} style={{ paddingLeft: '10px' }}>
+                      <li>
+                        <span
+                          style={{
+                            color: props.color.primary,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item?.quantity}x{' '}
+                        </span>
+                        {item?.name}{' '}
+                        <span
+                          style={{
+                            color: props.color.primary,
+                            fontWeight: 500,
+                            fontSize: '12px',
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          +{handleCurrency(item?.price)}
+                        </span>
+                      </li>
+                    </ul>
+                  );
+                });
+              })}
+            </li>
+            <li>
+              <table>
+                <tr>
+                  <td
+                    className={fontStyleCustom.title}
+                    style={{
+                      textAlign: 'left',
+                      width: '100%',
+                      display: '-webkit-box',
+                      WebkitLineClamp: '3',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      padding: 0,
+                      margin: 0,
+                    }}
+                  >
+                    <span style={{ fontWeight: 700 }}>Notes: </span>
+                    {item?.remark}
+                  </td>
+                </tr>
+              </table>
+            </li>
+          </ul>
+        </div>
+        <div>
           <img
             style={styles.imageSize}
             src={renderImageProduct(item)}
@@ -328,27 +468,66 @@ const renderPrice = () => {
             title={item?.product.name}
           />
         </div>
-        <div style={styles.itemBody}>
-          <div style={styles.name}>
-            <Typography style={styles.quantity}>{item.quantity}x</Typography>
-            <Typography style={styles.typography}>
-              {item?.product.name} ({handleCurrency(item.product.retailPrice)})
-            </Typography>
-          </div>
-          {renderPromotion()}
-          {renderProductModifiers(item?.modifiers)}
-          {renderNotes()}
-          {renderPrice()}
-        </div>
       </div>
-      <IconButton
-        style={styles.buttonDelete}
-        onClick={() => {
-          handleOpenRemoveModal();
+      <div
+        style={{
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          width: '95%',
+          marginTop: '10px',
+          borderTop: '1px dashed #4386A1',
         }}
       >
-        <DeleteIcon fontSize='large' />
-      </IconButton>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            paddingTop: '10px',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+              }}
+            >
+              <Button
+                sx={{
+                  width: '80px',
+                  border: '1px solid #4386A1',
+                  borderRadius: '10px',
+                  paddingTop: '10px',
+                  paddingBottom: '10px',
+                  color: props.color.font,
+                }}
+                onClick={() => {
+                  handleOpenAddModal();
+                }}
+                startIcon={<img src={editIcon} />}
+              >
+                Edit
+              </Button>
+              <IconButton
+                onClick={handleOpenRemoveModal}
+                style={{
+                  color: props.color.primary,
+                }}
+              >
+                <DeleteIcon fontSize='large' />
+              </IconButton>
+            </div>
+            <div style={{ color: props.color.primary }}>{renderPrice()}</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

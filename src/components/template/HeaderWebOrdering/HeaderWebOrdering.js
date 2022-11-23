@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, withRouter, useHistory } from 'react-router-dom';
+import { Link, withRouter, useHistory, useLocation } from 'react-router-dom';
 import Badge from '@mui/material/Badge';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -18,9 +18,8 @@ import Sidebar from './components/Sidebar';
 import { getLogoInfo } from '../../../redux/actions/LogoAction';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
-const useStyles = () => {
+const useStyles = (location) => {
   const { color } = useSelector((state) => state.theme);
-
   const mobileSize = useMobileSize();
   const result = {
     container: {
@@ -30,21 +29,68 @@ const useStyles = () => {
       top: 0,
       width: '100%',
       zIndex: 999,
-      backgroundColor: '#f2f2f2',
-      paddingTop: '8px',
-      paddingBottom: '8px',
+      backgroundColor:
+        location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/trackorder' ||
+        location.pathname === '/thankyoupage' ||
+        location.pathname === '/ordertrackhistory' ||
+        location.pathname === '/cart'
+          ? 'transparent'
+          : '#f2f2f2',
+      paddingTop:
+        location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/trackorder' ||
+        location.pathname === '/thankyoupage' ||
+        location.pathname === '/ordertrackhistory' ||
+        location.pathname === '/cart'
+          ? '0px'
+          : '8px',
+      paddingBottom:
+        location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/trackorder' ||
+        location.pathname === '/thankyoupage' ||
+        location.pathname === '/ordertrackhistory' ||
+        location.pathname === '/cart'
+          ? '0px'
+          : '8px',
     },
     wrapNavbar: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      width: '80%',
+      width:
+        location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/trackorder' ||
+        location.pathname === '/thankyoupage' ||
+        location.pathname === '/ordertrackhistory' ||
+        location.pathname === '/cart'
+          ? '45%'
+          : '80%',
+      backgroundColor: '#f2f2f2',
+      padding:
+        location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/trackorder' ||
+        location.pathname === '/thankyoupage' ||
+        location.pathname === '/ordertrackhistory' ||
+        location.pathname === '/cart'
+          ? '10px 0px'
+          : '0px',
     },
+
     wrapNavbarForMobile: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      width: '95%',
+      width: '100%',
+      padding:
+        location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/trackorder' ||
+        location.pathname === '/thankyoupage' ||
+        location.pathname === '/ordertrackhistory' ||
+        location.pathname === '/cart'
+          ? '5px 10px'
+          : '0px 7px',
+      backgroundColor: '#f2f2f2',
     },
     wrapList: {
       display: 'flex',
@@ -106,7 +152,7 @@ const useStyles = () => {
       color: color.primary,
     },
     logoAndOuletName: {
-      width: mobileSize ? '125px' : '9.5em',
+      width: mobileSize ? '97px' : '9.5em',
       height: 50,
     },
   };
@@ -115,7 +161,8 @@ const useStyles = () => {
 };
 
 const HeaderWebOrdering = () => {
-  const styles = useStyles();
+  const location = useLocation();
+  const styles = useStyles(location);
   const history = useHistory();
   const mobileSize = useMobileSize();
   const dispatch = useDispatch();
@@ -292,7 +339,7 @@ const HeaderWebOrdering = () => {
     if (!isLoggedIn && guessCheckout) {
       return (
         <ListItem>
-          <Link to='/trackorder'>Track Order</Link>
+          <Link to='/trackorder'>TrackOrder</Link>
         </ListItem>
       );
     }
@@ -414,8 +461,8 @@ const HeaderWebOrdering = () => {
       }}
     >
       {logo && (
-        <Link to='/'>
-          <img style={styles.logoAndOuletName} alt={'Logo'} src={logo} />
+        <Link>
+          <img style={styles.logoAndOuletName} src={logo} />
         </Link>
       )}
       {renderOutletNamed()}

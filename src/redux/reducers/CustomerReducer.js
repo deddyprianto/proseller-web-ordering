@@ -5,6 +5,8 @@ const defaultState = {
   fields: null,
   stamps: null,
   showLoadingOnModal: false,
+  placeholderAddressCustomer: {},
+  placeholderForEditAddressCustomer: {},
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -40,6 +42,16 @@ export default function reducer(state = defaultState, action) {
       };
     case CONSTANT.LOADING_ON_MODAL_REGISTER:
       return { ...state, showLoadingOnModal: action.data };
+    case CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER:
+      return {
+        ...state,
+        placeholderAddressCustomer: action.data,
+      };
+    case CONSTANT.PLACEHOLDER_ADDRESS_CUSTOMER_FOR_EDIT:
+      return {
+        ...state,
+        placeholderForEditAddressCustomer: action.data,
+      };
     default:
       return state;
   }
