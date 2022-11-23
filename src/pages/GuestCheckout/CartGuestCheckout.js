@@ -20,7 +20,6 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
-import circleActive from 'assets/images/bulatActive.png';
 import fontStyleCustom from './style/styles.module.css';
 import IconDown from 'assets/images/VectorDown.png';
 import addIcon from 'assets/images/add.png';
@@ -752,7 +751,7 @@ const CartGuestCheckout = () => {
                   }}
                 >
                   {itemDetails?.quantity}x
-                </div> 
+                </div>
                 <div
                   style={{
                     fontWeight: 'bold',
@@ -1334,6 +1333,20 @@ const CartGuestCheckout = () => {
     );
   };
 
+  const renderElipsIcon = () => {
+    return (
+      <svg
+        width='128'
+        height='128'
+        viewBox='0 0 128 128'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <circle cx='64' cy='64' r='64' fill={color?.primary} />
+      </svg>
+    );
+  };
+
   const renderButtonProvider = () => {
     if (!dataCalculateFee) {
       return (
@@ -1366,7 +1379,7 @@ const CartGuestCheckout = () => {
               onClick={() => {
                 handleSelectDeliveryProviderGuest(item);
                 setDataDeliveryProvider(item.name);
-                setOpenAccordion(false);
+                setOpenAccordion(true);
               }}
               style={{
                 backgroundColor: conditionName ? '#4386A133' : 'white',
@@ -1412,11 +1425,10 @@ const CartGuestCheckout = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    padding: '2px',
                   }}
                 >
-                  {conditionName && (
-                    <img src={circleActive} width={11} height={11} />
-                  )}
+                  {conditionName && renderElipsIcon()}
                 </div>
               </div>
             </div>

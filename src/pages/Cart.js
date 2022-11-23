@@ -32,8 +32,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import circleActive from 'assets/images/bulatActive.png';
-import iconVespa from 'assets/images/2.png';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -848,6 +846,20 @@ const Cart = ({ ...props }) => {
     );
   };
 
+  const renderElipsIcon = () => {
+    return (
+      <svg
+        width='128'
+        height='128'
+        viewBox='0 0 128 128'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <circle cx='64' cy='64' r='64' fill={props.color?.primary} />
+      </svg>
+    );
+  };
+
   const renderButtonProvider = () => {
     if (!dataCalculateFee) {
       return (
@@ -880,7 +892,7 @@ const Cart = ({ ...props }) => {
               onClick={() => {
                 handleSelectDeliveryProvider(item);
                 setDataDeliveryProvider(item.name);
-                setOpenAccordion(false);
+                setOpenAccordion(true);
               }}
               style={{
                 backgroundColor: conditionName
@@ -927,11 +939,10 @@ const Cart = ({ ...props }) => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    padding: '2px',
                   }}
                 >
-                  {conditionName && (
-                    <img src={circleActive} width={11} height={11} />
-                  )}
+                  {conditionName && renderElipsIcon()}
                 </div>
               </div>
             </div>
