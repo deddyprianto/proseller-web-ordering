@@ -443,9 +443,7 @@ const ModalDeliveryAddress = ({
               className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'
               style={{ marginTop: 10 }}
             >
-              <label style={{ fontSize: 12 }}>
-                Pin Location <span className='required'>*</span>
-              </label>
+              <label style={{ fontSize: 12 }}>Pin Location</label>
               <LinkRouter to='/map'>
                 {isCreate ? (
                   <MapAtom
