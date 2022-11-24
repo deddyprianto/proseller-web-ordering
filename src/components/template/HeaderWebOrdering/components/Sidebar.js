@@ -19,12 +19,12 @@ import { useSelector } from 'react-redux';
 
 const useStyles = (theme) => ({
   icon: {
-    color: 'black',
+    color: '#25282b',
     cursor: 'pointer',
     paddingLeft: '8px',
     paddingRight: '8px',
-    width: '100%',
-    height: '100%',
+    width: '40px',
+    height: '40px',
   },
   box: {
     width: 250,
