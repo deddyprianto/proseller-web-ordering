@@ -197,7 +197,7 @@ const EmailForm = ({
             onClick={() => {
               setIsLoading(true);
               handleSubmit().then((res) => {
-                if (!res || !res.status) {
+                if (!res || !res.status || res.status === 'FAILED') {
                   setIsLoading(false);
                 }
               });
@@ -218,7 +218,7 @@ const EmailForm = ({
             onClick={() => {
               setIsLoading(true);
               handleSubmit().then((res) => {
-                if (!res || !res.status) {
+                if (!res || !res.status || res.status === 'FAILED') {
                   setIsLoading(false);
                 }
               });
