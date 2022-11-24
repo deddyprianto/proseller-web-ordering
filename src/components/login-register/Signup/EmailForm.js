@@ -232,21 +232,6 @@ const EmailForm = ({
   );
 };
 
-EmailForm.defaultProps = {
-  color: '',
-  children: null,
-  errorName: '',
-  email: '',
-  handleSubmit: null,
-  handleChange: null,
-  isSubmitting: false,
-  error: '',
-  errorPassword: '',
-  enablePassword: false,
-  invitationCode: '',
-  isTCAvailable: false,
-  termsAndConditions: '',
-};
 
 EmailForm.propTypes = {
   children: PropTypes.func,
