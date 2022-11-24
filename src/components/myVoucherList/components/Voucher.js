@@ -282,7 +282,6 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const handleTermsAndConditions = (value) => {
     if (value?.validity?.canNotUseWithPromoItem) {
-      console.log(props.basket.details);
       const hasPromoItem = props?.basket?.details?.find((item) => {
         console.log(item);
         return (
