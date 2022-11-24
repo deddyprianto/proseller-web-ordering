@@ -1199,6 +1199,8 @@ const LoginRegister = (props) => {
               enableSMSOTP={enableSMSOTP}
               enableWhatsappOTP={enableWhatsappOTP}
               minimumAge={minimumAge}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
             ></SignUp>
           ) : (
             <Portal
