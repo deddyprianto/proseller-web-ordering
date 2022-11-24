@@ -17,14 +17,14 @@ class ModalDetailSVC extends Component {
     };
   }
 
-  handlePurchaseSVC = async () => {
+  handlePurchaseSVC = async (itemSvc) => {
     let { dataDetail } = this.props;
     let { detailPurchase, count } = this.state;
     const { backupOutlet, defaultOutlet } = this.props;
 
-    let outlet = defaultOutlet
+    let outlet = defaultOutlet;
     if (outlet === undefined || outlet.id === undefined) {
-      outlet = backupOutlet
+      outlet = backupOutlet;
     }
 
     const payload = {
@@ -52,21 +52,24 @@ class ModalDetailSVC extends Component {
       },
       paySVC: true,
     };
-
+    this.props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: itemSvc,
+    });
     localStorage.setItem(
       `${config.prefix}_dataSettle`,
       JSON.stringify(encryptor.encrypt(payload))
     );
-    this.props.history.push("/payment");
+    this.props.history.push('/payment');
   };
 
   findTax = async (dataDetail) => {
     const { count } = this.state;
     const { backupOutlet, defaultOutlet } = this.props;
 
-    let outlet = defaultOutlet
+    let outlet = defaultOutlet;
     if (outlet === undefined || outlet.id === undefined) {
-      outlet = backupOutlet
+      outlet = backupOutlet;
     }
 
     let returnData = {
@@ -103,91 +106,95 @@ class ModalDetailSVC extends Component {
     return (
       <div>
         <div
-          className="modal fade"
-          id="voucher-detail-modal"
+          className='modal fade'
+          id='voucher-detail-modal'
           tabIndex={-1}
-          role="dialog"
-          aria-labelledby="exampleModalCenterTitle"
-          aria-hidden="true"
+          role='dialog'
+          aria-labelledby='exampleModalCenterTitle'
+          aria-hidden='true'
         >
           <div
-            className="modal-dialog modal-dialog-product modal-dialog-centered modal-full"
-            role="document"
+            className='modal-dialog modal-dialog-product modal-dialog-centered modal-full'
+            role='document'
           >
             {dataDetail && (
               <div
-                className="modal-content"
-                style={{ width: "100%", marginTop: 20, marginBottom: 20 }}
+                className='modal-content'
+                style={{ width: '100%', marginTop: 20, marginBottom: 20 }}
               >
                 <div
-                  className="modal-header"
-                  style={{ display: "flex", justifyContent: "left" }}
+                  className='modal-header'
+                  style={{ display: 'flex', justifyContent: 'left' }}
                 >
                   <h5
-                    className="modal-title"
-                    id="exampleModalLabel"
+                    className='modal-title'
+                    id='exampleModalLabel'
                     style={{ fontSize: 20 }}
                   >
                     {dataDetail.name}
                   </h5>
                   <button
-                    id="btn-close-detail-voucher"
-                    type="button"
-                    className="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
+                    id='btn-close-detail-voucher'
+                    type='button'
+                    className='close'
+                    data-dismiss='modal'
+                    aria-label='Close'
                     style={{
-                      position: "absolute",
+                      position: 'absolute',
                       right: 10,
                       top: 13,
                     }}
                   >
                     <span
-                      aria-hidden="true"
-                      style={{ fontSize: 30, color: "red" }}
+                      aria-hidden='true'
+                      style={{ fontSize: 30, color: 'red' }}
                     >
                       ×
                     </span>
                   </button>
                 </div>
-                <div className="modal-body">
+                <div className='modal-body'>
                   <img
                     style={{
-                      width: "100%",
+                      width: '100%',
                       height: 150,
-                      objectFit: "contain",
-                      overflow: "hidden",
+                      objectFit: 'contain',
+                      overflow: 'hidden',
                     }}
                     src={dataDetail.image ? dataDetail.image : voucherIcon}
-                    alt="voucher"
+                    alt='voucher'
                   />
 
                   <div
-                    style={{ width: "100%", textAlign: "center", marginTop: 5 }}
+                    style={{ width: '100%', textAlign: 'center', marginTop: 5 }}
                   >
                     <div
-                      className=""
-                      style={{ fontSize: 18, fontWeight: "bold" }}
+                      className=''
+                      style={{ fontSize: 18, fontWeight: 'bold' }}
                     >
                       {dataDetail.name}
                     </div>
-                    
+
                     <div
-                      className="customer-group-name"
-                      style={{ fontSize: 15, fontWeight: "bold" }}
+                      className='customer-group-name'
+                      style={{ fontSize: 15, fontWeight: 'bold' }}
                     >
                       {getCurrency(dataDetail.retailPrice)}
                     </div>
                     <br />
                     <hr />
-                    <div style={{ fontSize: 14, textAlign: "justify" }}>
+                    <div style={{ fontSize: 14, textAlign: 'justify' }}>
                       {dataDetail.description}
                     </div>
                   </div>
 
                   <div
                     className={styles.counter}
-                    style={{ marginTop: 30, marginBottom: 50, height: isEmptyObject(detailPurchase) ? 100 : 20 }}
+                    style={{
+                      marginTop: 30,
+                      marginBottom: 50,
+                      height: isEmptyObject(detailPurchase) ? 100 : 20,
+                    }}
                   ></div>
 
                   {!isEmptyObject(detailPurchase) && (
@@ -195,20 +202,20 @@ class ModalDetailSVC extends Component {
                       <hr />
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         }}
                       >
                         <p
-                          style={{ fontWeight: "bold" }}
-                          className="customer-gr"
+                          style={{ fontWeight: 'bold' }}
+                          className='customer-gr'
                         >
                           Point Rewards
                         </p>
                         <p
-                          style={{ fontWeight: "bold" }}
-                          className="font-color-theme"
+                          style={{ fontWeight: 'bold' }}
+                          className='font-color-theme'
                         >
                           {dataDetail.pointReward * count}
                         </p>
@@ -216,20 +223,20 @@ class ModalDetailSVC extends Component {
                       <hr />
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         }}
                       >
                         <p
-                          style={{ fontWeight: "bold" }}
-                          className="customer-gr"
+                          style={{ fontWeight: 'bold' }}
+                          className='customer-gr'
                         >
                           Tax Amount
                         </p>
                         <p
-                          style={{ fontWeight: "bold" }}
-                          className="font-color-theme"
+                          style={{ fontWeight: 'bold' }}
+                          className='font-color-theme'
                         >
                           {getCurrency(detailPurchase.totalTaxAmount)}
                         </p>
@@ -237,20 +244,20 @@ class ModalDetailSVC extends Component {
                       <hr />
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         }}
                       >
                         <p
-                          style={{ fontWeight: "bold" }}
-                          className="font-color-theme"
+                          style={{ fontWeight: 'bold' }}
+                          className='font-color-theme'
                         >
                           Total
                         </p>
                         <p
-                          style={{ fontWeight: "bold" }}
-                          className="font-color-theme"
+                          style={{ fontWeight: 'bold' }}
+                          className='font-color-theme'
                         >
                           {getCurrency(detailPurchase.totalNettAmount)}
                         </p>
@@ -260,20 +267,20 @@ class ModalDetailSVC extends Component {
                   )}
 
                   <div
-                    className="pizzaro-handheld-footer-bar"
+                    className='pizzaro-handheld-footer-bar'
                     style={{
-                      display: "flex",
-                      justifyContent: "center",
+                      display: 'flex',
+                      justifyContent: 'center',
                       padding: 5,
                       paddingBottom: 20,
                       paddingTop: 20,
                     }}
                   >
-                    <div className="control-quantity">
+                    <div className='control-quantity'>
                       <button
                         disabled={count === 0}
                         style={{ minWidth: 40 }}
-                        className="btn btn-increase"
+                        className='btn btn-increase'
                         onClick={async () => {
                           if (count > 0)
                             await this.setState({ count: count - 1 });
@@ -283,24 +290,24 @@ class ModalDetailSVC extends Component {
                           this.setState({ detailPurchase: result });
                         }}
                       >
-                        <b className="text-btn-theme" style={{ fontSize: 20 }}>
+                        <b className='text-btn-theme' style={{ fontSize: 20 }}>
                           -
                         </b>
                       </button>
                       <b
-                        className="color"
+                        className='color'
                         style={{
                           fontSize: 20,
                           minWidth: 40,
-                          textAlign: "center",
-                          fontWeight: "bold",
+                          textAlign: 'center',
+                          fontWeight: 'bold',
                         }}
                       >
                         {count}
                       </b>
                       <button
                         style={{ minWidth: 40 }}
-                        className="btn btn-increase"
+                        className='btn btn-increase'
                         onClick={async () => {
                           await this.setState({ count: count + 1 });
                           const result = await this.findTax(
@@ -309,18 +316,20 @@ class ModalDetailSVC extends Component {
                           this.setState({ detailPurchase: result });
                         }}
                       >
-                        <b className="text-btn-theme" style={{ fontSize: 20 }}>
+                        <b className='text-btn-theme' style={{ fontSize: 20 }}>
                           +
                         </b>
                       </button>
                     </div>
-                    <div style={{ width: "100%", marginLeft: 10 }}>
+                    <div style={{ width: '100%', marginLeft: 10 }}>
                       <button
+                        data-dismiss='modal'
+                        type='button'
                         disabled={count < 1}
-                        className="btn btn-block btn-footer"
-                        onClick={() => this.handlePurchaseSVC()}
+                        className='btn btn-block btn-footer'
+                        onClick={() => this.handlePurchaseSVC(dataDetail)}
                       >
-                        <b className="text-btn-theme">
+                        <b className='text-btn-theme'>
                           Purchase {getCurrency(detailPurchase.totalNettAmount)}
                         </b>
                       </button>
