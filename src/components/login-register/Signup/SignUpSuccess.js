@@ -90,19 +90,16 @@ const SignUpSuccess = ({
   );
 };
 SignUpSuccess.propTypes = {
-  counter: PropTypes.string,
-  counterMinutes: PropTypes.string,
-  enableSMSOTP: PropTypes.bool,
-  enableWhatsappOTP: PropTypes.bool,
-  handleChange: PropTypes.func,
+  username: PropTypes.string,
   handleLogin: PropTypes.func,
-  isSending: PropTypes.bool,
-  method: PropTypes.string,
-  sendCounter: PropTypes.number,
   sendOtpToEmail: PropTypes.func,
   sendOtpToPhone: PropTypes.func,
+  handleChange: PropTypes.func,
+  isSending: PropTypes.bool,
+  sendCounter: PropTypes.number,
+  counterMinutes: PropTypes.string,
+  counter: PropTypes.string,
   usePassword: PropTypes.bool,
-  username: PropTypes.string,
 };
 
 export default SignUpSuccess;
