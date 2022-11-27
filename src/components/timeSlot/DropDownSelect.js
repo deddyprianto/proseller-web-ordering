@@ -1,6 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import * as React from 'react';
 import {
   Dropdown,
@@ -10,6 +7,7 @@ import {
 } from 'reactstrap';
 import iconDown from 'assets/images/IconDown.png';
 import { isEmptyObject } from 'helpers/CheckEmpty';
+import { useSelector } from 'react-redux';
 
 const DropDownCustomSelect = ({
   setSelectTimeDropDown,
@@ -20,7 +18,7 @@ const DropDownCustomSelect = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-
+  const color = useSelector((state) => state.theme.color);
   let date = [];
   if (getDateBaseOnClick) {
     timeList?.forEach((item) => {
@@ -129,7 +127,7 @@ const DropDownCustomSelect = ({
             alignItems: 'center',
             fontWeight: 700,
             fontSize: '16px',
-            color: 'GrayText',
+            color: color.primary,
             opacity: '.8',
             paddingTop: !selectTimeDropDown && '20px',
             paddingBottom: !selectTimeDropDown && '20px',

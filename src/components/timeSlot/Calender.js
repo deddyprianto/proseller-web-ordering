@@ -1,7 +1,3 @@
-/* eslint-disable react/no-this-in-sfc */
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import Button from '@mui/material/Button';
@@ -51,7 +47,7 @@ const useStyles = (mobileSize, color) => ({
     display: 'flex',
     width: 30,
     height: 30,
-    backgroundColor: '#4D86A0',
+    backgroundColor: color.primary,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
@@ -69,7 +65,7 @@ const useStyles = (mobileSize, color) => ({
     alignItems: 'center',
     width: '40px',
     height: '40px',
-    backgroundColor: '#4D86A0',
+    backgroundColor: color.primary,
     borderRadius: '100%',
     color: 'white',
     fontSize: mobileSize ? '11px' : '13px',
@@ -97,20 +93,22 @@ const useStyles = (mobileSize, color) => ({
     backgroundColor: color.primary,
   },
   buttonDate: {
-    padding: mobileSize ? '2px' : '10px',
-    color: '#4D86A0',
-    border: '1px solid #4D86A0',
+    color: color.primary,
+    border: `1px solid ${color.primary}`,
     backgroundColor: 'white',
     '&:hover': { color: 'gray' },
     fontSize: mobileSize ? '11px' : '13px',
+    height: '30px',
+    width: '30px',
   },
   buttonDateActive: {
-    padding: mobileSize ? '2px' : '10px',
-    backgroundColor: '#4D86A0',
+    backgroundColor: color.primary,
     color: 'white',
-    border: '1px solid #4D86A0',
+    border: `1px solid ${color.primary}`,
     '&:hover': { color: 'gray' },
     fontSize: mobileSize ? '11px' : '13px',
+    width: '30px',
+    height: '30px',
   },
   gridMonth: {
     display: 'grid',
@@ -229,7 +227,7 @@ const useStyles = (mobileSize, color) => ({
     justifyContent: 'space-around',
   },
   wrapperChooseDate: {
-    backgroundColor: '#EAF3FB',
+    backgroundColor: `${color.primary}20`,
     borderRadius: '5px',
     padding: '10px',
     textChoosenDate: {
@@ -244,13 +242,13 @@ const useStyles = (mobileSize, color) => ({
     justifyContent: 'space-between',
   },
   wrapperChooseDateTime: {
-    backgroundColor: '#EAF3FB',
+    backgroundColor: `${color.primary}20`,
     borderRadius: '10px',
     padding: '5px',
   },
   textChooseDateTime: {
     fontWeight: 'bold',
-    color: '#4D86A0',
+    color: color.primary,
     fontSize: '13px',
     marginLeft: '2px',
     marginRight: '2px',
@@ -275,6 +273,7 @@ const Calendar = ({ onClose }) => {
   const [postsPerPage] = useState(4);
   const [selector, setSelector] = useState('');
   const [selectTime, setselectTime] = useState();
+  const [dateActive, setDateActive] = useState('');
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
   );
@@ -326,7 +325,7 @@ const Calendar = ({ onClose }) => {
       calender.push(
         Array(7)
           .fill(0)
-          .map(() => day.add(1, 'day').clone().format('DD MMM'))
+          .map(() => day.add(1, 'day').clone().format('YYYY MMM DD'))
       );
     }
 
@@ -489,11 +488,9 @@ const Calendar = ({ onClose }) => {
             onClick={() => {
               setSelector('date');
             }}
-            style={
-              selector === 'date' ? styles.buttonDateActive : styles.buttonDate
-            }
+            style={styles.buttonDate}
           >
-            {selectedDate}
+            {dateActive ? dateActive : selectedDate}
           </button>
           <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
           <button
@@ -641,10 +638,24 @@ const Calendar = ({ onClose }) => {
 
   const renderDeliveryDateItem = (item) => {
     const itemDate = item.split(' ');
-    const date = Number(itemDate[0]);
+    const date = Number(itemDate[2]);
     const month = itemDate[1];
-    const isActive = selectedDate === date;
+    const year = itemDate[0];
+    const isActive = dateActive === date;
     const isThisMonth = selectedMonth === month;
+
+    const combineDateNMonth = moment()
+      .year(year)
+      .month(month)
+      .date(date)
+      .format('YYYYMMDD');
+
+    const availableDateFromAPI = timeList.some((item) => {
+      const arr = item.date.split('-');
+      const stringToInt = arr.join('');
+
+      return combineDateNMonth === stringToInt;
+    });
 
     const styleFontDate = !isThisMonth
       ? {
@@ -657,16 +668,30 @@ const Calendar = ({ onClose }) => {
 
     const styleCircle =
       isActive && isThisMonth ? styles.circleActive : styles.circle;
-    console.log(selectedDate);
+
     return (
       <div
-        style={styles.styleDate}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '5px',
+          pointerEvents: !availableDateFromAPI && 'none',
+        }}
         onClick={() => {
-          setSelectedDate(date);
+          setDateActive(date);
         }}
       >
         <div style={styleCircle}>
-          <Typography style={styleFontDate}>{date}</Typography>
+          <Typography
+            style={{
+              ...styleFontDate,
+              opacity: availableDateFromAPI ? 1 : 0.2,
+              cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {date}
+          </Typography>
         </div>
       </div>
     );
@@ -705,12 +730,47 @@ const Calendar = ({ onClose }) => {
 
   const renderDeliveryMonthItem = (item) => {
     const getSubstrMonth = item.substring(0, 3);
+    const combineYearNMonth = moment()
+      .year(selectedYear)
+      .month(item)
+      .format('YYYYMM');
+
+    const yearFilterFromAPI = timeList.some((item) => {
+      const getYYMM = item.date.split('-');
+      getYYMM.pop();
+      const joinArrayItem = getYYMM.join('');
+      return combineYearNMonth === joinArrayItem;
+    });
+
     return (
       <p
         style={
           getSubstrMonth === selectedMonth
-            ? styles.circleActiveForDDMMYY
-            : styles.itemDDMMYY
+            ? {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '40px',
+                height: '40px',
+                backgroundColor: yearFilterFromAPI
+                  ? color.primary
+                  : 'transparent',
+                borderRadius: '100%',
+                color: yearFilterFromAPI ? 'white' : 'black',
+                opacity: yearFilterFromAPI ? 1 : 0.2,
+                fontSize: mobileSize ? '11px' : '13px',
+                marginLeft: '4px',
+                marginRight: '4px',
+              }
+            : {
+                color: 'black',
+                fontSize: mobileSize ? '11px' : '13px',
+                paddingLeft: '10px',
+                paddingRight: '10px',
+                opacity: yearFilterFromAPI ? 1 : 0.2,
+                cursor: yearFilterFromAPI ? 'pointer' : 'not-allowed',
+                pointerEvents: !yearFilterFromAPI && 'none',
+              }
         }
         onClick={() => {
           setSelectedMonth(item.substring(0, 3));
@@ -740,12 +800,36 @@ const Calendar = ({ onClose }) => {
     );
   };
   const renderDeliveryYearItem = (item) => {
+    const availableYearFromAPI = timeList.some(
+      (items) => items.date.split('-')[0] === item
+    );
+
     return (
       <p
         style={
           item === selectedYear
-            ? styles.circleActiveForDDMMYY
-            : styles.itemDDMMYY
+            ? {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '40px',
+                height: '40px',
+                backgroundColor: color.primary,
+                borderRadius: '100%',
+                color: 'white',
+                fontSize: mobileSize ? '11px' : '13px',
+                marginLeft: '4px',
+                marginRight: '4px',
+              }
+            : {
+                color: 'black',
+                fontSize: mobileSize ? '11px' : '13px',
+                paddingLeft: '10px',
+                paddingRight: '10px',
+                opacity: availableYearFromAPI ? 1 : 0.2,
+                cursor: availableYearFromAPI ? 'pointer' : 'not-allowed',
+                pointerEvents: !availableYearFromAPI && 'none',
+              }
         }
         onClick={() => {
           setSelectedYear(item);
@@ -890,7 +974,6 @@ const Calendar = ({ onClose }) => {
       );
     } else {
       return getAllDateForTimeSlot.map((itemDate) => {
-        console.log('dedd =>', 'render ulang');
         const baseStyleStack = {
           width: '80px',
           height: '100px',
