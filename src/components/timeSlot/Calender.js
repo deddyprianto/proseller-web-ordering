@@ -567,10 +567,15 @@ const Calendar = ({ onClose }) => {
             <Typography
               style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}
             >
-              {selectedMonth},{' '}
+              {selectedMonth}
             </Typography>
             <Typography
-              style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: 'black',
+                marginLeft: '2px',
+              }}
             >
               {selectedYear}
             </Typography>
@@ -684,6 +689,9 @@ const Calendar = ({ onClose }) => {
         }}
         onClick={() => {
           setDateActive(date);
+          if (date === 1) {
+            handleMonthSlider('next');
+          }
         }}
       >
         <div style={styleCircle}>
