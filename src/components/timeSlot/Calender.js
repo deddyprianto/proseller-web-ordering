@@ -423,6 +423,10 @@ const Calendar = ({ onClose }) => {
     printTime();
   }, []);
 
+  const changeFormatDate = (itemDate) => {
+    return itemDate.split(' ').join('-');
+  };
+
   const handleSaveDateTime = async () => {
     const formatDate = `${moment(selectTime).format('DD')}-${moment(selectTime)
       .format('MM')
@@ -896,9 +900,15 @@ const Calendar = ({ onClose }) => {
             sx={styles.buttonConfirm}
             variant='contained'
             onClick={() => {
-              const getSelectedAllDate = `${selectedDate}-${selectedMonth}-${selectedYear}`;
+              const getSelectedAllDate = `${dateActive}-${selectedMonth}-${selectedYear}`;
               setselectTime(getSelectedAllDate);
               setSelector('');
+              const formatForSendApi = moment()
+                .year(selectedYear)
+                .month(selectedMonth)
+                .date(dateActive)
+                .format('YYYY MM DD');
+              setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
             }}
           >
             Apply
@@ -942,10 +952,6 @@ const Calendar = ({ onClose }) => {
 
   const compareDateLocalWithDateApi = (changeFormatDate) => {
     return timeList.some((item) => item?.date === changeFormatDate);
-  };
-
-  const changeFormatDate = (itemDate) => {
-    return itemDate.split(' ').join('-');
   };
 
   const nameDay = (item) => {
