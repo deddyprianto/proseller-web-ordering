@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 
 const FooterWebOrdering = () => {
+  const widthScreen = screen();
   const responsiveDesign = screen();
   const location = useLocation();
   const allState = useSelector((state) => state);
@@ -270,6 +271,10 @@ const FooterWebOrdering = () => {
                 label={menu.text.toUpperCase()}
                 component={Link}
                 to={menu.path}
+                sx={{
+                  marginLeft: widthScreen.width <= 400 ? '-10px' : '0px',
+                  marginRight: widthScreen.width <= 400 ? '-10px' : '0px',
+                }}
                 icon={iconCheck(
                   menu.text,
                   value === index
