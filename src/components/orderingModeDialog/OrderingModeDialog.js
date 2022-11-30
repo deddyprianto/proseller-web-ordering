@@ -16,8 +16,10 @@ import { CONSTANT } from 'helpers';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const OrderingModeDialog = ({ open, onClose }) => {
-  const [orderingModeActive, setOrderingModeActive] = useState();
-  const [itemOrderingMode, setItemOrderingMode] = useState({});
+  const orderingModeActive = useSelector(
+    (state) => state.order.orderingModeActive
+  );
+  const itemOrderingMode = useSelector((state) => state.order.itemOrderingMode);
   const colorState = useSelector((state) => state.theme.color);
   const defaultOutlet = useSelector((state) => state.order.basket.outlet);
   const selectedDeliveryProvider = useSelector(
@@ -348,8 +350,8 @@ const OrderingModeDialog = ({ open, onClose }) => {
       return (
         <div
           onClick={() => {
-            setItemOrderingMode(item);
-            setOrderingModeActive(item);
+            dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
+            dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
           }}
           style={
             item.name === orderingModeActive?.name || item.name === orderingMode
