@@ -260,6 +260,7 @@ const Calendar = ({ onClose }) => {
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
+  const [dateIfTimeSlotSelected, setDateIfTimeSlotSelected] = useState('');
   const [selectTimeDropDown, setSelectTimeDropDown] = useState('');
   const [dates, setDates] = useState([]);
   const [mode, setMode] = useState();
@@ -335,7 +336,7 @@ const Calendar = ({ onClose }) => {
   const getAllDate = () => {
     let monthArr = [];
     const weeks = moment().add(0, 'weeks').startOf('week');
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
       monthArr.push(weeks.clone().add(i, 'day').format('YYYY MM DD'));
     }
 
@@ -488,36 +489,13 @@ const Calendar = ({ onClose }) => {
           justifyContent='center'
           alignItems='center'
         >
-          <button
-            onClick={() => {
-              setSelector('date');
-            }}
-            style={styles.buttonDate}
-          >
+          <button style={styles.buttonDate}>
             {dateActive ? dateActive : selectedDate}
           </button>
           <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
-          <button
-            onClick={() => {
-              setSelector('month');
-            }}
-            style={
-              selector === 'month' ? styles.buttonDateActive : styles.buttonDate
-            }
-          >
-            {selectedMonth}
-          </button>
+          <button style={styles.buttonDate}>{selectedMonth}</button>
           <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
-          <button
-            onClick={() => {
-              setSelector('year');
-            }}
-            style={
-              selector === 'year' ? styles.buttonDateActive : styles.buttonDate
-            }
-          >
-            {selectedYear}
-          </button>
+          <button style={styles.buttonDate}>{selectedYear}</button>
         </Stack>
       </Stack>
     );
@@ -558,29 +536,37 @@ const Calendar = ({ onClose }) => {
         >
           <KeyboardArrowLeft style={{ color: 'black' }} />
         </Button>
-        <Button
-          onClick={() => {
-            setSelector('month');
-          }}
-        >
-          <Stack direction='row'>
-            <Typography
-              style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}
-            >
-              {selectedMonth}
-            </Typography>
-            <Typography
-              style={{
-                fontSize: 12,
-                fontWeight: 'bold',
-                color: 'black',
-                marginLeft: '2px',
-              }}
-            >
-              {selectedYear}
-            </Typography>
-          </Stack>
-        </Button>
+
+        <Stack direction='row'>
+          <Typography
+            onClick={() => {
+              setSelector('month');
+            }}
+            style={{
+              fontSize: 12,
+              fontWeight: 'bold',
+              color: 'black',
+              cursor: 'pointer',
+            }}
+          >
+            {selectedMonth}
+          </Typography>
+          <Typography
+            onClick={() => {
+              setSelector('year');
+            }}
+            style={{
+              fontSize: 12,
+              fontWeight: 'bold',
+              color: 'black',
+              marginLeft: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            {selectedYear}
+          </Typography>
+        </Stack>
+
         <Button
           onClick={() => {
             handleMonthSlider('next');
@@ -917,6 +903,10 @@ const Calendar = ({ onClose }) => {
                 .date(dateActive)
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
+              setDateIfTimeSlotSelected(changeFormatDate(formatForSendApi));
+              dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
             }}
           >
             Apply
@@ -975,6 +965,25 @@ const Calendar = ({ onClose }) => {
     );
   };
 
+  if (dateIfTimeSlotSelected) {
+    getAllDateForTimeSlot.sort((item) => {
+      if (dateIfTimeSlotSelected === item.split(' ').join('-')) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+  }
+
+  if (dateEdit.date) {
+    getAllDateForTimeSlot.sort((item) => {
+      if (dateEdit.date === item.split(' ').join('-')) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+  }
   const renderTimeScroll = () => {
     if (!timeList) {
       return (
@@ -1004,7 +1013,7 @@ const Calendar = ({ onClose }) => {
 
         const stackStyle =
           changeFormatDate(itemDate) === dateEdit.date ||
-          changeFormatDate(itemDate) === selectTime
+          changeFormatDate(itemDate) === getDateBaseOnClick
             ? {
                 ...baseStyleStack,
                 backgroundColor: color.primary,
@@ -1030,7 +1039,7 @@ const Calendar = ({ onClose }) => {
 
         const cycleStyle =
           changeFormatDate(itemDate) === dateEdit.date ||
-          changeFormatDate(itemDate) === selectTime
+          changeFormatDate(itemDate) === getDateBaseOnClick
             ? {
                 ...baseCycleStyle,
                 color: color.primary,
