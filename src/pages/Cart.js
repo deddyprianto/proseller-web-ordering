@@ -236,6 +236,13 @@ const Cart = ({ ...props }) => {
   }, [props.orderingMode]);
 
   useEffect(() => {
+    props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
     const getDataProviderListAndFee = async () => {
       if (props.deliveryAddress) {
         setIsLoading(true);
