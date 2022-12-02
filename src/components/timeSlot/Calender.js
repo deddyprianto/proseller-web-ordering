@@ -286,6 +286,9 @@ const Calendar = ({ onClose }) => {
   const saveTimeSlotCalendar = useSelector(
     (state) => state.guestCheckoutCart.saveTimeSlotCalendar
   );
+  const saveTimeSlotForEdit = useSelector(
+    (state) => state.guestCheckoutCart.saveTimeSlotForEdit
+  );
   const dateEdit = useSelector((state) => state.guestCheckoutCart);
   const orderingMode = useSelector((state) => state.order.orderingMode);
   const timeslot = useSelector((state) => state.guestCheckoutCart);
@@ -994,6 +997,7 @@ const Calendar = ({ onClose }) => {
   };
 
   let filteredItem;
+  let dateListEdit;
 
   if (saveTimeSlotCalendar) {
     getAllDateForTimeSlot.sort((item) => {
@@ -1023,6 +1027,16 @@ const Calendar = ({ onClose }) => {
         return 1;
       }
     });
+    const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
+
+    const dateFiltered = getAllDateForTimeSlot.filter(
+      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+    );
+
+    const dateSorted = dateFiltered.sort(
+      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+    );
+    dateListEdit = dateSorted;
   }
   const renderTimeScroll = () => {
     if (!timeList) {
@@ -1038,6 +1052,100 @@ const Calendar = ({ onClose }) => {
     } else {
       if (filteredItem) {
         return filteredItem.map((itemDate) => {
+          const baseStyleStack = {
+            width: '80px',
+            height: '100px',
+            borderRadius: '10px',
+          };
+          const baseCycleStyle = {
+            display: 'flex',
+            width: 26,
+            height: 26,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 100,
+          };
+
+          const stackStyle =
+            changeFormatDate(itemDate) === dateEdit.date ||
+            changeFormatDate(itemDate) === getDateBaseOnClick
+              ? {
+                  ...baseStyleStack,
+                  backgroundColor: color.primary,
+                  border: `1px solid ${color.primary}80`,
+                  color: 'white',
+                }
+              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+              ? {
+                  ...baseStyleStack,
+                  backgroundColor: 'white',
+                  border: `1px solid ${color.primary}80`,
+                  color: 'gray',
+                  opacity: '.4',
+                  pointerEvents: 'none',
+                  cursor: 'not-allowed',
+                }
+              : {
+                  ...baseStyleStack,
+                  backgroundColor: 'white',
+                  border: `1px solid ${color.primary}80`,
+                  color: color.primary,
+                };
+
+          const cycleStyle =
+            changeFormatDate(itemDate) === dateEdit.date ||
+            changeFormatDate(itemDate) === getDateBaseOnClick
+              ? {
+                  ...baseCycleStyle,
+                  color: color.primary,
+                  backgroundColor: 'white',
+                }
+              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+              ? {
+                  ...baseCycleStyle,
+                  backgroundColor: color.primary,
+                }
+              : {
+                  ...baseCycleStyle,
+                  backgroundColor: color.primary,
+                  color: 'white',
+                };
+
+          return (
+            <SwiperSlide
+              key={changeFormatDate(itemDate)}
+              style={{ flexShrink: 'unset' }}
+            >
+              <Stack
+                direction='column'
+                alignItems='center'
+                justifyContent='space-around'
+                sx={stackStyle}
+                onClick={() => {
+                  setselectTime(changeFormatDate(itemDate));
+                  setGetDateBaseOnClick(changeFormatDate(itemDate));
+                  dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+                  dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+                  dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+                }}
+              >
+                <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
+                <div style={cycleStyle}>
+                  <Typography>
+                    {moment(changeFormatDate(itemDate)).format('DD')}
+                  </Typography>
+                </div>
+                <Typography>
+                  {moment(changeFormatDate(itemDate))
+                    .format('MM')
+                    .toLocaleUpperCase()}
+                </Typography>
+              </Stack>
+            </SwiperSlide>
+          );
+        });
+      } else if (dateListEdit) {
+        return dateListEdit.map((itemDate) => {
           const baseStyleStack = {
             width: '80px',
             height: '100px',
@@ -1207,6 +1315,10 @@ const Calendar = ({ onClose }) => {
                   dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
                   dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
                   dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+                  dispatch({
+                    type: CONSTANT.SAVE_TIMESLOT_FOR_EDIT,
+                    payload: changeFormatDate(itemDate),
+                  });
                 }}
               >
                 <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
