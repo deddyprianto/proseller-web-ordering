@@ -537,7 +537,7 @@ const Calendar = ({ onClose }) => {
   const renderConditionButtonNextPrev = () => {
     const isMonthYearGreaterFromNow =
       Number(moment().month(selectedMonth).year(selectedYear).format('YYMM')) <=
-      2211;
+      2212;
 
     if (isMonthYearGreaterFromNow) {
       return (
@@ -904,11 +904,10 @@ const Calendar = ({ onClose }) => {
   };
 
   const renderConfirmButton = () => {
-    const buttonDisabled =
-      selectTimeDropDown ===
-      `${date.getHours()}:${date.getMinutes()} - ${getTimeEarly()}`
-        ? true
-        : false;
+    const buttonDisabled = !selectTimeDropDown ? true : false;
+
+    const isTimeSlotEditExist = timeslot.timeslot ? false : buttonDisabled;
+
     if (selector === 'date' || selector === 'month' || selector === 'year') {
       return (
         <Stack
@@ -967,7 +966,7 @@ const Calendar = ({ onClose }) => {
                 handleSaveDateTime();
               }
             }}
-            disabled={buttonDisabled}
+            disabled={isTimeSlotEditExist}
             style={styles.buttonConfirm}
           >
             Confirm
