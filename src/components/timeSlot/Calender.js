@@ -79,18 +79,20 @@ const useStyles = (mobileSize, color) => ({
     padding: '5px',
   },
   buttonCancel: {
-    width: '45%',
-    paddingTop: '10px',
-    paddingBottom: '10px',
-    '&:hover': { color: 'gray' },
-    border: `1px solid ${color.primary}70`,
-    color: 'black',
+    backgroundColor: 'white',
+    border: `1px solid ${color.primary}`,
+    color: color.primary,
+    width: '48%',
+    padding: '6px 0px',
+    borderRadius: '10px',
+    fontSize: '12px',
   },
   buttonConfirm: {
-    width: '45%',
-    paddingTop: '10px',
-    paddingBottom: '10px',
-    backgroundColor: color.primary,
+    color: 'white',
+    width: '48%',
+    padding: '6px 0px',
+    borderRadius: '10px',
+    fontSize: '12px',
   },
   buttonDate: {
     color: color.primary,
@@ -214,10 +216,14 @@ const useStyles = (mobileSize, color) => ({
   },
   wrapperMonthSlider: {
     width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    gridTemplateRows: '1fr',
+    gap: '0px 0px',
+    gridAutoFlow: 'row',
+    gridTemplateAreas: '". . ."',
+    justifyItems: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   wrapperYearSlider: {
     width: '100%',
@@ -243,7 +249,7 @@ const useStyles = (mobileSize, color) => ({
   },
   wrapperChooseDateTime: {
     backgroundColor: `${color.primary}20`,
-    borderRadius: '10px',
+    borderRadius: '5px',
     padding: '5px',
   },
   textChooseDateTime: {
@@ -260,7 +266,6 @@ const Calendar = ({ onClose }) => {
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
-  const [dateIfTimeSlotSelected, setDateIfTimeSlotSelected] = useState('');
   const [selectTimeDropDown, setSelectTimeDropDown] = useState('');
   const [dates, setDates] = useState([]);
   const [mode, setMode] = useState();
@@ -277,6 +282,9 @@ const Calendar = ({ onClose }) => {
   const [dateActive, setDateActive] = useState('');
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
+  );
+  const saveTimeSlotCalendar = useSelector(
+    (state) => state.guestCheckoutCart.saveTimeSlotCalendar
   );
   const dateEdit = useSelector((state) => state.guestCheckoutCart);
   const orderingMode = useSelector((state) => state.order.orderingMode);
@@ -526,9 +534,27 @@ const Calendar = ({ onClose }) => {
     }
   };
 
-  const renderMonthSlider = () => {
-    return (
-      <div style={styles.wrapperMonthSlider}>
+  const renderConditionButtonNextPrev = () => {
+    const isMonthYearGreaterFromNow =
+      Number(moment().month(selectedMonth).year(selectedYear).format('YYMM')) <=
+      2211;
+
+    if (isMonthYearGreaterFromNow) {
+      return (
+        <>
+          <Button
+            style={{ display: 'none' }}
+            onClick={() => {
+              handleMonthSlider('last');
+            }}
+          >
+            <KeyboardArrowLeft style={{ color: 'black' }} />
+          </Button>
+          <div />
+        </>
+      );
+    } else {
+      return (
         <Button
           onClick={() => {
             handleMonthSlider('last');
@@ -536,7 +562,14 @@ const Calendar = ({ onClose }) => {
         >
           <KeyboardArrowLeft style={{ color: 'black' }} />
         </Button>
+      );
+    }
+  };
 
+  const renderMonthSlider = () => {
+    return (
+      <div style={styles.wrapperMonthSlider}>
+        {renderConditionButtonNextPrev()}
         <Stack direction='row'>
           <Typography
             onClick={() => {
@@ -613,7 +646,7 @@ const Calendar = ({ onClose }) => {
 
   const renderDeliveryDayItem = (item) => {
     return (
-      <div style={styles.circle}>
+      <div style={styles.circle} key={item}>
         <Typography style={{ fontSize: 10, color: '#4D86A0' }}>
           {item}
         </Typography>
@@ -666,6 +699,7 @@ const Calendar = ({ onClose }) => {
 
     return (
       <div
+        key={item}
         style={{
           display: 'flex',
           justifyContent: 'center',
@@ -879,20 +913,18 @@ const Calendar = ({ onClose }) => {
       return (
         <Stack
           direction='row'
-          justifyContent='space-between'
+          justifyContent='space-evenly'
           alignItems='center'
           mt={2}
         >
-          <Button
+          <button
             onClick={() => setSelector('dateTime')}
-            sx={styles.buttonCancel}
-            variant='outlined'
+            style={styles.buttonCancel}
           >
             Back
-          </Button>
-          <Button
-            sx={styles.buttonConfirm}
-            variant='contained'
+          </button>
+          <button
+            style={styles.buttonConfirm}
             onClick={() => {
               const getSelectedAllDate = `${dateActive}-${selectedMonth}-${selectedYear}`;
               setselectTime(getSelectedAllDate);
@@ -903,14 +935,17 @@ const Calendar = ({ onClose }) => {
                 .date(dateActive)
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
-              setDateIfTimeSlotSelected(changeFormatDate(formatForSendApi));
+              dispatch({
+                type: CONSTANT.SAVE_TIMESLOT_CALENDER,
+                payload: changeFormatDate(formatForSendApi),
+              });
               dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
             }}
           >
             Apply
-          </Button>
+          </button>
         </Stack>
       );
     } else {
@@ -921,10 +956,10 @@ const Calendar = ({ onClose }) => {
           alignItems='center'
           mt={2}
         >
-          <Button onClick={onClose} sx={styles.buttonCancel} variant='outlined'>
+          <button onClick={onClose} style={styles.buttonCancel}>
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => {
               if (mode === 'GuestMode') {
                 handleSaveDateTimeForGuestMode();
@@ -932,17 +967,11 @@ const Calendar = ({ onClose }) => {
                 handleSaveDateTime();
               }
             }}
-            sx={{
-              width: '45%',
-              paddingTop: '10px',
-              paddingBottom: '10px',
-              backgroundColor: color.primary,
-            }}
-            variant='contained'
             disabled={buttonDisabled}
+            style={styles.buttonConfirm}
           >
             Confirm
-          </Button>
+          </button>
         </Stack>
       );
     }
@@ -965,14 +994,26 @@ const Calendar = ({ onClose }) => {
     );
   };
 
-  if (dateIfTimeSlotSelected) {
+  let filteredItem;
+
+  if (saveTimeSlotCalendar) {
     getAllDateForTimeSlot.sort((item) => {
-      if (dateIfTimeSlotSelected === item.split(' ').join('-')) {
+      if (saveTimeSlotCalendar === item.split(' ').join('-')) {
         return -1;
       } else {
         return 1;
       }
     });
+    const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
+
+    const dateFiltered = getAllDateForTimeSlot.filter(
+      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+    );
+
+    const dateSorted = dateFiltered.sort(
+      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+    );
+    filteredItem = dateSorted;
   }
 
   if (dateEdit.date) {
@@ -996,99 +1037,195 @@ const Calendar = ({ onClose }) => {
         </Stack>
       );
     } else {
-      return getAllDateForTimeSlot.map((itemDate) => {
-        const baseStyleStack = {
-          width: '80px',
-          height: '100px',
-          borderRadius: '10px',
-        };
-        const baseCycleStyle = {
-          display: 'flex',
-          width: 26,
-          height: 26,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 100,
-        };
+      if (filteredItem) {
+        return filteredItem.map((itemDate) => {
+          const baseStyleStack = {
+            width: '80px',
+            height: '100px',
+            borderRadius: '10px',
+          };
+          const baseCycleStyle = {
+            display: 'flex',
+            width: 26,
+            height: 26,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 100,
+          };
 
-        const stackStyle =
-          changeFormatDate(itemDate) === dateEdit.date ||
-          changeFormatDate(itemDate) === getDateBaseOnClick
-            ? {
-                ...baseStyleStack,
-                backgroundColor: color.primary,
-                border: `1px solid ${color.primary}80`,
-                color: 'white',
-              }
-            : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-            ? {
-                ...baseStyleStack,
-                backgroundColor: 'white',
-                border: `1px solid ${color.primary}80`,
-                color: 'gray',
-                opacity: '.4',
-                pointerEvents: 'none',
-                cursor: 'not-allowed',
-              }
-            : {
-                ...baseStyleStack,
-                backgroundColor: 'white',
-                border: `1px solid ${color.primary}80`,
-                color: color.primary,
-              };
+          const stackStyle =
+            changeFormatDate(itemDate) === dateEdit.date ||
+            changeFormatDate(itemDate) === getDateBaseOnClick
+              ? {
+                  ...baseStyleStack,
+                  backgroundColor: color.primary,
+                  border: `1px solid ${color.primary}80`,
+                  color: 'white',
+                }
+              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+              ? {
+                  ...baseStyleStack,
+                  backgroundColor: 'white',
+                  border: `1px solid ${color.primary}80`,
+                  color: 'gray',
+                  opacity: '.4',
+                  pointerEvents: 'none',
+                  cursor: 'not-allowed',
+                }
+              : {
+                  ...baseStyleStack,
+                  backgroundColor: 'white',
+                  border: `1px solid ${color.primary}80`,
+                  color: color.primary,
+                };
 
-        const cycleStyle =
-          changeFormatDate(itemDate) === dateEdit.date ||
-          changeFormatDate(itemDate) === getDateBaseOnClick
-            ? {
-                ...baseCycleStyle,
-                color: color.primary,
-                backgroundColor: 'white',
-              }
-            : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-            ? {
-                ...baseCycleStyle,
-                backgroundColor: color.primary,
-              }
-            : {
-                ...baseCycleStyle,
-                backgroundColor: color.primary,
-                color: 'white',
-              };
+          const cycleStyle =
+            changeFormatDate(itemDate) === dateEdit.date ||
+            changeFormatDate(itemDate) === getDateBaseOnClick
+              ? {
+                  ...baseCycleStyle,
+                  color: color.primary,
+                  backgroundColor: 'white',
+                }
+              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+              ? {
+                  ...baseCycleStyle,
+                  backgroundColor: color.primary,
+                }
+              : {
+                  ...baseCycleStyle,
+                  backgroundColor: color.primary,
+                  color: 'white',
+                };
 
-        return (
-          <SwiperSlide
-            key={changeFormatDate(itemDate)}
-            style={{ flexShrink: 'unset' }}
-          >
-            <Stack
-              direction='column'
-              alignItems='center'
-              justifyContent='space-around'
-              sx={stackStyle}
-              onClick={() => {
-                setselectTime(changeFormatDate(itemDate));
-                setGetDateBaseOnClick(changeFormatDate(itemDate));
-                dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-                dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-                dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
-              }}
+          return (
+            <SwiperSlide
+              key={changeFormatDate(itemDate)}
+              style={{ flexShrink: 'unset' }}
             >
-              <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
-              <div style={cycleStyle}>
+              <Stack
+                direction='column'
+                alignItems='center'
+                justifyContent='space-around'
+                sx={stackStyle}
+                onClick={() => {
+                  setselectTime(changeFormatDate(itemDate));
+                  setGetDateBaseOnClick(changeFormatDate(itemDate));
+                  dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+                  dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+                  dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+                }}
+              >
+                <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
+                <div style={cycleStyle}>
+                  <Typography>
+                    {moment(changeFormatDate(itemDate)).format('DD')}
+                  </Typography>
+                </div>
                 <Typography>
-                  {moment(changeFormatDate(itemDate)).format('DD')}
+                  {moment(changeFormatDate(itemDate))
+                    .format('MM')
+                    .toLocaleUpperCase()}
                 </Typography>
-              </div>
-              <Typography>
-                {moment(changeFormatDate(itemDate))
-                  .format('MM')
-                  .toLocaleUpperCase()}
-              </Typography>
-            </Stack>
-          </SwiperSlide>
-        );
-      });
+              </Stack>
+            </SwiperSlide>
+          );
+        });
+      } else {
+        return getAllDateForTimeSlot.map((itemDate) => {
+          const baseStyleStack = {
+            width: '80px',
+            height: '100px',
+            borderRadius: '10px',
+          };
+          const baseCycleStyle = {
+            display: 'flex',
+            width: 26,
+            height: 26,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 100,
+          };
+
+          const stackStyle =
+            changeFormatDate(itemDate) === dateEdit.date ||
+            changeFormatDate(itemDate) === getDateBaseOnClick
+              ? {
+                  ...baseStyleStack,
+                  backgroundColor: color.primary,
+                  border: `1px solid ${color.primary}80`,
+                  color: 'white',
+                }
+              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+              ? {
+                  ...baseStyleStack,
+                  backgroundColor: 'white',
+                  border: `1px solid ${color.primary}80`,
+                  color: 'gray',
+                  opacity: '.4',
+                  pointerEvents: 'none',
+                  cursor: 'not-allowed',
+                }
+              : {
+                  ...baseStyleStack,
+                  backgroundColor: 'white',
+                  border: `1px solid ${color.primary}80`,
+                  color: color.primary,
+                };
+
+          const cycleStyle =
+            changeFormatDate(itemDate) === dateEdit.date ||
+            changeFormatDate(itemDate) === getDateBaseOnClick
+              ? {
+                  ...baseCycleStyle,
+                  color: color.primary,
+                  backgroundColor: 'white',
+                }
+              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+              ? {
+                  ...baseCycleStyle,
+                  backgroundColor: color.primary,
+                }
+              : {
+                  ...baseCycleStyle,
+                  backgroundColor: color.primary,
+                  color: 'white',
+                };
+
+          return (
+            <SwiperSlide
+              key={changeFormatDate(itemDate)}
+              style={{ flexShrink: 'unset' }}
+            >
+              <Stack
+                direction='column'
+                alignItems='center'
+                justifyContent='space-around'
+                sx={stackStyle}
+                onClick={() => {
+                  setselectTime(changeFormatDate(itemDate));
+                  setGetDateBaseOnClick(changeFormatDate(itemDate));
+                  dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+                  dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+                  dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+                }}
+              >
+                <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
+                <div style={cycleStyle}>
+                  <Typography>
+                    {moment(changeFormatDate(itemDate)).format('DD')}
+                  </Typography>
+                </div>
+                <Typography>
+                  {moment(changeFormatDate(itemDate))
+                    .format('MM')
+                    .toLocaleUpperCase()}
+                </Typography>
+              </Stack>
+            </SwiperSlide>
+          );
+        });
+      }
     }
   };
 

@@ -20,6 +20,7 @@ const DropDownCustomSelect = ({
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const color = useSelector((state) => state.theme.color);
   let date = [];
+
   if (getDateBaseOnClick) {
     timeList?.forEach((item) => {
       if (item.date === getDateBaseOnClick) {
@@ -87,7 +88,7 @@ const DropDownCustomSelect = ({
               display: !item.isAvailable && 'none',
             }}
             header
-            key={item}
+            key={item.time}
           >
             <p
               style={{
@@ -114,7 +115,7 @@ const DropDownCustomSelect = ({
         toggle={toggle}
         direction='down'
         style={{
-          border: '1px solid #eaeaea',
+          border: `1px solid ${color.primary}`,
           borderRadius: '10px',
         }}
       >
@@ -129,8 +130,8 @@ const DropDownCustomSelect = ({
             fontSize: '16px',
             color: color.primary,
             opacity: '.8',
-            paddingTop: !selectTimeDropDown && '20px',
-            paddingBottom: !selectTimeDropDown && '20px',
+            paddingTop: !selectTimeDropDown && '15px',
+            paddingBottom: !selectTimeDropDown && '15px',
           }}
         >
           {dateEdit?.timeslot ? dateEdit.timeslot : selectTimeDropDown}
