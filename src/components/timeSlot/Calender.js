@@ -359,7 +359,6 @@ const Calendar = ({ onClose }) => {
     const listDate = monthArr.filter(
       (item) => new Date(item).getTime() >= timeStamp
     );
-
     return listDate;
   };
 
@@ -717,6 +716,7 @@ const Calendar = ({ onClose }) => {
           pointerEvents: !availableDateFromAPI && 'none',
         }}
         onClick={() => {
+          setSelectTimeDropDown('');
           setDateActive(date);
           if (date === 1) {
             handleMonthSlider('next');
@@ -739,9 +739,9 @@ const Calendar = ({ onClose }) => {
   };
 
   const renderDeliveryDate = () => {
-    const result = dates.map((date) => {
+    const result = dates.map((date, i) => {
       return (
-        <div key={date} style={styles.wrapperDeliveryDate}>
+        <div key={i} style={styles.wrapperDeliveryDate}>
           {date.map((item) => {
             return renderDeliveryDateItem(item);
           })}
@@ -1042,6 +1042,103 @@ const Calendar = ({ onClose }) => {
     );
     dateListEdit = dateSorted;
   }
+
+  const renderChildTimeSlotScrool = (arrayDate) => {
+    return arrayDate?.map((itemDate) => {
+      const baseStyleStack = {
+        width: '80px',
+        height: '100px',
+        borderRadius: '10px',
+      };
+      const baseCycleStyle = {
+        display: 'flex',
+        width: 26,
+        height: 26,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 100,
+      };
+
+      const stackStyle =
+        changeFormatDate(itemDate) === dateEdit.date ||
+        changeFormatDate(itemDate) === getDateBaseOnClick
+          ? {
+              ...baseStyleStack,
+              backgroundColor: color.primary,
+              border: `1px solid ${color.primary}80`,
+              color: 'white',
+            }
+          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+          ? {
+              ...baseStyleStack,
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}80`,
+              color: 'gray',
+              opacity: '.4',
+              pointerEvents: 'none',
+              cursor: 'not-allowed',
+            }
+          : {
+              ...baseStyleStack,
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}80`,
+              color: color.primary,
+            };
+
+      const cycleStyle =
+        changeFormatDate(itemDate) === dateEdit.date ||
+        changeFormatDate(itemDate) === getDateBaseOnClick
+          ? {
+              ...baseCycleStyle,
+              color: color.primary,
+              backgroundColor: 'white',
+            }
+          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+          ? {
+              ...baseCycleStyle,
+              backgroundColor: color.primary,
+            }
+          : {
+              ...baseCycleStyle,
+              backgroundColor: color.primary,
+              color: 'white',
+            };
+
+      return (
+        <SwiperSlide
+          key={changeFormatDate(itemDate)}
+          style={{ flexShrink: 'unset' }}
+        >
+          <Stack
+            direction='column'
+            alignItems='center'
+            justifyContent='space-around'
+            sx={stackStyle}
+            onClick={() => {
+              setSelectTimeDropDown('');
+              setselectTime(changeFormatDate(itemDate));
+              setGetDateBaseOnClick(changeFormatDate(itemDate));
+              dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+            }}
+          >
+            <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
+            <div style={cycleStyle}>
+              <Typography>
+                {moment(changeFormatDate(itemDate)).format('DD')}
+              </Typography>
+            </div>
+            <Typography>
+              {moment(changeFormatDate(itemDate))
+                .format('MM')
+                .toLocaleUpperCase()}
+            </Typography>
+          </Stack>
+        </SwiperSlide>
+      );
+    });
+  };
   const renderTimeScroll = () => {
     if (!timeList) {
       return (
@@ -1055,287 +1152,11 @@ const Calendar = ({ onClose }) => {
       );
     } else {
       if (filteredItem) {
-        return filteredItem.map((itemDate) => {
-          const baseStyleStack = {
-            width: '80px',
-            height: '100px',
-            borderRadius: '10px',
-          };
-          const baseCycleStyle = {
-            display: 'flex',
-            width: 26,
-            height: 26,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 100,
-          };
-
-          const stackStyle =
-            changeFormatDate(itemDate) === dateEdit.date ||
-            changeFormatDate(itemDate) === getDateBaseOnClick
-              ? {
-                  ...baseStyleStack,
-                  backgroundColor: color.primary,
-                  border: `1px solid ${color.primary}80`,
-                  color: 'white',
-                }
-              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-              ? {
-                  ...baseStyleStack,
-                  backgroundColor: 'white',
-                  border: `1px solid ${color.primary}80`,
-                  color: 'gray',
-                  opacity: '.4',
-                  pointerEvents: 'none',
-                  cursor: 'not-allowed',
-                }
-              : {
-                  ...baseStyleStack,
-                  backgroundColor: 'white',
-                  border: `1px solid ${color.primary}80`,
-                  color: color.primary,
-                };
-
-          const cycleStyle =
-            changeFormatDate(itemDate) === dateEdit.date ||
-            changeFormatDate(itemDate) === getDateBaseOnClick
-              ? {
-                  ...baseCycleStyle,
-                  color: color.primary,
-                  backgroundColor: 'white',
-                }
-              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-              ? {
-                  ...baseCycleStyle,
-                  backgroundColor: color.primary,
-                }
-              : {
-                  ...baseCycleStyle,
-                  backgroundColor: color.primary,
-                  color: 'white',
-                };
-
-          return (
-            <SwiperSlide
-              key={changeFormatDate(itemDate)}
-              style={{ flexShrink: 'unset' }}
-            >
-              <Stack
-                direction='column'
-                alignItems='center'
-                justifyContent='space-around'
-                sx={stackStyle}
-                onClick={() => {
-                  setselectTime(changeFormatDate(itemDate));
-                  setGetDateBaseOnClick(changeFormatDate(itemDate));
-                  dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-                  dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-                  dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
-                }}
-              >
-                <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
-                <div style={cycleStyle}>
-                  <Typography>
-                    {moment(changeFormatDate(itemDate)).format('DD')}
-                  </Typography>
-                </div>
-                <Typography>
-                  {moment(changeFormatDate(itemDate))
-                    .format('MM')
-                    .toLocaleUpperCase()}
-                </Typography>
-              </Stack>
-            </SwiperSlide>
-          );
-        });
+        return renderChildTimeSlotScrool(filteredItem);
       } else if (dateListEdit) {
-        return dateListEdit.map((itemDate) => {
-          const baseStyleStack = {
-            width: '80px',
-            height: '100px',
-            borderRadius: '10px',
-          };
-          const baseCycleStyle = {
-            display: 'flex',
-            width: 26,
-            height: 26,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 100,
-          };
-
-          const stackStyle =
-            changeFormatDate(itemDate) === dateEdit.date ||
-            changeFormatDate(itemDate) === getDateBaseOnClick
-              ? {
-                  ...baseStyleStack,
-                  backgroundColor: color.primary,
-                  border: `1px solid ${color.primary}80`,
-                  color: 'white',
-                }
-              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-              ? {
-                  ...baseStyleStack,
-                  backgroundColor: 'white',
-                  border: `1px solid ${color.primary}80`,
-                  color: 'gray',
-                  opacity: '.4',
-                  pointerEvents: 'none',
-                  cursor: 'not-allowed',
-                }
-              : {
-                  ...baseStyleStack,
-                  backgroundColor: 'white',
-                  border: `1px solid ${color.primary}80`,
-                  color: color.primary,
-                };
-
-          const cycleStyle =
-            changeFormatDate(itemDate) === dateEdit.date ||
-            changeFormatDate(itemDate) === getDateBaseOnClick
-              ? {
-                  ...baseCycleStyle,
-                  color: color.primary,
-                  backgroundColor: 'white',
-                }
-              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-              ? {
-                  ...baseCycleStyle,
-                  backgroundColor: color.primary,
-                }
-              : {
-                  ...baseCycleStyle,
-                  backgroundColor: color.primary,
-                  color: 'white',
-                };
-
-          return (
-            <SwiperSlide
-              key={changeFormatDate(itemDate)}
-              style={{ flexShrink: 'unset' }}
-            >
-              <Stack
-                direction='column'
-                alignItems='center'
-                justifyContent='space-around'
-                sx={stackStyle}
-                onClick={() => {
-                  setselectTime(changeFormatDate(itemDate));
-                  setGetDateBaseOnClick(changeFormatDate(itemDate));
-                  dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-                  dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-                  dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
-                }}
-              >
-                <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
-                <div style={cycleStyle}>
-                  <Typography>
-                    {moment(changeFormatDate(itemDate)).format('DD')}
-                  </Typography>
-                </div>
-                <Typography>
-                  {moment(changeFormatDate(itemDate))
-                    .format('MM')
-                    .toLocaleUpperCase()}
-                </Typography>
-              </Stack>
-            </SwiperSlide>
-          );
-        });
+        return renderChildTimeSlotScrool(dateListEdit);
       } else {
-        return getAllDateForTimeSlot.map((itemDate) => {
-          const baseStyleStack = {
-            width: '80px',
-            height: '100px',
-            borderRadius: '10px',
-          };
-          const baseCycleStyle = {
-            display: 'flex',
-            width: 26,
-            height: 26,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 100,
-          };
-
-          const stackStyle =
-            changeFormatDate(itemDate) === dateEdit.date ||
-            changeFormatDate(itemDate) === getDateBaseOnClick
-              ? {
-                  ...baseStyleStack,
-                  backgroundColor: color.primary,
-                  border: `1px solid ${color.primary}80`,
-                  color: 'white',
-                }
-              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-              ? {
-                  ...baseStyleStack,
-                  backgroundColor: 'white',
-                  border: `1px solid ${color.primary}80`,
-                  color: 'gray',
-                  opacity: '.4',
-                  pointerEvents: 'none',
-                  cursor: 'not-allowed',
-                }
-              : {
-                  ...baseStyleStack,
-                  backgroundColor: 'white',
-                  border: `1px solid ${color.primary}80`,
-                  color: color.primary,
-                };
-
-          const cycleStyle =
-            changeFormatDate(itemDate) === dateEdit.date ||
-            changeFormatDate(itemDate) === getDateBaseOnClick
-              ? {
-                  ...baseCycleStyle,
-                  color: color.primary,
-                  backgroundColor: 'white',
-                }
-              : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-              ? {
-                  ...baseCycleStyle,
-                  backgroundColor: color.primary,
-                }
-              : {
-                  ...baseCycleStyle,
-                  backgroundColor: color.primary,
-                  color: 'white',
-                };
-
-          return (
-            <SwiperSlide
-              key={changeFormatDate(itemDate)}
-              style={{ flexShrink: 'unset' }}
-            >
-              <Stack
-                direction='column'
-                alignItems='center'
-                justifyContent='space-around'
-                sx={stackStyle}
-                onClick={() => {
-                  setselectTime(changeFormatDate(itemDate));
-                  setGetDateBaseOnClick(changeFormatDate(itemDate));
-                  dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-                  dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-                  dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
-                }}
-              >
-                <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
-                <div style={cycleStyle}>
-                  <Typography>
-                    {moment(changeFormatDate(itemDate)).format('DD')}
-                  </Typography>
-                </div>
-                <Typography>
-                  {moment(changeFormatDate(itemDate))
-                    .format('MM')
-                    .toLocaleUpperCase()}
-                </Typography>
-              </Stack>
-            </SwiperSlide>
-          );
-        });
+        return renderChildTimeSlotScrool(getAllDateForTimeSlot);
       }
     }
   };
