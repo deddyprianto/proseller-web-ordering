@@ -280,6 +280,8 @@ const Calendar = ({ onClose }) => {
   const [selector, setSelector] = useState('');
   const [selectTime, setselectTime] = useState();
   const [dateActive, setDateActive] = useState('');
+  const [monthActive, setMonthActive] = useState('');
+  const [yearActive, setYearActive] = useState('');
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
   );
@@ -474,6 +476,10 @@ const Calendar = ({ onClose }) => {
       await dispatch(
         OrderAction.saveTimeGuest(selectTimeDropDown, CONSTANT.SAVE_TIME)
       );
+      dispatch({
+        type: CONSTANT.SAVE_TIMESLOT_FOR_EDIT,
+        payload: formatDate,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -757,8 +763,6 @@ const Calendar = ({ onClose }) => {
         {renderMonthSlider()}
         <div style={{ marginTop: 20 }} />
         {renderDeliveryDate()}
-        <div style={{ marginTop: 20 }} />
-        {renderChooseDate()}
       </div>
     );
   };
@@ -780,7 +784,7 @@ const Calendar = ({ onClose }) => {
     return (
       <p
         style={
-          getSubstrMonth === selectedMonth
+          getSubstrMonth === monthActive
             ? {
                 display: 'flex',
                 justifyContent: 'center',
@@ -808,6 +812,7 @@ const Calendar = ({ onClose }) => {
               }
         }
         onClick={() => {
+          setMonthActive(item.substring(0, 3));
           setSelectedMonth(item.substring(0, 3));
         }}
       >
@@ -829,8 +834,6 @@ const Calendar = ({ onClose }) => {
         {renderMonthSlider()}
         <div style={{ marginTop: 20 }} />
         {renderDeliveryMonth()}
-        <div style={{ marginTop: 20 }} />
-        {renderChooseDate()}
       </div>
     );
   };
@@ -842,7 +845,7 @@ const Calendar = ({ onClose }) => {
     return (
       <p
         style={
-          item === selectedYear
+          item === yearActive
             ? {
                 display: 'flex',
                 justifyContent: 'center',
@@ -868,6 +871,7 @@ const Calendar = ({ onClose }) => {
         }
         onClick={() => {
           setSelectedYear(item);
+          setYearActive(item);
         }}
       >
         {item}
@@ -900,8 +904,6 @@ const Calendar = ({ onClose }) => {
         {renderYearSlider()}
         <div style={{ marginTop: 20 }} />
         {renderDeliveryYear()}
-        <div style={{ marginTop: 20 }} />
-        {renderChooseDate()}
       </div>
     );
   };
@@ -910,6 +912,7 @@ const Calendar = ({ onClose }) => {
     const buttonDisabled = !selectTimeDropDown ? true : false;
 
     const isTimeSlotEditExist = timeslot.timeslot ? false : buttonDisabled;
+    const disableApplyButton = dateActive ? false : true;
 
     if (selector === 'date' || selector === 'month' || selector === 'year') {
       return (
@@ -926,6 +929,7 @@ const Calendar = ({ onClose }) => {
             Back
           </button>
           <button
+            disabled={disableApplyButton}
             style={styles.buttonConfirm}
             onClick={() => {
               const getSelectedAllDate = `${dateActive}-${selectedMonth}-${selectedYear}`;
@@ -1019,7 +1023,7 @@ const Calendar = ({ onClose }) => {
     filteredItem = dateSorted;
   }
 
-  if (dateEdit.date) {
+  if (dateEdit.date || saveTimeSlotForEdit) {
     getAllDateForTimeSlot.sort((item) => {
       if (dateEdit.date === item.split(' ').join('-')) {
         return -1;
@@ -1315,10 +1319,6 @@ const Calendar = ({ onClose }) => {
                   dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
                   dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
                   dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
-                  dispatch({
-                    type: CONSTANT.SAVE_TIMESLOT_FOR_EDIT,
-                    payload: changeFormatDate(itemDate),
-                  });
                 }}
               >
                 <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
