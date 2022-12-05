@@ -479,6 +479,7 @@ const Calendar = ({ onClose }) => {
         type: CONSTANT.SAVE_TIMESLOT_FOR_EDIT,
         payload: formatDate,
       });
+      dispatch({ type: CONSTANT.SAVE_TIMESLOT_CALENDER, payload: '' });
     } catch (error) {
       console.log(error);
     }
