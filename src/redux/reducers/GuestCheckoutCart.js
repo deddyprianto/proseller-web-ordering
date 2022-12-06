@@ -15,6 +15,8 @@ function GuestCheckoutCart(
     openOrderingMode: false,
     trackorder: {},
     isCartDeleted: false,
+    saveTimeSlotCalendar: '',
+    saveTimeSlotForEdit: '',
   },
   action
 ) {
@@ -59,6 +61,10 @@ function GuestCheckoutCart(
       return { ...state, saveEditResponse: action.payload };
     case CONSTANT.IS_CART_DELETED:
       return { ...state, isCartDeleted: action.payload };
+    case CONSTANT.SAVE_TIMESLOT_CALENDER:
+      return { ...state, saveTimeSlotCalendar: action.payload };
+    case CONSTANT.SAVE_TIMESLOT_FOR_EDIT:
+      return { ...state, saveTimeSlotForEdit: action.payload };
     default:
       return state;
   }
