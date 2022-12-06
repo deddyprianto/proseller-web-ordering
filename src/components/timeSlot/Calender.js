@@ -1,7 +1,3 @@
-/* eslint-disable react/no-this-in-sfc */
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import Button from '@mui/material/Button';
@@ -51,7 +47,7 @@ const useStyles = (mobileSize, color) => ({
     display: 'flex',
     width: 30,
     height: 30,
-    backgroundColor: '#4D86A0',
+    backgroundColor: color.primary,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
@@ -69,7 +65,7 @@ const useStyles = (mobileSize, color) => ({
     alignItems: 'center',
     width: '40px',
     height: '40px',
-    backgroundColor: '#4D86A0',
+    backgroundColor: color.primary,
     borderRadius: '100%',
     color: 'white',
     fontSize: mobileSize ? '11px' : '13px',
@@ -83,34 +79,38 @@ const useStyles = (mobileSize, color) => ({
     padding: '5px',
   },
   buttonCancel: {
-    width: '45%',
-    paddingTop: '10px',
-    paddingBottom: '10px',
-    '&:hover': { color: 'gray' },
-    border: `1px solid ${color.primary}70`,
-    color: 'black',
+    backgroundColor: 'white',
+    border: `1px solid ${color.primary}`,
+    color: color.primary,
+    width: '48%',
+    padding: '6px 0px',
+    borderRadius: '10px',
+    fontSize: '12px',
   },
   buttonConfirm: {
-    width: '45%',
-    paddingTop: '10px',
-    paddingBottom: '10px',
-    backgroundColor: color.primary,
+    color: 'white',
+    width: '48%',
+    padding: '6px 0px',
+    borderRadius: '10px',
+    fontSize: '12px',
   },
   buttonDate: {
-    padding: mobileSize ? '2px' : '10px',
-    color: '#4D86A0',
-    border: '1px solid #4D86A0',
+    color: color.primary,
+    border: `1px solid ${color.primary}`,
     backgroundColor: 'white',
     '&:hover': { color: 'gray' },
     fontSize: mobileSize ? '11px' : '13px',
+    height: '30px',
+    width: '30px',
   },
   buttonDateActive: {
-    padding: mobileSize ? '2px' : '10px',
-    backgroundColor: '#4D86A0',
+    backgroundColor: color.primary,
     color: 'white',
-    border: '1px solid #4D86A0',
+    border: `1px solid ${color.primary}`,
     '&:hover': { color: 'gray' },
     fontSize: mobileSize ? '11px' : '13px',
+    width: '30px',
+    height: '30px',
   },
   gridMonth: {
     display: 'grid',
@@ -216,10 +216,14 @@ const useStyles = (mobileSize, color) => ({
   },
   wrapperMonthSlider: {
     width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    gridTemplateRows: '1fr',
+    gap: '0px 0px',
+    gridAutoFlow: 'row',
+    gridTemplateAreas: '". . ."',
+    justifyItems: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   wrapperYearSlider: {
     width: '100%',
@@ -229,7 +233,7 @@ const useStyles = (mobileSize, color) => ({
     justifyContent: 'space-around',
   },
   wrapperChooseDate: {
-    backgroundColor: '#EAF3FB',
+    backgroundColor: `${color.primary}20`,
     borderRadius: '5px',
     padding: '10px',
     textChoosenDate: {
@@ -244,13 +248,13 @@ const useStyles = (mobileSize, color) => ({
     justifyContent: 'space-between',
   },
   wrapperChooseDateTime: {
-    backgroundColor: '#EAF3FB',
-    borderRadius: '10px',
+    backgroundColor: `${color.primary}20`,
+    borderRadius: '5px',
     padding: '5px',
   },
   textChooseDateTime: {
     fontWeight: 'bold',
-    color: '#4D86A0',
+    color: color.primary,
     fontSize: '13px',
     marginLeft: '2px',
     marginRight: '2px',
@@ -275,8 +279,17 @@ const Calendar = ({ onClose }) => {
   const [postsPerPage] = useState(4);
   const [selector, setSelector] = useState('');
   const [selectTime, setselectTime] = useState();
+  const [dateActive, setDateActive] = useState('');
+  const [monthActive, setMonthActive] = useState('');
+  const [yearActive, setYearActive] = useState('');
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
+  );
+  const saveTimeSlotCalendar = useSelector(
+    (state) => state.guestCheckoutCart.saveTimeSlotCalendar
+  );
+  const saveTimeSlotForEdit = useSelector(
+    (state) => state.guestCheckoutCart.saveTimeSlotForEdit
   );
   const dateEdit = useSelector((state) => state.guestCheckoutCart);
   const orderingMode = useSelector((state) => state.order.orderingMode);
@@ -326,7 +339,7 @@ const Calendar = ({ onClose }) => {
       calender.push(
         Array(7)
           .fill(0)
-          .map(() => day.add(1, 'day').clone().format('DD MMM'))
+          .map(() => day.add(1, 'day').clone().format('YYYY MMM DD'))
       );
     }
 
@@ -336,7 +349,7 @@ const Calendar = ({ onClose }) => {
   const getAllDate = () => {
     let monthArr = [];
     const weeks = moment().add(0, 'weeks').startOf('week');
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 150; i++) {
       monthArr.push(weeks.clone().add(i, 'day').format('YYYY MM DD'));
     }
 
@@ -346,7 +359,6 @@ const Calendar = ({ onClose }) => {
     const listDate = monthArr.filter(
       (item) => new Date(item).getTime() >= timeStamp
     );
-
     return listDate;
   };
 
@@ -424,6 +436,10 @@ const Calendar = ({ onClose }) => {
     printTime();
   }, []);
 
+  const changeFormatDate = (itemDate) => {
+    return itemDate.split(' ').join('-');
+  };
+
   const handleSaveDateTime = async () => {
     const formatDate = `${moment(selectTime).format('DD')}-${moment(selectTime)
       .format('MM')
@@ -459,6 +475,11 @@ const Calendar = ({ onClose }) => {
       await dispatch(
         OrderAction.saveTimeGuest(selectTimeDropDown, CONSTANT.SAVE_TIME)
       );
+      dispatch({
+        type: CONSTANT.SAVE_TIMESLOT_FOR_EDIT,
+        payload: formatDate,
+      });
+      dispatch({ type: CONSTANT.SAVE_TIMESLOT_CALENDER, payload: '' });
     } catch (error) {
       console.log(error);
     }
@@ -485,38 +506,13 @@ const Calendar = ({ onClose }) => {
           justifyContent='center'
           alignItems='center'
         >
-          <button
-            onClick={() => {
-              setSelector('date');
-            }}
-            style={
-              selector === 'date' ? styles.buttonDateActive : styles.buttonDate
-            }
-          >
-            {selectedDate}
+          <button style={styles.buttonDate}>
+            {dateActive ? dateActive : selectedDate}
           </button>
           <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
-          <button
-            onClick={() => {
-              setSelector('month');
-            }}
-            style={
-              selector === 'month' ? styles.buttonDateActive : styles.buttonDate
-            }
-          >
-            {selectedMonth}
-          </button>
+          <button style={styles.buttonDate}>{selectedMonth}</button>
           <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
-          <button
-            onClick={() => {
-              setSelector('year');
-            }}
-            style={
-              selector === 'year' ? styles.buttonDateActive : styles.buttonDate
-            }
-          >
-            {selectedYear}
-          </button>
+          <button style={styles.buttonDate}>{selectedYear}</button>
         </Stack>
       </Stack>
     );
@@ -547,9 +543,27 @@ const Calendar = ({ onClose }) => {
     }
   };
 
-  const renderMonthSlider = () => {
-    return (
-      <div style={styles.wrapperMonthSlider}>
+  const renderConditionButtonNextPrev = () => {
+    const isMonthYearGreaterFromNow =
+      Number(moment().month(selectedMonth).year(selectedYear).format('YYMM')) <=
+      2212;
+
+    if (isMonthYearGreaterFromNow) {
+      return (
+        <>
+          <Button
+            style={{ display: 'none' }}
+            onClick={() => {
+              handleMonthSlider('last');
+            }}
+          >
+            <KeyboardArrowLeft style={{ color: 'black' }} />
+          </Button>
+          <div />
+        </>
+      );
+    } else {
+      return (
         <Button
           onClick={() => {
             handleMonthSlider('last');
@@ -557,24 +571,44 @@ const Calendar = ({ onClose }) => {
         >
           <KeyboardArrowLeft style={{ color: 'black' }} />
         </Button>
-        <Button
-          onClick={() => {
-            setSelector('month');
-          }}
-        >
-          <Stack direction='row'>
-            <Typography
-              style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}
-            >
-              {selectedMonth},{' '}
-            </Typography>
-            <Typography
-              style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}
-            >
-              {selectedYear}
-            </Typography>
-          </Stack>
-        </Button>
+      );
+    }
+  };
+
+  const renderMonthSlider = () => {
+    return (
+      <div style={styles.wrapperMonthSlider}>
+        {renderConditionButtonNextPrev()}
+        <Stack direction='row'>
+          <Typography
+            onClick={() => {
+              setSelector('month');
+            }}
+            style={{
+              fontSize: 12,
+              fontWeight: 'bold',
+              color: 'black',
+              cursor: 'pointer',
+            }}
+          >
+            {selectedMonth}
+          </Typography>
+          <Typography
+            onClick={() => {
+              setSelector('year');
+            }}
+            style={{
+              fontSize: 12,
+              fontWeight: 'bold',
+              color: 'black',
+              marginLeft: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            {selectedYear}
+          </Typography>
+        </Stack>
+
         <Button
           onClick={() => {
             handleMonthSlider('next');
@@ -621,7 +655,7 @@ const Calendar = ({ onClose }) => {
 
   const renderDeliveryDayItem = (item) => {
     return (
-      <div style={styles.circle}>
+      <div style={styles.circle} key={item}>
         <Typography style={{ fontSize: 10, color: '#4D86A0' }}>
           {item}
         </Typography>
@@ -641,10 +675,24 @@ const Calendar = ({ onClose }) => {
 
   const renderDeliveryDateItem = (item) => {
     const itemDate = item.split(' ');
-    const date = Number(itemDate[0]);
+    const date = Number(itemDate[2]);
     const month = itemDate[1];
-    const isActive = selectedDate === date;
+    const year = itemDate[0];
+    const isActive = dateActive === date;
     const isThisMonth = selectedMonth === month;
+
+    const combineDateNMonth = moment()
+      .year(year)
+      .month(month)
+      .date(date)
+      .format('YYYYMMDD');
+
+    const availableDateFromAPI = timeList.some((item) => {
+      const arr = item.date.split('-');
+      const stringToInt = arr.join('');
+
+      return combineDateNMonth === stringToInt;
+    });
 
     const styleFontDate = !isThisMonth
       ? {
@@ -657,25 +705,44 @@ const Calendar = ({ onClose }) => {
 
     const styleCircle =
       isActive && isThisMonth ? styles.circleActive : styles.circle;
-    console.log(selectedDate);
+
     return (
       <div
-        style={styles.styleDate}
+        key={item}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '5px',
+          pointerEvents: !availableDateFromAPI && 'none',
+        }}
         onClick={() => {
-          setSelectedDate(date);
+          setSelectTimeDropDown('');
+          setDateActive(date);
+          if (date === 1) {
+            handleMonthSlider('next');
+          }
         }}
       >
         <div style={styleCircle}>
-          <Typography style={styleFontDate}>{date}</Typography>
+          <Typography
+            style={{
+              ...styleFontDate,
+              opacity: availableDateFromAPI ? 1 : 0.2,
+              cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {date}
+          </Typography>
         </div>
       </div>
     );
   };
 
   const renderDeliveryDate = () => {
-    const result = dates.map((date) => {
+    const result = dates.map((date, i) => {
       return (
-        <div key={date} style={styles.wrapperDeliveryDate}>
+        <div key={i} style={styles.wrapperDeliveryDate}>
           {date.map((item) => {
             return renderDeliveryDateItem(item);
           })}
@@ -697,22 +764,56 @@ const Calendar = ({ onClose }) => {
         {renderMonthSlider()}
         <div style={{ marginTop: 20 }} />
         {renderDeliveryDate()}
-        <div style={{ marginTop: 20 }} />
-        {renderChooseDate()}
       </div>
     );
   };
 
   const renderDeliveryMonthItem = (item) => {
     const getSubstrMonth = item.substring(0, 3);
+    const combineYearNMonth = moment()
+      .year(selectedYear)
+      .month(item)
+      .format('YYYYMM');
+
+    const yearFilterFromAPI = timeList.some((item) => {
+      const getYYMM = item.date.split('-');
+      getYYMM.pop();
+      const joinArrayItem = getYYMM.join('');
+      return combineYearNMonth === joinArrayItem;
+    });
+
     return (
       <p
         style={
-          getSubstrMonth === selectedMonth
-            ? styles.circleActiveForDDMMYY
-            : styles.itemDDMMYY
+          getSubstrMonth === monthActive
+            ? {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '40px',
+                height: '40px',
+                backgroundColor: yearFilterFromAPI
+                  ? color.primary
+                  : 'transparent',
+                borderRadius: '100%',
+                color: yearFilterFromAPI ? 'white' : 'black',
+                opacity: yearFilterFromAPI ? 1 : 0.2,
+                fontSize: mobileSize ? '11px' : '13px',
+                marginLeft: '4px',
+                marginRight: '4px',
+              }
+            : {
+                color: 'black',
+                fontSize: mobileSize ? '11px' : '13px',
+                paddingLeft: '10px',
+                paddingRight: '10px',
+                opacity: yearFilterFromAPI ? 1 : 0.2,
+                cursor: yearFilterFromAPI ? 'pointer' : 'not-allowed',
+                pointerEvents: !yearFilterFromAPI && 'none',
+              }
         }
         onClick={() => {
+          setMonthActive(item.substring(0, 3));
           setSelectedMonth(item.substring(0, 3));
         }}
       >
@@ -734,21 +835,44 @@ const Calendar = ({ onClose }) => {
         {renderMonthSlider()}
         <div style={{ marginTop: 20 }} />
         {renderDeliveryMonth()}
-        <div style={{ marginTop: 20 }} />
-        {renderChooseDate()}
       </div>
     );
   };
   const renderDeliveryYearItem = (item) => {
+    const availableYearFromAPI = timeList.some(
+      (items) => items.date.split('-')[0] === item
+    );
+
     return (
       <p
         style={
-          item === selectedYear
-            ? styles.circleActiveForDDMMYY
-            : styles.itemDDMMYY
+          item === yearActive
+            ? {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '40px',
+                height: '40px',
+                backgroundColor: color.primary,
+                borderRadius: '100%',
+                color: 'white',
+                fontSize: mobileSize ? '11px' : '13px',
+                marginLeft: '4px',
+                marginRight: '4px',
+              }
+            : {
+                color: 'black',
+                fontSize: mobileSize ? '11px' : '13px',
+                paddingLeft: '10px',
+                paddingRight: '10px',
+                opacity: availableYearFromAPI ? 1 : 0.2,
+                cursor: availableYearFromAPI ? 'pointer' : 'not-allowed',
+                pointerEvents: !availableYearFromAPI && 'none',
+              }
         }
         onClick={() => {
           setSelectedYear(item);
+          setYearActive(item);
         }}
       >
         {item}
@@ -781,44 +905,54 @@ const Calendar = ({ onClose }) => {
         {renderYearSlider()}
         <div style={{ marginTop: 20 }} />
         {renderDeliveryYear()}
-        <div style={{ marginTop: 20 }} />
-        {renderChooseDate()}
       </div>
     );
   };
 
   const renderConfirmButton = () => {
-    const buttonDisabled =
-      selectTimeDropDown ===
-      `${date.getHours()}:${date.getMinutes()} - ${getTimeEarly()}`
-        ? true
-        : false;
+    const buttonDisabled = !selectTimeDropDown ? true : false;
+
+    const isTimeSlotEditExist = timeslot.timeslot ? false : buttonDisabled;
+    const disableApplyButton = dateActive ? false : true;
+
     if (selector === 'date' || selector === 'month' || selector === 'year') {
       return (
         <Stack
           direction='row'
-          justifyContent='space-between'
+          justifyContent='space-evenly'
           alignItems='center'
           mt={2}
         >
-          <Button
+          <button
             onClick={() => setSelector('dateTime')}
-            sx={styles.buttonCancel}
-            variant='outlined'
+            style={styles.buttonCancel}
           >
             Back
-          </Button>
-          <Button
-            sx={styles.buttonConfirm}
-            variant='contained'
+          </button>
+          <button
+            disabled={disableApplyButton}
+            style={styles.buttonConfirm}
             onClick={() => {
-              const getSelectedAllDate = `${selectedDate}-${selectedMonth}-${selectedYear}`;
+              const getSelectedAllDate = `${dateActive}-${selectedMonth}-${selectedYear}`;
               setselectTime(getSelectedAllDate);
               setSelector('');
+              const formatForSendApi = moment()
+                .year(selectedYear)
+                .month(selectedMonth)
+                .date(dateActive)
+                .format('YYYY MM DD');
+              setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
+              dispatch({
+                type: CONSTANT.SAVE_TIMESLOT_CALENDER,
+                payload: changeFormatDate(formatForSendApi),
+              });
+              dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
             }}
           >
             Apply
-          </Button>
+          </button>
         </Stack>
       );
     } else {
@@ -829,10 +963,10 @@ const Calendar = ({ onClose }) => {
           alignItems='center'
           mt={2}
         >
-          <Button onClick={onClose} sx={styles.buttonCancel} variant='outlined'>
+          <button onClick={onClose} style={styles.buttonCancel}>
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => {
               if (mode === 'GuestMode') {
                 handleSaveDateTimeForGuestMode();
@@ -840,17 +974,11 @@ const Calendar = ({ onClose }) => {
                 handleSaveDateTime();
               }
             }}
-            sx={{
-              width: '45%',
-              paddingTop: '10px',
-              paddingBottom: '10px',
-              backgroundColor: color.primary,
-            }}
-            variant='contained'
-            disabled={buttonDisabled}
+            disabled={isTimeSlotEditExist}
+            style={styles.buttonConfirm}
           >
             Confirm
-          </Button>
+          </button>
         </Stack>
       );
     }
@@ -858,10 +986,6 @@ const Calendar = ({ onClose }) => {
 
   const compareDateLocalWithDateApi = (changeFormatDate) => {
     return timeList.some((item) => item?.date === changeFormatDate);
-  };
-
-  const changeFormatDate = (itemDate) => {
-    return itemDate.split(' ').join('-');
   };
 
   const nameDay = (item) => {
@@ -877,6 +1001,145 @@ const Calendar = ({ onClose }) => {
     );
   };
 
+  let filteredItem;
+  let dateListEdit;
+
+  if (saveTimeSlotCalendar) {
+    getAllDateForTimeSlot.sort((item) => {
+      if (saveTimeSlotCalendar === item.split(' ').join('-')) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+    const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
+
+    const dateFiltered = getAllDateForTimeSlot.filter(
+      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+    );
+
+    const dateSorted = dateFiltered.sort(
+      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+    );
+    filteredItem = dateSorted;
+  }
+
+  if (dateEdit.date || saveTimeSlotForEdit) {
+    getAllDateForTimeSlot.sort((item) => {
+      if (dateEdit.date === item.split(' ').join('-')) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+    const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
+
+    const dateFiltered = getAllDateForTimeSlot.filter(
+      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+    );
+
+    const dateSorted = dateFiltered.sort(
+      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+    );
+    dateListEdit = dateSorted;
+  }
+
+  const renderChildTimeSlotScrool = (arrayDate) => {
+    return arrayDate?.map((itemDate) => {
+      const baseStyleStack = {
+        width: '80px',
+        height: '100px',
+        borderRadius: '10px',
+      };
+      const baseCycleStyle = {
+        display: 'flex',
+        width: 26,
+        height: 26,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 100,
+      };
+
+      const stackStyle =
+        changeFormatDate(itemDate) === dateEdit.date ||
+        changeFormatDate(itemDate) === getDateBaseOnClick
+          ? {
+              ...baseStyleStack,
+              backgroundColor: color.primary,
+              border: `1px solid ${color.primary}80`,
+              color: 'white',
+            }
+          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+          ? {
+              ...baseStyleStack,
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}80`,
+              color: 'gray',
+              opacity: '.4',
+              pointerEvents: 'none',
+              cursor: 'not-allowed',
+            }
+          : {
+              ...baseStyleStack,
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}80`,
+              color: color.primary,
+            };
+
+      const cycleStyle =
+        changeFormatDate(itemDate) === dateEdit.date ||
+        changeFormatDate(itemDate) === getDateBaseOnClick
+          ? {
+              ...baseCycleStyle,
+              color: color.primary,
+              backgroundColor: 'white',
+            }
+          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+          ? {
+              ...baseCycleStyle,
+              backgroundColor: color.primary,
+            }
+          : {
+              ...baseCycleStyle,
+              backgroundColor: color.primary,
+              color: 'white',
+            };
+
+      return (
+        <SwiperSlide
+          key={changeFormatDate(itemDate)}
+          style={{ flexShrink: 'unset' }}
+        >
+          <Stack
+            direction='column'
+            alignItems='center'
+            justifyContent='space-around'
+            sx={stackStyle}
+            onClick={() => {
+              setSelectTimeDropDown('');
+              setselectTime(changeFormatDate(itemDate));
+              setGetDateBaseOnClick(changeFormatDate(itemDate));
+              dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+            }}
+          >
+            <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
+            <div style={cycleStyle}>
+              <Typography>
+                {moment(changeFormatDate(itemDate)).format('DD')}
+              </Typography>
+            </div>
+            <Typography>
+              {moment(changeFormatDate(itemDate))
+                .format('MM')
+                .toLocaleUpperCase()}
+            </Typography>
+          </Stack>
+        </SwiperSlide>
+      );
+    });
+  };
   const renderTimeScroll = () => {
     if (!timeList) {
       return (
@@ -889,100 +1152,13 @@ const Calendar = ({ onClose }) => {
         </Stack>
       );
     } else {
-      return getAllDateForTimeSlot.map((itemDate) => {
-        console.log('dedd =>', 'render ulang');
-        const baseStyleStack = {
-          width: '80px',
-          height: '100px',
-          borderRadius: '10px',
-        };
-        const baseCycleStyle = {
-          display: 'flex',
-          width: 26,
-          height: 26,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 100,
-        };
-
-        const stackStyle =
-          changeFormatDate(itemDate) === dateEdit.date ||
-          changeFormatDate(itemDate) === selectTime
-            ? {
-                ...baseStyleStack,
-                backgroundColor: color.primary,
-                border: `1px solid ${color.primary}80`,
-                color: 'white',
-              }
-            : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-            ? {
-                ...baseStyleStack,
-                backgroundColor: 'white',
-                border: `1px solid ${color.primary}80`,
-                color: 'gray',
-                opacity: '.4',
-                pointerEvents: 'none',
-                cursor: 'not-allowed',
-              }
-            : {
-                ...baseStyleStack,
-                backgroundColor: 'white',
-                border: `1px solid ${color.primary}80`,
-                color: color.primary,
-              };
-
-        const cycleStyle =
-          changeFormatDate(itemDate) === dateEdit.date ||
-          changeFormatDate(itemDate) === selectTime
-            ? {
-                ...baseCycleStyle,
-                color: color.primary,
-                backgroundColor: 'white',
-              }
-            : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-            ? {
-                ...baseCycleStyle,
-                backgroundColor: color.primary,
-              }
-            : {
-                ...baseCycleStyle,
-                backgroundColor: color.primary,
-                color: 'white',
-              };
-
-        return (
-          <SwiperSlide
-            key={changeFormatDate(itemDate)}
-            style={{ flexShrink: 'unset' }}
-          >
-            <Stack
-              direction='column'
-              alignItems='center'
-              justifyContent='space-around'
-              sx={stackStyle}
-              onClick={() => {
-                setselectTime(changeFormatDate(itemDate));
-                setGetDateBaseOnClick(changeFormatDate(itemDate));
-                dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-                dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-                dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
-              }}
-            >
-              <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
-              <div style={cycleStyle}>
-                <Typography>
-                  {moment(changeFormatDate(itemDate)).format('DD')}
-                </Typography>
-              </div>
-              <Typography>
-                {moment(changeFormatDate(itemDate))
-                  .format('MM')
-                  .toLocaleUpperCase()}
-              </Typography>
-            </Stack>
-          </SwiperSlide>
-        );
-      });
+      if (filteredItem) {
+        return renderChildTimeSlotScrool(filteredItem);
+      } else if (dateListEdit) {
+        return renderChildTimeSlotScrool(dateListEdit);
+      } else {
+        return renderChildTimeSlotScrool(getAllDateForTimeSlot);
+      }
     }
   };
 
