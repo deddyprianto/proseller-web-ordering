@@ -1,4 +1,7 @@
-import * as React from 'react';
+/* eslint-disable react/button-has-type */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+import React from 'react';
 import {
   Dropdown,
   DropdownToggle,
@@ -20,7 +23,6 @@ const DropDownCustomSelect = ({
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const color = useSelector((state) => state.theme.color);
   let date = [];
-
   if (getDateBaseOnClick) {
     timeList?.forEach((item) => {
       if (item.date === getDateBaseOnClick) {

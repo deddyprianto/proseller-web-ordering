@@ -38,6 +38,11 @@ const defaultState = {
   orderActionTimeSlot:
     localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
   orderingSetting: {},
+  date: '',
+  timeslot: '',
+  saveValueEdit: '',
+  saveTimeSlotCalendarLogin: '',
+  saveDateEdit: '',
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -171,6 +176,16 @@ export default function reducer(state = defaultState, action) {
         orderActionTime: moment().add(1, 'h').format('HH') + ':00',
         orderActionTimeSlot: null,
       };
+    case CONSTANT.SAVE_DATE_EDIT:
+      return { ...state, saveDateEdit: action.payload };
+    case CONSTANT.SAVE_TIMESLOT_CALENDER_LOGIN:
+      return { ...state, saveTimeSlotCalendarLogin: action.payload };
+    case CONSTANT.SAVE_DATE_LOGIN:
+      return { ...state, date: action.payload };
+    case CONSTANT.SAVE_TIMESLOT_LOGIN:
+      return { ...state, timeslot: action.payload };
+    case CONSTANT.SAVE_VALUE_EDIT:
+      return { ...state, saveValueEdit: action.payload };
     default:
       return state;
   }
