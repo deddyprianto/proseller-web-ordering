@@ -51,6 +51,7 @@ const mapStateToProps = (state) => {
     products: state.product.products,
     orderingMode: state.order.orderingMode,
     orderingSetting: state.order.orderingSetting,
+    promotion: state.promotion.banners,
   };
 };
 
@@ -271,11 +272,12 @@ const ProductList = ({ ...props }) => {
       </Tab>
     );
   };
+  const isBannerSetToTrue = props.promotion.length === 0;
 
   const renderTabHeader = () => {
     const categoryTab = categories.slice(0, limitCategoryTabHeader);
     return (
-      <TabsList>
+      <TabsList sx={{ marginTop: isBannerSetToTrue && '103px' }}>
         {categoryTab.map((category, index) => {
           return (
             <Tab
@@ -393,6 +395,7 @@ ProductList.defaultProps = {
   defaultOutlet: {},
   orderingMode: '',
   orderingSetting: {},
+  promotion: [],
 };
 
 ProductList.propTypes = {
@@ -401,6 +404,7 @@ ProductList.propTypes = {
   dispatch: PropTypes.func,
   orderingMode: PropTypes.string,
   orderingSetting: PropTypes.object,
+  promotion: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList);
