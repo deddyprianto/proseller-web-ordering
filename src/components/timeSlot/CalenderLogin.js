@@ -1,3 +1,7 @@
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable react/button-has-type */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import Button from '@mui/material/Button';
@@ -261,7 +265,7 @@ const useStyles = (mobileSize, color) => ({
   },
 });
 
-const Calendar = ({ onClose }) => {
+const CalendarLogin = ({ onClose }) => {
   const date = new Date();
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
@@ -285,15 +289,15 @@ const Calendar = ({ onClose }) => {
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
   );
-  const saveTimeSlotCalendar = useSelector(
-    (state) => state.guestCheckoutCart.saveTimeSlotCalendar
+  const saveTimeSlotCalendarLogin = useSelector(
+    (state) => state.order.saveTimeSlotCalendarLogin
   );
-  const saveTimeSlotForEdit = useSelector(
-    (state) => state.guestCheckoutCart.saveTimeSlotForEdit
-  );
-  const dateEdit = useSelector((state) => state.guestCheckoutCart);
+
+  const saveValueEdit = useSelector((state) => state.order.saveValueEdit);
+  const saveDateLogin = useSelector((state) => state.order.date);
+  const saveDateNTime = useSelector((state) => state.order);
+  const timeslot = useSelector((state) => state.order);
   const orderingMode = useSelector((state) => state.order.orderingMode);
-  const timeslot = useSelector((state) => state.guestCheckoutCart);
   const color = useSelector((state) => state.theme.color);
   const styles = useStyles(mobileSize, color);
   const dataTime = useSelector((state) => state.outlet.defaultOutlet);
@@ -441,23 +445,6 @@ const Calendar = ({ onClose }) => {
   };
 
   const handleSaveDateTime = async () => {
-    const formatDate = `${moment(selectTime).format('DD')}-${moment(selectTime)
-      .format('MM')
-      .toLocaleUpperCase()}-${moment(selectTime)
-      .format('YYYY')
-      .toLocaleUpperCase()}`;
-    try {
-      await dispatch(OrderAction.setData(formatDate, 'SET_ORDER_ACTION_DATE'));
-      await dispatch(
-        OrderAction.setData(selectTimeDropDown, 'SET_ORDER_ACTION_TIME_SLOT')
-      );
-    } catch (error) {
-      console.log(error);
-    }
-    onClose(true);
-  };
-
-  const handleSaveDateTimeForGuestMode = async () => {
     const formatDate = `${moment(selectTime).format('YYYY')}-${moment(
       selectTime
     )
@@ -465,21 +452,19 @@ const Calendar = ({ onClose }) => {
       .toLocaleUpperCase()}-${moment(selectTime)
       .format('DD')
       .toLocaleUpperCase()}`;
-    const splitTime = selectTimeDropDown.split('-')[0];
-    const finalTime = splitTime.split(' ')[0];
+    dispatch({ type: CONSTANT.SAVE_DATE_LOGIN, payload: formatDate });
+    dispatch({
+      type: CONSTANT.SAVE_TIMESLOT_LOGIN,
+      payload: selectTimeDropDown,
+    });
+    dispatch({ type: CONSTANT.SAVE_VALUE_EDIT, payload: formatDate });
+    dispatch({ type: CONSTANT.SAVE_TIMESLOT_CALENDER_LOGIN, payload: '' });
+    dispatch({ type: CONSTANT.SAVE_DATE_EDIT, payload: formatDate });
     try {
-      await dispatch(OrderAction.saveDateGuest(formatDate, CONSTANT.SAVE_DATE));
+      await dispatch(OrderAction.setData(formatDate, 'SET_ORDER_ACTION_DATE'));
       await dispatch(
-        OrderAction.saveTimeSlotGuest(finalTime, CONSTANT.SAVE_TIMESLOT)
+        OrderAction.setData(selectTimeDropDown, 'SET_ORDER_ACTION_TIME_SLOT')
       );
-      await dispatch(
-        OrderAction.saveTimeGuest(selectTimeDropDown, CONSTANT.SAVE_TIME)
-      );
-      dispatch({
-        type: CONSTANT.SAVE_TIMESLOT_FOR_EDIT,
-        payload: formatDate,
-      });
-      dispatch({ type: CONSTANT.SAVE_TIMESLOT_CALENDER, payload: '' });
     } catch (error) {
       console.log(error);
     }
@@ -912,7 +897,6 @@ const Calendar = ({ onClose }) => {
   const renderConfirmButton = () => {
     const buttonDisabled = !selectTimeDropDown ? true : false;
 
-    const isTimeSlotEditExist = timeslot.timeslot ? false : buttonDisabled;
     const disableApplyButton = dateActive ? false : true;
 
     if (selector === 'date' || selector === 'month' || selector === 'year') {
@@ -943,12 +927,11 @@ const Calendar = ({ onClose }) => {
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
               dispatch({
-                type: CONSTANT.SAVE_TIMESLOT_CALENDER,
+                type: CONSTANT.SAVE_TIMESLOT_CALENDER_LOGIN,
                 payload: changeFormatDate(formatForSendApi),
               });
-              dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-              dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-              dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_DATE_LOGIN, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_TIMESLOT_LOGIN, payload: '' });
             }}
           >
             Apply
@@ -967,14 +950,8 @@ const Calendar = ({ onClose }) => {
             Cancel
           </button>
           <button
-            onClick={() => {
-              if (mode === 'GuestMode') {
-                handleSaveDateTimeForGuestMode();
-              } else {
-                handleSaveDateTime();
-              }
-            }}
-            disabled={isTimeSlotEditExist}
+            onClick={handleSaveDateTime}
+            disabled={buttonDisabled}
             style={styles.buttonConfirm}
           >
             Confirm
@@ -1004,15 +981,15 @@ const Calendar = ({ onClose }) => {
   let filteredItem;
   let dateListEdit;
 
-  if (saveTimeSlotCalendar) {
+  if (saveTimeSlotCalendarLogin) {
     getAllDateForTimeSlot.sort((item) => {
-      if (saveTimeSlotCalendar === item.split(' ').join('-')) {
+      if (saveTimeSlotCalendarLogin === item.split(' ').join('-')) {
         return -1;
       } else {
         return 1;
       }
     });
-    const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
+    const splitFormatDate = saveTimeSlotCalendarLogin.split('-').join('');
 
     const dateFiltered = getAllDateForTimeSlot.filter(
       (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
@@ -1024,15 +1001,15 @@ const Calendar = ({ onClose }) => {
     filteredItem = dateSorted;
   }
 
-  if (dateEdit.date || saveTimeSlotForEdit) {
+  if (saveDateNTime.saveDateEdit) {
     getAllDateForTimeSlot.sort((item) => {
-      if (dateEdit.date === item.split(' ').join('-')) {
+      if (saveDateNTime.saveDateEdit === item.split(' ').join('-')) {
         return -1;
       } else {
         return 1;
       }
     });
-    const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
+    const splitFormatDate = saveDateNTime.saveDateEdit.split('-').join('');
 
     const dateFiltered = getAllDateForTimeSlot.filter(
       (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
@@ -1061,7 +1038,7 @@ const Calendar = ({ onClose }) => {
       };
 
       const stackStyle =
-        changeFormatDate(itemDate) === dateEdit.date ||
+        changeFormatDate(itemDate) === saveValueEdit ||
         changeFormatDate(itemDate) === getDateBaseOnClick
           ? {
               ...baseStyleStack,
@@ -1087,7 +1064,7 @@ const Calendar = ({ onClose }) => {
             };
 
       const cycleStyle =
-        changeFormatDate(itemDate) === dateEdit.date ||
+        changeFormatDate(itemDate) === saveValueEdit ||
         changeFormatDate(itemDate) === getDateBaseOnClick
           ? {
               ...baseCycleStyle,
@@ -1119,9 +1096,12 @@ const Calendar = ({ onClose }) => {
               setSelectTimeDropDown('');
               setselectTime(changeFormatDate(itemDate));
               setGetDateBaseOnClick(changeFormatDate(itemDate));
-              dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
-              dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
-              dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
+              dispatch({ type: CONSTANT.SAVE_DATE_LOGIN, payload: '' });
+              dispatch({
+                type: CONSTANT.SAVE_TIMESLOT_LOGIN,
+                payload: '',
+              });
+              dispatch({ type: CONSTANT.SAVE_VALUE_EDIT, payload: '' });
             }}
           >
             <Typography>{nameDay(changeFormatDate(itemDate))}</Typography>
@@ -1153,10 +1133,13 @@ const Calendar = ({ onClose }) => {
       );
     } else {
       if (filteredItem) {
+        console.log('%cdedd =>', 'color: green;', 'CALENDER PICK MODE');
         return renderChildTimeSlotScrool(filteredItem);
       } else if (dateListEdit) {
+        console.log('%cdedd =>', 'color: green;', 'EDIT MODE');
         return renderChildTimeSlotScrool(dateListEdit);
       } else {
+        console.log('%cdedd =>', 'color: green;', 'DEFAULT MODE');
         return renderChildTimeSlotScrool(getAllDateForTimeSlot);
       }
     }
@@ -1224,7 +1207,7 @@ const Calendar = ({ onClose }) => {
             selectTimeDropDown={selectTimeDropDown}
             timeList={timeList}
             getDateBaseOnClick={getDateBaseOnClick}
-            valueEditTimeSlot={timeslot}
+            valueEditTimeSlot={saveDateNTime}
           />
         </div>
         <Stack
@@ -1240,8 +1223,8 @@ const Calendar = ({ onClose }) => {
               marginLeft: '3px',
               fontWeight: 'bold',
               fontSize: mobileSize ? '10px' : '13px',
-              paddingTop: !dateEdit?.date && '10px',
-              paddingBottom: !dateEdit?.date && '10px',
+              paddingTop: !saveDateLogin && '10px',
+              paddingBottom: !saveDateLogin && '10px',
             }}
           >
             Chosen Date & Time
@@ -1255,15 +1238,15 @@ const Calendar = ({ onClose }) => {
           >
             <div style={{ display: 'flex' }}>
               <Typography sx={styles.textChooseDateTime}>
-                {dateEdit?.date
-                  ? `${moment(dateEdit.date).format('DD')} /`
+                {saveDateLogin
+                  ? `${moment(saveValueEdit).format('DD')} /`
                   : selectTime
                   ? `${moment(selectTime).format('DD')} /`
                   : ''}
               </Typography>
               <Typography sx={styles.textChooseDateTime}>
-                {dateEdit?.date
-                  ? `${moment(dateEdit.date)
+                {saveDateLogin
+                  ? `${moment(saveValueEdit)
                       .format('MM')
                       .toLocaleUpperCase()} / `
                   : selectTime
@@ -1271,8 +1254,8 @@ const Calendar = ({ onClose }) => {
                   : ''}
               </Typography>
               <Typography sx={styles.textChooseDateTime}>
-                {dateEdit?.date
-                  ? moment(dateEdit.date).format('YYYY').toLocaleUpperCase()
+                {saveDateLogin
+                  ? moment(saveValueEdit).format('YYYY').toLocaleUpperCase()
                   : selectTime
                   ? moment(selectTime).format('YYYY').toLocaleUpperCase()
                   : ''}
@@ -1339,4 +1322,4 @@ const Calendar = ({ onClose }) => {
   );
 };
 
-export default Calendar;
+export default CalendarLogin;

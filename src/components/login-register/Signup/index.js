@@ -34,6 +34,8 @@ const SignUp = ({
   setting,
   invitationCode,
   color,
+  isLoading,
+  setIsLoading,
 }) => {
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
   if (minimumAge && fields) {
@@ -116,6 +118,8 @@ const SignUp = ({
           enableOrdering={enableOrdering}
           enableSMSOTP={enableSMSOTP}
           enableWhatsappOTP={enableWhatsappOTP}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
         ></SignUpSuccess>
       ) : method === 'phone' ? (
         <PhoneForm

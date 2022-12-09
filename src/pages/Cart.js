@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
-import TimeSlotDialog from 'components/timeSlot/TimeSlot';
+import TimeSlotDialog from 'components/timeSlot/TimeSlotLogin';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
 
@@ -266,6 +266,13 @@ const Cart = ({ ...props }) => {
 
     getDataProviderListAndFee();
   }, [props.deliveryAddress]);
+
+  useEffect(() => {
+    props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: {},
+    });
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
