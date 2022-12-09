@@ -728,6 +728,23 @@ function submitAndPay(payload) {
   };
 }
 
+function paymentTopUPSVC(payload) {
+  return async () => {
+    let response = await CRMService.api(
+      'POST',
+      payload,
+      'sales/customer/submit',
+      'bearer'
+    );
+
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log(response);
+    }
+
+    return response;
+  };
+}
+
 function checkOfflineCart() {
   return async (dispatch) => {
     try {
@@ -964,6 +981,7 @@ export const OrderAction = {
   moveCart,
   getTimeSlot,
   submitMembership,
+  paymentTopUPSVC,
   updateCartInfo,
   getTrackOrder,
   addCartToGuestMode,

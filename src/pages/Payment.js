@@ -58,6 +58,7 @@ const orderActionTimeSlot = localStorage.getItem(
 
 const mapStateToProps = (state) => {
   return {
+    account: state.auth.account.idToken.payload,
     color: state.theme.color,
     basket: state.order.basket,
     companyInfo: state.masterdata.companyInfo.data,
@@ -75,6 +76,9 @@ const mapStateToProps = (state) => {
     orderActionTimeSlot: state.order.orderActionTimeSlot || orderActionTimeSlot,
     selectedDeliveryProvider:
       state.order.selectedDeliveryProvider || deliveryProviderLocal,
+    saveDetailTopupSvc: state.svc.saveDetailTopupSvc,
+    payment: state.payment.paymentCard,
+    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
@@ -285,6 +289,10 @@ const Payment = ({ ...props }) => {
     },
   };
 
+  const handleOpenWarningModal = () => {
+    setIsOpenWarningModal(true);
+  };
+
   useEffect(() => {
     if (!referenceNumberConfirmation) {
       return;
@@ -321,7 +329,9 @@ const Payment = ({ ...props }) => {
   };
 
   const handleRemovePaymentCard = () => {
-    props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
+    if (isEmptyObject(props.saveDetailTopupSvc)) {
+      props.dispatch(PaymentAction.setData({}, 'SET_SELECTED_PAYMENT_CARD'));
+    }
   };
 
   const handlePrice = () => {
@@ -418,7 +428,6 @@ const Payment = ({ ...props }) => {
     totalPrice,
     props.basket,
     props.companyInfo,
-    selectedVouchers,
   ]);
 
   const handleOpenPointAddModal = () => {
@@ -427,10 +436,6 @@ const Payment = ({ ...props }) => {
 
   const handleClosePointAddModal = () => {
     setIsOpenPointAddModal(false);
-  };
-
-  const handleOpenWarningModal = () => {
-    setIsOpenWarningModal(true);
   };
 
   const handleCloseWarningModal = () => {
@@ -566,7 +571,13 @@ const Payment = ({ ...props }) => {
           }}
           sx={styles.badge}
         >
-          <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+          {isEmptyObject(props.saveDetailTopupSvc) ? (
+            <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+          ) : (
+            <Typography style={styles.typographyPrice}>
+              {props.saveDetailTopupSvc.name}
+            </Typography>
+          )}
         </Badge>
       </Badge>
     );
@@ -586,7 +597,9 @@ const Payment = ({ ...props }) => {
             fontWeight: 'bold',
           }}
         >
-          {props.basket?.outlet?.name}
+          {isEmptyObject(props.saveDetailTopupSvc)
+            ? props.basket?.outlet?.name
+            : props.defaultOutlet?.name}
         </Typography>
       </div>
     );
@@ -815,7 +828,11 @@ const Payment = ({ ...props }) => {
             variant='outlined'
             component={Link}
             textTransform='none'
-            disabled={handleDisableButton()}
+            disabled={
+              isEmptyObject(props.saveDetailTopupSvc)
+                ? handleDisableButton()
+                : false
+            }
             to='/payment-method'
           >
             <div style={styles.displayFlexAndAlignCenter}>
@@ -998,7 +1015,64 @@ const Payment = ({ ...props }) => {
     if (totalPrice < minPayment) {
       return true;
     }
+    if (isEmptyObject(props.selectedPaymentCard)) {
+      return true;
+    }
     return false;
+  };
+
+  const handlePaymentTopUpSVC = async () => {
+    setIsLoading(true);
+    const payload = {
+      payments: [
+        {
+          accountId: props.selectedPaymentCard?.accountID,
+          paymentType: props.selectedPaymentCard?.paymentID,
+          paymentRefNo: '',
+          paymentID: props.selectedPaymentCard?.paymentID,
+          paymentName: props.selectedPaymentCard?.paymentName,
+          paymentAmount: props.saveDetailTopupSvc?.retailPrice,
+        },
+      ],
+      outletId: props.defaultOutlet?.id,
+      price: props.saveDetailTopupSvc?.retailPrice,
+      customerId: `customer::${props.account?.id}`,
+      dataPay: {
+        storeValueCard: {
+          value: props.saveDetailTopupSvc?.value,
+          expiryOnUnit: props.saveDetailTopupSvc?.expiryOnUnit,
+          retailPrice: props.saveDetailTopupSvc?.retailPrice,
+          totalNettAmount: props.saveDetailTopupSvc?.retailPrice,
+        },
+        id: props.saveDetailTopupSvc?.id,
+      },
+    };
+
+    const response = await props.dispatch(OrderAction.paymentTopUPSVC(payload));
+    if (
+      response &&
+      response.resultCode === 200 &&
+      response?.data?.action?.type !== 'url'
+    ) {
+      handleAfterPaymentSuccess(payload, response);
+      handleAudio();
+
+      return history.push('/settleSuccess');
+    } else if (
+      response &&
+      response.resultCode === 200 &&
+      response?.data?.action?.type === 'url'
+    ) {
+      setReferenceNumberConfirmation(response?.data?.referenceNo);
+      setUrlConfirmationDialog(response.data.action.url);
+      handleAfterPaymentSuccess(payload, response);
+      setIsLoading(false);
+      setOpenConfirmationDialogActionPayment(true);
+    } else {
+      setWarningMessage(response?.data?.message);
+      handleOpenWarningModal();
+      setIsLoading(false);
+    }
   };
 
   const renderButtonPay = () => {
@@ -1012,14 +1086,22 @@ const Payment = ({ ...props }) => {
         onClick={() => {
           if (props.selectedPaymentCard?.paymentID === 'MANUAL_TRANSFER') {
             setOpenTransferDialog(true);
+          } else if (!isEmptyObject(props.saveDetailTopupSvc)) {
+            handlePaymentTopUpSVC();
           } else {
             handlePay();
           }
         }}
       >
-        <Typography style={styles.typographyPay}>
-          Pay {handleCurrency(totalPrice)}
-        </Typography>
+        {isEmptyObject(props.saveDetailTopupSvc) ? (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(totalPrice)}
+          </Typography>
+        ) : (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
+          </Typography>
+        )}
       </LoadingButton>
     );
   };
@@ -1094,15 +1176,24 @@ const Payment = ({ ...props }) => {
           Confirm Payment
         </Typography>
         {renderPrice()}
-
-        <div style={styles.dividerOutletName} />
-        {renderOutletName()}
-        <div style={styles.dividerOutletName} />
-        {renderVoucher()}
-        {renderPoint()}
-        {renderSVC()}
-        {renderPaymentMethod()}
-        {renderButtonPay()}
+        {isEmptyObject(props.saveDetailTopupSvc) ? (
+          <React.Fragment>
+            <div style={styles.dividerOutletName} />
+            {renderOutletName()}
+            <div style={styles.dividerOutletName} />
+            {renderVoucher()}
+            {renderPoint()}
+            {renderSVC()}
+            {renderPaymentMethod()}
+            {renderButtonPay()}
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            {renderOutletName()}
+            {renderPaymentMethod()}
+            {renderButtonPay()}
+          </React.Fragment>
+        )}
       </Box>
     </>
   );

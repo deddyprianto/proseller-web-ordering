@@ -7,6 +7,7 @@ const initialState = {
   defaultBalance: 0,
   history: {},
   historyExpiration: {},
+  saveDetailTopupSvc: {},
 };
 
 export default function reducer(state = initialState, action) {
@@ -51,6 +52,12 @@ export default function reducer(state = initialState, action) {
         errorMessage: action.payload,
         successMessage: '',
       };
+    case 'SAVE_DETAIL_TOP_UP_SVC':
+      return {
+        ...state,
+        saveDetailTopupSvc: action.payload,
+      };
+
     default:
       return state;
   }

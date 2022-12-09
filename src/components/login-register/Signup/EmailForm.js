@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import PhoneInput from 'react-phone-input-2';
 import { Input, Button } from 'reactstrap';
 import CheckBox from '../../setting/checkBoxCostume';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import { useSelector } from 'react-redux';
+import LoadingOverlay from 'react-loading-overlay';
+
 import styles from './styles.module.css';
 import PasswordField from '../PasswordField';
 
@@ -23,13 +23,11 @@ const EmailForm = ({
   isTCAvailable,
   termsAndConditions,
 }) => {
-  const showLoadingOnModal = useSelector(
-    (state) => state.customer.showLoadingOnModal
-  );
   const initialCountry = 'SG';
   const [phoneCountryCode, setPhoneCountryCode] = useState('+65');
   const [phone, setPhone] = useState('');
   const [agreeTC, setAgreeTC] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (phone) {
@@ -46,11 +44,11 @@ const EmailForm = ({
   }
 
   return (
-    <LoadingOverlayCustom active={showLoadingOnModal} spinner text='Loading...'>
+    <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div className='modal-body'>
         <p className='text-muted'>{`Register for ${email || '-'}`}</p>
         <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-          <label for='name'>
+          <label htmlFor='name'>
             Name <span className='required'>*</span>
           </label>
           <input
@@ -74,7 +72,7 @@ const EmailForm = ({
         </p>
 
         <div className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-          <label for='name'>
+          <label htmlFor='name'>
             Phone Number <span className='required'>*</span>
           </label>
           <div className={styles.fieldGroup}>
@@ -82,7 +80,7 @@ const EmailForm = ({
               <PhoneInput
                 country={initialCountry}
                 value={phoneCountryCode}
-                enableSearch={true}
+                enableSearch
                 autoFormat={false}
                 onChange={(e) => {
                   setPhoneCountryCode(`+${e}`);
@@ -133,7 +131,7 @@ const EmailForm = ({
         )}
         {invitationCode && (
           <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-            <label for='referral'>Referral Code</label>
+            <label htmlFor='referral'>Referral Code</label>
             <input
               type='text'
               value={invitationCode}
@@ -177,7 +175,7 @@ const EmailForm = ({
                 />
                 <label
                   className='form-check-label'
-                  for='exampleCheck1'
+                  htmlFor='exampleCheck1'
                   style={{ marginLeft: 10 }}
                 >
                   I Agree to Terms & Conditions{' '}
@@ -186,28 +184,67 @@ const EmailForm = ({
             </div>
           </>
         )}
-        <Button
-          disabled={isSubmitting || agreeTC || !isTCAvailable}
-          className='button'
-          style={{ width: '100%', marginTop: 10, borderRadius: 5, height: 50 }}
-          onClick={() => handleSubmit()}
-        >
-          Create Account
-        </Button>
+        {isTCAvailable ? (
+          <Button
+            disabled={isSubmitting || agreeTC || !isTCAvailable}
+            className='button'
+            style={{
+              width: '100%',
+              marginTop: 10,
+              borderRadius: 5,
+              height: 50,
+            }}
+            onClick={() => {
+              setIsLoading(true);
+              handleSubmit().then((res) => {
+                if (!res || !res.status || res.status === 'FAILED') {
+                  setIsLoading(false);
+                }
+              });
+            }}
+          >
+            Create Account
+          </Button>
+        ) : (
+          <Button
+            disabled={isSubmitting}
+            className='button'
+            style={{
+              width: '100%',
+              marginTop: 10,
+              borderRadius: 5,
+              height: 50,
+            }}
+            onClick={() => {
+              setIsLoading(true);
+              handleSubmit().then((res) => {
+                if (!res || !res.status || res.status === 'FAILED') {
+                  setIsLoading(false);
+                }
+              });
+            }}
+          >
+            Create Account
+          </Button>
+        )}
       </div>
-    </LoadingOverlayCustom>
+    </LoadingOverlay>
   );
 };
 
+
 EmailForm.propTypes = {
+  children: PropTypes.func,
+  color: PropTypes.string,
   email: PropTypes.string,
-  handleSubmit: PropTypes.func,
-  handleChange: PropTypes.func,
-  isSubmitting: PropTypes.bool,
-  error: PropTypes.string,
-  errorPassword: PropTypes.string,
   enablePassword: PropTypes.bool,
+  error: PropTypes.string,
+  errorName: PropTypes.string,
+  errorPassword: PropTypes.string,
+  handleChange: PropTypes.func,
+  handleSubmit: PropTypes.func,
   invitationCode: PropTypes.string,
+  isSubmitting: PropTypes.bool,
   isTCAvailable: PropTypes.bool,
   termsAndConditions: PropTypes.string,
 };

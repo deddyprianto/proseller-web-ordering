@@ -1048,6 +1048,7 @@ const LoginRegister = (props) => {
 
       // Validate minimum age
       if (minimumAge > 0) {
+        setIsLoading(false);
         const currentAge = getAge(payload.birthDate);
         if (currentAge < minimumAge) {
           Swal.fire(
@@ -1098,6 +1099,7 @@ const LoginRegister = (props) => {
           setIsLoading(false);
         }
       }
+      return response;
     } catch (err) {
       setIsLoading(false);
       let error = 'Please try again.';
@@ -1111,10 +1113,6 @@ const LoginRegister = (props) => {
       }
       Swal.fire('Oppss!', error, 'error');
     }
-    props.dispatch({
-      type: CONSTANT.LOADING_ON_MODAL_REGISTER,
-      data: false,
-    });
   };
 
   const handleClear = () => {
@@ -1201,6 +1199,8 @@ const LoginRegister = (props) => {
               enableSMSOTP={enableSMSOTP}
               enableWhatsappOTP={enableWhatsappOTP}
               minimumAge={minimumAge}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
             ></SignUp>
           ) : (
             <Portal

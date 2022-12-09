@@ -3,6 +3,7 @@ import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import ModalStatus from './ModalSatatus';
 import config from '../../config';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2');
@@ -312,43 +313,59 @@ class SettleSuccess extends Component {
                             ? 'Amount to Pay'
                             : "You've Paid"}
                         </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            marginLeft: -20,
-                            marginTop: 10,
-                          }}
-                        >
+                        {isEmptyObject(this.props.saveDetailTopupSvc) ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              marginLeft: -20,
+                              marginTop: 10,
+                              backgroundColor: 'red',
+                            }}
+                          >
+                            <div
+                              style={{
+                                color: 'gray',
+                                fontSize: 10,
+                                fontWeight: 'bold',
+                                marginTop: -20,
+                              }}
+                            >
+                              {this.props.companyInfo &&
+                                this.props.companyInfo.currency.code}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: 20, fontWeight: 'bold' }}>
+                                {this.getCurrency(totalAmount - discount)}
+                              </div>
+                              {discount > 0 && (
+                                <div
+                                  style={{
+                                    textAlign: 'right',
+                                    marginRight: -10,
+                                    textDecorationLine: 'line-through',
+                                  }}
+                                >
+                                  {this.getCurrency(totalAmount)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
                           <div
                             style={{
                               color: 'gray',
-                              fontSize: 10,
+                              fontSize: '20px',
                               fontWeight: 'bold',
-                              marginTop: -20,
                             }}
                           >
-                            {this.props.companyInfo &&
-                              this.props.companyInfo.currency.code}
-                          </div>
-                          <div>
-                            <div style={{ fontSize: 20, fontWeight: 'bold' }}>
-                              {this.getCurrency(totalAmount - discount)}
-                            </div>
-                            {discount > 0 && (
-                              <div
-                                style={{
-                                  textAlign: 'right',
-                                  marginRight: -10,
-                                  textDecorationLine: 'line-through',
-                                }}
-                              >
-                                {this.getCurrency(totalAmount)}
-                              </div>
+                            SGD{' '}
+                            {this.getCurrency(
+                              this.props.saveDetailTopupSvc?.retailPrice
                             )}
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                     <div
@@ -446,6 +463,7 @@ const mapStateToProps = (state) => {
     color: state.theme.color,
     setting: state.order.setting,
     orderingMode: state.order.orderingMode,
+    saveDetailTopupSvc: state.svc.saveDetailTopupSvc,
   };
 };
 
