@@ -38,6 +38,8 @@ const defaultState = {
   orderActionTimeSlot:
     localStorage.getItem(`${config.prefix}_order_action_time_slot`) || null,
   orderingSetting: {},
+  itemOrderingMode: {},
+  orderingModeActive: null,
   date: '',
   timeslot: '',
   saveValueEdit: '',
@@ -176,6 +178,10 @@ export default function reducer(state = defaultState, action) {
         orderActionTime: moment().add(1, 'h').format('HH') + ':00',
         orderActionTimeSlot: null,
       };
+    case 'ORDERING_MODE_ACTIVE':
+      return { ...state, orderingModeActive: action.data };
+    case 'ITEM_ORDERING_MODE':
+      return { ...state, itemOrderingMode: action.data };
     case CONSTANT.SAVE_DATE_EDIT:
       return { ...state, saveDateEdit: action.payload };
     case CONSTANT.SAVE_TIMESLOT_CALENDER_LOGIN:
