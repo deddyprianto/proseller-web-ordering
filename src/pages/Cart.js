@@ -32,8 +32,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import circleActive from 'assets/images/bulatActive.png';
-import iconVespa from 'assets/images/2.png';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -236,6 +234,13 @@ const Cart = ({ ...props }) => {
       props.dispatch({ type: 'SET_DELIVERY_ADDRESS', data: null });
     }
   }, [props.orderingMode]);
+
+  useEffect(() => {
+    props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: {},
+    });
+  }, []);
 
   useEffect(() => {
     const getDataProviderListAndFee = async () => {
@@ -814,6 +819,61 @@ const Cart = ({ ...props }) => {
     setOpenSelectDeliveryProvider(false);
   };
 
+  const deliveryIcon = (colorState) => {
+    return (
+      <svg
+        width='40'
+        height='40'
+        viewBox='0 0 128 128'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M48.0774 87.5351C47.8138 87.5221 47.5218 87.5092 47.1987 87.5015C45.2914 87.442 42.7199 87.442 39.1353 87.442C35.5481 87.442 32.9766 87.442 31.0719 87.5015C30.7488 87.5118 30.4568 87.5221 30.1931 87.5351C30.5192 89.6731 31.6005 91.6235 33.2409 93.0328C34.8814 94.4421 36.9726 95.217 39.1353 95.217C41.298 95.217 43.3891 94.4421 45.0296 93.0328C46.6701 91.6235 47.7514 89.6731 48.0774 87.5351ZM39.1353 100.364C41.002 100.364 42.8503 99.9965 44.5749 99.2822C46.2995 98.5679 47.8665 97.5208 49.1864 96.2009C50.5063 94.881 51.5533 93.314 52.2677 91.5894C52.982 89.8649 53.3497 88.0165 53.3497 86.1498C53.3497 85.0023 53.3497 84.1934 52.9801 83.6248C52.104 82.2732 49.1422 82.2732 39.1353 82.2732C24.9209 82.2732 24.9209 82.2732 24.9209 86.1498C24.9209 89.9197 26.4185 93.5352 29.0842 96.2009C31.7499 98.8666 35.3654 100.364 39.1353 100.364ZM82.2308 43.5066H94.7007V74.5198H89.5318V48.6755H86.4951L79.1475 86.6408L74.0717 85.6588L82.2308 43.5066ZM101.027 95.0351C102.194 94.8119 103.306 94.361 104.298 93.7082C105.291 93.0554 106.145 92.2134 106.812 91.2304C107.48 90.2474 107.947 89.1426 108.187 87.9791C108.427 86.8155 108.436 85.6161 108.212 84.4492L113.288 83.4775C113.997 87.1802 113.205 91.0128 111.088 94.1322C108.971 97.2516 105.702 99.4022 101.999 100.111C98.2964 100.82 94.4638 100.028 91.3444 97.9114C88.225 95.7943 86.0744 92.5248 85.3657 88.8221L90.4415 87.8504C90.6647 89.0173 91.1156 90.1288 91.7684 91.1214C92.4212 92.114 93.2632 92.9683 94.2462 93.6355C95.2292 94.3027 96.334 94.7697 97.4976 95.0098C98.6611 95.25 99.8605 95.2586 101.027 95.0351V95.0351Z'
+          fill={colorState}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M105.997 76.6184C104.294 75.4258 102.303 74.7114 100.23 74.5497C98.1575 74.388 96.0793 74.7849 94.2121 75.699C92.3448 76.6131 90.7567 78.011 89.6131 79.7472C88.4696 81.4834 87.8123 83.4944 87.7097 85.5709L110.044 81.6322C109.195 79.6131 107.792 77.8752 105.997 76.6184V76.6184ZM96.409 69.6017C100.278 68.9198 104.263 69.6153 107.672 71.5672C111.081 73.5192 113.698 76.6041 115.069 80.2857C116.247 83.4439 113.885 86.2041 111.228 86.6693L88.3223 90.7113C85.6681 91.1765 82.5047 89.3933 82.528 86.0232C82.5565 82.0949 83.9609 78.3008 86.4969 75.3006C89.0329 72.3004 92.5402 70.2839 96.409 69.6017V69.6017ZM55.9341 53.8444H32.6742C31.9888 53.8444 31.3314 54.1167 30.8467 54.6013C30.3621 55.086 30.0898 55.7434 30.0898 56.4288V61.5977H58.5186V56.4288C58.5186 55.7434 58.2463 55.086 57.7616 54.6013C57.2769 54.1167 56.6196 53.8444 55.9341 53.8444ZM32.6742 48.6755C30.6179 48.6755 28.6458 49.4924 27.1918 50.9464C25.7378 52.4004 24.9209 54.3725 24.9209 56.4288V64.1821C24.9209 64.8676 25.1932 65.5249 25.6779 66.0096C26.1625 66.4943 26.8199 66.7666 27.5053 66.7666H61.103C61.7884 66.7666 62.4458 66.4943 62.9305 66.0096C63.4151 65.5249 63.6874 64.8676 63.6874 64.1821V56.4288C63.6874 54.3725 62.8706 52.4004 61.4165 50.9464C59.9625 49.4924 57.9904 48.6755 55.9341 48.6755H32.6742Z'
+          fill={colorState}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M55.9354 66.7665H38.0666C27.7987 66.7665 19.5827 73.5765 17.6186 82.2731H55.6485C55.7507 82.2784 55.8517 82.2493 55.9354 82.1904V66.7665ZM38.0666 61.5977C23.6713 61.5977 12 72.6539 12 86.2945C12 86.9277 12.5427 87.442 13.2147 87.442H55.6485C58.662 87.442 61.1043 85.1289 61.1043 82.2731V63.6652C61.1043 62.5229 60.1274 61.5977 58.923 61.5977H38.0666V61.5977ZM92.1175 33.1689H86.9486C85.5778 33.1689 84.263 33.7134 83.2937 34.6828C82.3243 35.6521 81.7798 36.9669 81.7798 38.3377C81.7798 39.7086 82.3243 41.0233 83.2937 41.9927C84.263 42.962 85.5778 43.5066 86.9486 43.5066H92.1175V33.1689ZM86.9486 28C84.2069 28 81.5774 29.0892 79.6387 31.0279C77.7 32.9666 76.6109 35.596 76.6109 38.3377C76.6109 41.0795 77.7 43.7089 79.6387 45.6476C81.5774 47.5863 84.2069 48.6755 86.9486 48.6755H95.6969C96.5756 48.6755 97.2864 47.9622 97.2864 47.0861V29.5894C97.2864 29.1679 97.1189 28.7636 96.8208 28.4655C96.5228 28.1675 96.1185 28 95.6969 28H86.9486V28Z'
+          fill={colorState}
+        />
+        <path
+          d='M67.1686 30.5844L79.897 32.8226L79.0002 37.9139L66.2744 35.6758L67.1686 30.5844Z'
+          fill={colorState}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M84.3638 87.442H53.3506V82.2731H84.3638V87.442ZM79.1949 74.5198H55.935V69.3509H79.1949V74.5198Z'
+          fill={colorState}
+        />
+      </svg>
+    );
+  };
+
+  const renderElipsIcon = () => {
+    return (
+      <svg
+        width='128'
+        height='128'
+        viewBox='0 0 128 128'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <circle cx='64' cy='64' r='64' fill={props.color?.primary} />
+      </svg>
+    );
+  };
+
   const renderButtonProvider = () => {
     if (!dataCalculateFee) {
       return (
@@ -846,11 +906,13 @@ const Cart = ({ ...props }) => {
               onClick={() => {
                 handleSelectDeliveryProvider(item);
                 setDataDeliveryProvider(item.name);
-                setOpenAccordion(false);
+                setOpenAccordion(true);
               }}
               style={{
-                backgroundColor: conditionName ? '#4386A133' : 'white',
-                border: '1px solid #4386A1',
+                backgroundColor: conditionName
+                  ? `${props.color.primary}33`
+                  : 'white',
+                border: `1px solid ${props.color.primary}`,
                 borderRadius: '10px',
                 width: '100%',
                 display: 'flex',
@@ -859,14 +921,14 @@ const Cart = ({ ...props }) => {
                 padding: '10px',
               }}
             >
-              <img src={iconVespa} alt='vespa' style={{ flex: 0 }} />
+              {deliveryIcon(props.color.primary)}
 
               <div style={{ flex: 1, paddingLeft: '10px' }}>
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={{
                     fontSize: '14px',
-                    color: '#4386A1',
+                    color: props.color.primary,
                     fontWeight: 700,
                   }}
                 >
@@ -876,7 +938,7 @@ const Cart = ({ ...props }) => {
                   className={fontStyleCustom.myFont}
                   style={{
                     fontSize: '14px',
-                    color: '#4386A1',
+                    color: props.color.primary,
                     fontWeight: 700,
                   }}
                 >{`(SGD ${item?.deliveryFee})`}</Typography>
@@ -885,17 +947,16 @@ const Cart = ({ ...props }) => {
                 <div
                   style={{
                     borderRadius: '100%',
-                    border: '1px solid #4386A1',
+                    border: `1px solid ${props.color.primary}`,
                     width: '18px',
                     height: '18px',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    padding: '2px',
                   }}
                 >
-                  {conditionName && (
-                    <img src={circleActive} width={11} height={11} />
-                  )}
+                  {conditionName && renderElipsIcon()}
                 </div>
               </div>
             </div>
