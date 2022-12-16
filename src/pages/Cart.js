@@ -801,7 +801,7 @@ const Cart = ({ ...props }) => {
 
     await props.dispatch({
       type: 'SET_SELECTED_DELIVERY_PROVIDERS',
-      payload: value,
+      data: value,
     });
 
     const response = await props.dispatch(
