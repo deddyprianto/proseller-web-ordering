@@ -35,7 +35,6 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     color: state.theme.color,
     companyInfo: state.masterdata.companyInfo.data,
-    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
