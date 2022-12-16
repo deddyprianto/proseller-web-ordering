@@ -195,15 +195,15 @@ class Basket extends Component {
       this.setState({ countryCode: infoCompany.countryCode });
     }
 
-    if (dataBasket.confirmationInfo && dataBasket.confirmationInfo.voucher) {
+    if (dataBasket?.confirmationInfo && dataBasket?.confirmationInfo.voucher) {
       selectedVoucher = dataBasket.confirmationInfo.voucher;
       localStorage.setItem(
         `${config.prefix}_selectedVoucher`,
         JSON.stringify(encryptor.encrypt(selectedVoucher))
       );
     } else if (
-      dataBasket.confirmationInfo &&
-      dataBasket.confirmationInfo.redeemPoint > 0
+      dataBasket?.confirmationInfo &&
+      dataBasket?.confirmationInfo.redeemPoint > 0
     ) {
       selectedPoint = this.setPoint(
         dataBasket.confirmationInfo.redeemPoint,
@@ -220,39 +220,39 @@ class Basket extends Component {
       storeDetail = this.props.defaultOutlet;
     } else {
       storeDetail = await this.props.dispatch(
-        MasterDataAction.getOutletByID(dataBasket.outlet.id)
+        MasterDataAction.getOutletByID(dataBasket?.outlet.id)
       );
     }
 
     await this.getStatusVoucher(selectedVoucher, storeDetail, dataBasket);
     let discount = (selectedPoint || 0) + this.state.discountVoucher;
     let totalPrice =
-      dataBasket.totalNettAmount - discount < 0
+      dataBasket?.totalNettAmount - discount < 0
         ? 0
-        : dataBasket.totalNettAmount - discount;
+        : dataBasket?.totalNettAmount - discount;
 
-    let orderingMode = dataBasket.orderingMode;
+    let orderingMode = dataBasket?.orderingMode;
     scanTable = {
       ...scanTable,
-      tableType: dataBasket.orderingMode,
-      tableNo: dataBasket.tableNo,
-      outlet: dataBasket.outletID,
+      tableType: dataBasket?.orderingMode,
+      tableNo: dataBasket?.tableNo,
+      outlet: dataBasket?.outletID,
     };
 
     let deliveryProvaider = await this.props.dispatch(
       OrderAction.getProvider()
     );
     let provaiderDelivery = {};
-    if (dataBasket.deliveryProviderId) {
+    if (dataBasket?.deliveryProviderId) {
       provaiderDelivery = deliveryProvaider.find((items) => {
         return items.id === dataBasket.deliveryProviderId;
       });
       this.setState({ provaiderDelivery });
     }
 
-    if (dataBasket.orderActionDate)
+    if (dataBasket?.orderActionDate)
       this.setState({ orderActionDate: dataBasket.orderActionDate });
-    if (dataBasket.orderActionTime)
+    if (dataBasket?.orderActionTime)
       this.setState({ orderActionTime: dataBasket.orderActionTime });
 
     let checkOperationalHours = this.checkOperationalHours(storeDetail);
@@ -310,10 +310,10 @@ class Basket extends Component {
     let { viewCartStatus } = this.state;
     if (
       viewCartStatus &&
-      (dataBasket.status === 'PROCESSING' ||
-        dataBasket.status === 'READY_FOR_COLLECTION' ||
-        dataBasket.status === 'READY_FOR_DELIVERY' ||
-        dataBasket.status === 'ON_THE_WAY')
+      (dataBasket?.status === 'PROCESSING' ||
+        dataBasket?.status === 'READY_FOR_COLLECTION' ||
+        dataBasket?.status === 'READY_FOR_DELIVERY' ||
+        dataBasket?.status === 'ON_THE_WAY')
     ) {
       this.setState({ viewCart: false });
     }
@@ -368,7 +368,7 @@ class Basket extends Component {
 
   checkOperationalHours = (storeDetail) => {
     let operationalHours = {};
-    if (storeDetail.operationalHours !== undefined) {
+    if (storeDetail?.operationalHours !== undefined) {
       operationalHours = storeDetail.operationalHours.filter(function (a) {
         return a.nameOfDay === moment().format('dddd');
       })[0];
