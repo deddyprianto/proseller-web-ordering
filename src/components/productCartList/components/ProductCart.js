@@ -453,7 +453,7 @@ const ProductCart = ({ item, ...props }) => {
                 </li>
               </React.Fragment>
             )}
-            {item.remark && (
+            {item?.remark && (
               <li>
                 <table>
                   <tr>
