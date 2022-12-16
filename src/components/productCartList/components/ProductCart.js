@@ -15,7 +15,6 @@ import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import ProductCartRemoveModal from 'components/productCartList/components/ProductCartRemoveModal';
 
-import editIcon from 'assets/images/edit.png';
 import TagPromotion from 'assets/images/Tag.png';
 
 const useWindowSize = () => {
@@ -283,6 +282,27 @@ const ProductCart = ({ item, ...props }) => {
     }
   };
 
+  const renderIconEdit = () => {
+    return (
+      <svg
+        width='15'
+        height='15'
+        viewBox='0 0 129 129'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M91.072 16.8123C92.4728 15.4116 94.1357 14.3004 95.9659 13.5423C97.7961 12.7842 99.7577 12.394 101.739 12.394C103.72 12.394 105.681 12.7842 107.511 13.5423C109.342 14.3004 111.005 15.4116 112.405 16.8123C113.806 18.2131 114.917 19.876 115.675 21.7062C116.433 23.5364 116.824 25.498 116.824 27.479C116.824 29.46 116.433 31.4216 115.675 33.2517C114.917 35.0819 113.806 36.7449 112.405 38.1457L40.4054 110.146L11.072 118.146L19.072 88.8123L91.072 16.8123Z'
+          stroke='white'
+          strokeWidth='10.6824'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          fill={props.color.primary}
+        />
+      </svg>
+    );
+  };
+
   const renderPrice = () => {
     if (item?.totalDiscAmount !== 0) {
       return (
@@ -369,6 +389,7 @@ const ProductCart = ({ item, ...props }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                padding: '5px',
               }}
             >
               {item.quantity}x
@@ -384,14 +405,6 @@ const ProductCart = ({ item, ...props }) => {
             >
               {item?.product.name} ({handleCurrency(item.product.retailPrice)})
             </div>
-
-            {/* <div style={styles.itemBody}>
-
-              {renderPromotion()}
-              {renderProductModifiers(item?.modifiers)}
-              {renderNotes()}
-              {renderPrice()}
-            </div> */}
           </div>
           <ul
             style={{
@@ -403,61 +416,67 @@ const ProductCart = ({ item, ...props }) => {
             }}
           >
             <li style={{ marginTop: '10px' }}>{renderPromotion()}</li>
-            <hr style={{ opacity: 0.5 }} />
-            <li>
-              Add-On:
-              {item?.modifiers?.map((items) => {
-                return items?.modifier?.details.map((item) => {
-                  return (
-                    <ul key={item?.name} style={{ paddingLeft: '10px' }}>
-                      <li>
-                        <span
-                          style={{
-                            color: props.color.primary,
-                            fontWeight: 600,
-                          }}
-                        >
-                          {item?.quantity}x{' '}
-                        </span>
-                        {item?.name}{' '}
-                        <span
-                          style={{
-                            color: props.color.primary,
-                            fontWeight: 500,
-                            fontSize: '12px',
-                            fontStyle: 'italic',
-                          }}
-                        >
-                          +{handleCurrency(item?.price)}
-                        </span>
-                      </li>
-                    </ul>
-                  );
-                });
-              })}
-            </li>
-            <li>
-              <table>
-                <tr>
-                  <td
-                    className={fontStyleCustom.title}
-                    style={{
-                      textAlign: 'left',
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '3',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    <span style={{ fontWeight: 700 }}>Notes: </span>
-                    {item?.remark}
-                  </td>
-                </tr>
-              </table>
-            </li>
+            {!isEmptyArray(item?.modifiers) && (
+              <React.Fragment>
+                <hr style={{ opacity: 0.5, marginTop: '10px' }} />
+                <li>
+                  Add-On:
+                  {item?.modifiers?.map((items) => {
+                    return items?.modifier?.details.map((item) => {
+                      return (
+                        <ul key={item?.name} style={{ paddingLeft: '10px' }}>
+                          <li>
+                            <span
+                              style={{
+                                color: props.color.primary,
+                                fontWeight: 600,
+                              }}
+                            >
+                              {item?.quantity}x{' '}
+                            </span>
+                            {item?.name}{' '}
+                            <span
+                              style={{
+                                color: props.color.primary,
+                                fontWeight: 500,
+                                fontSize: '12px',
+                                fontStyle: 'italic',
+                              }}
+                            >
+                              +{handleCurrency(item?.price)}
+                            </span>
+                          </li>
+                        </ul>
+                      );
+                    });
+                  })}
+                </li>
+              </React.Fragment>
+            )}
+            {item?.remark && (
+              <li>
+                <table>
+                  <tr>
+                    <td
+                      className={fontStyleCustom.title}
+                      style={{
+                        textAlign: 'left',
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '3',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                    >
+                      <span style={{ fontWeight: 700 }}>Notes: </span>
+                      {item?.remark}
+                    </td>
+                  </tr>
+                </table>
+              </li>
+            )}
           </ul>
         </div>
         <div>
@@ -475,7 +494,7 @@ const ProductCart = ({ item, ...props }) => {
           marginRight: 'auto',
           width: '95%',
           marginTop: '10px',
-          borderTop: '1px dashed #4386A1',
+          borderTop: `1px dashed ${props.color.primary}`,
         }}
       >
         <div
@@ -502,16 +521,14 @@ const ProductCart = ({ item, ...props }) => {
               <Button
                 sx={{
                   width: '80px',
-                  border: '1px solid #4386A1',
+                  border: `1px solid ${props.color.primary}`,
                   borderRadius: '10px',
-                  paddingTop: '10px',
-                  paddingBottom: '10px',
-                  color: props.color.font,
+                  color: props.color.primary,
                 }}
                 onClick={() => {
                   handleOpenAddModal();
                 }}
-                startIcon={<img src={editIcon} />}
+                startIcon={renderIconEdit()}
               >
                 Edit
               </Button>

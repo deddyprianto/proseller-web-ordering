@@ -660,6 +660,28 @@ const CartGuestCheckout = () => {
     }
   };
 
+
+  const renderIconEdit = () => {
+    return (
+      <svg
+        width='15'
+        height='15'
+        viewBox='0 0 129 129'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M91.072 16.8123C92.4728 15.4116 94.1357 14.3004 95.9659 13.5423C97.7961 12.7842 99.7577 12.394 101.739 12.394C103.72 12.394 105.681 12.7842 107.511 13.5423C109.342 14.3004 111.005 15.4116 112.405 16.8123C113.806 18.2131 114.917 19.876 115.675 21.7062C116.433 23.5364 116.824 25.498 116.824 27.479C116.824 29.46 116.433 31.4216 115.675 33.2517C114.917 35.0819 113.806 36.7449 112.405 38.1457L40.4054 110.146L11.072 118.146L19.072 88.8123L91.072 16.8123Z'
+          stroke='white'
+          strokeWidth='10.6824'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          fill={color.primary}
+        />
+      </svg>
+    );
+  };
+
   const renderPrice = (item) => {
     if (item?.totalDiscAmount !== 0) {
       return (
@@ -748,6 +770,7 @@ const CartGuestCheckout = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    padding: '5px',
                   }}
                 >
                   {itemDetails?.quantity}x
@@ -777,61 +800,70 @@ const CartGuestCheckout = () => {
                 </li>
                 <hr style={{ opacity: 0.5 }} />
                 <li>{itemDetails?.product.categoryName}</li>
-                <hr style={{ opacity: 0.5 }} />
-                <li>
-                  Add-On:
-                  {itemDetails?.modifiers?.map((items) => {
-                    return items?.modifier?.details.map((item) => {
-                      return (
-                        <ul key={item?.name} style={{ paddingLeft: '10px' }}>
-                          <li>
-                            <span
-                              style={{
-                                color: color.primary,
-                                fontWeight: 600,
-                              }}
+                {!isEmptyArray(itemDetails.modifiers) && (
+                  <React.Fragment>
+                    <hr style={{ opacity: 0.5 }} />
+                    <li>
+                      Add-On:
+                      {itemDetails?.modifiers?.map((items) => {
+                        return items?.modifier?.details.map((item) => {
+                          return (
+                            <ul
+                              key={item?.name}
+                              style={{ paddingLeft: '10px' }}
                             >
-                              {item?.quantity}x{' '}
-                            </span>
-                            {item?.name}{' '}
-                            <span
-                              style={{
-                                color: color.primary,
-                                fontWeight: 500,
-                                fontSize: '12px',
-                                fontStyle: 'italic',
-                              }}
-                            >
-                              +{handleCurrency(item?.price)}
-                            </span>
-                          </li>
-                        </ul>
-                      );
-                    });
-                  })}
-                </li>
-                <li>
-                  <table>
-                    <tr>
-                      <td
-                        className={fontStyleCustom.title}
-                        style={{
-                          textAlign: 'left',
-                          width: '100%',
-                          display: '-webkit-box',
-                          WebkitLineClamp: '3',
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          padding: 0,
-                          margin: 0,
-                        }}
-                      >
-                        <span style={{ fontWeight: 700 }}>Notes: </span>
-                        {itemDetails?.remark}
-                      </td>
-                    </tr>
-                  </table>
-                </li>
+                              <li>
+                                <span
+                                  style={{
+                                    color: color.primary,
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {item?.quantity}x{' '}
+                                </span>
+                                {item?.name}{' '}
+                                <span
+                                  style={{
+                                    color: color.primary,
+                                    fontWeight: 500,
+                                    fontSize: '12px',
+                                    fontStyle: 'italic',
+                                  }}
+                                >
+                                  +{handleCurrency(item?.price)}
+                                </span>
+                              </li>
+                            </ul>
+                          );
+                        });
+                      })}
+                    </li>
+                  </React.Fragment>
+                )}
+                {itemDetails?.remark && (
+                  <li>
+                    <table>
+                      <tr>
+                        <td
+                          className={fontStyleCustom.title}
+                          style={{
+                            textAlign: 'left',
+                            width: '100%',
+                            display: '-webkit-box',
+                            WebkitLineClamp: '3',
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            padding: 0,
+                            margin: 0,
+                          }}
+                        >
+                          <span style={{ fontWeight: 700 }}>Notes: </span>
+                          {itemDetails?.remark}
+                        </td>
+                      </tr>
+                    </table>
+                  </li>
+                )}
               </ul>
             </div>
             <div>
@@ -844,7 +876,7 @@ const CartGuestCheckout = () => {
               marginRight: 'auto',
               width: '90%',
               marginTop: '10px',
-              borderTop: '1px dashed #4386A1',
+              borderTop: `1px dashed ${color.primary}`,
               marginBottom: '10px',
             }}
           />
@@ -870,7 +902,7 @@ const CartGuestCheckout = () => {
                 <Button
                   sx={{
                     width: '80px',
-                    border: '1px solid #4386A1',
+                    border: `1px solid ${color.primary}`,
                     borderRadius: '10px',
                     paddingTop: '10px',
                     paddingBottom: '10px',
@@ -881,7 +913,8 @@ const CartGuestCheckout = () => {
                     setProductSpecific(itemDetails.product);
                     setProductEditModal(true);
                   }}
-                  startIcon={<img src={editIcon} />}
+                  startIcon={renderIconEdit()}
+
                 >
                   Edit
                 </Button>
