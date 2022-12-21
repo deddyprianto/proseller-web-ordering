@@ -768,11 +768,6 @@ const ProductAddModal = ({
           );
         }
       }
-      if (!isEmptyObject(basket)) {
-        if (basket.details.length === 1) {
-          history.push('/');
-        }
-      }
     } else {
       await props.dispatch(
         OrderAction.processAddCart(props.defaultOutlet, productAdd)
