@@ -251,7 +251,6 @@ const Product = ({ item, ...props }) => {
         totalQty = totalQty + item.quantity;
       });
     } else {
-      console.log('dedd =>', 'not RUN');
       const productItemInBasket = handleProductItemsInBasket({
         basketDetails: props.basket.details,
         item,

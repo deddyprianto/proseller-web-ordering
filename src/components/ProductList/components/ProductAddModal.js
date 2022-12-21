@@ -941,6 +941,42 @@ const ProductAddModal = ({
     }
   };
 
+  const handleModifierOptionSelectedSpecialRestriction = ({
+    modifierProductId,
+    modifierId,
+    qty,
+    price,
+    name,
+    min,
+    max,
+  }) => {
+    const items = selectedProductModifiers;
+
+    const modifierProductIds = selectedProductModifiers.map((item) => {
+      return item.modifierProductId;
+    });
+
+    const modifierProductIdIndex =
+      modifierProductIds.indexOf(modifierProductId);
+
+    if (modifierProductIdIndex !== -1) {
+      items.splice(modifierProductIdIndex, 1);
+      setSelectedProductModifiers([...items]);
+    } else {
+      setSelectedProductModifiers([
+        {
+          modifierId,
+          modifierProductId,
+          qty,
+          price,
+          name,
+          min,
+          max,
+        },
+      ]);
+    }
+  };
+
   const renderImageProduct = () => {
     if (variantImageURL) {
       return variantImageURL;
@@ -1016,7 +1052,9 @@ const ProductAddModal = ({
             disabled={
               handleDisabledRemoveButtonProductModifier({
                 modifier: selectedProductModifier,
-                min,
+                min: selectedProductModifier?.min
+                  ? selectedProductModifier.min
+                  : min,
               }) || isLoading
             }
             onClick={() => {
@@ -1036,7 +1074,9 @@ const ProductAddModal = ({
             disabled={
               handleDisabledAddButtonProductModifier({
                 modifier: selectedProductModifier,
-                max,
+                max: selectedProductModifier?.max
+                  ? selectedProductModifier.max
+                  : max,
               }) || isLoading
             }
             onClick={() => {
@@ -1112,6 +1152,76 @@ const ProductAddModal = ({
     return <div style={styles.displayFlex}>{renderButtonAndPrice}</div>;
   };
 
+  const renderSpecialRestrictionProductModifier = (productModifier) => {
+    const productModifierOptions = productModifier.modifier?.details?.map(
+      (modifier, index) => {
+        const passedData = {
+          modifierProductId: modifier.productID,
+          modifierId: productModifier.modifierID,
+          qty: modifier.min ? modifier.min : 1,
+          price: modifier.price,
+          name: modifier.name,
+          max: modifier.max,
+          min: modifier.min,
+        };
+        return (
+          <div key={index}>
+            <div style={styles.modifierOption}>
+              <FormControlLabel
+                disabled={
+                  modifier.orderingStatus === 'UNAVAILABLE' ? true : false
+                }
+                sx={{
+                  opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
+                }}
+                value={modifier.productID}
+                control={
+                  <Radio
+                    sx={styles.radioSizeModifier}
+                    name={modifier.productID}
+                    onChange={() => {
+                      handleModifierOptionSelectedSpecialRestriction(
+                        passedData
+                      );
+                    }}
+                    disabled={handleDisabledCheckbox({
+                      modifier,
+                      max: productModifier.modifier.max,
+                      productModifier,
+                    })}
+                  />
+                }
+                label={
+                  <>
+                    <Typography style={styles.optionTitle}>
+                      {modifier.name}
+                    </Typography>
+                    <Typography style={styles.optionPriceGadgetScreen}>
+                      {`(Min. ${modifier.min},`} {`Max ${modifier.max})`}
+                    </Typography>
+                    <Typography style={styles.optionPriceGadgetScreen}>
+                      {handleCurrency(modifier.price)}
+                    </Typography>
+                  </>
+                }
+              />
+              {renderAddAndRemoveButtonAndPrice({
+                modifier,
+                productModifier,
+              })}
+            </div>
+            {productModifier.modifier.details.length - 1 !== index && (
+              <Divider sx={{ margin: '5px 0px' }} />
+            )}
+          </div>
+        );
+      }
+    );
+
+    return productModifierOptions;
+  };
+  console.log('%cdedd =>', 'color: green;', selectedProductModifiers);
+
   const renderProductModifierOptions = (productModifier) => {
     const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
@@ -1125,7 +1235,6 @@ const ProductAddModal = ({
                 sx={{
                   opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
                 }}
-                // style={styles.marginLeft}
                 value={modifier.productID}
                 checked={isCheckedCheckbox(modifier)}
                 control={
@@ -1172,20 +1281,75 @@ const ProductAddModal = ({
     return productModifierOptions;
   };
 
+  const checkIfIsModifierItemSpecialRestriction = (itemModifier) => {
+    if (itemModifier.modifier.specialRestriction) {
+      return (
+        <RadioGroup>
+          {renderSpecialRestrictionProductModifier(itemModifier)}
+        </RadioGroup>
+      );
+    } else {
+      return (
+        <FormGroup>{renderProductModifierOptions(itemModifier)}</FormGroup>
+      );
+    }
+  };
+
+  const renderHeaderModifier = (product) => {
+    if (product.modifier.specialRestriction) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            style={{
+              fontWeight: 700,
+              fontSize: '14px',
+              lineHeight: '18px',
+              color: '#000000',
+              marginRight: 5,
+            }}
+          >
+            {product.modifierName}
+          </Typography>
+          <div
+            style={{
+              fontSize: '14px',
+            }}
+          >
+            (Select one option)
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <React.Fragment>
+          <Typography style={styles.title}>{product.modifierName}</Typography>
+          {renderTermsAndConditionsProductModifiers(product)}
+        </React.Fragment>
+      );
+    }
+  };
+
   const renderProductModifiers = (productModifiers) => {
     if (!isEmptyArray(productModifiers)) {
+      productModifiers.sort((item) => {
+        if (item.modifier.specialRestriction) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
       const result = productModifiers.map((productModifier, index) => {
         return (
           <Paper key={index} variant='outlined' style={styles.paper}>
             <div style={styles.modifierHeader}>
-              <Typography style={styles.title}>
-                {productModifier.modifierName}
-              </Typography>
-              {renderTermsAndConditionsProductModifiers(productModifier)}
+              {renderHeaderModifier(productModifier)}
             </div>
-            <FormGroup>
-              {renderProductModifierOptions(productModifier)}
-            </FormGroup>
+            {checkIfIsModifierItemSpecialRestriction(productModifier)}
           </Paper>
         );
       });
