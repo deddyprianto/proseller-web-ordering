@@ -201,11 +201,12 @@ const Voucher = ({ item, quantity, ...props }) => {
         (appliedItem) => appliedItem.value === detail.product.id
       );
     });
-    if (isEmptyArray(isVoucherProduct)) {
+
+    if (isVoucherProduct?.length < 0) {
       setMessage('Only specific products are allowed to use this voucher');
       handleOpenModal();
     }
-    return isVoucherProduct || false;
+    return isVoucherProduct?.length > 0 ? isVoucherProduct : false;
   };
 
   const getPricesByProduct = () => {
