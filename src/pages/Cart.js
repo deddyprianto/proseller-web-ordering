@@ -372,7 +372,7 @@ const Cart = ({ ...props }) => {
    * @description When all product in cart were removed, redirect to '/' page.
    */
   useEffect(() => {
-    if (props?.basket?.details) {
+    if (props?.basket?.details && props.basket.details.length) {
       setPreviousTotalItem(props.basket.details.length);
     } else {
       if (previousTotalItem > 0) {
