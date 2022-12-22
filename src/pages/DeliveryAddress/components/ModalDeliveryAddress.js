@@ -284,7 +284,6 @@ const ModalDeliveryAddress = ({
       setLoading(false);
       setSubmitting(false);
       resetForm();
-      window.location.reload();
     },
   });
 
