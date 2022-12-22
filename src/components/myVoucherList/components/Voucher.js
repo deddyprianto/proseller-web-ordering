@@ -176,6 +176,25 @@ const Voucher = ({ item, quantity, ...props }) => {
     return result;
   };
 
+  const getPricesByCollection = () => {
+    let result = [];
+    const specificCollection = handleSpecificCollectionCondition();
+    if (!isEmptyArray(specificCollection)) {
+      specificCollection.forEach((item) => {
+        result.push(item.unitPrice);
+      });
+      return result;
+    }
+
+    if (!isEmptyArray(basket)) {
+      basket.forEach((item) => {
+        result.push(item.unitPrice);
+      });
+    }
+
+    return result;
+  };
+
   const handleSpecificProductCondition = () => {
     const isVoucherProduct = props.basket?.details.filter((detail) => {
       return item.appliedItems.find(
@@ -247,11 +266,25 @@ const Voucher = ({ item, quantity, ...props }) => {
       );
     });
 
-    if (!isVoucherCategory) {
+    if (isVoucherCategory.length < 1) {
       setMessage('Specific Category required');
       handleOpenModal();
     }
-    return isVoucherCategory || false;
+    return isVoucherCategory.length > 0 ? isVoucherCategory : false;
+  };
+
+  const handleSpecificCollectionCondition = () => {
+    const isCollectionMatched = props.basket?.details.filter((detail) => {
+      return item.appliedItems.find(
+        (appliedItem) => detail?.collections?.includes(appliedItem.value)
+      );
+    });
+
+    if (isCollectionMatched.length < 1) {
+      setMessage('Specific Collection required');
+      handleOpenModal();
+    }
+    return isCollectionMatched.length > 0 ? isCollectionMatched : false;
   };
 
   const handleCannotBeMixedCondition = () => {
@@ -300,6 +333,10 @@ const Voucher = ({ item, quantity, ...props }) => {
       return handleSpecificCategoryCondition();
     }
 
+    if (value?.appliedTo === 'COLLECTION') {
+      return handleSpecificCollectionCondition();
+    }
+
     if (value?.appliedTo === 'PRODUCT') {
       return handleSpecificProductCondition();
     }
@@ -331,6 +368,9 @@ const Voucher = ({ item, quantity, ...props }) => {
     switch (appliedTo) {
       case 'CATEGORY':
         pricesInBasket = getPricesByCategory(appliedItems);
+        break;
+      case 'COLLECTION':
+        pricesInBasket = getPricesByCollection(appliedItems);
         break;
       case 'PRODUCT':
         pricesInBasket = getPricesByProduct(appliedItems);
@@ -379,6 +419,24 @@ const Voucher = ({ item, quantity, ...props }) => {
     return result;
   };
 
+  const handleSpecificCollections = ({ appliedItems, value }) => {
+    let result = 0;
+    let prices = getPricesByCollection(appliedItems);
+
+    if (item.applyToLowestItem) {
+      const min = Math.min(...prices);
+      prices = [min];
+    }
+
+    prices.forEach((price) => {
+      const percentageResult = (price * value) / 100;
+      const amount = handleCapAmount(percentageResult);
+      result = result + amount;
+    });
+
+    return result;
+  };
+
   const handleDiscount = ({ type, value, appliedTo, appliedItems }) => {
     let discount = 0;
     if (type === 'discAmount') {
@@ -403,12 +461,18 @@ const Voucher = ({ item, quantity, ...props }) => {
       const amount = handleSpecificCategories({ appliedItems, value });
       discount = amount;
     }
+
+    if (!isEmptyArray(appliedItems) && appliedTo === 'COLLECTION') {
+      const amount = handleSpecificCollections({ appliedItems, value });
+      discount = amount;
+    }
+
     return discount;
   };
 
   const handleSelectVoucher = () => {
-    const isTemsAndConditions = handleTermsAndConditions(item);
-    if (isTemsAndConditions) {
+    const isTermsAndConditions = handleTermsAndConditions(item);
+    if (isTermsAndConditions) {
       let result = [];
       const discount = handleDiscount({
         type: item.voucherType,
