@@ -202,7 +202,7 @@ const Voucher = ({ item, quantity, ...props }) => {
       );
     });
     if (isEmptyArray(isVoucherProduct)) {
-      setMessage('Spesific Product required');
+      setMessage('Only specific products are allowed to use this voucher');
       handleOpenModal();
     }
     return isVoucherProduct || false;
@@ -267,7 +267,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     });
 
     if (isVoucherCategory.length < 1) {
-      setMessage('Specific Category required');
+      setMessage('Only specific product category are allowed to use this voucher');
       handleOpenModal();
     }
     return isVoucherCategory.length > 0 ? isVoucherCategory : false;
@@ -281,7 +281,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     });
 
     if (isCollectionMatched.length < 1) {
-      setMessage('Specific Collection required');
+      setMessage('Only specific products are allowed to use this voucher');
       handleOpenModal();
     }
     return isCollectionMatched.length > 0 ? isCollectionMatched : false;
