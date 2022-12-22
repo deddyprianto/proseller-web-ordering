@@ -225,6 +225,8 @@ const Cart = ({ ...props }) => {
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
 
+  const [previousTotalItem, setPreviousTotalItem] = useState(0);
+
   const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
 
   const [dataCalculateFee, setDataCalculateFee] = useState();
@@ -281,7 +283,6 @@ const Cart = ({ ...props }) => {
       await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
-
     loadData();
   }, [props.basketUpdate, props.basket?.details?.length]);
 
@@ -365,6 +366,20 @@ const Cart = ({ ...props }) => {
   useEffect(() => {
     props.dispatch(PaymentAction.clearAll());
   }, [props]);
+
+  /**
+   * Side effect when basket updated
+   * @description When all product in cart were removed, redirect to '/' page.
+   */
+  useEffect(() => {
+    if (props?.basket?.details) {
+      setPreviousTotalItem(props.basket.details.length);
+    } else {
+      if (previousTotalItem > 0) {
+        history.push('/');
+      }
+    }
+  }, [previousTotalItem, props?.basket, history]);
 
   const handleCurrency = (price) => {
     if (props?.companyInfo) {
