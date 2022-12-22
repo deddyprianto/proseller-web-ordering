@@ -1215,7 +1215,6 @@ const ProductAddModal = ({
 
     return productModifierOptions;
   };
-  console.log('%cdedd =>', 'color: green;', selectedProductModifiers);
 
   const renderProductModifierOptions = (productModifier) => {
     const productModifierOptions = productModifier.modifier?.details?.map(
