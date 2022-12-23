@@ -795,11 +795,6 @@ const CartGuestCheckout = () => {
                   listStyle: 'none',
                 }}
               >
-                <li style={{ marginTop: '10px' }}>
-                  {itemDetails?.product.name}
-                </li>
-                <hr style={{ opacity: 0.5 }} />
-                <li>{itemDetails?.product.categoryName}</li>
                 {!isEmptyArray(itemDetails.modifiers) && (
                   <React.Fragment>
                     <hr style={{ opacity: 0.5 }} />
@@ -914,7 +909,6 @@ const CartGuestCheckout = () => {
                     setProductEditModal(true);
                   }}
                   startIcon={renderIconEdit()}
-
                 >
                   Edit
                 </Button>
