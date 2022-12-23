@@ -402,7 +402,6 @@ const Payment = ({ ...props }) => {
   useEffect(() => {
     const loadData = async () => {
       const vouchers = await props.dispatch(CustomerAction.getVoucher());
-
       setMyVouchers(vouchers.data);
     };
     loadData();
@@ -517,8 +516,8 @@ const Payment = ({ ...props }) => {
       (selectedVoucher) => selectedVoucher.serialNumber !== value
     );
 
-    await props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
     setSelectedVouchers(result);
+    await props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
   };
 
   const handleMixSVC = () => {
