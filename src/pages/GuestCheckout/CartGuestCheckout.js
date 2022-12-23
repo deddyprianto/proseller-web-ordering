@@ -782,7 +782,8 @@ const CartGuestCheckout = () => {
                     fontSize: '14px',
                   }}
                 >
-                  {itemDetails?.product.name}
+                  {itemDetails?.product.name} ({' '}
+                  {handleCurrency(itemDetails?.grossAmount)} )
                 </div>
               </div>
 
