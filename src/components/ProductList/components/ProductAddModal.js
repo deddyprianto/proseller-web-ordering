@@ -336,7 +336,7 @@ const ProductAddModal = ({
   const [stock, setStock] = useState({ manage: false, current: 0 });
 
   useEffect(() => {
-    if (product) {
+    if (product && product.productModifiers) {
       let arrFinalData = [];
       product.productModifiers.forEach((modifier) => {
         if (
@@ -823,11 +823,6 @@ const ProductAddModal = ({
           await props.dispatch(
             OrderAction.setData(filteredData, 'SET_SELECTED_DELIVERY_PROVIDERS')
           );
-        }
-      }
-      if (!isEmptyObject(basket)) {
-        if (basket.details.length === 1) {
-          history.push('/');
         }
       }
     } else {
