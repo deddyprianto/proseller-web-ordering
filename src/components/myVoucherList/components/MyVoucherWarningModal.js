@@ -40,6 +40,7 @@ const MyVoucherWarningModal = ({ open, handleClose, message, ...props }) => {
       margin: 20,
       fontSize: 20,
       color: props.color.primary,
+      textAlign: 'center',
     },
     displayFlexAndJustifyCenter: {
       display: 'flex',
