@@ -45,6 +45,7 @@ const defaultState = {
   saveValueEdit: '',
   saveTimeSlotCalendarLogin: '',
   saveDateEdit: '',
+  saveSelectProductModifier: [],
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -192,6 +193,8 @@ export default function reducer(state = defaultState, action) {
       return { ...state, timeslot: action.payload };
     case CONSTANT.SAVE_VALUE_EDIT:
       return { ...state, saveValueEdit: action.payload };
+    case CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER:
+      return { ...state, saveSelectProductModifier: action.payload };
     default:
       return state;
   }

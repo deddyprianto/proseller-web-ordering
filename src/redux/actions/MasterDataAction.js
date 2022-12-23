@@ -116,7 +116,7 @@ function getDomainName() {
     const domainName =
       window.location.hostname !== 'localhost'
         ? window.location.hostname
-        : 'ordering-newmujicafe.proseller-demo.com';
+        : process.env.REACT_APP_COMPANY_URL;
     // : 'ordering-acemart-demo.proseller.io';
     // 'ordering-qa-retail.proseller-demo.com';
     try {
