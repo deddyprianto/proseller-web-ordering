@@ -202,7 +202,7 @@ const Voucher = ({ item, quantity, ...props }) => {
       );
     });
 
-    if (isVoucherProduct?.length < 0) {
+    if (isVoucherProduct?.length < 1) {
       setMessage('Only specific products are allowed to use this voucher');
       handleOpenModal();
     }
@@ -358,7 +358,7 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const handleCapAmount = (value) => {
-    if (item.capAmount < value) {
+    if (item.capAmount && item.capAmount < value) {
       return item.capAmount;
     }
     return value;
@@ -386,7 +386,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
     return discount;
   };
-  const handleSpecificProducts = ({ appliedItems, value }) => {
+  const handleSpecificProducts = ({ appliedItems, value, type }) => {
     let result = 0;
     let prices = getPricesByProduct(appliedItems);
     if (item.applyToLowestItem) {
@@ -394,15 +394,26 @@ const Voucher = ({ item, quantity, ...props }) => {
       prices = [min];
     }
     prices.forEach((price) => {
-      const percentageResult = (price * value) / 100;
-      const amount = handleCapAmount(percentageResult);
-      result = result + amount;
+      const amount = calculateDisc({ price, value, type });
+      result += amount;
     });
 
     return result;
   };
 
-  const handleSpecificCategories = ({ appliedItems, value }) => {
+  const calculateDisc = ({ price, value, type }) => {
+    switch (type) {
+      case "discPercentage":
+        const discPercentage = (price * value) / 100;
+        return handleCapAmount(discPercentage);
+      case "discAmount":
+        return value
+      default:
+        return 0
+    }
+  }
+
+  const handleSpecificCategories = ({ appliedItems, value, type }) => {
     let result = 0;
     let prices = getPricesByCategory(appliedItems);
 
@@ -412,15 +423,14 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
 
     prices.forEach((price) => {
-      const percentageResult = (price * value) / 100;
-      const amount = handleCapAmount(percentageResult);
-      result = result + amount;
+      const amount = calculateDisc({ price, value, type });
+      result += amount;
     });
 
     return result;
   };
 
-  const handleSpecificCollections = ({ appliedItems, value }) => {
+  const handleSpecificCollections = ({ appliedItems, value, type }) => {
     let result = 0;
     let prices = getPricesByCollection(appliedItems);
 
@@ -430,23 +440,16 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
 
     prices.forEach((price) => {
-      const percentageResult = (price * value) / 100;
-      const amount = handleCapAmount(percentageResult);
-      result = result + amount;
+      const amount = calculateDisc({ price, value, type });
+      result += amount;
     });
 
     return result;
   };
 
   const handleDiscount = ({ type, value, appliedTo, appliedItems }) => {
-    let discount = 0;
-    if (type === 'discAmount') {
-      discount = value;
-    } else {
-      const percentageResult = (props.totalPaymentAmount * value) / 100;
-      const amount = handleCapAmount(percentageResult);
-      discount = amount;
-    }
+    const price = props.totalPaymentAmount;
+    let discount = calculateDisc({ price, value, type });
 
     if (item.applyToLowestItem) {
       const amount = handleLowestPrice({ discount, appliedTo, appliedItems });
@@ -454,17 +457,17 @@ const Voucher = ({ item, quantity, ...props }) => {
     }
 
     if (!isEmptyArray(appliedItems) && appliedTo === 'PRODUCT') {
-      const amount = handleSpecificProducts({ appliedItems, value });
+      const amount = handleSpecificProducts({ appliedItems, value, type });
       discount = amount;
     }
 
     if (!isEmptyArray(appliedItems) && appliedTo === 'CATEGORY') {
-      const amount = handleSpecificCategories({ appliedItems, value });
+      const amount = handleSpecificCategories({ appliedItems, value, type });
       discount = amount;
     }
 
     if (!isEmptyArray(appliedItems) && appliedTo === 'COLLECTION') {
-      const amount = handleSpecificCollections({ appliedItems, value });
+      const amount = handleSpecificCollections({ appliedItems, value, type });
       discount = amount;
     }
 
