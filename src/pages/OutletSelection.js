@@ -148,7 +148,7 @@ class OutletSelection extends Component {
     }
     await this.setState({ loadingShow: false });
     try {
-      this.props.history.goBack();
+      this.props.history.push('/');
     } catch (e) {
       console.log(e);
     }

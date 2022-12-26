@@ -321,7 +321,6 @@ class SettleSuccess extends Component {
                               justifyContent: 'center',
                               marginLeft: -20,
                               marginTop: 10,
-                              backgroundColor: 'red',
                             }}
                           >
                             <div
