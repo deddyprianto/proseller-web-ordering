@@ -825,11 +825,11 @@ const ProductAddModal = ({
           );
         }
       }
-      if (!isEmptyObject(basket)) {
-        if (basket.details.length === 1) {
-          history.push('/');
-        }
-      }
+      // if (!isEmptyObject(basket)) {
+      //   if (basket.details.length === 1) {
+      //     history.push('/');
+      //   }
+      // }
     } else {
       props.dispatch({
         type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
@@ -1056,7 +1056,7 @@ const ProductAddModal = ({
     max,
     specialRestriction,
   }) => {
-    const items = selectedProductModifiers;
+    let items = selectedProductModifiers;
     const arrData = {
       modifierId,
       modifierProductId,
@@ -1079,14 +1079,17 @@ const ProductAddModal = ({
       setSelectedProductModifiers([...items]);
     } else {
       if (!isEmptyObject(selectedProduct)) {
-        if (items[0].specialRestriction) {
-          items.shift();
-          items.push(arrData);
-        } else {
-          items.pop();
-          items.push(arrData);
-        }
+        items = items.map((itemData) => {
+          if (itemData.specialRestriction) {
+            itemData = arrData;
+          }
+          return itemData;
+        });
         setSelectedProductModifiers(items);
+        props.dispatch({
+          type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+          payload: items,
+        });
       } else {
         setSelectedProductModifiers([arrData]);
         props.dispatch({
