@@ -11,6 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import { OrderAction } from 'redux/actions/OrderAction';
+import { CONSTANT } from 'helpers';
 
 const mapStateToProps = (state) => {
   return {
@@ -72,6 +73,10 @@ const ProductRemoveCartModal = ({
       history.push('/');
     }
     setIsLoading(false);
+    props.dispatch({
+      type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+      payload: [],
+    });
     handleClose();
   };
 

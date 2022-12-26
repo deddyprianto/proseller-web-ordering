@@ -359,10 +359,9 @@ const CartGuestCheckout = () => {
       });
     },
   });
+  const validateEmailRegex = /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-  const validateEmailRegex =
-    /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-  let email = formik.values.email;
+  let email = formik.values.email?.toLowerCase();
   const formRegexMail = validateEmailRegex.test(email);
 
   const handlePaymentGuestMode = async () => {
@@ -782,7 +781,8 @@ const CartGuestCheckout = () => {
                     fontSize: '14px',
                   }}
                 >
-                  {itemDetails?.product.name}
+                  {itemDetails?.product.name} ({' '}
+                  {handleCurrency(itemDetails?.grossAmount)} )
                 </div>
               </div>
 
@@ -795,11 +795,6 @@ const CartGuestCheckout = () => {
                   listStyle: 'none',
                 }}
               >
-                <li style={{ marginTop: '10px' }}>
-                  {itemDetails?.product.name}
-                </li>
-                <hr style={{ opacity: 0.5 }} />
-                <li>{itemDetails?.product.categoryName}</li>
                 {!isEmptyArray(itemDetails.modifiers) && (
                   <React.Fragment>
                     <hr style={{ opacity: 0.5 }} />
@@ -914,7 +909,6 @@ const CartGuestCheckout = () => {
                     setProductEditModal(true);
                   }}
                   startIcon={renderIconEdit()}
-
                 >
                   Edit
                 </Button>
@@ -2085,7 +2079,7 @@ const CartGuestCheckout = () => {
                   paddingBottom: '2rem',
                   marginBottom: '0.5rem',
                 }}
-                value={formik.values.email || ''}
+                value={formik.values?.email?.toLowerCase() || ''}
                 size='small'
                 placeholder='Your Email'
                 onChange={formik.handleChange}
@@ -2362,7 +2356,7 @@ const CartGuestCheckout = () => {
                   paddingBottom: '2rem',
                   marginBottom: '0.5rem',
                 }}
-                value={formik.values.email || ''}
+                value={formik.values?.email?.toLowerCase() || ''}
                 size='small'
                 placeholder='Your Email'
                 onChange={formik.handleChange}

@@ -40,6 +40,7 @@ const mapStateToProps = (state) => {
     refreshData: state.guestCheckoutCart.refreshData,
     basketUpdate: state.order.basketUpdate,
     isCartDeleted: state.guestCheckoutCart.isCartDeleted,
+    saveSelectProductModifier: state.order.saveSelectProductModifier,
   };
 };
 
@@ -325,7 +326,8 @@ const ProductAddModal = ({
   const [variantImageURL, setVariantImageURL] = useState('');
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
-
+  const [isHandleSpesialStriction, setIsHandleSpesialStriction] =
+    useState(true);
   const [increaseQtyButtonDisabled, setIncreaseQtyButtonDisabled] =
     useState(true);
   const [decreaseQtyButtonDisabled, setDecreaseQtyButtonDisabled] =
@@ -334,7 +336,7 @@ const ProductAddModal = ({
   const [stock, setStock] = useState({ manage: false, current: 0 });
 
   useEffect(() => {
-    if (product) {
+    if (product && product.productModifiers) {
       let arrFinalData = [];
       product.productModifiers.forEach((modifier) => {
         if (
@@ -402,12 +404,19 @@ const ProductAddModal = ({
             name: detail.name,
             price: detail.price,
             qty: detail.quantity,
+            specialRestriction: detail.specialRestriction,
+            min: detail?.min,
+            max: detail?.max,
           });
         });
       });
       setQty(selectedProduct?.quantity);
       setNotes(selectedProduct?.remark);
       setSelectedProductModifiers(defaultValue);
+      props.dispatch({
+        type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+        payload: defaultValue,
+      });
     }
   };
 
@@ -433,6 +442,9 @@ const ProductAddModal = ({
                 quantity: item.qty,
                 price: item.price,
                 name: item.name,
+                max: item?.max,
+                min: item?.min,
+                specialRestriction: item?.specialRestriction,
               },
             ],
           },
@@ -587,6 +599,7 @@ const ProductAddModal = ({
     selectedProduct,
     selectedVariantOptions,
     selectedProductModifiers,
+    isHandleSpesialStriction,
   ]);
 
   useEffect(() => {
@@ -673,27 +686,71 @@ const ProductAddModal = ({
     return !!isChecked;
   };
 
-  const handleAddAndReduceQtyProductModifier = ({ key, value }) => {
-    let productModifiersQtyChanged = [];
-    const qty = key === 'add' ? value.qty + 1 : value.qty - 1;
+  const isCheckedCheckboxForSpecialRestriction = (modifier) => {
+    const isChecked = props.saveSelectProductModifier.find(
+      (selectedProductModifier) =>
+        selectedProductModifier.modifierProductId === modifier.productID
+    );
 
-    selectedProductModifiers.forEach((selectedProductModifier) => {
-      if (
-        selectedProductModifier.modifierProductId === value.modifierProductId &&
-        qty !== 0
-      ) {
-        productModifiersQtyChanged.push({ ...value, qty });
-      } else if (
-        selectedProductModifier.modifierProductId === value.modifierProductId &&
-        qty === 0
-      ) {
-        productModifiersQtyChanged.push();
-      } else {
-        productModifiersQtyChanged.push(selectedProductModifier);
-      }
-    });
+    return !!isChecked;
+  };
 
-    setSelectedProductModifiers(productModifiersQtyChanged);
+  const handleAddAndReduceQtyProductModifier = ({
+    key,
+    value,
+    isSpecialRestriction,
+  }) => {
+    if (isSpecialRestriction) {
+      let productModifiersQtyChanged = [];
+      const qty = key === 'add' ? value.qty + 1 : value.qty - 1;
+
+      props.saveSelectProductModifier.forEach((selectedProductModifier) => {
+        if (
+          selectedProductModifier.modifierProductId ===
+            value.modifierProductId &&
+          qty !== 0
+        ) {
+          productModifiersQtyChanged.push({ ...value, qty });
+        } else if (
+          selectedProductModifier.modifierProductId ===
+            value.modifierProductId &&
+          qty === 0
+        ) {
+          productModifiersQtyChanged.push();
+        } else {
+          productModifiersQtyChanged.push(selectedProductModifier);
+        }
+      });
+
+      props.dispatch({
+        type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+        payload: productModifiersQtyChanged,
+      });
+      setSelectedProductModifiers(productModifiersQtyChanged);
+    } else {
+      let productModifiersQtyChanged = [];
+      const qty = key === 'add' ? value.qty + 1 : value.qty - 1;
+
+      selectedProductModifiers.forEach((selectedProductModifier) => {
+        if (
+          selectedProductModifier.modifierProductId ===
+            value.modifierProductId &&
+          qty !== 0
+        ) {
+          productModifiersQtyChanged.push({ ...value, qty });
+        } else if (
+          selectedProductModifier.modifierProductId ===
+            value.modifierProductId &&
+          qty === 0
+        ) {
+          productModifiersQtyChanged.push();
+        } else {
+          productModifiersQtyChanged.push(selectedProductModifier);
+        }
+      });
+
+      setSelectedProductModifiers(productModifiersQtyChanged);
+    }
   };
 
   const handleDisabledAddProductButton = () => {
@@ -768,7 +825,16 @@ const ProductAddModal = ({
           );
         }
       }
+      // if (!isEmptyObject(basket)) {
+      //   if (basket.details.length === 1) {
+      //     history.push('/');
+      //   }
+      // }
     } else {
+      props.dispatch({
+        type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+        payload: [],
+      });
       await props.dispatch(
         OrderAction.processAddCart(props.defaultOutlet, productAdd)
       );
@@ -852,39 +918,83 @@ const ProductAddModal = ({
     return isDisabled;
   };
 
-  const handleDisabledRemoveButtonProductModifier = ({ modifier, min }) => {
-    if (min > 0) {
-      let qtyTotal = 0;
+  const handleDisabledRemoveButtonProductModifier = ({
+    modifier,
+    min,
+    isSpecialRestriction,
+  }) => {
+    if (isSpecialRestriction) {
+      if (min > 0) {
+        let qtyTotal = 0;
 
-      const modifierProducts = selectedProductModifiers.filter(
-        (item) => item.modifierId === modifier.modifierId
-      );
+        const modifierProducts = props.saveSelectProductModifier.filter(
+          (item) => item.modifierId === modifier.modifierId
+        );
 
-      modifierProducts.forEach((modifierProduct) => {
-        qtyTotal = qtyTotal + modifierProduct.qty;
-      });
+        modifierProducts.forEach((modifierProduct) => {
+          qtyTotal = qtyTotal + modifierProduct.qty;
+        });
 
-      const isDisabled = qtyTotal <= min;
+        const isDisabled = qtyTotal <= min;
 
-      return isDisabled;
+        return isDisabled;
+      }
+    } else {
+      if (min > 0) {
+        let qtyTotal = 0;
+
+        const modifierProducts = selectedProductModifiers.filter(
+          (item) => item.modifierId === modifier.modifierId
+        );
+
+        modifierProducts.forEach((modifierProduct) => {
+          qtyTotal = qtyTotal + modifierProduct.qty;
+        });
+
+        const isDisabled = qtyTotal <= min;
+
+        return isDisabled;
+      }
     }
   };
 
-  const handleDisabledAddButtonProductModifier = ({ modifier, max }) => {
-    if (max > 0) {
-      let qtyTotal = 0;
+  const handleDisabledAddButtonProductModifier = ({
+    modifier,
+    max,
+    isSpecialRestriction,
+  }) => {
+    if (isSpecialRestriction) {
+      if (max > 0) {
+        let qtyTotal = 0;
 
-      const modifierProducts = selectedProductModifiers.filter(
-        (item) => item.modifierId === modifier.modifierId
-      );
+        const modifierProducts = props.saveSelectProductModifier.filter(
+          (item) => item.modifierId === modifier.modifierId
+        );
 
-      modifierProducts.forEach((modifierProduct) => {
-        qtyTotal = qtyTotal + modifierProduct.qty;
-      });
+        modifierProducts.forEach((modifierProduct) => {
+          qtyTotal = qtyTotal + modifierProduct.qty;
+        });
 
-      const isDisabled = qtyTotal >= max;
+        const isDisabled = qtyTotal >= max;
 
-      return isDisabled;
+        return isDisabled;
+      }
+    } else {
+      if (max > 0) {
+        let qtyTotal = 0;
+
+        const modifierProducts = selectedProductModifiers.filter(
+          (item) => item.modifierId === modifier.modifierId
+        );
+
+        modifierProducts.forEach((modifierProduct) => {
+          qtyTotal = qtyTotal + modifierProduct.qty;
+        });
+
+        const isDisabled = qtyTotal >= max;
+
+        return isDisabled;
+      }
     }
   };
 
@@ -944,9 +1054,19 @@ const ProductAddModal = ({
     name,
     min,
     max,
+    specialRestriction,
   }) => {
-    const items = selectedProductModifiers;
-
+    let items = selectedProductModifiers;
+    const arrData = {
+      modifierId,
+      modifierProductId,
+      qty,
+      price,
+      name,
+      min,
+      max,
+      specialRestriction,
+    };
     const modifierProductIds = selectedProductModifiers.map((item) => {
       return item.modifierProductId;
     });
@@ -958,17 +1078,25 @@ const ProductAddModal = ({
       items.splice(modifierProductIdIndex, 1);
       setSelectedProductModifiers([...items]);
     } else {
-      setSelectedProductModifiers([
-        {
-          modifierId,
-          modifierProductId,
-          qty,
-          price,
-          name,
-          min,
-          max,
-        },
-      ]);
+      if (!isEmptyObject(selectedProduct)) {
+        items = items.map((itemData) => {
+          if (itemData.specialRestriction) {
+            itemData = arrData;
+          }
+          return itemData;
+        });
+        setSelectedProductModifiers(items);
+        props.dispatch({
+          type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+          payload: items,
+        });
+      } else {
+        setSelectedProductModifiers([arrData]);
+        props.dispatch({
+          type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+          payload: [arrData],
+        });
+      }
     }
   };
 
@@ -992,7 +1120,6 @@ const ProductAddModal = ({
       return (
         <div key={index}>
           <FormControlLabel
-            // style={styles.marginLeft}
             value={option}
             control={<Radio sx={styles.radioSize} />}
             label={<Typography style={styles.optionTitle}>{option}</Typography>}
@@ -1050,12 +1177,14 @@ const ProductAddModal = ({
                 min: selectedProductModifier?.min
                   ? selectedProductModifier.min
                   : min,
+                isSpecialRestriction: false,
               }) || isLoading
             }
             onClick={() => {
               handleAddAndReduceQtyProductModifier({
                 key: 'reduce',
                 value: selectedProductModifier,
+                isSpecialRestriction: false,
               });
             }}
           >
@@ -1072,12 +1201,14 @@ const ProductAddModal = ({
                 max: selectedProductModifier?.max
                   ? selectedProductModifier.max
                   : max,
+                isSpecialRestriction: false,
               }) || isLoading
             }
             onClick={() => {
               handleAddAndReduceQtyProductModifier({
                 key: 'add',
                 value: selectedProductModifier,
+                isSpecialRestriction: false,
               });
             }}
           >
@@ -1147,10 +1278,86 @@ const ProductAddModal = ({
     return <div style={styles.displayFlex}>{renderButtonAndPrice}</div>;
   };
 
+  const renderAddAndRemoveButtonProductModifierOptionsSpecialRes = ({
+    modifierProductId,
+  }) => {
+    const selectedSpecialRestriction = props.saveSelectProductModifier.find(
+      (item) => item.modifierProductId === modifierProductId
+    );
+
+    const qty = selectedSpecialRestriction?.qty || 0;
+    if (qty > 0) {
+      return (
+        <div style={styles.rootMofidierOptions}>
+          <IconButton
+            style={styles.buttonIconProductModifier}
+            disabled={
+              handleDisabledRemoveButtonProductModifier({
+                modifier: selectedSpecialRestriction,
+                min: selectedSpecialRestriction.min,
+                isSpecialRestriction: true,
+              }) || isLoading
+            }
+            onClick={() => {
+              handleAddAndReduceQtyProductModifier({
+                key: 'reduce',
+                value: selectedSpecialRestriction,
+                isSpecialRestriction: true,
+              });
+            }}
+          >
+            <RemoveIcon style={styles.iconProductModifier} />
+          </IconButton>
+          <Typography style={styles.qtyProductModifier}>
+            {selectedSpecialRestriction.qty}
+          </Typography>
+          <IconButton
+            style={styles.buttonIconProductModifier}
+            disabled={
+              handleDisabledAddButtonProductModifier({
+                modifier: selectedSpecialRestriction,
+                max: selectedSpecialRestriction.max,
+                isSpecialRestriction: true,
+              }) || isLoading
+            }
+            onClick={() => {
+              handleAddAndReduceQtyProductModifier({
+                key: 'add',
+                value: selectedSpecialRestriction,
+                isSpecialRestriction: true,
+              });
+            }}
+          >
+            <AddIcon style={styles.iconProductModifier} />
+          </IconButton>
+        </div>
+      );
+    }
+  };
+
+  const renderAddAndRemoveButtonAndPriceSpecialRestriction = ({ modifier }) => {
+    if (gadgetScreen) {
+      return (
+        <div style={styles.modifierOptionsPrice}>
+          {renderAddAndRemoveButtonProductModifierOptionsSpecialRes({
+            modifierProductId: modifier.productID,
+          })}
+        </div>
+      );
+    }
+    return (
+      <div style={styles.displayFlex}>
+        {renderAddAndRemoveButtonProductModifierOptionsSpecialRes({
+          modifierProductId: modifier.productID,
+        })}
+      </div>
+    );
+  };
+
   const renderSpecialRestrictionProductModifier = (productModifier) => {
     const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
-        const passedData = {
+        const passData = {
           modifierProductId: modifier.productID,
           modifierId: productModifier.modifierID,
           qty: modifier.min ? modifier.min : 1,
@@ -1158,26 +1365,23 @@ const ProductAddModal = ({
           name: modifier.name,
           max: modifier.max,
           min: modifier.min,
+          specialRestriction: productModifier.modifier?.specialRestriction,
         };
         return (
           <div key={index}>
             <div style={styles.modifierOption}>
               <FormControlLabel
-                disabled={
-                  modifier.orderingStatus === 'UNAVAILABLE' ? true : false
-                }
-                sx={{
-                  opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
-                }}
+                checked={isCheckedCheckboxForSpecialRestriction(modifier)}
                 value={modifier.productID}
                 control={
                   <Radio
                     sx={styles.radioSizeModifier}
                     name={modifier.productID}
                     onChange={() => {
-                      handleModifierOptionSelectedSpecialRestriction(
-                        passedData
-                      );
+                      if (!isEmptyObject(selectedProduct)) {
+                        setIsHandleSpesialStriction(!isHandleSpesialStriction);
+                      }
+                      handleModifierOptionSelectedSpecialRestriction(passData);
                     }}
                     disabled={handleDisabledCheckbox({
                       modifier,
@@ -1200,9 +1404,8 @@ const ProductAddModal = ({
                   </>
                 }
               />
-              {renderAddAndRemoveButtonAndPrice({
+              {renderAddAndRemoveButtonAndPriceSpecialRestriction({
                 modifier,
-                productModifier,
               })}
             </div>
             {productModifier.modifier.details.length - 1 !== index && (
@@ -1223,12 +1426,6 @@ const ProductAddModal = ({
           <div key={index}>
             <div style={styles.modifierOption}>
               <FormControlLabel
-                disabled={
-                  modifier.orderingStatus === 'UNAVAILABLE' ? true : false
-                }
-                sx={{
-                  opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
-                }}
                 value={modifier.productID}
                 checked={isCheckedCheckbox(modifier)}
                 control={
@@ -1359,6 +1556,10 @@ const ProductAddModal = ({
           style={styles.buttonIcon}
           disabled={isLoading}
           onClick={() => {
+            props.dispatch({
+              type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+              payload: [],
+            });
             handleClear();
             handleClose();
           }}
@@ -1377,6 +1578,10 @@ const ProductAddModal = ({
             style={styles.buttonIconClose}
             disabled={isLoading}
             onClick={() => {
+              props.dispatch({
+                type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+                payload: [],
+              });
               handleClear();
               handleClose();
             }}
