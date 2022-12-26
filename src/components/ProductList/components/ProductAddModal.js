@@ -825,6 +825,11 @@ const ProductAddModal = ({
           );
         }
       }
+      // if (!isEmptyObject(basket)) {
+      //   if (basket.details.length === 1) {
+      //     history.push('/');
+      //   }
+      // }
     } else {
       props.dispatch({
         type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
@@ -1051,7 +1056,7 @@ const ProductAddModal = ({
     max,
     specialRestriction,
   }) => {
-    const items = selectedProductModifiers;
+    let items = selectedProductModifiers;
     const arrData = {
       modifierId,
       modifierProductId,
@@ -1074,14 +1079,17 @@ const ProductAddModal = ({
       setSelectedProductModifiers([...items]);
     } else {
       if (!isEmptyObject(selectedProduct)) {
-        if (items[0].specialRestriction) {
-          items.shift();
-          items.push(arrData);
-        } else {
-          items.pop();
-          items.push(arrData);
-        }
+        items = items.map((itemData) => {
+          if (itemData.specialRestriction) {
+            itemData = arrData;
+          }
+          return itemData;
+        });
         setSelectedProductModifiers(items);
+        props.dispatch({
+          type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+          payload: items,
+        });
       } else {
         setSelectedProductModifiers([arrData]);
         props.dispatch({
@@ -1363,12 +1371,6 @@ const ProductAddModal = ({
           <div key={index}>
             <div style={styles.modifierOption}>
               <FormControlLabel
-                disabled={
-                  modifier.orderingStatus === 'UNAVAILABLE' ? true : false
-                }
-                sx={{
-                  opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
-                }}
                 checked={isCheckedCheckboxForSpecialRestriction(modifier)}
                 value={modifier.productID}
                 control={
@@ -1424,12 +1426,6 @@ const ProductAddModal = ({
           <div key={index}>
             <div style={styles.modifierOption}>
               <FormControlLabel
-                disabled={
-                  modifier.orderingStatus === 'UNAVAILABLE' ? true : false
-                }
-                sx={{
-                  opacity: modifier.orderingStatus === 'UNAVAILABLE' ? 0.2 : 1,
-                }}
                 value={modifier.productID}
                 checked={isCheckedCheckbox(modifier)}
                 control={
