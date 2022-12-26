@@ -74,10 +74,6 @@ const renderGrandTotalForGuestCheckMode = ({
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
         <button
           onClick={() => {
-            dispatch({
-              type: CONSTANT.RESET_BOTTOM_NAVIGATION,
-              payload: 0,
-            });
             history.push('/');
           }}
           style={{
@@ -476,7 +472,7 @@ const renderCardAccordion = ({
     .slice(0)
     .reverse()
     .map((item) => item);
-  console.log('dedd =>', sortArrTime);
+
   return (
     <div
       style={{
@@ -517,7 +513,7 @@ const renderCardAccordion = ({
           </div>
         </AccordionSummary>
         <AccordionDetails sx={{ padding: 0, margin: 0 }}>
-          {sortArrTime.map((item, i) =>
+          {sortArrTime?.map((item, i) =>
             renderTimeLineComponent({
               i: i,
               item: item,

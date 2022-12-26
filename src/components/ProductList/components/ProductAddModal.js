@@ -336,7 +336,7 @@ const ProductAddModal = ({
   const [stock, setStock] = useState({ manage: false, current: 0 });
 
   useEffect(() => {
-    if (product) {
+    if (product && product.productModifiers) {
       let arrFinalData = [];
       product.productModifiers.forEach((modifier) => {
         if (
