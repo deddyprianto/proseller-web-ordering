@@ -8,10 +8,10 @@ const useStyles = createUseStyles({
     height: 'inherit',
     width: 'inherit',
   },
-  image: {
-    width: ({ isLandscape }) => (isLandscape ? '100% !important' : 'auto'),
-    height: ({ isLandscape }) => (!isLandscape ? '100% !important' : 'auto'),
-  },
+  image: ({ isLandscape }) => ({
+    width: isLandscape ? '100%' : 'auto',
+    height: !isLandscape ? '100%' : 'auto',
+  }),
 });
 
 export default useStyles;

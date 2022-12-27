@@ -10,6 +10,7 @@ import useStyles from './styles';
  */
 const ImageContainer = ({ image, ...props }) => {
   const [isLandscape, setIsLandscape] = useState(true);
+  console.log('ImageContainer isLandscape', isLandscape);
 
   const styles = useStyles({ isLandscape });
 
@@ -17,14 +18,18 @@ const ImageContainer = ({ image, ...props }) => {
     const { offsetHeight, offsetWidth } = e.target;
     if (offsetHeight > offsetWidth) {
       setIsLandscape(false);
-    } else {
-      setIsLandscape(true);
     }
   };
 
   return (
     <div className={styles.container}>
-      <img src={image} alt='' {...props} onLoad={handleOnImageLoad}></img>
+      <img
+        className={styles.image}
+        src={image}
+        alt=''
+        onLoad={handleOnImageLoad}
+        {...props}
+      ></img>
     </div>
   );
 };
