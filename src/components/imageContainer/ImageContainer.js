@@ -14,13 +14,11 @@ const ImageContainer = ({ image, ...props }) => {
   const styles = useStyles({ isLandscape });
 
   const handleOnImageLoad = (e) => {
-    console.log(e.target);
     const { offsetHeight, offsetWidth } = e.target;
-    console.log(offsetHeight, offsetWidth);
     if (offsetHeight > offsetWidth) {
       setIsLandscape(false);
     } else {
-      setIsLandscape(false);
+      setIsLandscape(true);
     }
   };
 
