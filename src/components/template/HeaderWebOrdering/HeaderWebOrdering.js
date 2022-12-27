@@ -16,6 +16,7 @@ import LoginRegister from '../../login-register';
 import useMobileSize from 'hooks/useMobileSize';
 import Sidebar from './components/Sidebar';
 import { getLogoInfo } from '../../../redux/actions/LogoAction';
+import ImageContainer from 'components/imageContainer';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = (location) => {
@@ -461,8 +462,18 @@ const HeaderWebOrdering = () => {
       }}
     >
       {logo && (
-        <Link>
-          <img style={styles.logoAndOuletName} src={logo} />
+        <Link style={styles.logoAndOuletName}>
+          <ImageContainer image={logo} />
+          {/* <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img style={styles.logoAndOuletName} src={logo} />
+          </div> */}
         </Link>
       )}
       {renderOutletNamed()}
@@ -505,6 +516,8 @@ const HeaderWebOrdering = () => {
       </div>
     );
   };
+
+  const onLogoImageLoaded = ({ img }) => {};
   return (
     <>
       {renderLoginRegister()}

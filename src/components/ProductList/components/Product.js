@@ -18,6 +18,7 @@ import { isEmptyArray } from 'helpers/CheckEmpty';
 
 import ProductAddModal from './ProductAddModal';
 import ProductUpdateModal from './ProductUpdateModal';
+import ImageContainer from 'components/imageContainer';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -52,8 +53,6 @@ const Product = ({ item, ...props }) => {
 
   const useStyles = makeStyles({
     image: {
-      display: 'flex',
-      justifyContent: 'center',
       height: 100,
       filter: isUnavailable ? 'grayscale(90%)' : '',
     },
@@ -319,11 +318,10 @@ const Product = ({ item, ...props }) => {
     return (
       <div className={classes.item}>
         <div className={classes.image}>
-          <img
-            className={classes.imageSize}
-            src={renderImageProduct(item)}
-            alt={item.name}
-            title={item.name}
+          <ImageContainer
+            image={renderImageProduct(item)}
+            alt={item?.product?.name || ''}
+            title={item?.product?.name}
           />
         </div>
         <div className={classes.itemBody}>
@@ -398,9 +396,8 @@ const Product = ({ item, ...props }) => {
             </div>
             <div className={classes.boxRight}>
               <div className={classes.image}>
-                <img
-                  className={classes.imageSize}
-                  src={renderImageProduct(item)}
+                <ImageContainer
+                  image={renderImageProduct(item)}
                   alt={item?.product?.name || ''}
                   title={item?.product?.name}
                 />
