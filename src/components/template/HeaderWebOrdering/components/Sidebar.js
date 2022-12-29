@@ -23,8 +23,8 @@ const useStyles = (theme) => ({
     cursor: 'pointer',
     paddingLeft: '8px',
     paddingRight: '8px',
-    width: '40px',
-    height: '40px',
+    width: '30px',
+    height: '30px',
   },
   box: {
     width: 250,

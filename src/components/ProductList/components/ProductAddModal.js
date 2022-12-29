@@ -536,8 +536,12 @@ const ProductAddModal = ({
     }
 
     if (!isEmptyArray(product?.productModifiers)) {
+      const isSelectedProductExist = !isEmptyObject(selectedProduct)
+        ? selectedProductModifiers
+        : [...selectedProductModifiers, ...props.saveSelectProductModifier];
+
       const productModifierFormated = handleProductModifierFormated(
-        selectedProductModifiers
+        isSelectedProductExist
       );
 
       const price = totalPrice / qty || 0;
@@ -600,6 +604,7 @@ const ProductAddModal = ({
     selectedVariantOptions,
     selectedProductModifiers,
     isHandleSpesialStriction,
+    props.saveSelectProductModifier,
   ]);
 
   useEffect(() => {
@@ -726,7 +731,9 @@ const ProductAddModal = ({
         type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
         payload: productModifiersQtyChanged,
       });
-      setSelectedProductModifiers(productModifiersQtyChanged);
+      if (!isEmptyObject(selectedProduct)) {
+        setSelectedProductModifiers(productModifiersQtyChanged);
+      }
     } else {
       let productModifiersQtyChanged = [];
       const qty = key === 'add' ? value.qty + 1 : value.qty - 1;
@@ -1057,7 +1064,7 @@ const ProductAddModal = ({
     specialRestriction,
   }) => {
     let items = selectedProductModifiers;
-    const arrData = {
+    const objData = {
       modifierId,
       modifierProductId,
       qty,
@@ -1081,7 +1088,7 @@ const ProductAddModal = ({
       if (!isEmptyObject(selectedProduct)) {
         items = items.map((itemData) => {
           if (itemData.specialRestriction) {
-            itemData = arrData;
+            itemData = objData;
           }
           return itemData;
         });
@@ -1091,10 +1098,9 @@ const ProductAddModal = ({
           payload: items,
         });
       } else {
-        setSelectedProductModifiers([arrData]);
         props.dispatch({
           type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
-          payload: [arrData],
+          payload: [objData],
         });
       }
     }
