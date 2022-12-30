@@ -17,6 +17,7 @@ import { isEmptyArray } from '../../helpers/CheckEmpty';
 import Loading from 'components/loading/Loading';
 
 const ModalQRCode = loadable(() => import('./ModalQRCode'));
+const ModalTermAndCondition = loadable(() => import('./ModalTermAndCondition'));
 
 class DetailProfile extends Component {
   constructor(props) {
@@ -281,33 +282,39 @@ class DetailProfile extends Component {
 
   viewRightPage(loadingShow) {
     let { referall, isEmenu, svc } = this.state;
-    const { orderingSetting } = this.props;
+    const { orderingSetting, setting } = this.props;
+    let enableTermAndCondition = setting.find((items) => {
+      return items.settingKey === 'TermCondition';
+    });
 
     return (
       <div>
+        <ModalTermAndCondition
+          enableTermAndCondition={enableTermAndCondition}
+        />
         {loadingShow && <Loading loadingType='code' />}
 
         {orderingSetting.AdditionalLinkLabel &&
           orderingSetting.AdditionalLinkURL && (
             <a
               href={orderingSetting.AdditionalLinkURL}
-              target="_blank"
-              rel="noreferrer"
+              target='_blank'
+              rel='noreferrer'
             >
               <div
-                className="background-theme"
+                className='background-theme'
                 style={{
                   padding: 10,
                   marginTop: 10,
                   borderRadius: 10,
-                  border: "1px solid #CDCDCD",
-                  boxShadow: "0px 0px 5px rgba(128, 128, 128, 0.5)",
-                  cursor: "pointer",
+                  border: '1px solid #CDCDCD',
+                  boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                  cursor: 'pointer',
                 }}
               >
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                    <i className="fa fa-circle" aria-hidden="true" />{" "}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                    <i className='fa fa-circle' aria-hidden='true' />{' '}
                     {orderingSetting.AdditionalLinkLabel}
                   </div>
                 </div>
@@ -430,7 +437,28 @@ class DetailProfile extends Component {
                 </div>
               </div>
             </Link>
-
+            {enableTermAndCondition?.settingValue && (
+              <div
+                data-toggle='modal'
+                data-target='#detail-termcondition-modal'
+                className='background-theme'
+                style={{
+                  padding: 10,
+                  marginTop: 10,
+                  borderRadius: 10,
+                  border: '1px solid #CDCDCD',
+                  boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                    <i className='fa fa-file-text-o' aria-hidden='true' /> Term
+                    & Condition
+                  </div>
+                </div>
+              </div>
+            )}
             <div
               onClick={() => this.handleLogout()}
               className='background-theme'
@@ -476,6 +504,7 @@ const mapStateToProps = (state) => {
     account: state.auth.account.idToken.payload,
     orderingSetting: state.order.orderingSetting,
     qrcode: state.auth.account.accessToken.qrcode,
+    setting: state.order.setting,
   };
 };
 
