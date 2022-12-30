@@ -286,7 +286,6 @@ class DetailProfile extends Component {
     let enableTermAndCondition = setting.find((items) => {
       return items.settingKey === 'TermCondition';
     });
-
     return (
       <div>
         <ModalTermAndCondition

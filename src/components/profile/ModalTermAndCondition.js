@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const ModalTermAndCondition = ({ enableTermAndCondition }) => {
-  const split = enableTermAndCondition?.settingValue.split('\n');
+  const split = enableTermAndCondition?.settingValue?.split('\n');
   const { color } = useSelector((state) => state.theme);
   const style = {
     modalContent: { width: '100%', marginTop: 100, marginBottom: 100 },
@@ -58,7 +58,7 @@ const ModalTermAndCondition = ({ enableTermAndCondition }) => {
           </div>
           <div style={style.containerContent}>
             <div style={style.containerMain}>
-              <p style={style.fontSizeContent}>{split[0]}</p>
+              <p style={style.fontSizeContent}>{split && split[0]}</p>
               <ul
                 style={{
                   listStyle: 'none',
@@ -67,7 +67,7 @@ const ModalTermAndCondition = ({ enableTermAndCondition }) => {
                   margin: '0',
                 }}
               >
-                {split.map((item, i) => {
+                {split?.map((item, i) => {
                   if (i !== 0) {
                     return <li>{item}</li>;
                   }
