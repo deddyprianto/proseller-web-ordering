@@ -62,6 +62,39 @@ const ProductCartList = ({ ...props }) => {
       marginBottom: 10,
     },
   };
+  const renderIconInformation = () => {
+    return (
+      <svg
+        width='20'
+        height='20'
+        viewBox='0 0 128 129'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M64.0001 118.143C93.4553 118.143 117.333 94.2646 117.333 64.8094C117.333 35.3542 93.4553 11.4761 64.0001 11.4761C34.5449 11.4761 10.6667 35.3542 10.6667 64.8094C10.6667 94.2646 34.5449 118.143 64.0001 118.143Z'
+          stroke={props.color.primary}
+          strokeWidth='10.6824'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+        <path
+          d='M64.0007 86.1449V64.8115'
+          stroke={props.color.primary}
+          strokeWidth='15.2432'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+        <path
+          d='M64.0007 43.478H64.0541'
+          stroke={props.color.primary}
+          strokeWidth='14.2432'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+      </svg>
+    );
+  };
   const renderTitleNameForCart = () => {
     return (
       <div
@@ -129,23 +162,118 @@ const ProductCartList = ({ ...props }) => {
     );
   };
 
+  const renderTextBanner = (text = 'You have unavailable item') => {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'flex-start',
+          marginTop: '30px',
+          flexDirection: 'column',
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '14px',
+            padding: 0,
+            margin: 0,
+            letterSpacing: '.5px',
+            marginLeft: '3px',
+          }}
+        >
+          {text}
+        </h1>
+        <div
+          style={{
+            display: 'flex',
+            marginLeft: '3px',
+            alignItems: 'center',
+          }}
+        >
+          {renderIconInformation()}
+          <p
+            style={{
+              padding: 0,
+              margin: 0,
+              color: props.color.primary,
+              fontSize: '12px',
+              marginLeft: '5px',
+            }}
+          >
+            Item(s) will not be included in your payment
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   const renderBasketItems = () => {
     const sortItemForPriceHighest = props.basket.details.sort(
       (a, b) => b.unitPrice - a.unitPrice
     );
-    const result = sortItemForPriceHighest.map((item, key) => (
-      <div key={key}>
-        <ProductCart item={item} />
-      </div>
-    ));
+    const sortOrderingStatusItem = sortItemForPriceHighest.sort(
+      (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
+    );
+    const isDisable = true;
+    const result = sortOrderingStatusItem.map((item, key) => {
+      if (item.orderingStatus === 'UNAVAILABLE') {
+        if (item.modifiers.length > 0) {
+          return (
+            <div key={key}>
+              {renderTextBanner('Add On Unavailable')}
+              <ProductCart item={item} isDisable={isDisable} />
+            </div>
+          );
+        } else {
+          return (
+            <div key={key}>
+              {renderTextBanner('Item Unavailable')}
+              <ProductCart item={item} isDisable={isDisable} />
+            </div>
+          );
+        }
+      } else {
+        return (
+          <div key={key}>
+            <ProductCart item={item} />
+          </div>
+        );
+      }
+    });
     return result;
   };
+
+  const isUnavailableExist = props.basket.details.some(
+    (item) => item.orderingStatus === 'UNAVAILABLE'
+  );
 
   return (
     <div>
       {renderTitleNameForCart()}
       {renderLabelNeedAnythingElse()}
-      <h1 style={{ fontSize: '16px' }}>Items</h1>
+      {isUnavailableExist && (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {renderIconInformation()}
+          <h1
+            style={{
+              fontSize: '14px',
+              padding: 0,
+              margin: 0,
+              letterSpacing: '.5px',
+              marginLeft: '3px',
+            }}
+          >
+            You have unavailable item
+          </h1>
+        </div>
+      )}
       {renderBasketItems()}
     </div>
   );

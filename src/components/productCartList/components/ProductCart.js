@@ -56,6 +56,8 @@ const ProductCart = ({ item, ...props }) => {
     },
     rootProductCart: {
       position: 'relative',
+      opacity: item.orderingStatus === 'UNAVAILABLE' ? 0.4 : 1,
+      pointerEvents: item.orderingStatus === 'UNAVAILABLE' && 'none',
     },
     rootPrice: {
       display: 'flex',
@@ -360,10 +362,12 @@ const ProductCart = ({ item, ...props }) => {
   return (
     <div
       style={{
+        opacity: props.isDisable ? 0.5 : 1,
+        pointerEvents: props.isDisable && 'none',
         width: '100%',
         backgroundColor: 'white',
         borderRadius: '8px',
-        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
         marginTop: '10px',
         marginBottom: '10px',
         paddingTop: '10px',
