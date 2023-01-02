@@ -421,6 +421,9 @@ const Cart = ({ ...props }) => {
   };
 
   const handleDisabled = () => {
+    const isAllItemUnavailable = props.basket?.details.every(
+      (item) => item.orderingStatus === 'UNAVAILABLE'
+    );
     const someItemIsUnavailable = !props.basket?.details.every((item) => {
       const itemIsUnavailable =
         item.orderingStatus && item.orderingStatus === 'UNAVAILABLE';
@@ -432,7 +435,9 @@ const Cart = ({ ...props }) => {
     if (someItemIsUnavailable) {
       return someItemIsUnavailable;
     }
-
+    if (isAllItemUnavailable) {
+      return isAllItemUnavailable;
+    }
     if (props.orderingMode === CONSTANT.ORDERING_MODE_DELIVERY) {
       let isAllCompleted = false;
       if (selectTimeSlotAvailable) {
