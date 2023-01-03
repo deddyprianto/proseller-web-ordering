@@ -1161,6 +1161,12 @@ const CartGuestCheckout = () => {
   };
 
   const handleButtonDisable = (key) => {
+    const isAllItemUnavailable = basket?.details.every(
+      (item) => item.orderingStatus === 'UNAVAILABLE'
+    );
+    if (isAllItemUnavailable) {
+      return isAllItemUnavailable;
+    }
     const reqDelivery = deliveryAddresGuest.deliveryAddress;
     const reqProvider = providerGuestCheckout;
     const reqTimeSlot = timeslot;
