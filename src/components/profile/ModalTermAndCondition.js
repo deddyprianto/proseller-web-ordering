@@ -34,14 +34,13 @@ const ModalTermAndCondition = ({ enableTermAndCondition }) => {
       width: '100%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',
-      height: '70px',
+      alignItems: 'flex-end',
+      height: '60px',
     },
     buttonOK: {
       backgroundColor: color.primary,
       width: '90%',
       color: 'white',
-      margin: '20px auto',
       height: '40px',
     },
   };
