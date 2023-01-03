@@ -442,8 +442,8 @@ class DetailProfile extends Component {
                 data-target='#detail-termcondition-modal'
                 className='background-theme'
                 style={{
+                  margin: '10px 0px',
                   padding: 10,
-                  marginTop: 10,
                   borderRadius: 10,
                   border: '1px solid #CDCDCD',
                   boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
