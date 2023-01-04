@@ -1292,20 +1292,23 @@ const Cart = ({ ...props }) => {
         <Button
           onClick={() => {
             if (props.isLoggedIn) {
-              Swal.fire({
-                title: 'The outlet is not available',
-                text: 'Selected Outlet Name is currently not available,please select another outlet',
-                allowOutsideClick: false,
-                confirmButtonText: 'OK',
-                confirmButtonColor: props.color?.primary,
-                customClass: {
-                  confirmButton: fontStyleCustom.buttonSweetAlert,
-                  text: fontStyleCustom.textModalOutlet,
-                },
-              }).then((res) => {
-                // history.push('/outlets');
-              });
-              // handleConfirmAndPay();
+              if (props.defaultOutlet.orderingStatus === 'UNAVAILABLE') {
+                Swal.fire({
+                  title: '<p>The outlet is not available</p>',
+                  text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
+                  allowOutsideClick: false,
+                  confirmButtonText: 'OK',
+                  confirmButtonColor: props.color?.primary,
+                  customClass: {
+                    confirmButton: fontStyleCustom.buttonSweetAlert,
+                    text: fontStyleCustom.textModalOutlet,
+                  },
+                }).then(() => {
+                  history.push('/outlets');
+                });
+              } else {
+                handleConfirmAndPay();
+              }
             } else {
               handleLogin();
             }
