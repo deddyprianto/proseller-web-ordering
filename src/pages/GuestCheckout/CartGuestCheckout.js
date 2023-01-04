@@ -852,7 +852,7 @@ const CartGuestCheckout = () => {
                             <li>
                               <span
                                 style={{
-                                  color: color.primary,
+                                  color: isDisable ? '#8A8D8E' : color.primary,
                                   fontWeight: 600,
                                 }}
                               >
@@ -861,7 +861,7 @@ const CartGuestCheckout = () => {
                               {item?.name}{' '}
                               <span
                                 style={{
-                                  color: color.primary,
+                                  color: isDisable ? '#8A8D8E' : color.primary,
                                   fontWeight: 500,
                                   fontSize: '12px',
                                   fontStyle: 'italic',
@@ -936,7 +936,7 @@ const CartGuestCheckout = () => {
                 display: 'flex',
               }}
             >
-              {!isDisable && (
+              {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
                 <Button
                   sx={{
                     width: '80px',
@@ -1002,6 +1002,7 @@ const CartGuestCheckout = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  cursor: 'pointer',
                 }}
               >
                 <IconButton

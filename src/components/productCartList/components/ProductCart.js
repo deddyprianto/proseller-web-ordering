@@ -520,7 +520,7 @@ const ProductCart = ({ item, ...props }) => {
                 display: 'flex',
               }}
             >
-              {!props.isDisable && (
+              {(!props.isDisable || !isEmptyArray(item?.modifiers)) && (
                 <Button
                   sx={{
                     width: '80px',
