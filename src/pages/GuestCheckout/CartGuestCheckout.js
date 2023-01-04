@@ -48,6 +48,7 @@ import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import SearchInput, { createFilter } from 'react-search-input';
 import search from 'assets/images/search.png';
 import screen from 'hooks/useWindowSize';
+import { renderIconEdit, renderIconInformation } from 'assets/iconsSvg/Icons';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -231,6 +232,16 @@ const CartGuestCheckout = () => {
   const gadgetScreen = width < 980;
 
   const styles = {
+    containerDataEmpty: {
+      width: gadgetScreen ? '100%' : '40%',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      backgroundColor: 'white',
+      height: '99vh',
+      borderRadius: '8px',
+      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+      overflowY: 'auto',
+    },
     rootCartGadgetSize: {
       paddingLeft: 20,
       paddingRight: 20,
@@ -657,28 +668,7 @@ const CartGuestCheckout = () => {
     }
   };
 
-  const renderIconEdit = () => {
-    return (
-      <svg
-        width='15'
-        height='15'
-        viewBox='0 0 129 129'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M91.072 16.8123C92.4728 15.4116 94.1357 14.3004 95.9659 13.5423C97.7961 12.7842 99.7577 12.394 101.739 12.394C103.72 12.394 105.681 12.7842 107.511 13.5423C109.342 14.3004 111.005 15.4116 112.405 16.8123C113.806 18.2131 114.917 19.876 115.675 21.7062C116.433 23.5364 116.824 25.498 116.824 27.479C116.824 29.46 116.433 31.4216 115.675 33.2517C114.917 35.0819 113.806 36.7449 112.405 38.1457L40.4054 110.146L11.072 118.146L19.072 88.8123L91.072 16.8123Z'
-          stroke='white'
-          strokeWidth='10.6824'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          fill={color.primary}
-        />
-      </svg>
-    );
-  };
-
-  const renderPrice = (item) => {
+  const renderPrice = (item, isDisable) => {
     if (item?.totalDiscAmount !== 0) {
       return (
         <div
@@ -688,7 +678,12 @@ const CartGuestCheckout = () => {
             justifyContent: 'flex-end',
           }}
         >
-          <Typography style={{ color: color.font, fontSize: '16px' }}>
+          <Typography
+            style={{
+              color: isDisable ? '#8A8D8E' : color.primary,
+              fontSize: '16px',
+            }}
+          >
             {handleCurrency(item?.totalDiscAmount)}
           </Typography>
           <Typography
@@ -696,7 +691,7 @@ const CartGuestCheckout = () => {
               fontSize: '16px',
               textDecorationLine: 'line-through',
               marginRight: '10px',
-              color: color.font,
+              color: isDisable ? '#8A8D8E' : color.primary,
             }}
           >
             {handleCurrency(item?.grossAmount)}
@@ -713,45 +708,18 @@ const CartGuestCheckout = () => {
           justifyContent: 'flex-end',
         }}
       >
-        <Typography style={{ color: color.primary, fontSize: '16px' }}>
+        <Typography
+          style={{
+            color: isDisable ? '#8A8D8E' : color.primary,
+            fontSize: '16px',
+          }}
+        >
           {handleCurrency(item?.grossAmount)}
         </Typography>
       </div>
     );
   };
-  const renderIconInformation = () => {
-    return (
-      <svg
-        width='20'
-        height='20'
-        viewBox='0 0 128 129'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M64.0001 118.143C93.4553 118.143 117.333 94.2646 117.333 64.8094C117.333 35.3542 93.4553 11.4761 64.0001 11.4761C34.5449 11.4761 10.6667 35.3542 10.6667 64.8094C10.6667 94.2646 34.5449 118.143 64.0001 118.143Z'
-          stroke={color?.primary}
-          strokeWidth='10.6824'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-        <path
-          d='M64.0007 86.1449V64.8115'
-          stroke={color?.primary}
-          strokeWidth='15.2432'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-        <path
-          d='M64.0007 43.478H64.0541'
-          stroke={color?.primary}
-          strokeWidth='14.2432'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-      </svg>
-    );
-  };
+
   const renderTextBanner = (text = 'You have unavailable item') => {
     return (
       <div
@@ -781,7 +749,7 @@ const CartGuestCheckout = () => {
             alignItems: 'center',
           }}
         >
-          {renderIconInformation()}
+          {renderIconInformation(color?.primary)}
           <p
             style={{
               padding: 0,
@@ -804,8 +772,6 @@ const CartGuestCheckout = () => {
         key={itemDetails?.productID}
         className={fontStyleCustom.myFont}
         style={{
-          opacity: isDisable ? 0.5 : 1,
-          pointerEvents: isDisable && 'none',
           width: '100%',
           backgroundColor: 'white',
           borderRadius: '8px',
@@ -818,6 +784,8 @@ const CartGuestCheckout = () => {
       >
         <div
           style={{
+            opacity: isDisable ? 0.5 : 1,
+            pointerEvents: isDisable && 'none',
             maxWidth: 'min(1280px, 100% - 20px)',
             marginLeft: 'auto',
             marginRight: 'auto',
@@ -840,7 +808,7 @@ const CartGuestCheckout = () => {
                 style={{
                   width: '24px',
                   height: '24px',
-                  backgroundColor: color.primary,
+                  backgroundColor: isDisable ? '#8A8D8E' : color.primary,
                   borderRadius: '5px',
                   color: 'white',
                   display: 'flex',
@@ -945,7 +913,7 @@ const CartGuestCheckout = () => {
             marginRight: 'auto',
             width: '90%',
             marginTop: '10px',
-            borderTop: `1px dashed ${color.primary}`,
+            borderTop: `1px dashed ${isDisable ? '#8A8D8E' : color.primary}`,
             marginBottom: '10px',
           }}
         />
@@ -968,75 +936,100 @@ const CartGuestCheckout = () => {
                 display: 'flex',
               }}
             >
-              <Button
-                sx={{
-                  width: '80px',
-                  border: `1px solid ${color.primary}`,
-                  borderRadius: '10px',
-                  paddingTop: '10px',
-                  paddingBottom: '10px',
-                  color: color.font,
-                }}
-                onClick={() => {
-                  setProductDetailSpesific(itemDetails);
-                  setProductSpecific(itemDetails.product);
-                  setProductEditModal(true);
-                }}
-                startIcon={renderIconEdit()}
-              >
-                Edit
-              </Button>
-              <IconButton
-                style={{
-                  color: color.primary,
-                }}
-              >
-                <DeleteIcon
-                  fontSize='large'
-                  onClick={() => {
-                    Swal.fire({
-                      title: 'Are you sure?',
-                      text: 'You sure to delete this?',
-                      icon: 'warning',
-                      showCancelButton: true,
-                      confirmButtonColor: '#3085d6',
-                      cancelButtonColor: '#d33',
-                      confirmButtonText: 'Yes, delete it!',
-                    }).then(async (result) => {
-                      if (result.isConfirmed) {
-                        setIsLoading(true);
-                        const response = await dispatch(
-                          OrderAction.processRemoveCartGuestCheckoutMode(
-                            basket.guestID,
-                            itemDetails
-                          )
-                        );
-                        if (response?.resultCode === 200) {
-                          setRefreshData(!refreshData);
-                          Swal.fire('Deleted!', response.message, 'success');
-
-                          dispatch({
-                            type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-                            payload: {},
-                          });
-                          if (basket.details.length === 1) {
-                            dispatch({
-                              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-                              payload: '',
-                            });
-                            history.push('/');
-                          }
-                        } else {
-                          Swal.fire('Cancelled!', response, 'error');
-                        }
-                        setIsLoading(false);
-                      }
-                    });
+              {!isDisable && (
+                <Button
+                  sx={{
+                    width: '80px',
+                    border: `1px solid ${color?.primary}`,
+                    borderRadius: '10px',
+                    paddingTop: '10px',
+                    paddingBottom: '10px',
+                    color: color?.primary,
                   }}
-                />
-              </IconButton>
+                  onClick={() => {
+                    setProductDetailSpesific(itemDetails);
+                    setProductSpecific(itemDetails.product);
+                    setProductEditModal(true);
+                  }}
+                  startIcon={renderIconEdit(color?.primary)}
+                >
+                  Edit
+                </Button>
+              )}
+              <div
+                onClick={() => {
+                  Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You sure to delete this?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                  }).then(async (result) => {
+                    if (result.isConfirmed) {
+                      setIsLoading(true);
+                      const response = await dispatch(
+                        OrderAction.processRemoveCartGuestCheckoutMode(
+                          basket.guestID,
+                          itemDetails
+                        )
+                      );
+                      if (response?.resultCode === 200) {
+                        setRefreshData(!refreshData);
+                        Swal.fire('Deleted!', response.message, 'success');
+
+                        dispatch({
+                          type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+                          payload: {},
+                        });
+                        if (basket.details.length === 1) {
+                          dispatch({
+                            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+                            payload: '',
+                          });
+                          history.push('/');
+                        }
+                      } else {
+                        Swal.fire('Cancelled!', response, 'error');
+                      }
+                      setIsLoading(false);
+                    }
+                  });
+                }}
+                style={{
+                  marginLeft: '10px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <IconButton
+                  style={{
+                    color: color?.primary,
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    padding: 0,
+                    margin: 0,
+                    marginRight: '5px',
+                  }}
+                >
+                  <DeleteIcon fontSize='large' />
+                </IconButton>
+                <p
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    color: color?.primary,
+                    fontWeight: 500,
+                    fontSize: '14px',
+                  }}
+                >
+                  Delete
+                </p>
+              </div>
             </div>
-            {renderPrice(itemDetails)}
+            {renderPrice(itemDetails, isDisable)}
           </div>
         </div>
       </div>
@@ -1044,29 +1037,29 @@ const CartGuestCheckout = () => {
   };
 
   const renderCartProductList = () => {
+    const isDisable = true;
     const sortItemForPriceHighest = basket?.details.sort(
       (a, b) => b.unitPrice - a.unitPrice
     );
     const sortOrderingStatusItem = sortItemForPriceHighest?.sort(
       (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
     );
-    const isDisable = true;
-    console.log('%cdedd =>', 'color: green;', sortItemForPriceHighest);
+
     return sortOrderingStatusItem?.map((itemDetails) => {
       if (itemDetails.orderingStatus === 'UNAVAILABLE') {
         if (itemDetails.modifiers.length > 0) {
           return (
-            <div>
+            <React.Fragment>
               {renderTextBanner('Add On Unavailable')}
               {renderItemList(itemDetails, isDisable)}
-            </div>
+            </React.Fragment>
           );
         } else {
           return (
-            <div>
+            <React.Fragment>
               {renderTextBanner('Item Unavailable')}
               {renderItemList(itemDetails, isDisable)}
-            </div>
+            </React.Fragment>
           );
         }
       } else {
@@ -2851,6 +2844,7 @@ const CartGuestCheckout = () => {
   const isUnavailableExist = basket?.details?.some(
     (item) => item.orderingStatus === 'UNAVAILABLE'
   );
+
   const renderTextInformationUnAvailabeItem = () => {
     if (isUnavailableExist) {
       return (
@@ -2861,7 +2855,7 @@ const CartGuestCheckout = () => {
             alignItems: 'center',
           }}
         >
-          {renderIconInformation()}
+          {renderIconInformation(color?.primary)}
           <h1
             style={{
               fontSize: '14px',
@@ -2869,6 +2863,7 @@ const CartGuestCheckout = () => {
               margin: 0,
               letterSpacing: '.5px',
               marginLeft: '3px',
+              color: color?.primary,
             }}
           >
             You have unavailable item
@@ -2905,7 +2900,7 @@ const CartGuestCheckout = () => {
       <div style={{ width: '100vw' }}>
         <div
           style={{
-            width: '40%',
+            width: '45%',
             marginLeft: 'auto',
             marginRight: 'auto',
             backgroundColor: 'white',
@@ -2941,39 +2936,29 @@ const CartGuestCheckout = () => {
       </div>
     );
   };
-
-  const renderCartGuestCheckout = () => {
-    if (!isEmptyArray(basket?.details)) {
-      return (
-        <div style={{ width: '100%' }}>{renderCartForGuestCheckoutMode()}</div>
-      );
-    } else {
-      return (
-        <div style={{ width: '100vw' }}>
+  const renderEmptyData = () => {
+    return (
+      <div style={{ width: '100vw' }}>
+        <div style={styles.containerDataEmpty}>
           <div
             style={{
-              width: gadgetScreen ? '100%' : '40%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              backgroundColor: 'white',
-              height: '99vh',
-              borderRadius: '8px',
-              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-              overflowY: 'auto',
+              marginTop: '20%',
+              padding: '0px 10px',
             }}
           >
-            <div
-              style={{
-                marginTop: '20%',
-                padding: '0px 10px',
-              }}
-            >
-              <img src={config.url_emptyImage} alt='is empty' />
-              <Typography style={styles.emptyText}>Data is empty</Typography>
-            </div>
+            <img src={config.url_emptyImage} alt='is empty' />
+            <Typography style={styles.emptyText}>Data is empty</Typography>
           </div>
         </div>
-      );
+      </div>
+    );
+  };
+  // ROOT
+  const renderCartGuestCheckout = () => {
+    if (!isEmptyArray(basket?.details)) {
+      return renderCartForGuestCheckoutMode();
+    } else {
+      return renderEmptyData();
     }
   };
 

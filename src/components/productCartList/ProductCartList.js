@@ -268,6 +268,7 @@ const ProductCartList = ({ ...props }) => {
               margin: 0,
               letterSpacing: '.5px',
               marginLeft: '3px',
+              color: props.color?.primary,
             }}
           >
             You have unavailable item
