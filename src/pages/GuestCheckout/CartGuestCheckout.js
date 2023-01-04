@@ -280,11 +280,12 @@ const CartGuestCheckout = () => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
     },
     rootInclusiveTax: {
       display: 'flex',
       justifyContent: 'space-between',
-      marginBottom: '5px',
+      padding: '5px 10px',
     },
     inclusiveTax: {
       color: '#808080',

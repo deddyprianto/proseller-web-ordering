@@ -3,7 +3,14 @@
 .myFont{
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
-
+.buttonSweetAlert{
+  width: 100%;
+  border-radius: 10px !important;
+  margin-top: 20px;
+}
+.textModalOutlet{
+  margin-top: 15px;
+}
 .dropDownMenu{
   border: none !important;
   border-radius: 7px !important;
