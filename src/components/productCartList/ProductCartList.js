@@ -8,7 +8,7 @@ import ProductCart from 'components/productCartList/components/ProductCart';
 import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import Button from '@mui/material/Button';
-
+import { renderIconInformation } from 'assets/iconsSvg/Icons';
 const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
@@ -62,39 +62,7 @@ const ProductCartList = ({ ...props }) => {
       marginBottom: 10,
     },
   };
-  const renderIconInformation = () => {
-    return (
-      <svg
-        width='20'
-        height='20'
-        viewBox='0 0 128 129'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M64.0001 118.143C93.4553 118.143 117.333 94.2646 117.333 64.8094C117.333 35.3542 93.4553 11.4761 64.0001 11.4761C34.5449 11.4761 10.6667 35.3542 10.6667 64.8094C10.6667 94.2646 34.5449 118.143 64.0001 118.143Z'
-          stroke={props.color.primary}
-          strokeWidth='10.6824'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-        <path
-          d='M64.0007 86.1449V64.8115'
-          stroke={props.color.primary}
-          strokeWidth='15.2432'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-        <path
-          d='M64.0007 43.478H64.0541'
-          stroke={props.color.primary}
-          strokeWidth='14.2432'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-      </svg>
-    );
-  };
+
   const renderTitleNameForCart = () => {
     return (
       <div
@@ -191,7 +159,7 @@ const ProductCartList = ({ ...props }) => {
             alignItems: 'center',
           }}
         >
-          {renderIconInformation()}
+          {renderIconInformation(props.color?.primary)}
           <p
             style={{
               padding: 0,
@@ -274,7 +242,7 @@ const ProductCartList = ({ ...props }) => {
             alignItems: 'center',
           }}
         >
-          {renderIconInformation()}
+          {renderIconInformation(props.color?.primary)}
           <h1
             style={{
               fontSize: '14px',

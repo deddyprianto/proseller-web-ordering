@@ -14,7 +14,11 @@ import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import ProductCartRemoveModal from 'components/productCartList/components/ProductCartRemoveModal';
-import { renderIconEdit, renderIconPromotion } from 'assets/iconsSvg/Icons';
+import {
+  renderIconEdit,
+  renderIconPromotion,
+  renderIconInformation,
+} from 'assets/iconsSvg/Icons';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -445,6 +449,11 @@ const ProductCart = ({ item, ...props }) => {
                             >
                               +{handleCurrency(item?.price)}
                             </span>
+                            {item.orderingStatus === 'UNAVAILABLE' && (
+                              <span style={{ marginLeft: '5px' }}>
+                                {renderIconInformation(props.color?.primary)}
+                              </span>
+                            )}
                           </li>
                         </ul>
                       );
