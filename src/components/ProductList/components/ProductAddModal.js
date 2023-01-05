@@ -838,13 +838,13 @@ const ProductAddModal = ({
       //   }
       // }
     } else {
+      await props.dispatch(
+        OrderAction.processAddCart(props.defaultOutlet, productAdd)
+      );
       props.dispatch({
         type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
         payload: [],
       });
-      await props.dispatch(
-        OrderAction.processAddCart(props.defaultOutlet, productAdd)
-      );
     }
 
     setIsLoading(false);
