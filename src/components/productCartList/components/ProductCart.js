@@ -526,9 +526,10 @@ const ProductCart = ({ item, ...props }) => {
                     width: '80px',
                     border: `1px solid ${props.color?.primary}`,
                     borderRadius: '10px',
-                    paddingTop: '10px',
-                    paddingBottom: '10px',
+                    padding: '5px 0px',
                     color: props.color?.primary,
+                    textTransform: 'capitalize',
+                    fontSize: '14px',
                   }}
                   onClick={() => {
                     handleOpenAddModal();

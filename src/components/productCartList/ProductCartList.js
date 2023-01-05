@@ -247,11 +247,25 @@ const ProductCartList = ({ ...props }) => {
   const isUnavailableExist = props.basket.details.some(
     (item) => item.orderingStatus === 'UNAVAILABLE'
   );
-
+  const textItem = () => {
+    return (
+      <div
+        className={fontStyleCustom.myFont}
+        style={{
+          width: '100%',
+          marginBottom: '10px',
+          marginTop: '10px',
+        }}
+      >
+        <h1 style={{ fontSize: '16px' }}>Items</h1>
+      </div>
+    );
+  };
   return (
     <div>
       {renderTitleNameForCart()}
       {renderLabelNeedAnythingElse()}
+      {textItem()}
       {isUnavailableExist && (
         <div
           style={{

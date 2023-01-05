@@ -942,8 +942,9 @@ const CartGuestCheckout = () => {
                     width: '80px',
                     border: `1px solid ${color?.primary}`,
                     borderRadius: '10px',
-                    paddingTop: '10px',
-                    paddingBottom: '10px',
+                    padding: '5px 0px',
+                    textTransform: 'capitalize',
+                    fontSize: '14px',
                     color: color?.primary,
                   }}
                   onClick={() => {
