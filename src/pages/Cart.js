@@ -32,6 +32,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Swal from 'sweetalert2';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -108,8 +109,7 @@ const Cart = ({ ...props }) => {
     rootInclusiveTax: {
       display: 'flex',
       justifyContent: 'space-between',
-      paddingLeft: 10,
-      paddingRight: 10,
+      padding: '5px 10px',
     },
     rootSubTotalItem: {
       display: 'flex',
@@ -1284,17 +1284,31 @@ const Cart = ({ ...props }) => {
     return (
       <div
         style={{
-          paddingTop: 15,
-          paddingRight: 10,
-          paddingLeft: 10,
-          paddingBottom: 10,
+          padding:
+            props.basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
           width: '70%',
         }}
       >
         <Button
           onClick={() => {
             if (props.isLoggedIn) {
-              handleConfirmAndPay();
+              if (props.defaultOutlet.orderingStatus === 'UNAVAILABLE') {
+                Swal.fire({
+                  title: '<p>The outlet is not available</p>',
+                  text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
+                  allowOutsideClick: false,
+                  confirmButtonText: 'OK',
+                  confirmButtonColor: props.color?.primary,
+                  customClass: {
+                    confirmButton: fontStyleCustom.buttonSweetAlert,
+                    text: fontStyleCustom.textModalOutlet,
+                  },
+                }).then(() => {
+                  history.push('/outlets');
+                });
+              } else {
+                handleConfirmAndPay();
+              }
             } else {
               handleLogin();
             }

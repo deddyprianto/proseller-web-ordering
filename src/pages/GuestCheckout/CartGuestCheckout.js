@@ -23,10 +23,8 @@ import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
 import fontStyleCustom from './style/styles.module.css';
 import IconDown from 'assets/images/VectorDown.png';
 import addIcon from 'assets/images/add.png';
-import editIcon from 'assets/images/edit.png';
 import iconRight from 'assets/images/iconRight.png';
 import iconSeru from 'assets/images/IconsSeru.png';
-import iconVespa from 'assets/images/2.png';
 import OrderingModeDialogGuestCheckout from 'components/orderingModeDialog/OrderingModeDialogGuestCheckout';
 import config from 'config';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -280,11 +278,12 @@ const CartGuestCheckout = () => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
     },
     rootInclusiveTax: {
       display: 'flex',
       justifyContent: 'space-between',
-      marginBottom: '5px',
+      padding: '5px 0px',
     },
     inclusiveTax: {
       color: '#808080',
@@ -658,7 +657,6 @@ const CartGuestCheckout = () => {
       return result;
     }
   };
-
 
   const renderIconEdit = () => {
     return (
@@ -1113,7 +1111,25 @@ const CartGuestCheckout = () => {
     return (
       <div style={styles.rootSubmitButton}>
         <Button
-          onClick={handlePaymentGuestMode}
+          onClick={() => {
+            if (defaultOutlet.orderingStatus === 'UNAVAILABLE') {
+              Swal.fire({
+                title: '<p>The outlet is not available</p>',
+                text: `${defaultOutlet.name} is currently not available,please select another outlet`,
+                allowOutsideClick: false,
+                confirmButtonText: 'OK',
+                confirmButtonColor: color?.primary,
+                customClass: {
+                  confirmButton: fontStyleCustom.buttonSweetAlert,
+                  text: fontStyleCustom.textModalOutlet,
+                },
+              }).then(() => {
+                history.push('/outlets');
+              });
+            } else {
+              handlePaymentGuestMode();
+            }
+          }}
           disabled={handleButtonDisable(orderingModeGuestCheckout)}
           style={{
             backgroundColor: color.primary,
