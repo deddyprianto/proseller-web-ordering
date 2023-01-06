@@ -1465,7 +1465,8 @@ const ProductAddModal = ({
                   </>
                 }
               />
-              {renderAddAndRemoveButtonAndPrice({ modifier, productModifier })}
+              {modifier.orderingStatus === 'AVAILABLE' &&
+                renderAddAndRemoveButtonAndPrice({ modifier, productModifier })}
             </div>
             {productModifier.modifier.details.length - 1 !== index && (
               <Divider />
