@@ -119,6 +119,7 @@ const Payment = ({ ...props }) => {
   const [disableButtonAll, setDisableButtonAll] = useState(false);
   const [referenceNumberConfirmation, setReferenceNumberConfirmation] =
     useState('');
+  const [dataPoints, setDataPoints] = useState([]);
   const [
     openConfirmationDialogActionPayment,
     setOpenConfirmationDialogActionPayment,
@@ -129,6 +130,16 @@ const Payment = ({ ...props }) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
   const minPayment = props?.selectedPaymentCard?.minimumPayment;
+
+  useEffect(() => {
+    const getAllPoints = async () => {
+      const dataPoints = await props.dispatch(
+        CampaignAction.getCampaignByPoints()
+      );
+      setDataPoints(dataPoints.data);
+    };
+    getAllPoints();
+  }, []);
 
   const styles = {
     root: {
@@ -657,38 +668,40 @@ const Payment = ({ ...props }) => {
   };
 
   const renderPoint = () => {
-    const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
-    const isTotalPoint = props.campaignPoint.totalPoint > 0;
+    if (dataPoints?.points?.enablePointRedemption) {
+      const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
+      const isTotalPoint = props.campaignPoint.totalPoint > 0;
 
-    if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
-      return (
-        <Paper variant='outlined' style={styles.paper}>
-          <Button
-            style={styles.button}
-            disabled={handleDisableButton()}
-            onClick={handleOpenPointAddModal}
-            variant='outlined'
-          >
-            <div style={styles.displayFlexAndAlignCenter}>
-              <LocalOfferIcon style={styles.icon} />
-              <Typography style={styles.typography}>
-                {handlePoint()} Point
-              </Typography>
-            </div>
-            <ArrowForwardIosIcon style={styles.iconArrow} />
-          </Button>
-          {selectedPoint.redeemValue > 0 && (
-            <IconButton
-              style={styles.iconButtonRemove}
-              onClick={() => {
-                handleRemovePoint();
-              }}
+      if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
+        return (
+          <Paper variant='outlined' style={styles.paper}>
+            <Button
+              style={styles.button}
+              disabled={handleDisableButton()}
+              onClick={handleOpenPointAddModal}
+              variant='outlined'
             >
-              <CloseIcon style={styles.iconRemove} />
-            </IconButton>
-          )}
-        </Paper>
-      );
+              <div style={styles.displayFlexAndAlignCenter}>
+                <LocalOfferIcon style={styles.icon} />
+                <Typography style={styles.typography}>
+                  {handlePoint()} Point
+                </Typography>
+              </div>
+              <ArrowForwardIosIcon style={styles.iconArrow} />
+            </Button>
+            {selectedPoint.redeemValue > 0 && (
+              <IconButton
+                style={styles.iconButtonRemove}
+                onClick={() => {
+                  handleRemovePoint();
+                }}
+              >
+                <CloseIcon style={styles.iconRemove} />
+              </IconButton>
+            )}
+          </Paper>
+        );
+      }
     }
   };
 
