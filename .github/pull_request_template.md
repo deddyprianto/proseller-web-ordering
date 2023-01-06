@@ -3,6 +3,8 @@ _Please provide a description of the changes being made._
 
 ### Linear / Resources / Document Link *
 _Please provide a link to any resources, documents, or a linear link that would help the developer understand the changes being made in this pull request._
+_donot use Linear link, instead use the Key-Number_
+_example: Fixes for PROS-123, PROS-125 and ENG-256 _
 
 ### How did you address the problem? *
 _explain your changes. what did you do with the code or how you solve the problem?_
