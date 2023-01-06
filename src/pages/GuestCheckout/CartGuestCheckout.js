@@ -813,14 +813,15 @@ const CartGuestCheckout = () => {
           key={itemDetails?.productID}
           className={fontStyleCustom.myFont}
           style={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-            marginTop: '10px',
-            marginBottom: '10px',
-            paddingTop: '10px',
-            paddingBottom: '10px',
+            pointerEvents: isDisable && 'none',
+            maxWidth: 'min(1280px, 100% - 20px)',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            display: 'grid',
+            gridTemplateColumns: '1.6fr 0.4fr',
+            gridTemplateRows: '1fr',
+            gap: '0px 0px',
+            gridTemplateAreas: '". ."',
           }}
         >
           <div
@@ -927,33 +928,94 @@ const CartGuestCheckout = () => {
                 )}
                 {itemDetails?.remark && (
                   <li>
-                    <table>
-                      <tr>
-                        <td
-                          className={fontStyleCustom.title}
-                          style={{
-                            textAlign: 'left',
-                            width: '100%',
-                            display: '-webkit-box',
-                            WebkitLineClamp: '3',
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            padding: 0,
-                            margin: 0,
-                          }}
-                        >
-                          <span style={{ fontWeight: 700 }}>Notes: </span>
-                          {itemDetails?.remark}
-                        </td>
-                      </tr>
-                    </table>
+                    Add-On:
+                    {itemDetails?.modifiers?.map((items) => {
+                      return items?.modifier?.details.map((item) => {
+                        return (
+                          <ul key={item?.name} style={{ paddingLeft: '10px' }}>
+                            <li>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  marginTop: '5px',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    color: isDisable
+                                      ? '#8A8D8E'
+                                      : color?.primary,
+                                    fontWeight: 600,
+                                    marginRight: '1px',
+                                  }}
+                                >
+                                  {item?.quantity}x{' '}
+                                </div>
+                                {item?.name}{' '}
+                                <div
+                                  style={{
+                                    color: isDisable
+                                      ? '#8A8D8E'
+                                      : color?.primary,
+                                    fontWeight: 500,
+                                    fontSize: '12px',
+                                    fontStyle: 'italic',
+                                  }}
+                                >
+                                  +{handleCurrency(item?.price)}
+                                </div>
+                                {item.orderingStatus === 'UNAVAILABLE' && (
+                                  <div
+                                    style={{
+                                      marginLeft: '5px',
+                                      paddingTop: '6px',
+                                    }}
+                                  >
+                                    {renderIconInformation('red')}
+                                  </div>
+                                )}
+                              </div>
+                            </li>
+                          </ul>
+                        );
+                      });
+                    })}
                   </li>
-                )}
-              </ul>
-            </div>
-            <div>
-              <img alt='logo' src={renderImageProduct(itemDetails)} />
-            </div>
+                </React.Fragment>
+              )}
+              {itemDetails?.remark && (
+                <li>
+                  <table>
+                    <tr>
+                      <td
+                        className={fontStyleCustom.title}
+                        style={{
+                          textAlign: 'left',
+                          width: '100%',
+                          display: '-webkit-box',
+                          WebkitLineClamp: '3',
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          padding: 0,
+                          margin: 0,
+                        }}
+                      >
+                        <span style={{ fontWeight: 700 }}>Notes: </span>
+                        {itemDetails?.remark}
+                      </td>
+                    </tr>
+                  </table>
+                </li>
+              )}
+            </ul>
+          </div>
+          <div>
+            <img
+              alt='logo'
+              src={renderImageProduct(itemDetails)}
+              className={isDisable && fontStyleCustom.filter}
+            />
           </div>
           <div
             style={{
