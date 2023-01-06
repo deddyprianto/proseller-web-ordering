@@ -289,11 +289,12 @@ const CartGuestCheckout = () => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
     },
     rootInclusiveTax: {
       display: 'flex',
       justifyContent: 'space-between',
-      marginBottom: '5px',
+      padding: '5px 0px',
     },
     inclusiveTax: {
       color: '#808080',
@@ -1219,7 +1220,25 @@ const CartGuestCheckout = () => {
     return (
       <div style={styles.rootSubmitButton}>
         <Button
-          onClick={handlePaymentGuestMode}
+          onClick={() => {
+            if (defaultOutlet.orderingStatus === 'UNAVAILABLE') {
+              Swal.fire({
+                title: '<p>The outlet is not available</p>',
+                text: `${defaultOutlet.name} is currently not available,please select another outlet`,
+                allowOutsideClick: false,
+                confirmButtonText: 'OK',
+                confirmButtonColor: color?.primary,
+                customClass: {
+                  confirmButton: fontStyleCustom.buttonSweetAlert,
+                  text: fontStyleCustom.textModalOutlet,
+                },
+              }).then(() => {
+                history.push('/outlets');
+              });
+            } else {
+              handlePaymentGuestMode();
+            }
+          }}
           disabled={handleButtonDisable(orderingModeGuestCheckout)}
           style={{
             backgroundColor: color.primary,
