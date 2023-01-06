@@ -19,7 +19,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Dialog from '@mui/material/Dialog';
-
+import { OutletAction } from 'redux/actions/OutletAction';
+import Swal from 'sweetalert2';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import PointAddModal from 'components/pointAddModal';
 
 import { PaymentAction } from 'redux/actions/PaymentAction';
@@ -894,96 +896,118 @@ const Payment = ({ ...props }) => {
 
   //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
-    let isNeedConfirmation = false;
-    const enableAutoConfirmation = props.settings.find((item) => {
-      return item.settingKey === 'EnableAutoConfirmation';
-    });
+    const getAllOutlets = await props.dispatch(
+      OutletAction.fetchAllOutlet(true)
+    );
+    const filterOutletUnavailable = getAllOutlets.find(
+      (item) => item.name === props.defaultOutlet.name
+    );
+    if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
+      Swal.fire({
+        title: '<p>The outlet is not available</p>',
+        text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color?.primary,
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          text: fontStyleCustom.textModalOutlet,
+        },
+      }).then(() => {
+        history.push('/outlets');
+      });
+    } else {
+      let isNeedConfirmation = false;
+      const enableAutoConfirmation = props.settings.find((item) => {
+        return item.settingKey === 'EnableAutoConfirmation';
+      });
 
-    if (enableAutoConfirmation) {
-      isNeedConfirmation = enableAutoConfirmation?.settingValue || false;
-    }
-    setIsLoading(true);
-    let payload = {
-      cartID: props.basket.cartID,
-      totalNettAmount: props.basket.totalNettAmount,
-      payments: [],
-      isNeedConfirmation,
-      payAtPOS: false,
-      tableNo: '-',
-      orderingMode: props.orderingMode,
-      orderActionDate: props.orderActionDate,
-      orderActionTime: props.orderActionTime,
-      orderActionTimeSlot: props.orderActionTimeSlot,
-    };
-
-    if (props.orderingMode === 'DELIVERY') {
-      payload.deliveryAddress = props.deliveryAddress;
-      payload.deliveryProvider = props.selectedDeliveryProvider.name;
-      payload.deliveryProviderName = props.selectedDeliveryProvider.name;
-      payload.deliveryService = '-';
-      payload.deliveryProviderId = props.selectedDeliveryProvider.id;
-      payload.deliveryFee = props.selectedDeliveryProvider.deliveryFee;
-    }
-
-    if (!isEmptyArray(selectedVouchers)) {
-      payload.payments = payload.payments.concat(selectedVouchers);
-    }
-
-    if (!isEmptyObject(selectedPoint)) {
-      payload.payments.push(selectedPoint);
-    }
-
-    if (!isEmptyObject(useSVCPayment)) {
-      payload.payments.push(useSVCPayment);
-    }
-
-    if (!isEmptyObject(props.selectedPaymentCard)) {
-      const totalWithSVC = totalPrice - (useSVCPayment.paymentAmount || 0);
-
-      const dataPaymentMethod = {
-        accountId: props.selectedPaymentCard.accountID,
-        paymentAmount: Number(totalWithSVC),
-        paymentID: props.selectedPaymentCard.paymentID,
-        paymentName: props.selectedPaymentCard.paymentName,
-        paymentType: props.selectedPaymentCard.paymentID,
-        description: props.selectedPaymentCard.description,
-        manual_transfer_image:
-          props.selectedPaymentCard?.configurations?.filter(
-            (item) => item.name === 'manual_transfer_image'
-          )[0].value || null,
+      if (enableAutoConfirmation) {
+        isNeedConfirmation = enableAutoConfirmation?.settingValue || false;
+      }
+      setIsLoading(true);
+      let payload = {
+        cartID: props.basket.cartID,
+        totalNettAmount: props.basket.totalNettAmount,
+        payments: [],
+        isNeedConfirmation,
+        payAtPOS: false,
+        tableNo: '-',
+        orderingMode: props.orderingMode,
+        orderActionDate: props.orderActionDate,
+        orderActionTime: props.orderActionTime,
+        orderActionTimeSlot: props.orderActionTimeSlot,
       };
 
-      payload.payments.push(dataPaymentMethod);
-    }
+      if (props.orderingMode === 'DELIVERY') {
+        payload.deliveryAddress = props.deliveryAddress;
+        payload.deliveryProvider = props.selectedDeliveryProvider.name;
+        payload.deliveryProviderName = props.selectedDeliveryProvider.name;
+        payload.deliveryService = '-';
+        payload.deliveryProviderId = props.selectedDeliveryProvider.id;
+        payload.deliveryFee = props.selectedDeliveryProvider.deliveryFee;
+      }
 
-    const dateTime = new Date();
-    payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset());
+      if (!isEmptyArray(selectedVouchers)) {
+        payload.payments = payload.payments.concat(selectedVouchers);
+      }
 
-    const response = await props.dispatch(OrderAction.submitAndPay(payload));
+      if (!isEmptyObject(selectedPoint)) {
+        payload.payments.push(selectedPoint);
+      }
 
-    if (
-      response &&
-      response.resultCode === 200 &&
-      response?.data?.action?.type !== 'url'
-    ) {
-      handleAfterPaymentSuccess(payload, response);
-      handleAudio();
+      if (!isEmptyObject(useSVCPayment)) {
+        payload.payments.push(useSVCPayment);
+      }
 
-      return history.push('/settleSuccess');
-    } else if (
-      response &&
-      response.resultCode === 200 &&
-      response?.data?.action?.type === 'url'
-    ) {
-      setReferenceNumberConfirmation(response?.data?.referenceNo);
-      setUrlConfirmationDialog(response.data.action.url);
-      handleAfterPaymentSuccess(payload, response);
-      setIsLoading(false);
-      setOpenConfirmationDialogActionPayment(true);
-    } else {
-      setWarningMessage(response?.data?.message);
-      handleOpenWarningModal();
-      setIsLoading(false);
+      if (!isEmptyObject(props.selectedPaymentCard)) {
+        const totalWithSVC = totalPrice - (useSVCPayment.paymentAmount || 0);
+
+        const dataPaymentMethod = {
+          accountId: props.selectedPaymentCard.accountID,
+          paymentAmount: Number(totalWithSVC),
+          paymentID: props.selectedPaymentCard.paymentID,
+          paymentName: props.selectedPaymentCard.paymentName,
+          paymentType: props.selectedPaymentCard.paymentID,
+          description: props.selectedPaymentCard.description,
+          manual_transfer_image:
+            props.selectedPaymentCard?.configurations?.filter(
+              (item) => item.name === 'manual_transfer_image'
+            )[0].value || null,
+        };
+
+        payload.payments.push(dataPaymentMethod);
+      }
+
+      const dateTime = new Date();
+      payload.clientTimezone = Math.abs(dateTime.getTimezoneOffset());
+
+      const response = await props.dispatch(OrderAction.submitAndPay(payload));
+
+      if (
+        response &&
+        response.resultCode === 200 &&
+        response?.data?.action?.type !== 'url'
+      ) {
+        handleAfterPaymentSuccess(payload, response);
+        handleAudio();
+
+        return history.push('/settleSuccess');
+      } else if (
+        response &&
+        response.resultCode === 200 &&
+        response?.data?.action?.type === 'url'
+      ) {
+        setReferenceNumberConfirmation(response?.data?.referenceNo);
+        setUrlConfirmationDialog(response.data.action.url);
+        handleAfterPaymentSuccess(payload, response);
+        setIsLoading(false);
+        setOpenConfirmationDialogActionPayment(true);
+      } else {
+        setWarningMessage(response?.data?.message);
+        handleOpenWarningModal();
+        setIsLoading(false);
+      }
     }
   };
 
@@ -1022,55 +1046,79 @@ const Payment = ({ ...props }) => {
 
   const handlePaymentTopUpSVC = async () => {
     setIsLoading(true);
-    const payload = {
-      payments: [
-        {
-          accountId: props.selectedPaymentCard?.accountID,
-          paymentType: props.selectedPaymentCard?.paymentID,
-          paymentRefNo: '',
-          paymentID: props.selectedPaymentCard?.paymentID,
-          paymentName: props.selectedPaymentCard?.paymentName,
-          paymentAmount: props.saveDetailTopupSvc?.retailPrice,
+    const getAllOutlets = await props.dispatch(
+      OutletAction.fetchAllOutlet(true)
+    );
+    const filterOutletUnavailable = getAllOutlets.find(
+      (item) => item.name === props.defaultOutlet.name
+    );
+    if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
+      Swal.fire({
+        title: '<p>The outlet is not available</p>',
+        text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color?.primary,
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          text: fontStyleCustom.textModalOutlet,
         },
-      ],
-      outletId: props.defaultOutlet?.id,
-      price: props.saveDetailTopupSvc?.retailPrice,
-      customerId: `customer::${props.account?.id}`,
-      dataPay: {
-        storeValueCard: {
-          value: props.saveDetailTopupSvc?.value,
-          expiryOnUnit: props.saveDetailTopupSvc?.expiryOnUnit,
-          retailPrice: props.saveDetailTopupSvc?.retailPrice,
-          totalNettAmount: props.saveDetailTopupSvc?.retailPrice,
-        },
-        id: props.saveDetailTopupSvc?.id,
-      },
-    };
-
-    const response = await props.dispatch(OrderAction.paymentTopUPSVC(payload));
-    if (
-      response &&
-      response.resultCode === 200 &&
-      response?.data?.action?.type !== 'url'
-    ) {
-      handleAfterPaymentSuccess(payload, response);
-      handleAudio();
-
-      return history.push('/settleSuccess');
-    } else if (
-      response &&
-      response.resultCode === 200 &&
-      response?.data?.action?.type === 'url'
-    ) {
-      setReferenceNumberConfirmation(response?.data?.referenceNo);
-      setUrlConfirmationDialog(response.data.action.url);
-      handleAfterPaymentSuccess(payload, response);
-      setIsLoading(false);
-      setOpenConfirmationDialogActionPayment(true);
+      }).then(() => {
+        history.push('/outlets');
+      });
     } else {
-      setWarningMessage(response?.data?.message);
-      handleOpenWarningModal();
-      setIsLoading(false);
+      const payload = {
+        payments: [
+          {
+            accountId: props.selectedPaymentCard?.accountID,
+            paymentType: props.selectedPaymentCard?.paymentID,
+            paymentRefNo: '',
+            paymentID: props.selectedPaymentCard?.paymentID,
+            paymentName: props.selectedPaymentCard?.paymentName,
+            paymentAmount: props.saveDetailTopupSvc?.retailPrice,
+          },
+        ],
+        outletId: props.defaultOutlet?.id,
+        price: props.saveDetailTopupSvc?.retailPrice,
+        customerId: `customer::${props.account?.id}`,
+        dataPay: {
+          storeValueCard: {
+            value: props.saveDetailTopupSvc?.value,
+            expiryOnUnit: props.saveDetailTopupSvc?.expiryOnUnit,
+            retailPrice: props.saveDetailTopupSvc?.retailPrice,
+            totalNettAmount: props.saveDetailTopupSvc?.retailPrice,
+          },
+          id: props.saveDetailTopupSvc?.id,
+        },
+      };
+
+      const response = await props.dispatch(
+        OrderAction.paymentTopUPSVC(payload)
+      );
+      if (
+        response &&
+        response.resultCode === 200 &&
+        response?.data?.action?.type !== 'url'
+      ) {
+        handleAfterPaymentSuccess(payload, response);
+        handleAudio();
+
+        return history.push('/settleSuccess');
+      } else if (
+        response &&
+        response.resultCode === 200 &&
+        response?.data?.action?.type === 'url'
+      ) {
+        setReferenceNumberConfirmation(response?.data?.referenceNo);
+        setUrlConfirmationDialog(response.data.action.url);
+        handleAfterPaymentSuccess(payload, response);
+        setIsLoading(false);
+        setOpenConfirmationDialogActionPayment(true);
+      } else {
+        setWarningMessage(response?.data?.message);
+        handleOpenWarningModal();
+        setIsLoading(false);
+      }
     }
   };
 

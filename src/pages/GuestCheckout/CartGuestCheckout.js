@@ -48,6 +48,7 @@ import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import SearchInput, { createFilter } from 'react-search-input';
 import search from 'assets/images/search.png';
 import screen from 'hooks/useWindowSize';
+import { OutletAction } from 'redux/actions/OutletAction';
 import { renderIconEdit, renderIconInformation } from 'assets/iconsSvg/Icons';
 
 const useWindowSize = () => {
@@ -1220,8 +1221,14 @@ const CartGuestCheckout = () => {
     return (
       <div style={styles.rootSubmitButton}>
         <Button
-          onClick={() => {
-            if (defaultOutlet.orderingStatus === 'UNAVAILABLE') {
+          onClick={async () => {
+            const getAllOutlets = await dispatch(
+              OutletAction.fetchAllOutlet(true)
+            );
+            const filterOutletUnavailable = getAllOutlets.find(
+              (item) => item.name === defaultOutlet.name
+            );
+            if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
               Swal.fire({
                 title: '<p>The outlet is not available</p>',
                 text: `${defaultOutlet.name} is currently not available,please select another outlet`,
