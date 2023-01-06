@@ -117,7 +117,7 @@ const CartGuestCheckout = () => {
     (state) => state.guestCheckoutCart.isCartDeleted
   );
     const itemOrderingMode = useSelector(
-      (state) => state.order.itemOrderingMode
+      (state) => state.guestCheckoutCart.orderingModeGuestCheckoutObj
     );
     const companyInfo = useSelector(
       (state) => state.masterdata.companyInfo.data
@@ -283,6 +283,7 @@ const CartGuestCheckout = () => {
       rootGrandTotal: {
         display: 'flex',
         justifyContent: 'space-between',
+        padding: '10px',
       },
 
       rootSubmitButton: {
@@ -807,26 +808,238 @@ const CartGuestCheckout = () => {
       );
     };
 
+    const renderItemAddOn = (itemDetails, isDisable) => {
+      return (
+        <React.Fragment>
+          <hr style={{ opacity: 0.5 }} />
+          <li>
+            Add-On:
+            {itemDetails?.modifiers?.map((items) => {
+              return items?.modifier?.details.map((item) => {
+                return (
+                  <ul key={item?.name} style={{ paddingLeft: '10px' }}>
+                    <li>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginTop: '5px',
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: isDisable ? '#8A8D8E' : color?.primary,
+                            fontWeight: 600,
+                            marginRight: '1px',
+                          }}
+                        >
+                          {item?.quantity}x{' '}
+                        </div>
+                        <div
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {item?.name}
+                        </div>
+                        <div
+                          style={{
+                            color: isDisable ? '#8A8D8E' : color?.primary,
+                            fontWeight: 500,
+                            fontSize: '12px',
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          +{handleCurrency(item?.price)}
+                        </div>
+                        {item.orderingStatus === 'UNAVAILABLE' && (
+                          <div
+                            style={{
+                              marginLeft: '5px',
+                              paddingTop: '6px',
+                            }}
+                          >
+                            {renderIconInformation('red')}
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  </ul>
+                );
+              });
+            })}
+          </li>
+        </React.Fragment>
+      );
+    };
+
+    const renderRemark = (itemDetails) => {
+      <li>
+        <table>
+          <tr>
+            <td
+              className={fontStyleCustom.title}
+              style={{
+                textAlign: 'left',
+                width: '100%',
+                display: '-webkit-box',
+                WebkitLineClamp: '3',
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>Notes: </span>
+              {itemDetails?.remark}
+            </td>
+          </tr>
+        </table>
+      </li>;
+    };
+
+    const renderButtonEditDelete = (itemDetails, isDisable) => {
+      return (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: '90%',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+              }}
+            >
+              {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
+                <Button
+                  sx={{
+                    width: '80px',
+                    border: `1px solid ${color?.primary}`,
+                    borderRadius: '10px',
+                    padding: '5px 0px',
+                    textTransform: 'capitalize',
+                    fontSize: '14px',
+                    color: color?.primary,
+                  }}
+                  onClick={() => {
+                    setProductDetailSpesific(itemDetails);
+                    setProductSpecific(itemDetails.product);
+                    setProductEditModal(true);
+                  }}
+                  startIcon={renderIconEdit(color?.primary)}
+                >
+                  Edit
+                </Button>
+              )}
+              <div
+                onClick={() => {
+                  Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You sure to delete this?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                  }).then(async (result) => {
+                    if (result.isConfirmed) {
+                      setIsLoading(true);
+                      const response = await dispatch(
+                        OrderAction.processRemoveCartGuestCheckoutMode(
+                          basket.guestID,
+                          itemDetails
+                        )
+                      );
+                      if (response?.resultCode === 200) {
+                        setRefreshData(!refreshData);
+                        Swal.fire('Deleted!', response.message, 'success');
+
+                        dispatch({
+                          type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+                          payload: {},
+                        });
+                        if (basket.details.length === 1) {
+                          dispatch({
+                            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+                            payload: '',
+                          });
+                          history.push('/');
+                        }
+                      } else {
+                        Swal.fire('Cancelled!', response, 'error');
+                      }
+                      setIsLoading(false);
+                    }
+                  });
+                }}
+                style={{
+                  marginLeft: '10px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <IconButton
+                  style={{
+                    color: color?.primary,
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    padding: 0,
+                    margin: 0,
+                    marginRight: '5px',
+                  }}
+                >
+                  <DeleteIcon fontSize='large' />
+                </IconButton>
+                <p
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    color: color?.primary,
+                    fontWeight: 500,
+                    fontSize: '14px',
+                  }}
+                >
+                  Delete
+                </p>
+              </div>
+            </div>
+            {renderPrice(itemDetails, isDisable)}
+          </div>
+        </div>
+      );
+    };
+
     const renderItemList = (itemDetails, isDisable) => {
       return (
         <div
           key={itemDetails?.productID}
           className={fontStyleCustom.myFont}
           style={{
-            pointerEvents: isDisable && 'none',
-            maxWidth: 'min(1280px, 100% - 20px)',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            display: 'grid',
-            gridTemplateColumns: '1.6fr 0.4fr',
-            gridTemplateRows: '1fr',
-            gap: '0px 0px',
-            gridTemplateAreas: '". ."',
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
           }}
         >
           <div
             style={{
-              opacity: isDisable ? 0.5 : 1,
               pointerEvents: isDisable && 'none',
               maxWidth: 'min(1280px, 100% - 20px)',
               marginLeft: 'auto',
@@ -882,140 +1095,19 @@ const CartGuestCheckout = () => {
                   listStyle: 'none',
                 }}
               >
-                {!isEmptyArray(itemDetails.modifiers) && (
-                  <React.Fragment>
-                    <hr style={{ opacity: 0.5 }} />
-                    <li>
-                      Add-On:
-                      {itemDetails?.modifiers?.map((items) => {
-                        return items?.modifier?.details.map((item) => {
-                          return (
-                            <ul
-                              key={item?.name}
-                              style={{ paddingLeft: '10px' }}
-                            >
-                              <li>
-                                <span
-                                  style={{
-                                    color: isDisable
-                                      ? '#8A8D8E'
-                                      : color.primary,
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {item?.quantity}x{' '}
-                                </span>
-                                {item?.name}{' '}
-                                <span
-                                  style={{
-                                    color: isDisable
-                                      ? '#8A8D8E'
-                                      : color.primary,
-                                    fontWeight: 500,
-                                    fontSize: '12px',
-                                    fontStyle: 'italic',
-                                  }}
-                                >
-                                  +{handleCurrency(item?.price)}
-                                </span>
-                              </li>
-                            </ul>
-                          );
-                        });
-                      })}
-                    </li>
-                  </React.Fragment>
-                )}
-                {itemDetails?.remark && (
-                  <li>
-                    Add-On:
-                    {itemDetails?.modifiers?.map((items) => {
-                      return items?.modifier?.details.map((item) => {
-                        return (
-                          <ul key={item?.name} style={{ paddingLeft: '10px' }}>
-                            <li>
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  marginTop: '5px',
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    color: isDisable
-                                      ? '#8A8D8E'
-                                      : color?.primary,
-                                    fontWeight: 600,
-                                    marginRight: '1px',
-                                  }}
-                                >
-                                  {item?.quantity}x{' '}
-                                </div>
-                                {item?.name}{' '}
-                                <div
-                                  style={{
-                                    color: isDisable
-                                      ? '#8A8D8E'
-                                      : color?.primary,
-                                    fontWeight: 500,
-                                    fontSize: '12px',
-                                    fontStyle: 'italic',
-                                  }}
-                                >
-                                  +{handleCurrency(item?.price)}
-                                </div>
-                                {item.orderingStatus === 'UNAVAILABLE' && (
-                                  <div
-                                    style={{
-                                      marginLeft: '5px',
-                                      paddingTop: '6px',
-                                    }}
-                                  >
-                                    {renderIconInformation('red')}
-                                  </div>
-                                )}
-                              </div>
-                            </li>
-                          </ul>
-                        );
-                      });
-                    })}
-                  </li>
-                </React.Fragment>
-              )}
-              {itemDetails?.remark && (
-                <li>
-                  <table>
-                    <tr>
-                      <td
-                        className={fontStyleCustom.title}
-                        style={{
-                          textAlign: 'left',
-                          width: '100%',
-                          display: '-webkit-box',
-                          WebkitLineClamp: '3',
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          padding: 0,
-                          margin: 0,
-                        }}
-                      >
-                        <span style={{ fontWeight: 700 }}>Notes: </span>
-                        {itemDetails?.remark}
-                      </td>
-                    </tr>
-                  </table>
-                </li>
-              )}
-            </ul>
-          </div>
-          <div>
-            <img
-              alt='logo'
-              src={renderImageProduct(itemDetails)}
-              className={isDisable && fontStyleCustom.filter}
-            />
+                {!isEmptyArray(itemDetails.modifiers) &&
+                  renderItemAddOn(itemDetails, isDisable)}
+
+                {itemDetails?.remark && renderRemark(itemDetails)}
+              </ul>
+            </div>
+            <div>
+              <img
+                alt='logo'
+                src={renderImageProduct(itemDetails)}
+                className={isDisable && fontStyleCustom.filter}
+              />
+            </div>
           </div>
           <div
             style={{
@@ -1027,123 +1119,7 @@ const CartGuestCheckout = () => {
               marginBottom: '10px',
             }}
           />
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <div
-              style={{
-                width: '90%',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                }}
-              >
-                {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
-                  <Button
-                    sx={{
-                      width: '80px',
-                      border: `1px solid ${color?.primary}`,
-                      borderRadius: '10px',
-                      padding: '5px 0px',
-                      textTransform: 'capitalize',
-                      fontSize: '14px',
-                      color: color?.primary,
-                    }}
-                    onClick={() => {
-                      setProductDetailSpesific(itemDetails);
-                      setProductSpecific(itemDetails.product);
-                      setProductEditModal(true);
-                    }}
-                    startIcon={renderIconEdit(color?.primary)}
-                  >
-                    Edit
-                  </Button>
-                )}
-                <div
-                  onClick={() => {
-                    Swal.fire({
-                      title: 'Are you sure?',
-                      text: 'You sure to delete this?',
-                      icon: 'warning',
-                      showCancelButton: true,
-                      confirmButtonColor: '#3085d6',
-                      cancelButtonColor: '#d33',
-                      confirmButtonText: 'Yes, delete it!',
-                    }).then(async (result) => {
-                      if (result.isConfirmed) {
-                        setIsLoading(true);
-                        const response = await dispatch(
-                          OrderAction.processRemoveCartGuestCheckoutMode(
-                            basket.guestID,
-                            itemDetails
-                          )
-                        );
-                        if (response?.resultCode === 200) {
-                          setRefreshData(!refreshData);
-                          Swal.fire('Deleted!', response.message, 'success');
-
-                          dispatch({
-                            type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-                            payload: {},
-                          });
-                          if (basket.details.length === 1) {
-                            dispatch({
-                              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-                              payload: '',
-                            });
-                            history.push('/');
-                          }
-                        } else {
-                          Swal.fire('Cancelled!', response, 'error');
-                        }
-                        setIsLoading(false);
-                      }
-                    });
-                  }}
-                  style={{
-                    marginLeft: '10px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <IconButton
-                    style={{
-                      color: color?.primary,
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      padding: 0,
-                      margin: 0,
-                      marginRight: '5px',
-                    }}
-                  >
-                    <DeleteIcon fontSize='large' />
-                  </IconButton>
-                  <p
-                    style={{
-                      margin: 0,
-                      padding: 0,
-                      color: color?.primary,
-                      fontWeight: 500,
-                      fontSize: '14px',
-                    }}
-                  >
-                    Delete
-                  </p>
-                </div>
-              </div>
-              {renderPrice(itemDetails, isDisable)}
-            </div>
-          </div>
+          {renderButtonEditDelete(itemDetails, isDisable)}
         </div>
       );
     };

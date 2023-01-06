@@ -443,7 +443,15 @@ const ProductCart = ({ item, ...props }) => {
                               >
                                 {item?.quantity}x{' '}
                               </div>
-                              {item?.name}{' '}
+                              <div
+                                style={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {item?.name}
+                              </div>
                               <div
                                 style={{
                                   color: props.isDisable
@@ -584,7 +592,11 @@ const ProductCart = ({ item, ...props }) => {
                 >
                   <DeleteIcon fontSize='large' />
                 </IconButton>
-                <p style={{ color: 'red', margin: 0, padding: 0 }}>Delete</p>
+                <p
+                  style={{ color: props.color.primary, margin: 0, padding: 0 }}
+                >
+                  Delete
+                </p>
               </div>
             </div>
             <div style={{ color: props.color.primary }}>{renderPrice()}</div>
