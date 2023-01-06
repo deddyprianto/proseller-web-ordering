@@ -48,6 +48,7 @@ import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import SearchInput, { createFilter } from 'react-search-input';
 import search from 'assets/images/search.png';
 import screen from 'hooks/useWindowSize';
+import { renderIconEdit, renderIconInformation } from 'assets/iconsSvg/Icons';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -231,6 +232,16 @@ const CartGuestCheckout = () => {
   const gadgetScreen = width < 980;
 
   const styles = {
+    containerDataEmpty: {
+      width: gadgetScreen ? '100%' : '40%',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      backgroundColor: 'white',
+      height: '99vh',
+      borderRadius: '8px',
+      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+      overflowY: 'auto',
+    },
     rootCartGadgetSize: {
       paddingLeft: 20,
       paddingRight: 20,
@@ -658,28 +669,7 @@ const CartGuestCheckout = () => {
     }
   };
 
-  const renderIconEdit = () => {
-    return (
-      <svg
-        width='15'
-        height='15'
-        viewBox='0 0 129 129'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M91.072 16.8123C92.4728 15.4116 94.1357 14.3004 95.9659 13.5423C97.7961 12.7842 99.7577 12.394 101.739 12.394C103.72 12.394 105.681 12.7842 107.511 13.5423C109.342 14.3004 111.005 15.4116 112.405 16.8123C113.806 18.2131 114.917 19.876 115.675 21.7062C116.433 23.5364 116.824 25.498 116.824 27.479C116.824 29.46 116.433 31.4216 115.675 33.2517C114.917 35.0819 113.806 36.7449 112.405 38.1457L40.4054 110.146L11.072 118.146L19.072 88.8123L91.072 16.8123Z'
-          stroke='white'
-          strokeWidth='10.6824'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          fill={color.primary}
-        />
-      </svg>
-    );
-  };
-
-  const renderPrice = (item) => {
+  const renderPrice = (item, isDisable) => {
     if (item?.totalDiscAmount !== 0) {
       return (
         <div
@@ -689,7 +679,12 @@ const CartGuestCheckout = () => {
             justifyContent: 'flex-end',
           }}
         >
-          <Typography style={{ color: color.font, fontSize: '16px' }}>
+          <Typography
+            style={{
+              color: isDisable ? '#8A8D8E' : color.primary,
+              fontSize: '16px',
+            }}
+          >
             {handleCurrency(item?.totalDiscAmount)}
           </Typography>
           <Typography
@@ -697,7 +692,7 @@ const CartGuestCheckout = () => {
               fontSize: '16px',
               textDecorationLine: 'line-through',
               marginRight: '10px',
-              color: color.font,
+              color: isDisable ? '#8A8D8E' : color.primary,
             }}
           >
             {handleCurrency(item?.grossAmount)}
@@ -714,257 +709,365 @@ const CartGuestCheckout = () => {
           justifyContent: 'flex-end',
         }}
       >
-        <Typography style={{ color: color.primary, fontSize: '16px' }}>
+        <Typography
+          style={{
+            color: isDisable ? '#8A8D8E' : color.primary,
+            fontSize: '16px',
+          }}
+        >
           {handleCurrency(item?.grossAmount)}
         </Typography>
       </div>
     );
   };
-  const renderCartProductList = () => {
-    return basket?.details.map((itemDetails) => {
-      return (
-        <div
-          key={itemDetails?.productID}
-          className={fontStyleCustom.myFont}
+
+  const renderTextBanner = (text = 'You have unavailable item') => {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'flex-start',
+          marginTop: '30px',
+          flexDirection: 'column',
+        }}
+      >
+        <h1
           style={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-            marginTop: '10px',
-            marginBottom: '10px',
-            paddingTop: '10px',
-            paddingBottom: '10px',
+            fontSize: '14px',
+            padding: 0,
+            margin: 0,
+            letterSpacing: '.5px',
+            marginLeft: '3px',
           }}
         >
-          <div
+          {text}
+        </h1>
+        <div
+          style={{
+            display: 'flex',
+            marginLeft: '3px',
+            alignItems: 'center',
+          }}
+        >
+          {renderIconInformation(color?.primary)}
+          <p
             style={{
-              maxWidth: 'min(1280px, 100% - 20px)',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              display: 'grid',
-              gridTemplateColumns: '1.6fr 0.4fr',
-              gridTemplateRows: '1fr',
-              gap: '0px 0px',
-              gridTemplateAreas: '". ."',
+              padding: 0,
+              margin: 0,
+              color: color?.primary,
+              fontSize: '12px',
+              marginLeft: '5px',
             }}
           >
-            <div style={{ width: '100%' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginTop: '8px',
-                }}
-              >
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    backgroundColor: color.primary,
-                    borderRadius: '5px',
-                    color: 'white',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '5px',
-                  }}
-                >
-                  {itemDetails?.quantity}x
-                </div>
-                <div
-                  style={{
-                    fontWeight: 'bold',
-                    marginLeft: '5px',
-                    fontSize: '14px',
-                  }}
-                >
-                  {itemDetails?.product.name} ({' '}
-                  {handleCurrency(itemDetails?.grossAmount)} )
-                </div>
-              </div>
+            Item(s) will not be included in your payment
+          </p>
+        </div>
+      </div>
+    );
+  };
 
-              <ul
-                style={{
-                  color: '#8A8D8E',
-                  fontSize: '13px',
-                  padding: 0,
-                  margin: 0,
-                  listStyle: 'none',
-                }}
-              >
-                {!isEmptyArray(itemDetails.modifiers) && (
-                  <React.Fragment>
-                    <hr style={{ opacity: 0.5 }} />
-                    <li>
-                      Add-On:
-                      {itemDetails?.modifiers?.map((items) => {
-                        return items?.modifier?.details.map((item) => {
-                          return (
-                            <ul
-                              key={item?.name}
-                              style={{ paddingLeft: '10px' }}
-                            >
-                              <li>
-                                <span
-                                  style={{
-                                    color: color.primary,
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {item?.quantity}x{' '}
-                                </span>
-                                {item?.name}{' '}
-                                <span
-                                  style={{
-                                    color: color.primary,
-                                    fontWeight: 500,
-                                    fontSize: '12px',
-                                    fontStyle: 'italic',
-                                  }}
-                                >
-                                  +{handleCurrency(item?.price)}
-                                </span>
-                              </li>
-                            </ul>
-                          );
-                        });
-                      })}
-                    </li>
-                  </React.Fragment>
-                )}
-                {itemDetails?.remark && (
-                  <li>
-                    <table>
-                      <tr>
-                        <td
-                          className={fontStyleCustom.title}
-                          style={{
-                            textAlign: 'left',
-                            width: '100%',
-                            display: '-webkit-box',
-                            WebkitLineClamp: '3',
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            padding: 0,
-                            margin: 0,
-                          }}
-                        >
-                          <span style={{ fontWeight: 700 }}>Notes: </span>
-                          {itemDetails?.remark}
-                        </td>
-                      </tr>
-                    </table>
-                  </li>
-                )}
-              </ul>
-            </div>
-            <div>
-              <img src={renderImageProduct(itemDetails)} />
-            </div>
-          </div>
-          <div
-            style={{
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              width: '90%',
-              marginTop: '10px',
-              borderTop: `1px dashed ${color.primary}`,
-              marginBottom: '10px',
-            }}
-          />
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
+  const renderItemList = (itemDetails, isDisable) => {
+    return (
+      <div
+        key={itemDetails?.productID}
+        className={fontStyleCustom.myFont}
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+          marginTop: '10px',
+          marginBottom: '10px',
+          paddingTop: '10px',
+          paddingBottom: '10px',
+        }}
+      >
+        <div
+          style={{
+            opacity: isDisable ? 0.5 : 1,
+            pointerEvents: isDisable && 'none',
+            maxWidth: 'min(1280px, 100% - 20px)',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            display: 'grid',
+            gridTemplateColumns: '1.6fr 0.4fr',
+            gridTemplateRows: '1fr',
+            gap: '0px 0px',
+            gridTemplateAreas: '". ."',
+          }}
+        >
+          <div style={{ width: '100%' }}>
             <div
               style={{
-                width: '90%',
                 display: 'flex',
                 alignItems: 'center',
+                marginTop: '8px',
               }}
             >
               <div
                 style={{
+                  width: '24px',
+                  height: '24px',
+                  backgroundColor: isDisable ? '#8A8D8E' : color.primary,
+                  borderRadius: '5px',
+                  color: 'white',
                   display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '5px',
                 }}
               >
+                {itemDetails?.quantity}x
+              </div>
+              <div
+                style={{
+                  fontWeight: 'bold',
+                  marginLeft: '5px',
+                  fontSize: '14px',
+                }}
+              >
+                {itemDetails?.product.name} ({' '}
+                {handleCurrency(itemDetails?.grossAmount)} )
+              </div>
+            </div>
+
+            <ul
+              style={{
+                color: '#8A8D8E',
+                fontSize: '13px',
+                padding: 0,
+                margin: 0,
+                listStyle: 'none',
+              }}
+            >
+              {!isEmptyArray(itemDetails.modifiers) && (
+                <React.Fragment>
+                  <hr style={{ opacity: 0.5 }} />
+                  <li>
+                    Add-On:
+                    {itemDetails?.modifiers?.map((items) => {
+                      return items?.modifier?.details.map((item) => {
+                        return (
+                          <ul key={item?.name} style={{ paddingLeft: '10px' }}>
+                            <li>
+                              <span
+                                style={{
+                                  color: isDisable ? '#8A8D8E' : color.primary,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {item?.quantity}x{' '}
+                              </span>
+                              {item?.name}{' '}
+                              <span
+                                style={{
+                                  color: isDisable ? '#8A8D8E' : color.primary,
+                                  fontWeight: 500,
+                                  fontSize: '12px',
+                                  fontStyle: 'italic',
+                                }}
+                              >
+                                +{handleCurrency(item?.price)}
+                              </span>
+                            </li>
+                          </ul>
+                        );
+                      });
+                    })}
+                  </li>
+                </React.Fragment>
+              )}
+              {itemDetails?.remark && (
+                <li>
+                  <table>
+                    <tr>
+                      <td
+                        className={fontStyleCustom.title}
+                        style={{
+                          textAlign: 'left',
+                          width: '100%',
+                          display: '-webkit-box',
+                          WebkitLineClamp: '3',
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          padding: 0,
+                          margin: 0,
+                        }}
+                      >
+                        <span style={{ fontWeight: 700 }}>Notes: </span>
+                        {itemDetails?.remark}
+                      </td>
+                    </tr>
+                  </table>
+                </li>
+              )}
+            </ul>
+          </div>
+          <div>
+            <img alt='logo' src={renderImageProduct(itemDetails)} />
+          </div>
+        </div>
+        <div
+          style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            width: '90%',
+            marginTop: '10px',
+            borderTop: `1px dashed ${isDisable ? '#8A8D8E' : color.primary}`,
+            marginBottom: '10px',
+          }}
+        />
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: '90%',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+              }}
+            >
+              {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
                 <Button
                   sx={{
                     width: '80px',
-                    border: `1px solid ${color.primary}`,
+                    border: `1px solid ${color?.primary}`,
                     borderRadius: '10px',
-                    paddingTop: '10px',
-                    paddingBottom: '10px',
-                    color: color.font,
+                    padding: '5px 0px',
+                    textTransform: 'capitalize',
+                    fontSize: '14px',
+                    color: color?.primary,
                   }}
                   onClick={() => {
                     setProductDetailSpesific(itemDetails);
                     setProductSpecific(itemDetails.product);
                     setProductEditModal(true);
                   }}
-                  startIcon={renderIconEdit()}
+                  startIcon={renderIconEdit(color?.primary)}
                 >
                   Edit
                 </Button>
+              )}
+              <div
+                onClick={() => {
+                  Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You sure to delete this?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                  }).then(async (result) => {
+                    if (result.isConfirmed) {
+                      setIsLoading(true);
+                      const response = await dispatch(
+                        OrderAction.processRemoveCartGuestCheckoutMode(
+                          basket.guestID,
+                          itemDetails
+                        )
+                      );
+                      if (response?.resultCode === 200) {
+                        setRefreshData(!refreshData);
+                        Swal.fire('Deleted!', response.message, 'success');
+
+                        dispatch({
+                          type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+                          payload: {},
+                        });
+                        if (basket.details.length === 1) {
+                          dispatch({
+                            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+                            payload: '',
+                          });
+                          history.push('/');
+                        }
+                      } else {
+                        Swal.fire('Cancelled!', response, 'error');
+                      }
+                      setIsLoading(false);
+                    }
+                  });
+                }}
+                style={{
+                  marginLeft: '10px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+              >
                 <IconButton
                   style={{
-                    color: color.primary,
+                    color: color?.primary,
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    padding: 0,
+                    margin: 0,
+                    marginRight: '5px',
                   }}
                 >
-                  <DeleteIcon
-                    fontSize='large'
-                    onClick={() => {
-                      Swal.fire({
-                        title: 'Are you sure?',
-                        text: 'You sure to delete this?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!',
-                      }).then(async (result) => {
-                        if (result.isConfirmed) {
-                          setIsLoading(true);
-                          const response = await dispatch(
-                            OrderAction.processRemoveCartGuestCheckoutMode(
-                              basket.guestID,
-                              itemDetails
-                            )
-                          );
-                          if (response?.resultCode === 200) {
-                            setRefreshData(!refreshData);
-                            Swal.fire('Deleted!', response.message, 'success');
-
-                            dispatch({
-                              type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-                              payload: {},
-                            });
-                            if (basket.details.length === 1) {
-                              dispatch({
-                                type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-                                payload: '',
-                              });
-                              history.push('/');
-                            }
-                          } else {
-                            Swal.fire('Cancelled!', response, 'error');
-                          }
-                          setIsLoading(false);
-                        }
-                      });
-                    }}
-                  />
+                  <DeleteIcon fontSize='large' />
                 </IconButton>
+                <p
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    color: color?.primary,
+                    fontWeight: 500,
+                    fontSize: '14px',
+                  }}
+                >
+                  Delete
+                </p>
               </div>
-              {renderPrice(itemDetails)}
             </div>
+            {renderPrice(itemDetails, isDisable)}
           </div>
         </div>
-      );
+      </div>
+    );
+  };
+
+  const renderCartProductList = () => {
+    const isDisable = true;
+    const sortItemForPriceHighest = basket?.details.sort(
+      (a, b) => b.unitPrice - a.unitPrice
+    );
+    const sortOrderingStatusItem = sortItemForPriceHighest?.sort(
+      (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
+    );
+
+    return sortOrderingStatusItem?.map((itemDetails) => {
+      if (itemDetails.orderingStatus === 'UNAVAILABLE') {
+        if (itemDetails.modifiers.length > 0) {
+          return (
+            <React.Fragment>
+              {renderTextBanner('Add On Unavailable')}
+              {renderItemList(itemDetails, isDisable)}
+            </React.Fragment>
+          );
+        } else {
+          return (
+            <React.Fragment>
+              {renderTextBanner('Item Unavailable')}
+              {renderItemList(itemDetails, isDisable)}
+            </React.Fragment>
+          );
+        }
+      } else {
+        return renderItemList(itemDetails);
+      }
     });
   };
 
@@ -989,7 +1092,7 @@ const CartGuestCheckout = () => {
           width: '100%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
           marginTop: '10px',
           marginBottom: '10px',
           padding: '20px 5px',
@@ -1054,6 +1157,12 @@ const CartGuestCheckout = () => {
   };
 
   const handleButtonDisable = (key) => {
+    const isAllItemUnavailable = basket?.details.every(
+      (item) => item.orderingStatus === 'UNAVAILABLE'
+    );
+    if (isAllItemUnavailable) {
+      return isAllItemUnavailable;
+    }
     const reqDelivery = deliveryAddresGuest.deliveryAddress;
     const reqProvider = providerGuestCheckout;
     const reqTimeSlot = timeslot;
@@ -1224,7 +1333,7 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '20px 0px',
@@ -1489,7 +1598,7 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '10px',
@@ -1832,7 +1941,7 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '20px 5px',
@@ -2117,7 +2226,7 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '20px 5px',
@@ -2405,7 +2514,7 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '20px 5px',
@@ -2689,7 +2798,7 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '15px 5px',
@@ -2753,6 +2862,38 @@ const CartGuestCheckout = () => {
     return;
   };
 
+  const isUnavailableExist = basket?.details?.some(
+    (item) => item.orderingStatus === 'UNAVAILABLE'
+  );
+
+  const renderTextInformationUnAvailabeItem = () => {
+    if (isUnavailableExist) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {renderIconInformation(color?.primary)}
+          <h1
+            style={{
+              fontSize: '14px',
+              padding: 0,
+              margin: 0,
+              letterSpacing: '.5px',
+              marginLeft: '3px',
+              color: color?.primary,
+            }}
+          >
+            You have unavailable item
+          </h1>
+        </div>
+      );
+    }
+  };
+
   const renderCartForGuestCheckoutMode = () => {
     if (gadgetScreen) {
       return (
@@ -2761,6 +2902,7 @@ const CartGuestCheckout = () => {
             {renderTitleNameForCart()}
             {renderLabelNeedAnythingElse()}
             {textItem()}
+            {renderTextInformationUnAvailabeItem()}
             {renderCartProductList()}
             {renderLabelOrderingDetail()}
             {renderOrderingMode()}
@@ -2779,7 +2921,7 @@ const CartGuestCheckout = () => {
       <div style={{ width: '100vw' }}>
         <div
           style={{
-            width: '40%',
+            width: '45%',
             marginLeft: 'auto',
             marginRight: 'auto',
             backgroundColor: 'white',
@@ -2815,39 +2957,29 @@ const CartGuestCheckout = () => {
       </div>
     );
   };
-
-  const renderCartGuestCheckout = () => {
-    if (!isEmptyArray(basket?.details)) {
-      return (
-        <div style={{ width: '100%' }}>{renderCartForGuestCheckoutMode()}</div>
-      );
-    } else {
-      return (
-        <div style={{ width: '100vw' }}>
+  const renderEmptyData = () => {
+    return (
+      <div style={{ width: '100vw' }}>
+        <div style={styles.containerDataEmpty}>
           <div
             style={{
-              width: gadgetScreen ? '100%' : '40%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              backgroundColor: 'white',
-              height: '99vh',
-              borderRadius: '8px',
-              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-              overflowY: 'auto',
+              marginTop: '20%',
+              padding: '0px 10px',
             }}
           >
-            <div
-              style={{
-                marginTop: '20%',
-                padding: '0px 10px',
-              }}
-            >
-              <img src={config.url_emptyImage} alt='is empty' />
-              <Typography style={styles.emptyText}>Data is empty</Typography>
-            </div>
+            <img src={config.url_emptyImage} alt='is empty' />
+            <Typography style={styles.emptyText}>Data is empty</Typography>
           </div>
         </div>
-      );
+      </div>
+    );
+  };
+  // ROOT
+  const renderCartGuestCheckout = () => {
+    if (!isEmptyArray(basket?.details)) {
+      return renderCartForGuestCheckoutMode();
+    } else {
+      return renderEmptyData();
     }
   };
 

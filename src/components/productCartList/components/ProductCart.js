@@ -14,8 +14,11 @@ import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import ProductCartRemoveModal from 'components/productCartList/components/ProductCartRemoveModal';
-
-import TagPromotion from 'assets/images/Tag.png';
+import {
+  renderIconEdit,
+  renderIconPromotion,
+  renderIconInformation,
+} from 'assets/iconsSvg/Icons';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -56,6 +59,8 @@ const ProductCart = ({ item, ...props }) => {
     },
     rootProductCart: {
       position: 'relative',
+      opacity: item.orderingStatus === 'UNAVAILABLE' ? 0.4 : 1,
+      pointerEvents: item.orderingStatus === 'UNAVAILABLE' && 'none',
     },
     rootPrice: {
       display: 'flex',
@@ -119,7 +124,7 @@ const ProductCart = ({ item, ...props }) => {
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
-      color: props.color.primary,
+      color: props.isDisable ? '#8A8D8E' : props.color.primary,
     },
     priceDiscount: {
       paddingRight: 10,
@@ -128,7 +133,7 @@ const ProductCart = ({ item, ...props }) => {
       fontSize: 14,
       lineHeight: '17px',
       fontWeight: 600,
-      color: props.color.primary,
+      color: props.isDisable ? '#8A8D8E' : props.color.primary,
       textDecorationLine: 'line-through',
     },
     quantity: {
@@ -233,24 +238,6 @@ const ProductCart = ({ item, ...props }) => {
     }
   };
 
-  const renderIconPromotion = () => {
-    return (
-      <svg
-        width={16}
-        height={16}
-        viewBox='0 0 218 218'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-        {...props}
-      >
-        <path
-          d='M113.543 10.9749C115.308 10.9749 117.005 11.8333 118.251 13.3539L206.685 121.239C208.52 123.937 209.363 127.273 209.04 130.743C208.775 133.612 207.823 136.249 205.881 138.995L152.497 203.202C150.443 205.699 147.691 207.098 144.826 207.101C142.118 207.101 139.852 205.9 137.037 203.202L135.369 201.547L144.6 189.995L188.125 137.696C189.773 135.317 190.588 132.472 190.588 129.149C190.634 127.65 190.417 126.157 189.951 124.776C189.485 123.394 188.781 122.157 187.89 121.154L107.353 23.3478C103.468 18.8107 99.4559 15.6102 95.3261 13.7463C93.0137 12.7188 90.6385 11.9273 88.2239 11.3796L86.9388 11.0976C86.5955 11.0117 86.5857 10.9872 87.0075 10.9749H113.543ZM79.7876 10.9014C81.5533 10.9014 83.2504 11.7597 84.4962 13.2803L172.93 121.166C174.755 123.864 175.608 127.187 175.285 130.657C175.02 133.526 174.068 136.175 172.126 138.91L118.732 203.116C116.679 205.618 113.928 207.021 111.061 207.028C108.363 207.028 105.842 205.826 103.036 203.128L14.9261 98.7745C14.2949 98.0353 13.791 97.143 13.4452 96.152C13.0994 95.161 12.919 94.0922 12.9151 93.0111V27.5538C12.817 23.4582 13.6607 19.7181 15.5637 16.6402C17.8199 13.0105 21.2337 11.1957 25.6579 10.9014H79.7876ZM56.5075 43.6014C47.875 43.6014 38.2714 51.9072 38.2714 62.4407C38.2714 72.9619 47.875 80.62 56.5075 80.62C65.14 80.62 74.2091 72.9619 74.2091 62.4407C74.2091 51.9072 65.14 43.6014 56.5075 43.6014Z'
-          fill={props.color.primary}
-        />
-      </svg>
-    );
-  };
-
   const renderPromotion = () => {
     if (!isEmptyArray(item.promotions)) {
       const promotions = item.promotions.map((promotion) => {
@@ -273,7 +260,7 @@ const ProductCart = ({ item, ...props }) => {
                 margin: 'auto',
               }}
             >
-              {renderIconPromotion()}
+              {renderIconPromotion(props.color?.primary)}
             </div>
             <Typography style={styles.textPromotion}>
               {promotion.name}
@@ -312,27 +299,6 @@ const ProductCart = ({ item, ...props }) => {
     }
   };
 
-  const renderIconEdit = () => {
-    return (
-      <svg
-        width='15'
-        height='15'
-        viewBox='0 0 129 129'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M91.072 16.8123C92.4728 15.4116 94.1357 14.3004 95.9659 13.5423C97.7961 12.7842 99.7577 12.394 101.739 12.394C103.72 12.394 105.681 12.7842 107.511 13.5423C109.342 14.3004 111.005 15.4116 112.405 16.8123C113.806 18.2131 114.917 19.876 115.675 21.7062C116.433 23.5364 116.824 25.498 116.824 27.479C116.824 29.46 116.433 31.4216 115.675 33.2517C114.917 35.0819 113.806 36.7449 112.405 38.1457L40.4054 110.146L11.072 118.146L19.072 88.8123L91.072 16.8123Z'
-          stroke='white'
-          strokeWidth='10.6824'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          fill={props.color.primary}
-        />
-      </svg>
-    );
-  };
-
   const renderPrice = () => {
     if (item?.totalDiscAmount !== 0) {
       return (
@@ -363,7 +329,7 @@ const ProductCart = ({ item, ...props }) => {
         width: '100%',
         backgroundColor: 'white',
         borderRadius: '8px',
-        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
         marginTop: '10px',
         marginBottom: '10px',
         paddingTop: '10px',
@@ -380,6 +346,8 @@ const ProductCart = ({ item, ...props }) => {
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridTemplateAreas: '". ."',
+          opacity: props.isDisable ? 0.5 : 1,
+          pointerEvents: props.isDisable && 'none',
         }}
       >
         {isOpenAddModal && (
@@ -413,7 +381,9 @@ const ProductCart = ({ item, ...props }) => {
               style={{
                 width: '24px',
                 height: '24px',
-                backgroundColor: props.color.primary,
+                backgroundColor: props.isDisable
+                  ? '#8A8D8E'
+                  : props.color.primary,
                 borderRadius: '5px',
                 color: 'white',
                 display: 'flex',
@@ -458,7 +428,9 @@ const ProductCart = ({ item, ...props }) => {
                           <li>
                             <span
                               style={{
-                                color: props.color.primary,
+                                color: props.isDisable
+                                  ? '#8A8D8E'
+                                  : props.color.primary,
                                 fontWeight: 600,
                               }}
                             >
@@ -467,7 +439,9 @@ const ProductCart = ({ item, ...props }) => {
                             {item?.name}{' '}
                             <span
                               style={{
-                                color: props.color.primary,
+                                color: props.isDisable
+                                  ? '#8A8D8E'
+                                  : props.color.primary,
                                 fontWeight: 500,
                                 fontSize: '12px',
                                 fontStyle: 'italic',
@@ -475,6 +449,11 @@ const ProductCart = ({ item, ...props }) => {
                             >
                               +{handleCurrency(item?.price)}
                             </span>
+                            {item.orderingStatus === 'UNAVAILABLE' && (
+                              <span style={{ marginLeft: '5px' }}>
+                                {renderIconInformation(props.color?.primary)}
+                              </span>
+                            )}
                           </li>
                         </ul>
                       );
@@ -524,7 +503,9 @@ const ProductCart = ({ item, ...props }) => {
           marginRight: 'auto',
           width: '95%',
           marginTop: '10px',
-          borderTop: `1px dashed ${props.color.primary}`,
+          borderTop: `1px dashed ${
+            props.isDisable ? '#8A8D8E' : props.color.primary
+          }`,
         }}
       >
         <div
@@ -548,28 +529,53 @@ const ProductCart = ({ item, ...props }) => {
                 display: 'flex',
               }}
             >
-              <Button
-                sx={{
-                  width: '80px',
-                  border: `1px solid ${props.color.primary}`,
-                  borderRadius: '10px',
-                  color: props.color.primary,
-                }}
-                onClick={() => {
-                  handleOpenAddModal();
-                }}
-                startIcon={renderIconEdit()}
-              >
-                Edit
-              </Button>
-              <IconButton
-                onClick={handleOpenRemoveModal}
+              {(!props.isDisable || !isEmptyArray(item?.modifiers)) && (
+                <Button
+                  sx={{
+                    width: '80px',
+                    border: `1px solid ${props.color?.primary}`,
+                    borderRadius: '10px',
+                    padding: '5px 0px',
+                    color: props.color?.primary,
+                    textTransform: 'capitalize',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => {
+                    handleOpenAddModal();
+                  }}
+                  startIcon={renderIconEdit(props.color?.primary)}
+                >
+                  Edit
+                </Button>
+              )}
+              <div
                 style={{
-                  color: props.color.primary,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  marginLeft: '10px',
                 }}
+                onClick={handleOpenRemoveModal}
               >
-                <DeleteIcon fontSize='large' />
-              </IconButton>
+                <IconButton
+                  style={{
+                    color: props.color?.primary,
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    padding: 0,
+                    margin: 0,
+                    marginRight: '5px',
+                  }}
+                >
+                  <DeleteIcon fontSize='large' />
+                </IconButton>
+                <p
+                  style={{ color: props.color.primary, margin: 0, padding: 0 }}
+                >
+                  Delete
+                </p>
+              </div>
             </div>
             <div style={{ color: props.color.primary }}>{renderPrice()}</div>
           </div>
