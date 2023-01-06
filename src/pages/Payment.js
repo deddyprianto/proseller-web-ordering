@@ -81,6 +81,7 @@ const mapStateToProps = (state) => {
     saveDetailTopupSvc: state.svc.saveDetailTopupSvc,
     payment: state.payment.paymentCard,
     defaultOutlet: state.outlet.defaultOutlet,
+    itemOrderingMode: state.order.itemOrderingMode,
   };
 };
 
@@ -119,6 +120,7 @@ const Payment = ({ ...props }) => {
   const [disableButtonAll, setDisableButtonAll] = useState(false);
   const [referenceNumberConfirmation, setReferenceNumberConfirmation] =
     useState('');
+  const [dataPoints, setDataPoints] = useState([]);
   const [
     openConfirmationDialogActionPayment,
     setOpenConfirmationDialogActionPayment,
@@ -129,6 +131,16 @@ const Payment = ({ ...props }) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
   const minPayment = props?.selectedPaymentCard?.minimumPayment;
+
+  useEffect(() => {
+    const getAllPoints = async () => {
+      const dataPoints = await props.dispatch(
+        CampaignAction.getCampaignByPoints()
+      );
+      setDataPoints(dataPoints.data);
+    };
+    getAllPoints();
+  }, []);
 
   const styles = {
     root: {
@@ -657,38 +669,40 @@ const Payment = ({ ...props }) => {
   };
 
   const renderPoint = () => {
-    const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
-    const isTotalPoint = props.campaignPoint.totalPoint > 0;
+    if (dataPoints?.points?.enablePointRedemption) {
+      const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
+      const isTotalPoint = props.campaignPoint.totalPoint > 0;
 
-    if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
-      return (
-        <Paper variant='outlined' style={styles.paper}>
-          <Button
-            style={styles.button}
-            disabled={handleDisableButton()}
-            onClick={handleOpenPointAddModal}
-            variant='outlined'
-          >
-            <div style={styles.displayFlexAndAlignCenter}>
-              <LocalOfferIcon style={styles.icon} />
-              <Typography style={styles.typography}>
-                {handlePoint()} Point
-              </Typography>
-            </div>
-            <ArrowForwardIosIcon style={styles.iconArrow} />
-          </Button>
-          {selectedPoint.redeemValue > 0 && (
-            <IconButton
-              style={styles.iconButtonRemove}
-              onClick={() => {
-                handleRemovePoint();
-              }}
+      if (pointToRebateRatio && pointToRebateRatio !== '0:0' && isTotalPoint) {
+        return (
+          <Paper variant='outlined' style={styles.paper}>
+            <Button
+              style={styles.button}
+              disabled={handleDisableButton()}
+              onClick={handleOpenPointAddModal}
+              variant='outlined'
             >
-              <CloseIcon style={styles.iconRemove} />
-            </IconButton>
-          )}
-        </Paper>
-      );
+              <div style={styles.displayFlexAndAlignCenter}>
+                <LocalOfferIcon style={styles.icon} />
+                <Typography style={styles.typography}>
+                  {handlePoint()} Point
+                </Typography>
+              </div>
+              <ArrowForwardIosIcon style={styles.iconArrow} />
+            </Button>
+            {selectedPoint.redeemValue > 0 && (
+              <IconButton
+                style={styles.iconButtonRemove}
+                onClick={() => {
+                  handleRemovePoint();
+                }}
+              >
+                <CloseIcon style={styles.iconRemove} />
+              </IconButton>
+            )}
+          </Paper>
+        );
+      }
     }
   };
 
@@ -902,7 +916,8 @@ const Payment = ({ ...props }) => {
     const filterOutletUnavailable = getAllOutlets.find(
       (item) => item.name === props.defaultOutlet.name
     );
-    if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
+
+    if (filterOutletUnavailable?.orderingStatus === 'UNAVAILABLE') {
       Swal.fire({
         title: '<p>The outlet is not available</p>',
         text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
@@ -915,6 +930,27 @@ const Payment = ({ ...props }) => {
         },
       }).then(() => {
         history.push('/outlets');
+      });
+    } else if (
+      !filterOutletUnavailable?.[props.itemOrderingMode?.isEnabledFieldName]
+    ) {
+      Swal.fire({
+        title: '<p>The Ordering mode is not available</p>',
+        text: `${props.itemOrderingMode.name} is currently not available,please select another outlet`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color?.primary,
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          text: fontStyleCustom.textModalOutlet,
+        },
+      }).then(() => {
+        history.push({
+          pathname: '/cart',
+          state: {
+            data: true,
+          },
+        });
       });
     } else {
       let isNeedConfirmation = false;

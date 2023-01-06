@@ -17,6 +17,7 @@ function GuestCheckoutCart(
     isCartDeleted: false,
     saveTimeSlotCalendar: '',
     saveTimeSlotForEdit: '',
+    orderingModeGuestCheckoutObj: {},
   },
   action
 ) {
@@ -35,6 +36,8 @@ function GuestCheckoutCart(
       return { ...state, addressPlaceHolderForm: action.payload };
     case CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT:
       return { ...state, orderingModeGuestCheckout: action.payload };
+    case CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ:
+      return { ...state, orderingModeGuestCheckoutObj: action.payload };
     case CONSTANT.SET_DELIVERY_PROVIDER_GUEST_CHECKOUT:
       return { ...state, providerGuestCheckout: action.payload };
     case CONSTANT.URL_PAYMENT:
