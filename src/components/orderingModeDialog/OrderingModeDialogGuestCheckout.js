@@ -292,6 +292,10 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
       type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
       payload: value.name,
     });
+    dispatch({
+      type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
+      payload: value,
+    });
     dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
     dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
     dispatch({
