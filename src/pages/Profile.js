@@ -74,7 +74,6 @@ class Profile extends Component {
   }
 
   render() {
-    console.log('%cdedd =>', 'color: green;', this.props.setting);
     let { isProfile } = this.state;
     if (!this.props.isLoggedIn) {
       return (

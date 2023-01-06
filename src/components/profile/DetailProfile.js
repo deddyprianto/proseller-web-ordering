@@ -292,7 +292,6 @@ class DetailProfile extends Component {
     let showDeliveryAddressOnProfileSubMenu = setting.find((items) => {
       return items.settingKey === 'ShowDeliveryAddressOnProfileSubMenu';
     });
-    console.log('%cdedd =>', 'color: green;', showSvcOnProfileSubMenu);
     return (
       <div>
         <ModalTermAndCondition
