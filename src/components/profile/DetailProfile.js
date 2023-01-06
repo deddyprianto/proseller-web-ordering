@@ -286,6 +286,12 @@ class DetailProfile extends Component {
     let enableTermAndCondition = setting.find((items) => {
       return items.settingKey === 'TermCondition';
     });
+    let showSvcOnProfileSubMenu = setting.find((items) => {
+      return items.settingKey === 'ShowSvcOnProfileSubMenu';
+    });
+    let showDeliveryAddressOnProfileSubMenu = setting.find((items) => {
+      return items.settingKey === 'ShowDeliveryAddressOnProfileSubMenu';
+    });
     return (
       <div>
         <ModalTermAndCondition
@@ -334,6 +340,7 @@ class DetailProfile extends Component {
                     border: '1px solid #CDCDCD',
                     boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
                     cursor: 'pointer',
+                    display: !showSvcOnProfileSubMenu?.settingValue && 'none',
                   }}
                 >
                   <div style={{ textAlign: 'center' }}>
@@ -426,6 +433,9 @@ class DetailProfile extends Component {
                   border: '1px solid #CDCDCD',
                   boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
                   cursor: 'pointer',
+                  display:
+                    !showDeliveryAddressOnProfileSubMenu?.settingValue &&
+                    'none',
                 }}
               >
                 <div style={{ textAlign: 'center' }}>
