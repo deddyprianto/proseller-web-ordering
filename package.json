@@ -108,7 +108,8 @@
     "proseller-demo-com": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 sync --profile demo build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
     "martin-demo-retail": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 --profile demo sync build/ s3://martin-webordering --acl public-read",
     "pinkcity-uat": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 --profile demo sync build/ s3://pinkcity-uat --acl public-read",
-    "deploy:webordering-v3": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync --profile prod build/ s3://ew-webordering-v3.0-prod --acl public-read"
+    "deploy:webordering-v3": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync --profile prod build/ s3://ew-webordering-v3.0-prod --acl public-read",
+    "deploy:demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering.proseller-demo.com react-scripts build && aws s3 sync build/ s3://martin-webordering --acl public-read"
   },
   "eslintConfig": {
     "extends": "react-app"
