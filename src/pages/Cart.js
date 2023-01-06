@@ -296,6 +296,17 @@ const Cart = ({ ...props }) => {
   }, []);
 
   useEffect(() => {
+    if (props.history.location.state?.data) {
+      props.dispatch({ type: 'SET_ORDERING_MODE', payload: '' });
+      props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: '' });
+      props.dispatch({ type: 'ITEM_ORDERING_MODE', data: {} });
+      props.dispatch({ type: 'SET_ORDERING_MODES', payload: [] });
+      props.dispatch({ type: 'SET_ORDERING_MODE_DISPlAY_NAME', data: '' });
+      handleOpenOrderingMode();
+    }
+  }, []);
+
+  useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       await props.dispatch(OrderAction.getCart());
@@ -1177,7 +1188,7 @@ const Cart = ({ ...props }) => {
                 </Typography>
               </div>
               <div style={styles.gapContainer}>
-                <hr style={styles.gap}/>
+                <hr style={styles.gap} />
               </div>
             </>
           )}
@@ -1196,8 +1207,8 @@ const Cart = ({ ...props }) => {
               >
                 {handleCurrency(
                   props.basket?.totalGrossAmount +
-                  props.basket?.totalSurchargeAmount -
-                  props.basket?.totalDiscountAmount
+                    props.basket?.totalSurchargeAmount -
+                    props.basket?.totalDiscountAmount
                 )}
               </Typography>
             </div>
@@ -1264,9 +1275,9 @@ const Cart = ({ ...props }) => {
           )}
 
           <div style={styles.bottomLineContainer}>
-            <hr style={styles.gap}/>
+            <hr style={styles.gap} />
           </div>
-    
+
           <div
             style={{
               display: 'flex',

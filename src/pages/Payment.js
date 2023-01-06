@@ -81,6 +81,7 @@ const mapStateToProps = (state) => {
     saveDetailTopupSvc: state.svc.saveDetailTopupSvc,
     payment: state.payment.paymentCard,
     defaultOutlet: state.outlet.defaultOutlet,
+    itemOrderingMode: state.order.itemOrderingMode,
   };
 };
 
@@ -915,7 +916,8 @@ const Payment = ({ ...props }) => {
     const filterOutletUnavailable = getAllOutlets.find(
       (item) => item.name === props.defaultOutlet.name
     );
-    if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
+
+    if (filterOutletUnavailable?.orderingStatus === 'UNAVAILABLE') {
       Swal.fire({
         title: '<p>The outlet is not available</p>',
         text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
@@ -928,6 +930,27 @@ const Payment = ({ ...props }) => {
         },
       }).then(() => {
         history.push('/outlets');
+      });
+    } else if (
+      !filterOutletUnavailable?.[props.itemOrderingMode?.isEnabledFieldName]
+    ) {
+      Swal.fire({
+        title: '<p>The Ordering mode is not available</p>',
+        text: `${props.itemOrderingMode.name} is currently not available,please select another outlet`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color?.primary,
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          text: fontStyleCustom.textModalOutlet,
+        },
+      }).then(() => {
+        history.push({
+          pathname: '/cart',
+          state: {
+            data: true,
+          },
+        });
       });
     } else {
       let isNeedConfirmation = false;

@@ -116,579 +116,631 @@ const CartGuestCheckout = () => {
   const isCartDeleted = useSelector(
     (state) => state.guestCheckoutCart.isCartDeleted
   );
+    const itemOrderingMode = useSelector(
+      (state) => state.order.itemOrderingMode
+    );
+    const companyInfo = useSelector(
+      (state) => state.masterdata.companyInfo.data
+    );
+    const deliveryAddresGuest = useSelector(
+      (state) => state.guestCheckoutCart.address
+    );
+    const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+    const date = useSelector((state) => state.guestCheckoutCart.date);
+    const timeslot = useSelector((state) => state.guestCheckoutCart.timeslot);
+    const time = useSelector((state) => state.guestCheckoutCart.time);
 
-  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  const deliveryAddresGuest = useSelector(
-    (state) => state.guestCheckoutCart.address
-  );
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
-  const date = useSelector((state) => state.guestCheckoutCart.date);
-  const timeslot = useSelector((state) => state.guestCheckoutCart.timeslot);
-  const time = useSelector((state) => state.guestCheckoutCart.time);
-
-  const loadingData = (role) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(role);
-      }, 100);
-    });
-  };
-
-  useEffect(() => {
-    const idGuestCheckout = localStorage.getItem('idGuestCheckout');
-    if (idGuestCheckout) {
-      setIdGuestCheckout(idGuestCheckout);
-    }
-  }, [localStorage]);
-
-  useEffect(() => {
-    const clearStateResponse = async () => {
-      await dispatch(OrderAction.clearResponse());
+    const loadingData = (role) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(role);
+        }, 100);
+      });
     };
-    clearStateResponse();
-  }, []);
 
-  useEffect(() => {
-    const fetchBasket = async () => {
+    useEffect(() => {
+      const idGuestCheckout = localStorage.getItem('idGuestCheckout');
       if (idGuestCheckout) {
-        setIsLoading(true);
-        await dispatch(
-          OrderAction.getCartGuestMode(`guest::${idGuestCheckout}`)
-        );
-        setIsLoading(false);
+        setIdGuestCheckout(idGuestCheckout);
       }
-    };
-    fetchBasket();
-    setShowErrorName(false);
-    setShowErrorPhone(false);
-    setShowErrorEmail(false);
-  }, [
-    idGuestCheckout,
-    refreshData,
-    saveEditResponse,
-    orderingModeGuestCheckout,
-    isCartDeleted,
-  ]);
+    }, [localStorage]);
 
-  useEffect(() => {
-    const getDataProviderListAndFee = async () => {
-      if (deliveryAddresGuest?.deliveryAddress) {
-        let payload = {
-          outletId: basket?.outlet?.id,
-          cartID: basket?.cartID,
-          deliveryAddress: deliveryAddresGuest?.deliveryAddress,
-        };
-        if (deliveryAddresGuest) {
-          let responseCalculateFee = await dispatch(
-            OrderAction.getCalculateFee(payload)
+    useEffect(() => {
+      const clearStateResponse = async () => {
+        await dispatch(OrderAction.clearResponse());
+      };
+      clearStateResponse();
+    }, []);
+
+    useEffect(() => {
+      const fetchBasket = async () => {
+        if (idGuestCheckout) {
+          setIsLoading(true);
+          await dispatch(
+            OrderAction.getCartGuestMode(`guest::${idGuestCheckout}`)
           );
-          if (responseCalculateFee) {
-            loadingData(responseCalculateFee).then((res) =>
-              setDataCalculateFee(res)
+          setIsLoading(false);
+        }
+      };
+      fetchBasket();
+      setShowErrorName(false);
+      setShowErrorPhone(false);
+      setShowErrorEmail(false);
+    }, [
+      idGuestCheckout,
+      refreshData,
+      saveEditResponse,
+      orderingModeGuestCheckout,
+      isCartDeleted,
+    ]);
+
+    useEffect(() => {
+      const getDataProviderListAndFee = async () => {
+        if (deliveryAddresGuest?.deliveryAddress) {
+          let payload = {
+            outletId: basket?.outlet?.id,
+            cartID: basket?.cartID,
+            deliveryAddress: deliveryAddresGuest?.deliveryAddress,
+          };
+          if (deliveryAddresGuest) {
+            let responseCalculateFee = await dispatch(
+              OrderAction.getCalculateFee(payload)
             );
+            if (responseCalculateFee) {
+              loadingData(responseCalculateFee).then((res) =>
+                setDataCalculateFee(res)
+              );
+            }
           }
         }
+      };
+      getDataProviderListAndFee();
+    }, [deliveryAddresGuest?.deliveryAddress]);
+
+    useEffect(() => {
+      const getDataTimeSlot = async () => {
+        let dateTime = new Date();
+        let maxDays = 90;
+
+        if (!isEmptyArray(defaultOutlet)) {
+          maxDays = defaultOutlet?.timeSlots[0]?.interval;
+        }
+
+        let payload = {
+          outletID: defaultOutlet.sortKey,
+          clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
+          date: moment(dateTime).format('YYYY-MM-DD'),
+          maxDays: maxDays,
+          orderingMode: orderingModeGuestCheckout,
+        };
+
+        const response = await dispatch(OrderAction.getTimeSlot(payload));
+        if (!response) {
+          setAvailableTime(false);
+        } else {
+          setAvailableTime(true);
+        }
+      };
+      getDataTimeSlot();
+    }, [orderingModeGuestCheckout]);
+
+    useEffect(() => {
+      const isBasketEmpty = basket?.message === 'Cart it empty.';
+      if (isBasketEmpty || orderingModeGuestCheckout) {
+        setOpenOrderingMode(false);
+      } else {
+        setOpenOrderingMode(true);
       }
+    }, [basket]);
+
+    const [width] = useWindowSize();
+    const gadgetScreen = width < 980;
+
+    const styles = {
+      containerDataEmpty: {
+        width: gadgetScreen ? '100%' : '40%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        backgroundColor: 'white',
+        height: '99vh',
+        borderRadius: '8px',
+        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        overflowY: 'auto',
+      },
+      rootCartGadgetSize: {
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingTop: 100,
+        paddingBottom: 300,
+      },
+      emptyText: {
+        marginTop: 10,
+        fontSize: 14,
+        lineHeight: '17px',
+        fontWeight: 600,
+        textAlign: 'center',
+      },
+      rootEmptyCart: {
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 150,
+      },
+      grandTotalGadgetScreen: {
+        width: '100%',
+        margin: 0,
+        top: 'auto',
+        right: 'auto',
+        bottom: responsiveDesign.height < 500 ? 0 : 70,
+        left: 'auto',
+        position: 'fixed',
+        padding: '0px 10px',
+        backgroundColor: color.background,
+      },
+      grandTotalFullScreen: {
+        backgroundColor: color.background,
+        marginBottom: '10px',
+      },
+      rootGrandTotal: {
+        display: 'flex',
+        justifyContent: 'space-between',
+      },
+
+      rootSubmitButton: {
+        paddingTop: 15,
+        paddingRight: 10,
+        paddingLeft: 10,
+        paddingBottom: 10,
+        width: '70%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
+      },
+      rootInclusiveTax: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingLeft: 10,
+        paddingRight: 10,
+        marginTop: 10,
+        opacity: 0.5,
+      },
+      inclusiveTax: {
+        color: '#808080',
+        fontSize: 12,
+      },
+      subTotal: {
+        fontWeight: 500,
+        fontSize: 16,
+      },
+      rootSubTotalItem: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      gapContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: 15,
+      },
+      bottomLineContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+      },
+      gap: {
+        backgroundColor: '#D6D6D6',
+        width: '95%',
+        opacity: 0.5,
+      },
     };
-    getDataProviderListAndFee();
-  }, [deliveryAddresGuest?.deliveryAddress]);
 
-  useEffect(() => {
-    const getDataTimeSlot = async () => {
-      let dateTime = new Date();
-      let maxDays = 90;
-
-      if (!isEmptyArray(defaultOutlet)) {
-        maxDays = defaultOutlet?.timeSlots[0]?.interval;
-      }
-
-      let payload = {
-        outletID: defaultOutlet.sortKey,
-        clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
-        date: moment(dateTime).format('YYYY-MM-DD'),
-        maxDays: maxDays,
-        orderingMode: orderingModeGuestCheckout,
-      };
-
-      const response = await dispatch(OrderAction.getTimeSlot(payload));
-      if (!response) {
-        setAvailableTime(false);
+    const myCountryCodesObject = countryCodes.customList(
+      'countryCode',
+      '{countryNameEn}: +{countryCallingCode}'
+    );
+    const optionCodePhone = Object.keys(myCountryCodesObject).map(
+      (key) => myCountryCodesObject[key]
+    );
+    optionCodePhone.sort((a, b) => {
+      let item = a.substring(a.indexOf(':') + 2);
+      if (item === initialCodePhone) {
+        return -1;
       } else {
-        setAvailableTime(true);
+        return 1;
       }
+    });
+    const filteredPhoneCode = optionCodePhone.filter(
+      createFilter(valueSearchCode)
+    );
+
+    const validationSchemaForGuestCheckout = yup.object({
+      name: yup.string().required('Please enter your Name'),
+      phoneNo: yup.number().required('Please enter your Phone Number'),
+      email: yup.string().required('Please enter your Email'),
+    });
+
+    const formik = useFormik({
+      enableReinitialize: true,
+      validationSchema: validationSchemaForGuestCheckout,
+      initialValues: {
+        name: '',
+        phoneNo: '',
+        email: '',
+      },
+      validateOnChange: true,
+      onSubmit: async (values, { setSubmitting, resetForm }) => {
+        Object.keys(values).forEach((key) => {
+          if (values[key] === null || values[key] === '') {
+            values[key] = undefined;
+          }
+        });
+        const convertPhoneNumberTostring = values.phoneNo.toString();
+        let val = convertPhoneNumberTostring.split();
+        val.unshift(phoneCountryCode);
+        const finalValues = { ...values, phoneNo: val.join('') };
+        // handleSaveAddressModeGuestCheckout(finalValues);
+        resetForm();
+        Swal.fire({
+          position: 'top',
+          icon: 'success',
+          title: 'Your address has been saved',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      },
+    });
+    const validateEmailRegex = /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+    let email = formik.values.email?.toLowerCase();
+    const formRegexMail = validateEmailRegex.test(email);
+
+    const handlePaymentGuestMode = async () => {
+      if (orderingModeGuestCheckout === 'DELIVERY') {
+        const objectSubmitCart = {
+          cartID: basket.cartID,
+          outletID: basket.outletID,
+          guestID: basket.guestID,
+          customerDetails: {
+            name: deliveryAddresGuest.deliveryAddress.name,
+            email: deliveryAddresGuest.deliveryAddress.email,
+            phoneNumber: deliveryAddresGuest.deliveryAddress.phoneNo,
+          },
+          payments: [
+            {
+              paymentType: companyInfo.paymentTypes[0].paymentID,
+              paymentID: companyInfo.paymentTypes[0].paymentID,
+            },
+          ],
+          deliveryAddress: deliveryAddresGuest.deliveryAddress,
+          orderingMode: orderingModeGuestCheckout,
+          tableNo: '-',
+          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
+          orderActionTime: time
+            ? time
+            : new Date().getHours() + ':' + new Date().getUTCMinutes(),
+          orderActionTimeSlot: timeslot ? timeslot : null,
+        };
+        setIsLoading(true);
+        const response = await dispatch(
+          OrderAction.paymentGuestMode(objectSubmitCart)
+        );
+        if (response.resultCode === 200) {
+          window.location.href = response.data.url;
+        }
+        setIsLoading(false);
+      } else if (orderingModeGuestCheckout === 'TAKEAWAY') {
+        const finalVal = () => {
+          const convertPhoneNumberTostring = formik.values.phoneNo.toString();
+          let val = convertPhoneNumberTostring.split();
+          val.unshift(phoneCountryCode);
+          return { ...formik.values, phoneNo: val.join('') };
+        };
+        if (
+          formik.values.name &&
+          formik.values.phoneNo &&
+          formik.values.email
+        ) {
+          const objectSubmitCart = {
+            cartID: basket.cartID,
+            outletID: basket.outletID,
+            guestID: basket.guestID,
+            customerDetails: {
+              name: finalVal().name,
+              email: finalVal().email,
+              phoneNumber: finalVal().phoneNo,
+            },
+            payments: [
+              {
+                paymentType: companyInfo.paymentTypes[0].paymentID,
+                paymentID: companyInfo.paymentTypes[0].paymentID,
+              },
+            ],
+            deliveryAddress: {},
+            orderingMode: orderingModeGuestCheckout,
+            tableNo: '-',
+            clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+            orderActionDate: date
+              ? date
+              : new Date().toISOString().split('T')[0],
+            orderActionTime: time
+              ? time
+              : new Date().getHours() + ':' + new Date().getMinutes(),
+            orderActionTimeSlot: timeslot ? timeslot : null,
+          };
+          setIsLoading(true);
+          const response = await dispatch(
+            OrderAction.paymentGuestMode(objectSubmitCart)
+          );
+          if (response.resultCode === 200) {
+            window.location.href = response.data.url;
+          }
+          setIsLoading(false);
+        }
+      } else if (orderingModeGuestCheckout === 'STOREPICKUP') {
+        const finalVal = () => {
+          const convertPhoneNumberTostring = formik.values.phoneNo.toString();
+          let val = convertPhoneNumberTostring.split();
+          val.unshift(phoneCountryCode);
+          return { ...formik.values, phoneNo: val.join('') };
+        };
+        if (
+          formik.values.name &&
+          formik.values.phoneNo &&
+          formik.values.email
+        ) {
+          const objectSubmitCart = {
+            cartID: basket.cartID,
+            outletID: basket.outletID,
+            guestID: basket.guestID,
+            customerDetails: {
+              name: finalVal().name,
+              email: finalVal().email,
+              phoneNumber: finalVal().phoneNo,
+            },
+            payments: [
+              {
+                paymentType: companyInfo.paymentTypes[0].paymentID,
+                paymentID: companyInfo.paymentTypes[0].paymentID,
+              },
+            ],
+            deliveryAddress: {},
+            orderingMode: orderingModeGuestCheckout,
+            tableNo: '-',
+            clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+            orderActionDate: date
+              ? date
+              : new Date().toISOString().split('T')[0],
+            orderActionTime: time
+              ? time
+              : new Date().getHours() + ':' + new Date().getMinutes(),
+            orderActionTimeSlot: timeslot ? timeslot : null,
+          };
+          setIsLoading(true);
+          const response = await dispatch(
+            OrderAction.paymentGuestMode(objectSubmitCart)
+          );
+          if (response.resultCode === 200) {
+            window.location.href = response.data.url;
+          }
+          setIsLoading(false);
+        }
+      } else if (orderingModeGuestCheckout === 'DINEIN') {
+        const finalVal = () => {
+          const convertPhoneNumberTostring = formik.values.phoneNo.toString();
+          let val = convertPhoneNumberTostring.split();
+          val.unshift(phoneCountryCode);
+          return { ...formik.values, phoneNo: val.join('') };
+        };
+        if (formik.values.name === '') {
+          setShowErrorName(true);
+        } else {
+          setShowErrorName(false);
+        }
+        if (formik.values.phoneNo === '') {
+          setShowErrorPhone(true);
+        } else {
+          setShowErrorPhone(false);
+        }
+        if (formik.values.email === '') {
+          setShowErrorEmail(true);
+        } else {
+          setShowErrorEmail(false);
+        }
+        if (
+          formik.values.name &&
+          formik.values.phoneNo &&
+          formik.values.email
+        ) {
+          const objectSubmitCart = {
+            cartID: basket.cartID,
+            outletID: basket.outletID,
+            guestID: basket.guestID,
+            customerDetails: {
+              name: finalVal().name,
+              email: finalVal().email,
+              phoneNumber: finalVal().phoneNo,
+            },
+            payments: [
+              {
+                paymentType: companyInfo.paymentTypes[0].paymentID,
+                paymentID: companyInfo.paymentTypes[0].paymentID,
+              },
+            ],
+            deliveryAddress: {},
+            orderingMode: orderingModeGuestCheckout,
+            tableNo: '-',
+            clientTimezone: Math.abs(new Date().getTimezoneOffset()),
+            orderActionDate: date
+              ? date
+              : new Date().toISOString().split('T')[0],
+            orderActionTime: time
+              ? time
+              : new Date().getHours() + ':' + new Date().getMinutes(),
+            orderActionTimeSlot: timeslot ? timeslot : null,
+          };
+          setIsLoading(true);
+          const response = await dispatch(
+            OrderAction.paymentGuestMode(objectSubmitCart)
+          );
+          if (response.resultCode === 200) {
+            window.location.href = response.data.url;
+          }
+          setIsLoading(false);
+        }
+      }
+      localStorage.removeItem(`${config.prefix}_locationPinned`);
     };
-    getDataTimeSlot();
-  }, [orderingModeGuestCheckout]);
 
-  useEffect(() => {
-    const isBasketEmpty = basket?.message === 'Cart it empty.';
-    if (isBasketEmpty || orderingModeGuestCheckout) {
-      setOpenOrderingMode(false);
-    } else {
-      setOpenOrderingMode(true);
-    }
-  }, [basket]);
-
-  const [width] = useWindowSize();
-  const gadgetScreen = width < 980;
-
-  const styles = {
-    containerDataEmpty: {
-      width: gadgetScreen ? '100%' : '40%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      backgroundColor: 'white',
-      height: '99vh',
-      borderRadius: '8px',
-      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      overflowY: 'auto',
-    },
-    rootCartGadgetSize: {
-      paddingLeft: 20,
-      paddingRight: 20,
-      paddingTop: 100,
-      paddingBottom: 300,
-    },
-    emptyText: {
-      marginTop: 10,
-      fontSize: 14,
-      lineHeight: '17px',
-      fontWeight: 600,
-      textAlign: 'center',
-    },
-    rootEmptyCart: {
-      paddingLeft: 10,
-      paddingRight: 10,
-      paddingTop: 150,
-    },
-    grandTotalGadgetScreen: {
-      width: '100%',
-      margin: 0,
-      top: 'auto',
-      right: 'auto',
-      bottom: responsiveDesign.height < 500 ? 0 : 70,
-      left: 'auto',
-      position: 'fixed',
-      padding: '0px 10px',
-      backgroundColor: color.background,
-    },
-    grandTotalFullScreen: {
-      backgroundColor: color.background,
-      marginBottom: '10px',
-    },
-    rootGrandTotal: {
-      display: 'flex',
-      justifyContent: 'space-between',
-    },
-
-    rootSubmitButton: {
-      paddingTop: 15,
-      paddingRight: 10,
-      paddingLeft: 10,
-      paddingBottom: 10,
-      width: '70%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
-    },
-    rootInclusiveTax: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: 10,
-      paddingRight: 10,
-      marginTop: 10,
-      opacity: 0.5,
-    },
-    inclusiveTax: {
-      color: '#808080',
-      fontSize: 12,
-    },
-    subTotal: {
-      fontWeight: 500,
-      fontSize: 16,
-    },
-    rootSubTotalItem: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: 10,
-      paddingRight: 10,
-    },
-    gapContainer: {
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      marginTop: 15,
-    },
-    bottomLineContainer: {
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-    },
-    gap: {
-      backgroundColor: '#D6D6D6',
-      width: '95%',
-      opacity: 0.5,
-    }
-  };
-
-  const myCountryCodesObject = countryCodes.customList(
-    'countryCode',
-    '{countryNameEn}: +{countryCallingCode}'
-  );
-  const optionCodePhone = Object.keys(myCountryCodesObject).map(
-    (key) => myCountryCodesObject[key]
-  );
-  optionCodePhone.sort((a, b) => {
-    let item = a.substring(a.indexOf(':') + 2);
-    if (item === initialCodePhone) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
-  const filteredPhoneCode = optionCodePhone.filter(
-    createFilter(valueSearchCode)
-  );
-
-  const validationSchemaForGuestCheckout = yup.object({
-    name: yup.string().required('Please enter your Name'),
-    phoneNo: yup.number().required('Please enter your Phone Number'),
-    email: yup.string().required('Please enter your Email'),
-  });
-
-  const formik = useFormik({
-    enableReinitialize: true,
-    validationSchema: validationSchemaForGuestCheckout,
-    initialValues: {
-      name: '',
-      phoneNo: '',
-      email: '',
-    },
-    validateOnChange: true,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      Object.keys(values).forEach((key) => {
-        if (values[key] === null || values[key] === '') {
-          values[key] = undefined;
-        }
-      });
-      const convertPhoneNumberTostring = values.phoneNo.toString();
-      let val = convertPhoneNumberTostring.split();
-      val.unshift(phoneCountryCode);
-      const finalValues = { ...values, phoneNo: val.join('') };
-      // handleSaveAddressModeGuestCheckout(finalValues);
-      resetForm();
-      Swal.fire({
-        position: 'top',
-        icon: 'success',
-        title: 'Your address has been saved',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
-  });
-  const validateEmailRegex = /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,4}$/;
-
-  let email = formik.values.email?.toLowerCase();
-  const formRegexMail = validateEmailRegex.test(email);
-
-  const handlePaymentGuestMode = async () => {
-    if (orderingModeGuestCheckout === 'DELIVERY') {
-      const objectSubmitCart = {
-        cartID: basket.cartID,
-        outletID: basket.outletID,
-        guestID: basket.guestID,
-        customerDetails: {
-          name: deliveryAddresGuest.deliveryAddress.name,
-          email: deliveryAddresGuest.deliveryAddress.email,
-          phoneNumber: deliveryAddresGuest.deliveryAddress.phoneNo,
-        },
-        payments: [
-          {
-            paymentType: companyInfo.paymentTypes[0].paymentID,
-            paymentID: companyInfo.paymentTypes[0].paymentID,
-          },
-        ],
-        deliveryAddress: deliveryAddresGuest.deliveryAddress,
-        orderingMode: orderingModeGuestCheckout,
-        tableNo: '-',
-        clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-        orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-        orderActionTime: time
-          ? time
-          : new Date().getHours() + ':' + new Date().getUTCMinutes(),
-        orderActionTimeSlot: timeslot ? timeslot : null,
-      };
-      setIsLoading(true);
-      const response = await dispatch(
-        OrderAction.paymentGuestMode(objectSubmitCart)
-      );
-      if (response.resultCode === 200) {
-        window.location.href = response.data.url;
+    const handleSubtotalForGuestCheckout = () => {
+      if (basket?.totalDiscountAmount !== 0) {
+        const subTotalAfterDiscount =
+          basket?.totalGrossAmount - basket.totalDiscountAmount;
+        return subTotalAfterDiscount;
       }
-      setIsLoading(false);
-    } else if (orderingModeGuestCheckout === 'TAKEAWAY') {
-      const finalVal = () => {
-        const convertPhoneNumberTostring = formik.values.phoneNo.toString();
-        let val = convertPhoneNumberTostring.split();
-        val.unshift(phoneCountryCode);
-        return { ...formik.values, phoneNo: val.join('') };
-      };
-      if (formik.values.name && formik.values.phoneNo && formik.values.email) {
-        const objectSubmitCart = {
-          cartID: basket.cartID,
-          outletID: basket.outletID,
-          guestID: basket.guestID,
-          customerDetails: {
-            name: finalVal().name,
-            email: finalVal().email,
-            phoneNumber: finalVal().phoneNo,
-          },
-          payments: [
-            {
-              paymentType: companyInfo.paymentTypes[0].paymentID,
-              paymentID: companyInfo.paymentTypes[0].paymentID,
-            },
-          ],
-          deliveryAddress: {},
-          orderingMode: orderingModeGuestCheckout,
-          tableNo: '-',
-          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-          orderActionTime: time
-            ? time
-            : new Date().getHours() + ':' + new Date().getMinutes(),
-          orderActionTimeSlot: timeslot ? timeslot : null,
-        };
-        setIsLoading(true);
-        const response = await dispatch(
-          OrderAction.paymentGuestMode(objectSubmitCart)
-        );
-        if (response.resultCode === 200) {
-          window.location.href = response.data.url;
-        }
-        setIsLoading(false);
-      }
-    } else if (orderingModeGuestCheckout === 'STOREPICKUP') {
-      const finalVal = () => {
-        const convertPhoneNumberTostring = formik.values.phoneNo.toString();
-        let val = convertPhoneNumberTostring.split();
-        val.unshift(phoneCountryCode);
-        return { ...formik.values, phoneNo: val.join('') };
-      };
-      if (formik.values.name && formik.values.phoneNo && formik.values.email) {
-        const objectSubmitCart = {
-          cartID: basket.cartID,
-          outletID: basket.outletID,
-          guestID: basket.guestID,
-          customerDetails: {
-            name: finalVal().name,
-            email: finalVal().email,
-            phoneNumber: finalVal().phoneNo,
-          },
-          payments: [
-            {
-              paymentType: companyInfo.paymentTypes[0].paymentID,
-              paymentID: companyInfo.paymentTypes[0].paymentID,
-            },
-          ],
-          deliveryAddress: {},
-          orderingMode: orderingModeGuestCheckout,
-          tableNo: '-',
-          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-          orderActionTime: time
-            ? time
-            : new Date().getHours() + ':' + new Date().getMinutes(),
-          orderActionTimeSlot: timeslot ? timeslot : null,
-        };
-        setIsLoading(true);
-        const response = await dispatch(
-          OrderAction.paymentGuestMode(objectSubmitCart)
-        );
-        if (response.resultCode === 200) {
-          window.location.href = response.data.url;
-        }
-        setIsLoading(false);
-      }
-    } else if (orderingModeGuestCheckout === 'DINEIN') {
-      const finalVal = () => {
-        const convertPhoneNumberTostring = formik.values.phoneNo.toString();
-        let val = convertPhoneNumberTostring.split();
-        val.unshift(phoneCountryCode);
-        return { ...formik.values, phoneNo: val.join('') };
-      };
-      if (formik.values.name === '') {
-        setShowErrorName(true);
-      } else {
-        setShowErrorName(false);
-      }
-      if (formik.values.phoneNo === '') {
-        setShowErrorPhone(true);
-      } else {
-        setShowErrorPhone(false);
-      }
-      if (formik.values.email === '') {
-        setShowErrorEmail(true);
-      } else {
-        setShowErrorEmail(false);
-      }
-      if (formik.values.name && formik.values.phoneNo && formik.values.email) {
-        const objectSubmitCart = {
-          cartID: basket.cartID,
-          outletID: basket.outletID,
-          guestID: basket.guestID,
-          customerDetails: {
-            name: finalVal().name,
-            email: finalVal().email,
-            phoneNumber: finalVal().phoneNo,
-          },
-          payments: [
-            {
-              paymentType: companyInfo.paymentTypes[0].paymentID,
-              paymentID: companyInfo.paymentTypes[0].paymentID,
-            },
-          ],
-          deliveryAddress: {},
-          orderingMode: orderingModeGuestCheckout,
-          tableNo: '-',
-          clientTimezone: Math.abs(new Date().getTimezoneOffset()),
-          orderActionDate: date ? date : new Date().toISOString().split('T')[0],
-          orderActionTime: time
-            ? time
-            : new Date().getHours() + ':' + new Date().getMinutes(),
-          orderActionTimeSlot: timeslot ? timeslot : null,
-        };
-        setIsLoading(true);
-        const response = await dispatch(
-          OrderAction.paymentGuestMode(objectSubmitCart)
-        );
-        if (response.resultCode === 200) {
-          window.location.href = response.data.url;
-        }
-        setIsLoading(false);
-      }
-    }
-    localStorage.removeItem(`${config.prefix}_locationPinned`);
-  };
+      return basket?.totalGrossAmount;
+    };
 
-  const handleSubtotalForGuestCheckout = () => {
-    if (basket?.totalDiscountAmount !== 0) {
-      const subTotalAfterDiscount =
-        basket?.totalGrossAmount - basket.totalDiscountAmount;
-      return subTotalAfterDiscount;
-    }
-    return basket?.totalGrossAmount;
-  };
-
-  const renderTitleNameForCart = () => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gridTemplateRows: '1fr',
-          gap: '0px 0px',
-          gridTemplateAreas: '". . ."',
-          marginBottom: '20px',
-        }}
-      >
-        <img src={IconsArrowLeft} onClick={() => history.push('/')} />
+    const renderTitleNameForCart = () => {
+      return (
         <div
           style={{
-            fontSize: '16px',
-            fontWeight: 700,
-            justifySelf: 'center',
+            width: '100%',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gridTemplateRows: '1fr',
+            gap: '0px 0px',
+            gridTemplateAreas: '". . ."',
+            marginBottom: '20px',
           }}
-          className={fontStyleCustom.myFont}
         >
-          Cart
+          <img src={IconsArrowLeft} onClick={() => history.push('/')} />
+          <div
+            style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              justifySelf: 'center',
+            }}
+            className={fontStyleCustom.myFont}
+          >
+            Cart
+          </div>
         </div>
-      </div>
-    );
-  };
+      );
+    };
 
-  const renderLabelNeedAnythingElse = () => {
-    return (
-      <div
-        className={fontStyleCustom.myFont}
-        style={{
-          marginBottom: '30px',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div>
-          <div style={{ fontSize: '16px', fontWeight: 700 }}>
-            Need anything else?
+    const renderLabelNeedAnythingElse = () => {
+      return (
+        <div
+          className={fontStyleCustom.myFont}
+          style={{
+            marginBottom: '30px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: '16px', fontWeight: 700 }}>
+              Need anything else?
+            </div>
+            <div style={{ fontSize: '14px', fontWeight: 500 }}>
+              Add other dishes, if you want.
+            </div>
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500 }}>
-            Add other dishes, if you want.
+          <div>
+            <Button
+              onClick={() => history.push('/')}
+              startIcon={<img src={addIcon} alt='addIcon' />}
+              sx={{
+                backgroundColor: color.primary,
+                borderRadius: '10px',
+                width: '120px',
+                height: '40px',
+                color: 'white',
+                fontSize: '12px',
+              }}
+            >
+              Add More
+            </Button>
           </div>
         </div>
-        <div>
-          <Button
-            onClick={() => history.push('/')}
-            startIcon={<img src={addIcon} alt='addIcon' />}
-            sx={{
-              backgroundColor: color.primary,
-              borderRadius: '10px',
-              width: '120px',
-              height: '40px',
-              color: 'white',
-              fontSize: '12px',
+      );
+    };
+
+    const textItem = () => {
+      return (
+        <div
+          className={fontStyleCustom.myFont}
+          style={{
+            width: '100%',
+            marginBottom: '10px',
+            marginTop: '10px',
+          }}
+        >
+          <h1 style={{ fontSize: '16px' }}>Items</h1>
+        </div>
+      );
+    };
+    const renderImageProduct = (item) => {
+      if (item.product.defaultImageURL) {
+        return item.product.defaultImageURL;
+      } else {
+        if (item.defaultImageURL) {
+          return item.defaultImageURL;
+        }
+        if (color.productPlaceholder) {
+          return color.productPlaceholder;
+        }
+        return config.image_placeholder;
+      }
+    };
+
+    const handleCurrency = (price) => {
+      if (companyInfo) {
+        const result = price?.toLocaleString(companyInfo?.currency?.locale, {
+          style: 'currency',
+          currency: companyInfo?.currency?.code,
+        });
+        return result;
+      }
+    };
+
+    const renderPrice = (item, isDisable) => {
+      if (item?.totalDiscAmount !== 0) {
+        return (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'flex-end',
             }}
           >
-            Add More
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  const textItem = () => {
-    return (
-      <div
-        className={fontStyleCustom.myFont}
-        style={{
-          width: '100%',
-          marginBottom: '10px',
-          marginTop: '10px',
-        }}
-      >
-        <h1 style={{ fontSize: '16px' }}>Items</h1>
-      </div>
-    );
-  };
-  const renderImageProduct = (item) => {
-    if (item.product.defaultImageURL) {
-      return item.product.defaultImageURL;
-    } else {
-      if (item.defaultImageURL) {
-        return item.defaultImageURL;
+            <Typography
+              style={{
+                color: isDisable ? '#8A8D8E' : color.primary,
+                fontSize: '16px',
+              }}
+            >
+              {handleCurrency(item?.totalDiscAmount)}
+            </Typography>
+            <Typography
+              style={{
+                fontSize: '16px',
+                textDecorationLine: 'line-through',
+                marginRight: '10px',
+                color: isDisable ? '#8A8D8E' : color.primary,
+              }}
+            >
+              {handleCurrency(item?.grossAmount)}
+            </Typography>
+          </div>
+        );
       }
-      if (color.productPlaceholder) {
-        return color.productPlaceholder;
-      }
-      return config.image_placeholder;
-    }
-  };
 
-  const handleCurrency = (price) => {
-    if (companyInfo) {
-      const result = price?.toLocaleString(companyInfo?.currency?.locale, {
-        style: 'currency',
-        currency: companyInfo?.currency?.code,
-      });
-      return result;
-    }
-  };
-
-  const renderPrice = (item, isDisable) => {
-    if (item?.totalDiscAmount !== 0) {
       return (
         <div
           style={{
@@ -703,588 +755,581 @@ const CartGuestCheckout = () => {
               fontSize: '16px',
             }}
           >
-            {handleCurrency(item?.totalDiscAmount)}
-          </Typography>
-          <Typography
-            style={{
-              fontSize: '16px',
-              textDecorationLine: 'line-through',
-              marginRight: '10px',
-              color: isDisable ? '#8A8D8E' : color.primary,
-            }}
-          >
             {handleCurrency(item?.grossAmount)}
           </Typography>
         </div>
       );
-    }
+    };
 
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <Typography
-          style={{
-            color: isDisable ? '#8A8D8E' : color.primary,
-            fontSize: '16px',
-          }}
-        >
-          {handleCurrency(item?.grossAmount)}
-        </Typography>
-      </div>
-    );
-  };
-
-  const renderTextBanner = (text = 'You have unavailable item') => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'flex-start',
-          marginTop: '30px',
-          flexDirection: 'column',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '14px',
-            padding: 0,
-            margin: 0,
-            letterSpacing: '.5px',
-            marginLeft: '3px',
-          }}
-        >
-          {text}
-        </h1>
-        <div
-          style={{
-            display: 'flex',
-            marginLeft: '3px',
-            alignItems: 'center',
-          }}
-        >
-          {renderIconInformation(color?.primary)}
-          <p
-            style={{
-              padding: 0,
-              margin: 0,
-              color: color?.primary,
-              fontSize: '12px',
-              marginLeft: '5px',
-            }}
-          >
-            Item(s) will not be included in your payment
-          </p>
-        </div>
-      </div>
-    );
-  };
-
-  const renderItemList = (itemDetails, isDisable) => {
-    return (
-      <div
-        key={itemDetails?.productID}
-        className={fontStyleCustom.myFont}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          paddingTop: '10px',
-          paddingBottom: '10px',
-        }}
-      >
-        <div
-          style={{
-            opacity: isDisable ? 0.5 : 1,
-            pointerEvents: isDisable && 'none',
-            maxWidth: 'min(1280px, 100% - 20px)',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            display: 'grid',
-            gridTemplateColumns: '1.6fr 0.4fr',
-            gridTemplateRows: '1fr',
-            gap: '0px 0px',
-            gridTemplateAreas: '". ."',
-          }}
-        >
-          <div style={{ width: '100%' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '8px',
-              }}
-            >
-              <div
-                style={{
-                  width: '24px',
-                  height: '24px',
-                  backgroundColor: isDisable ? '#8A8D8E' : color.primary,
-                  borderRadius: '5px',
-                  color: 'white',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '5px',
-                }}
-              >
-                {itemDetails?.quantity}x
-              </div>
-              <div
-                style={{
-                  fontWeight: 'bold',
-                  marginLeft: '5px',
-                  fontSize: '14px',
-                }}
-              >
-                {itemDetails?.product.name} ({' '}
-                {handleCurrency(itemDetails?.grossAmount)} )
-              </div>
-            </div>
-
-            <ul
-              style={{
-                color: '#8A8D8E',
-                fontSize: '13px',
-                padding: 0,
-                margin: 0,
-                listStyle: 'none',
-              }}
-            >
-              {!isEmptyArray(itemDetails.modifiers) && (
-                <React.Fragment>
-                  <hr style={{ opacity: 0.5 }} />
-                  <li>
-                    Add-On:
-                    {itemDetails?.modifiers?.map((items) => {
-                      return items?.modifier?.details.map((item) => {
-                        return (
-                          <ul key={item?.name} style={{ paddingLeft: '10px' }}>
-                            <li>
-                              <span
-                                style={{
-                                  color: isDisable ? '#8A8D8E' : color.primary,
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {item?.quantity}x{' '}
-                              </span>
-                              {item?.name}{' '}
-                              <span
-                                style={{
-                                  color: isDisable ? '#8A8D8E' : color.primary,
-                                  fontWeight: 500,
-                                  fontSize: '12px',
-                                  fontStyle: 'italic',
-                                }}
-                              >
-                                +{handleCurrency(item?.price)}
-                              </span>
-                            </li>
-                          </ul>
-                        );
-                      });
-                    })}
-                  </li>
-                </React.Fragment>
-              )}
-              {itemDetails?.remark && (
-                <li>
-                  <table>
-                    <tr>
-                      <td
-                        className={fontStyleCustom.title}
-                        style={{
-                          textAlign: 'left',
-                          width: '100%',
-                          display: '-webkit-box',
-                          WebkitLineClamp: '3',
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          padding: 0,
-                          margin: 0,
-                        }}
-                      >
-                        <span style={{ fontWeight: 700 }}>Notes: </span>
-                        {itemDetails?.remark}
-                      </td>
-                    </tr>
-                  </table>
-                </li>
-              )}
-            </ul>
-          </div>
-          <div>
-            <img alt='logo' src={renderImageProduct(itemDetails)} />
-          </div>
-        </div>
-        <div
-          style={{
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            width: '90%',
-            marginTop: '10px',
-            borderTop: `1px dashed ${isDisable ? '#8A8D8E' : color.primary}`,
-            marginBottom: '10px',
-          }}
-        />
+    const renderTextBanner = (text = 'You have unavailable item') => {
+      return (
         <div
           style={{
             width: '100%',
             display: 'flex',
-            justifyContent: 'center',
+            alignItems: 'flex-start',
+            marginTop: '30px',
+            flexDirection: 'column',
+          }}
+        >
+          <h1
+            style={{
+              fontSize: '14px',
+              padding: 0,
+              margin: 0,
+              letterSpacing: '.5px',
+              marginLeft: '3px',
+            }}
+          >
+            {text}
+          </h1>
+          <div
+            style={{
+              display: 'flex',
+              marginLeft: '3px',
+              alignItems: 'center',
+            }}
+          >
+            {renderIconInformation(color?.primary)}
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                color: color?.primary,
+                fontSize: '12px',
+                marginLeft: '5px',
+              }}
+            >
+              Item(s) will not be included in your payment
+            </p>
+          </div>
+        </div>
+      );
+    };
+
+    const renderItemList = (itemDetails, isDisable) => {
+      return (
+        <div
+          key={itemDetails?.productID}
+          className={fontStyleCustom.myFont}
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
           }}
         >
           <div
             style={{
+              opacity: isDisable ? 0.5 : 1,
+              pointerEvents: isDisable && 'none',
+              maxWidth: 'min(1280px, 100% - 20px)',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              display: 'grid',
+              gridTemplateColumns: '1.6fr 0.4fr',
+              gridTemplateRows: '1fr',
+              gap: '0px 0px',
+              gridTemplateAreas: '". ."',
+            }}
+          >
+            <div style={{ width: '100%' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginTop: '8px',
+                }}
+              >
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    backgroundColor: isDisable ? '#8A8D8E' : color.primary,
+                    borderRadius: '5px',
+                    color: 'white',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '5px',
+                  }}
+                >
+                  {itemDetails?.quantity}x
+                </div>
+                <div
+                  style={{
+                    fontWeight: 'bold',
+                    marginLeft: '5px',
+                    fontSize: '14px',
+                  }}
+                >
+                  {itemDetails?.product.name} ({' '}
+                  {handleCurrency(itemDetails?.grossAmount)} )
+                </div>
+              </div>
+
+              <ul
+                style={{
+                  color: '#8A8D8E',
+                  fontSize: '13px',
+                  padding: 0,
+                  margin: 0,
+                  listStyle: 'none',
+                }}
+              >
+                {!isEmptyArray(itemDetails.modifiers) && (
+                  <React.Fragment>
+                    <hr style={{ opacity: 0.5 }} />
+                    <li>
+                      Add-On:
+                      {itemDetails?.modifiers?.map((items) => {
+                        return items?.modifier?.details.map((item) => {
+                          return (
+                            <ul
+                              key={item?.name}
+                              style={{ paddingLeft: '10px' }}
+                            >
+                              <li>
+                                <span
+                                  style={{
+                                    color: isDisable
+                                      ? '#8A8D8E'
+                                      : color.primary,
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {item?.quantity}x{' '}
+                                </span>
+                                {item?.name}{' '}
+                                <span
+                                  style={{
+                                    color: isDisable
+                                      ? '#8A8D8E'
+                                      : color.primary,
+                                    fontWeight: 500,
+                                    fontSize: '12px',
+                                    fontStyle: 'italic',
+                                  }}
+                                >
+                                  +{handleCurrency(item?.price)}
+                                </span>
+                              </li>
+                            </ul>
+                          );
+                        });
+                      })}
+                    </li>
+                  </React.Fragment>
+                )}
+                {itemDetails?.remark && (
+                  <li>
+                    <table>
+                      <tr>
+                        <td
+                          className={fontStyleCustom.title}
+                          style={{
+                            textAlign: 'left',
+                            width: '100%',
+                            display: '-webkit-box',
+                            WebkitLineClamp: '3',
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            padding: 0,
+                            margin: 0,
+                          }}
+                        >
+                          <span style={{ fontWeight: 700 }}>Notes: </span>
+                          {itemDetails?.remark}
+                        </td>
+                      </tr>
+                    </table>
+                  </li>
+                )}
+              </ul>
+            </div>
+            <div>
+              <img alt='logo' src={renderImageProduct(itemDetails)} />
+            </div>
+          </div>
+          <div
+            style={{
+              marginLeft: 'auto',
+              marginRight: 'auto',
               width: '90%',
+              marginTop: '10px',
+              borderTop: `1px dashed ${isDisable ? '#8A8D8E' : color.primary}`,
+              marginBottom: '10px',
+            }}
+          />
+          <div
+            style={{
+              width: '100%',
               display: 'flex',
-              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <div
               style={{
+                width: '90%',
                 display: 'flex',
+                alignItems: 'center',
               }}
             >
-              {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
-                <Button
-                  sx={{
-                    width: '80px',
-                    border: `1px solid ${color?.primary}`,
-                    borderRadius: '10px',
-                    padding: '5px 0px',
-                    textTransform: 'capitalize',
-                    fontSize: '14px',
-                    color: color?.primary,
-                  }}
-                  onClick={() => {
-                    setProductDetailSpesific(itemDetails);
-                    setProductSpecific(itemDetails.product);
-                    setProductEditModal(true);
-                  }}
-                  startIcon={renderIconEdit(color?.primary)}
-                >
-                  Edit
-                </Button>
-              )}
               <div
-                onClick={() => {
-                  Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'You sure to delete this?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!',
-                  }).then(async (result) => {
-                    if (result.isConfirmed) {
-                      setIsLoading(true);
-                      const response = await dispatch(
-                        OrderAction.processRemoveCartGuestCheckoutMode(
-                          basket.guestID,
-                          itemDetails
-                        )
-                      );
-                      if (response?.resultCode === 200) {
-                        setRefreshData(!refreshData);
-                        Swal.fire('Deleted!', response.message, 'success');
-
-                        dispatch({
-                          type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-                          payload: {},
-                        });
-                        if (basket.details.length === 1) {
-                          dispatch({
-                            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-                            payload: '',
-                          });
-                          history.push('/');
-                        }
-                      } else {
-                        Swal.fire('Cancelled!', response, 'error');
-                      }
-                      setIsLoading(false);
-                    }
-                  });
-                }}
                 style={{
-                  marginLeft: '10px',
                   display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  cursor: 'pointer',
                 }}
               >
-                <IconButton
+                {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
+                  <Button
+                    sx={{
+                      width: '80px',
+                      border: `1px solid ${color?.primary}`,
+                      borderRadius: '10px',
+                      padding: '5px 0px',
+                      textTransform: 'capitalize',
+                      fontSize: '14px',
+                      color: color?.primary,
+                    }}
+                    onClick={() => {
+                      setProductDetailSpesific(itemDetails);
+                      setProductSpecific(itemDetails.product);
+                      setProductEditModal(true);
+                    }}
+                    startIcon={renderIconEdit(color?.primary)}
+                  >
+                    Edit
+                  </Button>
+                )}
+                <div
+                  onClick={() => {
+                    Swal.fire({
+                      title: 'Are you sure?',
+                      text: 'You sure to delete this?',
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Yes, delete it!',
+                    }).then(async (result) => {
+                      if (result.isConfirmed) {
+                        setIsLoading(true);
+                        const response = await dispatch(
+                          OrderAction.processRemoveCartGuestCheckoutMode(
+                            basket.guestID,
+                            itemDetails
+                          )
+                        );
+                        if (response?.resultCode === 200) {
+                          setRefreshData(!refreshData);
+                          Swal.fire('Deleted!', response.message, 'success');
+
+                          dispatch({
+                            type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+                            payload: {},
+                          });
+                          if (basket.details.length === 1) {
+                            dispatch({
+                              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+                              payload: '',
+                            });
+                            history.push('/');
+                          }
+                        } else {
+                          Swal.fire('Cancelled!', response, 'error');
+                        }
+                        setIsLoading(false);
+                      }
+                    });
+                  }}
                   style={{
-                    color: color?.primary,
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    padding: 0,
-                    margin: 0,
-                    marginRight: '5px',
+                    marginLeft: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
                   }}
                 >
-                  <DeleteIcon fontSize='large' />
-                </IconButton>
-                <p
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    color: color?.primary,
-                    fontWeight: 500,
-                    fontSize: '14px',
-                  }}
-                >
-                  Delete
-                </p>
+                  <IconButton
+                    style={{
+                      color: color?.primary,
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      padding: 0,
+                      margin: 0,
+                      marginRight: '5px',
+                    }}
+                  >
+                    <DeleteIcon fontSize='large' />
+                  </IconButton>
+                  <p
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      color: color?.primary,
+                      fontWeight: 500,
+                      fontSize: '14px',
+                    }}
+                  >
+                    Delete
+                  </p>
+                </div>
               </div>
+              {renderPrice(itemDetails, isDisable)}
             </div>
-            {renderPrice(itemDetails, isDisable)}
           </div>
         </div>
-      </div>
-    );
-  };
+      );
+    };
 
-  const renderCartProductList = () => {
-    const isDisable = true;
-    const sortItemForPriceHighest = basket?.details.sort(
-      (a, b) => b.unitPrice - a.unitPrice
-    );
-    const sortOrderingStatusItem = sortItemForPriceHighest?.sort(
-      (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
-    );
+    const renderCartProductList = () => {
+      const isDisable = true;
+      const sortItemForPriceHighest = basket?.details.sort(
+        (a, b) => b.unitPrice - a.unitPrice
+      );
+      const sortOrderingStatusItem = sortItemForPriceHighest?.sort(
+        (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
+      );
 
-    return sortOrderingStatusItem?.map((itemDetails) => {
-      if (itemDetails.orderingStatus === 'UNAVAILABLE') {
-        if (itemDetails.modifiers.length > 0) {
-          return (
-            <React.Fragment>
-              {renderTextBanner('Add On Unavailable')}
-              {renderItemList(itemDetails, isDisable)}
-            </React.Fragment>
-          );
+      return sortOrderingStatusItem?.map((itemDetails) => {
+        if (itemDetails.orderingStatus === 'UNAVAILABLE') {
+          if (itemDetails.modifiers.length > 0) {
+            return (
+              <React.Fragment>
+                {renderTextBanner('Add On Unavailable')}
+                {renderItemList(itemDetails, isDisable)}
+              </React.Fragment>
+            );
+          } else {
+            return (
+              <React.Fragment>
+                {renderTextBanner('Item Unavailable')}
+                {renderItemList(itemDetails, isDisable)}
+              </React.Fragment>
+            );
+          }
         } else {
-          return (
-            <React.Fragment>
-              {renderTextBanner('Item Unavailable')}
-              {renderItemList(itemDetails, isDisable)}
-            </React.Fragment>
-          );
+          return renderItemList(itemDetails);
         }
-      } else {
-        return renderItemList(itemDetails);
-      }
-    });
-  };
+      });
+    };
 
-  const renderLabelOrderingDetail = () => {
-    return (
-      <div style={{ width: '100%', marginTop: '25px' }}>
-        <Typography
-          style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-          className={fontStyleCustom.myFont}
-        >
-          Ordering Detail
-        </Typography>
-      </div>
-    );
-  };
-
-  const renderOrderingMode = () => {
-    return (
-      <div
-        onClick={() => setOpenOrderingMode(true)}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 5px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
+    const renderLabelOrderingDetail = () => {
+      return (
+        <div style={{ width: '100%', marginTop: '25px' }}>
           <Typography
             style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
             className={fontStyleCustom.myFont}
           >
-            Ordering Mode
+            Ordering Detail
           </Typography>
+        </div>
+      );
+    };
+
+    const renderOrderingMode = () => {
+      return (
+        <div
+          onClick={() => setOpenOrderingMode(true)}
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '20px 5px',
+          }}
+        >
           <div
             style={{
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              marginRight: '10px',
+              width: '100%',
             }}
           >
             <Typography
-              style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
+              style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
               className={fontStyleCustom.myFont}
             >
-              {!orderingModeGuestCheckout
-                ? 'Ordering Mode'
-                : orderingModeGuestCheckout}
+              Ordering Mode
             </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-          </div>
-        </div>
-
-        {orderingModeGuestCheckout === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
+            <div
               style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '10px',
               }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
             >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
+              <Typography
+                style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
+                className={fontStyleCustom.myFont}
+              >
+                {!orderingModeGuestCheckout
+                  ? 'Ordering Mode'
+                  : orderingModeGuestCheckout}
+              </Typography>
+              <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
             </div>
           </div>
-        )}
-      </div>
-    );
-  };
 
-  const handleButtonDisable = (key) => {
-    const isAllItemUnavailable = basket?.details.every(
-      (item) => item.orderingStatus === 'UNAVAILABLE'
-    );
-    if (isAllItemUnavailable) {
-      return isAllItemUnavailable;
-    }
-    const reqDelivery = deliveryAddresGuest.deliveryAddress;
-    const reqProvider = providerGuestCheckout;
-    const reqTimeSlot = timeslot;
-    const reqAvailableTime = availableTime;
-    const requiredForm =
-      formik.values.name && formik.values.phoneNo && formRegexMail;
+          {orderingModeGuestCheckout === 'STOREPICKUP' && (
+            <div style={{ marginTop: '20px' }}>
+              <hr
+                style={{
+                  backgroundColor: '#8A8D8E',
+                  opacity: 0.5,
+                }}
+              />
+              <div
+                style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
+              >
+                Outlet Address
+              </div>
+              <div
+                style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
+              >
+                {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
+                {defaultOutlet?.postalCode}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
 
-    const isDeliveryActive = availableTime
-      ? reqTimeSlot && reqAvailableTime && reqProvider
-      : reqDelivery && reqProvider;
+    const handleButtonDisable = (key) => {
+      const isAllItemUnavailable = basket?.details.every(
+        (item) => item.orderingStatus === 'UNAVAILABLE'
+      );
+      if (isAllItemUnavailable) {
+        return isAllItemUnavailable;
+      }
+      const reqDelivery = deliveryAddresGuest.deliveryAddress;
+      const reqProvider = providerGuestCheckout;
+      const reqTimeSlot = timeslot;
+      const reqAvailableTime = availableTime;
+      const requiredForm =
+        formik.values.name && formik.values.phoneNo && formRegexMail;
 
-    const isTakeAwayActive = availableTime
-      ? requiredForm && reqTimeSlot
-      : requiredForm;
+      const isDeliveryActive = availableTime
+        ? reqTimeSlot && reqAvailableTime && reqProvider
+        : reqDelivery && reqProvider;
 
-    const isPickUpActive = availableTime
-      ? requiredForm && reqTimeSlot
-      : requiredForm;
+      const isTakeAwayActive = availableTime
+        ? requiredForm && reqTimeSlot
+        : requiredForm;
 
-    const isDineInActive = availableTime
-      ? requiredForm && reqTimeSlot
-      : requiredForm;
+      const isPickUpActive = availableTime
+        ? requiredForm && reqTimeSlot
+        : requiredForm;
 
-    switch (key) {
-      case 'DELIVERY':
-        if (isDeliveryActive) {
-          return false;
-        } else {
+      const isDineInActive = availableTime
+        ? requiredForm && reqTimeSlot
+        : requiredForm;
+
+      switch (key) {
+        case 'DELIVERY':
+          if (isDeliveryActive) {
+            return false;
+          } else {
+            return true;
+          }
+        case 'TAKEAWAY':
+          if (isTakeAwayActive) {
+            return false;
+          } else {
+            return true;
+          }
+        case 'STOREPICKUP':
+          if (isPickUpActive) {
+            return false;
+          } else {
+            return true;
+          }
+        case 'DINEIN':
+          if (isDineInActive) {
+            return false;
+          } else {
+            return true;
+          }
+        default:
           return true;
-        }
-      case 'TAKEAWAY':
-        if (isTakeAwayActive) {
-          return false;
-        } else {
-          return true;
-        }
-      case 'STOREPICKUP':
-        if (isPickUpActive) {
-          return false;
-        } else {
-          return true;
-        }
-      case 'DINEIN':
-        if (isDineInActive) {
-          return false;
-        } else {
-          return true;
-        }
-      default:
-        return true;
-    }
-  };
+      }
+    };
 
-  const renderButtonDisable = () => {
-    return (
-      <div style={styles.rootSubmitButton}>
-        <Button
-          onClick={async () => {
-            const getAllOutlets = await dispatch(
-              OutletAction.fetchAllOutlet(true)
-            );
-            const filterOutletUnavailable = getAllOutlets.find(
-              (item) => item.name === defaultOutlet.name
-            );
-            if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
-              Swal.fire({
-                title: '<p>The outlet is not available</p>',
-                text: `${defaultOutlet.name} is currently not available,please select another outlet`,
-                allowOutsideClick: false,
-                confirmButtonText: 'OK',
-                confirmButtonColor: color?.primary,
-                customClass: {
-                  confirmButton: fontStyleCustom.buttonSweetAlert,
-                  text: fontStyleCustom.textModalOutlet,
-                },
-              }).then(() => {
-                history.push('/outlets');
-              });
-            } else {
-              handlePaymentGuestMode();
-            }
-          }}
-          disabled={handleButtonDisable(orderingModeGuestCheckout)}
-          style={{
-            backgroundColor: color.primary,
-            borderRadius: '15px',
-            padding: '20px',
-            width: '100%',
-          }}
-        >
-          <Typography
-            className={fontStyleCustom.myFont}
-            sx={{
-              fontWeight: 500,
-              fontSize: '14px',
-              color: 'white',
+    const renderButtonDisable = () => {
+      return (
+        <div style={styles.rootSubmitButton}>
+          <Button
+            onClick={async () => {
+              const getAllOutlets = await dispatch(
+                OutletAction.fetchAllOutlet(true)
+              );
+              const filterOutletUnavailable = getAllOutlets.find(
+                (item) => item.name === defaultOutlet.name
+              );
+              if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
+                Swal.fire({
+                  title: '<p>The outlet is not available</p>',
+                  text: `${defaultOutlet.name} is currently not available,please select another outlet`,
+                  allowOutsideClick: false,
+                  confirmButtonText: 'OK',
+                  confirmButtonColor: color?.primary,
+                  customClass: {
+                    confirmButton: fontStyleCustom.buttonSweetAlert,
+                    text: fontStyleCustom.textModalOutlet,
+                  },
+                }).then(() => {
+                  history.push('/outlets');
+                });
+              } else if (
+                !filterOutletUnavailable?.[itemOrderingMode?.isEnabledFieldName]
+              ) {
+                Swal.fire({
+                  title: '<p>The Ordering mode is not available</p>',
+                  text: `${itemOrderingMode.name} is currently not available,please select another outlet`,
+                  allowOutsideClick: false,
+                  confirmButtonText: 'OK',
+                  confirmButtonColor: color?.primary,
+                  customClass: {
+                    confirmButton: fontStyleCustom.buttonSweetAlert,
+                    text: fontStyleCustom.textModalOutlet,
+                  },
+                }).then(() => {
+                  setOpenOrderingMode(true);
+                });
+              } else {
+                handlePaymentGuestMode();
+              }
+            }}
+            disabled={handleButtonDisable(orderingModeGuestCheckout)}
+            style={{
+              backgroundColor: color.primary,
+              borderRadius: '15px',
+              padding: '20px',
+              width: '100%',
             }}
           >
-            Payment
-          </Typography>
-        </Button>
-      </div>
-    );
-  };
+            <Typography
+              className={fontStyleCustom.myFont}
+              sx={{
+                fontWeight: 500,
+                fontSize: '14px',
+                color: 'white',
+              }}
+            >
+              Payment
+            </Typography>
+          </Button>
+        </div>
+      );
+    };
   const renderTotal = () => {
     return (
       <Paper
