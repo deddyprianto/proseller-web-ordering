@@ -346,7 +346,6 @@ const ProductCart = ({ item, ...props }) => {
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridTemplateAreas: '". ."',
-          opacity: props.isDisable ? 0.5 : 1,
           pointerEvents: props.isDisable && 'none',
         }}
       >
@@ -426,34 +425,47 @@ const ProductCart = ({ item, ...props }) => {
                       return (
                         <ul key={item?.name} style={{ paddingLeft: '10px' }}>
                           <li>
-                            <span
+                            <div
                               style={{
-                                color: props.isDisable
-                                  ? '#8A8D8E'
-                                  : props.color.primary,
-                                fontWeight: 600,
+                                display: 'flex',
+                                alignItems: 'center',
+                                marginTop: '5px',
                               }}
                             >
-                              {item?.quantity}x{' '}
-                            </span>
-                            {item?.name}{' '}
-                            <span
-                              style={{
-                                color: props.isDisable
-                                  ? '#8A8D8E'
-                                  : props.color.primary,
-                                fontWeight: 500,
-                                fontSize: '12px',
-                                fontStyle: 'italic',
-                              }}
-                            >
-                              +{handleCurrency(item?.price)}
-                            </span>
-                            {item.orderingStatus === 'UNAVAILABLE' && (
-                              <span style={{ marginLeft: '5px' }}>
-                                {renderIconInformation(props.color?.primary)}
-                              </span>
-                            )}
+                              <div
+                                style={{
+                                  color: props.isDisable
+                                    ? '#8A8D8E'
+                                    : props.color.primary,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {item?.quantity}x{' '}
+                              </div>
+                              {item?.name}{' '}
+                              <div
+                                style={{
+                                  color: props.isDisable
+                                    ? '#8A8D8E'
+                                    : props.color.primary,
+                                  fontWeight: 500,
+                                  fontSize: '12px',
+                                  fontStyle: 'italic',
+                                }}
+                              >
+                                +{handleCurrency(item?.price)}
+                              </div>
+                              {item.orderingStatus === 'UNAVAILABLE' && (
+                                <div
+                                  style={{
+                                    marginLeft: '5px',
+                                    paddingTop: '6px',
+                                  }}
+                                >
+                                  {renderIconInformation(props.color?.primary)}
+                                </div>
+                              )}
+                            </div>
                           </li>
                         </ul>
                       );
@@ -494,6 +506,7 @@ const ProductCart = ({ item, ...props }) => {
             src={renderImageProduct(item)}
             alt={item?.product.name || ''}
             title={item?.product.name}
+            className={props.isDisable && fontStyleCustom.filter}
           />
         </div>
       </div>

@@ -1,16 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap');
 
+.filter {
+  position: relative;
+  -webkit-filter: contrast(110%) brightness(110%) sepia(30%) grayscale(100%);
+  filter: contrast(110%) brightness(110%) sepia(30%) grayscale(100%);
+}
+.filter::before {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+}
 .myFont{
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
-.buttonSweetAlert{
-  width: 100%;
-  border-radius: 10px !important;
-  margin-top: 20px;
-}
-.textModalOutlet{
-  margin-top: 15px;
-}
+
 .dropDownMenu{
   border: none !important;
   border-radius: 7px !important;
