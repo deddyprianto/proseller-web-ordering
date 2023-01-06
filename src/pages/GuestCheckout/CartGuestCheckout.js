@@ -786,7 +786,6 @@ const CartGuestCheckout = () => {
       >
         <div
           style={{
-            opacity: isDisable ? 0.5 : 1,
             pointerEvents: isDisable && 'none',
             maxWidth: 'min(1280px, 100% - 20px)',
             marginLeft: 'auto',
@@ -852,25 +851,48 @@ const CartGuestCheckout = () => {
                         return (
                           <ul key={item?.name} style={{ paddingLeft: '10px' }}>
                             <li>
-                              <span
+                              <div
                                 style={{
-                                  color: isDisable ? '#8A8D8E' : color.primary,
-                                  fontWeight: 600,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  marginTop: '5px',
                                 }}
                               >
-                                {item?.quantity}x{' '}
-                              </span>
-                              {item?.name}{' '}
-                              <span
-                                style={{
-                                  color: isDisable ? '#8A8D8E' : color.primary,
-                                  fontWeight: 500,
-                                  fontSize: '12px',
-                                  fontStyle: 'italic',
-                                }}
-                              >
-                                +{handleCurrency(item?.price)}
-                              </span>
+                                <div
+                                  style={{
+                                    color: isDisable
+                                      ? '#8A8D8E'
+                                      : color?.primary,
+                                    fontWeight: 600,
+                                    marginRight: '1px',
+                                  }}
+                                >
+                                  {item?.quantity}x{' '}
+                                </div>
+                                {item?.name}{' '}
+                                <div
+                                  style={{
+                                    color: isDisable
+                                      ? '#8A8D8E'
+                                      : color?.primary,
+                                    fontWeight: 500,
+                                    fontSize: '12px',
+                                    fontStyle: 'italic',
+                                  }}
+                                >
+                                  +{handleCurrency(item?.price)}
+                                </div>
+                                {item.orderingStatus === 'UNAVAILABLE' && (
+                                  <div
+                                    style={{
+                                      marginLeft: '5px',
+                                      paddingTop: '6px',
+                                    }}
+                                  >
+                                    {renderIconInformation('red')}
+                                  </div>
+                                )}
+                              </div>
                             </li>
                           </ul>
                         );
@@ -906,7 +928,11 @@ const CartGuestCheckout = () => {
             </ul>
           </div>
           <div>
-            <img alt='logo' src={renderImageProduct(itemDetails)} />
+            <img
+              alt='logo'
+              src={renderImageProduct(itemDetails)}
+              className={isDisable && fontStyleCustom.filter}
+            />
           </div>
         </div>
         <div

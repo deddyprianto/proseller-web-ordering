@@ -438,6 +438,7 @@ const ProductCart = ({ item, ...props }) => {
                                     ? '#8A8D8E'
                                     : props.color.primary,
                                   fontWeight: 600,
+                                  marginRight: '1px',
                                 }}
                               >
                                 {item?.quantity}x{' '}
@@ -462,7 +463,7 @@ const ProductCart = ({ item, ...props }) => {
                                     paddingTop: '6px',
                                   }}
                                 >
-                                  {renderIconInformation(props.color?.primary)}
+                                  {renderIconInformation('red')}
                                 </div>
                               )}
                             </div>
@@ -583,11 +584,7 @@ const ProductCart = ({ item, ...props }) => {
                 >
                   <DeleteIcon fontSize='large' />
                 </IconButton>
-                <p
-                  style={{ color: props.color.primary, margin: 0, padding: 0 }}
-                >
-                  Delete
-                </p>
+                <p style={{ color: 'red', margin: 0, padding: 0 }}>Delete</p>
               </div>
             </div>
             <div style={{ color: props.color.primary }}>{renderPrice()}</div>

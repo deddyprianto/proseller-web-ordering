@@ -159,7 +159,7 @@ const ProductCartList = ({ ...props }) => {
             alignItems: 'center',
           }}
         >
-          {renderIconInformation(props.color?.primary)}
+          {renderIconInformation('red')}
           <p
             style={{
               padding: 0,
@@ -242,7 +242,7 @@ const ProductCartList = ({ ...props }) => {
             alignItems: 'center',
           }}
         >
-          {renderIconInformation(props.color?.primary)}
+          {renderIconInformation('red')}
           <h1
             style={{
               fontSize: '14px',
