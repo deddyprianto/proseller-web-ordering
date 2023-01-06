@@ -295,7 +295,10 @@ const CartGuestCheckout = () => {
     rootInclusiveTax: {
       display: 'flex',
       justifyContent: 'space-between',
-      padding: '5px 0px',
+      paddingLeft: 10,
+      paddingRight: 10,
+      marginTop: 10,
+      opacity: 0.5,
     },
     inclusiveTax: {
       color: '#808080',
@@ -303,16 +306,30 @@ const CartGuestCheckout = () => {
     },
     subTotal: {
       fontWeight: 500,
-      color: 'black',
-      fontSize: 14,
+      fontSize: 16,
     },
     rootSubTotalItem: {
       display: 'flex',
       justifyContent: 'space-between',
       paddingLeft: 10,
       paddingRight: 10,
-      paddingTop: 10,
     },
+    gapContainer: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      marginTop: 15,
+    },
+    bottomLineContainer: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    gap: {
+      backgroundColor: '#D6D6D6',
+      width: '95%',
+      opacity: 0.5,
+    }
   };
 
   const myCountryCodesObject = countryCodes.customList(
@@ -1320,14 +1337,6 @@ const CartGuestCheckout = () => {
           </div>
           {renderButtonDisable()}
         </div>
-
-        {basket?.inclusiveTax !== 0 && (
-          <div style={styles.rootInclusiveTax}>
-            <Typography style={styles.inclusiveTax}>
-              Inclusive Tax {handleCurrency(basket?.inclusiveTax)}
-            </Typography>
-          </div>
-        )}
       </Paper>
     );
   };
@@ -1703,39 +1712,86 @@ const CartGuestCheckout = () => {
             padding: '10px',
           }}
         >
-          {basket?.provider?.deliveryFee !== 0 && (
+          <>
+            <div style={styles.rootSubTotalItem}>
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={styles.subTotal}
+              >
+                Subtotal b/f disc.
+              </Typography>
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={styles.subTotal}
+              >
+                {handleCurrency(basket?.totalGrossAmount)}
+              </Typography>
+            </div>
+            <div style={styles.gapContainer} />
+          </>
+          {basket?.totalDiscountAmount !== 0 && (
+            <>
+              <div style={styles.rootSubTotalItem}>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={styles.totalDiscount}
+                >
+                  Discount
+                </Typography>
+                <Typography
+                  className={fontStyleCustom.myFont}
+                  style={styles.totalDiscount}
+                >
+                  - {handleCurrency(basket?.totalDiscountAmount)}
+                </Typography>
+              </div>
+              <div style={styles.gapContainer} />
+            </>
+          )}
+          {basket?.totalSurchargeAmount !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  Total
+                  Service Charge
                 </Typography>
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  {handleCurrency(basket?.totalGrossAmount)}
+                  {handleCurrency(basket?.totalSurchargeAmount)}
                 </Typography>
               </div>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <hr
-                  style={{
-                    backgroundColor: '#D6D6D6',
-                    width: '95%',
-                    opacity: 0.5,
-                  }}
-                />
+              <div style={styles.gapContainer}>
+                <hr style={styles.gap}/>
               </div>
             </>
           )}
+
+          <>
+            <div style={styles.rootSubTotalItem}>
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={styles.subTotal}
+              >
+                Subtotal
+              </Typography>
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={styles.subTotal}
+              >
+                {handleCurrency(
+                  basket?.totalGrossAmount +
+                  basket?.totalSurchargeAmount -
+                  basket?.totalDiscountAmount
+                )}
+              </Typography>
+            </div>
+            <div style={styles.gapContainer} />
+          </>
+
           {basket?.orderingMode === 'DELIVERY' && (
             <>
               {basket?.provider?.deliveryFee !== 0 && (
@@ -1744,7 +1800,7 @@ const CartGuestCheckout = () => {
                     className={fontStyleCustom.myFont}
                     style={styles.subTotal}
                   >
-                    Delivery Cost
+                    Delivery Fee
                   </Typography>
                   <Typography
                     className={fontStyleCustom.myFont}
@@ -1771,24 +1827,11 @@ const CartGuestCheckout = () => {
                   </Typography>
                 </div>
               ) : null}
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <hr
-                  style={{
-                    backgroundColor: '#D6D6D6',
-                    width: '95%',
-                    opacity: 0.5,
-                  }}
-                />
-              </div>
+              <div style={styles.gapContainer} />
             </>
           )}
-          {basket?.exclusiveTax !== 0 && (
+
+          {basket?.totalTaxAmount > 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography
@@ -1801,93 +1844,17 @@ const CartGuestCheckout = () => {
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  {handleCurrency(basket?.exclusiveTax)}
+                  {handleCurrency(basket?.totalTaxAmount)}
                 </Typography>
               </div>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <hr
-                  style={{
-                    backgroundColor: '#D6D6D6',
-                    width: '95%',
-                    opacity: 0.5,
-                  }}
-                />
-              </div>
-            </>
-          )}
-          {basket?.totalDiscountAmount !== 0 && (
-            <>
-              <div style={styles.rootSubTotalItem}>
-                <Typography
-                  className={fontStyleCustom.myFont}
-                  style={styles.totalDiscount}
-                >
-                  Discount
-                </Typography>
-                <Typography
-                  className={fontStyleCustom.myFont}
-                  style={styles.totalDiscount}
-                >
-                  - {handleCurrency(basket?.totalDiscountAmount)}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <hr
-                  style={{
-                    backgroundColor: '#D6D6D6',
-                    width: '95%',
-                    opacity: 0.5,
-                  }}
-                />
-              </div>
-            </>
-          )}
-          {basket?.totalSurchargeAmount !== 0 && (
-            <>
-              <div style={styles.rootSubTotalItem}>
-                <Typography
-                  className={fontStyleCustom.myFont}
-                  style={styles.subTotal}
-                >
-                  Surcharge
-                </Typography>
-                <Typography
-                  className={fontStyleCustom.myFont}
-                  style={styles.subTotal}
-                >
-                  {handleCurrency(basket?.totalSurchargeAmount)}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <hr
-                  style={{
-                    backgroundColor: '#D6D6D6',
-                    width: '95%',
-                    opacity: 0.5,
-                  }}
-                />
-              </div>
+              <div style={styles.gapContainer} />
             </>
           )}
 
+          <div style={styles.bottomLineContainer}>
+            <hr style={styles.gap}/>
+          </div>
+    
           <div
             style={{
               display: 'flex',
@@ -1896,7 +1863,7 @@ const CartGuestCheckout = () => {
           >
             <p
               style={{
-                fontWeight: 500,
+                fontWeight: 800,
                 fontSize: '16px',
                 margin: 0,
                 padding: '0px 0px 0px 10px',
@@ -1911,7 +1878,7 @@ const CartGuestCheckout = () => {
                 margin: 0,
                 padding: 0,
                 paddingRight: '10px',
-                color: color.primary,
+                color: color?.primary,
               }}
             >
               {handleCurrency(basket?.totalNettAmount)}
