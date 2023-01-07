@@ -11,7 +11,6 @@ function getCampaignStamps() {
       'bearer'
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log('Error on getCampaignStamps:', response);
       dispatch(setData(null, CONSTANT.GET_CAMPAIGN_STAMPS));
     }
 

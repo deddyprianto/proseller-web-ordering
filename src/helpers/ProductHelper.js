@@ -3,7 +3,6 @@ import { isEmptyArray } from './CheckEmpty';
 const getInitialProductValue = (productSelected, mode) => {
   let product = JSON.stringify(productSelected);
   product = JSON.parse(product);
-  console.log('calling select product');
   try {
     product.product.productModifiers.forEach((group, i) => {
       if (!isEmptyArray(group.modifier.details))

@@ -59,7 +59,6 @@ const App = (props) => {
   } = props;
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
-  console.log('Add New Deployment Script');
 
   const [enableOrdering, setEnableOrdering] = useState(false);
   const domainNameExist = props.domainName && props.domainName.length > 0;
@@ -191,7 +190,7 @@ const App = (props) => {
 
     if (param && param['referral'] && !isLoggedIn && !account) {
       const referralCode = param['referral'].split('#')[0];
-      console.log('I have referral!', referralCode);
+
       const isAvailable = await props.dispatch(
         ReferralAction.getReferralById(referralCode)
       );

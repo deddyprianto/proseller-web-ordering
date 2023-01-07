@@ -23,7 +23,6 @@ class DetailMembership extends Component {
     const selectedMembership = encryptor.decrypt(
       JSON.parse(localStorage.getItem(`${config.prefix}_selectedMembership`))
     );
-    console.log(selectedMembership, 'selectedMembership')
 
     this.state = {
       memberships: [],
