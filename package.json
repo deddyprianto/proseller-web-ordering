@@ -35,7 +35,7 @@
     "lodash": "^4.17.19",
     "lottie-react-web": "^2.2.2",
     "moment": "^2.27.0",
-    "node-sass": "4.14.1",
+    "node-sass": "8.0.0",
     "password-generation": "^1.1.0",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
