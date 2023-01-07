@@ -10,7 +10,7 @@ import useStyles from './styles';
  */
 const ImageContainer = ({ image, ...props }) => {
   const [isLandscape, setIsLandscape] = useState(true);
-  console.log('ImageContainer isLandscape', isLandscape);
+
 
   const styles = useStyles({ isLandscape });
 
