@@ -920,13 +920,13 @@ const Payment = ({ ...props }) => {
     if (filterOutletUnavailable?.orderingStatus === 'UNAVAILABLE') {
       Swal.fire({
         title: '<p>The outlet is not available</p>',
-        text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
+        html: `<h5 style='color:#B7B7B7; font-size:12px'>${props.defaultOutlet.name} is currently not available, please select another outlet</h5>`,
         allowOutsideClick: false,
         confirmButtonText: 'OK',
         confirmButtonColor: props.color?.primary,
+        width: '40em',
         customClass: {
           confirmButton: fontStyleCustom.buttonSweetAlert,
-          text: fontStyleCustom.textModalOutlet,
         },
       }).then(() => {
         history.push('/outlets');
@@ -935,14 +935,14 @@ const Payment = ({ ...props }) => {
       !filterOutletUnavailable?.[props.itemOrderingMode?.isEnabledFieldName]
     ) {
       Swal.fire({
-        title: '<p>The Ordering mode is not available</p>',
-        text: `${props.itemOrderingMode.name} is currently not available,please select another outlet`,
+        title: '<p>Ordering mode is not available</p>',
+        html: `<h5 style='color:#B7B7B7; font-size:12px'>${props.itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
         allowOutsideClick: false,
         confirmButtonText: 'OK',
         confirmButtonColor: props.color?.primary,
+        width: '40em',
         customClass: {
           confirmButton: fontStyleCustom.buttonSweetAlert,
-          text: fontStyleCustom.textModalOutlet,
         },
       }).then(() => {
         history.push({

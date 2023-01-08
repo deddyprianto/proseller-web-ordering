@@ -428,7 +428,6 @@ const ProductCart = ({ item, ...props }) => {
                             <div
                               style={{
                                 display: 'flex',
-                                alignItems: 'center',
                                 marginTop: '5px',
                               }}
                             >
@@ -443,15 +442,7 @@ const ProductCart = ({ item, ...props }) => {
                               >
                                 {item?.quantity}x{' '}
                               </div>
-                              <div
-                                style={{
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                {item?.name}
-                              </div>
+                              <div>{item?.name}</div>
                               <div
                                 style={{
                                   color: props.isDisable
@@ -460,6 +451,7 @@ const ProductCart = ({ item, ...props }) => {
                                   fontWeight: 500,
                                   fontSize: '12px',
                                   fontStyle: 'italic',
+                                  alignSelf: 'flex-end',
                                 }}
                               >
                                 +{handleCurrency(item?.price)}
