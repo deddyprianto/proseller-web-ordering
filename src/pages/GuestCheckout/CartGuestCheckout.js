@@ -1308,8 +1308,8 @@ const CartGuestCheckout = () => {
               );
               if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
                 Swal.fire({
-                  title: '<p>The outlet is offline</p>',
-                  html: `<h5 style='color:#B7B7B7; font-size:12px'>${defaultOutlet.name} is currently offline, please select another outlet</h5>`,
+                  title: '<p>The outlet is not available</p>',
+                  html: `<h5 style='color:#B7B7B7; font-size:12px'>${defaultOutlet.name} is currently not available, please select another outlet</h5>`,
                   width: '40em',
                   allowOutsideClick: false,
                   confirmButtonText: 'OK',
