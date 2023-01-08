@@ -452,20 +452,21 @@ const ProductCart = ({ item, ...props }) => {
                                   fontSize: '12px',
                                   fontStyle: 'italic',
                                   alignSelf: 'flex-end',
+                                  display: 'flex',
                                 }}
                               >
                                 +{handleCurrency(item?.price)}
+                                {item.orderingStatus === 'UNAVAILABLE' && (
+                                  <div
+                                    style={{
+                                      marginLeft: '5px',
+                                      paddingTop: '4px',
+                                    }}
+                                  >
+                                    {renderIconInformation('red', '17')}
+                                  </div>
+                                )}
                               </div>
-                              {item.orderingStatus === 'UNAVAILABLE' && (
-                                <div
-                                  style={{
-                                    marginLeft: '5px',
-                                    paddingTop: '6px',
-                                  }}
-                                >
-                                  {renderIconInformation('red')}
-                                </div>
-                              )}
                             </div>
                           </li>
                         </ul>

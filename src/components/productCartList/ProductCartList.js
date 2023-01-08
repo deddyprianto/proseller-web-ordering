@@ -212,29 +212,20 @@ const ProductCartList = ({ ...props }) => {
     return result;
   };
 
-  const isUnavailableExist = props.basket.details.some(
+  const isUnavailableExist = props.basket.details?.some(
     (item) => item.orderingStatus === 'UNAVAILABLE'
   );
-  const textItem = () => {
-    return (
-      <div
-        className={fontStyleCustom.myFont}
-        style={{
-          width: '100%',
-          marginBottom: '10px',
-          marginTop: '10px',
-        }}
-      >
-        <h1 style={{ fontSize: '16px' }}>Items</h1>
-      </div>
-    );
-  };
-  return (
-    <div>
-      {renderTitleNameForCart()}
-      {renderLabelNeedAnythingElse()}
-      {textItem()}
-      {isUnavailableExist && (
+
+  const isOrderingStatusUnavailable = props.basket?.details?.every(
+    (item) => item.orderingStatus === 'UNAVAILABLE'
+  );
+
+  const renderTextInformationUnAvailabeItem = () => {
+    if (isOrderingStatusUnavailable) {
+      return null;
+    }
+    if (isUnavailableExist) {
+      return (
         <div
           style={{
             width: '100%',
@@ -256,7 +247,15 @@ const ProductCartList = ({ ...props }) => {
             You have unavailable item
           </h1>
         </div>
-      )}
+      );
+    }
+  };
+
+  return (
+    <div>
+      {renderTitleNameForCart()}
+      {renderLabelNeedAnythingElse()}
+      {renderTextInformationUnAvailabeItem()}
       {renderBasketItems()}
     </div>
   );
