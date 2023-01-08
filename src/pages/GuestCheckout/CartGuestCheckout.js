@@ -822,7 +822,6 @@ const CartGuestCheckout = () => {
                       <div
                         style={{
                           display: 'flex',
-                          alignItems: 'center',
                           marginTop: '5px',
                         }}
                       >
@@ -835,21 +834,16 @@ const CartGuestCheckout = () => {
                         >
                           {item?.quantity}x{' '}
                         </div>
-                        <div
-                          style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {item?.name}
-                        </div>
+
+                        <div>{item?.name}</div>
+
                         <div
                           style={{
                             color: isDisable ? '#8A8D8E' : color?.primary,
                             fontWeight: 500,
                             fontSize: '12px',
                             fontStyle: 'italic',
+                            alignSelf: 'flex-end',
                           }}
                         >
                           +{handleCurrency(item?.price)}
@@ -1315,13 +1309,13 @@ const CartGuestCheckout = () => {
               if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
                 Swal.fire({
                   title: '<p>The outlet is not available</p>',
-                  text: `${defaultOutlet.name} is currently not available,please select another outlet`,
+                  html: `<h5 style='color:#B7B7B7; font-size:12px'>${defaultOutlet.name} is currently not available, please select another outlet</h5>`,
+                  width: '40em',
                   allowOutsideClick: false,
                   confirmButtonText: 'OK',
                   confirmButtonColor: color?.primary,
                   customClass: {
                     confirmButton: fontStyleCustom.buttonSweetAlert,
-                    text: fontStyleCustom.textModalOutlet,
                   },
                 }).then(() => {
                   history.push('/outlets');
@@ -1330,14 +1324,14 @@ const CartGuestCheckout = () => {
                 !filterOutletUnavailable?.[itemOrderingMode?.isEnabledFieldName]
               ) {
                 Swal.fire({
-                  title: '<p>The Ordering mode is not available</p>',
-                  text: `${itemOrderingMode.name} is currently not available,please select another outlet`,
+                  title: '<p>Ordering mode is not available</p>',
+                  html: `<h5 style='color:#B7B7B7; font-size:12px'>${itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
                   allowOutsideClick: false,
+                  width: '40em',
                   confirmButtonText: 'OK',
                   confirmButtonColor: color?.primary,
                   customClass: {
                     confirmButton: fontStyleCustom.buttonSweetAlert,
-                    text: fontStyleCustom.textModalOutlet,
                   },
                 }).then(() => {
                   setOpenOrderingMode(true);

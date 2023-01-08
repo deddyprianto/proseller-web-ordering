@@ -16,6 +16,10 @@
   pointer-events: none;
   background: rgba(0, 0, 0, 0);
 }
+.buttonSweetAlert{
+  width: 100%;
+  border-radius: 10px !important;
+}
 .myFont{
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
