@@ -116,9 +116,7 @@ function getDomainName() {
     const domainName =
       window.location.hostname !== 'localhost'
         ? window.location.hostname
-        : 'ordering-chickyfun.proseller-demo.com';
-    // : 'ordering-acemart-demo.proseller.io';
-    // 'ordering-qa-retail.proseller-demo.com';
+        : process.env.REACT_APP_COMPANY_URL;
     try {
       fetch(process.env.REACT_APP_DOMAIN_MAPPING_URL, {
         method: 'POST',
