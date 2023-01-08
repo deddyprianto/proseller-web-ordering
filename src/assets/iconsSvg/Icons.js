@@ -26,11 +26,11 @@ const renderIconEdit = (primary) => (
     />
   </svg>
 );
-const renderIconInformation = (primary) => {
+const renderIconInformation = (primary, size = '20') => {
   return (
     <svg
-      width='20'
-      height='20'
+      width={size}
+      height={size}
       viewBox='0 0 128 129'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
