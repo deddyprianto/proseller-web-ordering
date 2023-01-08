@@ -20,7 +20,13 @@ function getCampaignStamps() {
       response.data.stamps.stampsItem
     ) {
       const { stamps, expiryDate, trigger } = response.data;
-      const { stampsTitle, stampsDesc, stampsSubTitle, stampsItem } = stamps;
+      const {
+        stampsTitle,
+        stampsDesc,
+        stampsSubTitle,
+        stampsItem,
+        emptyStampImage,
+      } = stamps;
       const totalStampsEarned = stampsItem.reduce((acc, item) => {
         if (item.stampsStatus === true) {
           return acc + 1;
@@ -33,7 +39,10 @@ function getCampaignStamps() {
         trigger.campaignTrigger === 'COMPLETE_PROFILE' &&
         !trigger.status;
 
-      const stampsImage = stampsItem[totalStampsEarned - 1].reward.imageURL;
+      const stampsImage =
+        totalStampsEarned < 1
+          ? emptyStampImage
+          : stampsItem[totalStampsEarned - 1].reward.imageURL;
 
       const payload = {
         totalStampsEarned,
