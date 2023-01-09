@@ -437,12 +437,12 @@ const ProductCart = ({ item, ...props }) => {
                                     ? '#8A8D8E'
                                     : props.color.primary,
                                   fontWeight: 600,
-                                  marginRight: '1px',
+                                  marginRight: '3px',
                                 }}
                               >
                                 {item?.quantity}x{' '}
                               </div>
-                              <div>{item?.name}</div>
+
                               <div
                                 style={{
                                   color: props.isDisable
@@ -450,21 +450,21 @@ const ProductCart = ({ item, ...props }) => {
                                     : props.color.primary,
                                   fontWeight: 500,
                                   fontSize: '12px',
-                                  fontStyle: 'italic',
-                                  alignSelf: 'flex-end',
-                                  display: 'flex',
                                 }}
                               >
-                                +{handleCurrency(item?.price)}
+                                {item?.name}{' '}
+                                <span
+                                  style={{ fontWeight: 'bold' }}
+                                >{`(${handleCurrency(item?.price)})`}</span>
                                 {item.orderingStatus === 'UNAVAILABLE' && (
-                                  <div
+                                  <span
                                     style={{
-                                      marginLeft: '5px',
-                                      paddingTop: '4px',
+                                      verticalAlign: '-webkit-baseline-middle',
+                                      marginLeft: '2px',
                                     }}
                                   >
                                     {renderIconInformation('red', '17')}
-                                  </div>
+                                  </span>
                                 )}
                               </div>
                             </div>

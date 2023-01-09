@@ -912,9 +912,11 @@ const Payment = ({ ...props }) => {
 
   //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
+    setIsLoading(true);
     const getAllOutlets = await props.dispatch(
       OutletAction.fetchAllOutlet(true)
     );
+    setIsLoading(false);
     const filterOutletUnavailable = getAllOutlets.find(
       (item) => item.name === props.defaultOutlet.name
     );
@@ -922,13 +924,14 @@ const Payment = ({ ...props }) => {
     if (filterOutletUnavailable?.orderingStatus === 'UNAVAILABLE') {
       Swal.fire({
         title: '<p>The outlet is not available</p>',
-        html: `<h5 style='color:#B7B7B7; font-size:12px'>${props.defaultOutlet.name} is currently not available, please select another outlet</h5>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.defaultOutlet.name} is currently not available, please select another outlet</h5>`,
         allowOutsideClick: false,
         confirmButtonText: 'OK',
         confirmButtonColor: props.color?.primary,
         width: '40em',
         customClass: {
           confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
         },
       }).then(() => {
         history.push('/outlets');
@@ -938,13 +941,14 @@ const Payment = ({ ...props }) => {
     ) {
       Swal.fire({
         title: '<p>Ordering mode is not available</p>',
-        html: `<h5 style='color:#B7B7B7; font-size:12px'>${props.itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
         allowOutsideClick: false,
         confirmButtonText: 'OK',
         confirmButtonColor: props.color?.primary,
         width: '40em',
         customClass: {
           confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
         },
       }).then(() => {
         history.push({
