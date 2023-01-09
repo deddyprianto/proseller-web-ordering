@@ -94,8 +94,8 @@ const Cart = ({ ...props }) => {
       display: 'flex',
     },
     rootCartGadgetSize: {
-      paddingLeft: 20,
-      paddingRight: 20,
+      paddingLeft: 15,
+      paddingRight: 15,
       paddingTop: 100,
       paddingBottom: 300,
     },
@@ -232,7 +232,7 @@ const Cart = ({ ...props }) => {
       backgroundColor: '#D6D6D6',
       width: '95%',
       opacity: 0.5,
-    }
+    },
   };
   const [dataDeliveryProvider, setDataDeliveryProvider] = useState('');
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);

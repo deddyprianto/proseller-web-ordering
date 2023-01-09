@@ -248,8 +248,8 @@ const CartGuestCheckout = () => {
         overflowY: 'auto',
       },
       rootCartGadgetSize: {
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 15,
+        paddingRight: 15,
         paddingTop: 100,
         paddingBottom: 300,
       },
@@ -287,15 +287,11 @@ const CartGuestCheckout = () => {
       },
 
       rootSubmitButton: {
-        paddingTop: 15,
-        paddingRight: 10,
-        paddingLeft: 10,
-        paddingBottom: 10,
         width: '70%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
+        padding: basket?.inclusiveTax !== 0 ? '10px 0px' : '7px 10px',
       },
       rootInclusiveTax: {
         display: 'flex',
@@ -766,6 +762,7 @@ const CartGuestCheckout = () => {
               margin: 0,
               letterSpacing: '.5px',
               marginLeft: '3px',
+              color: 'red',
             }}
           >
             {text}
@@ -777,12 +774,12 @@ const CartGuestCheckout = () => {
               alignItems: 'center',
             }}
           >
-            {renderIconInformation(color?.primary)}
+            {renderIconInformation('red')}
             <p
               style={{
                 padding: 0,
                 margin: 0,
-                color: color?.primary,
+                color: 'red',
                 fontSize: '12px',
                 marginLeft: '5px',
               }}
@@ -815,34 +812,31 @@ const CartGuestCheckout = () => {
                           style={{
                             color: isDisable ? '#8A8D8E' : color?.primary,
                             fontWeight: 600,
-                            marginRight: '1px',
+                            marginRight: '2px',
                           }}
                         >
                           {item?.quantity}x{' '}
                         </div>
-
-                        <div>{item?.name}</div>
-
                         <div
                           style={{
                             color: isDisable ? '#8A8D8E' : color?.primary,
                             fontWeight: 500,
                             fontSize: '12px',
-                            fontStyle: 'italic',
-                            alignSelf: 'flex-end',
-                            display: 'flex',
                           }}
                         >
-                          +{handleCurrency(item?.price)}
+                          {item?.name}{' '}
+                          <span style={{ fontWeight: 'bold' }}>
+                            {`(${handleCurrency(item?.price)})`}
+                          </span>
                           {item.orderingStatus === 'UNAVAILABLE' && (
-                            <div
+                            <span
                               style={{
-                                marginLeft: '5px',
-                                paddingTop: '4px',
+                                verticalAlign: '-webkit-baseline-middle',
+                                marginLeft: '2px',
                               }}
                             >
                               {renderIconInformation('red', '17')}
-                            </div>
+                            </span>
                           )}
                         </div>
                       </div>
@@ -1287,22 +1281,25 @@ const CartGuestCheckout = () => {
         <div style={styles.rootSubmitButton}>
           <Button
             onClick={async () => {
+              setIsLoading(true);
               const getAllOutlets = await dispatch(
                 OutletAction.fetchAllOutlet(true)
               );
+              setIsLoading(false);
               const filterOutletUnavailable = getAllOutlets.find(
                 (item) => item.name === defaultOutlet.name
               );
               if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
                 Swal.fire({
                   title: '<p>The outlet is not available</p>',
-                  html: `<h5 style='color:#B7B7B7; font-size:12px'>${defaultOutlet.name} is currently not available, please select another outlet</h5>`,
+                  html: `<h5 style='color:#B7B7B7; font-size:14px'>${defaultOutlet.name} is currently not available, please select another outlet</h5>`,
                   width: '40em',
                   allowOutsideClick: false,
                   confirmButtonText: 'OK',
                   confirmButtonColor: color?.primary,
                   customClass: {
                     confirmButton: fontStyleCustom.buttonSweetAlert,
+                    title: fontStyleCustom.fontTitleSweetAlert,
                   },
                 }).then(() => {
                   history.push('/outlets');
@@ -1312,13 +1309,14 @@ const CartGuestCheckout = () => {
               ) {
                 Swal.fire({
                   title: '<p>Ordering mode is not available</p>',
-                  html: `<h5 style='color:#B7B7B7; font-size:12px'>${itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
+                  html: `<h5 style='color:#B7B7B7; font-size:14px'>${itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
                   allowOutsideClick: false,
                   width: '40em',
                   confirmButtonText: 'OK',
                   confirmButtonColor: color?.primary,
                   customClass: {
                     confirmButton: fontStyleCustom.buttonSweetAlert,
+                    title: fontStyleCustom.fontTitleSweetAlert,
                   },
                 }).then(() => {
                   setOpenOrderingMode(true);
