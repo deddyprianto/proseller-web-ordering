@@ -669,7 +669,7 @@ const Payment = ({ ...props }) => {
   };
 
   const renderPoint = () => {
-    if (dataPoints?.points?.enablePointRedemption) {
+    if (dataPoints[0]?.points?.enablePointRedemption) {
       const pointToRebateRatio = props?.campaignPoint?.pointsToRebateRatio;
       const isTotalPoint = props.campaignPoint.totalPoint > 0;
 
@@ -703,6 +703,8 @@ const Payment = ({ ...props }) => {
           </Paper>
         );
       }
+    } else {
+      return null;
     }
   };
 
