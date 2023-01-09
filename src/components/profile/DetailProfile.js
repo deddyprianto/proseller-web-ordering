@@ -462,8 +462,7 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                    <i className='fa fa-file-text-o' aria-hidden='true' />
-                    Terms & Conditions
+                    <i className='fa fa-file-text-o' aria-hidden='true' /> Terms & Conditions
                   </div>
                 </div>
               </div>
