@@ -22,6 +22,7 @@ import { useHistory } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 import { OrderAction } from 'redux/actions/OrderAction';
 
@@ -1374,10 +1375,20 @@ const ProductAddModal = ({
           specialRestriction: productModifier.modifier?.specialRestriction,
         };
         return (
-          <div key={index}>
+          <div
+            key={modifier.name}
+            style={{
+              position: modifier.orderingStatus === 'UNAVAILABLE' && 'relative',
+            }}
+          >
             <div style={styles.modifierOption}>
               <FormControlLabel
                 checked={isCheckedCheckboxForSpecialRestriction(modifier)}
+                sx={{
+                  opacity: modifier?.orderingStatus === 'UNAVAILABLE' && 0.5,
+                  pointerEvents:
+                    modifier?.orderingStatus === 'UNAVAILABLE' && 'none',
+                }}
                 value={modifier.productID}
                 control={
                   <Radio
@@ -1398,15 +1409,35 @@ const ProductAddModal = ({
                 }
                 label={
                   <>
-                    <Typography style={styles.optionTitle}>
-                      {modifier.name}
-                    </Typography>
-                    <Typography style={styles.optionPriceGadgetScreen}>
-                      {`(Min. ${modifier.min},`} {`Max ${modifier.max})`}
-                    </Typography>
-                    <Typography style={styles.optionPriceGadgetScreen}>
-                      {handleCurrency(modifier.price)}
-                    </Typography>
+                    <div>
+                      <Typography
+                        style={styles.optionTitle}
+                        className={fontStyleCustom.myFont}
+                      >
+                        {modifier.name}
+                      </Typography>
+                      <Typography style={styles.optionPriceGadgetScreen}>
+                        {`(Min. ${modifier.min},`} {`Max ${modifier.max})`}
+                      </Typography>
+                      <Typography style={styles.optionPriceGadgetScreen}>
+                        {handleCurrency(modifier.price)}
+                      </Typography>
+                    </div>
+                    {modifier.orderingStatus === 'UNAVAILABLE' && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: 0,
+                          bottom: '30%',
+                          color: 'red',
+                          fontSize: '14px',
+                          fontWeight: 700,
+                        }}
+                        className={fontStyleCustom.myFont}
+                      >
+                        Out of Stock
+                      </div>
+                    )}
                   </>
                 }
               />
@@ -1429,11 +1460,21 @@ const ProductAddModal = ({
     const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
         return (
-          <div key={index}>
+          <div
+            key={modifier.name}
+            style={{
+              position: modifier.orderingStatus === 'UNAVAILABLE' && 'relative',
+            }}
+          >
             <div style={styles.modifierOption}>
               <FormControlLabel
                 value={modifier.productID}
                 checked={isCheckedCheckbox(modifier)}
+                sx={{
+                  opacity: modifier.orderingStatus === 'UNAVAILABLE' && 0.5,
+                  pointerEvents:
+                    modifier.orderingStatus === 'UNAVAILABLE' && 'none',
+                }}
                 control={
                   <Checkbox
                     sx={styles.radioSizeModifier}
@@ -1456,12 +1497,29 @@ const ProductAddModal = ({
                 }
                 label={
                   <>
-                    <Typography style={styles.optionTitle}>
-                      {modifier.name}
-                    </Typography>
-                    <Typography style={styles.optionPriceGadgetScreen}>
-                      {handleCurrency(modifier.price)}
-                    </Typography>
+                    <div>
+                      <Typography style={styles.optionTitle} classNam>
+                        {modifier.name}
+                      </Typography>
+                      <Typography style={styles.optionPriceGadgetScreen}>
+                        {handleCurrency(modifier.price)}
+                      </Typography>
+                    </div>
+                    {modifier.orderingStatus === 'UNAVAILABLE' && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: 0,
+                          bottom: '30%',
+                          color: 'red',
+                          fontSize: '14px',
+                          fontWeight: 700,
+                        }}
+                        className={fontStyleCustom.myFont}
+                      >
+                        Out of Stock
+                      </div>
+                    )}
                   </>
                 }
               />
