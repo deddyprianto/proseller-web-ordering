@@ -3051,7 +3051,7 @@ const CartGuestCheckout = () => {
   };
 
   return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
       {productEditModal && (
         <ProductAddModal
           width={width}

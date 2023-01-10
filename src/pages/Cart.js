@@ -441,9 +441,7 @@ const Cart = ({ ...props }) => {
   };
 
   const handleRenderOrderingModeLabel = () => {
-    if (props.orderingModeDisplayName) {
-      return props.orderingModeDisplayName;
-    } else if (props.orderingMode) {
+    if (props.orderingMode) {
       return props.orderingMode;
     } else {
       return 'Ordering Mode';
