@@ -18,9 +18,9 @@ const defaultState = {
     encryptor.decrypt(lsLoad(`${config.prefix}_deliveryProvider`, true)) ||
     null,
   deliveryAddress: null,
-  orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`) || null,
+  orderingMode: localStorage.getItem(`${config.prefix}_ordering_mode`) || '',
   orderingModeDisplayName:
-    localStorage.getItem(`${config.prefix}_ordering_mode_display_name`) || null,
+    localStorage.getItem(`${config.prefix}_ordering_mode_display_name`) || '',
   orderingModeSelectedOn: localStorage.getItem(
     `${config.prefix}_ordering_mode_selected_on`
   )
