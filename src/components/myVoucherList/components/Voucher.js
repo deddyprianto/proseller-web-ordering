@@ -317,14 +317,12 @@ const Voucher = ({ item, quantity, ...props }) => {
   const handleTermsAndConditions = (value) => {
     if (value?.validity?.canNotUseWithPromoItem) {
       const hasPromoItem = props?.basket?.details?.find((item) => {
-        console.log(item);
         return (
           item.promotions &&
           item.promotions.length > 0 &&
           item.isPromotionApplied
         );
       });
-      console.log(hasPromoItem);
       if (hasPromoItem) {
         return handleCanNotUseWithPromoItem();
       }
@@ -495,6 +493,7 @@ const Voucher = ({ item, quantity, ...props }) => {
         serialNumber: item.serialNumber,
         cannotBeMixed: item.validity?.cannotBeMixed,
         paymentAmount: discount,
+        capAmount: item?.capAmount,
       });
 
       props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
