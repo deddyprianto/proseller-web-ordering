@@ -105,6 +105,7 @@ const Login = ({
               } else {
                 setIsLoading(true);
                 handleSubmit(!enablePassword);
+                setIsLoading(false);
               }
             }}
           >
