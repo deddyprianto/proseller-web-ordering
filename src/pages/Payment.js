@@ -357,13 +357,8 @@ const Payment = ({ ...props }) => {
     if (!isEmptyArray(selectedVouchers)) {
       selectedVouchers.forEach((selectedVoucher) => {
         if (selectedVoucher?.capAmount && selectedVoucher?.capAmount < price) {
-          console.log('%cdedd =>', 'color: green;', 'ATAS');
           price = price - selectedVoucher?.capAmount;
-        } else if (
-          selectedVoucher?.capAmount &&
-          selectedVoucher?.capAmount > price
-        ) {
-          console.log('%cdedd =>', 'color: green;', 'BAWAH');
+        } else if (selectedVoucher?.capAmount && selectedVoucher?.capAmount > price) {
           price = price - selectedVoucher?.paymentAmount;
         } else {
           price = price - selectedVoucher?.paymentAmount;

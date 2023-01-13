@@ -124,6 +124,7 @@ const MyVoucherList = ({ ...props }) => {
   const renderVoucherList = () => {
     if (!isEmptyArray(vouchers)) {
       const voucherList = vouchers.map((voucher, index) => {
+        console.log('%cdedd =>', 'color: green;', voucher);
         return (
           <Grid key={index} item xs={12} sm={6} md={6}>
             <Voucher
