@@ -355,15 +355,40 @@ const Payment = ({ ...props }) => {
     }
 
     if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        if (selectedVoucher?.capAmount && selectedVoucher?.capAmount < price) {
-          price = price - selectedVoucher?.capAmount;
-        } else if (selectedVoucher?.capAmount && selectedVoucher?.capAmount > price) {
-          price = price - selectedVoucher?.paymentAmount;
-        } else {
-          price = price - selectedVoucher?.paymentAmount;
+      if (selectedVouchers.length === 1) {
+        console.log('%cdedd =>', 'color: green;', '1');
+        const itemBasket = props.basket?.details;
+        if (itemBasket) {
+          const itemWithPriceLowest = itemBasket.reduce((prev, curl) =>
+            prev.grossAmount < curl.grossAmount ? prev : curl
+          );
+          selectedVouchers.forEach((item) => {
+            if (item?.capAmount) {
+              price = itemWithPriceLowest.grossAmount - item.capAmount;
+            }
+          });
         }
-      });
+      }
+      // selectedVouchers.forEach((selectedVoucher) => {
+      //   const isCapAmountLessPriceProd =
+      //     selectedVouchers.length === 1 &&
+      //     selectedVoucher?.capAmount &&
+      //     selectedVoucher?.capAmount < price;
+
+      //   const isCapAmountMoreThanPriceProd =
+      //     selectedVouchers.length === 1 &&
+      //     selectedVoucher?.capAmount &&
+      //     selectedVoucher?.capAmount > price;
+
+      //   if (isCapAmountLessPriceProd) {
+      //     console.log('%cdedd =>', 'color: green;', '2');
+      //     price = price - selectedVoucher?.capAmount;
+      //   } else if (isCapAmountMoreThanPriceProd) {
+      //     console.log('%cdedd =>', 'color: green;', '3');
+      //     price = price - selectedVoucher?.paymentAmount;
+      //   } else {
+      //   }
+      // });
     }
 
     if (price < 0) {
