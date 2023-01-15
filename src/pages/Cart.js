@@ -310,11 +310,19 @@ const Cart = ({ ...props }) => {
     const loadData = async () => {
       setIsLoading(true);
       await props.dispatch(OrderAction.getCart());
-      await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
     loadData();
   }, [props.basketUpdate, props.basket?.details?.length]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      await props.dispatch(OrderAction.checkOfflineCart());
+      setIsLoading(false);
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     const getDataTimeSlot = async () => {
