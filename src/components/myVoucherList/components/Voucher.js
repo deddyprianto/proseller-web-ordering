@@ -494,6 +494,7 @@ const Voucher = ({ item, quantity, ...props }) => {
         cannotBeMixed: item.validity?.cannotBeMixed,
         paymentAmount: discount,
         capAmount: item?.capAmount,
+        applyToLowestItem: item?.applyToLowestItem,
       });
 
       props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
