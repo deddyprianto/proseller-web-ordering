@@ -370,27 +370,28 @@ const Payment = ({ ...props }) => {
 
       selectedVouchers.forEach((selectedVoucher) => {
         const isCapAmountLessPriceProd =
-          selectedVouchers.length === 1 &&
+          !selectedVoucher?.applyToLowestItem &&
           selectedVoucher?.capAmount &&
           selectedVoucher?.capAmount < price;
 
         const isCapAmountMoreThanPriceProd =
-          selectedVouchers.length === 1 &&
+          !selectedVoucher?.applyToLowestItem &&
           selectedVoucher?.capAmount &&
           selectedVoucher?.capAmount > price;
 
-        const voucherIsApplyToLowestItem = selectedVouchers?.applyToLowestItem;
+        const voucherIsApplyToLowestItem = selectedVoucher?.applyToLowestItem;
+
+        const itemBasket = props.basket?.details;
+        const itemWithPriceLowest = itemBasket.reduce((prev, curl) =>
+          prev.grossAmount < curl.grossAmount ? prev : curl
+        );
 
         if (isCapAmountLessPriceProd) {
           price = price - selectedVoucher?.capAmount;
         } else if (isCapAmountMoreThanPriceProd) {
           price = price - selectedVoucher?.paymentAmount;
         } else if (voucherIsApplyToLowestItem) {
-          const itemBasket = props.basket?.details;
-          const itemWithPriceLowest = itemBasket.reduce((prev, curl) =>
-            prev.grossAmount < curl.grossAmount ? prev : curl
-          );
-          price = itemWithPriceLowest.grossAmount - selectedVoucher?.capAmount;
+          price = price - itemWithPriceLowest.grossAmount;
         } else {
           price = price - selectedVoucher?.paymentAmount;
         }
