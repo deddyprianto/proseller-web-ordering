@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
@@ -30,6 +36,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
 import Loading from 'components/loading/Loading';
+import { useProducts } from 'hooks/useProducts';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -170,6 +177,23 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
 
+  // console.log('%cdedd =>', 'color: green;', productsItem);
+  // const observer = useRef();
+
+  // const lastEl = useCallback(
+  //   (node) => {
+  //     if (isLoading) return;
+  //     if (observer.current) observer.current.disconnect();
+  //     observer.current = new IntersectionObserver((entries) => {
+  //       if (entries[0].isIntersecting) {
+  //         setSize((prev) => prev + 1);
+  //       }
+  //     });
+  //     if (node) observer.current.observe(node);
+  //   },
+  //   [isLoading]
+  // );
+
   const handleFetchCategoryProduct = async (outlet) => {
     const orderingMode = props.orderingMode | '';
     const categories = await props.dispatch(
@@ -237,6 +261,12 @@ const ProductList = ({ ...props }) => {
       // console.log(e);
     }
   }, [selectedCategory]);
+  const { productsItem, isError, loading, setSize, size } = useProducts(
+    selectedCategory,
+    outlet,
+    0,
+    50
+  );
 
   const handleChangeCategory = ({ category, index }) => {
     let categoryChanged = [];
