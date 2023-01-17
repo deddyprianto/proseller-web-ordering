@@ -354,22 +354,7 @@ const Payment = ({ ...props }) => {
       price = price - selectedPoint.paymentAmount;
     }
     if (!isEmptyArray(selectedVouchers)) {
-      // if (selectedVouchers.length === 1) {
-      //   const itemBasket = props.basket?.details;
-      //   if (itemBasket) {
-      //     const itemWithPriceLowest = itemBasket.reduce((prev, curl) =>
-      //       prev.grossAmount < curl.grossAmount ? prev : curl
-      //     );
-      //     selectedVouchers.forEach((item) => {
-      //       if (item?.capAmount) {
-      //         price = itemWithPriceLowest.grossAmount - item.capAmount;
-      //       }
-      //     });
-      //   }
-      // }
-
       selectedVouchers.forEach((selectedVoucher) => {
-        console.log('%cdedd =>', 'color: green;', selectedVoucher);
         const isCapAmountLessPriceProd =
           !selectedVoucher?.applyToLowestItem &&
           selectedVoucher?.capAmount &&
@@ -380,24 +365,10 @@ const Payment = ({ ...props }) => {
           selectedVoucher?.capAmount &&
           selectedVoucher?.capAmount > price;
 
-        const voucherIsApplyToLowestItem = selectedVoucher?.applyToLowestItem;
-
-        const itemBasket = props.basket?.details;
-        // const itemWithPriceLowest = itemBasket.reduce((prev, curl) =>
-        //   prev.grossAmount < curl.grossAmount ? prev : curl
-        // );
-        const sortItemLow = itemBasket.sort(
-          (a, b) => a.nettAmount - b.nettAmount
-        );
         if (isCapAmountLessPriceProd) {
           price = price - selectedVoucher?.capAmount;
         } else if (isCapAmountMoreThanPriceProd) {
           price = price - selectedVoucher?.paymentAmount;
-        } else if (voucherIsApplyToLowestItem) {
-          // price = price - itemWithPriceLowest.grossAmount;
-          sortItemLow.forEach((item) => {
-            price = price - item.grossAmount;
-          });
         } else {
           price = price - selectedVoucher?.paymentAmount;
         }
@@ -674,6 +645,7 @@ const Payment = ({ ...props }) => {
 
               <IconButton
                 onClick={() => {
+                  props.dispatch({ type: 'INDEX_VOUCHER', payload: 0 });
                   handleRemoveVoucher(selectedVoucher.serialNumber);
                 }}
               >

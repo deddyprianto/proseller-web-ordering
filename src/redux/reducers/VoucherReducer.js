@@ -4,6 +4,7 @@ const initialState = {
   sendFailed: false,
   errorMessage: '',
   successMessage: '',
+  indexVoucer: 0,
 };
 
 export default function reducer(state = initialState, action) {
@@ -45,6 +46,11 @@ export default function reducer(state = initialState, action) {
         sendFailed: true,
         errorMessage: action.payload,
         successMessage: '',
+      };
+    case 'INDEX_VOUCHER':
+      return {
+        ...state,
+        indexVoucer: action.payload,
       };
     default:
       return state;

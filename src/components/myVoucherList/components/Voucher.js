@@ -36,6 +36,7 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     selectedVoucher: state.payment.selectedVoucher,
     totalPaymentAmount: state.payment.totalPaymentAmount,
+    indexVoucher: state.voucher.indexVoucer,
   };
 };
 
@@ -230,14 +231,19 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const getPrices = () => {
     let result = [];
-
+    let currIndex = props.indexVoucher;
     if (!isEmptyArray(basket)) {
       basket.forEach((item) => {
         result.push(item.unitPrice);
       });
     }
+    let sortBasketToLowestItem = result.sort();
+    if (currIndex < sortBasketToLowestItem.length) {
+      sortBasketToLowestItem = [sortBasketToLowestItem[currIndex]];
+      props.dispatch({ type: 'INDEX_VOUCHER', payload: (currIndex += 1) });
+    }
 
-    return result;
+    return sortBasketToLowestItem;
   };
 
   const handleOpenModal = () => {
@@ -268,7 +274,9 @@ const Voucher = ({ item, quantity, ...props }) => {
     });
 
     if (isVoucherCategory.length < 1) {
-      setMessage('Only specific product category are allowed to use this voucher');
+      setMessage(
+        'Only specific product category are allowed to use this voucher'
+      );
       handleOpenModal();
     }
     return isVoucherCategory.length > 0 ? isVoucherCategory : false;
@@ -276,8 +284,8 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const handleSpecificCollectionCondition = () => {
     const isCollectionMatched = props.basket?.details.filter((detail) => {
-      return item.appliedItems.find(
-        (appliedItem) => detail?.collections?.includes(appliedItem.value)
+      return item.appliedItems.find((appliedItem) =>
+        detail?.collections?.includes(appliedItem.value)
       );
     });
 
@@ -401,15 +409,15 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const calculateDisc = ({ price, value, type }) => {
     switch (type) {
-      case "discPercentage":
+      case 'discPercentage':
         const discPercentage = (price * value) / 100;
         return handleCapAmount(discPercentage);
-      case "discAmount":
-        return value
+      case 'discAmount':
+        return value;
       default:
-        return 0
+        return 0;
     }
-  }
+  };
 
   const handleSpecificCategories = ({ appliedItems, value, type }) => {
     let result = 0;
