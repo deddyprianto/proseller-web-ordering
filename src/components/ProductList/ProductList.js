@@ -36,7 +36,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
 import Loading from 'components/loading/Loading';
-import { useProducts } from 'hooks/useProducts';
+import { useProductList } from 'hooks/useProductList';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -176,23 +176,22 @@ const ProductList = ({ ...props }) => {
   const [outlet, setOutlet] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
+  const { productsItem, isError, loading, setSize, size } = useProductList();
 
-  // console.log('%cdedd =>', 'color: green;', productsItem);
-  // const observer = useRef();
-
-  // const lastEl = useCallback(
-  //   (node) => {
-  //     if (isLoading) return;
-  //     if (observer.current) observer.current.disconnect();
-  //     observer.current = new IntersectionObserver((entries) => {
-  //       if (entries[0].isIntersecting) {
-  //         setSize((prev) => prev + 1);
-  //       }
-  //     });
-  //     if (node) observer.current.observe(node);
-  //   },
-  //   [isLoading]
-  // );
+  const observer = useRef();
+  const lastEl = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setSize((prev) => prev + 10);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading]
+  );
 
   const handleFetchCategoryProduct = async (outlet) => {
     const orderingMode = props.orderingMode | '';
@@ -261,12 +260,6 @@ const ProductList = ({ ...props }) => {
       // console.log(e);
     }
   }, [selectedCategory]);
-  const { productsItem, isError, loading, setSize, size } = useProducts(
-    selectedCategory,
-    outlet,
-    0,
-    50
-  );
 
   const handleChangeCategory = ({ category, index }) => {
     let categoryChanged = [];
@@ -377,24 +370,46 @@ const ProductList = ({ ...props }) => {
   };
 
   const renderProductList = () => {
-    if (!isEmptyArray(products)) {
-      const productList = products.map((product, index) => {
-        return (
-          <Grid key={index} item xs={12} sm={6} md={6}>
-            <Product item={product} />
-          </Grid>
-        );
+    if (!isEmptyArray(productsItem)) {
+      const productList = productsItem?.map((product) => {
+        return product.data.map((itemProd, index) => {
+          if (product.data.length === index + 1) {
+            return (
+              <Grid ref={lastEl} key={index} item xs={12} sm={6} md={6}>
+                <Product item={itemProd} />
+              </Grid>
+            );
+          } else {
+            return (
+              <Grid key={index} item xs={12} sm={6} md={6}>
+                <Product item={itemProd} />
+              </Grid>
+            );
+          }
+        });
       });
 
       return (
-        <Grid
-          paddingTop={6}
-          container
-          rowSpacing={1}
-          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        >
-          {productList}
-        </Grid>
+        <React.Fragment>
+          <Grid
+            paddingTop={6}
+            container
+            rowSpacing={1}
+            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+          >
+            {productList}
+          </Grid>
+          <div>
+            <h1
+              style={{
+                fontSize: '15px',
+                display: size === 10 ? 'none' : 'inline',
+              }}
+            >
+              Loading...
+            </h1>
+          </div>
+        </React.Fragment>
       );
     }
 
