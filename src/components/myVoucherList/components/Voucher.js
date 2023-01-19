@@ -143,7 +143,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     typographyQuantity: {
       fontSize: 12,
       fontWeight: 'bold',
-      color: props.color.font,
+      color: 'white',
     },
   };
 
@@ -513,7 +513,14 @@ const Voucher = ({ item, quantity, ...props }) => {
           voucherId: item.voucherId,
         })),
       };
-      Swal.showLoading();
+      Swal.fire({
+        title: 'Please Wait !',
+        html: 'Voucher will be applied',
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        },
+      });
       const dataVoucher = await props.dispatch(
         PaymentAction.calculateVoucher(payload)
       );
@@ -538,7 +545,6 @@ const Voucher = ({ item, quantity, ...props }) => {
           }
         });
       }
-      Swal.hideLoading();
     }
   };
 

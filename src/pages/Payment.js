@@ -352,14 +352,12 @@ const Payment = ({ ...props }) => {
 
   const handlePrice = () => {
     let price = props.basket?.totalNettAmount || 0;
+
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
+    }
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
-    }
-
-    if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.paymentAmount;
-      });
     }
 
     if (price < 0) {
@@ -379,10 +377,8 @@ const Payment = ({ ...props }) => {
       price = price - selectedPoint.paymentAmount;
     }
 
-    if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.paymentAmount;
-      });
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
     }
 
     if (price === 0) {
@@ -446,7 +442,6 @@ const Payment = ({ ...props }) => {
   ]);
 
   const handleOpenPointAddModal = () => {
-    props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
     setIsOpenPointAddModal(true);
   };
 
@@ -580,6 +575,32 @@ const Payment = ({ ...props }) => {
     disableAnotherPaymentForManual();
   }, [props.selectedPaymentCard?.paymentID]);
 
+  const renderLabelPrice = () => {
+    if (!isEmptyObject(props.saveDetailTopupSvc)) {
+      return (
+        <Typography style={styles.typographyPrice}>
+          {props.saveDetailTopupSvc.name}
+        </Typography>
+      );
+    } else if (!isEmptyObject(props.dataVoucher)) {
+      if (!isEmptyObject(selectedPoint)) {
+        return (
+          <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+        );
+      } else {
+        return (
+          <Typography style={styles.typographyPrice}>
+            {props.dataVoucher?.total}
+          </Typography>
+        );
+      }
+    } else {
+      return (
+        <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+      );
+    }
+  };
+
   const renderPrice = () => {
     return (
       <Badge
@@ -602,17 +623,7 @@ const Payment = ({ ...props }) => {
           }}
           sx={styles.badge}
         >
-          {!isEmptyObject(props.saveDetailTopupSvc) ? (
-            <Typography style={styles.typographyPrice}>
-              {props.saveDetailTopupSvc.name}
-            </Typography>
-          ) : !isEmptyObject(props.dataVoucher) ? (
-            <Typography style={styles.typographyPrice}>
-              {props.dataVoucher?.total}
-            </Typography>
-          ) : (
-            <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
-          )}
+          {renderLabelPrice()}
         </Badge>
       </Badge>
     );
@@ -833,10 +844,8 @@ const Payment = ({ ...props }) => {
       price = price - selectedPoint.paymentAmount;
     }
 
-    if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.paymentAmount;
-      });
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
     }
     if (price < minPayment) {
       return (
@@ -1185,7 +1194,35 @@ const Payment = ({ ...props }) => {
       }
     }
   };
-
+  const renderLabelButtonPay = () => {
+    if (!isEmptyObject(props.saveDetailTopupSvc)) {
+      return (
+        <Typography style={styles.typographyPay}>
+          Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
+        </Typography>
+      );
+    } else if (!isEmptyObject(props.dataVoucher)) {
+      if (!isEmptyObject(selectedPoint)) {
+        return (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(totalPrice)}
+          </Typography>
+        );
+      } else {
+        return (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(props.dataVoucher?.total)}
+          </Typography>
+        );
+      }
+    } else {
+      return (
+        <Typography style={styles.typographyPay}>
+          Pay {handleCurrency(totalPrice)}
+        </Typography>
+      );
+    }
+  };
   const renderButtonPay = () => {
     return (
       <LoadingButton
@@ -1204,19 +1241,7 @@ const Payment = ({ ...props }) => {
           }
         }}
       >
-        {!isEmptyObject(props.saveDetailTopupSvc) ? (
-          <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
-          </Typography>
-        ) : !isEmptyObject(props.dataVoucher) ? (
-          <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(props.dataVoucher?.total)}
-          </Typography>
-        ) : (
-          <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(totalPrice)}
-          </Typography>
-        )}
+        {renderLabelButtonPay()}
       </LoadingButton>
     );
   };
@@ -1298,8 +1323,8 @@ const Payment = ({ ...props }) => {
             <div style={styles.dividerOutletName} />
             {renderVoucher()}
             {renderPoint()}
-            {renderSVC()}
-            {renderPaymentMethod()}
+            {/* {renderSVC()} */}
+            {/* {renderPaymentMethod()} */}
             {renderButtonPay()}
           </React.Fragment>
         ) : (
