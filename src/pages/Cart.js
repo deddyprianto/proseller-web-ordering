@@ -261,6 +261,7 @@ const Cart = ({ ...props }) => {
       type: 'SAVE_DETAIL_TOP_UP_SVC',
       payload: {},
     });
+    props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
   }, []);
 
   useEffect(() => {

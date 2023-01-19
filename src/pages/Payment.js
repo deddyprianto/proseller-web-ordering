@@ -82,6 +82,8 @@ const mapStateToProps = (state) => {
     payment: state.payment.paymentCard,
     defaultOutlet: state.outlet.defaultOutlet,
     itemOrderingMode: state.order.itemOrderingMode,
+    dataVoucher: state.voucher.indexVoucer,
+    totalPaymentAmount: state.payment.totalPaymentAmount,
   };
 };
 
@@ -353,25 +355,10 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
     }
+
     if (!isEmptyArray(selectedVouchers)) {
       selectedVouchers.forEach((selectedVoucher) => {
-        const isCapAmountLessPriceProd =
-          !selectedVoucher?.applyToLowestItem &&
-          selectedVoucher?.capAmount &&
-          selectedVoucher?.capAmount < price;
-
-        const isCapAmountMoreThanPriceProd =
-          !selectedVoucher?.applyToLowestItem &&
-          selectedVoucher?.capAmount &&
-          selectedVoucher?.capAmount > price;
-
-        if (isCapAmountLessPriceProd) {
-          price = price - selectedVoucher?.capAmount;
-        } else if (isCapAmountMoreThanPriceProd) {
-          price = price - selectedVoucher?.paymentAmount;
-        } else {
-          price = price - selectedVoucher?.paymentAmount;
-        }
+        price = price - selectedVoucher.paymentAmount;
       });
     }
 
@@ -459,6 +446,7 @@ const Payment = ({ ...props }) => {
   ]);
 
   const handleOpenPointAddModal = () => {
+    props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
     setIsOpenPointAddModal(true);
   };
 
@@ -485,9 +473,13 @@ const Payment = ({ ...props }) => {
   };
 
   const handleCutPrice = () => {
-    const price = props.basket?.totalNettAmount;
-    if (totalPrice !== price) {
-      return price;
+    if (isEmptyArray(props.dataVoucher?.payments)) {
+      return null;
+    } else {
+      const price = props.basket?.totalNettAmount;
+      if (totalPrice !== price) {
+        return price;
+      }
     }
   };
   const handleDisableButton = () => {
@@ -541,12 +533,23 @@ const Payment = ({ ...props }) => {
   };
 
   const handleRemoveVoucher = async (value) => {
-    const result = selectedVouchers.filter(
+    const result = props.dataVoucher.payments.filter(
       (selectedVoucher) => selectedVoucher.serialNumber !== value
     );
-
-    setSelectedVouchers(result);
+    const payload = {
+      details: props.basket?.details,
+      outletId: props.basket?.outletID,
+      total: props.basket?.totalNettAmount,
+      customerId: props.basket?.customerId,
+      payments: result,
+    };
+    setIsLoading(true);
+    const dataVoucher = await props.dispatch(
+      PaymentAction.calculateVoucher(payload)
+    );
+    setIsLoading(false);
     await props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
+    props.dispatch({ type: 'INDEX_VOUCHER', payload: dataVoucher.data });
   };
 
   const handleMixSVC = () => {
@@ -599,12 +602,16 @@ const Payment = ({ ...props }) => {
           }}
           sx={styles.badge}
         >
-          {isEmptyObject(props.saveDetailTopupSvc) ? (
-            <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
-          ) : (
+          {!isEmptyObject(props.saveDetailTopupSvc) ? (
             <Typography style={styles.typographyPrice}>
               {props.saveDetailTopupSvc.name}
             </Typography>
+          ) : !isEmptyObject(props.dataVoucher) ? (
+            <Typography style={styles.typographyPrice}>
+              {props.dataVoucher?.total}
+            </Typography>
+          ) : (
+            <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
           )}
         </Badge>
       </Badge>
@@ -634,18 +641,17 @@ const Payment = ({ ...props }) => {
   };
 
   const renderSelectedVoucher = () => {
-    if (!isEmptyArray(selectedVouchers)) {
-      return selectedVouchers.map((selectedVoucher, index) => {
+    if (!isEmptyArray(props.dataVoucher?.payments)) {
+      return props.dataVoucher?.payments?.map((selectedVoucher, index) => {
         return (
           <div key={index}>
             <div style={styles.buttonVoucher} variant='outlined'>
               <Typography style={styles.typography}>
-                {selectedVoucher.name}
+                {selectedVoucher.voucherName}
               </Typography>
 
               <IconButton
                 onClick={() => {
-                  props.dispatch({ type: 'INDEX_VOUCHER', payload: 0 });
                   handleRemoveVoucher(selectedVoucher.serialNumber);
                 }}
               >
@@ -1198,13 +1204,17 @@ const Payment = ({ ...props }) => {
           }
         }}
       >
-        {isEmptyObject(props.saveDetailTopupSvc) ? (
+        {!isEmptyObject(props.saveDetailTopupSvc) ? (
           <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(totalPrice)}
+            Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
+          </Typography>
+        ) : !isEmptyObject(props.dataVoucher) ? (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(props.dataVoucher?.total)}
           </Typography>
         ) : (
           <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
+            Pay {handleCurrency(totalPrice)}
           </Typography>
         )}
       </LoadingButton>

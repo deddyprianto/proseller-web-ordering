@@ -1,3 +1,4 @@
+import { CRMService } from 'Services/CRMService';
 import { PaymentService } from '../../Services/PaymentService';
 
 function removePaymentCard(id) {
@@ -79,6 +80,22 @@ function getPaymentCard() {
   };
 }
 
+function calculateVoucher(payload) {
+  return async (dispatch) => {
+    const response = await CRMService.api(
+      'POST',
+      payload,
+      'payment/calculate',
+      'bearer'
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      console.log(response);
+    }
+    dispatch({ type: 'INDEX_VOUCHER', payload: response?.data });
+    return response;
+  };
+}
+
 export const PaymentAction = {
   getPaymentCard,
   removePaymentCard,
@@ -87,4 +104,5 @@ export const PaymentAction = {
   setDefaultPaymentCard,
   setData,
   clearAll,
+  calculateVoucher,
 };

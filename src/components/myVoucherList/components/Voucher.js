@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import config from 'config';
+
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -16,6 +16,8 @@ import { PaymentAction } from 'redux/actions/PaymentAction';
 
 import MyVoucherWarningModal from './MyVoucherWarningModal';
 import PicVoucherDefault from '../../../assets/images/voucher-icon.png';
+
+import Swal from 'sweetalert2';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -36,7 +38,6 @@ const mapStateToProps = (state) => {
     basket: state.order.basket,
     selectedVoucher: state.payment.selectedVoucher,
     totalPaymentAmount: state.payment.totalPaymentAmount,
-    indexVoucher: state.voucher.indexVoucer,
   };
 };
 
@@ -231,19 +232,14 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const getPrices = () => {
     let result = [];
-    let currIndex = props.indexVoucher;
+
     if (!isEmptyArray(basket)) {
       basket.forEach((item) => {
         result.push(item.unitPrice);
       });
     }
-    let sortBasketToLowestItem = result.sort();
-    if (currIndex < sortBasketToLowestItem.length) {
-      sortBasketToLowestItem = [sortBasketToLowestItem[currIndex]];
-      props.dispatch({ type: 'INDEX_VOUCHER', payload: (currIndex += 1) });
-    }
 
-    return sortBasketToLowestItem;
+    return result;
   };
 
   const handleOpenModal = () => {
@@ -480,7 +476,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     return discount;
   };
 
-  const handleSelectVoucher = () => {
+  const handleSelectVoucher = async () => {
     const isTermsAndConditions = handleTermsAndConditions(item);
     if (isTermsAndConditions) {
       let result = [];
@@ -506,10 +502,44 @@ const Voucher = ({ item, quantity, ...props }) => {
       });
 
       props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
-
-      return history.push('/payment');
+      const payload = {
+        details: props.basket?.details,
+        outletId: props.basket?.outletID,
+        total: props.totalPaymentAmount,
+        customerId: props.basket?.customerId,
+        payments: selectedVouchers.map((item) => ({
+          isVoucher: item.isVoucher,
+          serialNumber: item.serialNumber,
+          voucherId: item.voucherId,
+        })),
+      };
+      Swal.showLoading();
+      const dataVoucher = await props.dispatch(
+        PaymentAction.calculateVoucher(payload)
+      );
+      if (dataVoucher.data.message) {
+        Swal.fire({
+          icon: 'info',
+          title: dataVoucher.data.message,
+          allowOutsideClick: false,
+          confirmButtonText: 'OK',
+          confirmButtonColor: props.color.primary,
+          iconColor: 'red',
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'successfully applied the voucher!',
+          confirmButtonColor: props.color.primary,
+        }).then((res) => {
+          if (res.isConfirmed) {
+            history.push('/payment');
+          }
+        });
+      }
+      Swal.hideLoading();
     }
-    return handleOpenModal();
   };
 
   const renderImageProduct = (item) => {
