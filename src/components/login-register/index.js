@@ -639,7 +639,10 @@ const LoginRegister = (props) => {
   const handleMobileRegister = async () => {
     try {
       const fields = props.fields || [];
-      const isEmailMandatory = props.orderingSetting?.RegistrationEmailMandatory;
+      let isEmailMandatory = props.orderingSetting?.RegistrationEmailMandatory;
+
+      if (typeof isEmailMandatory === 'undefined') isEmailMandatory = true;
+      
       
       let mandatory =
         fields.filter(
