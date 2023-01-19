@@ -168,6 +168,7 @@ config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
     settings: [
       { settingKey: 'LoginByEmail', settingValue: true },
       { settingKey: 'LoginByMobile', settingValue: true },
+      { settingKey: 'RegistrationEmailMandatory', settingValue: true },
       { settingKey: 'MobileOTP', settingValue: 'SMS' },
       { settingKey: 'EnableRegisterWithPassword', settingValue: false },
       { settingKey: 'EnableOrdering', settingValue: true },
