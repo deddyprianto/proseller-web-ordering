@@ -10,7 +10,7 @@ const LoadingOverlayCustom = ({ loadingText, children, ...props }) => {
         overlay: (base) => ({
           ...base,
           position: 'fixed',
-          zIndex: 100,
+          zIndex: 99999,
         }),
       }}
       {...props}
