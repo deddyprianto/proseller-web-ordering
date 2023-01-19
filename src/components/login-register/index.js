@@ -639,7 +639,8 @@ const LoginRegister = (props) => {
   const handleMobileRegister = async () => {
     try {
       const fields = props.fields || [];
-
+      const isEmailMandatory = props.orderingSetting?.RegistrationEmailMandatory;
+      
       let mandatory =
         fields.filter(
           (items) => items.signUpField === true && items.mandatory === true
@@ -647,8 +648,11 @@ const LoginRegister = (props) => {
 
       mandatory.push({ fieldName: 'name', displayName: 'Name' });
       mandatory.push({ fieldName: 'phoneNumber', displayName: 'Phone Number' });
-      mandatory.push({ fieldName: 'email', displayName: 'Email' });
       mandatory.push({ fieldName: 'password', displayName: 'Password' });
+
+      if (isEmailMandatory) {
+        mandatory.push({ fieldName: 'email', displayName: 'Email' });
+      }
 
       const customFields =
         fields &&
@@ -690,6 +694,10 @@ const LoginRegister = (props) => {
         phoneNumber: payloadResponse.phoneNumber,
         ...customFields,
       };
+
+      if (!isEmailMandatory) {
+        payload.email =  `${payloadResponse.phoneNumber}@proseller.io`;
+      }
 
       let listName = '';
 
