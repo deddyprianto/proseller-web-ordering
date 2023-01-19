@@ -23,70 +23,68 @@ const SignUpSuccess = ({
   const [showOtp, setShowOtp] = useState(false);
 
   return (
-    <LoadingOverlay active={isLoading} spinner text='Loading...'>
-      <div className='modal-body'>
-        {showOtp ? (
-          <div>
-            <p className='text-muted'>{`Sign in to ${username || '-'}`}</p>
-            <OtpField
-              method={method}
-              sendEmailOtp={sendOtpToEmail}
-              sendPhoneOtp={sendOtpToPhone}
-              handleChange={handleChange}
-              sendCounter={sendCounter}
-              counterMinutes={counterMinutes}
-              counter={counter}
-              isSending={isSending}
-              enableSMSOTP={enableSMSOTP}
-              enableWhatsappOTP={enableWhatsappOTP}
-            ></OtpField>
-          </div>
-        ) : (
-          <div>
-            <p className='font-color-theme' style={{ textAlign: 'center' }}>
-              You will receive 4-digit verification code via{' '}
-              {method === 'phone' ? 'SMS' : 'Email'} at
-            </p>
-            {method === 'phone' ? (
-              <h2
-                className='font-color-theme'
-                style={{ textAlign: 'center', marginTop: 10 }}
-              >
-                {username || '-'}
-              </h2>
-            ) : (
-              <h4
-                className='font-color-theme'
-                style={{ textAlign: 'center', marginTop: 10 }}
-              >
-                {username || '-'}
-              </h4>
-            )}
-          </div>
-        )}
+    <div className='modal-body'>
+      {showOtp ? (
+        <div>
+          <p className='text-muted'>{`Sign in to ${username || '-'}`}</p>
+          <OtpField
+            method={method}
+            sendEmailOtp={sendOtpToEmail}
+            sendPhoneOtp={sendOtpToPhone}
+            handleChange={handleChange}
+            sendCounter={sendCounter}
+            counterMinutes={counterMinutes}
+            counter={counter}
+            isSending={isSending}
+            enableSMSOTP={enableSMSOTP}
+            enableWhatsappOTP={enableWhatsappOTP}
+          ></OtpField>
+        </div>
+      ) : (
+        <div>
+          <p className='font-color-theme' style={{ textAlign: 'center' }}>
+            You will receive 4-digit verification code via{' '}
+            {method === 'phone' ? 'SMS' : 'Email'} at
+          </p>
+          {method === 'phone' ? (
+            <h2
+              className='font-color-theme'
+              style={{ textAlign: 'center', marginTop: 10 }}
+            >
+              {username || '-'}
+            </h2>
+          ) : (
+            <h4
+              className='font-color-theme'
+              style={{ textAlign: 'center', marginTop: 10 }}
+            >
+              {username || '-'}
+            </h4>
+          )}
+        </div>
+      )}
 
-        <Button
-          className='button'
-          style={{
-            width: '100%',
-            marginTop: 10,
-            borderRadius: 5,
-            height: 50,
-          }}
-          onClick={() => {
-            if (usePassword) {
-              handleLogin(!usePassword);
-            } else if (!showOtp) {
-              setShowOtp(true);
-            } else {
-              handleLogin(true);
-            }
-          }}
-        >
-          Continue
-        </Button>
-      </div>
-    </LoadingOverlay>
+      <Button
+        className='button'
+        style={{
+          width: '100%',
+          marginTop: 10,
+          borderRadius: 5,
+          height: 50,
+        }}
+        onClick={() => {
+          if (usePassword) {
+            handleLogin(!usePassword);
+          } else if (!showOtp) {
+            setShowOtp(true);
+          } else {
+            handleLogin(true);
+          }
+        }}
+      >
+        Continue
+      </Button>
+    </div>
   );
 };
 SignUpSuccess.propTypes = {

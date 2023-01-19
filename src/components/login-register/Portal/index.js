@@ -388,103 +388,101 @@ const Portal = ({
   };
 
   return (
-    <LoadingOverlay active={isLoading} spinner text='Loading...'>
+    <div
+      className='modal-content'
+      style={{
+        justifyContent: 'center',
+        width: matches ? '90vw' : '30vw',
+      }}
+    >
       <div
-        className='modal-content'
         style={{
-          justifyContent: 'center',
-          width: matches ? '90vw' : '30vw',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          paddingTop: '20px',
+          paddingLeft: '15px',
         }}
       >
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            paddingTop: '20px',
-            paddingLeft: '15px',
-          }}
+        <h5
+          style={{ fontSize: '24px', fontWeight: 500 }}
+          className={cx('modal-title', styles.modalTitle)}
         >
-          <h5
-            style={{ fontSize: '24px', fontWeight: 500 }}
-            className={cx('modal-title', styles.modalTitle)}
+          Welcome!
+        </h5>
+        {location.pathname !== '/cart' && (
+          <button
+            type='button'
+            className='close'
+            data-dismiss='modal'
+            aria-label='Close'
+            disabled={!enableOrdering}
+            style={{
+              position: 'absolute',
+              right: 10,
+              top: 16,
+            }}
           >
-            Welcome!
-          </h5>
-          {location.pathname !== '/cart' && (
-            <button
-              type='button'
-              className='close'
-              data-dismiss='modal'
-              aria-label='Close'
-              disabled={!enableOrdering}
+            <span aria-hidden='true' className={styles.closeButton}>
+              ×
+            </span>
+          </button>
+        )}
+        <p style={{ fontSize: '14px', color: '#8D8D8D' }}>
+          {`To Login or Register, please enter your ${
+            method === 'phone' ? 'Phone number' : 'Email'
+          }.`}
+        </p>
+      </div>
+      <div
+        style={{
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          maxWidth: 'min(1280px, 100% - 30px)',
+        }}
+      >
+        {handleRenderByMethod(method)}
+        {settingGuessCheckout === 'GuestMode' && (
+          <>
+            <hr style={{ opacity: 0.5, marginTop: '25px' }} />
+            <div
               style={{
-                position: 'absolute',
-                right: 10,
-                top: 16,
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              <span aria-hidden='true' className={styles.closeButton}>
-                ×
-              </span>
-            </button>
-          )}
-          <p style={{ fontSize: '14px', color: '#8D8D8D' }}>
-            {`To Login or Register, please enter your ${
-              method === 'phone' ? 'Phone number' : 'Email'
-            }.`}
-          </p>
-        </div>
-        <div
-          style={{
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            maxWidth: 'min(1280px, 100% - 30px)',
-          }}
-        >
-          {handleRenderByMethod(method)}
-          {settingGuessCheckout === 'GuestMode' && (
-            <>
-              <hr style={{ opacity: 0.5, marginTop: '25px' }} />
-              <div
+              <button
+                aria-label='Close'
+                data-dismiss='modal'
+                onClick={handleGuestCheckoutMode}
                 style={{
-                  width: '100%',
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  padding: '8px',
+                  borderRadius: '50px',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  backgroundColor: '#4386A133',
+                  color: '#4386A1',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  width: '70%',
                 }}
+                className={styles.myFont}
               >
-                <button
-                  aria-label='Close'
-                  data-dismiss='modal'
-                  onClick={handleGuestCheckoutMode}
-                  style={{
-                    marginTop: '20px',
-                    marginBottom: '20px',
-                    padding: '8px',
-                    borderRadius: '50px',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    backgroundColor: '#4386A133',
-                    color: '#4386A1',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '70%',
-                  }}
-                  className={styles.myFont}
-                >
-                  <span>
-                    <img src={IconButton} width={14.4} height={19.2} />
-                  </span>
-                  <div style={{ marginLeft: '5px' }}>Guest Checkout</div>
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+                <span>
+                  <img src={IconButton} width={14.4} height={19.2} />
+                </span>
+                <div style={{ marginLeft: '5px' }}>Guest Checkout</div>
+              </button>
+            </div>
+          </>
+        )}
       </div>
-    </LoadingOverlay>
+    </div>
   );
 };
 
