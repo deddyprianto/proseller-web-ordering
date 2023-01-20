@@ -1323,8 +1323,8 @@ const Payment = ({ ...props }) => {
             <div style={styles.dividerOutletName} />
             {renderVoucher()}
             {renderPoint()}
-            {/* {renderSVC()} */}
-            {/* {renderPaymentMethod()} */}
+            {renderSVC()}
+            {renderPaymentMethod()}
             {renderButtonPay()}
           </React.Fragment>
         ) : (
