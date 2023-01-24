@@ -505,7 +505,7 @@ const Voucher = ({ item, quantity, ...props }) => {
       const payload = {
         details: props.basket?.details,
         outletId: props.basket?.outletID,
-        total: props.totalPaymentAmount,
+        total: props.basket?.totalNettAmount,
         customerId: props.basket?.customerId,
         payments: selectedVouchers.map((item) => ({
           isVoucher: item.isVoucher,
