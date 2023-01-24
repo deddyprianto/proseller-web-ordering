@@ -36,7 +36,8 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
 import Loading from 'components/loading/Loading';
-import { useProductList } from 'hooks/useProductList';
+import useProductList from 'hooks/useProductList';
+import Swal from 'sweetalert2';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -172,11 +173,15 @@ const ProductList = ({ ...props }) => {
   const [width] = useWindowSize();
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [products, setProducts] = useState([]);
   const [outlet, setOutlet] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
-  const { productsItem, isError, loading, setSize, size } = useProductList();
+  const [pageNumber, setPageNumber] = useState(1);
+  const { products, loading, error, hasMore } = useProductList({
+    pageNumber,
+    selectedCategory,
+    outlet,
+  });
 
   const observer = useRef();
   const lastEl = useCallback(
@@ -184,13 +189,13 @@ const ProductList = ({ ...props }) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setSize((prev) => prev + 10);
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNumber((prev) => prev + 1);
         }
       });
       if (node) observer.current.observe(node);
     },
-    [loading]
+    [loading, hasMore]
   );
 
   const handleFetchCategoryProduct = async (outlet) => {
@@ -247,7 +252,7 @@ const ProductList = ({ ...props }) => {
             ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
           );
 
-          setProducts(products.data);
+          // setProducts(products.data);
           props.dispatch({
             type: CONSTANT.LIST_CATEGORY,
             data: products,
@@ -368,25 +373,38 @@ const ProductList = ({ ...props }) => {
       </Box>
     );
   };
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'bottom-left',
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    },
+  });
+  if (loading) {
+    Toast.fire({
+      title: 'Loading...',
+    });
+  }
   const renderProductList = () => {
-    if (!isEmptyArray(productsItem)) {
-      const productList = productsItem?.map((product) => {
-        return product.data.map((itemProd, index) => {
-          if (product.data.length === index + 1) {
-            return (
-              <Grid ref={lastEl} key={index} item xs={12} sm={6} md={6}>
-                <Product item={itemProd} />
-              </Grid>
-            );
-          } else {
-            return (
-              <Grid key={index} item xs={12} sm={6} md={6}>
-                <Product item={itemProd} />
-              </Grid>
-            );
-          }
-        });
+    if (!isEmptyArray(products)) {
+      const productList = products.map((itemProd, index) => {
+        if (products.length === index + 1) {
+          return (
+            <Grid ref={lastEl} key={index} item xs={12} sm={6} md={6}>
+              <Product item={itemProd} />
+            </Grid>
+          );
+        } else {
+          return (
+            <Grid key={index} item xs={12} sm={6} md={6}>
+              <Product item={itemProd} />
+            </Grid>
+          );
+        }
       });
 
       return (
@@ -399,16 +417,7 @@ const ProductList = ({ ...props }) => {
           >
             {productList}
           </Grid>
-          <div>
-            <h1
-              style={{
-                fontSize: '15px',
-                display: size === 10 ? 'none' : 'inline',
-              }}
-            >
-              Loading...
-            </h1>
-          </div>
+          <div>{error && error}</div>
         </React.Fragment>
       );
     }

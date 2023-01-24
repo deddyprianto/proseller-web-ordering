@@ -1,24 +1,55 @@
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import useSWRInfinite from 'swr/infinite';
+import config from 'config';
 
-const getKey = (pageIndex, previousPageData) => {
-  console.log('%cdedd =>', 'color: green;', previousPageData);
-  pageIndex = pageIndex + 20;
-  if (previousPageData && !previousPageData.length) return null;
-  return `https://api-pink-city.proseller-demo.com/product/api/productpreset/loaditems/webOrdering/2d78d587-c36d-4083-86ec-96878d5cca6c/e73e0f7c-9aa3-4623-a2d7-e3503a2f9656?skip=0&take=${pageIndex}`; // SWR key
-};
+export default function useProductList({
+  pageNumber,
+  selectedCategory,
+  outlet,
+}) {
+  let url = config.getUrlProduct();
+  const OUTLET_ID = outlet.id;
+  const categoryID = selectedCategory.id;
+  const PRESET_TYPE = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
+  let presetType = PRESET_TYPE;
+  if (selectedCategory.presetType) {
+    presetType = selectedCategory.presetType;
+  }
 
-export const useProductList = () => {
-  const fetcher = (url) => axios.get(url).then((res) => res.data);
-  const { data, error, size, setSize } = useSWRInfinite(getKey, fetcher, {
-    initialSize: 10,
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
+  if (categoryID !== categoryID) {
+    console.log('gaksama');
+  } else {
+    console.log('sama');
+  }
+  useEffect(() => {
+    if (OUTLET_ID && categoryID) {
+      setLoading(true);
+      setError(false);
+      axios({
+        method: 'POST',
+        url: `${url}productpreset/loaditems/${presetType}/${OUTLET_ID}/${categoryID}`,
+        params: { page: pageNumber },
+      })
+        .then((res) => {
+          setHasMore(res.data.data.length > 0);
+          setLoading(false);
+          setProducts((prevBooks) => {
+            if (hasMore) {
+              return [...new Set([...prevBooks, ...res.data.data])];
+            } else {
+              return [...new Set([...res.data.data])];
+            }
+          });
+        })
+        .catch((e) => {
+          setError(true);
+        });
+    }
+  }, [pageNumber, OUTLET_ID, categoryID]);
 
-  return {
-    productsItem: data,
-    isLoading: !error && !data,
-    isError: error,
-    size: size,
-    setSize: setSize,
-  };
-};
+  return { loading, error, products, hasMore };
+}
