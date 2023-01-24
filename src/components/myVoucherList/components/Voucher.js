@@ -477,18 +477,21 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const handleSelectVoucher = async () => {
-    const isTermsAndConditions = handleTermsAndConditions(item);
-    if (isTermsAndConditions) {
+      if (!item.applyToLowestItem) {
+        props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
+        Swal.fire({
+          icon: 'error',
+          title: 'Cannot use multiple voucher',
+          allowOutsideClick: false,
+          confirmButtonText: 'OK',
+          confirmButtonColor: props.color.primary,
+        });
+        return;
+      }
+      console.log('ALLOWED GO TO BOTTOM');
       let result = [];
-      const discount = handleDiscount({
-        type: item.voucherType,
-        value: item.voucherValue,
-        appliedTo: item.appliedTo,
-        appliedItems: item.appliedItems,
-      });
-
       result = selectedVouchers;
-
       result.push({
         name: item.name,
         isVoucher: true,
@@ -496,12 +499,11 @@ const Voucher = ({ item, quantity, ...props }) => {
         paymentType: 'voucher',
         serialNumber: item.serialNumber,
         cannotBeMixed: item.validity?.cannotBeMixed,
-        paymentAmount: discount,
         capAmount: item?.capAmount,
         applyToLowestItem: item?.applyToLowestItem,
       });
-
       props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
+
       const payload = {
         details: props.basket?.details,
         outletId: props.basket?.outletID,
@@ -521,17 +523,24 @@ const Voucher = ({ item, quantity, ...props }) => {
           Swal.showLoading();
         },
       });
+
       const dataVoucher = await props.dispatch(
         PaymentAction.calculateVoucher(payload)
       );
-      if (dataVoucher.data.message) {
+      const isVoucherCannotApplied = dataVoucher.data.message;
+
+      if (isVoucherCannotApplied) {
+        props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+        props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
+      }
+
+      if (isVoucherCannotApplied) {
         Swal.fire({
           icon: 'info',
           title: dataVoucher.data.message,
           allowOutsideClick: false,
           confirmButtonText: 'OK',
           confirmButtonColor: props.color.primary,
-          iconColor: 'red',
         });
       } else {
         Swal.fire({
@@ -545,7 +554,6 @@ const Voucher = ({ item, quantity, ...props }) => {
           }
         });
       }
-    }
   };
 
   const renderImageProduct = (item) => {
