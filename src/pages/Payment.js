@@ -513,7 +513,7 @@ if (
     confirmButtonText: 'OK',
     confirmButtonColor: props.color.primary,
   });
-} else if (selectedVouchers[0]?.cannotBeMixed) {
+} else if (!isEmptyArray(selectedVouchers) && selectedVouchers[0]?.cannotBeMixed) {
   Swal.fire({
     icon: 'error',
     title: 'This voucher cannot be mixed with other voucher',
