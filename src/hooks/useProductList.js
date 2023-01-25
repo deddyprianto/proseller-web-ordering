@@ -20,11 +20,7 @@ export default function useProductList({
   const [error, setError] = useState(false);
   const [products, setProducts] = useState([]);
   const [hasMore, setHasMore] = useState(false);
-  if (categoryID !== categoryID) {
-    console.log('gaksama');
-  } else {
-    console.log('sama');
-  }
+
   useEffect(() => {
     if (OUTLET_ID && categoryID) {
       setLoading(true);
@@ -35,8 +31,6 @@ export default function useProductList({
         params: { page: pageNumber },
       })
         .then((res) => {
-          setHasMore(res.data.data.length > 0);
-          setLoading(false);
           setProducts((prevBooks) => {
             if (hasMore) {
               return [...new Set([...prevBooks, ...res.data.data])];
@@ -44,6 +38,8 @@ export default function useProductList({
               return [...new Set([...res.data.data])];
             }
           });
+          setHasMore(res.data.data.length > 0);
+          setLoading(false);
         })
         .catch((e) => {
           setError(true);

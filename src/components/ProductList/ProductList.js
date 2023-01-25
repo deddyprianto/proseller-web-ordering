@@ -177,10 +177,12 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
   const [pageNumber, setPageNumber] = useState(1);
+  const [productsData, setProductsData] = useState([]);
   const { products, loading, error, hasMore } = useProductList({
     pageNumber,
     selectedCategory,
     outlet,
+    categories,
   });
 
   const observer = useRef();
@@ -249,10 +251,10 @@ const ProductList = ({ ...props }) => {
         setIsLoading(true);
         if (!isEmptyObject(selectedCategory)) {
           const products = await props.dispatch(
-            ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
+            ProductAction.fetchProduct(selectedCategory, outlet, 0, 10)
           );
 
-          // setProducts(products.data);
+          setProductsData(products.data);
           props.dispatch({
             type: CONSTANT.LIST_CATEGORY,
             data: products,
@@ -375,7 +377,7 @@ const ProductList = ({ ...props }) => {
   };
   const Toast = Swal.mixin({
     toast: true,
-    position: 'bottom-left',
+    position: 'bottom',
     showConfirmButton: false,
     timer: 2000,
     timerProgressBar: true,
@@ -390,9 +392,11 @@ const ProductList = ({ ...props }) => {
     });
   }
   const renderProductList = () => {
-    if (!isEmptyArray(products)) {
-      const productList = products.map((itemProd, index) => {
-        if (products.length === index + 1) {
+    const isProductPaginate =
+      selectedCategory.sequence === 0 ? products : productsData;
+    if (!isEmptyArray(isProductPaginate)) {
+      const productList = isProductPaginate.map((itemProd, index) => {
+        if (isProductPaginate.length === index + 1) {
           return (
             <Grid ref={lastEl} key={index} item xs={12} sm={6} md={6}>
               <Product item={itemProd} />
