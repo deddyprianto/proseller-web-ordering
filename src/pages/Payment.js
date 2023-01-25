@@ -502,12 +502,7 @@ const Payment = ({ ...props }) => {
   };
 
   const handleSelectVoucher = () => {
-    if (selectedVouchers[0]?.cannotBeMixed) {
-      setWarningMessage('This voucher cannot be mixed with other voucher');
-      handleOpenWarningModal();
-    } else {
-      history.push('/my-voucher');
-    }
+    history.push('/my-voucher');
   };
 
   const handlePoint = () => {
