@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import config from 'config';
+
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -16,6 +16,8 @@ import { PaymentAction } from 'redux/actions/PaymentAction';
 
 import MyVoucherWarningModal from './MyVoucherWarningModal';
 import PicVoucherDefault from '../../../assets/images/voucher-icon.png';
+
+import Swal from 'sweetalert2';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -141,7 +143,7 @@ const Voucher = ({ item, quantity, ...props }) => {
     typographyQuantity: {
       fontSize: 12,
       fontWeight: 'bold',
-      color: props.color.font,
+      color: 'white',
     },
   };
 
@@ -268,7 +270,9 @@ const Voucher = ({ item, quantity, ...props }) => {
     });
 
     if (isVoucherCategory.length < 1) {
-      setMessage('Only specific product category are allowed to use this voucher');
+      setMessage(
+        'Only specific product category are allowed to use this voucher'
+      );
       handleOpenModal();
     }
     return isVoucherCategory.length > 0 ? isVoucherCategory : false;
@@ -276,8 +280,8 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const handleSpecificCollectionCondition = () => {
     const isCollectionMatched = props.basket?.details.filter((detail) => {
-      return item.appliedItems.find(
-        (appliedItem) => detail?.collections?.includes(appliedItem.value)
+      return item.appliedItems.find((appliedItem) =>
+        detail?.collections?.includes(appliedItem.value)
       );
     });
 
@@ -317,14 +321,12 @@ const Voucher = ({ item, quantity, ...props }) => {
   const handleTermsAndConditions = (value) => {
     if (value?.validity?.canNotUseWithPromoItem) {
       const hasPromoItem = props?.basket?.details?.find((item) => {
-        console.log(item);
         return (
           item.promotions &&
           item.promotions.length > 0 &&
           item.isPromotionApplied
         );
       });
-      console.log(hasPromoItem);
       if (hasPromoItem) {
         return handleCanNotUseWithPromoItem();
       }
@@ -403,15 +405,15 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const calculateDisc = ({ price, value, type }) => {
     switch (type) {
-      case "discPercentage":
+      case 'discPercentage':
         const discPercentage = (price * value) / 100;
         return handleCapAmount(discPercentage);
-      case "discAmount":
-        return value
+      case 'discAmount':
+        return value;
       default:
-        return 0
+        return 0;
     }
-  }
+  };
 
   const handleSpecificCategories = ({ appliedItems, value, type }) => {
     let result = 0;
@@ -474,34 +476,71 @@ const Voucher = ({ item, quantity, ...props }) => {
     return discount;
   };
 
-  const handleSelectVoucher = () => {
-    const isTermsAndConditions = handleTermsAndConditions(item);
-    if (isTermsAndConditions) {
-      let result = [];
-      const discount = handleDiscount({
-        type: item.voucherType,
-        value: item.voucherValue,
-        appliedTo: item.appliedTo,
-        appliedItems: item.appliedItems,
-      });
+  const handleSelectVoucher = async () => {
+    let result = [];
+    result = selectedVouchers;
+    result.push({
+      name: item.name,
+      isVoucher: true,
+      voucherId: item.id,
+      paymentType: 'voucher',
+      serialNumber: item.serialNumber,
+      cannotBeMixed: item.validity?.cannotBeMixed,
+      capAmount: item?.capAmount,
+      applyToLowestItem: item?.applyToLowestItem,
+    });
+    props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
 
-      result = selectedVouchers;
-
-      result.push({
-        name: item.name,
-        isVoucher: true,
-        voucherId: item.id,
-        paymentType: 'voucher',
+    const payload = {
+      details: props.basket?.details,
+      outletId: props.basket?.outletID,
+      total: props.basket?.totalNettAmount,
+      customerId: props.basket?.customerId,
+      payments: selectedVouchers.map((item) => ({
+        isVoucher: item.isVoucher,
         serialNumber: item.serialNumber,
-        cannotBeMixed: item.validity?.cannotBeMixed,
-        paymentAmount: discount,
-      });
+        voucherId: item.voucherId,
+      })),
+    };
+    Swal.fire({
+      title: 'Please Wait !',
+      html: 'Voucher will be applied',
+      allowOutsideClick: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
-      props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
+    const dataVoucher = await props.dispatch(
+      PaymentAction.calculateVoucher(payload)
+    );
+    const isVoucherCannotApplied = dataVoucher.data.message;
 
-      return history.push('/payment');
+    if (isVoucherCannotApplied) {
+      props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
+      props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
     }
-    return handleOpenModal();
+
+    if (isVoucherCannotApplied) {
+      Swal.fire({
+        icon: 'info',
+        title: dataVoucher.data.message,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color.primary,
+      });
+    } else {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'successfully applied the voucher!',
+        confirmButtonColor: props.color.primary,
+      }).then((res) => {
+        if (res.isConfirmed) {
+          history.push('/payment');
+        }
+      });
+    }
   };
 
   const renderImageProduct = (item) => {

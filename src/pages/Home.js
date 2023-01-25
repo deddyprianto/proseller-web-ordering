@@ -101,6 +101,14 @@ const Home = ({ ...props }) => {
     };
     loadData();
   }, []);
+  
+  useEffect(() => {
+    props.dispatch({
+      type: 'SAVE_DETAIL_TOP_UP_SVC',
+      payload: {},
+    });
+    props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
+  }, []);
 
   useEffect(() => {
     const isOfflineCartGuestCO = JSON.parse(
@@ -140,7 +148,7 @@ const Home = ({ ...props }) => {
       saveGuestCheckoutOfflineCart();
     }
   }, []);
-
+  
   const renderProductListOrOutletSelection = () => {
     if (
       props.setting.outletSelection === 'MANUAL' &&

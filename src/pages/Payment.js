@@ -82,6 +82,8 @@ const mapStateToProps = (state) => {
     payment: state.payment.paymentCard,
     defaultOutlet: state.outlet.defaultOutlet,
     itemOrderingMode: state.order.itemOrderingMode,
+    dataVoucher: state.voucher.indexVoucer,
+    totalPaymentAmount: state.payment.totalPaymentAmount,
   };
 };
 
@@ -350,14 +352,12 @@ const Payment = ({ ...props }) => {
 
   const handlePrice = () => {
     let price = props.basket?.totalNettAmount || 0;
+
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
+    }
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
-    }
-
-    if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.paymentAmount;
-      });
     }
 
     if (price < 0) {
@@ -377,10 +377,8 @@ const Payment = ({ ...props }) => {
       price = price - selectedPoint.paymentAmount;
     }
 
-    if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.paymentAmount;
-      });
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
     }
 
     if (price === 0) {
@@ -470,9 +468,13 @@ const Payment = ({ ...props }) => {
   };
 
   const handleCutPrice = () => {
-    const price = props.basket?.totalNettAmount;
-    if (totalPrice !== price) {
-      return price;
+    if (isEmptyArray(props.dataVoucher?.payments)) {
+      return null;
+    } else {
+      const price = props.basket?.totalNettAmount;
+      if (totalPrice !== price) {
+        return price;
+      }
     }
   };
   const handleDisableButton = () => {
@@ -500,12 +502,28 @@ const Payment = ({ ...props }) => {
   };
 
   const handleSelectVoucher = () => {
-    if (selectedVouchers[0]?.cannotBeMixed) {
-      setWarningMessage('This voucher cannot be mixed with other voucher');
-      handleOpenWarningModal();
-    } else {
-      history.push('/my-voucher');
-    }
+if (
+  !isEmptyArray(selectedVouchers) &&
+  !selectedVouchers[0]?.applyToLowestItem
+) {
+  Swal.fire({
+    icon: 'error',
+    title: 'This voucher cannot use multiple voucher',
+    allowOutsideClick: false,
+    confirmButtonText: 'OK',
+    confirmButtonColor: props.color.primary,
+  });
+} else if (!isEmptyArray(selectedVouchers) && selectedVouchers[0]?.cannotBeMixed) {
+  Swal.fire({
+    icon: 'error',
+    title: 'This voucher cannot be mixed with other voucher',
+    allowOutsideClick: false,
+    confirmButtonText: 'OK',
+    confirmButtonColor: props.color.primary,
+  });
+} else {
+  history.push('/my-voucher');
+}
   };
 
   const handlePoint = () => {
@@ -526,12 +544,23 @@ const Payment = ({ ...props }) => {
   };
 
   const handleRemoveVoucher = async (value) => {
-    const result = selectedVouchers.filter(
+    const result = props.dataVoucher.payments.filter(
       (selectedVoucher) => selectedVoucher.serialNumber !== value
     );
-
-    setSelectedVouchers(result);
+    const payload = {
+      details: props.basket?.details,
+      outletId: props.basket?.outletID,
+      total: props.basket?.totalNettAmount,
+      customerId: props.basket?.customerId,
+      payments: result,
+    };
+    setIsLoading(true);
+    const dataVoucher = await props.dispatch(
+      PaymentAction.calculateVoucher(payload)
+    );
+    setIsLoading(false);
     await props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
+    props.dispatch({ type: 'INDEX_VOUCHER', payload: dataVoucher.data });
   };
 
   const handleMixSVC = () => {
@@ -562,6 +591,32 @@ const Payment = ({ ...props }) => {
     disableAnotherPaymentForManual();
   }, [props.selectedPaymentCard?.paymentID]);
 
+  const renderLabelPrice = () => {
+    if (!isEmptyObject(props.saveDetailTopupSvc)) {
+      return (
+        <Typography style={styles.typographyPrice}>
+          {props.saveDetailTopupSvc.name}
+        </Typography>
+      );
+    } else if (!isEmptyObject(props.dataVoucher)) {
+      if (!isEmptyObject(selectedPoint)) {
+        return (
+          <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+        );
+      } else {
+        return (
+          <Typography style={styles.typographyPrice}>
+            {props.dataVoucher?.total}
+          </Typography>
+        );
+      }
+    } else {
+      return (
+        <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
+      );
+    }
+  };
+
   const renderPrice = () => {
     return (
       <Badge
@@ -584,13 +639,7 @@ const Payment = ({ ...props }) => {
           }}
           sx={styles.badge}
         >
-          {isEmptyObject(props.saveDetailTopupSvc) ? (
-            <Typography style={styles.typographyPrice}>{totalPrice}</Typography>
-          ) : (
-            <Typography style={styles.typographyPrice}>
-              {props.saveDetailTopupSvc.name}
-            </Typography>
-          )}
+          {renderLabelPrice()}
         </Badge>
       </Badge>
     );
@@ -619,13 +668,13 @@ const Payment = ({ ...props }) => {
   };
 
   const renderSelectedVoucher = () => {
-    if (!isEmptyArray(selectedVouchers)) {
-      return selectedVouchers.map((selectedVoucher, index) => {
+    if (!isEmptyArray(props.dataVoucher?.payments)) {
+      return props.dataVoucher?.payments?.map((selectedVoucher, index) => {
         return (
           <div key={index}>
             <div style={styles.buttonVoucher} variant='outlined'>
               <Typography style={styles.typography}>
-                {selectedVoucher.name}
+                {selectedVoucher.voucherName}
               </Typography>
 
               <IconButton
@@ -811,10 +860,8 @@ const Payment = ({ ...props }) => {
       price = price - selectedPoint.paymentAmount;
     }
 
-    if (!isEmptyArray(selectedVouchers)) {
-      selectedVouchers.forEach((selectedVoucher) => {
-        price = price - selectedVoucher.paymentAmount;
-      });
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
     }
     if (price < minPayment) {
       return (
@@ -1163,7 +1210,35 @@ const Payment = ({ ...props }) => {
       }
     }
   };
-
+  const renderLabelButtonPay = () => {
+    if (!isEmptyObject(props.saveDetailTopupSvc)) {
+      return (
+        <Typography style={styles.typographyPay}>
+          Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
+        </Typography>
+      );
+    } else if (!isEmptyObject(props.dataVoucher)) {
+      if (!isEmptyObject(selectedPoint)) {
+        return (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(totalPrice)}
+          </Typography>
+        );
+      } else {
+        return (
+          <Typography style={styles.typographyPay}>
+            Pay {handleCurrency(props.dataVoucher?.total)}
+          </Typography>
+        );
+      }
+    } else {
+      return (
+        <Typography style={styles.typographyPay}>
+          Pay {handleCurrency(totalPrice)}
+        </Typography>
+      );
+    }
+  };
   const renderButtonPay = () => {
     return (
       <LoadingButton
@@ -1182,15 +1257,7 @@ const Payment = ({ ...props }) => {
           }
         }}
       >
-        {isEmptyObject(props.saveDetailTopupSvc) ? (
-          <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(totalPrice)}
-          </Typography>
-        ) : (
-          <Typography style={styles.typographyPay}>
-            Pay {handleCurrency(props.saveDetailTopupSvc.retailPrice)}
-          </Typography>
-        )}
+        {renderLabelButtonPay()}
       </LoadingButton>
     );
   };
