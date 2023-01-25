@@ -477,32 +477,6 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const handleSelectVoucher = async () => {
-    if (!item.applyToLowestItem) {
-      props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
-      props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
-      Swal.fire({
-        icon: 'error',
-        title: 'Cannot use multiple voucher',
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: props.color.primary,
-      });
-      return;
-    }
-    if (item.validity?.cannotBeMixed) {
-      props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
-      props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
-      Swal.fire({
-        icon: 'error',
-        title: 'This voucher cannot be mixed with other voucher',
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: props.color.primary,
-      });
-      return;
-    }
-
-    console.log('ALLOWED GO TO BOTTOM');
     let result = [];
     result = selectedVouchers;
     result.push({

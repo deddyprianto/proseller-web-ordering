@@ -502,7 +502,28 @@ const Payment = ({ ...props }) => {
   };
 
   const handleSelectVoucher = () => {
-    history.push('/my-voucher');
+if (
+  !isEmptyArray(selectedVouchers) &&
+  !selectedVouchers[0]?.applyToLowestItem
+) {
+  Swal.fire({
+    icon: 'error',
+    title: 'This voucher cannot use multiple voucher',
+    allowOutsideClick: false,
+    confirmButtonText: 'OK',
+    confirmButtonColor: props.color.primary,
+  });
+} else if (selectedVouchers[0]?.cannotBeMixed) {
+  Swal.fire({
+    icon: 'error',
+    title: 'This voucher cannot be mixed with other voucher',
+    allowOutsideClick: false,
+    confirmButtonText: 'OK',
+    confirmButtonColor: props.color.primary,
+  });
+} else {
+  history.push('/my-voucher');
+}
   };
 
   const handlePoint = () => {
