@@ -291,7 +291,6 @@ const Portal = ({
               )}
               onChange={(e) => {
                 const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-                console.log('dedd =>', regEmail.test(e.target.value));
                 setValue(e.target.value);
               }}
             ></input>

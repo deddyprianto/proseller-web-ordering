@@ -28,7 +28,7 @@ const EmailForm = ({
   const [phone, setPhone] = useState('');
   const [agreeTC, setAgreeTC] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [nameValue, setNameValue] = useState('');
   useEffect(() => {
     if (phone) {
       handleChange('phoneNumber', phoneCountryCode + phone);
@@ -43,6 +43,15 @@ const EmailForm = ({
     isTCAvailable = false;
   }
 
+  const handleDisabelButton = () => {
+    const iSAllPassed = nameValue && phone ? false : true;
+    if (isTCAvailable) {
+      return agreeTC;
+    } else {
+      return iSAllPassed || isSubmitting;
+    }
+  };
+
   return (
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div className='modal-body'>
@@ -55,7 +64,10 @@ const EmailForm = ({
             type='text'
             className='woocommerce-Input woocommerce-Input--text input-text'
             style={{ borderRadius: 5 }}
-            onChange={(e) => handleChange('name', e.target.value)}
+            onChange={(e) => {
+              handleChange('name', e.target.value);
+              setNameValue(e.target.value);
+            }}
           />
           {errorName !== '' && (
             <div
@@ -207,7 +219,7 @@ const EmailForm = ({
           </Button>
         ) : (
           <Button
-            disabled={isSubmitting}
+            disabled={handleDisabelButton()}
             className='button'
             style={{
               width: '100%',
