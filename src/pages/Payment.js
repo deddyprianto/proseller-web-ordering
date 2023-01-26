@@ -502,28 +502,32 @@ const Payment = ({ ...props }) => {
   };
 
   const handleSelectVoucher = () => {
-if (
-  !isEmptyArray(selectedVouchers) &&
-  !selectedVouchers[0]?.applyToLowestItem
-) {
-  Swal.fire({
-    icon: 'error',
-    title: 'This voucher cannot use multiple voucher',
-    allowOutsideClick: false,
-    confirmButtonText: 'OK',
-    confirmButtonColor: props.color.primary,
-  });
-} else if (!isEmptyArray(selectedVouchers) && selectedVouchers[0]?.cannotBeMixed) {
-  Swal.fire({
-    icon: 'error',
-    title: 'This voucher cannot be mixed with other voucher',
-    allowOutsideClick: false,
-    confirmButtonText: 'OK',
-    confirmButtonColor: props.color.primary,
-  });
-} else {
-  history.push('/my-voucher');
-}
+    if (
+      !isEmptyArray(selectedVouchers) &&
+      !selectedVouchers[0]?.applyToLowestItem
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'This voucher cannot use multiple voucher',
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color.primary,
+      });
+    } else if (
+      !isEmptyArray(selectedVouchers) &&
+      selectedVouchers[0]?.cannotBeMixed
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'This voucher cannot be mixed with other voucher',
+        allowOutsideClick: false,
+        confirmButtonText: 'Switch to another voucher',
+        confirmButtonColor: props.color.primary,
+        showCancelButton: true,
+      });
+    } else {
+      history.push('/my-voucher');
+    }
   };
 
   const handlePoint = () => {
@@ -544,7 +548,10 @@ if (
   };
 
   const handleRemoveVoucher = async (value) => {
-    const result = props.dataVoucher.payments.filter(
+    const selectPayment = props.dataVoucher.payments.filter(
+      (selectedVoucher) => selectedVoucher.serialNumber !== value
+    );
+    const selectVoucher = selectedVouchers.filter(
       (selectedVoucher) => selectedVoucher.serialNumber !== value
     );
     const payload = {
@@ -552,14 +559,16 @@ if (
       outletId: props.basket?.outletID,
       total: props.basket?.totalNettAmount,
       customerId: props.basket?.customerId,
-      payments: result,
+      payments: selectPayment,
     };
     setIsLoading(true);
     const dataVoucher = await props.dispatch(
       PaymentAction.calculateVoucher(payload)
     );
     setIsLoading(false);
-    await props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
+    await props.dispatch(
+      PaymentAction.setData(selectVoucher, 'SELECT_VOUCHER')
+    );
     props.dispatch({ type: 'INDEX_VOUCHER', payload: dataVoucher.data });
   };
 
@@ -1037,8 +1046,8 @@ if (
         payload.deliveryFee = props.selectedDeliveryProvider.deliveryFee;
       }
 
-      if (!isEmptyArray(selectedVouchers)) {
-        payload.payments = payload.payments.concat(selectedVouchers);
+      if (!isEmptyArray(props.dataVoucher?.payments)) {
+        payload.payments = payload.payments.concat(props.dataVoucher?.payments);
       }
 
       if (!isEmptyObject(selectedPoint)) {
