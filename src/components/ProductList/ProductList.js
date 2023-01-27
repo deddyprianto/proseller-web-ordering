@@ -38,7 +38,7 @@ import Product from './components/Product';
 import Loading from 'components/loading/Loading';
 import useProductList from 'hooks/useProductList';
 import Swal from 'sweetalert2';
-
+import './components/style/style.css';
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -375,22 +375,7 @@ const ProductList = ({ ...props }) => {
       </Box>
     );
   };
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'bottom',
-    showConfirmButton: false,
-    timer: 2000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-  });
-  if (loading) {
-    Toast.fire({
-      title: 'Loading...',
-    });
-  }
+
   const renderProductList = () => {
     const isProductPaginate =
       selectedCategory.sequence === 0 ? products : productsData;
@@ -419,8 +404,22 @@ const ProductList = ({ ...props }) => {
             rowSpacing={1}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
-            {productList}
+            <div class='lds-spinner'>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           </Grid>
+
           <div>{error && error}</div>
         </React.Fragment>
       );
