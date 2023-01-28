@@ -462,13 +462,13 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                    <i className='fa fa-file-text-o' aria-hidden='true' /> Terms & Conditions
+                    <i className='fa fa-file-text-o' aria-hidden='true' /> Terms
+                    & Conditions
                   </div>
                 </div>
               </div>
             )}
             <div
-              onClick={() => this.handleLogout()}
               className='background-theme'
               style={{
                 padding: 10,
@@ -479,9 +479,23 @@ class DetailProfile extends Component {
                 cursor: 'pointer',
               }}
             >
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 16, fontWeight: 'bold' }}>
-                  <i className='fa fa-sign-out' aria-hidden='true' /> Logout
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    width: 'fit-content',
+                  }}
+                  onClick={() => this.handleLogout()}
+                >
+                  <i className='fa fa-sign-out' aria-hidden='true' />
+                  Logout
                 </div>
               </div>
             </div>

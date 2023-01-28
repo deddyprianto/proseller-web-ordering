@@ -10,32 +10,33 @@ const ModalTermAndCondition = ({ enableTermAndCondition }) => {
       marginTop: 100,
       marginBottom: 100,
       height: '100%',
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gridTemplateRows: '50px 1fr 50px',
+      gap: '0px 0px',
+      gridAutoFlow: 'row',
+      gridTemplateAreas: '"."\n    "."\n    "."',
     },
-    modalHeader: { display: 'flex', justifyContent: 'center' },
-    modalTitle: { fontSize: 18 },
-    containerContent: {
-      width: '100%',
+    modalHeader: {
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',
-      height: '80%',
     },
-    containerMain: {
-      height: '100%',
+    modalTitle: { fontSize: 18 },
+    containerContent: {
+      height: '98%',
       width: '90%',
       border: '2px solid #eaeaea',
       borderRadius: '20px',
-      padding: '20px',
+      padding: '10px',
       overflowY: 'auto',
-      marginTop: '15px',
+      margin: 'auto',
     },
     fontSizeContent: { fontSize: '15px', textAlign: 'left' },
     containerButton: {
       width: '100%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'flex-end',
-      height: '60px',
+      alignItems: 'center',
     },
     buttonOK: {
       backgroundColor: color.primary,
@@ -69,23 +70,21 @@ const ModalTermAndCondition = ({ enableTermAndCondition }) => {
             </h5>
           </div>
           <div style={style.containerContent}>
-            <div style={style.containerMain}>
-              <p style={style.fontSizeContent}>{split && split[0]}</p>
-              <ul
-                style={{
-                  listStyle: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                  margin: '0',
-                }}
-              >
-                {split?.map((item, i) => {
-                  if (i !== 0) {
-                    return <li>{item}</li>;
-                  }
-                })}
-              </ul>
-            </div>
+            <p style={style.fontSizeContent}>{split && split[0]}</p>
+            <ul
+              style={{
+                listStyle: 'none',
+                textAlign: 'left',
+                padding: '0',
+                margin: '0',
+              }}
+            >
+              {split?.map((item, i) => {
+                if (i !== 0) {
+                  return <li>{item}</li>;
+                }
+              })}
+            </ul>
           </div>
           <div style={style.containerButton}>
             <button type='button' data-dismiss='modal' style={style.buttonOK}>
