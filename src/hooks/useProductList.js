@@ -22,7 +22,7 @@ export default function useProductList({
   const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
-    if (OUTLET_ID && categoryID) {
+    if (selectedCategory.sequence === 0) {
       setLoading(true);
       setError(false);
       axios({
