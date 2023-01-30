@@ -200,6 +200,12 @@ const ProductList = ({ ...props }) => {
     [loading, hasMore]
   );
 
+  useEffect(() => {
+    if (selectedCategory.sequence >= 0) {
+      setPageNumber(1);
+    }
+  }, [selectedCategory]);
+
   const handleFetchCategoryProduct = async (outlet) => {
     const orderingMode = props.orderingMode | '';
     const categories = await props.dispatch(
@@ -375,13 +381,29 @@ const ProductList = ({ ...props }) => {
       </Box>
     );
   };
+  const RenderAnimationLoading = () => {
+    return (
+      <div className='lds-spinner'>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    );
+  };
 
   const renderProductList = () => {
-    const isProductPaginate =
-      selectedCategory.sequence === 0 ? products : productsData;
-    if (!isEmptyArray(isProductPaginate)) {
-      const productList = isProductPaginate.map((itemProd, index) => {
-        if (isProductPaginate.length === index + 1) {
+    if (!isEmptyArray(products)) {
+      const productList = products.map((itemProd, index) => {
+        if (products.length === index + 1) {
           return (
             <Grid ref={lastEl} key={index} item xs={12} sm={6} md={6}>
               <Product item={itemProd} />
@@ -404,22 +426,9 @@ const ProductList = ({ ...props }) => {
             rowSpacing={1}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
-            <div class='lds-spinner'>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
+            {productList}
           </Grid>
-
+          {loading && <RenderAnimationLoading />}
           <div>{error && error}</div>
         </React.Fragment>
       );

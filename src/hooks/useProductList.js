@@ -7,6 +7,10 @@ export default function useProductList({
   selectedCategory,
   outlet,
 }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
   let url = config.getUrlProduct();
   const OUTLET_ID = outlet.id;
   const categoryID = selectedCategory.id;
@@ -16,13 +20,8 @@ export default function useProductList({
     presetType = selectedCategory.presetType;
   }
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [hasMore, setHasMore] = useState(false);
-
   useEffect(() => {
-    if (selectedCategory.sequence === 0) {
+    if (OUTLET_ID && categoryID) {
       setLoading(true);
       setError(false);
       axios({
@@ -32,7 +31,7 @@ export default function useProductList({
       })
         .then((res) => {
           setProducts((prevBooks) => {
-            if (hasMore) {
+            if (hasMore && pageNumber > 1) {
               return [...new Set([...prevBooks, ...res.data.data])];
             } else {
               return [...new Set([...res.data.data])];
