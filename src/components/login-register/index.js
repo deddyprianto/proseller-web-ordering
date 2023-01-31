@@ -14,6 +14,7 @@ import { lsLoad, lsStore } from '../../helpers/localStorage';
 import config from '../../config';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import { CONSTANT } from 'helpers';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2');
@@ -86,7 +87,10 @@ const LoginRegister = (props) => {
     setErrorEmail('');
     const otpData = lsLoad(config.prefix + '_otp') || null;
     if (otpData) {
-      const waitTime = method === 'phone' ? 60 : 300;
+      let waitTime;
+      if (!isEmptyObject(payloadResponse)) {
+        waitTime = method === 'phone' ? 60 : 300;
+      }
       const countdown =
         waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
       if (countdown > 0) {
@@ -642,8 +646,7 @@ const LoginRegister = (props) => {
       let isEmailMandatory = props.orderingSetting?.RegistrationEmailMandatory;
 
       if (typeof isEmailMandatory === 'undefined') isEmailMandatory = true;
-      
-      
+
       let mandatory =
         fields.filter(
           (items) => items.signUpField === true && items.mandatory === true
@@ -699,7 +702,7 @@ const LoginRegister = (props) => {
       };
 
       if (!isEmailMandatory) {
-        payload.email =  `${payloadResponse.phoneNumber}@proseller.io`;
+        payload.email = `${payloadResponse.phoneNumber}@proseller.io`;
       }
 
       let listName = '';
