@@ -30,10 +30,16 @@ class DetailProfile extends Component {
       dataCustomer: {},
       memberships: [],
       svc: [],
+      versionAppWebOrdering: '',
     };
   }
 
   async componentDidMount() {
+    if (localStorage.getItem('APP_VERSION_WEBORDERING')) {
+      this.setState({
+        versionAppWebOrdering: localStorage.getItem('APP_VERSION_WEBORDERING'),
+      });
+    }
     // Fetch Custom fields
     await this.props.dispatch(CustomerAction.mandatoryField());
 
@@ -462,7 +468,8 @@ class DetailProfile extends Component {
               >
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                    <i className='fa fa-file-text-o' aria-hidden='true' /> Terms & Conditions
+                    <i className='fa fa-file-text-o' aria-hidden='true' /> Terms
+                    & Conditions
                   </div>
                 </div>
               </div>
@@ -484,6 +491,12 @@ class DetailProfile extends Component {
                   <i className='fa fa-sign-out' aria-hidden='true' /> Logout
                 </div>
               </div>
+            </div>
+            <hr style={{ marginTop: '20px' }} />
+            <div style={{ width: '100%' }}>
+              <p style={{ textAlign: 'center' }}>
+                v{this.state.versionAppWebOrdering}
+              </p>
             </div>
           </div>
         )}

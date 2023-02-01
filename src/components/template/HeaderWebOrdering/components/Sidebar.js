@@ -33,12 +33,12 @@ const useStyles = (theme) => ({
     backgroundColor: theme.primary,
   },
   listIcon: {
-    color: 'white',
+    color: theme.font,
   },
   primaryTypographyProps: {
     fontSize: 15,
     letterSpacing: 0,
-    color: 'white',
+    color: theme.font,
     fontWeight: 600,
   },
 });
@@ -133,17 +133,18 @@ const Sidebar = ({ guessCheckout }) => {
     );
   };
   const renderMenuItem = (item) => {
+    const iconColor = theme.font;
     switch (item.text) {
       case 'Menu':
-        return menuIcon('white');
+        return menuIcon(iconColor);
       case 'History':
-        return historyIcon('white');
+        return historyIcon(iconColor);
       case 'Rewards':
-        return rewardsIcon('white');
+        return rewardsIcon(iconColor);
       case 'Inbox':
-        return inboxIcon('white');
+        return inboxIcon(iconColor);
       default:
-        return profileIcon('white');
+        return profileIcon(iconColor);
     }
   };
 
@@ -219,26 +220,6 @@ const Sidebar = ({ guessCheckout }) => {
           </ListItem>
           {renderMenuList()}
         </List>
-        <div
-          style={{
-            width: '100%',
-            position: 'absolute',
-            bottom: 0,
-            padding: '10px 0px',
-          }}
-        >
-          <p
-            style={{
-              padding: 0,
-              margin: 0,
-              textAlign: 'center',
-              color: 'white',
-              fontWeight: 500,
-            }}
-          >
-            v2.0.0
-          </p>
-        </div>
       </Box>
     );
   };
@@ -292,7 +273,7 @@ const Sidebar = ({ guessCheckout }) => {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon style={styles.listIcon}>
-                  {trackIcon('white')}
+                  {trackIcon(theme.font)}
                 </ListItemIcon>
                 <Link to='/trackorder'>
                   <ListItemText
@@ -321,26 +302,6 @@ const Sidebar = ({ guessCheckout }) => {
             </ListItemButton>
           </ListItem>
         </List>
-        <div
-          style={{
-            width: '100%',
-            position: 'absolute',
-            bottom: 0,
-            padding: '10px 0px',
-          }}
-        >
-          <p
-            style={{
-              padding: 0,
-              margin: 0,
-              textAlign: 'center',
-              color: 'white',
-              fontWeight: 500,
-            }}
-          >
-            v2.0.0
-          </p>
-        </div>
       </Box>
     );
   };
