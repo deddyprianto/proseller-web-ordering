@@ -7,6 +7,7 @@ const defaultState = {
   showLoadingOnModal: false,
   placeholderAddressCustomer: {},
   placeholderForEditAddressCustomer: {},
+  isUserHasBeenCompletedfillData: false,
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -51,6 +52,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         placeholderForEditAddressCustomer: action.data,
+      };
+    case 'IS_USER_COMPLETED_FILL_ALL_DATA':
+      return {
+        ...state,
+        isUserHasBeenCompletedfillData: action.data,
       };
     default:
       return state;

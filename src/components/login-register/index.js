@@ -33,6 +33,7 @@ const mapStateToProps = (state) => ({
   defaultEmail: state.customer.defaultEmail,
   referralCode: state.auth.invitationCode,
   orderingSetting: state.order.orderingSetting,
+  isUserHasBeenCompletedfillData: state.customer.isUserHasBeenCompletedfillData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -85,7 +86,7 @@ const LoginRegister = (props) => {
     setErrorPhone('');
     setErrorEmail('');
     const otpData = lsLoad(config.prefix + '_otp') || null;
-    if (otpData) {
+    if (otpData && props.isUserHasBeenCompletedfillData) {
       const waitTime = method === 'phone' ? 60 : 300;
       const countdown =
         waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
@@ -131,7 +132,7 @@ const LoginRegister = (props) => {
         }, 1000);
       }
     }
-  }, [method]);
+  }, [method, props.isUserHasBeenCompletedfillData]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -642,8 +643,7 @@ const LoginRegister = (props) => {
       let isEmailMandatory = props.orderingSetting?.RegistrationEmailMandatory;
 
       if (typeof isEmailMandatory === 'undefined') isEmailMandatory = true;
-      
-      
+
       let mandatory =
         fields.filter(
           (items) => items.signUpField === true && items.mandatory === true
@@ -699,7 +699,7 @@ const LoginRegister = (props) => {
       };
 
       if (!isEmailMandatory) {
-        payload.email =  `${payloadResponse.phoneNumber}@proseller.io`;
+        payload.email = `${payloadResponse.phoneNumber}@proseller.io`;
       }
 
       let listName = '';
@@ -977,7 +977,6 @@ const LoginRegister = (props) => {
       data: true,
     });
     try {
-      setIsLoading(true);
       const fields = props.fields || [];
       let mandatory = [];
       mandatory = fields.filter((items) => {
