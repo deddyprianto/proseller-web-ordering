@@ -14,7 +14,6 @@ import { lsLoad, lsStore } from '../../helpers/localStorage';
 import config from '../../config';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import { CONSTANT } from 'helpers';
-import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const Swal = require('sweetalert2');
@@ -34,6 +33,7 @@ const mapStateToProps = (state) => ({
   defaultEmail: state.customer.defaultEmail,
   referralCode: state.auth.invitationCode,
   orderingSetting: state.order.orderingSetting,
+  isUserHasBeenCompletedfillData: state.customer.isUserHasBeenCompletedfillData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -86,11 +86,8 @@ const LoginRegister = (props) => {
     setErrorPhone('');
     setErrorEmail('');
     const otpData = lsLoad(config.prefix + '_otp') || null;
-    if (otpData) {
-      let waitTime;
-      if (!isEmptyObject(payloadResponse)) {
-        waitTime = method === 'phone' ? 60 : 300;
-      }
+    if (otpData && props.isUserHasBeenCompletedfillData) {
+      const waitTime = method === 'phone' ? 60 : 300;
       const countdown =
         waitTime - Math.floor((new Date() - new Date(otpData.lastTry)) / 1000);
       if (countdown > 0) {
@@ -135,7 +132,7 @@ const LoginRegister = (props) => {
         }, 1000);
       }
     }
-  }, [method]);
+  }, [method, props.isUserHasBeenCompletedfillData]);
 
   useEffect(() => {
     setIsLoading(true);

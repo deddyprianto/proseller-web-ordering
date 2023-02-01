@@ -7,6 +7,7 @@ import LoadingOverlay from 'react-loading-overlay';
 
 import styles from './styles.module.css';
 import PasswordField from '../PasswordField';
+import { useDispatch } from 'react-redux';
 
 const EmailForm = ({
   email,
@@ -23,6 +24,7 @@ const EmailForm = ({
   isTCAvailable,
   termsAndConditions,
 }) => {
+  const dispatch = useDispatch();
   const initialCountry = 'SG';
   const [phoneCountryCode, setPhoneCountryCode] = useState('+65');
   const [phone, setPhone] = useState('');
@@ -211,6 +213,10 @@ const EmailForm = ({
               handleSubmit().then((res) => {
                 if (!res || !res.status || res.status === 'FAILED') {
                   setIsLoading(false);
+                  dispatch({
+                    type: 'IS_USER_COMPLETED_FILL_ALL_DATA',
+                    data: true,
+                  });
                 }
               });
             }}
@@ -232,6 +238,10 @@ const EmailForm = ({
               handleSubmit().then((res) => {
                 if (!res || !res.status || res.status === 'FAILED') {
                   setIsLoading(false);
+                  dispatch({
+                    type: 'IS_USER_COMPLETED_FILL_ALL_DATA',
+                    data: true,
+                  });
                 }
               });
             }}

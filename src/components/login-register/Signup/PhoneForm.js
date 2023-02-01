@@ -5,6 +5,7 @@ import PasswordField from '../PasswordField';
 import CheckBox from '../../setting/checkBoxCostume';
 import { useSelector } from 'react-redux';
 import LoadingOverlay from 'react-loading-overlay';
+import { useDispatch } from 'react-redux';
 
 const PhoneForm = ({
   phoneNumber,
@@ -20,6 +21,7 @@ const PhoneForm = ({
   termsAndConditions,
   invitationCode,
 }) => {
+  const dispatch = useDispatch();
   const [agreeTC, setAgreeTC] = useState(true);
   const orderState = useSelector((state) => state.order.setting);
   const [isLoading, setIsLoading] = useState(false);
@@ -196,6 +198,10 @@ const PhoneForm = ({
               handleSubmit().then((res) => {
                 if (!res || !res.status || res.status === 'FAILED') {
                   setIsLoading(false);
+                  dispatch({
+                    type: 'IS_USER_COMPLETED_FILL_ALL_DATA',
+                    data: true,
+                  });
                 }
               });
             }}
@@ -217,6 +223,10 @@ const PhoneForm = ({
               handleSubmit().then((res) => {
                 if (!res || !res.status || res.status === 'FAILED') {
                   setIsLoading(false);
+                  dispatch({
+                    type: 'IS_USER_COMPLETED_FILL_ALL_DATA',
+                    data: true,
+                  });
                 }
               });
             }}

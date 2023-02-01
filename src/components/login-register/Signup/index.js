@@ -6,6 +6,7 @@ import EmailForm from './EmailForm';
 import PhoneForm from './PhoneForm';
 import SignUpSuccess from './SignUpSuccess';
 import CustomFields from '../../profile/CustomFields';
+import { useDispatch } from 'react-redux';
 
 const SignUp = ({
   method,
@@ -37,6 +38,7 @@ const SignUp = ({
   isLoading,
   setIsLoading,
 }) => {
+  const dispatch = useDispatch();
   const { sendCounter, counterMinutes, counter, isSending } = otpTimer;
   if (minimumAge && fields) {
     fields.forEach((mandatory) => {
@@ -70,7 +72,10 @@ const SignUp = ({
             left: 10,
             top: 20,
           }}
-          onClick={handleBackButtonClick}
+          onClick={() => {
+            handleBackButtonClick();
+            dispatch({ type: 'IS_USER_COMPLETED_FILL_ALL_DATA', data: false });
+          }}
         >
           <i className='fa fa-chevron-left'></i>
         </button>
