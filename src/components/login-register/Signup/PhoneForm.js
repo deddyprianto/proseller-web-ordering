@@ -4,8 +4,6 @@ import { Button } from 'reactstrap';
 import PasswordField from '../PasswordField';
 import CheckBox from '../../setting/checkBoxCostume';
 import { useSelector } from 'react-redux';
-import LoadingOverlay from 'react-loading-overlay';
-import { useDispatch } from 'react-redux';
 
 const PhoneForm = ({
   phoneNumber,
@@ -21,10 +19,9 @@ const PhoneForm = ({
   termsAndConditions,
   invitationCode,
 }) => {
-  const dispatch = useDispatch();
   const [agreeTC, setAgreeTC] = useState(true);
   const orderState = useSelector((state) => state.order.setting);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [userNameValue, setUserNameValue] = useState('');
   const [userEmailValue, setUserEmailValue] = useState('');
   const [settingFilterEmail] = orderState.filter(
@@ -91,151 +88,127 @@ const PhoneForm = ({
   };
 
   return (
-    <LoadingOverlay active={isLoading} spinner text='Loading...'>
-      <div className='modal-body'>
-        <p className='text-muted'>{`Register for ${phoneNumber || '-'}`}</p>
+    <div className='modal-body'>
+      <p className='text-muted'>{`Register for ${phoneNumber || '-'}`}</p>
+      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
+        <label for='name'>
+          Name <span className='required'>*</span>
+        </label>
+        <input
+          type='text'
+          className='woocommerce-Input woocommerce-Input--text input-text'
+          style={{ borderRadius: 5 }}
+          onChange={(e) => {
+            handleChange('name', e.target.value, true);
+            setUserNameValue(e.target.value);
+          }}
+        />
+        {errorName !== '' && (
+          <div
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              color: 'red',
+              lineHeight: '15px',
+            }}
+          >
+            {errorName}
+          </div>
+        )}
+      </p>
+      {renderEmailInput()}
+      {children}
+      {enablePassword && (
+        <PasswordField
+          handleChange={handleChange}
+          error={errorPassword}
+        ></PasswordField>
+      )}
+      {invitationCode && (
         <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-          <label for='name'>
-            Name <span className='required'>*</span>
-          </label>
+          <label for='referral'>Referral Code</label>
           <input
             type='text'
+            value={invitationCode}
+            disabled
             className='woocommerce-Input woocommerce-Input--text input-text'
             style={{ borderRadius: 5 }}
-            onChange={(e) => {
-              handleChange('name', e.target.value, true);
-              setUserNameValue(e.target.value);
-            }}
+            onChange={(e) => handleChange('referral', e.target.value, true)}
           />
-          {errorName !== '' && (
+        </p>
+      )}
+      {isTCAvailable && (
+        <>
+          <div style={{ marginTop: '2rem' }}>
+            <div
+              className='card card-body'
+              style={{ textAlign: 'justify', fontSize: 11 }}
+            >
+              <textarea disabled rows={10}>
+                {termsAndConditions}
+              </textarea>
+            </div>
+          </div>
+          <div
+            onClick={() => setAgreeTC(!agreeTC)}
+            className='form-group form-check'
+            style={{ marginTop: 5 }}
+          >
             <div
               style={{
-                marginTop: 5,
-                marginBottom: 5,
-                color: 'red',
-                lineHeight: '15px',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
               }}
             >
-              {errorName}
-            </div>
-          )}
-        </p>
-        {renderEmailInput()}
-        {children}
-        {enablePassword && (
-          <PasswordField
-            handleChange={handleChange}
-            error={errorPassword}
-          ></PasswordField>
-        )}
-        {invitationCode && (
-          <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-            <label for='referral'>Referral Code</label>
-            <input
-              type='text'
-              value={invitationCode}
-              disabled
-              className='woocommerce-Input woocommerce-Input--text input-text'
-              style={{ borderRadius: 5 }}
-              onChange={(e) => handleChange('referral', e.target.value, true)}
-            />
-          </p>
-        )}
-        {isTCAvailable && (
-          <>
-            <div style={{ marginTop: '2rem' }}>
-              <div
-                className='card card-body'
-                style={{ textAlign: 'justify', fontSize: 11 }}
+              <CheckBox
+                className='form-check-input'
+                handleChange={() => setAgreeTC(!agreeTC)}
+                selected={!agreeTC}
+                setRadius={5}
+                setHeight={20}
+              />
+              <label
+                className='form-check-label'
+                for='exampleCheck1'
+                style={{ marginLeft: 10 }}
               >
-                <textarea disabled rows={10}>
-                  {termsAndConditions}
-                </textarea>
-              </div>
+                I Agree to Terms & Conditions{' '}
+              </label>
             </div>
-            <div
-              onClick={() => setAgreeTC(!agreeTC)}
-              className='form-group form-check'
-              style={{ marginTop: 5 }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <CheckBox
-                  className='form-check-input'
-                  handleChange={() => setAgreeTC(!agreeTC)}
-                  selected={!agreeTC}
-                  setRadius={5}
-                  setHeight={20}
-                />
-                <label
-                  className='form-check-label'
-                  for='exampleCheck1'
-                  style={{ marginLeft: 10 }}
-                >
-                  I Agree to Terms & Conditions{' '}
-                </label>
-              </div>
-            </div>
-          </>
-        )}
-        {isTCAvailable ? (
-          <Button
-            disabled={isSubmitting || agreeTC || !isTCAvailable}
-            className='button'
-            style={{
-              width: '100%',
-              marginTop: 10,
-              borderRadius: 5,
-              height: 50,
-            }}
-            onClick={() => {
-              setIsLoading(true);
-              handleSubmit().then((res) => {
-                if (!res || !res.status || res.status === 'FAILED') {
-                  setIsLoading(false);
-                  dispatch({
-                    type: 'IS_USER_COMPLETED_FILL_ALL_DATA',
-                    data: true,
-                  });
-                }
-              });
-            }}
-          >
-            Create Account
-          </Button>
-        ) : (
-          <Button
-            disabled={handleDisabelButton()}
-            className='button'
-            style={{
-              width: '100%',
-              marginTop: 10,
-              borderRadius: 5,
-              height: 50,
-            }}
-            onClick={() => {
-              setIsLoading(true);
-              handleSubmit().then((res) => {
-                if (!res || !res.status || res.status === 'FAILED') {
-                  setIsLoading(false);
-                  dispatch({
-                    type: 'IS_USER_COMPLETED_FILL_ALL_DATA',
-                    data: true,
-                  });
-                }
-              });
-            }}
-          >
-            Create Account
-          </Button>
-        )}
-      </div>
-    </LoadingOverlay>
+          </div>
+        </>
+      )}
+      {isTCAvailable ? (
+        <Button
+          disabled={isSubmitting || agreeTC || !isTCAvailable}
+          className='button'
+          style={{
+            width: '100%',
+            marginTop: 10,
+            borderRadius: 5,
+            height: 50,
+          }}
+          onClick={handleSubmit}
+        >
+          Create Account
+        </Button>
+      ) : (
+        <Button
+          disabled={handleDisabelButton()}
+          className='button'
+          style={{
+            width: '100%',
+            marginTop: 10,
+            borderRadius: 5,
+            height: 50,
+          }}
+          onClick={handleSubmit}
+        >
+          Create Account
+        </Button>
+      )}
+    </div>
   );
 };
 

@@ -977,7 +977,6 @@ const LoginRegister = (props) => {
       data: true,
     });
     try {
-      setIsLoading(true);
       const fields = props.fields || [];
       let mandatory = [];
       mandatory = fields.filter((items) => {

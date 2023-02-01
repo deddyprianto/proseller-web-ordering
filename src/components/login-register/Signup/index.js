@@ -75,6 +75,7 @@ const SignUp = ({
           onClick={() => {
             handleBackButtonClick();
             dispatch({ type: 'IS_USER_COMPLETED_FILL_ALL_DATA', data: false });
+            window.location.reload();
           }}
         >
           <i className='fa fa-chevron-left'></i>
@@ -91,6 +92,9 @@ const SignUp = ({
           className='close'
           data-dismiss='modal'
           aria-label='Close'
+          onClick={() => {
+            window.location.reload();
+          }}
           style={{
             position: 'absolute',
             right: 10,
@@ -139,6 +143,7 @@ const SignUp = ({
           enablePassword={enablePassword}
           errorName={errorName}
           invitationCode={invitationCode}
+          isLoading={isLoading}
         >
           <CustomFields
             fields={fields}
