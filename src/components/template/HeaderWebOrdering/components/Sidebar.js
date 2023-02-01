@@ -29,15 +29,16 @@ const useStyles = (theme) => ({
   box: {
     width: 250,
     height: '100%',
-    backgroundColor: theme.navigationColor,
+    position: 'relative',
+    backgroundColor: theme.primary,
   },
   listIcon: {
-    color: theme.navigationIconSelectedColor,
+    color: 'white',
   },
   primaryTypographyProps: {
     fontSize: 15,
     letterSpacing: 0,
-    color: theme.navigationFontColor,
+    color: 'white',
     fontWeight: 600,
   },
 });
@@ -218,6 +219,26 @@ const Sidebar = ({ guessCheckout }) => {
           </ListItem>
           {renderMenuList()}
         </List>
+        <div
+          style={{
+            width: '100%',
+            position: 'absolute',
+            bottom: 0,
+            padding: '10px 0px',
+          }}
+        >
+          <p
+            style={{
+              padding: 0,
+              margin: 0,
+              textAlign: 'center',
+              color: 'white',
+              fontWeight: 500,
+            }}
+          >
+            v2.0.0
+          </p>
+        </div>
       </Box>
     );
   };
@@ -271,7 +292,7 @@ const Sidebar = ({ guessCheckout }) => {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon style={styles.listIcon}>
-                  {trackIcon(theme.navigationIconSelectedColor)}
+                  {trackIcon('white')}
                 </ListItemIcon>
                 <Link to='/trackorder'>
                   <ListItemText
@@ -300,6 +321,26 @@ const Sidebar = ({ guessCheckout }) => {
             </ListItemButton>
           </ListItem>
         </List>
+        <div
+          style={{
+            width: '100%',
+            position: 'absolute',
+            bottom: 0,
+            padding: '10px 0px',
+          }}
+        >
+          <p
+            style={{
+              padding: 0,
+              margin: 0,
+              textAlign: 'center',
+              color: 'white',
+              fontWeight: 500,
+            }}
+          >
+            v2.0.0
+          </p>
+        </div>
       </Box>
     );
   };
