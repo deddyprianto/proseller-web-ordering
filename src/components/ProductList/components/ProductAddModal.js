@@ -408,6 +408,7 @@ const ProductAddModal = ({
             specialRestriction: detail.specialRestriction,
             min: detail?.min,
             max: detail?.max,
+            orderingStatus: detail.orderingStatus,
           });
         });
       });
@@ -684,7 +685,11 @@ const ProductAddModal = ({
   };
 
   const isCheckedCheckbox = (modifier) => {
-    const isChecked = selectedProductModifiers.find(
+    const filterSelectedProductModifiers = selectedProductModifiers.filter(
+      (item) => item.orderingStatus !== 'UNAVAILABLE'
+    );
+
+    const isChecked = filterSelectedProductModifiers.find(
       (selectedProductModifier) =>
         selectedProductModifier.modifierProductId === modifier.productID
     );
@@ -904,8 +909,10 @@ const ProductAddModal = ({
   };
   const handleDisabledCheckbox = ({ modifier, max, productModifier }) => {
     let qtyTotal = 0;
-
-    const modifierProducts = selectedProductModifiers.filter(
+    const filterSelectedProductModifiers = selectedProductModifiers.filter(
+      (item) => item.orderingStatus !== 'UNAVAILABLE'
+    );
+    const modifierProducts = filterSelectedProductModifiers.filter(
       (item) => item.modifierId === productModifier.modifierID
     );
     const modifierProductIds = modifierProducts.map(

@@ -20,6 +20,7 @@ import ProductAddModal from './ProductAddModal';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const mapStateToProps = (state) => {
   return {
@@ -297,6 +298,13 @@ const ProductUpdateModal = ({
     });
     return productItemInBasket;
   };
+
+  useEffect(() => {
+    const loadData = async () => {
+      await props.dispatch(OrderAction.getCart());
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (!isEmptyArray(product.variants)) {
