@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import styles from './styles.module.css';
 import cx from 'classnames';
-
+import { useSelector } from 'react-redux';
 const Swal = require('sweetalert2');
 
 const Field = ({
@@ -15,7 +15,9 @@ const Field = ({
   error,
   titleEditAccount,
   touched,
+  dataCustomer,
 }) => {
+  const color = useSelector((state) => state.theme.color);
   const initialValue = value[field.fieldName];
   const [modalTrigger, setModalTrigger] = useState(null);
   const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -201,7 +203,22 @@ const Field = ({
             style={{ backgroundColor: 'white', borderRadius: 7 }}
           >
             <div
-              onClick={() => setOpenDatePicker(true)}
+              onClick={() => {
+                const isDefaultValueBirthDateExist = dataCustomer?.birthDate;
+                if (!isDefaultValueBirthDateExist) {
+                  setOpenDatePicker(true);
+                } else {
+                  Swal.fire({
+                    icon: 'info',
+                    iconColor: '#333',
+                    title: 'Oppss!',
+                    text: 'Date of birth can only be entered once',
+                    allowOutsideClick: false,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: color.primary,
+                  });
+                }
+              }}
               style={{
                 borderRadius: 7,
                 border: '1px solid #bdc3c7',

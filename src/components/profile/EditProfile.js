@@ -573,6 +573,7 @@ class EditProfile extends Component {
               this.setState({ titleEditAccount: title })
             }
             touched={this.state.touched}
+            dataCustomer={this.props.account}
           />
 
           {this.checkLoginSetting() && (
