@@ -3,8 +3,7 @@ import { isEmptyArray } from '../../helpers/CheckEmpty';
 
 import { MasterDataService } from '../../Services/MasterDataService';
 import { useSelector } from 'react-redux';
-import { Link as LinkRouter } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
+
 
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 
@@ -38,14 +37,9 @@ const Banner = () => {
   if (isEmptyArray(banners)) return null;
 
   const renderBannerItem = (item) => {
-    if (item?.promotionId) {
-      const promotionId = item.promotionId.split(':')[2];
+    if (item?.linkBanner) {
       return (
-        <Link
-          component={LinkRouter}
-          to={`/promotions-detail/${promotionId}`}
-          rel='noopener noreferrer'
-        >
+        <a href={item?.url} target='_blank' rel='noreferrer'>
           <img
             src={item.defaultImageURL}
             alt={item.name}
@@ -55,7 +49,7 @@ const Banner = () => {
               borderRadius: 10,
             }}
           />
-        </Link>
+        </a>
       );
     } else {
       return (
