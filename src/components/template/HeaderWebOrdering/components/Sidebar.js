@@ -29,6 +29,7 @@ const useStyles = (theme) => ({
   box: {
     width: 250,
     height: '100%',
+    position: 'relative',
     backgroundColor: theme.navigationColor,
   },
   listIcon: {
@@ -37,7 +38,7 @@ const useStyles = (theme) => ({
   primaryTypographyProps: {
     fontSize: 15,
     letterSpacing: 0,
-    color: theme.navigationFontColor,
+    color: theme.navigationIconSelectedColor,
     fontWeight: 600,
   },
 });
@@ -132,17 +133,18 @@ const Sidebar = ({ guessCheckout }) => {
     );
   };
   const renderMenuItem = (item) => {
+    const iconColor = theme.navigationIconSelectedColor;
     switch (item.text) {
       case 'Menu':
-        return menuIcon('white');
+        return menuIcon(iconColor);
       case 'History':
-        return historyIcon('white');
+        return historyIcon(iconColor);
       case 'Rewards':
-        return rewardsIcon('white');
+        return rewardsIcon(iconColor);
       case 'Inbox':
-        return inboxIcon('white');
+        return inboxIcon(iconColor);
       default:
-        return profileIcon('white');
+        return profileIcon(iconColor);
     }
   };
 
@@ -202,10 +204,7 @@ const Sidebar = ({ guessCheckout }) => {
             justifyContent: 'space-between',
           }}
         >
-          <ListItem
-            disablePadding
-            sx={{ backgroundColor: '#444646', marginTop: '-10px' }}
-          >
+          <ListItem disablePadding sx={{ marginTop: '-10px' }}>
             <ListItemButton>
               <ListItemIcon style={styles.listIcon}>
                 <ArrowBack sx={{ width: 25, height: 25 }} />

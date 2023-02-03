@@ -6,10 +6,11 @@ import { store } from './redux';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import packageJson from '../package.json';
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <App version={packageJson.version} />
   </Provider>,
   document.getElementById('root')
 );

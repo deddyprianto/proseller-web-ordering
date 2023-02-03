@@ -217,6 +217,10 @@ const App = (props) => {
   };
 
   useEffect(() => {
+    localStorage.setItem('APP_VERSION_WEBORDERING', props.version);
+  }, []);
+  
+  useEffect(() => {
     if (setting) {
       let enableOrdering = setting.find((items) => {
         return items.settingKey === 'EnableOrdering';
