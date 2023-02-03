@@ -30,15 +30,15 @@ const useStyles = (theme) => ({
     width: 250,
     height: '100%',
     position: 'relative',
-    backgroundColor: theme.primary,
+    backgroundColor: theme.navigationColor,
   },
   listIcon: {
-    color: theme.font,
+    color: theme.navigationIconSelectedColor,
   },
   primaryTypographyProps: {
     fontSize: 15,
     letterSpacing: 0,
-    color: theme.font,
+    color: theme.navigationIconSelectedColor,
     fontWeight: 600,
   },
 });
@@ -133,7 +133,7 @@ const Sidebar = ({ guessCheckout }) => {
     );
   };
   const renderMenuItem = (item) => {
-    const iconColor = theme.font;
+    const iconColor = theme.navigationIconSelectedColor;
     switch (item.text) {
       case 'Menu':
         return menuIcon(iconColor);
@@ -204,10 +204,7 @@ const Sidebar = ({ guessCheckout }) => {
             justifyContent: 'space-between',
           }}
         >
-          <ListItem
-            disablePadding
-            sx={{ backgroundColor: '#444646', marginTop: '-10px' }}
-          >
+          <ListItem disablePadding sx={{ marginTop: '-10px' }}>
             <ListItemButton>
               <ListItemIcon style={styles.listIcon}>
                 <ArrowBack sx={{ width: 25, height: 25 }} />
@@ -273,7 +270,7 @@ const Sidebar = ({ guessCheckout }) => {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon style={styles.listIcon}>
-                  {trackIcon(theme.font)}
+                  {trackIcon(theme.navigationIconSelectedColor)}
                 </ListItemIcon>
                 <Link to='/trackorder'>
                   <ListItemText
