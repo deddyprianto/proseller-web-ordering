@@ -12,6 +12,7 @@ const CustomFields = ({
   roundedBorder,
   titleEditAccount,
   touched,
+  dataCustomer,
 }) => {
   const fieldsToRender =
     fields &&
@@ -31,7 +32,7 @@ const CustomFields = ({
     if (initialRender.current) {
       initialRender.current = false;
     } else {
-      handleChange("address", `${value.street}, ${value.unitNo}`);
+      handleChange('address', `${value.street}, ${value.unitNo}`);
     }
   }, [value]);
 
@@ -39,7 +40,7 @@ const CustomFields = ({
     <Row>
       {fieldsToRender &&
         fieldsToRender.map((field, keys) => {
-          if (field.type === "multipleField") {
+          if (field.type === 'multipleField') {
             return (
               <Col key={keys} sm={6}>
                 <Row>
@@ -52,6 +53,7 @@ const CustomFields = ({
                         roundedBorder={roundedBorder}
                         error={defaultError}
                         touched={touched}
+                        dataCustomer={dataCustomer}
                       ></Field>
                     </Col>
                   ))}
@@ -69,6 +71,7 @@ const CustomFields = ({
                 error={defaultError}
                 titleEditAccount={titleEditAccount}
                 touched={touched}
+                dataCustomer={dataCustomer}
               ></Field>
             </Col>
           );
