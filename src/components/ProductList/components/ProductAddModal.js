@@ -815,7 +815,7 @@ const ProductAddModal = ({
         data: !props.basketUpdate,
       });
 
-      if (props.deliveryProviderSelected) {
+      if (!isEmptyObject(props.deliveryProviderSelected)) {
         const payloadCalculateFee = {
           outletId: basket.outlet.id,
           cartID: basket.cartID,
