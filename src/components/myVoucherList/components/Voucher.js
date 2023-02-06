@@ -17,8 +17,6 @@ import { PaymentAction } from 'redux/actions/PaymentAction';
 import MyVoucherWarningModal from './MyVoucherWarningModal';
 import PicVoucherDefault from '../../../assets/images/voucher-icon.png';
 
-import Swal from 'sweetalert2';
-
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -477,70 +475,25 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const handleSelectVoucher = async () => {
-    let result = [];
-    result = selectedVouchers;
-    result.push({
-      name: item.name,
-      isVoucher: true,
-      voucherId: item.id,
-      paymentType: 'voucher',
-      serialNumber: item.serialNumber,
-      cannotBeMixed: item.validity?.cannotBeMixed,
-      capAmount: item?.capAmount,
-      applyToLowestItem: item?.applyToLowestItem,
-    });
-    props.dispatch(PaymentAction.setData(result, 'SELECT_VOUCHER'));
-
-    const payload = {
-      details: props.basket?.details,
-      outletId: props.basket?.outletID,
-      total: props.basket?.totalNettAmount,
-      customerId: props.basket?.customerId,
-      payments: selectedVouchers.map((item) => ({
-        isVoucher: item.isVoucher,
-        serialNumber: item.serialNumber,
-        voucherId: item.voucherId,
-      })),
-    };
-    Swal.fire({
-      title: 'Please Wait !',
-      html: 'Voucher will be applied',
-      allowOutsideClick: false,
-      onBeforeOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    const dataVoucher = await props.dispatch(
-      PaymentAction.calculateVoucher(payload)
+    props.dispatch(
+      PaymentAction.setData(
+        [
+          ...props.selectedVoucher,
+          {
+            name: item.name,
+            isVoucher: true,
+            voucherId: item.id,
+            paymentType: 'voucher',
+            serialNumber: item.serialNumber,
+            cannotBeMixed: item.validity?.cannotBeMixed,
+            capAmount: item?.capAmount,
+            applyToLowestItem: item?.applyToLowestItem,
+          },
+        ],
+        'SELECT_VOUCHER'
+      )
     );
-    const isVoucherCannotApplied = dataVoucher.data.message;
-
-    if (isVoucherCannotApplied) {
-      props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
-      props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
-    }
-
-    if (isVoucherCannotApplied) {
-      Swal.fire({
-        icon: 'info',
-        title: dataVoucher.data.message,
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: props.color.primary,
-      });
-    } else {
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'successfully applied the voucher!',
-        confirmButtonColor: props.color.primary,
-      }).then((res) => {
-        if (res.isConfirmed) {
-          history.push('/payment');
-        }
-      });
-    }
+    history.push('/payment');
   };
 
   const renderImageProduct = (item) => {
