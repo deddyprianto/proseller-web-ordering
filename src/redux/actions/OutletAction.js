@@ -3,6 +3,7 @@ import { MasterDataService } from '../../Services/MasterDataService';
 import { isEmptyObject } from '../../helpers/CheckEmpty';
 import config from '../../config';
 import _ from 'lodash';
+import moment from 'moment-timezone';
 const geolib = require('geolib');
 
 const orderingModesField = [
@@ -197,29 +198,31 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
         localStorage.getItem(`${config.prefix}_locationCustomer`)
       );
 
-    const data = await MasterDataService.api('POST', null, 'outlets/load');
-    if (!isEmptyObject(data.data)) {
-      let outletData = [];
-      data.data.forEach((element) => {
-        if (element && element.id) element = config.getValidation(element);
+    const res = await MasterDataService.api('POST', null, 'outlets/load');
+    if (!isEmptyObject(res.data)) {
+      const unsortedOutlets = res.data.map((outlet) => {
+        const outletStatus = getOutletStatus(outlet);
+        const { orderValidation } = config.getValidation(outlet);
+
         if (
-          locationCustomer &&
-          element.latitude &&
-          element.longitude &&
-          getDefaultOutlet
+          !locationCustomer ||
+          !outlet.latitude ||
+          !outlet.longitude ||
+          !getDefaultOutlet
         ) {
-          let getDistance = (
-            geolib.getDistance(locationCustomer, element) / 1000
-          ).toFixed(2);
-          element.distance = Number(getDistance);
+          return { ...outlet, orderValidation, outletStatus };
         }
-        element.outletStatus = config.getOutletStatus(element);
-        outletData.push(element);
+
+        const distance = Number(
+          (geolib.getDistance(locationCustomer, outlet) / 1000).toFixed(2)
+        );
+
+        return { ...outlet, orderValidation, outletStatus, distance };
       });
 
-      outletData = _.orderBy(outletData, ['distance'], ['asc']);
-      dispatch(setData(outletData, CONSTANT.LIST_OUTLET));
-      return outletData;
+      const outlets = _.orderBy(unsortedOutlets, ['distance'], ['asc']);
+      dispatch(setData(outlets, CONSTANT.LIST_OUTLET));
+      return outlets;
     }
   };
 }
@@ -234,6 +237,81 @@ function getOutletById(id) {
       return null;
     }
   };
+}
+
+function getOperationalHours(outlet) {
+  try {
+    /**
+     * @type number
+     * @description Outlet's UTC offset.
+     * TODO: Read from Outlet Timezone setting;
+     */
+    const OUTLET_TIMEZONE = 'Asia/Singapore';
+
+    const { operationalHours } = outlet;
+
+    /**
+     * @type moment
+     * @description Current client's date and time converted to outlet's timezone.
+     */
+    const now = moment().tz(OUTLET_TIMEZONE);
+
+    const todaysDate = now.format('YYYY-MM-DD');
+    const todaysDayOfWeek = now.day();
+
+    /**
+     * @type object
+     * @description Today's operational hours. If `null` or `undefined`, it means the outlet currently closed.
+     */
+    const todaysOperationalHours = operationalHours.find((item) => {
+      const { active, day } = item;
+      const dayOfWeek = parseInt(day);
+      return active && dayOfWeek === todaysDayOfWeek;
+    });
+
+    if (!todaysOperationalHours) {
+      return { isOpen: false };
+    }
+
+    const { open, close } = todaysOperationalHours;
+
+    const openAt = moment.tz(`${todaysDate} ${open}`, OUTLET_TIMEZONE);
+
+    const closedAt = moment.tz(`${todaysDate} ${close}`, OUTLET_TIMEZONE);
+
+    const isOpen = now.isBetween(openAt, closedAt);
+
+    return { openAt, closedAt, isOpen };
+  } catch (e) {
+    console.log('error:getOperationalHours');
+    console.log('params:outlet', outlet);
+    console.log(e);
+    return { isOpen: false };
+  }
+}
+
+function getOutletStatus(outlet) {
+  try {
+    if (outlet.openAllDays) {
+      return true;
+    }
+
+    if (
+      outlet &&
+      outlet.operationalHours &&
+      outlet.operationalHours.length > 0
+    ) {
+      const { isOpen, openAt, closedAt } = getOperationalHours(outlet);
+      return isOpen;
+    }
+
+    return false;
+  } catch (e) {
+    console.log('error:getOutletStatus');
+    console.log('params:outlet', outlet);
+    console.log(e);
+    return false;
+  }
 }
 
 export const OutletAction = {

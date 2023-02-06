@@ -88,64 +88,6 @@ config.getValidation = function getValidation(defaultOutlet) {
   return defaultOutlet;
 };
 
-config.getOperationalHours = function getOperationalHours(data) {
-  try {
-    let operationalHours = data.operationalHours;
-
-    let date = new Date();
-    var dd = date.getDate();
-    var mm = date.getMonth() + 1;
-    var yyyy = date.getFullYear();
-    let currentDate = mm + '/' + dd + '/' + yyyy;
-    let day = date.getDay();
-    let time = date.getHours() + ':' + date.getMinutes();
-
-    let open;
-    operationalHours
-      .filter((item) => item.day === day && item.active === true)
-      .map((day) => {
-        if (
-          Date.parse(`${currentDate} ${time}`) >=
-            Date.parse(`${currentDate} ${day.open}`) &&
-          Date.parse(`${currentDate} ${time}`) <
-            Date.parse(`${currentDate} ${day.close}`)
-        )
-          open = true;
-      });
-
-    if (open) return true;
-    else {
-      if (operationalHours.leading === 0) return true;
-      else return false;
-    }
-  } catch (e) {
-    return false;
-  }
-};
-
-config.getOutletStatus = function getOutletStatus(data) {
-  try {
-    if (data && data.operationalHours && data.operationalHours.length > 0) {
-      if (config.getOperationalHours(data)) {
-        return true;
-      } else {
-        if (data.openAllDays === true) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      if (data.openAllDays === true) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  } catch (e) {}
-  return false;
-};
-
 config.getSettingOrdering = function getSettingOrdering(orderingSetting) {
   let primary =
     orderingSetting.theme &&
