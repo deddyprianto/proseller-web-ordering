@@ -130,7 +130,7 @@ const Payment = ({ ...props }) => {
 
   const [urlConfirmationDialog, setUrlConfirmationDialog] = useState('');
   const [isDeletingVoucher, setIsDeletingVoucher] = useState(false);
-
+  const [isFilteredVoucher, setIsFilteredVoucher] = useState(false);
   const [width] = useWindowSize();
   const gadgetScreen = width < 600;
   const minPayment = props?.selectedPaymentCard?.minimumPayment;
@@ -172,8 +172,20 @@ const Payment = ({ ...props }) => {
     const isVoucherCannotApplied = dataVoucher.data.message;
 
     if (isVoucherCannotApplied) {
-      props.dispatch(PaymentAction.setData([], 'SELECT_VOUCHER'));
-      props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
+      setIsFilteredVoucher(true);
+      const filterSelectedVoucher = props.selectedVoucher.filter((itemData) => {
+        const isSerialNumber = dataVoucher?.data.payments.some(
+          (item) => item.serialNumber === itemData.serialNumber
+        );
+        if (isSerialNumber) {
+          return itemData;
+        }
+      });
+
+      props.dispatch(
+        PaymentAction.setData(filterSelectedVoucher, 'SELECT_VOUCHER')
+      );
+      props.dispatch({ type: 'INDEX_VOUCHER', payload: dataVoucher.data });
     }
 
     if (isVoucherCannotApplied) {
@@ -195,7 +207,11 @@ const Payment = ({ ...props }) => {
   };
 
   useEffect(() => {
-    if (!isEmptyArray(props.selectedVoucher) && !isDeletingVoucher) {
+    if (
+      !isEmptyArray(props.selectedVoucher) &&
+      !isDeletingVoucher &&
+      !isFilteredVoucher
+    ) {
       calculateVoucher();
     }
   }, [props.selectedVoucher]);
@@ -495,6 +511,7 @@ const Payment = ({ ...props }) => {
     totalPrice,
     props.basket,
     props.companyInfo,
+    props.dataVoucher,
   ]);
 
   const handleOpenPointAddModal = () => {
