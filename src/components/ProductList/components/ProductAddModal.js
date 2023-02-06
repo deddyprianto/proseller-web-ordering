@@ -538,9 +538,15 @@ const ProductAddModal = ({
     }
 
     if (!isEmptyArray(product?.productModifiers)) {
+      const filterSelectedProductModifiers = selectedProductModifiers.filter(
+        (item) => item.orderingStatus !== 'UNAVAILABLE'
+      );
       const isSelectedProductExist = !isEmptyObject(selectedProduct)
-        ? selectedProductModifiers
-        : [...selectedProductModifiers, ...props.saveSelectProductModifier];
+        ? filterSelectedProductModifiers
+        : [
+            ...filterSelectedProductModifiers,
+            ...props.saveSelectProductModifier,
+          ];
 
       const productModifierFormated = handleProductModifierFormated(
         isSelectedProductExist
