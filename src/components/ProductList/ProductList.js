@@ -39,8 +39,6 @@ import Loading from 'components/loading/Loading';
 import useProductList from 'hooks/useProductList';
 import Swal from 'sweetalert2';
 import './components/style/style.css';
-import iconLoading from 'assets/gif/resized.gif';
-
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -384,7 +382,22 @@ const ProductList = ({ ...props }) => {
     );
   };
   const RenderAnimationLoading = () => {
-    return <img alt='Loading' src={iconLoading} />;
+    return (
+      <div className='lds-spinner'>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    );
   };
 
   const renderProductList = () => {

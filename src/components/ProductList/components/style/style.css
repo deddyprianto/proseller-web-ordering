@@ -14,12 +14,12 @@
   content: " ";
   display: block;
   position: absolute;
-  top: 3px;
-  left: 40px;
-  width: 4px;
-  height: 18px;
-  border-radius: 20%;
-  background: rgb(124, 123, 123);
+  top: 12px;
+  left: 34px;
+  width: 3px;
+  height: 14px;
+  border-radius: 30%;
+  background: rgb(0, 0, 0);
 }
 .lds-spinner div:nth-child(1) {
   transform: rotate(0deg);
