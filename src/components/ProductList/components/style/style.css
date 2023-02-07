@@ -1,6 +1,5 @@
 .lds-spinner {
   position: relative;
-  width: 80px;
   height: 80px;
   width: 80%;
   display: flex;
@@ -76,4 +75,13 @@
   100% {
     opacity: 0;
   }
+}
+@media (min-width: 1280px) {
+  .lds-spinner {
+  position: relative;
+  height: 80px;
+  width: 93%;
+  display: flex;
+  justify-content: center;
+}
 }
