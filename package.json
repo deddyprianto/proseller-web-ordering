@@ -19,6 +19,7 @@
     "@mui/material": "^5.2.5",
     "@mui/styles": "^5.2.3",
     "add": "^2.0.6",
+    "axios": "^1.2.2",
     "base-64": "^0.1.0",
     "bootstrap": "^4.5.0",
     "country-codes-list": "^1.6.8",

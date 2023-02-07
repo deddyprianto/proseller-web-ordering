@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
@@ -30,7 +36,9 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import Product from './components/Product';
 import Loading from 'components/loading/Loading';
-
+import useProductList from 'hooks/useProductList';
+import Swal from 'sweetalert2';
+import './components/style/style.css';
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -165,10 +173,38 @@ const ProductList = ({ ...props }) => {
   const [width] = useWindowSize();
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [products, setProducts] = useState([]);
   const [outlet, setOutlet] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [productsData, setProductsData] = useState([]);
+  const { products, loading, error, hasMore } = useProductList({
+    pageNumber,
+    selectedCategory,
+    outlet,
+    categories,
+  });
+
+  const observer = useRef();
+  const lastEl = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNumber((prev) => prev + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
+
+  useEffect(() => {
+    if (selectedCategory.sequence >= 0) {
+      setPageNumber(1);
+    }
+  }, [selectedCategory]);
 
   const handleFetchCategoryProduct = async (outlet) => {
     const orderingMode = props.orderingMode | '';
@@ -221,10 +257,10 @@ const ProductList = ({ ...props }) => {
         setIsLoading(true);
         if (!isEmptyObject(selectedCategory)) {
           const products = await props.dispatch(
-            ProductAction.fetchProduct(selectedCategory, outlet, 0, 200)
+            ProductAction.fetchProduct(selectedCategory, outlet, 0, 10)
           );
 
-          setProducts(products.data);
+          setProductsData(products.data);
           props.dispatch({
             type: CONSTANT.LIST_CATEGORY,
             data: products,
@@ -345,26 +381,56 @@ const ProductList = ({ ...props }) => {
       </Box>
     );
   };
+  const RenderAnimationLoading = () => {
+    return (
+      <div className='lds-spinner'>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    );
+  };
 
   const renderProductList = () => {
     if (!isEmptyArray(products)) {
-      const productList = products.map((product, index) => {
-        return (
-          <Grid key={index} item xs={12} sm={6} md={6}>
-            <Product item={product} />
-          </Grid>
-        );
+      const productList = products.map((itemProd, index) => {
+        if (products.length === index + 1) {
+          return (
+            <Grid ref={lastEl} key={index} item xs={12} sm={6} md={6}>
+              <Product item={itemProd} />
+            </Grid>
+          );
+        } else {
+          return (
+            <Grid key={index} item xs={12} sm={6} md={6}>
+              <Product item={itemProd} />
+            </Grid>
+          );
+        }
       });
 
       return (
-        <Grid
-          paddingTop={6}
-          container
-          rowSpacing={1}
-          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        >
-          {productList}
-        </Grid>
+        <React.Fragment>
+          <Grid
+            paddingTop={6}
+            container
+            rowSpacing={1}
+            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+          >
+            {productList}
+          </Grid>
+          {loading && <RenderAnimationLoading />}
+          <div>{error && error}</div>
+        </React.Fragment>
       );
     }
 
