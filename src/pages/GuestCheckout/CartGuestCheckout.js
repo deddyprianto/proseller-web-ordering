@@ -424,10 +424,19 @@ const CartGuestCheckout = () => {
         const response = await dispatch(
           OrderAction.paymentGuestMode(objectSubmitCart)
         );
+        setIsLoading(false);
+        if (response.resultCode >= 400) {
+          Swal.fire({
+            title: 'Alert',
+            text: response?.data?.message,
+            icon: 'error',
+            confirmButtonColor: color.primary,
+          });
+          return;
+        }
         if (response.resultCode === 200) {
           window.location.href = response.data.url;
         }
-        setIsLoading(false);
       } else if (orderingModeGuestCheckout === 'TAKEAWAY') {
         const finalVal = () => {
           const convertPhoneNumberTostring = formik.values.phoneNo.toString();
@@ -471,10 +480,19 @@ const CartGuestCheckout = () => {
           const response = await dispatch(
             OrderAction.paymentGuestMode(objectSubmitCart)
           );
+          setIsLoading(false);
+          if (response.resultCode >= 400) {
+            Swal.fire({
+              title: 'Alert',
+              text: response?.data?.message,
+              icon: 'error',
+              confirmButtonColor: color.primary,
+            });
+            return;
+          }
           if (response.resultCode === 200) {
             window.location.href = response.data.url;
           }
-          setIsLoading(false);
         }
       } else if (orderingModeGuestCheckout === 'STOREPICKUP') {
         const finalVal = () => {
@@ -519,10 +537,19 @@ const CartGuestCheckout = () => {
           const response = await dispatch(
             OrderAction.paymentGuestMode(objectSubmitCart)
           );
+          setIsLoading(false);
+          if (response.resultCode >= 400) {
+            Swal.fire({
+              title: 'Alert',
+              text: response?.data?.message,
+              icon: 'error',
+              confirmButtonColor: color.primary,
+            });
+            return;
+          }
           if (response.resultCode === 200) {
             window.location.href = response.data.url;
           }
-          setIsLoading(false);
         }
       } else if (orderingModeGuestCheckout === 'DINEIN') {
         const finalVal = () => {
@@ -582,10 +609,19 @@ const CartGuestCheckout = () => {
           const response = await dispatch(
             OrderAction.paymentGuestMode(objectSubmitCart)
           );
+          setIsLoading(false);
+          if (response.resultCode >= 400) {
+            Swal.fire({
+              title: 'Alert',
+              text: response?.data?.message,
+              icon: 'error',
+              confirmButtonColor: color.primary,
+            });
+            return;
+          }
           if (response.resultCode === 200) {
             window.location.href = response.data.url;
           }
-          setIsLoading(false);
         }
       }
       localStorage.removeItem(`${config.prefix}_locationPinned`);
@@ -819,7 +855,7 @@ const CartGuestCheckout = () => {
                         </div>
                         <div
                           style={{
-                            color: isDisable ? '#8A8D8E' : color?.primary,
+                            color: isDisable ? '#8A8D8E' : `${color?.font}80`,
                             fontWeight: 500,
                             fontSize: '12px',
                           }}

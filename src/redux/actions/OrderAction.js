@@ -703,7 +703,7 @@ const paymentGuestMode = (submitCart) => {
       'guest/cart/request-payment'
     );
     if (response.resultCode >= 400 || response.resultCode >= 400) {
-      console.log(response);
+      return response;
     } else {
       dispatch({ type: CONSTANT.URL_PAYMENT, payload: response.data });
       return response;
