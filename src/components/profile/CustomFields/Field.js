@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-mobile-datepicker';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import styles from './styles.module.css';
 import cx from 'classnames';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { CONSTANT } from 'helpers';
 const Swal = require('sweetalert2');
 
 const Field = ({
@@ -17,10 +18,14 @@ const Field = ({
   touched,
   dataCustomer,
 }) => {
+  const dispatch = useDispatch();
   const color = useSelector((state) => state.theme.color);
-  const initialValue = value[field.fieldName];
   const [modalTrigger, setModalTrigger] = useState(null);
   const [openDatePicker, setOpenDatePicker] = useState(false);
+
+  useEffect(() => {
+    dispatch({ type: CONSTANT.IS_ALL_FIELD_HAS_BEEN_FULLFILED, data: value });
+  }, [value]);
 
   const monthMap = {
     1: 'Jan',
