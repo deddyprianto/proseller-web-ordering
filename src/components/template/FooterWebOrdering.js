@@ -202,11 +202,11 @@ const FooterWebOrdering = () => {
         return items.settingKey === 'EnableOrdering';
       });
       if (enableOrderingCheck) {
-        setEnableOrdering({ enableOrdering: enableOrdering.settingValue });
+        setEnableOrdering(enableOrderingCheck.settingValue);
       }
     };
     enableOrderingChecker();
-  }, []);
+  }, [allState]);
 
   const matches = useMediaQuery('(max-width:1200px)');
 
