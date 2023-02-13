@@ -8,6 +8,7 @@ const defaultState = {
   placeholderAddressCustomer: {},
   placeholderForEditAddressCustomer: {},
   isUserHasBeenCompletedfillData: false,
+  isAllFieldHasBeenFullFiled: {},
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -20,6 +21,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         myVoucher: action.data,
+      };
+    case CONSTANT.IS_ALL_FIELD_HAS_BEEN_FULLFILED:
+      return {
+        ...state,
+        isAllFieldHasBeenFullFiled: action.data,
       };
     case CONSTANT.KEY_MANDATORY_FIELD_CUSTOMER:
       return {

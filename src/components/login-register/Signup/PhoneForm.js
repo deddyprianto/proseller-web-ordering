@@ -19,7 +19,10 @@ const PhoneForm = ({
   termsAndConditions,
   invitationCode,
 }) => {
-  const [agreeTC, setAgreeTC] = useState(true);
+  const isAllFieldHasBeenFullFiled = useSelector(
+    (state) => state.customer.isAllFieldHasBeenFullFiled
+  );
+  const [agreeTC, setAgreeTC] = useState(false);
   const orderState = useSelector((state) => state.order.setting);
 
   const [userNameValue, setUserNameValue] = useState('');
@@ -47,6 +50,22 @@ const PhoneForm = ({
       );
     } else {
       return 'Email';
+    }
+  };
+  const handleDisabelButtonForTNC = () => {
+    const isAllFieldMandatoryFullfilled =
+      agreeTC &&
+      isTCAvailable &&
+      userNameValue &&
+      userEmailValue &&
+      isAllFieldHasBeenFullFiled.birthDate &&
+      isAllFieldHasBeenFullFiled.gender &&
+      isAllFieldHasBeenFullFiled['nric(last4digits)'] &&
+      isAllFieldHasBeenFullFiled.outletsignup;
+    if (isAllFieldMandatoryFullfilled) {
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -164,7 +183,7 @@ const PhoneForm = ({
               <CheckBox
                 className='form-check-input'
                 handleChange={() => setAgreeTC(!agreeTC)}
-                selected={!agreeTC}
+                selected={agreeTC}
                 setRadius={5}
                 setHeight={20}
               />
@@ -181,7 +200,7 @@ const PhoneForm = ({
       )}
       {isTCAvailable ? (
         <Button
-          disabled={isSubmitting || agreeTC || !isTCAvailable}
+          disabled={handleDisabelButtonForTNC()}
           className='button'
           style={{
             width: '100%',

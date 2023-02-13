@@ -4,7 +4,7 @@ import PhoneInput from 'react-phone-input-2';
 import { Input, Button } from 'reactstrap';
 import CheckBox from '../../setting/checkBoxCostume';
 import LoadingOverlay from 'react-loading-overlay';
-
+import { useSelector } from 'react-redux';
 import styles from './styles.module.css';
 import PasswordField from '../PasswordField';
 
@@ -23,12 +23,15 @@ const EmailForm = ({
   isTCAvailable,
   termsAndConditions,
 }) => {
+  const isAllFieldHasBeenFullFiled = useSelector(
+    (state) => state.customer.isAllFieldHasBeenFullFiled
+  );
   const initialCountry = 'SG';
   const [phoneCountryCode, setPhoneCountryCode] = useState('+65');
   const [phone, setPhone] = useState('');
-  const [agreeTC, setAgreeTC] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [nameValue, setNameValue] = useState('');
+  const [agreeTC, setAgreeTC] = useState(false);
   useEffect(() => {
     if (phone) {
       handleChange('phoneNumber', phoneCountryCode + phone);
@@ -51,7 +54,22 @@ const EmailForm = ({
       return iSAllPassed || isSubmitting;
     }
   };
-
+  const handleDisabelButtonForTNC = () => {
+    const isAllFieldMandatoryFullfilled =
+      agreeTC &&
+      isTCAvailable &&
+      phone &&
+      nameValue &&
+      isAllFieldHasBeenFullFiled.birthDate &&
+      isAllFieldHasBeenFullFiled.gender &&
+      isAllFieldHasBeenFullFiled['nric(last4digits)'] &&
+      isAllFieldHasBeenFullFiled.outletsignup;
+    if (isAllFieldMandatoryFullfilled) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   return (
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div className='modal-body'>
@@ -181,7 +199,7 @@ const EmailForm = ({
                 <CheckBox
                   className='form-check-input'
                   handleChange={() => setAgreeTC(!agreeTC)}
-                  selected={!agreeTC}
+                  selected={agreeTC}
                   setRadius={5}
                   setHeight={20}
                 />
@@ -198,7 +216,7 @@ const EmailForm = ({
         )}
         {isTCAvailable ? (
           <Button
-            disabled={isSubmitting || agreeTC || !isTCAvailable}
+            disabled={handleDisabelButtonForTNC()}
             className='button'
             style={{
               width: '100%',

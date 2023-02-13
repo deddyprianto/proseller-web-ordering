@@ -88,7 +88,7 @@
     "webordering-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://prod-web-ordering-1-0 --acl public-read",
     "webordering-prod-cf": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync --profile prod build/ s3://ew-proseller-ordering --acl public-read",
     "webordering-demo": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync --profile demo build/ s3://ew-demo-web-ordering-1-0 --acl public-read",
-    "webordering-demo-cf": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e demo react-scripts build && aws s3 sync --profile default build/ s3://ew-demo-web-ordering-1-2 --acl public-read",
+    "webordering-demo-cf": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e webordering-demo.proseller-demo.io react-scripts build && aws s3 sync --profile default build/ s3://ew-demo-web-ordering-1-2 --acl public-read",
     "webordering-dev": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e dev react-scripts build && aws s3 sync --profile dev build/ s3://ew-dev-web-ordering-1-0 --acl public-read",
     "emenu-prod": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync build/ s3://emenu-1-0 --acl public-read",
     "emenu-prod-cf": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f ./.env-cmdrc -e prod react-scripts build && aws s3 sync --profile prod build/ s3://ew-proseller-emenu --acl public-read",
