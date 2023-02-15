@@ -1608,7 +1608,7 @@ const Cart = ({ ...props }) => {
           <div style={styles.rootCartGadgetSize}>
             <ProductCartList />
             <RenderOrderingMode />
-            <RenderTableMode />
+            {props.orderingMode === 'DINEIN' && <RenderTableMode />}
             <RenderDeliveryAddress />
             <RenderDeliveryProvider
               name='Choose Delivery Provider'
@@ -1648,6 +1648,7 @@ const Cart = ({ ...props }) => {
             <ProductCartList />
             <div style={styles.cartGridRight}>
               <RenderOrderingMode />
+              {props.orderingMode === 'DINEIN' && <RenderTableMode />}
               <RenderDeliveryAddress />
               <RenderDeliveryProvider
                 name='Choose Delivery Provider'

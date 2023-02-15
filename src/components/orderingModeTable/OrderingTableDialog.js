@@ -91,7 +91,7 @@ const OrderingTableDialog = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const [orderingModes, setOrderingModes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isExistingTable, setIsExistingTable] = useState(false);
   const handleFilter = (value) => {
     return value === 'TRUE';
   };
@@ -184,7 +184,7 @@ const OrderingTableDialog = ({ open, onClose }) => {
   //   getOrderingModes();
   // }, []);
 
-  const handleConfirmOrderingMode = async (value) => {
+  const handleConfirmInputTable = async (value) => {
     setIsLoading(true);
 
     await dispatch({
@@ -237,7 +237,37 @@ const OrderingTableDialog = ({ open, onClose }) => {
             justifyContent: 'center',
           }}
         >
-          <p>Happy Valentine</p>
+          <div
+            style={{
+              width: '100%',
+            }}
+          >
+            <div
+              style={{
+                margin: '0px 10px',
+                padding: '7px 10px',
+                borderRadius: '10px',
+                border: !isExistingTable
+                  ? `1px solid ${colorState.primary}50`
+                  : '1px solid red',
+              }}
+            >
+              <input
+                placeholder='Your table number'
+                style={{ border: 'none', outline: 'none', width: '100%' }}
+              />
+            </div>
+            <div style={{ padding: '3px 10px' }}>
+              <div
+                style={{
+                  color: !isExistingTable ? `${colorState.primary}90` : 'red',
+                  fontSize: '14px',
+                }}
+              >
+                Example: 78
+              </div>
+            </div>
+          </div>
         </div>
         <DialogActions
           sx={{
@@ -245,7 +275,7 @@ const OrderingTableDialog = ({ open, onClose }) => {
             justifyContent: 'space-around',
             alignItems: 'center',
             width: '100%',
-            marginTop: '20px',
+            marginTop: '10px',
           }}
         >
           <button
@@ -256,20 +286,22 @@ const OrderingTableDialog = ({ open, onClose }) => {
               border: `1px solid ${colorState.primary}`,
               color: colorState.primary,
               width: '50%',
-              padding: '6px 0px',
+              padding: '10px 0px',
               borderRadius: '10px',
+              fontSize: '12px',
             }}
           >
             Cancel
           </button>
           <button
-            onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
+            onClick={() => handleConfirmInputTable(itemOrderingMode)}
             className={fontStyles.myFont}
             style={{
               color: 'white',
               width: '50%',
-              padding: '6px 0px',
+              padding: '10px 0px',
               borderRadius: '10px',
+              fontSize: '12px',
             }}
           >
             Confirm
