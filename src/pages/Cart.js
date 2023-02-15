@@ -287,7 +287,7 @@ const Cart = ({ ...props }) => {
     };
 
     getDataProviderListAndFee();
-  }, [props.deliveryAddress]);
+  }, [props.deliveryAddress, props.basket]);
 
   useEffect(() => {
     props.dispatch({
