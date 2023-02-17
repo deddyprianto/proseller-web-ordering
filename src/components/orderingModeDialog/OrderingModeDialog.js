@@ -40,7 +40,6 @@ const OrderingModeDialog = ({ open, onClose }) => {
       color: colorState.primary,
     },
     dialogTitle: {
-      borderBottom: '1px solid #e5e5e5',
       marginBottom: 2,
     },
     boxContent: {

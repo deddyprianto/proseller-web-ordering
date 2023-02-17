@@ -1601,14 +1601,15 @@ const Cart = ({ ...props }) => {
     );
   };
 
-  const RenderCart = () => {
+  const renderCart = () => {
     if (gadgetScreen) {
       return (
         <>
           <div style={styles.rootCartGadgetSize}>
             <ProductCartList />
             <RenderOrderingMode />
-            {props.orderingMode === 'DINEIN' && <RenderTableMode />}
+            {props.orderingMode === 'DINEIN' &&
+              props.defaultOutlet.enableTableNumber && <RenderTableMode />}
             <RenderDeliveryAddress />
             <RenderDeliveryProvider
               name='Choose Delivery Provider'
@@ -1663,27 +1664,18 @@ const Cart = ({ ...props }) => {
     );
   };
 
-  const RenderEmptyState = ({ name }) => {
-    return (
-      <div style={styles.rootEmptyCart}>
-        <img src={config.url_emptyImage} alt='is empty' />
-        <Typography style={styles.emptyText}>{name}</Typography>
-      </div>
-    );
-  };
-
-  const RenderCartOrEmpty = () => {
+  const renderCartOrEmpty = () => {
     if (!isEmptyArray(props.basket.details)) {
+      return <div>{renderCart()}</div>;
+    } else {
       return (
-        <div>
-          <RenderCart />
+        <div style={styles.rootEmptyCart}>
+          <img src={config.url_emptyImage} alt='is empty' />
+          <Typography style={styles.emptyText}>Data is empty</Typography>
         </div>
       );
-    } else {
-      return <RenderEmptyState name='Data is Empty' />;
     }
   };
-
   return (
     <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
       <Box
@@ -1694,8 +1686,11 @@ const Cart = ({ ...props }) => {
       >
         {openOrderingTable && (
           <OrderingModeTable
+            gadgetScreen={gadgetScreen}
             open={openOrderingTable}
             onClose={() => setOpenOrderingTable(false)}
+            colorState={props.color}
+            defaultOutlet={props.defaultOutlet}
           />
         )}
         {openSelectDeliveryProvider && (
@@ -1724,7 +1719,8 @@ const Cart = ({ ...props }) => {
         >
           {renderSubTotal()}
         </Drawer>
-        <RenderCartOrEmpty />
+
+        {renderCartOrEmpty()}
       </Box>
     </LoadingOverlayCustom>
   );
