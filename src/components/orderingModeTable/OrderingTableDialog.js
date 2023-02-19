@@ -276,11 +276,12 @@ const OrderingTableDialog = ({
     return lettersArray;
   };
 
+
   const generateNumbersInRange = () => {
-    const endNumberingTable = defaultOutlet.tableNumber?.numbering?.end;
-    const startNumberingTable = defaultOutlet.tableNumber?.numbering?.start;
-    let numbersArray = [...Array(endNumberingTable).keys()].map(
-      (x) => x + startNumberingTable
+    const endValue = defaultOutlet.tableNumber?.numbering?.end;
+    const startValue = defaultOutlet.tableNumber?.numbering?.start;
+    let numbersArray = [...Array(endValue - startValue + 1).keys()].map(
+      (x) => x + startValue
     );
     return numbersArray;
   };
@@ -315,6 +316,13 @@ const OrderingTableDialog = ({
           letterPrefixing.current.value = '';
         } else {
           setIsError(false);
+          const changeBacKToString = numberFromInput.toString();
+          const combineLetterAndNumber = `${letterFromInput}${changeBacKToString}`;
+          dispatch({
+            type: CONSTANT.NO_TABLE,
+            payload: combineLetterAndNumber,
+          });
+          onClose();
         }
       } else {
         const numberFromInput = Number(numberTable.current.value);
@@ -327,7 +335,9 @@ const OrderingTableDialog = ({
           numberTable.current.value = '';
         } else {
           setIsError(false);
-          // dispatch({})
+          const changeBacKToString = numberFromInput.toString();
+          dispatch({ type: CONSTANT.NO_TABLE, payload: changeBacKToString });
+          onClose();
         }
       }
     }

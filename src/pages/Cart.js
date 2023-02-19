@@ -522,15 +522,6 @@ const Cart = ({ ...props }) => {
       } else {
         isAllCompleted = !!props.orderingMode;
       }
-
-      return !isAllCompleted;
-    } else if (props.orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
-      let isAllCompleted = false;
-      if (!props.noTable) {
-        isAllCompleted = props.orderingMode && props.noTable;
-      } else {
-        isAllCompleted = !!props.orderingMode;
-      }
       return !isAllCompleted;
     }
 
@@ -767,6 +758,7 @@ const Cart = ({ ...props }) => {
                 color: '#8A8D8E',
                 fontWeight: 500,
                 marginLeft: '5px',
+                textTransform: 'uppercase',
               }}
               className={fontStyleCustom.myFont}
             >
