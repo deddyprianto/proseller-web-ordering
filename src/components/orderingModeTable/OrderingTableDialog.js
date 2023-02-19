@@ -16,6 +16,7 @@ import 'slick-carousel/slick/slick-theme.css';
 
 import MagicSliderDots from 'react-magic-slider-dots';
 import 'react-magic-slider-dots/dist/magic-dots.css';
+import { CONSTANT } from 'helpers';
 
 const OrderingTableDialog = ({
   open,
@@ -285,42 +286,49 @@ const OrderingTableDialog = ({
   };
 
   const handleFormTable = () => {
-    if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
-      const numberFromInput = Number(numberTableLetter.current.value);
-      const letterFromInput = letterPrefixing.current.value;
-      const letterToUppercase = letterFromInput.toUpperCase();
-      const resGenerateNumber = generateNumbersInRange();
-      const resGenerateLetter = generateLettersInRange(
-        defaultOutlet.tableNumber?.letterPrefixing?.start,
-        defaultOutlet.tableNumber?.letterPrefixing?.end
-      );
-
-      const isLetterNotFound = resGenerateLetter.find(
-        (item) => item === letterToUppercase
-      );
-
-      const isNumberNotFound = resGenerateNumber.find(
-        (item) => item === numberFromInput
-      );
-      if (!isLetterNotFound || !isNumberNotFound) {
-        setIsError(true);
-        numberTableLetter.current.value = '';
-        letterPrefixing.current.value = '';
-      } else {
-        setIsError(false);
-      }
+    if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
+      dispatch({ type: CONSTANT.NO_TABLE, payload: isActiveTable });
+      onClose();
     } else {
-      const numberFromInput = Number(numberTable.current.value);
-      const resGenerateNumber = generateNumbersInRange();
-      const isNumberNotFound = resGenerateNumber.find(
-        (item) => item === numberFromInput
-      );
-      if (!isNumberNotFound) {
-        setIsError(true);
-        numberTable.current.value = '';
+      if (
+        defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER'
+      ) {
+        const numberFromInput = Number(numberTableLetter.current.value);
+        const letterFromInput = letterPrefixing.current.value;
+        const letterToUppercase = letterFromInput.toUpperCase();
+        const resGenerateNumber = generateNumbersInRange();
+        const resGenerateLetter = generateLettersInRange(
+          defaultOutlet.tableNumber?.letterPrefixing?.start,
+          defaultOutlet.tableNumber?.letterPrefixing?.end
+        );
+
+        const isLetterNotFound = resGenerateLetter.find(
+          (item) => item === letterToUppercase
+        );
+
+        const isNumberNotFound = resGenerateNumber.find(
+          (item) => item === numberFromInput
+        );
+        if (!isLetterNotFound || !isNumberNotFound) {
+          setIsError(true);
+          numberTableLetter.current.value = '';
+          letterPrefixing.current.value = '';
+        } else {
+          setIsError(false);
+        }
       } else {
-        setIsError(false);
-        // dispatch({})
+        const numberFromInput = Number(numberTable.current.value);
+        const resGenerateNumber = generateNumbersInRange();
+        const isNumberNotFound = resGenerateNumber.find(
+          (item) => item === numberFromInput
+        );
+        if (!isNumberNotFound) {
+          setIsError(true);
+          numberTable.current.value = '';
+        } else {
+          setIsError(false);
+          // dispatch({})
+        }
       }
     }
   };

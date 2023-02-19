@@ -52,6 +52,7 @@ const mapStateToProps = (state) => {
     orderActionTimeSlot: state.order.orderActionTimeSlot,
     selectedDeliveryProvider: state.order.selectedDeliveryProvider,
     basketUpdate: state.order.basketUpdate,
+    noTable: state.order.noTable,
   };
 };
 
@@ -523,6 +524,14 @@ const Cart = ({ ...props }) => {
       }
 
       return !isAllCompleted;
+    } else if (props.orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
+      let isAllCompleted = false;
+      if (!props.noTable) {
+        isAllCompleted = props.orderingMode && props.noTable;
+      } else {
+        isAllCompleted = !!props.orderingMode;
+      }
+      return !isAllCompleted;
     }
 
     return !props.orderingMode;
@@ -743,7 +752,15 @@ const Cart = ({ ...props }) => {
               marginRight: '10px',
             }}
           >
-            <RenderDineIcon />
+            {props.noTable ? (
+              <RenderDineIcon />
+            ) : (
+              <div
+                style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 600 }}
+              >
+                Choose Table
+              </div>
+            )}
             <Typography
               style={{
                 fontSize: '13px',
@@ -753,7 +770,7 @@ const Cart = ({ ...props }) => {
               }}
               className={fontStyleCustom.myFont}
             >
-              01
+              {props.noTable}
             </Typography>
             <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
           </div>
