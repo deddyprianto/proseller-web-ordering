@@ -18,7 +18,7 @@ export default class TableNo extends Component {
             ? 'Queue No.'
             : 'Table No.'}
         </div>
-        <div style={{ fontSize: 14, textTransform: 'uppercase' }}>
+        <div style={{ fontSize: 14 }}>
           {props.orderingMode === 'TAKEAWAY' ||
           props.orderingMode === 'STOREPICKUP' ||
           props.orderingMode === 'STORECHECKOUT'
