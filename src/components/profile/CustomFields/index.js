@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Col, Row } from "reactstrap";
 import Field from "./Field";
+import { useDispatch } from 'react-redux';
 
 const CustomFields = ({
   fields,
@@ -14,11 +15,15 @@ const CustomFields = ({
   touched,
   dataCustomer,
 }) => {
+  const dispatch = useDispatch();
   const fieldsToRender =
     fields &&
     fields.filter((field) => {
       return showSignUpFields ? field.signUpField === true : true;
     });
+  useEffect(() => {
+    dispatch({ type: 'IS_CUSTOM_FIELD_HAVE_VALUE', data: fieldsToRender });
+  }, []);
 
   const [value, setValue] = useState(defaultValue);
 
