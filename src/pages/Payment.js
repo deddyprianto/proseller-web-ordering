@@ -84,6 +84,7 @@ const mapStateToProps = (state) => {
     itemOrderingMode: state.order.itemOrderingMode,
     dataVoucher: state.voucher.indexVoucer,
     totalPaymentAmount: state.payment.totalPaymentAmount,
+    noTable: state.order.noTable,
   };
 };
 
@@ -1104,7 +1105,7 @@ const Payment = ({ ...props }) => {
         payments: [],
         isNeedConfirmation,
         payAtPOS: false,
-        tableNo: '-',
+        tableNo: props.noTable,
         orderingMode: props.orderingMode,
         orderActionDate: props.orderActionDate,
         orderActionTime: props.orderActionTime,
