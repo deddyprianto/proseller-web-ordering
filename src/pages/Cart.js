@@ -1064,7 +1064,8 @@ const Cart = ({ ...props }) => {
       );
     } else {
       return dataCalculateFee?.dataProvider?.map((item) => {
-        const conditionName = dataDeliveryProvider === item.name ? true : false;
+        const conditionName =
+          props.basket?.provider?.name === item.name ? true : false;
         return (
           <div
             key={item.name}
