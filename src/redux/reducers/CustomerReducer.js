@@ -9,7 +9,6 @@ const defaultState = {
   placeholderForEditAddressCustomer: {},
   isUserHasBeenCompletedfillData: false,
   isAllFieldHasBeenFullFiled: {},
-  isCustomFieldHaveValue: [],
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -65,8 +64,6 @@ export default function reducer(state = defaultState, action) {
         ...state,
         isUserHasBeenCompletedfillData: action.data,
       };
-    case 'IS_CUSTOM_FIELD_HAVE_VALUE':
-      return { ...state, isCustomFieldHaveValue: action.data };
     default:
       return state;
   }
