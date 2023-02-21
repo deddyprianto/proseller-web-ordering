@@ -526,7 +526,7 @@ const Cart = ({ ...props }) => {
       
     }else if (props.orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
       let isAllCompleted = false;
-      if (!props.noTable) {
+      if (props.defaultOutlet.enableTableNumber) {
         isAllCompleted = props.orderingMode && props.noTable;
       } else {
         isAllCompleted = !!props.orderingMode;
