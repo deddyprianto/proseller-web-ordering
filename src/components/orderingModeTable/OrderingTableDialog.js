@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
@@ -25,6 +25,7 @@ const OrderingTableDialog = ({
   colorState,
   gadgetScreen,
 }) => {
+  const tableNo = useSelector((state) => state.order.noTable);
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -221,7 +222,11 @@ const OrderingTableDialog = ({
     return item.map((item) => {
       return (
         <div
-          onClick={() => setIsActiveTable(item)}
+          key={item}
+          onClick={() => {
+            setIsActiveTable(item);
+            dispatch({ type: CONSTANT.NO_TABLE, payload: item });
+          }}
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -229,14 +234,12 @@ const OrderingTableDialog = ({
             width: '75px',
             border: `1px solid ${colorState.primary}`,
             borderRadius: '10px',
-            color: isActiveTable === item ? 'white' : colorState.primary,
-            backgroundColor: isActiveTable === item && colorState.primary,
+            color: tableNo === item ? 'white' : colorState.primary,
+            backgroundColor: tableNo === item && colorState.primary,
             cursor: 'pointer',
           }}
         >
-          <DineInIcon
-            color={isActiveTable === item ? 'white' : colorState.primary}
-          />
+          <DineInIcon color={tableNo === item ? 'white' : colorState.primary} />
           <div style={{ fontSize: '12px', marginLeft: '4px' }}>{item}</div>
         </div>
       );
@@ -275,7 +278,6 @@ const OrderingTableDialog = ({
     }
     return lettersArray;
   };
-
 
   const generateNumbersInRange = () => {
     const endValue = defaultOutlet.tableNumber?.numbering?.end;
