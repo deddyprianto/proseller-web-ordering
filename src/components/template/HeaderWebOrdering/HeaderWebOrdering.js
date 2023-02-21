@@ -162,6 +162,7 @@ const useStyles = (location) => {
 };
 
 const HeaderWebOrdering = () => {
+  const allState = useSelector((state) => state);
   const location = useLocation();
   const styles = useStyles(location);
   const history = useHistory();
@@ -182,6 +183,18 @@ const HeaderWebOrdering = () => {
     (state) => state.guestCheckoutCart.response
   );
   const data = useSelector((state) => state.guestCheckoutCart.data);
+
+  useEffect(() => {
+    const enableOrderingChecker = () => {
+      let enableOrderingCheck = allState.order.setting.find((items) => {
+        return items.settingKey === 'EnableOrdering';
+      });
+      if (enableOrderingCheck) {
+        setEnableOrdering(enableOrderingCheck.settingValue);
+      }
+    };
+    enableOrderingChecker();
+  }, [allState]);
 
   useEffect(() => {
     const isGuestMode = localStorage.getItem('settingGuestMode');
@@ -233,14 +246,6 @@ const HeaderWebOrdering = () => {
       }
     }
   };
-  const handleUpdateEnableOrdering = (setEnableOrdering) => {
-    const enableOrdering = setting?.find((items) => {
-      return items.settingKey === 'EnableOrdering';
-    });
-    if (enableOrdering) {
-      setEnableOrdering(enableOrdering);
-    }
-  };
 
   useEffect(() => {
     const infoCompany = encryptor.decrypt(
@@ -252,7 +257,6 @@ const HeaderWebOrdering = () => {
     dispatch(OutletAction.fetchAllOutlet(true));
     dispatchActionOrderingStatus(dispatch);
     handleLogo(infoCompany, logoCompany);
-    handleUpdateEnableOrdering(setEnableOrdering);
   }, [setting]);
 
   useEffect(() => {
@@ -459,6 +463,7 @@ const HeaderWebOrdering = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: 'red',
       }}
     >
       {logo && (
