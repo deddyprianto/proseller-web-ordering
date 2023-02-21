@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Col, Row } from "reactstrap";
-import Field from './Field';
+import Field from "./Field";
 
 const CustomFields = ({
   fields,
