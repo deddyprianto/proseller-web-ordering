@@ -207,7 +207,7 @@ class ModalDetailHistory extends Component {
                             lineHeight: '17px',
                           }}
                         >
-                          QUEUE NO.
+                          TABLE NO.
                         </div>
                         <div
                           style={{
@@ -217,7 +217,7 @@ class ModalDetailHistory extends Component {
                             lineHeight: '17px',
                           }}
                         >
-                          {detail.queueNo}
+                          {detail.tableNo}
                         </div>
                       </div>
 
