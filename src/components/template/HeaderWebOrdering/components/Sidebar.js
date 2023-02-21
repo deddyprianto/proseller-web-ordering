@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -44,16 +44,30 @@ const useStyles = (theme) => ({
 });
 
 const Sidebar = ({ guessCheckout }) => {
+  const allState = useSelector((state) => state);
   const menuSidebar = useSelector((state) => state.theme.menu);
   const history = useHistory();
   const theme = useSelector((state) => state.theme.color);
   const { isLoggedIn } = useSelector((state) => state.auth);
   const styles = useStyles(theme);
   const [open, setOpen] = React.useState(false);
+  const [enableOrdering, setEnableOrdering] = useState(true);
+
+  useEffect(() => {
+    const enableOrderingChecker = () => {
+      let enableOrderingCheck = allState.order.setting.find((items) => {
+        return items.settingKey === 'EnableOrdering';
+      });
+      if (enableOrderingCheck) {
+        setEnableOrdering(enableOrderingCheck.settingValue);
+      }
+    };
+    enableOrderingChecker();
+  }, [allState]);
+
   const handleUpdateOpen = (open) => {
     setOpen(open);
   };
-
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
@@ -170,6 +184,9 @@ const Sidebar = ({ guessCheckout }) => {
           </ListItem>
         );
       } else {
+        if (!enableOrdering && item.showOnOrderingEnabled) {
+          return null;
+        }
         return (
           <ListItem disablePadding key={item.text}>
             <ListItemButton>
@@ -253,19 +270,21 @@ const Sidebar = ({ guessCheckout }) => {
             justifyContent: 'space-between',
           }}
         >
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon style={styles.listIcon}>
-                <LibraryBooksIcon sx={{ width: 20, height: 20 }} />
-              </ListItemIcon>
-              <Link to='/'>
-                <ListItemText
-                  primary='Menu'
-                  primaryTypographyProps={styles.primaryTypographyProps}
-                />
-              </Link>
-            </ListItemButton>
-          </ListItem>
+          {enableOrdering && (
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon style={styles.listIcon}>
+                  <LibraryBooksIcon sx={{ width: 20, height: 20 }} />
+                </ListItemIcon>
+                <Link to='/'>
+                  <ListItemText
+                    primary='Menu'
+                    primaryTypographyProps={styles.primaryTypographyProps}
+                  />
+                </Link>
+              </ListItemButton>
+            </ListItem>
+          )}
           {guessCheckout && (
             <ListItem disablePadding>
               <ListItemButton>
@@ -281,7 +300,7 @@ const Sidebar = ({ guessCheckout }) => {
               </ListItemButton>
             </ListItem>
           )}
-          <hr />
+          {enableOrdering && <hr />}
           <ListItem disablePadding>
             <ListItemButton
               onClick={isLoggedIn && handleLogout}
