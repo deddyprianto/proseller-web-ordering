@@ -168,7 +168,7 @@ const HeaderWebOrdering = () => {
   const history = useHistory();
   const mobileSize = useMobileSize();
   const dispatch = useDispatch();
-
+  const [showMenu, setShowMenu] = useState(true);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [logo, setLogo] = useState('');
   const [basketLength, setBasketLength] = useState(0);
@@ -190,7 +190,7 @@ const HeaderWebOrdering = () => {
         return items.settingKey === 'EnableOrdering';
       });
       if (enableOrderingCheck) {
-        setEnableOrdering(enableOrderingCheck.settingValue);
+        setShowMenu(enableOrderingCheck.settingValue);
       }
     };
     enableOrderingChecker();
@@ -246,6 +246,14 @@ const HeaderWebOrdering = () => {
       }
     }
   };
+  const handleUpdateEnableOrdering = (setEnableOrdering) => {
+    const enableOrdering = setting?.find((items) => {
+      return items.settingKey === 'EnableOrdering';
+    });
+    if (enableOrdering) {
+      setEnableOrdering(enableOrdering);
+    }
+  };
 
   useEffect(() => {
     const infoCompany = encryptor.decrypt(
@@ -257,6 +265,7 @@ const HeaderWebOrdering = () => {
     dispatch(OutletAction.fetchAllOutlet(true));
     dispatchActionOrderingStatus(dispatch);
     handleLogo(infoCompany, logoCompany);
+    handleUpdateEnableOrdering(setEnableOrdering);
   }, [setting]);
 
   useEffect(() => {
@@ -332,7 +341,7 @@ const HeaderWebOrdering = () => {
   };
 
   const linkMenu = () => {
-    if (enableOrdering) {
+    if (showMenu) {
       return (
         <ListItem>
           <Link to='/'>Menu</Link>
@@ -463,7 +472,6 @@ const HeaderWebOrdering = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'red',
       }}
     >
       {logo && (
