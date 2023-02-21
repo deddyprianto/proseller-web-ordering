@@ -7,6 +7,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { useSelector } from 'react-redux';
 import styles from './styles.module.css';
 import PasswordField from '../PasswordField';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const EmailForm = ({
   email,
@@ -23,6 +24,9 @@ const EmailForm = ({
   isTCAvailable,
   termsAndConditions,
 }) => {
+  const isCustomFieldHaveValue = useSelector(
+    (state) => state.customer.isCustomFieldHaveValue
+  );
   const isAllFieldHasBeenFullFiled = useSelector(
     (state) => state.customer.isAllFieldHasBeenFullFiled
   );
@@ -54,20 +58,28 @@ const EmailForm = ({
       return iSAllPassed || isSubmitting;
     }
   };
+
   const handleDisabelButtonForTNC = () => {
-    const isAllFieldMandatoryFullfilled =
-      agreeTC &&
-      isTCAvailable &&
-      phone &&
-      nameValue &&
-      isAllFieldHasBeenFullFiled.birthDate &&
-      isAllFieldHasBeenFullFiled.gender &&
-      isAllFieldHasBeenFullFiled['nric(last4digits)'] &&
-      isAllFieldHasBeenFullFiled.outletsignup;
-    if (isAllFieldMandatoryFullfilled) {
-      return false;
+    if (!isEmptyArray(isCustomFieldHaveValue)) {
+      const customField = isCustomFieldHaveValue.some(
+        (item) => isAllFieldHasBeenFullFiled[item.fieldName]
+      );
+      const isAllFieldMandatoryFullfilled =
+        agreeTC && isTCAvailable && phone && nameValue && customField;
+      if (isAllFieldMandatoryFullfilled) {
+        return false;
+      } else {
+        return true;
+      }
     } else {
-      return true;
+      const isAllFieldMandatoryFullfilled =
+        agreeTC && isTCAvailable && phone && nameValue;
+
+      if (isAllFieldMandatoryFullfilled) {
+        return false;
+      } else {
+        return true;
+      }
     }
   };
   return (

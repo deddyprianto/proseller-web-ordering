@@ -4,6 +4,7 @@ import { Button } from 'reactstrap';
 import PasswordField from '../PasswordField';
 import CheckBox from '../../setting/checkBoxCostume';
 import { useSelector } from 'react-redux';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const PhoneForm = ({
   phoneNumber,
@@ -19,6 +20,9 @@ const PhoneForm = ({
   termsAndConditions,
   invitationCode,
 }) => {
+  const isCustomFieldHaveValue = useSelector(
+    (state) => state.customer.isCustomFieldHaveValue
+  );
   const isAllFieldHasBeenFullFiled = useSelector(
     (state) => state.customer.isAllFieldHasBeenFullFiled
   );
@@ -53,19 +57,31 @@ const PhoneForm = ({
     }
   };
   const handleDisabelButtonForTNC = () => {
-    const isAllFieldMandatoryFullfilled =
-      agreeTC &&
-      isTCAvailable &&
-      userNameValue &&
-      userEmailValue &&
-      isAllFieldHasBeenFullFiled.birthDate &&
-      isAllFieldHasBeenFullFiled.gender &&
-      isAllFieldHasBeenFullFiled['nric(last4digits)'] &&
-      isAllFieldHasBeenFullFiled.outletsignup;
-    if (isAllFieldMandatoryFullfilled) {
-      return false;
+    if (!isEmptyArray(isCustomFieldHaveValue)) {
+      const customField = isCustomFieldHaveValue.some(
+        (item) => isAllFieldHasBeenFullFiled[item.fieldName]
+      );
+      const isAllFieldMandatoryFullfilled =
+        agreeTC &&
+        isTCAvailable &&
+        userNameValue &&
+        userEmailValue &&
+        customField;
+
+      if (isAllFieldMandatoryFullfilled) {
+        return false;
+      } else {
+        return true;
+      }
     } else {
-      return true;
+      const isAllFieldMandatoryFullfilled =
+        agreeTC && isTCAvailable && userNameValue && userEmailValue;
+
+      if (isAllFieldMandatoryFullfilled) {
+        return false;
+      } else {
+        return true;
+      }
     }
   };
 
