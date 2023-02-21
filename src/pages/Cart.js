@@ -523,6 +523,15 @@ const Cart = ({ ...props }) => {
         isAllCompleted = !!props.orderingMode;
       }
       return !isAllCompleted;
+      
+    }else if (props.orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
+      let isAllCompleted = false;
+      if (!props.noTable) {
+        isAllCompleted = props.orderingMode && props.noTable;
+      } else {
+        isAllCompleted = !!props.orderingMode;
+      }
+      return !isAllCompleted;
     }
 
     return !props.orderingMode;
