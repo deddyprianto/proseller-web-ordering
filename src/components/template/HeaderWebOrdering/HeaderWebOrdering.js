@@ -162,12 +162,13 @@ const useStyles = (location) => {
 };
 
 const HeaderWebOrdering = () => {
+  const allState = useSelector((state) => state);
   const location = useLocation();
   const styles = useStyles(location);
   const history = useHistory();
   const mobileSize = useMobileSize();
   const dispatch = useDispatch();
-
+  const [showMenu, setShowMenu] = useState(true);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [logo, setLogo] = useState('');
   const [basketLength, setBasketLength] = useState(0);
@@ -182,6 +183,18 @@ const HeaderWebOrdering = () => {
     (state) => state.guestCheckoutCart.response
   );
   const data = useSelector((state) => state.guestCheckoutCart.data);
+
+  useEffect(() => {
+    const enableOrderingChecker = () => {
+      let enableOrderingCheck = allState.order.setting.find((items) => {
+        return items.settingKey === 'EnableOrdering';
+      });
+      if (enableOrderingCheck) {
+        setShowMenu(enableOrderingCheck.settingValue);
+      }
+    };
+    enableOrderingChecker();
+  }, [allState]);
 
   useEffect(() => {
     const isGuestMode = localStorage.getItem('settingGuestMode');
@@ -328,7 +341,7 @@ const HeaderWebOrdering = () => {
   };
 
   const linkMenu = () => {
-    if (enableOrdering) {
+    if (showMenu) {
       return (
         <ListItem>
           <Link to='/'>Menu</Link>
