@@ -87,7 +87,7 @@ class ModalDetailHistory extends Component {
                   id='exampleModalLabel'
                   style={{ fontSize: 18 }}
                 >
-                  Detail Transaction LOL
+                  Detail Transaction
                 </h5>
                 <button
                   type='button'
@@ -108,7 +108,7 @@ class ModalDetailHistory extends Component {
               {Object.keys(detail).length > 0 && (
                 <div className='modal-body'>
                   {detail.status && (
-                    <dev>
+                    <div>
                       <div
                         style={{
                           marginLeft: 5,
@@ -146,10 +146,10 @@ class ModalDetailHistory extends Component {
                           marginBottom: 10,
                         }}
                       />
-                    </dev>
+                    </div>
                   )}
                   {(detail.transactionRefNo || detail.referenceNo) && (
-                    <dev>
+                    <div>
                       <div
                         style={{
                           marginLeft: 5,
@@ -187,11 +187,51 @@ class ModalDetailHistory extends Component {
                           marginBottom: 10,
                         }}
                       />
-                    </dev>
+                    </div>
                   )}
-
                   {detail.queueNo && (
-                    <dev>
+                    <div>
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: 14,
+                            textAlign: 'left',
+                            lineHeight: '17px',
+                          }}
+                        >
+                          QUEUE NO.
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            textAlign: 'right',
+                            lineHeight: '17px',
+                          }}
+                        >
+                          {detail.queueNo}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          backgroundColor: '#CDCDCD',
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                    </div>
+                  )}
+                  {detail.tableNo && (
+                    <div>
                       <div
                         style={{
                           marginLeft: 5,
@@ -229,7 +269,7 @@ class ModalDetailHistory extends Component {
                           marginBottom: 10,
                         }}
                       />
-                    </dev>
+                    </div>
                   )}
 
                   <div
