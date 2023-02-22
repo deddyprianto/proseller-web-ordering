@@ -189,7 +189,47 @@ class ModalDetailHistory extends Component {
                       />
                     </div>
                   )}
-                  {detail.queueNo && (
+                  {detail.orderingMode === 'DINEIN' && detail.tableNo ? (
+                    <div>
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: 14,
+                            textAlign: 'left',
+                            lineHeight: '17px',
+                          }}
+                        >
+                          TABLE NO.
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            textAlign: 'right',
+                            lineHeight: '17px',
+                          }}
+                        >
+                          {detail.tableNo}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          backgroundColor: '#CDCDCD',
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                    </div>
+                  ) : (
                     <div>
                       <div
                         style={{
@@ -230,48 +270,6 @@ class ModalDetailHistory extends Component {
                       />
                     </div>
                   )}
-                  {detail.tableNo && (
-                    <div>
-                      <div
-                        style={{
-                          marginLeft: 5,
-                          marginRight: 5,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <div
-                          style={{
-                            fontSize: 14,
-                            textAlign: 'left',
-                            lineHeight: '17px',
-                          }}
-                        >
-                          TABLE NO.
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 'bold',
-                            textAlign: 'right',
-                            lineHeight: '17px',
-                          }}
-                        >
-                          {detail.tableNo}
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          backgroundColor: '#CDCDCD',
-                          height: 1,
-                          marginTop: 10,
-                          marginBottom: 10,
-                        }}
-                      />
-                    </div>
-                  )}
-
                   <div
                     style={{
                       marginLeft: 5,
