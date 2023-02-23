@@ -116,67 +116,65 @@ class History extends Component {
     }
 
     return (
-      <LoadingOverlay active={this.state.isLoading} spinner text='Loading...'>
-        <div
-          className='col-full'
-          style={{
-            marginTop: config.prefix === 'emenu' ? 100 : 0,
-            marginBottom: 50,
-          }}
-        >
-          <div id='primary' className='content-area'>
-            <div className='stretch-full-width'>
-              <div
-                style={{
-                  flexDirection: 'row',
-                  width: '100%',
-                  marginTop: '65px',
+      <div
+        className='col-full'
+        style={{
+          marginTop: config.prefix === 'emenu' ? 100 : 0,
+          marginBottom: 50,
+        }}
+      >
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
+            <div
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                marginTop: '65px',
+              }}
+            >
+              <Button
+                className={isTransaction ? 'use-select' : 'un-select'}
+                style={{ height: 50, fontWeight: 'bold' }}
+                onClick={() => this.setState({ isTransaction: true })}
+              >
+                Orders
+              </Button>
+              <Button
+                className={!isTransaction ? 'use-select' : 'un-select'}
+                style={{ height: 50, fontWeight: 'bold' }}
+                onClick={() => {
+                  this.setState({ isTransaction: false });
                 }}
               >
-                <Button
-                  className={isTransaction ? 'use-select' : 'un-select'}
-                  style={{ height: 50, fontWeight: 'bold' }}
-                  onClick={() => this.setState({ isTransaction: true })}
-                >
-                  Orders
-                </Button>
-                <Button
-                  className={!isTransaction ? 'use-select' : 'un-select'}
-                  style={{ height: 50, fontWeight: 'bold' }}
-                  onClick={() => {
-                    this.setState({ isTransaction: false });
-                  }}
-                >
-                  {`Pending Orders ${
-                    dataPendingLength > 0 ? `(${dataPendingLength})` : ''
-                  }`}
-                </Button>
-              </div>
-              <main
-                id='main'
-                className='site-main'
-                style={{
-                  textAlign: 'center',
-                  marginTop: '10px',
-                }}
-              >
-                <div>
-                  {isTransaction && (
-                    <HistoryTransaction countryCode={countryCode} />
-                  )}
-                  {!isTransaction && (
-                    <HistoryPending
-                      dataPending={dataPending}
-                      dataPendingLength={dataPendingLength}
-                      countryCode={countryCode}
-                    />
-                  )}
-                </div>
-              </main>
+                {`Pending Orders ${
+                  dataPendingLength > 0 ? `(${dataPendingLength})` : ''
+                }`}
+              </Button>
             </div>
+            <main
+              id='main'
+              className='site-main'
+              style={{
+                textAlign: 'center',
+                marginTop: '10px',
+              }}
+            >
+              <div>
+                {isTransaction && (
+                  <HistoryTransaction countryCode={countryCode} />
+                )}
+                {!isTransaction && (
+                  <HistoryPending
+                    dataPending={dataPending}
+                    dataPendingLength={dataPendingLength}
+                    countryCode={countryCode}
+                  />
+                )}
+              </div>
+            </main>
           </div>
         </div>
-      </LoadingOverlay>
+      </div>
     );
   }
 }

@@ -1,45 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
-import Loading from 'components/loading/Loading';
-import { HistoryAction } from '../../redux/actions/HistoryAction';
 import config from '../../config';
 import HistoryCard from './HistoryCardPending';
 import ModalDetailHistory from './ModalDetailHistory';
+import useHistoryTransaction from 'hooks/useHistoryTransaction';
+import './style/style.css';
 
 const HistoryTransaction = ({ countryCode }) => {
-  const [data, setData] = useState([]);
   const [detailData, setDetailData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        let response = await dispatch(
-          HistoryAction.getTransaction({
-            take: 1000,
-            skip: 0,
-          })
-        );
-        if (response.ResultCode === 200) {
-          setData(response.data);
+  const [take, setTake] = useState(80);
+  const { historyTransaction, loading, hasMore, error } = useHistoryTransaction(
+    {
+      take: take,
+      skip: 0,
+    }
+  );
+  const observer = useRef();
+  const lastEl = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setTake((prev) => prev + 10);
         }
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    loadData();
-  }, []);
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
-  if (isLoading) return <Loading loadingType='NestedList' />;
-
-  if (data.length === 0 && !isLoading) {
+  if (historyTransaction.length === 0 && !loading) {
     return (
       <>
         <img src={config.url_emptyImage} alt='is empty' />
@@ -47,6 +40,27 @@ const HistoryTransaction = ({ countryCode }) => {
       </>
     );
   }
+  const RenderAnimationLoading = () => {
+    return (
+      <div
+        className='lds-spinner'
+        style={{ marginTop: historyTransaction.length === 0 ? '200px' : '0px' }}
+      >
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -59,21 +73,42 @@ const HistoryTransaction = ({ countryCode }) => {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, md: 12 }}
       >
-        {data.map((items, index) => {
-          return (
-            <Grid
-              item
-              xs={4}
-              md={6}
-              key={index}
-              data-toggle='modal'
-              data-target='#detail-transaction-modal'
-              onClick={() => setDetailData(items)}
-            >
-              <HistoryCard items={items} countryCode={countryCode} />
-            </Grid>
-          );
+        {historyTransaction.map((items, index) => {
+          if (historyTransaction.length === index + 1) {
+            return (
+              <Grid
+                ref={lastEl}
+                item
+                xs={4}
+                md={6}
+                key={index}
+                data-toggle='modal'
+                data-target='#detail-transaction-modal'
+                onClick={() => setDetailData(items)}
+              >
+                <HistoryCard items={items} countryCode={countryCode} />
+              </Grid>
+            );
+          } else {
+            return (
+              <Grid
+                item
+                xs={4}
+                md={6}
+                key={index}
+                data-toggle='modal'
+                data-target='#detail-transaction-modal'
+                onClick={() => setDetailData(items)}
+              >
+                <HistoryCard items={items} countryCode={countryCode} />
+              </Grid>
+            );
+          }
         })}
+        {!error && loading && <RenderAnimationLoading />}
+        {error?.message && (
+          <p style={{ marginLeft: '10px' }}>You have reached the bottom data</p>
+        )}
       </Grid>
     </>
   );
