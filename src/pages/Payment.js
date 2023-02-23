@@ -1105,7 +1105,7 @@ const Payment = ({ ...props }) => {
         payments: [],
         isNeedConfirmation,
         payAtPOS: false,
-        tableNo: props.noTable,
+        tableNo: props.noTable ? props.noTable : null,
         orderingMode: props.orderingMode,
         orderActionDate: props.orderActionDate,
         orderActionTime: props.orderActionTime,
