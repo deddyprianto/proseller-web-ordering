@@ -10,8 +10,6 @@ function setData(data, constant) {
 
 function getTransaction(payload = {}) {
   return async () => {
-    payload.page = 1;
-
     let response = await CRMService.api(
       'GET',
       payload,

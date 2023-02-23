@@ -10,13 +10,16 @@ import './style/style.css';
 
 const HistoryTransaction = ({ countryCode }) => {
   const [detailData, setDetailData] = useState({});
-  const [take, setTake] = useState(80);
-  const { historyTransaction, loading, hasMore, error } = useHistoryTransaction(
+  const [pageNumber, setPageNumber] = useState(1);
+  const [skip, setSkip] = useState(10);
+  const { historyTransaction, loading, error, hasMore } = useHistoryTransaction(
     {
-      take: take,
-      skip: 0,
+      take: 10,
+      skip,
+      pageNumber,
     }
   );
+
   const observer = useRef();
   const lastEl = useCallback(
     (node) => {
@@ -24,7 +27,8 @@ const HistoryTransaction = ({ countryCode }) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setTake((prev) => prev + 10);
+          setSkip((prev) => prev + 10);
+          setPageNumber((prev) => prev + 1);
         }
       });
       if (node) observer.current.observe(node);
@@ -107,7 +111,9 @@ const HistoryTransaction = ({ countryCode }) => {
         })}
         {!error && loading && <RenderAnimationLoading />}
         {error?.message && (
-          <p style={{ marginLeft: '10px' }}>You have reached the bottom data</p>
+          <p style={{ marginLeft: '10px' }}>
+            You have reached the end of the list.
+          </p>
         )}
       </Grid>
     </>

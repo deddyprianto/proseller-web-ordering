@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { HistoryAction } from 'redux/actions/HistoryAction';
 
-export default function useHistoryTransaction({ take, skip }) {
+export default function useHistoryTransaction({ take, skip, pageNumber }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -17,6 +17,7 @@ export default function useHistoryTransaction({ take, skip }) {
           HistoryAction.getTransaction({
             take,
             skip,
+            page: pageNumber,
           })
         );
         if (response.ResultCode === 200) {
@@ -29,7 +30,7 @@ export default function useHistoryTransaction({ take, skip }) {
       }
     };
     loadData();
-  }, [take]);
+  }, [skip, pageNumber]);
 
   return { historyTransaction, loading, error, hasMore };
 }
