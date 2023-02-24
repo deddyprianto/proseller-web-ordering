@@ -8,6 +8,7 @@ export default function useHistoryTransaction({ take, skip, pageNumber }) {
   const [error, setError] = useState(false);
   const [historyTransaction, setHistoryTransaction] = useState([]);
   const [hasMore, setHasMore] = useState(false);
+  const [isEmptyData, setIsEmptyData] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -21,7 +22,16 @@ export default function useHistoryTransaction({ take, skip, pageNumber }) {
           })
         );
         if (response.ResultCode === 200) {
-          setHistoryTransaction(response.data);
+          setHistoryTransaction((prevTransaction) => {
+            if (hasMore) {
+              return [...new Set([...prevTransaction, ...response.data])];
+            } else {
+              return [...new Set([...response.data])];
+            }
+          });
+        }
+        if (response.data.length === 0) {
+          setIsEmptyData(true);
         }
         setLoading(false);
         setHasMore(response.data.length > 0);
@@ -32,5 +42,5 @@ export default function useHistoryTransaction({ take, skip, pageNumber }) {
     loadData();
   }, [skip, pageNumber]);
 
-  return { historyTransaction, loading, error, hasMore };
+  return { historyTransaction, loading, error, hasMore, isEmptyData };
 }

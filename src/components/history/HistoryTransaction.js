@@ -12,13 +12,12 @@ const HistoryTransaction = ({ countryCode }) => {
   const [detailData, setDetailData] = useState({});
   const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(10);
-  const { historyTransaction, loading, error, hasMore } = useHistoryTransaction(
-    {
+  const { historyTransaction, loading, error, hasMore, isEmptyData } =
+    useHistoryTransaction({
       take: 10,
       skip,
       pageNumber,
-    }
-  );
+    });
 
   const observer = useRef();
   const lastEl = useCallback(
@@ -109,11 +108,25 @@ const HistoryTransaction = ({ countryCode }) => {
             );
           }
         })}
-        {!error && loading && <RenderAnimationLoading />}
+        {loading && <RenderAnimationLoading />}
+        {isEmptyData && (
+          <div style={{ width: '100%' }}>
+            <p
+              style={{
+                textAlign: 'left',
+                fontSize: '14px',
+                fontWeight: 600,
+                marginLeft: '7px',
+                color: '#ec4646',
+                fontStyle: 'italic',
+              }}
+            >
+              You have reached the end of the list.
+            </p>
+          </div>
+        )}
         {error?.message && (
-          <p style={{ marginLeft: '10px' }}>
-            You have reached the end of the list.
-          </p>
+          <p style={{ marginLeft: '10px' }}>{error?.message}</p>
         )}
       </Grid>
     </>
