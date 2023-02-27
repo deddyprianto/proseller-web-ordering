@@ -45,6 +45,7 @@ p,h1,h2,h3,h4,h5{
 .phoneCountryCodeGroup {
   display: flex;
   position: relative;
+  margin-right: 20px;
 }
 
 .phoneCountryCode {
@@ -94,7 +95,6 @@ p,h1,h2,h3,h4,h5{
   outline: none;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-
 }
 .dropDownMenu{
   border: none !important;
