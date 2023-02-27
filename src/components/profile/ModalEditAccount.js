@@ -192,7 +192,7 @@ class ModalEditAccount extends Component {
             ></PhoneInput>
             <div className={styles.phoneCountryCode}>{phoneCountryCode}</div>
           </div>
-          <Input
+          <input
             type='number'
             id='phoneInputEdit'
             value={newPhoneNumber}
