@@ -32,6 +32,7 @@ const useStyles = (location) => {
       zIndex: 999,
       backgroundColor:
         location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/appointment' ||
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
@@ -40,6 +41,7 @@ const useStyles = (location) => {
           : '#f2f2f2',
       paddingTop:
         location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/appointment' ||
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
@@ -48,6 +50,7 @@ const useStyles = (location) => {
           : '8px',
       paddingBottom:
         location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/appointment' ||
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
@@ -61,6 +64,7 @@ const useStyles = (location) => {
       alignItems: 'center',
       width:
         location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/appointment' ||
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
@@ -70,6 +74,7 @@ const useStyles = (location) => {
       backgroundColor: '#f2f2f2',
       padding:
         location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/appointment' ||
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
@@ -85,6 +90,7 @@ const useStyles = (location) => {
       width: '100%',
       padding:
         location.pathname === '/cartguestcheckout' ||
+        location.pathname === '/appointment' ||
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||

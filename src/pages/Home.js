@@ -14,6 +14,7 @@ import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
 import { CONSTANT } from 'helpers';
+import ModalAppointment from 'components/modalAppointment/ModalAppointment';
 
 const base64 = require('base-64');
 
@@ -46,6 +47,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Home = ({ ...props }) => {
+  const [openModalAppointment, setOpenModalAppointment] = useState(false);
   const history = useHistory();
   const [width] = useWindowSize();
   const dispatch = useDispatch();
@@ -92,6 +94,7 @@ const Home = ({ ...props }) => {
     if (isEmptyObject(props.defaultOutlet)) {
       history.push('/outlets');
     }
+    setOpenModalAppointment(true);
   }, [props.defaultOutlet]);
 
   useEffect(() => {
@@ -101,7 +104,7 @@ const Home = ({ ...props }) => {
     };
     loadData();
   }, []);
-  
+
   useEffect(() => {
     props.dispatch({
       type: 'SAVE_DETAIL_TOP_UP_SVC',
@@ -148,7 +151,7 @@ const Home = ({ ...props }) => {
       saveGuestCheckoutOfflineCart();
     }
   }, []);
-  
+
   const renderProductListOrOutletSelection = () => {
     if (
       props.setting.outletSelection === 'MANUAL' &&
@@ -161,6 +164,12 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
+          {openModalAppointment && props.isLoggedIn && (
+            <ModalAppointment
+              open={openModalAppointment}
+              onClose={setOpenModalAppointment}
+            />
+          )}
         </div>
       );
     }
