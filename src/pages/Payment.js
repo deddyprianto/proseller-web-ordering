@@ -1043,6 +1043,8 @@ const Payment = ({ ...props }) => {
 
   //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
+    let win = window.open("/#/waiting-payment", "_blank");
+
     setIsLoading(true);
     const getAllOutlets = await props.dispatch(
       OutletAction.fetchAllOutlet(true)
@@ -1053,6 +1055,7 @@ const Payment = ({ ...props }) => {
     );
 
     if (filterOutletUnavailable?.orderingStatus === 'UNAVAILABLE') {
+      win.close();
       Swal.fire({
         title: '<p>The outlet is not available</p>',
         html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.defaultOutlet.name} is currently not available, please select another outlet</h5>`,
@@ -1070,6 +1073,7 @@ const Payment = ({ ...props }) => {
     } else if (
       !filterOutletUnavailable?.[props.itemOrderingMode?.isEnabledFieldName]
     ) {
+      win.close();
       Swal.fire({
         title: '<p>Ordering mode is not available</p>',
         html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
@@ -1171,12 +1175,15 @@ const Payment = ({ ...props }) => {
         response.resultCode === 200 &&
         response?.data?.action?.type === 'url'
       ) {
+        win.location = response.data.action.url;
+        
         setReferenceNumberConfirmation(response?.data?.referenceNo);
-        setUrlConfirmationDialog(response.data.action.url);
+        // setUrlConfirmationDialog(response.data.action.url);
         handleAfterPaymentSuccess(payload, response);
-        setIsLoading(false);
-        setOpenConfirmationDialogActionPayment(true);
+        // setIsLoading(false);
+        // setOpenConfirmationDialogActionPayment(true);
       } else {
+        win.close();
         setWarningMessage(response?.data?.message);
         handleOpenWarningModal();
         setIsLoading(false);

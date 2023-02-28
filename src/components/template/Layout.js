@@ -56,6 +56,7 @@ const Promotions = loadable(() =>
 const PromotionsDetail = loadable(() => import('../../pages/Promotions'));
 const Search = loadable(() => import('../../pages/Search'));
 const ProductSearchResult = loadable(() => import('../../pages/ProductSearch'));
+const WaitingPaymentLoading = loadable(() => import('../../pages/WaitingPaymentLoading'));
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -245,6 +246,9 @@ class Layout extends Component {
                 path='/detail-membership'
                 component={DetailMembership}
               />
+            )}
+            {isLoggedIn && (
+              <Route exact path='/waiting-payment' component={WaitingPaymentLoading} />
             )}
             <Route exact path='/cart' component={Cart} />
             <Route exact path='/history' component={History} />
