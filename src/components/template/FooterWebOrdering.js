@@ -24,6 +24,9 @@ const FooterWebOrdering = () => {
   const [value, setValue] = useState(0);
   const { setting } = useSelector((state) => state.order);
   const [guessCheckout, setGuessCheckout] = useState();
+  const [appointment, setAppointment] = useState(false);
+  const [enableOrdering, setEnableOrdering] = useState(true);
+  const isLoggedIn = allState.auth.isLoggedIn;
 
   useEffect(() => {
     const settingGuestCheckout = setting.find((items) => {
@@ -41,6 +44,29 @@ const FooterWebOrdering = () => {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      if (guessCheckout) {
+        const spliceData = navBar;
+        spliceData.splice(5, 0, { text: 'TrackOrder', path: '/trackorder' });
+        setNewNavbar(spliceData);
+      }
+    } else {
+      if (appointment) {
+        const data = navBar;
+        data[2] = {
+          text: 'Booking',
+          path: '/appointment',
+          loggedInOnly: true,
+        };
+        const dataFiltered = data;
+        setNewNavbar(dataFiltered);
+      } else {
+        setNewNavbar(navBar);
+      }
+    }
+  }, [guessCheckout]);
+
   const menuIcon = (color) => {
     return (
       <svg width='25' height='24' viewBox='0 0 19 18'>
@@ -52,6 +78,25 @@ const FooterWebOrdering = () => {
     );
   };
 
+  const appointmentIcon = (color) => {
+    return (
+      <svg
+        width='25'
+        height='25'
+        viewBox='0 0 240 240'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M210 130V60C210 54.6957 207.893 49.6086 204.142 45.8579C200.391 42.1071 195.304 40 190 40H50C44.6957 40 39.6086 42.1071 35.8579 45.8579C32.1071 49.6086 30 54.6957 30 60V200C30 205.304 32.1071 210.391 35.8579 214.142C39.6086 217.893 44.6957 220 50 220H130M160 20V60M80 20V60M30 100H210M190 160V220M160 190H220'
+          stroke='black'
+          strokeWidth='20'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+      </svg>
+    );
+  };
   const historyIcon = (color) => {
     return (
       <svg
@@ -163,28 +208,13 @@ const FooterWebOrdering = () => {
     },
   };
 
-  const [enableOrdering, setEnableOrdering] = useState(true);
-  const isLoggedIn = allState.auth.isLoggedIn;
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      if (guessCheckout) {
-        const spliceData = navBar;
-        spliceData.splice(5, 0, { text: 'TrackOrder', path: '/trackorder' });
-        setNewNavbar(spliceData);
-      } else {
-        setNewNavbar(navBar);
-      }
-    } else {
-      setNewNavbar(navBar);
-    }
-  }, [guessCheckout]);
-
   const iconCheck = (iconName, iconColor) => {
     if (iconName === 'Menu') {
       return menuIcon(iconColor);
     } else if (iconName === 'TrackOrder') {
       return trackIcon(iconColor);
+    } else if (iconName === 'Booking') {
+      return appointmentIcon(iconColor);
     } else if (iconName === 'History') {
       return historyIcon(iconColor);
     } else if (iconName === 'Profile') {
