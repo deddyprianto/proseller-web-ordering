@@ -1,11 +1,13 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import SearchIcon from '@mui/icons-material/Search';
 import PlaceIcon from '@mui/icons-material/Place';
 import fontStyles from './style/styles.module.css';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 import { useSelector } from 'react-redux';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { useHistory } from 'react-router-dom';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -13,6 +15,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import cutter from 'assets/images/cutter.png';
 import reflection from 'assets/images/reflection.png';
 import nails from 'assets/images/nails.png';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -27,14 +30,27 @@ const useWindowSize = () => {
   return size;
 };
 
-const Appointment = () => {
-  const history = useHistory();
+const Appointment = (props) => {
+  const [isLeavePage, setIsLeavePage] = useState(false);
+  const [open, setOpen] = useState(false);
   const [cutPrice, setCutPrice] = useState(false);
   const [openAccordion, setOpenAccordion] = useState(false);
   const color = useSelector((state) => state.theme.color);
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
 
+  const useStyles = makeStyles(() => ({
+    paper: { minWidth: '350px', overflow: 'hidden' },
+  }));
+  const classes = useStyles();
+
+  const style = {
+    dialogContent: {
+      '& .MuiDialogContent-root': {
+        paddingBottom: 0,
+      },
+    },
+  };
   const styleSheet = {
     container: {
       width: '45%',
@@ -73,7 +89,7 @@ const Appointment = () => {
         <ArrowBackIosIcon
           fontSize='large'
           onClick={() => {
-            history.goBack();
+            props.history.goBack();
           }}
         />
         <p
@@ -109,6 +125,29 @@ const Appointment = () => {
       </div>
     );
   };
+
+  if (isLeavePage) {
+    window.onhashchange = function () {
+      if (window.innerDocClick) {
+        window.innerDocClick = false;
+      } else {
+        if (window.location.hash !== '#undefined') {
+          setOpen(true);
+        }
+      }
+    };
+  } else {
+    window.onhashchange = function () {
+      if (window.innerDocClick) {
+        window.innerDocClick = false;
+      } else {
+        if (window.location.hash !== '#undefined') {
+          props.history.push('/appointment');
+          setOpen(true);
+        }
+      }
+    };
+  }
 
   const ListLocation = () => {
     return (
@@ -364,6 +403,88 @@ const Appointment = () => {
   return (
     <React.Fragment>
       <ResponsiveLayout />
+      <Dialog
+        fullWidth
+        maxWidth='xs'
+        open={open}
+        onClose={() => setOpen(false)}
+        classes={{ paper: classes.paper }}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        ></div>
+        <DialogTitle
+          className={fontStyles.myFont}
+          sx={{
+            fontWeight: 600,
+            fontSize: '16px',
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          Leaving Appointment Page
+        </DialogTitle>
+        <div style={{ marginTop: '20px' }}>
+          <p
+            className={fontStyles.myFont}
+            style={{
+              color: 'rgba(183, 183, 183, 1)',
+              fontSize: '14px',
+              textAlign: 'center',
+              fontWeight: 700,
+            }}
+          >
+            Some booked services you have not submitted might not be saved in
+            our system. Are you sure?
+          </p>
+        </div>
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <button
+            onClick={() => setOpen(false)}
+            className={fontStyles.myFont}
+            style={{
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}`,
+              color: color.primary,
+              width: '50%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              setIsLeavePage(true);
+              props.history.goBack();
+            }}
+            className={fontStyles.myFont}
+            style={{
+              color: 'white',
+              width: '50%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+            }}
+          >
+            Yes, I’m Sure
+          </button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 };
