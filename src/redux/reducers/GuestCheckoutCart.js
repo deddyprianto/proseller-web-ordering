@@ -18,6 +18,8 @@ function GuestCheckoutCart(
     saveTimeSlotCalendar: '',
     saveTimeSlotForEdit: '',
     orderingModeGuestCheckoutObj: {},
+    noTable: '',
+    noTableActive: '',
   },
   action
 ) {
@@ -68,6 +70,10 @@ function GuestCheckoutCart(
       return { ...state, saveTimeSlotCalendar: action.payload };
     case CONSTANT.SAVE_TIMESLOT_FOR_EDIT:
       return { ...state, saveTimeSlotForEdit: action.payload };
+    case CONSTANT.NO_TABLE_GUESTCO:
+      return { ...state, noTable: action.payload };
+    case CONSTANT.NO_TABLE_GUESTCO_ACTIVE:
+      return { ...state, noTableActive: action.payload };
     default:
       return state;
   }
