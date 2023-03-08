@@ -24,7 +24,7 @@ const FooterWebOrdering = () => {
   const [value, setValue] = useState(0);
   const { setting } = useSelector((state) => state.order);
   const [guessCheckout, setGuessCheckout] = useState();
-  const [appointment, setAppointment] = useState(false);
+  const [appointment, setAppointment] = useState(true);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const isLoggedIn = allState.auth.isLoggedIn;
 

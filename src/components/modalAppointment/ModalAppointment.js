@@ -66,17 +66,18 @@ const ModalAppointment = ({ open, onClose }) => {
       >
         Appointment feature is here!
       </DialogTitle>
-      <div style={{ padding: '5px 30px' }}>
+      <div style={{ padding: '10px 20px' }}>
         <p
           className={fontStyles.myFont}
           style={{
             color: 'rgba(183, 183, 183, 1)',
             fontSize: '14px',
             textAlign: 'center',
-            fontWeight: 700,
+            fontWeight: 500,
           }}
         >
-          Welcome! You can book an appointment by click BOOKING menu.
+          Welcome! You can booking an appointment by clicking calendar in menu
+          bar.
         </p>
       </div>
       <DialogActions
