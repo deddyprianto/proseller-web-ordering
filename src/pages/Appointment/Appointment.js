@@ -13,7 +13,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
-import reflection from 'assets/images/default-profile.png';
+import iconPro1 from 'assets/images/iconPro1.png';
+import iconPro2 from 'assets/images/iconPro2.png';
+import iconPro3 from 'assets/images/iconPro3.png';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useTheme } from '@mui/material/styles';
@@ -34,9 +36,7 @@ const useWindowSize = () => {
 };
 
 const Appointment = (props) => {
-  const [isLeavePage, setIsLeavePage] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [cutPrice, setCutPrice] = useState(false);
+  const [cutPrice, setCutPrice] = useState(true);
   const [openAccordion, setOpenAccordion] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
 
@@ -319,14 +319,19 @@ const Appointment = (props) => {
           <div style={{ display: 'flex' }}>
             <div
               style={{
-                width: '50px',
+                width: '80px',
                 display: 'flex',
                 justifyContent: 'center',
                 height: '50px',
-                padding: '10px',
+                paddingLeft: '5px',
+                marginTop: '5px',
               }}
             >
-              <img src={reflection} className={fontStyles.filter} />
+              <img
+                src={props.icon}
+                className={fontStyles.filter}
+                style={{ width: '100%' }}
+              />
             </div>
             <div style={{ padding: '0px 10px', opacity: '.5' }}>
               <div style={{ fontSize: '13px', fontWeight: '600' }}>
@@ -353,11 +358,23 @@ const Appointment = (props) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginLeft: '15px',
+                marginLeft: '6px',
+                backgroundColor: 'rgb(94, 94, 94)',
+                borderRadius: '16px',
+                padding: '0px 10px',
+                width: 'fit-content',
               }}
             >
-              <AccessTimeIcon />
-              <div style={{ fontSize: '13px', marginLeft: '5px' }}>30 mins</div>
+              <AccessTimeIcon sx={{ color: 'white' }} />
+              <div
+                style={{
+                  fontSize: '13px',
+                  marginLeft: '5px',
+                  color: 'white',
+                }}
+              >
+                30 mins
+              </div>
             </div>
             <div
               style={{
@@ -385,20 +402,23 @@ const Appointment = (props) => {
           <div style={{ display: 'flex' }}>
             <div
               style={{
-                width: '50px',
+                width: '80px',
                 display: 'flex',
                 justifyContent: 'center',
                 height: '50px',
-                padding: '10px',
+                paddingLeft: '5px',
+                marginTop: '5px',
               }}
             >
-              <img src={reflection} />
+              <img src={props.icon} style={{ width: '100%' }} />
             </div>
             <div style={{ padding: '0px 10px' }}>
               <div style={{ fontSize: '13px', fontWeight: '600' }}>
                 Finishing Short Hair Cut Title Goes Here ...
               </div>
-              <div style={{ fontSize: '13px' }}>
+              <div
+                style={{ fontSize: '13px', color: 'rgba(183, 183, 183, 1)' }}
+              >
                 Cutting Short hair description if any can goes here for example
               </div>
             </div>
@@ -421,10 +441,18 @@ const Appointment = (props) => {
                 alignItems: 'center',
               }}
             >
-              <AccessTimeIcon />
-              <div style={{ fontSize: '13px', marginLeft: '5px' }}>30 mins</div>
+              <AccessTimeIcon sx={{ color: 'rgba(255, 85, 99, 1)' }} />
+              <div
+                style={{
+                  fontSize: '13px',
+                  marginLeft: '5px',
+                  color: 'rgba(255, 85, 99, 1)',
+                }}
+              >
+                30 mins
+              </div>
             </div>
-            {cutPrice ? (
+            {props.cutPrice ? (
               <div
                 style={{
                   justifySelf: 'end',
@@ -617,9 +645,13 @@ const Appointment = (props) => {
           </Tabs>
         </div>
         <TabPanel value={value} index={0}>
-          <RenderListOutlet orderingStatus='AVAILABLE' />
-          <RenderListOutlet orderingStatus='UNAVAILABLE' />
-          <RenderListOutlet orderingStatus='AVAILABLE' />
+          <RenderListOutlet orderingStatus='AVAILABLE' icon={iconPro1} />
+          <RenderListOutlet
+            orderingStatus='AVAILABLE'
+            icon={iconPro2}
+            cutPrice={cutPrice}
+          />
+          <RenderListOutlet orderingStatus='UNAVAILABLE' icon={iconPro3} />
         </TabPanel>
         <TabPanel value={value} index={1}>
           Nails
