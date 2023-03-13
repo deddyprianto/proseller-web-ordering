@@ -1043,7 +1043,17 @@ const Payment = ({ ...props }) => {
 
   //TODO : AUTO CONFIRM SHOULD BE HANDLE BY BACKEND
   const handlePay = async () => {
-    let win = window.open("/#/waiting-payment", "_blank");
+    let win = null;
+    if (props?.selectedPaymentCard) {
+      const { companyInfo } = props;
+      const { paymentID } = props.selectedPaymentCard;
+      const isOpenNewTab = companyInfo?.paymentTypes?.find(
+        (payment) => payment.paymentID === paymentID && payment.forceNewTab
+      );
+      if (isOpenNewTab) {
+        win = window.open("/#/waiting-payment", "_blank");
+      }
+    }
 
     setIsLoading(true);
     const getAllOutlets = await props.dispatch(
