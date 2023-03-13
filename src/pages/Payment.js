@@ -1065,7 +1065,7 @@ const Payment = ({ ...props }) => {
     );
 
     if (filterOutletUnavailable?.orderingStatus === 'UNAVAILABLE') {
-      win.close();
+      win?.close();
       Swal.fire({
         title: '<p>The outlet is not available</p>',
         html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.defaultOutlet.name} is currently not available, please select another outlet</h5>`,
@@ -1083,7 +1083,7 @@ const Payment = ({ ...props }) => {
     } else if (
       !filterOutletUnavailable?.[props.itemOrderingMode?.isEnabledFieldName]
     ) {
-      win.close();
+      win?.close();
       Swal.fire({
         title: '<p>Ordering mode is not available</p>',
         html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
@@ -1193,7 +1193,7 @@ const Payment = ({ ...props }) => {
         // setIsLoading(false);
         // setOpenConfirmationDialogActionPayment(true);
       } else {
-        win.close();
+        win?.close();
         setWarningMessage(response?.data?.message);
         handleOpenWarningModal();
         setIsLoading(false);
