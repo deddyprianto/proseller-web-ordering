@@ -460,6 +460,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
             Cancel
           </button>
           <button
+          disabled={!orderingModeActive && true}
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}
             style={{

@@ -38,12 +38,11 @@ const OrderingTableDialog = ({
       },
     },
   };
-  const numberTable = useRef();
-  const numberTableLetter = useRef();
-  const letterPrefixing = useRef();
   const dispatch = useDispatch();
   const [isError, setIsError] = useState(false);
   const [isActiveTable, setIsActiveTable] = useState(false);
+  const [inputNumberTable, setInputNumberTable] = useState('');
+  const [inputLetterTable, setInputLetterTable] = useState('');
 
   const dataMerchantFinal = [];
   for (let i = 0; i < defaultOutlet.tableNumber?.list.length; i += 20) {
@@ -83,7 +82,7 @@ const OrderingTableDialog = ({
     );
   };
 
-  const RenderOptionOrderTable = () => {
+  const renderOptionOrderTable = () => {
     if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
       return (
         <div>
@@ -110,7 +109,9 @@ const OrderingTableDialog = ({
                 }}
               >
                 <input
-                  ref={letterPrefixing}
+                  value={inputLetterTable}
+                  type='text'
+                  onChange={(e) => setInputLetterTable(e.target.value)}
                   placeholder='Your table Letter'
                   style={{
                     border: 'none',
@@ -145,7 +146,9 @@ const OrderingTableDialog = ({
                 }}
               >
                 <input
-                  ref={numberTableLetter}
+                  value={inputNumberTable}
+                  type='text'
+                  onChange={(e) => setInputNumberTable(e.target.value)}
                   placeholder='Your table number'
                   style={{
                     border: 'none',
@@ -196,8 +199,9 @@ const OrderingTableDialog = ({
               }}
             >
               <input
+                value={inputNumberTable}
                 type='number'
-                ref={numberTable}
+                onChange={(e) => setInputNumberTable(e.target.value)}
                 placeholder='Your table number'
                 style={{ border: 'none', outline: 'none', width: '100%' }}
               />
@@ -296,8 +300,8 @@ const OrderingTableDialog = ({
       if (
         defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER'
       ) {
-        const numberFromInput = Number(numberTableLetter.current.value);
-        const letterFromInput = letterPrefixing.current.value;
+        const numberFromInput = Number(inputNumberTable);
+        const letterFromInput = inputLetterTable;
         const letterToUppercase = letterFromInput.toUpperCase();
         const resGenerateNumber = generateNumbersInRange();
         const resGenerateLetter = generateLettersInRange(
@@ -314,8 +318,8 @@ const OrderingTableDialog = ({
         );
         if (!isLetterNotFound || !isNumberNotFound) {
           setIsError(true);
-          numberTableLetter.current.value = '';
-          letterPrefixing.current.value = '';
+          setInputNumberTable('');
+          setInputLetterTable('');
         } else {
           setIsError(false);
           const changeBacKToString = numberFromInput.toString();
@@ -327,14 +331,14 @@ const OrderingTableDialog = ({
           onClose();
         }
       } else {
-        const numberFromInput = Number(numberTable.current.value);
+        const numberFromInput = Number(inputNumberTable);
         const resGenerateNumber = generateNumbersInRange();
         const isNumberNotFound = resGenerateNumber.find(
           (item) => item === numberFromInput
         );
         if (!isNumberNotFound) {
           setIsError(true);
-          numberTable.current.value = '';
+          setInputNumberTable('');
         } else {
           setIsError(false);
           const changeBacKToString = numberFromInput.toString();
@@ -357,7 +361,7 @@ const OrderingTableDialog = ({
         <HandleLabelModal />
       </DialogTitle>
       {defaultOutlet.tableNumber.sequencing === 'IN_ORDER' ? (
-        <RenderOptionOrderTable />
+        renderOptionOrderTable()
       ) : (
         <Slider {...settings}>
           {dataMerchantFinal.map((item) => (
