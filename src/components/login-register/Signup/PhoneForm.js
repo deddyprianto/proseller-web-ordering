@@ -57,6 +57,9 @@ const PhoneForm = ({
     }
   };
   const handleDisabelButtonForTNC = () => {
+    const emailNotRequired = settingFilterEmail?.settingValue === false;
+    const emailFulfilled = userEmailValue || emailNotRequired;
+
     if (!isEmptyArray(isCustomFieldHaveValue)) {
       const customField = isCustomFieldHaveValue.some(
         (item) => isAllFieldHasBeenFullFiled[item.fieldName]
@@ -65,7 +68,7 @@ const PhoneForm = ({
         agreeTC &&
         isTCAvailable &&
         userNameValue &&
-        userEmailValue &&
+        emailFulfilled &&
         customField;
 
       if (isAllFieldMandatoryFullfilled) {
@@ -75,7 +78,7 @@ const PhoneForm = ({
       }
     } else {
       const isAllFieldMandatoryFullfilled =
-        agreeTC && isTCAvailable && userNameValue && userEmailValue;
+        agreeTC && isTCAvailable && userNameValue && emailFulfilled;
 
       if (isAllFieldMandatoryFullfilled) {
         return false;
@@ -114,7 +117,10 @@ const PhoneForm = ({
     );
   };
   const handleDisabelButton = () => {
-    const iSAllPassed = userNameValue && userEmailValue ? false : true;
+    const emailNotRequired = settingFilterEmail?.settingValue === false;
+    const emailFulfilled = userEmailValue || emailNotRequired;
+    
+    const iSAllPassed = userNameValue && emailFulfilled ? false : true;
     if (isTCAvailable) {
       return agreeTC;
     } else {
