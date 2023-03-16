@@ -91,7 +91,7 @@ const EmailForm = ({
             Name <span className='required'>*</span>
           </label>
           <input
-            id='name-input-email'
+            id='name-email-input'
             type='text'
             className='woocommerce-Input woocommerce-Input--text input-text'
             style={{ borderRadius: 5 }}

@@ -137,7 +137,7 @@ const PhoneForm = ({
           Name <span className='required'>*</span>
         </label>
         <input
-          id='name-input-phone'
+          id='name-phone-input'
           type='text'
           className='woocommerce-Input woocommerce-Input--text input-text'
           style={{ borderRadius: 5 }}
