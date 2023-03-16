@@ -87,6 +87,7 @@ const Login = ({
             ></OtpField>
           )}
           <Button
+            id='submit-signup-login-button'
             disabled={isSubmitting}
             className='button'
             style={{

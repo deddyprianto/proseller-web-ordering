@@ -91,6 +91,7 @@ const EmailForm = ({
             Name <span className='required'>*</span>
           </label>
           <input
+            id='name-email-input'
             type='text'
             className='woocommerce-Input woocommerce-Input--text input-text'
             style={{ borderRadius: 5 }}
@@ -120,6 +121,7 @@ const EmailForm = ({
           <div className={styles.fieldGroup}>
             <div className={styles.phoneCountryCodeGroup}>
               <PhoneInput
+                id='phone-number-input'
                 country={initialCountry}
                 value={phoneCountryCode}
                 enableSearch
@@ -228,6 +230,7 @@ const EmailForm = ({
         )}
         {isTCAvailable ? (
           <Button
+            id='create-account-button'
             disabled={handleDisabelButtonForTNC()}
             className='button'
             style={{
@@ -249,6 +252,7 @@ const EmailForm = ({
           </Button>
         ) : (
           <Button
+            id='create-account-button'
             disabled={handleDisabelButton()}
             className='button'
             style={{
