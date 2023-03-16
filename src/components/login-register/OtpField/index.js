@@ -16,91 +16,107 @@ const OtpField = ({
 }) => {
   return (
     <div>
-
-      {
-        !enableSMSOTP && method === "email" &&
+      {!enableSMSOTP && method === 'email' && (
         <Button
+          id='resend-otp-button'
           disabled={isSending}
-          className="button"
+          className='button'
           style={{
-            width: "100%",
-            fontSize: 12,
-            paddingLeft: 5,
-            paddingRight: 5,
-            height: 40,
-            borderRadius: 5
-          }}
-          onClick={() =>
-            method === "phone" ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
-          }
-        >
-          {sendCounter <= 2 ? `${sendCounter >= 1 ? "Resend" : "Send"} OTP ${method === 'phone' ? 'via SMS' : "via Email"}` : "Get OTP via Email"}
-        </Button>
-      }
-
-      {
-        enableSMSOTP &&
-        <Button
-          disabled={isSending}
-          className="button"
-          style={{
-            width: "100%",
-            fontSize: 12,
-            paddingLeft: 5,
-            paddingRight: 5,
-            height: 40,
-            borderRadius: 5
-          }}
-          onClick={() =>
-            method === "phone" ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
-          }
-        >
-          {sendCounter <= 2 ? `${sendCounter >= 1 ? "Resend" : "Send"} OTP ${method === 'phone' ? 'via SMS' : "via Email"}` : "Get OTP via Email"}
-        </Button>
-      }
-
-      {
-        enableWhatsappOTP && (
-          (enableSMSOTP && sendCounter <= 2) ||
-          !enableSMSOTP
-        ) && method === "phone" &&
-        <Button
-          disabled={isSending}
-          className="button"
-          style={{
-            width: "100%",
+            width: '100%',
             fontSize: 12,
             paddingLeft: 5,
             paddingRight: 5,
             height: 40,
             borderRadius: 5,
-            backgroundColor: "#12950A",
-            marginTop: 10
           }}
           onClick={() =>
-            method === "phone" ? sendPhoneOtp('WhatsappOTP') : sendEmailOtp()
+            method === 'phone' ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
           }
         >
-          {sendCounter <= 2 ? `${sendCounter >= 1 ? "Resend" : "Send"} OTP ${method === 'phone' ? 'via WhatsApp' : "via Email"}` : "Get OTP via Email"}
+          {sendCounter <= 2
+            ? `${sendCounter >= 1 ? 'Resend' : 'Send'} OTP ${
+                method === 'phone' ? 'via SMS' : 'via Email'
+              }`
+            : 'Get OTP via Email'}
         </Button>
-      }
-      {isSending &&
+      )}
+
+      {enableSMSOTP && (
+        <Button
+          id='resend-otp-button'
+          disabled={isSending}
+          className='button'
+          style={{
+            width: '100%',
+            fontSize: 12,
+            paddingLeft: 5,
+            paddingRight: 5,
+            height: 40,
+            borderRadius: 5,
+          }}
+          onClick={() =>
+            method === 'phone' ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
+          }
+        >
+          {sendCounter <= 2
+            ? `${sendCounter >= 1 ? 'Resend' : 'Send'} OTP ${
+                method === 'phone' ? 'via SMS' : 'via Email'
+              }`
+            : 'Get OTP via Email'}
+        </Button>
+      )}
+
+      {enableWhatsappOTP &&
+        ((enableSMSOTP && sendCounter <= 2) || !enableSMSOTP) &&
+        method === 'phone' && (
+          <Button
+            id='resend-otp-button'
+            disabled={isSending}
+            className='button'
+            style={{
+              width: '100%',
+              fontSize: 12,
+              paddingLeft: 5,
+              paddingRight: 5,
+              height: 40,
+              borderRadius: 5,
+              backgroundColor: '#12950A',
+              marginTop: 10,
+            }}
+            onClick={() =>
+              method === 'phone' ? sendPhoneOtp('WhatsappOTP') : sendEmailOtp()
+            }
+          >
+            {sendCounter <= 2
+              ? `${sendCounter >= 1 ? 'Resend' : 'Send'} OTP ${
+                  method === 'phone' ? 'via WhatsApp' : 'via Email'
+                }`
+              : 'Get OTP via Email'}
+          </Button>
+        )}
+      {isSending && (
         <div
-          className="text-muted"
-          style={{ fontSize: 12, marginTop: 5, textAlign: "center" }}
+          className='text-muted'
+          style={{ fontSize: 12, marginTop: 5, textAlign: 'center' }}
         >{`Resend after ${counterMinutes}:${counter}`}</div>
-      }
-      <label for="txtOtp">
-        Enter 4 digit OTP <span className="required">*</span>
+      )}
+      <label for='txtOtp'>
+        Enter 4 digit OTP <span className='required'>*</span>
       </label>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <input
-          type="text"
-          pattern="[0-9]*" 
-          inputmode="numeric"
-          className="woocommerce-Input woocommerce-Input--text input-text"
-          style={{ height: 50, width: "100%", borderRadius: 5, textAlign: "center" }}
-          onChange={(e) => handleChange("txtOtp", e.target.value)}
+          id='otp-input'
+          type='text'
+          pattern='[0-9]*'
+          inputmode='numeric'
+          className='woocommerce-Input woocommerce-Input--text input-text'
+          style={{
+            height: 50,
+            width: '100%',
+            borderRadius: 5,
+            textAlign: 'center',
+          }}
+          onChange={(e) => handleChange('txtOtp', e.target.value)}
         />
       </div>
     </div>

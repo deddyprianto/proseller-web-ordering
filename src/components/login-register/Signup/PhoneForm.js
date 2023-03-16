@@ -93,6 +93,7 @@ const PhoneForm = ({
       <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
         <label for='email'>{renderEmailTextRequired()}</label>
         <input
+          id='email-input'
           type='email'
           className='woocommerce-Input woocommerce-Input--text input-text'
           style={{ borderRadius: 5 }}
@@ -119,7 +120,7 @@ const PhoneForm = ({
   const handleDisabelButton = () => {
     const emailNotRequired = settingFilterEmail?.settingValue === false;
     const emailFulfilled = userEmailValue || emailNotRequired;
-    
+
     const iSAllPassed = userNameValue && emailFulfilled ? false : true;
     if (isTCAvailable) {
       return agreeTC;
@@ -136,6 +137,7 @@ const PhoneForm = ({
           Name <span className='required'>*</span>
         </label>
         <input
+          id='name-input-phone'
           type='text'
           className='woocommerce-Input woocommerce-Input--text input-text'
           style={{ borderRadius: 5 }}
@@ -222,6 +224,7 @@ const PhoneForm = ({
       )}
       {isTCAvailable ? (
         <Button
+          id='create-account-button'
           disabled={handleDisabelButtonForTNC()}
           className='button'
           style={{
@@ -236,6 +239,7 @@ const PhoneForm = ({
         </Button>
       ) : (
         <Button
+          id='create-account-button'
           disabled={handleDisabelButton()}
           className='button'
           style={{
