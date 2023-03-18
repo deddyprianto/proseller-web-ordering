@@ -58,6 +58,7 @@ const ProductAddModal = ({
   basket,
   ...props
 }) => {
+  const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const history = useHistory();
   const gadgetScreen = width < 600;
   const theme = useTheme();
@@ -325,7 +326,6 @@ const ProductAddModal = ({
   const [productUpdate, setProductUpdate] = useState({});
   const [selectedVariantOptions, setSelectedVariantOptions] = useState([]);
   const [variantImageURL, setVariantImageURL] = useState('');
-  const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
   const [isHandleSpesialStriction, setIsHandleSpesialStriction] =
     useState(true);
@@ -690,22 +690,26 @@ const ProductAddModal = ({
     return result;
   };
 
-  const isCheckedCheckbox = (modifier) => {
+  const isCheckedCheckbox = ({ modifier, productModifierId }) => {
     const filterSelectedProductModifiers = selectedProductModifiers.filter(
       (item) => item.orderingStatus !== 'UNAVAILABLE'
     );
-
     const isChecked = filterSelectedProductModifiers.find(
       (selectedProductModifier) =>
+        selectedProductModifier.modifierId === productModifierId &&
         selectedProductModifier.modifierProductId === modifier.productID
     );
 
     return !!isChecked;
   };
 
-  const isCheckedCheckboxForSpecialRestriction = (modifier) => {
+  const isCheckedCheckboxForSpecialRestriction = ({
+    modifier,
+    productModifierId,
+  }) => {
     const isChecked = props.saveSelectProductModifier.find(
       (selectedProductModifier) =>
+        selectedProductModifier.modifierId === productModifierId &&
         selectedProductModifier.modifierProductId === modifier.productID
     );
 
@@ -1041,15 +1045,14 @@ const ProductAddModal = ({
     price,
     name,
   }) => {
+    const mergeID = `${modifierId}${modifierProductId}`;
     const items = selectedProductModifiers;
 
     const modifierProductIds = selectedProductModifiers.map((item) => {
-      return item.modifierProductId;
+      return `${item.modifierId}${item.modifierProductId}`;
     });
 
-    const modifierProductIdIndex =
-      modifierProductIds.indexOf(modifierProductId);
-
+    const modifierProductIdIndex = modifierProductIds.indexOf(mergeID);
     if (modifierProductIdIndex !== -1) {
       items.splice(modifierProductIdIndex, 1);
       setSelectedProductModifiers([...items]);
@@ -1077,6 +1080,7 @@ const ProductAddModal = ({
     max,
     specialRestriction,
   }) => {
+    const mergeID = `${modifierId}${modifierProductId}`;
     let items = selectedProductModifiers;
     const objData = {
       modifierId,
@@ -1089,11 +1093,10 @@ const ProductAddModal = ({
       specialRestriction,
     };
     const modifierProductIds = selectedProductModifiers.map((item) => {
-      return item.modifierProductId;
+      return `${item.modifierId}${item.modifierProductId}`;
     });
 
-    const modifierProductIdIndex =
-      modifierProductIds.indexOf(modifierProductId);
+    const modifierProductIdIndex = modifierProductIds.indexOf(mergeID);
 
     if (modifierProductIdIndex !== -1) {
       items.splice(modifierProductIdIndex, 1);
@@ -1179,9 +1182,12 @@ const ProductAddModal = ({
     modifierProductId,
     max,
     min,
+    productModifierId,
   }) => {
     const selectedProductModifier = selectedProductModifiers.find(
-      (item) => item.modifierProductId === modifierProductId
+      (item) =>
+        item.modifierId === productModifierId &&
+        item.modifierProductId === modifierProductId
     );
 
     const qty = selectedProductModifier?.qty || 0;
@@ -1286,6 +1292,7 @@ const ProductAddModal = ({
           modifierProductId: modifier.productID,
           max: productModifier.modifier.max,
           min: productModifier.modifier.min,
+          productModifierId: productModifier.modifierID,
         })}
       </>
     );
@@ -1300,9 +1307,12 @@ const ProductAddModal = ({
 
   const renderAddAndRemoveButtonProductModifierOptionsSpecialRes = ({
     modifierProductId,
+    productModifierId,
   }) => {
     const selectedSpecialRestriction = props.saveSelectProductModifier.find(
-      (item) => item.modifierProductId === modifierProductId
+      (item) =>
+        item.modifierId === productModifierId &&
+        item.modifierProductId === modifierProductId
     );
 
     const qty = selectedSpecialRestriction?.qty || 0;
@@ -1355,12 +1365,16 @@ const ProductAddModal = ({
     }
   };
 
-  const renderAddAndRemoveButtonAndPriceSpecialRestriction = ({ modifier }) => {
+  const renderAddAndRemoveButtonAndPriceSpecialRestriction = ({
+    modifier,
+    productModifier,
+  }) => {
     if (gadgetScreen) {
       return (
         <div style={styles.modifierOptionsPrice}>
           {renderAddAndRemoveButtonProductModifierOptionsSpecialRes({
             modifierProductId: modifier.productID,
+            productModifierId: productModifier.modifierID,
           })}
         </div>
       );
@@ -1369,6 +1383,7 @@ const ProductAddModal = ({
       <div style={styles.displayFlex}>
         {renderAddAndRemoveButtonProductModifierOptionsSpecialRes({
           modifierProductId: modifier.productID,
+          productModifierId: productModifier.modifierID,
         })}
       </div>
     );
@@ -1396,7 +1411,10 @@ const ProductAddModal = ({
           >
             <div style={styles.modifierOption}>
               <FormControlLabel
-                checked={isCheckedCheckboxForSpecialRestriction(modifier)}
+                checked={isCheckedCheckboxForSpecialRestriction({
+                  modifier,
+                  productModifierId: productModifier.modifierID,
+                })}
                 sx={{
                   opacity: modifier?.orderingStatus === 'UNAVAILABLE' && 0.5,
                   pointerEvents:
@@ -1456,6 +1474,7 @@ const ProductAddModal = ({
               />
               {renderAddAndRemoveButtonAndPriceSpecialRestriction({
                 modifier,
+                productModifier,
               })}
             </div>
             {productModifier.modifier.details.length - 1 !== index && (
@@ -1482,7 +1501,10 @@ const ProductAddModal = ({
             <div style={styles.modifierOption}>
               <FormControlLabel
                 value={modifier.productID}
-                checked={isCheckedCheckbox(modifier)}
+                checked={isCheckedCheckbox({
+                  modifier,
+                  productModifierId: productModifier.modifierID,
+                })}
                 sx={{
                   opacity: modifier.orderingStatus === 'UNAVAILABLE' && 0.5,
                   pointerEvents:
