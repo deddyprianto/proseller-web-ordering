@@ -185,7 +185,6 @@ const ProductCartList = ({ ...props }) => {
     );
     const isDisable = true;
     const result = sortOrderingStatusItem.map((item, key) => {
-      console.log(item);
       if (item.orderingStatus === 'UNAVAILABLE') {
         if (item.modifiers.length > 0) {
           return (
