@@ -58,6 +58,7 @@ const ProductAddModal = ({
   basket,
   ...props
 }) => {
+  const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const history = useHistory();
   const gadgetScreen = width < 600;
   const theme = useTheme();
@@ -325,7 +326,6 @@ const ProductAddModal = ({
   const [productUpdate, setProductUpdate] = useState({});
   const [selectedVariantOptions, setSelectedVariantOptions] = useState([]);
   const [variantImageURL, setVariantImageURL] = useState('');
-  const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [notes, setNotes] = useState('');
   const [isHandleSpesialStriction, setIsHandleSpesialStriction] =
     useState(true);
@@ -1183,12 +1183,13 @@ const ProductAddModal = ({
   };
 
   const renderAddAndRemoveButtonProductModifierOptions = ({
-    modifierProductId,
+    modifierId,
     max,
     min,
   }) => {
+    const combineId = `${modifierId.productID}${modifierId.modifierID}`;
     const selectedProductModifier = selectedProductModifiers.find(
-      (item) => item.modifierProductId === modifierProductId
+      (item) => item.combineId === combineId
     );
 
     const qty = selectedProductModifier?.qty || 0;
@@ -1290,7 +1291,7 @@ const ProductAddModal = ({
           {handleCurrency(modifier.price)}
         </Typography> */}
         {renderAddAndRemoveButtonProductModifierOptions({
-          modifierProductId: modifier.productID,
+          modifierId: modifier,
           max: productModifier.modifier.max,
           min: productModifier.modifier.min,
         })}
@@ -1475,7 +1476,7 @@ const ProductAddModal = ({
 
     return productModifierOptions;
   };
-
+  console.log('%cdedd =>', 'color: black;font-weight:bold', product);
   const renderProductModifierOptions = (productModifier) => {
     const productModifierOptions = productModifier.modifier?.details?.map(
       (modifier, index) => {
