@@ -453,9 +453,11 @@ const ProductCart = ({ item, ...props }) => {
                                 }}
                               >
                                 {item?.name}{' '}
-                                <span
-                                  style={{ fontWeight: 'bold' }}
-                                >{`(${handleCurrency(item?.price)})`}</span>
+                                <span style={{ fontWeight: 'bold' }}>{`(${
+                                  !handleCurrency(item?.price)
+                                    ? 'SGD 0'
+                                    : handleCurrency(item?.price)
+                                })`}</span>
                                 {item.orderingStatus === 'UNAVAILABLE' && (
                                   <span
                                     style={{
