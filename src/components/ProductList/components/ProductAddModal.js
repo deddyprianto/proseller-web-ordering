@@ -409,6 +409,7 @@ const ProductAddModal = ({
             min: detail?.min,
             max: detail?.max,
             orderingStatus: detail.orderingStatus,
+            combineId: detail?.combineId,
           });
         });
       });
@@ -447,6 +448,8 @@ const ProductAddModal = ({
                 max: item?.max,
                 min: item?.min,
                 specialRestriction: item?.specialRestriction,
+                combineId: item?.combineId,
+                modifierID: item.modifierId,
               },
             ],
           },
@@ -691,22 +694,24 @@ const ProductAddModal = ({
   };
 
   const isCheckedCheckbox = (modifier) => {
+    const combineId = `${modifier.productID}${modifier.modifierID}`;
     const filterSelectedProductModifiers = selectedProductModifiers.filter(
       (item) => item.orderingStatus !== 'UNAVAILABLE'
     );
 
     const isChecked = filterSelectedProductModifiers.find(
       (selectedProductModifier) =>
-        selectedProductModifier.modifierProductId === modifier.productID
+        selectedProductModifier.combineId === combineId
     );
 
     return !!isChecked;
   };
 
   const isCheckedCheckboxForSpecialRestriction = (modifier) => {
+    const combineId = `${modifier.productID}${modifier.modifierID}`;
     const isChecked = props.saveSelectProductModifier.find(
       (selectedProductModifier) =>
-        selectedProductModifier.modifierProductId === modifier.productID
+        selectedProductModifier.combineId === combineId
     );
 
     return !!isChecked;
@@ -1042,13 +1047,12 @@ const ProductAddModal = ({
     name,
   }) => {
     const items = selectedProductModifiers;
-
+    const combineId = `${modifierProductId}${modifierId}`;
     const modifierProductIds = selectedProductModifiers.map((item) => {
-      return item.modifierProductId;
+      return item.combineId;
     });
 
-    const modifierProductIdIndex =
-      modifierProductIds.indexOf(modifierProductId);
+    const modifierProductIdIndex = modifierProductIds.indexOf(combineId);
 
     if (modifierProductIdIndex !== -1) {
       items.splice(modifierProductIdIndex, 1);
@@ -1062,6 +1066,7 @@ const ProductAddModal = ({
           qty,
           price,
           name,
+          combineId,
         },
       ]);
     }
@@ -1077,6 +1082,7 @@ const ProductAddModal = ({
     max,
     specialRestriction,
   }) => {
+    const combineId = `${modifierProductId}${modifierId}`;
     let items = selectedProductModifiers;
     const objData = {
       modifierId,
@@ -1087,6 +1093,7 @@ const ProductAddModal = ({
       min,
       max,
       specialRestriction,
+      combineId,
     };
     const modifierProductIds = selectedProductModifiers.map((item) => {
       return item.modifierProductId;
