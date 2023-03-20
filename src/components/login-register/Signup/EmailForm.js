@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import PhoneInput from 'react-phone-input-2';
 import { Input, Button } from 'reactstrap';
@@ -36,6 +36,25 @@ const EmailForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [nameValue, setNameValue] = useState('');
   const [agreeTC, setAgreeTC] = useState(false);
+  const [isOpenDropDownHP, setIsOpenDropDownHP] = useState(false);
+
+  useLayoutEffect(() => {
+    const dropDownCountryCode = document.querySelector('.form-control');
+    const searchBox = document.querySelector('.search-box');
+    const labelCode = document.querySelector('.country-name');
+
+    searchBox?.setAttribute('id', 'search-country-code-register-input');
+    dropDownCountryCode?.setAttribute('id', 'country-code-register-dropdown');
+
+    if (labelCode?.textContent === 'Singapore') {
+      labelCode?.setAttribute('id', 'country-code-singapore-register-option');
+    }
+    if (labelCode?.textContent === 'Indonesia') {
+      console.log(labelCode);
+      labelCode?.setAttribute('id', 'country-code-indonesia-register-option');
+    }
+  }, [email, isOpenDropDownHP]);
+
   useEffect(() => {
     if (phone) {
       handleChange('phoneNumber', phoneCountryCode + phone);
@@ -82,6 +101,7 @@ const EmailForm = ({
       }
     }
   };
+
   return (
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div className='modal-body'>
@@ -119,9 +139,12 @@ const EmailForm = ({
             Phone Number <span className='required'>*</span>
           </label>
           <div className={styles.fieldGroup}>
-            <div className={styles.phoneCountryCodeGroup}>
+            <div
+              className={styles.phoneCountryCodeGroup}
+              onClick={() => setIsOpenDropDownHP(true)}
+            >
               <PhoneInput
-                id='phone-number-input'
+                id='country-code-register-dropdown'
                 country={initialCountry}
                 value={phoneCountryCode}
                 enableSearch
@@ -277,7 +300,6 @@ const EmailForm = ({
     </LoadingOverlay>
   );
 };
-
 
 EmailForm.propTypes = {
   children: PropTypes.func,

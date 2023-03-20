@@ -312,6 +312,7 @@ const Portal = ({
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
         <Button
+          id='next-signup-login-email-button'
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
           onClick={() => {
