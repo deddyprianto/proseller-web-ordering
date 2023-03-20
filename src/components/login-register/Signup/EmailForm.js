@@ -43,15 +43,15 @@ const EmailForm = ({
     const searchBox = document.querySelector('.search-box');
     const labelCode = document.querySelector('.country-name');
 
-    searchBox?.setAttribute('id', 'search-country-code-input-register');
-    dropDownCountryCode?.setAttribute('id', 'country-code-dropdown-register');
+    searchBox?.setAttribute('id', 'search-country-code-register-input');
+    dropDownCountryCode?.setAttribute('id', 'country-code-register-dropdown');
 
     if (labelCode?.textContent === 'Singapore') {
-      labelCode?.setAttribute('id', 'country-code-singapore-option-register');
+      labelCode?.setAttribute('id', 'country-code-singapore-register-option');
     }
     if (labelCode?.textContent === 'Indonesia') {
       console.log(labelCode);
-      labelCode?.setAttribute('id', 'country-code-indonesia-option-register');
+      labelCode?.setAttribute('id', 'country-code-indonesia-register-option');
     }
   }, [email, isOpenDropDownHP]);
 
@@ -144,7 +144,7 @@ const EmailForm = ({
               onClick={() => setIsOpenDropDownHP(true)}
             >
               <PhoneInput
-                id='country-code-dropdown-register'
+                id='country-code-register-dropdown'
                 country={initialCountry}
                 value={phoneCountryCode}
                 enableSearch
