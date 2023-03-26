@@ -281,14 +281,7 @@ const Appointment = (props) => {
     return (
       <div style={localStyle.container}>
         <div style={{ fontWeight: 'bold' }}>Chosen Location</div>
-        <div
-          style={{ color: color.primary, cursor: 'pointer' }}
-          onClick={() => {
-            window.location.href = changeFormatURl('/location');
-          }}
-        >
-          Change
-        </div>
+        <div style={{ color: color.primary, cursor: 'pointer' }}>Change</div>
       </div>
     );
   };
