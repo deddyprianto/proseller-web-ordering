@@ -42,11 +42,11 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [openModalValidation, setOpenModalValidation] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [isMore, setIsMore] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [showSearchBar, setShowSearchBar] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [cutPrice, setCutPrice] = useState(true);
   const [openAccordion, setOpenAccordion] = useState(false);
@@ -168,6 +168,12 @@ const Appointment = (props) => {
 
   // some Effect
   useEffect(() => {
+    if (isEmptyObject(defaultOutlet)) {
+      setOpenModalValidation(true);
+    }
+  }, [defaultOutlet]);
+
+  useEffect(() => {
     if (width < 600) {
       setLimitCategoryTabHeader(3);
     }
@@ -256,7 +262,7 @@ const Appointment = (props) => {
           }}
         />
         <div style={localStyle.label}>Appointment</div>
-        <img src={search} onClick={() => setShowSearchBar(true)} />
+        <img src={search} />
       </div>
     );
   };
@@ -728,10 +734,14 @@ const Appointment = (props) => {
           style={{ height: '90vh', overflowY: 'auto' }}
         >
           <Header />
-          <Label />
-          <Location />
-          <DropDownTime />
-          <Services />
+          {!isEmptyObject(defaultOutlet) && (
+            <>
+              <Label />
+              <Location />
+              <DropDownTime />
+              <Services />
+            </>
+          )}
         </div>
       );
     } else {
@@ -851,13 +861,12 @@ const Appointment = (props) => {
           </button>
         </DialogActions>
       </Dialog>
-
       <Dialog
-        fullScreen={fullScreen}
         fullWidth
-        maxWidth='md'
-        open={showSearchBar}
-        onClose={() => setShowSearchBar(false)}
+        maxWidth='xs'
+        open={openModalValidation}
+        onClose={() => setOpenModalValidation(false)}
+        classes={{ paper: classes.paper }}
       >
         <div
           style={{
@@ -866,16 +875,58 @@ const Appointment = (props) => {
             justifyContent: 'center',
             marginTop: '15px',
           }}
+        ></div>
+        <DialogTitle
+          className={fontStyles.myFont}
+          sx={{
+            fontWeight: 600,
+            fontSize: '16px',
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+          }}
         >
-          <SearchBar
-            setIsOpenModalDetail={setIsOpenModalDetail}
-            color={color}
-            setShowSearchBar={setShowSearchBar}
-            styleSheet={styleSheet}
-            gadgetScreen={gadgetScreen}
-            productServicesAppointment={productServicesAppointment}
-          />
+          You are not select outlet
+        </DialogTitle>
+        <div style={{ marginTop: '20px' }}>
+          <div
+            className={fontStyles.myFont}
+            style={{
+              color: 'rgba(183, 183, 183, 1)',
+              fontSize: '14px',
+              textAlign: 'center',
+              fontWeight: 500,
+            }}
+          >
+            Some booked services you have not submitted might not be saved in
+            our system. Are you sure?
+          </div>
         </div>
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <button
+            onClick={() => {
+              setOpenModalValidation(false);
+              window.location.href = changeFormatURl('/outlet');
+            }}
+            className={fontStyles.myFont}
+            style={{
+              color: 'white',
+              width: '90%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+            }}
+          >
+            Select Outlet Firts
+          </button>
+        </DialogActions>
       </Dialog>
     </React.Fragment>
   );
