@@ -414,7 +414,7 @@ const CartGuestCheckout = () => {
         ],
         deliveryAddress: deliveryAddresGuest.deliveryAddress,
         orderingMode: orderingModeGuestCheckout,
-        tableNo: noTable ? noTable : null,
+        tableNo: '-',
         clientTimezone: Math.abs(new Date().getTimezoneOffset()),
         orderActionDate: date ? date : new Date().toISOString().split('T')[0],
         orderActionTime: time
@@ -581,7 +581,7 @@ const CartGuestCheckout = () => {
           ],
           deliveryAddress: {},
           orderingMode: orderingModeGuestCheckout,
-          tableNo: '-',
+          tableNo: noTable ? noTable : null,
           clientTimezone: Math.abs(new Date().getTimezoneOffset()),
           orderActionDate: date ? date : new Date().toISOString().split('T')[0],
           orderActionTime: time
