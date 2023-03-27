@@ -280,7 +280,7 @@ const Location = (props) => {
       </div>
     );
   };
-  const Locations = ({ item, isDisable }) => {
+  const ListLocations = ({ item, isDisable }) => {
     const localStyle = {
       container: {
         width: '95%',
@@ -289,6 +289,7 @@ const Location = (props) => {
         borderRadius: '10px',
         padding: '10px 0px',
         marginBottom: '10px',
+        pointerEvents: isDisable && 'none',
       },
       containerAccordion: {
         width: '93%',
@@ -328,12 +329,13 @@ const Location = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 50px',
+            gridTemplateColumns: '40px 1fr 75px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
             cursor: 'pointer',
+            opacity: isDisable ? 0.4 : 1,
           }}
         >
           <PlaceIcon
@@ -358,12 +360,34 @@ const Location = (props) => {
               </div>
             </div>
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              width: '90%',
+              margin: '0px auto',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: isDisable ? 'red' : 'green',
+                display: 'flex',
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+                color: 'white',
+                fontWeight: 500,
+                borderRadius: '5px',
+              }}
+            >
+              <AccessTimeIcon />
+              <div>{isDisable ? 'Close' : 'Open'}</div>
+            </div>
+          </div>
         </div>
         <div style={localStyle.containerOpenNow}>
           <AccessTimeIcon style={{ fontSize: '20px' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            Open now 13:00 - 22.00
+            {isDisable ? 'Closed Today' : 'Open Now'}
           </div>
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
@@ -439,7 +463,7 @@ const Location = (props) => {
         <div style={{ margin: '10px 0px' }}>
           <p style={{ marginLeft: '10px', fontWeight: 700 }}>Other Location</p>
           {outlets.map((item) => (
-            <Locations
+            <ListLocations
               key={item.name}
               item={item}
               isDisable={item.outletStatus}
