@@ -65,7 +65,9 @@ const Portal = ({
   }, [localStorage.getItem('settingGuestMode')]);
 
   useEffect(() => {
-    if (initialCountry === 'ID') setPhoneCountryCode('+62');
+    if (initialCountry === 'ID') {
+      setPhoneCountryCode('+62');
+    }
 
     handleChange(
       method === 'phone' ? 'phoneNumber' : 'email',
@@ -74,9 +76,9 @@ const Portal = ({
   }, [value, phoneCountryCode, companyInfo]);
 
   useEffect(() => {
-    if (document.querySelector('#phoneInput')) {
+    if (document.querySelector('#phone-number-input')) {
       document
-        .querySelector('#phoneInput')
+        .querySelector('#phone-number-input')
         .addEventListener('keypress', (evt) => {
           if (
             (evt.which != 8 && evt.which != 0 && evt.which < 48) ||
@@ -139,6 +141,7 @@ const Portal = ({
                 size='100px'
               >
                 <DropdownToggle
+                  id='country-code-dropdown'
                   style={{
                     width: '100%',
                     backgroundColor: 'transparent',
@@ -150,7 +153,7 @@ const Portal = ({
                     color: backgroundTheme.primary,
                   }}
                 >
-                  {phoneCountryCode}
+                  <div id='selected-country-code'>{phoneCountryCode}</div>
                   <img src={iconDown} style={{ marginLeft: '10px' }} />
                 </DropdownToggle>
                 <DropdownMenu
@@ -176,6 +179,7 @@ const Portal = ({
                   >
                     <div style={{ width: '100%' }}>
                       <SearchInput
+                        id='search-country-code-input'
                         placeholder='Search for country code'
                         style={{
                           width: '100%',
@@ -212,6 +216,13 @@ const Portal = ({
                         key={item}
                       >
                         <p
+                          id={
+                            getPhoneCodeFromStr.split(' ')[1] === '+65'
+                              ? 'country-code-singapore-option'
+                              : getPhoneCodeFromStr.split(' ')[1] === '+62'
+                              ? 'country-code-indonesia-option'
+                              : ''
+                          }
                           style={{
                             padding: '0px 0px 7px 0px',
                             margin: 0,
@@ -239,7 +250,7 @@ const Portal = ({
               </Dropdown>
             </div>
             <input
-              id='phoneInput'
+              id='phone-number-input'
               value={value}
               type='number'
               placeholder='Phone Number'
@@ -252,6 +263,7 @@ const Portal = ({
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
         <Button
+          id='next-signup-login-button'
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
           onClick={() => {
@@ -263,6 +275,7 @@ const Portal = ({
         </Button>
         {loginByEmail && (
           <div
+            id='change-login-method-button'
             className={cx('modal-title', styles.switchMethodButton)}
             onClick={() => handleMethodChange('email')}
           >
@@ -283,6 +296,7 @@ const Portal = ({
           </label>
           <div className={styles.fieldGroup}>
             <input
+              id='email-address-input'
               type='email'
               value={value}
               className={cx(
@@ -298,6 +312,7 @@ const Portal = ({
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
         <Button
+          id='next-signup-login-email-button'
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
           onClick={() => {
@@ -309,6 +324,7 @@ const Portal = ({
         </Button>
         {loginByMobile && (
           <div
+            id='change-login-method-button'
             className={cx('modal-title', styles.switchMethodButton)}
             onClick={() => handleMethodChange('phone')}
           >

@@ -333,6 +333,7 @@ const Sidebar = ({ guessCheckout }) => {
               </ListItemIcon>
 
               <ListItemText
+                id='login-button'
                 primary={isLoggedIn ? 'Logout' : 'LogIn / SignUp'}
                 primaryTypographyProps={styles.primaryTypographyProps}
               />
@@ -352,6 +353,7 @@ const Sidebar = ({ guessCheckout }) => {
   return (
     <div style={{ width: '30px', height: '30px' }}>
       <FontAwesomeIcon
+        id='menu-hamburger-button'
         onClick={() => handleUpdateOpen(true)}
         style={styles.icon}
         icon={faBars}

@@ -18,14 +18,16 @@ import MagicSliderDots from 'react-magic-slider-dots';
 import 'react-magic-slider-dots/dist/magic-dots.css';
 import { CONSTANT } from 'helpers';
 
-const OrderingTableDialog = ({
+const OrderingTableDialogGuestCO = ({
   open,
   onClose,
   defaultOutlet,
   colorState,
   gadgetScreen,
 }) => {
-  const tableNo = useSelector((state) => state.order.noTable);
+  const tableNoActive = useSelector(
+    (state) => state.guestCheckoutCart.noTableActive
+  );
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -38,11 +40,11 @@ const OrderingTableDialog = ({
       },
     },
   };
+  const numberTable = useRef();
+  const numberTableLetter = useRef();
+  const letterPrefixing = useRef();
   const dispatch = useDispatch();
   const [isError, setIsError] = useState(false);
-  const [isActiveTable, setIsActiveTable] = useState(false);
-  const [inputNumberTable, setInputNumberTable] = useState('');
-  const [inputLetterTable, setInputLetterTable] = useState('');
 
   const dataMerchantFinal = [];
   for (let i = 0; i < defaultOutlet.tableNumber?.list.length; i += 20) {
@@ -82,7 +84,7 @@ const OrderingTableDialog = ({
     );
   };
 
-  const renderOptionOrderTable = () => {
+  const RenderOptionOrderTable = () => {
     if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
       return (
         <div>
@@ -109,9 +111,7 @@ const OrderingTableDialog = ({
                 }}
               >
                 <input
-                  value={inputLetterTable}
-                  type='text'
-                  onChange={(e) => setInputLetterTable(e.target.value)}
+                  ref={letterPrefixing}
                   placeholder='Your table Letter'
                   style={{
                     border: 'none',
@@ -146,9 +146,7 @@ const OrderingTableDialog = ({
                 }}
               >
                 <input
-                  value={inputNumberTable}
-                  type='text'
-                  onChange={(e) => setInputNumberTable(e.target.value)}
+                  ref={numberTableLetter}
                   placeholder='Your table number'
                   style={{
                     border: 'none',
@@ -199,9 +197,8 @@ const OrderingTableDialog = ({
               }}
             >
               <input
-                value={inputNumberTable}
                 type='number'
-                onChange={(e) => setInputNumberTable(e.target.value)}
+                ref={numberTable}
                 placeholder='Your table number'
                 style={{ border: 'none', outline: 'none', width: '100%' }}
               />
@@ -228,8 +225,7 @@ const OrderingTableDialog = ({
         <div
           key={item}
           onClick={() => {
-            setIsActiveTable(item);
-            dispatch({ type: CONSTANT.NO_TABLE, payload: item });
+            dispatch({ type: CONSTANT.NO_TABLE_GUESTCO_ACTIVE, payload: item });
           }}
           style={{
             display: 'flex',
@@ -238,12 +234,14 @@ const OrderingTableDialog = ({
             width: '75px',
             border: `1px solid ${colorState.primary}`,
             borderRadius: '10px',
-            color: tableNo === item ? 'white' : colorState.primary,
-            backgroundColor: tableNo === item && colorState.primary,
+            color: tableNoActive === item ? 'white' : colorState.primary,
+            backgroundColor: tableNoActive === item && colorState.primary,
             cursor: 'pointer',
           }}
         >
-          <DineInIcon color={tableNo === item ? 'white' : colorState.primary} />
+          <DineInIcon
+            color={tableNoActive === item ? 'white' : colorState.primary}
+          />
           <div style={{ fontSize: '12px', marginLeft: '4px' }}>{item}</div>
         </div>
       );
@@ -294,14 +292,14 @@ const OrderingTableDialog = ({
 
   const handleFormTable = () => {
     if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
-      dispatch({ type: CONSTANT.NO_TABLE, payload: isActiveTable });
+      dispatch({ type: CONSTANT.NO_TABLE_GUESTCO, payload: tableNoActive });
       onClose();
     } else {
       if (
         defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER'
       ) {
-        const numberFromInput = Number(inputNumberTable);
-        const letterFromInput = inputLetterTable;
+        const numberFromInput = Number(numberTableLetter.current.value);
+        const letterFromInput = letterPrefixing.current.value;
         const letterToUppercase = letterFromInput.toUpperCase();
         const resGenerateNumber = generateNumbersInRange();
         const resGenerateLetter = generateLettersInRange(
@@ -318,31 +316,34 @@ const OrderingTableDialog = ({
         );
         if (!isLetterNotFound || !isNumberNotFound) {
           setIsError(true);
-          setInputNumberTable('');
-          setInputLetterTable('');
+          numberTableLetter.current.value = '';
+          letterPrefixing.current.value = '';
         } else {
           setIsError(false);
           const changeBacKToString = numberFromInput.toString();
           const combineLetterAndNumber = `${letterFromInput}${changeBacKToString}`;
           dispatch({
-            type: CONSTANT.NO_TABLE,
+            type: CONSTANT.NO_TABLE_GUESTCO,
             payload: combineLetterAndNumber,
           });
           onClose();
         }
       } else {
-        const numberFromInput = Number(inputNumberTable);
+        const numberFromInput = Number(numberTable.current.value);
         const resGenerateNumber = generateNumbersInRange();
         const isNumberNotFound = resGenerateNumber.find(
           (item) => item === numberFromInput
         );
         if (!isNumberNotFound) {
           setIsError(true);
-          setInputNumberTable('');
+          numberTable.current.value = '';
         } else {
           setIsError(false);
           const changeBacKToString = numberFromInput.toString();
-          dispatch({ type: CONSTANT.NO_TABLE, payload: changeBacKToString });
+          dispatch({
+            type: CONSTANT.NO_TABLE_GUESTCO,
+            payload: changeBacKToString,
+          });
           onClose();
         }
       }
@@ -361,7 +362,7 @@ const OrderingTableDialog = ({
         <HandleLabelModal />
       </DialogTitle>
       {defaultOutlet.tableNumber.sequencing === 'IN_ORDER' ? (
-        renderOptionOrderTable()
+        <RenderOptionOrderTable />
       ) : (
         <Slider {...settings}>
           {dataMerchantFinal.map((item) => (
@@ -413,6 +414,7 @@ const OrderingTableDialog = ({
           Cancel
         </button>
         <button
+          disabled={!tableNoActive ? true : false}
           onClick={handleFormTable}
           className={fontStyles.myFont}
           style={{
@@ -430,9 +432,9 @@ const OrderingTableDialog = ({
   );
 };
 
-OrderingTableDialog.propTypes = {
+OrderingTableDialogGuestCO.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-export default OrderingTableDialog;
+export default OrderingTableDialogGuestCO;

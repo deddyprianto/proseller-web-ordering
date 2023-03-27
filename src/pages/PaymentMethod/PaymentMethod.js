@@ -164,6 +164,7 @@ const PaymentMethodPage = () => {
 
   const [openAlertMinimumPayment, setOpenAlertMinimumPayment] = useState(false);
   const [minimumPaymentAmount, setMinimumPaymentAmount] = useState(1);
+  const [renderInNewTab, setRenderInNewTab] = useState(false);
 
   const selectedCard = encryptor.decrypt(
     JSON.parse(localStorage.getItem(`${config.prefix}_selectedCard`))
@@ -219,19 +220,14 @@ const PaymentMethodPage = () => {
     }, 5000);
   }, [openDialogConfirm]);
 
-  const handleCheckRegisteredCard = async (payload, openNewTab) => {
+  const handleCheckRegisteredCard = async (payload) => {
     setIsLoading(true);
     const response = await dispatch(PaymentAction.registerPaymentCard(payload));
 
     if (response.resultCode === 200) {
       await setPaymentURL(response.data.url);
       await setAccountId(response.data.accountID);
-      if (openNewTab) {
-        childWindow = window.open(response.data.url, '_blank');
-        childWindow.focus();
-      } else {
-        setOpenDialogConfirm(true);
-      }
+      setOpenDialogConfirm(true);
     }
     setIsLoading(false);
   };
@@ -244,15 +240,9 @@ const PaymentMethodPage = () => {
       paymentID: item.paymentID,
     };
 
-    if (item.forceNewTab || item.paymentID === 'MASTERCARD_PAYMENT_GATEWAY') {
-      const response = await dispatch(
-        PaymentAction.registerPaymentCard(payload)
-      );
-      setPaymentURL(response.data.url);
-
-      handleCheckRegisteredCard(payload, true);
-    }
-    handleCheckRegisteredCard(payload, false);
+    setRenderInNewTab(item.forceNewTab || false);
+    
+    handleCheckRegisteredCard(payload);
   };
 
   const handleSelectedDefaultCard = async () => {
@@ -453,6 +443,13 @@ const PaymentMethodPage = () => {
     );
   };
 
+  const openNewTab = (url) => {
+    const win = window.open(url, '_blank');
+    win.focus();
+    
+    return;
+  }
+
   const dialogConfirmation = () => {
     return (
       <Dialog
@@ -485,7 +482,12 @@ const PaymentMethodPage = () => {
             variant='contained'
             onClick={() => {
               setOpenDialogConfirm(false);
-              setOpenDialogIframe(true);
+              
+              if (renderInNewTab) {
+                openNewTab(paymentURL);
+              } else {
+                setOpenDialogIframe(true);
+              }
             }}
             sx={style.button}
             autoFocus

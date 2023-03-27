@@ -65,6 +65,7 @@ const SignUpSuccess = ({
       )}
 
       <Button
+        id='continue-button'
         className='button'
         style={{
           width: '100%',
