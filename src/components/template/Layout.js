@@ -14,8 +14,9 @@ const HeaderWebOrdering = loadable(() => import('./HeaderWebOrdering'));
 const FooterEmenu = loadable(() => import('./FooterEmenu'));
 const FooterWebOrdering = loadable(() => import('./FooterWebOrdering'));
 const Home = loadable(() => import('../../pages/Home'));
-const Appointment = loadable(() =>
-  import('../../pages/Appointment/Appointment')
+const Appointment = loadable(() => import('../../pages/Appointment'));
+const LocationAppointment = loadable(() =>
+  import('../../pages/LocationAppointment')
 );
 const Cart = loadable(() => import('../../pages/Cart'));
 const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
@@ -171,6 +172,9 @@ class Layout extends Component {
             )}
             {enableOrdering && (
               <Route exact path='/appointment' component={Appointment} />
+            )}
+            {enableOrdering && (
+              <Route exact path='/location' component={LocationAppointment} />
             )}
             {/* TODO: component basket will remove later */}
             {enableOrdering && (

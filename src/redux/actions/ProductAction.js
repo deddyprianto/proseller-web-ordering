@@ -3,7 +3,8 @@ import { ProductService } from '../../Services/ProductService';
 import { isEmptyArray } from '../../helpers/CheckEmpty';
 import config from '../../config';
 
-const PRESET_TYPE = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
+
+const PRESET_TYPE = 'webOrdering';
 
 const clearCategoryProducts = () => ({ type: 'CLEAR_CATEGORY_PRODUCTS' });
 const fetchProductStarted = () => ({ type: 'GET_PRODUCT_LIST_STARTED' });
@@ -65,14 +66,11 @@ function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
   try {
     if (outlet.id) {
       const OUTLET_ID = outlet.id;
-
       if (!payload) {
         payload = { take: 500, skip: 0 };
       }
-
       let preset = PRESET_TYPE;
       if (presetType) preset = presetType;
-
       return async (dispatch) => {
         const data = await ProductService.api(
           'POST',
@@ -82,7 +80,14 @@ function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
           }`
         );
         if (!isEmptyArray(data.data)) {
-          dispatch(setData(data.data, CONSTANT.LIST_CATEGORY));
+          if (presetType === 'appointment') {
+            dispatch({
+              type: CONSTANT.LIST_CATEGORY_APPOINTMENT,
+              data: data.data,
+            });
+          } else {
+            dispatch(setData(data.data, CONSTANT.LIST_CATEGORY));
+          }
           return data;
         } else {
           return [];
@@ -175,11 +180,47 @@ function fetchProduct(category, outlet, skip, take, orderingMode) {
     }
   };
 }
+function fetchProductAppointment({
+  category,
+  outlet,
+  skip,
+  take,
+  presetTypeName,
+}) {
+  console.log({ category });
+  const OUTLET_ID = outlet.id;
+  const categoryID = category?.id;
+  const payload = {
+    skip,
+    take,
+  };
+  return async (dispatch) => {
+    dispatch(fetchProductStarted());
+    const response = await ProductService.api(
+      'POST',
+      payload,
+      `productpreset/loaditems/${presetTypeName}/${OUTLET_ID}/${categoryID}`
+    );
+    if (response.ResultCode >= 400) {
+      dispatch(
+        fetchProductError(response || { message: 'Failed to fetch product' })
+      );
+      return [];
+    } else {
+      dispatch({
+        type: CONSTANT.LIST_SERVICE_APPOINTMENT,
+        data: response.data,
+      });
+      return response;
+    }
+  };
+}
 
 export const ProductAction = {
   setData,
   fetchCategoryProduct,
   fetchProduct,
+  fetchProductAppointment,
   fetchCategoryList,
   getCollection,
   setSelectedCategory,
