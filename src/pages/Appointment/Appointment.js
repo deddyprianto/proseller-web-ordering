@@ -205,6 +205,7 @@ const Appointment = (props) => {
 
   useEffect(() => {
     const loadData = async () => {
+      setIsLoading(true);
       await dispatch(
         ProductAction.fetchProductAppointment({
           category: selectedCategory,
@@ -214,6 +215,7 @@ const Appointment = (props) => {
           presetTypeName: 'appointment',
         })
       );
+      setIsLoading(false);
     };
     if (!isEmptyObject(selectedCategory)) {
       loadData();
