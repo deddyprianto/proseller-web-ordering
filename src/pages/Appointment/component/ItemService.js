@@ -1,17 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
-const ListService = ({ productServicesAppointment }) => {
+import Dialog from '@mui/material/Dialog';
+
+const ItemService = ({
+  item,
+  gadgetScreen,
+  fullScreen,
+  styleSheet,
+  setIsOpenModalDetail,
+}) => {
+  // some state
+
   // some selectors
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+
   // some functions
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo.currency.locale, {
         style: 'currency',
-        currency: companyInfo.currency.code,
+        currency: companyInfo?.currency.code,
       });
 
       return result;
@@ -53,6 +64,8 @@ const ListService = ({ productServicesAppointment }) => {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+        fontSize: '14px',
+        fontWeight: 700,
       },
       label2: { fontSize: '13px', color: 'rgba(183, 183, 183, 1)' },
     },
@@ -147,13 +160,19 @@ const ListService = ({ productServicesAppointment }) => {
       },
     },
   };
-  return productServicesAppointment.map((item) => {
-    if (item.product.orderingStatus === 'UNAVAILABLE') {
+
+  // components
+
+  const RenderItemService = () => {
+    if (item.orderingStatus === 'UNAVAILABLE') {
       return (
         <div style={localStyle.container}>
           <div style={{ display: 'flex' }}>
             <div style={localStyle.containerImg}>
-              <img src={item.icon} style={{ borderRadius: '10px' }} />
+              <img
+                src={item?.defaultImageURL}
+                style={{ borderRadius: '10px' }}
+              />
             </div>
             <div style={localStyle.containerUnavailable}>
               <div style={localStyle.containerUnavailable.labelTitle}>
@@ -178,10 +197,20 @@ const ListService = ({ productServicesAppointment }) => {
     } else {
       return (
         <div style={localStyle.container}>
-          <div style={{ display: 'flex' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '70px 1fr',
+              gridTemplateRows: '1fr',
+              gridAutoColumns: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
+            }}
+          >
             <div style={localStyle.containerImg}>
               <img
-                src={item.product?.defaultImageURL}
+                src={item.defaultImageURL}
                 style={{
                   borderRadius: '10px',
                 }}
@@ -194,9 +223,7 @@ const ListService = ({ productServicesAppointment }) => {
                 )} */}
                 <CheckCircleIcon sx={localStyle.containerLabel.icon} />
                 <div style={{ width: '100%' }}>
-                  <div style={localStyle.containerLabel.label}>
-                    {item.product.name}
-                  </div>
+                  <div style={localStyle.containerLabel.label}>{item.name}</div>
                 </div>
               </div>
               <table>
@@ -210,9 +237,12 @@ const ListService = ({ productServicesAppointment }) => {
                       overflow: 'hidden',
                       padding: 0,
                       margin: 0,
+                      fontSize: '14px',
+                      color: 'rgba(183, 183, 183, 1)',
+                      fontWeight: 500,
                     }}
                   >
-                    {item.product.description}
+                    {item.description}
                   </td>
                 </tr>
               </table>
@@ -235,15 +265,14 @@ const ListService = ({ productServicesAppointment }) => {
             ) : (
               <div style={localStyle.containerPrice}>
                 <div style={localStyle.containerPrice.labelPrice}>
-                  {handleCurrency(item.product.retailPrice)}
+                  {handleCurrency(item.retailPrice)}
                 </div>
               </div>
             )}
             <div style={localStyle.button}>
               <button
                 onClick={() => {
-                  // setIsOpenModalDetail(true);
-                  console.log('lol');
+                  setIsOpenModalDetail(true);
                 }}
                 style={localStyle.button.labelButton}
               >
@@ -254,7 +283,13 @@ const ListService = ({ productServicesAppointment }) => {
         </div>
       );
     }
-  });
+  };
+
+  return (
+    <React.Fragment>
+      <RenderItemService />
+    </React.Fragment>
+  );
 };
 
-export default ListService;
+export default ItemService;

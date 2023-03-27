@@ -187,7 +187,6 @@ function fetchProductAppointment({
   take,
   presetTypeName,
 }) {
-  console.log({ category });
   const OUTLET_ID = outlet.id;
   const categoryID = category?.id;
   const payload = {

@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import SearchIcon from '@mui/icons-material/Search';
 import PlaceIcon from '@mui/icons-material/Place';
 import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
@@ -8,9 +7,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -24,13 +20,12 @@ import { ProductAction } from 'redux/actions/ProductAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Collapse from '@mui/material/Collapse';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import './style/loadingspin.css';
-import ListService from './component/ListService';
+import ItemService from './component/ItemService';
+import search from 'assets/images/search.png';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -47,17 +42,15 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
-  const [idProdService, setIdProdService] = useState('');
+  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
+  const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [isMore, setIsMore] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [dataProServices, setDataProServices] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [cutPrice, setCutPrice] = useState(true);
   const [openAccordion, setOpenAccordion] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
-  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState(0);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
@@ -70,17 +63,17 @@ const Appointment = (props) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   // some selectors
-  const productServicesAppointment = useSelector(
-    (state) => state.product.productServicesAppointment
-  );
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const categoryTabAppointment = useSelector(
     (state) => state.product.categoryTabAppointment
+  );
+  const productServicesAppointment = useSelector(
+    (state) => state.product.productServicesAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const isOpenModalLeavePage = useSelector(
     (state) => state.AppointmentReducer.isOpenModalLeavePage
   );
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
   const orderingMode = useSelector((state) => state.order.orderingMode);
 
@@ -92,7 +85,17 @@ const Appointment = (props) => {
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
-  // some functions
+  // some fn
+  const handleChangeCategory = ({ category, index }) => {
+    let categoryChanged = [];
+    categoryChanged.push(...categoryTabAppointment);
+    categoryChanged.splice(index + limitCategoryTabHeader, 1);
+    categoryChanged = [category, ...categoryChanged.slice(0)];
+    dispatch({
+      type: CONSTANT.LIST_CATEGORY_APPOINTMENT,
+      data: categoryChanged,
+    });
+  };
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
@@ -131,7 +134,10 @@ const Appointment = (props) => {
       backgroundColor: 'white',
     },
     categoryName: {
-      fontSize: '14px',
+      color: 'gray',
+      fontSize: '15px',
+      fontWeight: 500,
+      textTransform: 'capitalize',
     },
     muiSelected: {
       '&.MuiButtonBase-root': {
@@ -153,7 +159,13 @@ const Appointment = (props) => {
         backgroundColor: color.primary,
       },
     },
+    inputDropdown: {
+      '&.MuiSelect-select': {
+        border: 'none',
+      },
+    },
   };
+
   // some Effect
   useEffect(() => {
     if (width < 600) {
@@ -237,13 +249,14 @@ const Appointment = (props) => {
     return (
       <div style={localStyle.container}>
         <ArrowBackIosIcon
+          sx={{ color: color.primary }}
           fontSize='large'
           onClick={() => {
             props.history.push('/');
           }}
         />
         <div style={localStyle.label}>Appointment</div>
-        <SearchIcon fontSize='large' onClick={() => setShowSearchBar(true)} />
+        <img src={search} onClick={() => setShowSearchBar(true)} />
       </div>
     );
   };
@@ -275,39 +288,9 @@ const Appointment = (props) => {
   };
 
   const RenderTimeList = () => {
-    const data = [
-      {
-        day: 'monday',
-        time: '13:00 - 22:00',
-      },
-      {
-        day: 'Tuesday',
-        time: '13:00 - 22:00',
-      },
-      {
-        day: 'Wednesday',
-        time: '13:00 - 22:00',
-      },
-      {
-        day: 'Thursday',
-        time: '13:00 - 22:00',
-      },
-      {
-        day: 'Friday',
-        time: '09:00 - 13:00',
-      },
-      {
-        day: 'Saturday',
-        time: '13:00 - 22:00',
-      },
-      {
-        day: 'Sunday',
-        time: '13:00 - 22:00',
-      },
-    ];
-    return data.map((item, i) => {
+    return defaultOutlet?.operationalHours.map((item, i) => {
       return (
-        <ul key={i} style={{ padding: '5px 0px', margin: 0 }}>
+        <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
             style={{
               display: 'grid',
@@ -318,14 +301,17 @@ const Appointment = (props) => {
               gridTemplateAreas: '". ."',
             }}
           >
-            <div>{item.day}</div>
-            <div>{item.time}</div>
+            <div style={{ fontSize: '14px', fontWeight: 500 }}>
+              {item.nameOfDay}
+            </div>
+            <div style={{ fontSize: '14px', fontWeight: 500 }}>
+              {item.open} - {item.close}
+            </div>
           </li>
         </ul>
       );
     });
   };
-
   const Location = () => {
     const localStyle = {
       container: {
@@ -350,9 +336,14 @@ const Appointment = (props) => {
         display: 'flex',
         alignItems: 'center',
         marginLeft: '10px',
-        marginTop: openAccordion && '25px',
+        marginTop: '10px',
       },
-      labelOpenNow: { fontSize: '14px', marginLeft: '10px', fontWeight: 500 },
+      labelOpenNow: {
+        fontSize: '14px',
+        marginLeft: '10px',
+        marginRight: '5px',
+        fontWeight: 500,
+      },
     };
     return (
       <div style={localStyle.container}>
@@ -375,32 +366,18 @@ const Appointment = (props) => {
             }}
           />
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500 }}>Connection One</div>
+            <div style={{ fontWeight: 500 }}>{defaultOutlet.name}</div>
             <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
               169 Bukit Merah Central, Singapore
             </div>
             <div style={localStyle.containerAccordion}>
-              <Accordion
-                sx={{ boxShadow: 'none', padding: 0, margin: 0 }}
-                expanded={openAccordion}
-                onChange={() => setOpenAccordion(!openAccordion)}
+              <div
+                onClick={() => setOpenDropDownTime(!openDropDownTime)}
+                className={fontStyles.myFont}
+                style={localStyle.labelSeeDirection}
               >
-                <AccordionSummary
-                  sx={{ padding: 0, margin: 0 }}
-                  aria-controls='panel1a-content'
-                  id='panel1a-header'
-                >
-                  <div
-                    className={fontStyles.myFont}
-                    style={localStyle.labelSeeDirection}
-                  >
-                    See Direction
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <RenderTimeList />
-                </AccordionDetails>
-              </Accordion>
+                See Direction
+              </div>
             </div>
           </div>
           <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
@@ -410,6 +387,11 @@ const Appointment = (props) => {
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
+          {openDropDownTime ? (
+            <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
+          ) : (
+            <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
+          )}
         </div>
       </div>
     );
@@ -433,7 +415,7 @@ const Appointment = (props) => {
     );
   };
 
-  const IconsBlow = () => {
+  const IconsBlow = ({ name }) => {
     return (
       <svg
         width='19'
@@ -442,16 +424,16 @@ const Appointment = (props) => {
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
-        <divath
+        <path
           fillRule='evenodd'
           clipRule='evenodd'
           d='M5.7998 1.51465L10.2998 9.3094L10.6246 9.1219C11.0937 8.85109 11.6116 8.67534 12.1487 8.60469C12.6858 8.53404 13.2315 8.56987 13.7548 8.71014C14.278 8.8504 14.7685 9.09235 15.1982 9.42217C15.6279 9.75199 15.9885 10.1632 16.2593 10.6324L16.3396 10.7719C16.8651 11.6824 17.0074 12.7644 16.7353 13.7799C16.4631 14.7954 15.7987 15.6612 14.8883 16.1869C14.4208 16.4568 13.8653 16.5299 13.344 16.3902C12.8226 16.2506 12.378 15.9095 12.1081 15.4421L9.3998 10.7516L6.6923 15.4421C6.55863 15.6737 6.38065 15.8766 6.16853 16.0393C5.95642 16.2021 5.71432 16.3214 5.45607 16.3906C5.19782 16.4597 4.92848 16.4774 4.66343 16.4424C4.39837 16.4075 4.1428 16.3206 3.9113 16.1869C3.00086 15.6612 2.3365 14.7954 2.06435 13.7799C1.7922 12.7644 1.93453 11.6824 2.46005 10.7719L2.5403 10.6324C3.08733 9.685 3.98829 8.9937 5.04501 8.71056C6.10172 8.42743 7.22763 8.57566 8.17505 9.12265L8.49905 9.31015L8.53355 9.25015L5.2508 3.56365C5.0519 3.21913 4.998 2.80971 5.10095 2.42545C5.20391 2.04119 5.45529 1.71357 5.7998 1.51465V1.51465ZM3.8393 11.3824L3.75905 11.5219C3.43244 12.0879 3.344 12.7605 3.5132 13.3917C3.6824 14.0229 4.09537 14.5611 4.6613 14.8879C4.91705 15.0356 5.2448 14.9479 5.39255 14.6921L7.7498 10.6091L7.42505 10.4216C6.82221 10.0738 6.10591 9.97961 5.43364 10.1598C4.76136 10.3399 4.18816 10.7797 3.84005 11.3824H3.8393ZM11.3746 10.4216L11.0498 10.6091L13.4071 14.6921C13.4781 14.815 13.595 14.9047 13.7322 14.9414C13.8693 14.9781 14.0154 14.9588 14.1383 14.8879C14.7042 14.5611 15.1172 14.0229 15.2864 13.3917C15.4556 12.7605 15.3672 12.0879 15.0406 11.5219L14.9603 11.3824C14.6122 10.7795 14.0389 10.3396 13.3664 10.1594C12.6939 9.97924 11.9775 10.0736 11.3746 10.4216V10.4216ZM12.9998 1.51465C13.3268 1.70341 13.5706 2.00856 13.6826 2.3692C13.7945 2.72983 13.7663 3.11941 13.6036 3.46015L13.5488 3.56365L11.1286 7.75615L10.2623 6.25615L12.9998 1.51465Z'
-          fill={value === 0 ? color.primary : 'gray'}
+          fill={selectedCategory.name === name ? color.primary : 'gray'}
         />
       </svg>
     );
   };
-  const IconsNails = () => {
+  const IconsNails = ({ name }) => {
     return (
       <svg
         width={19}
@@ -460,28 +442,28 @@ const Appointment = (props) => {
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
-        <divath
+        <path
           d='M16.7 9C16.7 13.1422 13.3422 16.5 9.19995 16.5C5.0577 16.5 1.69995 13.1422 1.69995 9C1.69995 4.85775 5.0577 1.5 9.19995 1.5'
-          stroke={value === 1 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           strokeWidth={1.5}
           strokeLinecap='round'
           strokeLinejoin='round'
         />
-        <divath
+        <path
           d='M14.4499 3.55176L14.5785 3.94776H14.9948L14.658 4.19226L14.7867 4.58826L14.4499 4.34376L14.1132 4.58826L14.2418 4.19226L13.905 3.94776H14.3213L14.4499 3.55176Z'
-          stroke={value === 1 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           strokeWidth={1.5}
         />
-        <divath
+        <path
           d='M11.45 7.125C11.45 5.88236 10.4426 4.875 9.19995 4.875C7.95731 4.875 6.94995 5.88236 6.94995 7.125V11.625C6.94995 12.8676 7.95731 13.875 9.19995 13.875C10.4426 13.875 11.45 12.8676 11.45 11.625V7.125Z'
-          stroke={value === 1 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           strokeWidth={1.5}
           strokeLinecap='round'
           strokeLinejoin='round'
         />
-        <divath
+        <path
           d='M6.94995 9.375C6.19995 9.375 5.07495 10.1693 5.07495 11.625V15.294M11.45 9.375C12.2 9.375 13.325 10.1693 13.325 11.625V15.1875'
-          stroke={value === 1 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           strokeWidth={1.5}
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -490,7 +472,7 @@ const Appointment = (props) => {
     );
   };
 
-  const IconsReflexology = () => {
+  const IconsReflexology = ({ name }) => {
     return (
       <svg
         width='18'
@@ -499,23 +481,23 @@ const Appointment = (props) => {
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
-        <divath
+        <path
           d='M3 13.5C3.41421 13.5 3.75 13.1642 3.75 12.75C3.75 12.3358 3.41421 12 3 12C2.58579 12 2.25 12.3358 2.25 12.75C2.25 13.1642 2.58579 13.5 3 13.5Z'
-          stroke={value === 2 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           stroke-width='1.25'
           stroke-linecap='round'
           stroke-linejoin='round'
         />
-        <divath
+        <path
           d='M6.75 4.5C7.16421 4.5 7.5 4.16421 7.5 3.75C7.5 3.33579 7.16421 3 6.75 3C6.33579 3 6 3.33579 6 3.75C6 4.16421 6.33579 4.5 6.75 4.5Z'
-          stroke={value === 2 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           stroke-width='1.25'
           stroke-linecap='round'
           stroke-linejoin='round'
         />
-        <divath
+        <path
           d='M3 16.5L6 15V12.75H15M8.25 15H15M6 10.5L8.25 9L9 6C11.25 6.75 11.25 9 11.25 10.5'
-          stroke={value === 2 ? color.primary : 'gray'}
+          stroke={selectedCategory.name === name ? color.primary : 'gray'}
           stroke-width='1.25'
           stroke-linecap='round'
           stroke-linejoin='round'
@@ -533,17 +515,17 @@ const Appointment = (props) => {
         <Paper style={styleSheet.paper} className={fontStyles.myFont}>
           {categoryTabList.map((category, index) => {
             return (
-              <div className={classes.itemMoreHover} key={index}>
-                <Button
-                  key={index}
-                  onClick={() => {
-                    // handleChangeCategory({ category, index });
-                    setSelectedCategory(category);
-                    setIsMore(false);
-                  }}
-                >
-                  <div style={styleSheet.categoryName}>{category.name}</div>
-                </Button>
+              <div
+                onClick={() => {
+                  handleChangeCategory({ category, index });
+                  setSelectedCategory(category);
+                  setIsMore(false);
+                }}
+                className={classes.itemMoreHover}
+                key={index}
+                style={{ padding: '10px' }}
+              >
+                <div style={styleSheet.categoryName}>{category.name}</div>
               </div>
             );
           })}
@@ -576,6 +558,19 @@ const Appointment = (props) => {
       />
     );
   };
+
+  const handleIconsTab = (item) => {
+    switch (item.name) {
+      case 'group 1':
+        return <IconsBlow name={item.name} />;
+      case 'group 2':
+        return <IconsNails name={item.name} />;
+      case 'group 3':
+        return <IconsReflexology name={item.name} />;
+      default:
+        return null;
+    }
+  };
   const RenderTabHeader = () => {
     const categoryTab = categoryTabAppointment.slice(0, limitCategoryTabHeader);
     return (
@@ -591,8 +586,9 @@ const Appointment = (props) => {
             aria-label='basic tabs example'
             sx={styleSheet.indicator}
           >
-            {categoryTab.map((item) => (
+            {categoryTab.map((item, i) => (
               <Tab
+                icon={handleIconsTab(item)}
                 value={item.name}
                 onClick={() => {
                   if (isMore) {
@@ -606,7 +602,7 @@ const Appointment = (props) => {
                 sx={styleSheet.muiSelected}
               />
             ))}
-            <RenderTabMore />
+            {!isLoading && <RenderTabMore />}
           </Tabs>
           <RenderTabList />
         </div>
@@ -684,15 +680,46 @@ const Appointment = (props) => {
           {isLoading ? (
             <RenderAnimationLoading />
           ) : (
-            <ListService
-              productServicesAppointment={productServicesAppointment}
-            />
+            <>
+              {productServicesAppointment.map((item) => (
+                <ItemService
+                  setIsOpenModalDetail={setIsOpenModalDetail}
+                  item={item?.product}
+                  gadgetScreen={gadgetScreen}
+                  fullScreen={fullScreen}
+                  styleSheet={styleSheet}
+                />
+              ))}
+            </>
           )}
         </TabsUnstyled>
       </div>
     );
   };
-
+  const DropDownTime = () => {
+    if (openDropDownTime) {
+      return (
+        <div
+          style={{
+            position: 'absolute',
+            backgroundColor: 'white',
+            height: '270px',
+            width: '60%',
+            padding: '0px 10px',
+            borderRadius: '5px',
+            zIndex: 999,
+            left: 13,
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            overflowY: 'auto',
+          }}
+        >
+          <RenderTimeList />
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
@@ -703,6 +730,7 @@ const Appointment = (props) => {
           <Header />
           <Label />
           <Location />
+          <DropDownTime />
           <Services />
         </div>
       );
@@ -727,7 +755,7 @@ const Appointment = (props) => {
   };
 
   return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+    <React.Fragment>
       {showNotif && <RendernNotifSuccess />}
       <ResponsiveLayout />
       <Dialog
@@ -840,15 +868,16 @@ const Appointment = (props) => {
           }}
         >
           <SearchBar
+            setIsOpenModalDetail={setIsOpenModalDetail}
             color={color}
             setShowSearchBar={setShowSearchBar}
             styleSheet={styleSheet}
             gadgetScreen={gadgetScreen}
-            dataProServices={dataProServices}
+            productServicesAppointment={productServicesAppointment}
           />
         </div>
       </Dialog>
-    </LoadingOverlayCustom>
+    </React.Fragment>
   );
 };
 
