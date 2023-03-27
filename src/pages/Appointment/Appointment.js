@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import SearchIcon from '@mui/icons-material/Search';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -6,7 +6,7 @@ import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -16,6 +16,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import reflection from 'assets/images/default-profile.png';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { useTheme } from '@mui/material/styles';
+import { CONSTANT } from 'helpers';
+import { useHistory } from 'react-router-dom';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -35,7 +38,16 @@ const Appointment = (props) => {
   const [open, setOpen] = useState(false);
   const [cutPrice, setCutPrice] = useState(false);
   const [openAccordion, setOpenAccordion] = useState(false);
+  const [locationKeys, setLocationKeys] = useState([]);
+
+  const history = useHistory();
+  const dispatch = useDispatch();
+
   const color = useSelector((state) => state.theme.color);
+  const isOpenModalLeavePage = useSelector(
+    (state) => state.AppointmentReducer.isOpenModalLeavePage
+  );
+
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   const [value, setValue] = useState(0);
@@ -90,37 +102,41 @@ const Appointment = (props) => {
       gap: '0px 0px',
       gridAutoFlow: 'row',
       gridTemplateAreas: '". . ."',
+      cursor: 'pointer',
     },
   };
-  if (isLeavePage) {
-    window.onhashchange = function () {
-      if (window.innerDocClick) {
-        window.innerDocClick = false;
-      } else {
-        if (window.location.hash !== '#undefined') {
-          setOpen(true);
+
+  useEffect(() => {
+    return history.listen((location) => {
+      if (history.action === 'PUSH') {
+        setLocationKeys([location.pathname]);
+        if (location.pathname !== '/appointment') {
+          dispatch({
+            type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+            payload: true,
+          });
+          history.push('/appointment');
         }
       }
-    };
-  } else {
-    window.onhashchange = function () {
-      if (window.innerDocClick) {
-        window.innerDocClick = false;
-      } else {
-        if (window.location.hash !== '#undefined') {
-          props.history.push('/appointment');
-          setOpen(true);
-        }
-      }
-    };
-  }
+      // if (history.action === 'POP') {
+      //   if (locationKeys[1] === location.pathname) {
+      //     setLocationKeys(([_, ...keys]) => keys);
+      //     // Handle forward event
+      //   } else {
+      //     setLocationKeys((keys) => [location.pathname, ...keys]);
+      //     // Handle back event
+      //   }
+      // }
+    });
+  }, [locationKeys]);
+
   // COMPONENT
   const RenderHeader = () => {
     return (
       <div
         style={{
           ...styleSheet.gridStyle,
-          marginTop: gadgetScreen ? '70px' : '0px',
+          marginTop: gadgetScreen ? '80px' : '0px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -128,7 +144,7 @@ const Appointment = (props) => {
         <ArrowBackIosIcon
           fontSize='large'
           onClick={() => {
-            props.history.goBack();
+            props.history.push('/');
           }}
         />
         <p
@@ -159,7 +175,7 @@ const Appointment = (props) => {
           marginTop: '25px',
         }}
       >
-        <p style={{ fontWeight: 'bold' }}>Choosen Location</p>
+        <p style={{ fontWeight: 700 }}>Chosen Location</p>
         <p style={{ color: color.primary }}>Change</p>
       </div>
     );
@@ -198,7 +214,7 @@ const Appointment = (props) => {
     ];
     return data.map((item) => {
       return (
-        <ul>
+        <ul style={{ padding: '10px', margin: 0 }}>
           <li
             style={{
               display: 'grid',
@@ -231,11 +247,13 @@ const Appointment = (props) => {
         <div style={styleSheet.gridStyle}>
           <PlaceIcon style={{ justifySelf: 'center', fontSize: '30px' }} />
           <div style={{ fontSize: '14px' }}>
-            <div>Connection One</div>
-            <div>169 Bukit Merah Central, Singapore</div>
-            <div>See Direction</div>
+            <div style={{ fontWeight: 500 }}>Connection One</div>
+            <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
+              169 Bukit Merah Central, Singapore
+            </div>
+            <div style={{ color: 'rgba(0, 133, 255, 1)' }}>See Direction</div>
           </div>
-          <div style={{ fontSize: '14px' }}>800m</div>
+          <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
         </div>
         <div
           style={{
@@ -263,7 +281,11 @@ const Appointment = (props) => {
               <AccessTimeIcon style={{ fontSize: '25px' }} />
               <div
                 className={fontStyles.myFont}
-                style={{ fontSize: '14px', marginLeft: '10px' }}
+                style={{
+                  fontSize: '14px',
+                  marginLeft: '10px',
+                  fontWeight: 500,
+                }}
               >
                 Open now 13:00 - 22.00
               </div>
@@ -704,8 +726,10 @@ const Appointment = (props) => {
       <Dialog
         fullWidth
         maxWidth='xs'
-        open={open}
-        onClose={() => setOpen(false)}
+        open={isOpenModalLeavePage}
+        onClose={() =>
+          dispatch({ type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT, payload: false })
+        }
         classes={{ paper: classes.paper }}
       >
         <div
@@ -751,7 +775,12 @@ const Appointment = (props) => {
           }}
         >
           <button
-            onClick={() => setOpen(false)}
+            onClick={() =>
+              dispatch({
+                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+                payload: false,
+              })
+            }
             className={fontStyles.myFont}
             style={{
               backgroundColor: 'white',
@@ -767,8 +796,11 @@ const Appointment = (props) => {
           </button>
           <button
             onClick={() => {
-              setIsLeavePage(true);
-              props.history.goBack();
+              dispatch({
+                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+                payload: false,
+              });
+              window.location.href = 'http://localhost:3000/#/';
             }}
             className={fontStyles.myFont}
             style={{
