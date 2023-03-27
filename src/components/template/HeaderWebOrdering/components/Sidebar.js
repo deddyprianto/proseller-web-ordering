@@ -146,11 +146,32 @@ const Sidebar = ({ guessCheckout }) => {
       </svg>
     );
   };
+  const appointmentIcon = (color) => {
+    return (
+      <svg
+        width='25'
+        height='25'
+        viewBox='0 0 240 240'
+        fill={color}
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M210 130V60C210 54.6957 207.893 49.6086 204.142 45.8579C200.391 42.1071 195.304 40 190 40H50C44.6957 40 39.6086 42.1071 35.8579 45.8579C32.1071 49.6086 30 54.6957 30 60V200C30 205.304 32.1071 210.391 35.8579 214.142C39.6086 217.893 44.6957 220 50 220H130M160 20V60M80 20V60M30 100H210M190 160V220M160 190H220'
+          stroke='white'
+          strokeWidth='12'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+      </svg>
+    );
+  };
   const renderMenuItem = (item) => {
     const iconColor = theme.navigationIconSelectedColor;
     switch (item.text) {
       case 'Menu':
         return menuIcon(iconColor);
+      case 'Booking':
+        return appointmentIcon(iconColor);
       case 'History':
         return historyIcon(iconColor);
       case 'Rewards':

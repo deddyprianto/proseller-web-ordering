@@ -94,8 +94,13 @@ const Home = ({ ...props }) => {
     if (isEmptyObject(props.defaultOutlet)) {
       history.push('/outlets');
     }
-    setOpenModalAppointment(true);
-  }, [props.defaultOutlet]);
+    const settingAppoinment = props.setting.setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue && props.isLoggedIn) {
+      setOpenModalAppointment(settingAppoinment.settingValue);
+    }
+  }, [props.defaultOutlet, props.setting]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -164,12 +169,10 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
-          {openModalAppointment && props.isLoggedIn && (
-            <ModalAppointment
-              open={openModalAppointment}
-              onClose={setOpenModalAppointment}
-            />
-          )}
+          <ModalAppointment
+            open={openModalAppointment}
+            onClose={setOpenModalAppointment}
+          />
         </div>
       );
     }

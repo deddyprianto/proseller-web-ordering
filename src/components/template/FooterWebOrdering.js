@@ -20,11 +20,11 @@ const FooterWebOrdering = () => {
   const resetBottomNav = useSelector(
     (state) => state.guestCheckoutCart.resetBottomNav
   );
+  const [appointmentMenu, setAppointmentMenu] = useState(false);
   const [newNavbar, setNewNavbar] = useState([]);
   const [value, setValue] = useState(0);
   const { setting } = useSelector((state) => state.order);
   const [guessCheckout, setGuessCheckout] = useState();
-  const [appointment, setAppointment] = useState(true);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const isLoggedIn = allState.auth.isLoggedIn;
 
@@ -32,9 +32,15 @@ const FooterWebOrdering = () => {
     const settingGuestCheckout = setting.find((items) => {
       return items.settingKey === 'GuestMode';
     });
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
 
     if (settingGuestCheckout?.settingValue) {
       setGuessCheckout(settingGuestCheckout.settingKey);
+    }
+    if (settingAppoinment?.settingValue) {
+      setAppointmentMenu(settingAppoinment.settingValue);
     }
   }, [setting]);
 
@@ -52,7 +58,7 @@ const FooterWebOrdering = () => {
         setNewNavbar(spliceData);
       }
     } else {
-      if (appointment) {
+      if (appointmentMenu) {
         const data = navBar;
         data[2] = {
           text: 'Booking',
@@ -65,7 +71,7 @@ const FooterWebOrdering = () => {
         setNewNavbar(navBar);
       }
     }
-  }, [guessCheckout]);
+  }, [guessCheckout, appointmentMenu]);
 
   const menuIcon = (color) => {
     return (
@@ -89,7 +95,7 @@ const FooterWebOrdering = () => {
       >
         <path
           d='M210 130V60C210 54.6957 207.893 49.6086 204.142 45.8579C200.391 42.1071 195.304 40 190 40H50C44.6957 40 39.6086 42.1071 35.8579 45.8579C32.1071 49.6086 30 54.6957 30 60V200C30 205.304 32.1071 210.391 35.8579 214.142C39.6086 217.893 44.6957 220 50 220H130M160 20V60M80 20V60M30 100H210M190 160V220M160 190H220'
-          stroke='rgba(157, 157, 157, 1)'
+          stroke='white'
           strokeWidth='12'
           strokeLinecap='round'
           strokeLinejoin='round'
