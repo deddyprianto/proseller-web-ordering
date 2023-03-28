@@ -66,6 +66,7 @@ const ItemService = ({
         whiteSpace: 'nowrap',
         fontSize: '14px',
         fontWeight: 700,
+        color: 'black',
       },
       label2: { fontSize: '13px', color: 'rgba(183, 183, 183, 1)' },
     },
@@ -221,7 +222,6 @@ const ItemService = ({
                 {/* {props.check && (
                   <CheckCircleIcon sx={localStyle.containerLabel.icon} />
                 )} */}
-                <CheckCircleIcon sx={localStyle.containerLabel.icon} />
                 <div style={{ width: '100%' }}>
                   <div style={localStyle.containerLabel.label}>{item.name}</div>
                 </div>
@@ -237,7 +237,7 @@ const ItemService = ({
                       overflow: 'hidden',
                       padding: 0,
                       margin: 0,
-                      fontSize: '14px',
+                      fontSize: '12px',
                       color: 'rgba(183, 183, 183, 1)',
                       fontWeight: 500,
                     }}

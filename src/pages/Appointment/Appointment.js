@@ -15,7 +15,6 @@ import { useTheme } from '@mui/material/styles';
 import { CONSTANT } from 'helpers';
 import { useHistory } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import SearchBar from './component/SearchBar';
 import { ProductAction } from 'redux/actions/ProductAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -25,7 +24,10 @@ import Collapse from '@mui/material/Collapse';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
-import search from 'assets/images/search.png';
+import { styled } from '@mui/system';
+import TabsListUnstyled from '@mui/base/TabsListUnstyled';
+import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
+import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -42,6 +44,7 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [dateTimeActive, setDateTimeActive] = useState('');
   const [openModalValidation, setOpenModalValidation] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
@@ -103,6 +106,36 @@ const Appointment = (props) => {
   };
 
   // scss
+  const Tab = styled(TabUnstyled)`
+    cursor: pointer;
+    background-color: transparent;
+    width: 100%;
+    height: 58px;
+    border-radius: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    line-height: 16px;
+    color: rgba(92, 67, 67, 1);
+
+    &.${buttonUnstyledClasses.active} {
+      outline: none;
+      color: ${color.primary};
+    }
+
+    &.${tabUnstyledClasses.selected} {
+      outline: none;
+      color: ${color.primary};
+    }
+  `;
+
+  const TabsList = styled(TabsListUnstyled)`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: space-between;
+  `;
   const styleSheet = {
     container: {
       width: '45%',
@@ -167,10 +200,14 @@ const Appointment = (props) => {
   };
 
   // some Effect
+
   useEffect(() => {
     if (isEmptyObject(defaultOutlet)) {
       setOpenModalValidation(true);
     }
+    const date = new Date();
+    // const dateNow = defaultOutlet.operationalHours.find
+    console.log({ date: date.getDay() });
   }, [defaultOutlet]);
 
   useEffect(() => {
@@ -237,6 +274,23 @@ const Appointment = (props) => {
     });
   }, [locationKeys]);
 
+  const IconSearch = () => {
+    return (
+      <svg
+        width={32}
+        height={32}
+        viewBox='0 0 36 36'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M32.5651 30.4361L27.0001 24.9161C29.1603 22.2227 30.2064 18.804 29.9233 15.363C29.6403 11.922 28.0496 8.72025 25.4784 6.41604C22.9072 4.11184 19.5508 2.88034 16.0995 2.97478C12.6482 3.06922 9.36418 4.48242 6.92281 6.92379C4.48144 9.36516 3.06825 12.6491 2.97381 16.1005C2.87937 19.5518 4.11086 22.9081 6.41507 25.4794C8.71927 28.0506 11.9211 29.6413 15.3621 29.9243C18.803 30.2073 22.2217 29.1612 24.9151 27.0011L30.4351 32.5211C30.5745 32.6617 30.7404 32.7733 30.9232 32.8494C31.106 32.9256 31.3021 32.9648 31.5001 32.9648C31.6981 32.9648 31.8942 32.9256 32.077 32.8494C32.2598 32.7733 32.4257 32.6617 32.5651 32.5211C32.8355 32.2414 32.9866 31.8676 32.9866 31.4786C32.9866 31.0896 32.8355 30.7158 32.5651 30.4361V30.4361ZM16.5001 27.0011C14.4234 27.0011 12.3933 26.3853 10.6666 25.2315C8.9399 24.0778 7.59409 22.4379 6.79937 20.5193C6.00465 18.6006 5.79671 16.4894 6.20186 14.4526C6.607 12.4158 7.60703 10.5449 9.07548 9.07646C10.5439 7.608 12.4149 6.60798 14.4517 6.20283C16.4885 5.79769 18.5997 6.00562 20.5183 6.80034C22.4369 7.59506 24.0768 8.94087 25.2305 10.6676C26.3843 12.3943 27.0001 14.4244 27.0001 16.5011C27.0001 19.2858 25.8939 21.9566 23.9247 23.9257C21.9556 25.8948 19.2849 27.0011 16.5001 27.0011V27.0011Z'
+          fill={color.primary}
+        />
+      </svg>
+    );
+  };
+
   const Header = () => {
     const localStyle = {
       container: {
@@ -264,7 +318,7 @@ const Appointment = (props) => {
           }}
         />
         <div style={localStyle.label}>Appointment</div>
-        <img src={search} />
+        <IconSearch />
       </div>
     );
   };
@@ -282,8 +336,14 @@ const Appointment = (props) => {
     };
     return (
       <div style={localStyle.container}>
-        <div style={{ fontWeight: 'bold' }}>Chosen Location</div>
-        <div style={{ color: color.primary, cursor: 'pointer' }}>Change</div>
+        <div style={{ fontWeight: 'bold', color: 'black' }}>
+          Chosen Location
+        </div>
+        <div
+          style={{ color: color.primary, cursor: 'pointer', fontWeight: 500 }}
+        >
+          Change
+        </div>
       </div>
     );
   };
@@ -300,6 +360,7 @@ const Appointment = (props) => {
               gap: '0px 10px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
+              color: 'black',
             }}
           >
             <div style={{ fontSize: '14px', fontWeight: 500 }}>
@@ -344,6 +405,7 @@ const Appointment = (props) => {
         marginLeft: '10px',
         marginRight: '5px',
         fontWeight: 500,
+        color: 'black',
       },
     };
     return (
@@ -367,8 +429,10 @@ const Appointment = (props) => {
             }}
           />
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500 }}>{defaultOutlet.name}</div>
-            <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
+            <div style={{ fontWeight: 500, color: 'black' }}>
+              {defaultOutlet.name}
+            </div>
+            <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
               169 Bukit Merah Central, Singapore
             </div>
             <div style={localStyle.containerAccordion}>
@@ -539,39 +603,64 @@ const Appointment = (props) => {
     if (isMore) {
       return (
         <Tab
-          iconPosition='right'
-          icon={<KeyboardArrowDownIcon />}
-          label='Less'
           className={fontStyles.myFont}
           sx={styleSheet.muiSelected}
           onClick={() => setIsMore(false)}
-        />
+        >
+          <div
+            style={{
+              color: 'rgba(92, 67, 67, 1)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+              fontSize: '14px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div>Less</div>
+            <KeyboardArrowDownIcon />
+          </div>
+        </Tab>
       );
     }
     return (
-      <Tab
-        iconPosition='right'
-        icon={<KeyboardArrowDownIcon />}
-        label='More'
-        className={fontStyles.myFont}
-        sx={styleSheet.muiSelected}
-        onClick={() => setIsMore(true)}
-      />
+      <Tab sx={styleSheet.muiSelected} onClick={() => setIsMore(true)}>
+        <div
+          style={{
+            color: 'rgba(92, 67, 67, 1)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
+            fontSize: '14px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div>More</div>
+          <KeyboardArrowDownIcon />
+        </div>
+      </Tab>
     );
   };
 
   const handleIconsTab = (item) => {
     switch (item.name) {
-      case 'group 1':
+      case 'Beauty Salon Preset':
         return <IconsBlow name={item.name} />;
-      case 'group 2':
+      case 'Massage Preset':
         return <IconsNails name={item.name} />;
-      case 'group 3':
+      case 'Hair & Colouring Preset':
         return <IconsReflexology name={item.name} />;
       default:
         return null;
     }
   };
+
   const RenderTabHeader = () => {
     const categoryTab = categoryTabAppointment.slice(0, limitCategoryTabHeader);
     return (
@@ -581,15 +670,14 @@ const Appointment = (props) => {
             marginBottom: '10px',
           }}
         >
-          <Tabs
+          <TabsList
             value={selectedCategory.name}
             onChange={handleChange}
             aria-label='basic tabs example'
             sx={styleSheet.indicator}
           >
-            {categoryTab.map((item, i) => (
+            {categoryTab.map((item) => (
               <Tab
-                icon={handleIconsTab(item)}
                 value={item.name}
                 onClick={() => {
                   if (isMore) {
@@ -598,13 +686,27 @@ const Appointment = (props) => {
                   setSelectedCategory(item);
                 }}
                 key={item.id}
-                label={item.name}
                 className={fontStyles.myFont}
-                sx={styleSheet.muiSelected}
-              />
+              >
+                <div>
+                  {handleIconsTab(item)}
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      width: '85px',
+                      textAlign: 'center',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {item.name}
+                  </div>
+                </div>
+              </Tab>
             ))}
             {!isLoading && <RenderTabMore />}
-          </Tabs>
+          </TabsList>
           <RenderTabList />
         </div>
       </div>
@@ -671,6 +773,8 @@ const Appointment = (props) => {
         fontWeight: 'bold',
         padding: 0,
         margin: 0,
+        color: 'black',
+        marginBottom: '10px',
       },
     };
     return (
