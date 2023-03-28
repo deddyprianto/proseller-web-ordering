@@ -841,7 +841,7 @@ const Appointment = (props) => {
             padding: 0,
           }}
         >
-          You haven't chosen an outlet yet
+          Outlet Not Selected
         </DialogTitle>
         <div style={{ marginTop: '20px' }}>
           <div
@@ -853,8 +853,7 @@ const Appointment = (props) => {
               fontWeight: 500,
             }}
           >
-            You haven't chosen an outlet yet please select an outlet before
-            proceeding to the appointment feature
+            Please select an outlet to proceed.
           </div>
         </div>
         <DialogActions
@@ -879,7 +878,7 @@ const Appointment = (props) => {
               fontSize: '14px',
             }}
           >
-            Select Outlet Firts
+            OK
           </button>
         </DialogActions>
       </Dialog>
