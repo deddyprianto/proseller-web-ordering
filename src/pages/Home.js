@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import { useHistory } from 'react-router-dom';
@@ -47,7 +47,9 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Home = ({ ...props }) => {
-  const [openModalAppointment, setOpenModalAppointment] = useState(false);
+  const openPopupAppointment = useSelector(
+    (state) => state.AppointmentReducer.openPopupAppointment
+  );
   const history = useHistory();
   const [width] = useWindowSize();
   const dispatch = useDispatch();
@@ -97,8 +99,13 @@ const Home = ({ ...props }) => {
     const settingAppoinment = props.setting.setting.find((items) => {
       return items.settingKey === 'EnableAppointment';
     });
-    if (settingAppoinment?.settingValue && props.isLoggedIn) {
-      setOpenModalAppointment(settingAppoinment.settingValue);
+    if (openPopupAppointment) {
+      if (settingAppoinment?.settingValue) {
+        dispatch({
+          type: CONSTANT.OPEN_POPUP_APPOINTMENT,
+          payload: true,
+        });
+      }
     }
   }, [props.defaultOutlet, props.setting]);
 
@@ -169,10 +176,7 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
-          <ModalAppointment
-            open={openModalAppointment}
-            onClose={setOpenModalAppointment}
-          />
+          <ModalAppointment />
         </div>
       );
     }

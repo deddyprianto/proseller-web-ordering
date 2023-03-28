@@ -8,8 +8,14 @@ import fontStyles from './style/style.module.css';
 import { makeStyles } from '@material-ui/core/styles';
 import imgAppointment from 'assets/images/appointmetFeature.png';
 import { useHistory } from 'react-router-dom';
+import { CONSTANT } from 'helpers';
+import { useDispatch, useSelector } from 'react-redux';
 
-const ModalAppointment = ({ open, onClose }) => {
+const ModalAppointment = () => {
+  const openPopupAppointment = useSelector(
+    (state) => state.AppointmentReducer.openPopupAppointment
+  );
+  const dispatch = useDispatch();
   const history = useHistory();
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
@@ -28,12 +34,14 @@ const ModalAppointment = ({ open, onClose }) => {
     <Dialog
       fullWidth
       maxWidth='xs'
-      open={open}
+      open={openPopupAppointment}
       onClose={() => onclose(false)}
       classes={{ paper: classes.paper }}
     >
       <CloseIcon
-        onClick={() => onClose(false)}
+        onClick={() =>
+          dispatch({ type: CONSTANT.OPEN_POPUP_APPOINTMENT, payload: false })
+        }
         color='disabled'
         sx={{
           position: 'absolute',

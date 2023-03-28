@@ -168,20 +168,47 @@ const ItemService = ({
     if (item.orderingStatus === 'UNAVAILABLE') {
       return (
         <div style={localStyle.container}>
-          <div style={{ display: 'flex' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '70px 1fr',
+              gridTemplateRows: '1fr',
+              gridAutoColumns: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
+            }}
+          >
             <div style={localStyle.containerImg}>
               <img
-                src={item?.defaultImageURL}
+                src={item.defaultImageURL}
                 style={{ borderRadius: '10px' }}
               />
             </div>
             <div style={localStyle.containerUnavailable}>
               <div style={localStyle.containerUnavailable.labelTitle}>
-                Finishing Short Hair Cut Title Goes Here ...
+                {item.name}
               </div>
-              <div style={localStyle.containerUnavailable.labelSubTitle}>
-                Cutting Short hair description if any can goes here for example
-              </div>
+              <table>
+                <tr>
+                  <td
+                    style={{
+                      width: '100%',
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      padding: 0,
+                      margin: 0,
+                      fontSize: '12px',
+                      color: 'rgba(183, 183, 183, 1)',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {item.description}
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
           <div style={localStyle.containerUnavailable.gridContainer}>

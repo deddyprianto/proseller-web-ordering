@@ -1002,7 +1002,7 @@ const Appointment = (props) => {
             padding: 0,
           }}
         >
-          You are not select outlet
+          You haven't chosen an outlet yet
         </DialogTitle>
         <div style={{ marginTop: '20px' }}>
           <div
@@ -1014,8 +1014,8 @@ const Appointment = (props) => {
               fontWeight: 500,
             }}
           >
-            Some booked services you have not submitted might not be saved in
-            our system. Are you sure?
+            You haven't chosen an outlet yet please select an outlet before
+            proceeding to the appointment feature
           </div>
         </div>
         <DialogActions
