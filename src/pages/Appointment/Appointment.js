@@ -8,6 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { makeStyles } from '@material-ui/core/styles';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { CONSTANT } from 'helpers';
@@ -22,10 +24,7 @@ import Collapse from '@mui/material/Collapse';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
-import { styled } from '@mui/system';
-import TabsListUnstyled from '@mui/base/TabsListUnstyled';
-import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
-import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
+import search from 'assets/images/search.png';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -42,11 +41,9 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
-  const [dateTimeActive, setDateTimeActive] = useState('');
   const [openModalValidation, setOpenModalValidation] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
-  const [isMore, setIsMore] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [showNotif, setShowNotif] = useState(false);
   const [cutPrice, setCutPrice] = useState(true);
@@ -54,8 +51,6 @@ const Appointment = (props) => {
   const [locationKeys, setLocationKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState(0);
-  const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
-
   // initial
   const history = useHistory();
   const dispatch = useDispatch();
@@ -63,6 +58,11 @@ const Appointment = (props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
+  const useStyles = makeStyles(() => ({
+    paper: { minWidth: '350px', overflow: 'hidden' },
+  }));
+  const classes = useStyles();
+
   // some selectors
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const categoryTabAppointment = useSelector(
@@ -78,25 +78,11 @@ const Appointment = (props) => {
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
   const orderingMode = useSelector((state) => state.order.orderingMode);
 
+  // some fn
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const useStyles = makeStyles(() => ({
-    paper: { minWidth: '350px', overflow: 'hidden' },
-  }));
-  const classes = useStyles();
-  // some fn
-  const handleChangeCategory = ({ category, index }) => {
-    let categoryChanged = [];
-    categoryChanged.push(...categoryTabAppointment);
-    categoryChanged.splice(index + limitCategoryTabHeader, 1);
-    categoryChanged = [category, ...categoryChanged.slice(0)];
-    dispatch({
-      type: CONSTANT.LIST_CATEGORY_APPOINTMENT,
-      data: categoryChanged,
-    });
-  };
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
@@ -104,36 +90,6 @@ const Appointment = (props) => {
   };
 
   // scss
-  const Tab = styled(TabUnstyled)`
-    cursor: pointer;
-    background-color: transparent;
-    width: 100%;
-    height: 58px;
-    border-radius: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px;
-    line-height: 16px;
-    color: rgba(92, 67, 67, 1);
-
-    &.${buttonUnstyledClasses.active} {
-      outline: none;
-      color: ${color.primary};
-    }
-
-    &.${tabUnstyledClasses.selected} {
-      outline: none;
-      color: ${color.primary};
-    }
-  `;
-
-  const TabsList = styled(TabsListUnstyled)`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-content: space-between;
-  `;
   const styleSheet = {
     container: {
       width: '45%',
@@ -198,27 +154,11 @@ const Appointment = (props) => {
   };
 
   // some Effect
-
   useEffect(() => {
     if (isEmptyObject(defaultOutlet)) {
       setOpenModalValidation(true);
     }
-    const date = new Date();
-    // const dateNow = defaultOutlet.operationalHours.find
-    console.log({ date: date.getDay() });
   }, [defaultOutlet]);
-
-  useEffect(() => {
-    if (width < 600) {
-      setLimitCategoryTabHeader(3);
-    }
-    if (width > 750) {
-      setLimitCategoryTabHeader(5);
-    }
-    if (width >= 1000) {
-      setLimitCategoryTabHeader(6);
-    }
-  }, [width]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -584,87 +524,6 @@ const Appointment = (props) => {
     );
   };
 
-  const RenderTabList = () => {
-    const categoryTabList = categoryTabAppointment.slice(
-      limitCategoryTabHeader
-    );
-    return (
-      <Collapse in={isMore}>
-        <Paper style={styleSheet.paper} className={fontStyles.myFont}>
-          {categoryTabList.map((category, index) => {
-            return (
-              <div
-                onClick={() => {
-                  handleChangeCategory({ category, index });
-                  setSelectedCategory(category);
-                  setIsMore(false);
-                }}
-                className={fontStyles.myFont}
-                key={index}
-                style={{
-                  padding: '10px',
-                  textAlign: 'center',
-                  marginTop: '15px',
-                }}
-              >
-                <div style={styleSheet.categoryName}>{category.name}</div>
-              </div>
-            );
-          })}
-        </Paper>
-      </Collapse>
-    );
-  };
-
-  const RenderTabMore = () => {
-    if (isMore) {
-      return (
-        <Tab
-          className={fontStyles.myFont}
-          sx={styleSheet.muiSelected}
-          onClick={() => setIsMore(false)}
-        >
-          <div
-            style={{
-              color: 'rgba(92, 67, 67, 1)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              textAlign: 'center',
-              fontSize: '14px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <div>Less</div>
-            <KeyboardArrowDownIcon />
-          </div>
-        </Tab>
-      );
-    }
-    return (
-      <Tab sx={styleSheet.muiSelected} onClick={() => setIsMore(true)}>
-        <div
-          style={{
-            color: 'rgba(92, 67, 67, 1)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            textAlign: 'center',
-            fontSize: '14px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <div>More</div>
-          <KeyboardArrowDownIcon />
-        </div>
-      </Tab>
-    );
-  };
-
   const handleIconsTab = (item) => {
     switch (item.name) {
       case 'Beauty Salon Preset':
@@ -679,7 +538,6 @@ const Appointment = (props) => {
   };
 
   const RenderTabHeader = () => {
-    const categoryTab = categoryTabAppointment.slice(0, limitCategoryTabHeader);
     return (
       <div sx={{ width: '100%' }}>
         <div
@@ -687,44 +545,28 @@ const Appointment = (props) => {
             marginBottom: '10px',
           }}
         >
-          <TabsList
+          <Tabs
             value={selectedCategory.name}
             onChange={handleChange}
-            aria-label='basic tabs example'
             sx={styleSheet.indicator}
+            variant='scrollable'
+            scrollButtons='auto'
+            aria-label='scrollable auto tabs example'
           >
-            {categoryTab.map((item) => (
+            {categoryTabAppointment.map((item, i) => (
               <Tab
+                icon={handleIconsTab(item)}
                 value={item.name}
                 onClick={() => {
-                  if (isMore) {
-                    setIsMore(false);
-                  }
                   setSelectedCategory(item);
                 }}
                 key={item.id}
+                label={item.name}
                 className={fontStyles.myFont}
-              >
-                <div>
-                  {handleIconsTab(item)}
-                  <div
-                    style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      width: '85px',
-                      textAlign: 'center',
-                      fontSize: '14px',
-                    }}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              </Tab>
+                sx={styleSheet.muiSelected}
+              />
             ))}
-            {!isLoading && <RenderTabMore />}
-          </TabsList>
-          <RenderTabList />
+          </Tabs>
         </div>
       </div>
     );
