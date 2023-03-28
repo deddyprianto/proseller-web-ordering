@@ -15,6 +15,8 @@ const defaultState = {
   loading: false,
   loadingProductCategory: false,
   error: null,
+  categoryTabAppointment: [],
+  productServicesAppointment: [],
 };
 
 export default function reducer(state = defaultState, action) {
@@ -78,6 +80,16 @@ export default function reducer(state = defaultState, action) {
       return Object.assign({}, state, {
         products: action.data,
       });
+    case CONSTANT.LIST_CATEGORY_APPOINTMENT:
+      return {
+        ...state,
+        categoryTabAppointment: action.data,
+      };
+    case CONSTANT.LIST_SERVICE_APPOINTMENT:
+      return {
+        ...state,
+        productServicesAppointment: action.data,
+      };
     default:
       return state;
   }

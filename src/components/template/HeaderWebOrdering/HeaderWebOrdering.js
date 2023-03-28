@@ -24,7 +24,14 @@ const useStyles = (location) => {
   const mobileSize = useMobileSize();
   const result = {
     container: {
-      display: 'flex',
+      display:
+        location.pathname === '/appointment' ||
+        location.pathname === '/location' ||
+        location.pathname === '/cartappointment' ||
+        location.pathname === '/bookingsummary' ||
+        location.pathname === '/bookingsubmitted'
+          ? 'none'
+          : 'flex',
       justifyContent: 'center',
       position: 'fixed',
       top: 0,
