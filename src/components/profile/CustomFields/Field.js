@@ -384,21 +384,21 @@ const Field = ({
           <span className='required'>{field.mandatory && '*'}</span>
         </label>
         <select
-          name={field.fieldName}
+          name={field?.fieldName}
           onChange={handleValueChange}
           className={cx(styles.select, {
             [styles.rounded]: roundedBorder,
           })}
           multiple
         >
-          {field.options.map((option) => {
+          {field?.options?.map((option) => {
             return <option value={option.value}>{option.text}</option>;
           })}
         </select>
-        {error && error[field.fieldName] !== '' && (
+        {error && error[field?.fieldName] !== '' && (
           <div className='text text-warning-theme small'>
             {' '}
-            <em>{error[field.fieldName]}</em>{' '}
+            <em>{error[field?.fieldName]}</em>{' '}
           </div>
         )}
       </div>
