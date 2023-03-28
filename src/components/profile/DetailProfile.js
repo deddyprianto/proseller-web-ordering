@@ -288,7 +288,8 @@ class DetailProfile extends Component {
 
   viewRightPage(loadingShow) {
     let { referall, isEmenu, svc } = this.state;
-    const { orderingSetting, setting } = this.props;
+    const { orderingSetting, setting, settingAppoinment } = this.props;
+    const showRewardMenu = isEmenu && settingAppoinment;
     let enableTermAndCondition = setting.find((items) => {
       return items.settingKey === 'TermCondition';
     });
@@ -386,7 +387,7 @@ class DetailProfile extends Component {
               </Link>
             )}
 
-            {isEmenu && (
+            {showRewardMenu && (
               <Link to='/rewards'>
                 <div
                   className='background-theme'

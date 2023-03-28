@@ -8,8 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { makeStyles } from '@material-ui/core/styles';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { CONSTANT } from 'helpers';
@@ -349,6 +347,19 @@ const Appointment = (props) => {
   };
 
   const RenderTimeList = () => {
+    const dayNames = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const dayName = dayNames[dayOfWeek];
     return defaultOutlet?.operationalHours.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
@@ -360,13 +371,15 @@ const Appointment = (props) => {
               gap: '0px 10px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
-              color: 'black',
+              color:
+                dayName === item.nameOfDay
+                  ? 'black'
+                  : 'rrgba(183, 183, 183, 1)',
+              fontWeight: dayName === item.nameOfDay ? 'bold' : 500,
             }}
           >
-            <div style={{ fontSize: '14px', fontWeight: 500 }}>
-              {item.nameOfDay}
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 500 }}>
+            <div style={{ fontSize: '14px' }}>{item.nameOfDay}</div>
+            <div style={{ fontSize: '14px' }}>
               {item.open} - {item.close}
             </div>
           </li>
@@ -586,9 +599,13 @@ const Appointment = (props) => {
                   setSelectedCategory(category);
                   setIsMore(false);
                 }}
-                className={classes.itemMoreHover}
+                className={fontStyles.myFont}
                 key={index}
-                style={{ padding: '10px' }}
+                style={{
+                  padding: '10px',
+                  textAlign: 'center',
+                  marginTop: '15px',
+                }}
               >
                 <div style={styleSheet.categoryName}>{category.name}</div>
               </div>
@@ -809,7 +826,7 @@ const Appointment = (props) => {
             position: 'absolute',
             backgroundColor: 'white',
             height: '270px',
-            width: '60%',
+            width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
             zIndex: 999,

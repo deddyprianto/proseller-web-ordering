@@ -74,6 +74,9 @@ class Profile extends Component {
   }
 
   render() {
+    const settingAppoinment = this.props.setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
     let { isProfile } = this.state;
     if (!this.props.isLoggedIn) {
       return (
@@ -147,7 +150,13 @@ class Profile extends Component {
               className='site-main'
               style={{ textAlign: 'center' }}
             >
-              {isProfile ? <DetailProfile /> : <RewardsDetail />}
+              {isProfile ? (
+                <DetailProfile
+                  settingAppoinment={settingAppoinment?.settingValue}
+                />
+              ) : (
+                <RewardsDetail />
+              )}
             </main>
           </div>
         </div>
