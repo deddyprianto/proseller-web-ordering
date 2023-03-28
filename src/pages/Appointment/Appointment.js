@@ -38,7 +38,6 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
-  const [openModalValidation, setOpenModalValidation] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
@@ -151,12 +150,6 @@ const Appointment = (props) => {
   };
 
   // some Effect
-  useEffect(() => {
-    if (isEmptyObject(defaultOutlet)) {
-      setOpenModalValidation(true);
-    }
-  }, [defaultOutlet]);
-
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -813,72 +806,6 @@ const Appointment = (props) => {
             }}
           >
             Yes, I’m Sure
-          </button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        fullWidth
-        maxWidth='xs'
-        open={openModalValidation}
-        onClose={() => setOpenModalValidation(false)}
-        classes={{ paper: classes.paper }}
-      >
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '15px',
-          }}
-        ></div>
-        <DialogTitle
-          className={fontStyles.myFont}
-          sx={{
-            fontWeight: 600,
-            fontSize: '16px',
-            textAlign: 'center',
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          Outlet Not Selected
-        </DialogTitle>
-        <div style={{ marginTop: '20px' }}>
-          <div
-            className={fontStyles.myFont}
-            style={{
-              color: 'rgba(183, 183, 183, 1)',
-              fontSize: '14px',
-              textAlign: 'center',
-              fontWeight: 500,
-            }}
-          >
-            Please select an outlet to proceed.
-          </div>
-        </div>
-        <DialogActions
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <button
-            onClick={() => {
-              setOpenModalValidation(false);
-              window.location.href = changeFormatURl('/outlet');
-            }}
-            className={fontStyles.myFont}
-            style={{
-              color: 'white',
-              width: '90%',
-              padding: '6px 0px',
-              borderRadius: '10px',
-              fontSize: '14px',
-            }}
-          >
-            OK
           </button>
         </DialogActions>
       </Dialog>
