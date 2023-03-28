@@ -189,7 +189,7 @@ const Location = (props) => {
   const LocationSelected = () => {
     const localStyle = {
       container: {
-        width: '95%',
+        width: '93%',
         boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
         margin: 'auto',
         borderRadius: '10px',
@@ -214,6 +214,7 @@ const Location = (props) => {
         alignItems: 'center',
         marginLeft: '10px',
         marginTop: '10px',
+        color: 'black',
       },
       labelOpenNow: {
         fontSize: '14px',
@@ -243,7 +244,7 @@ const Location = (props) => {
             }}
           />
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500 }}>
+            <div style={{ fontWeight: 500, color: 'black' }}>
               {!isEmptyObject(selectedLocation)
                 ? selectedLocation.name
                 : defaultOutlet.name}
@@ -283,7 +284,7 @@ const Location = (props) => {
   const ListLocations = ({ item, isDisable }) => {
     const localStyle = {
       container: {
-        width: '95%',
+        width: '93%',
         boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 18px 0px',
         margin: 'auto',
         borderRadius: '10px',
@@ -435,12 +436,12 @@ const Location = (props) => {
       <div
         style={{
           display: 'flex',
-          width: '90%',
+          width: '93%',
           margin: 'auto',
           marginTop: '25px',
         }}
       >
-        <p style={{ fontWeight: 'bold' }}>Chosen Location</p>
+        <p style={{ fontWeight: 'bold', color: 'black' }}>Chosen Location</p>
       </div>
     );
   };
@@ -461,7 +462,9 @@ const Location = (props) => {
           <LocationSelected />
         </div>
         <div style={{ margin: '10px 0px' }}>
-          <p style={{ marginLeft: '10px', fontWeight: 700 }}>Other Location</p>
+          <p style={{ marginLeft: '15px', color: 'black', fontWeight: 700 }}>
+            Other Location
+          </p>
           {outlets.map((item) => (
             <ListLocations
               key={item.name}
