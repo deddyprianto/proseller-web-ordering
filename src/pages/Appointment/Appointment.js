@@ -19,12 +19,9 @@ import { ProductAction } from 'redux/actions/ProductAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Paper from '@mui/material/Paper';
-import Collapse from '@mui/material/Collapse';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
-import search from 'assets/images/search.png';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -265,7 +262,7 @@ const Appointment = (props) => {
     const localStyle = {
       container: {
         display: 'flex',
-        width: '90%',
+        width: '93%',
         margin: 'auto',
         justifyContent: 'space-between',
         marginTop: '25px',
@@ -330,7 +327,7 @@ const Appointment = (props) => {
   const Location = () => {
     const localStyle = {
       container: {
-        width: '95%',
+        width: '93%',
         boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 18px 0px',
         margin: 'auto',
         borderRadius: '10px',
@@ -624,7 +621,7 @@ const Appointment = (props) => {
   const Services = () => {
     const localStyle = {
       container: {
-        width: '95%',
+        width: '93%',
         margin: 'auto',
         marginTop: '25px',
       },
