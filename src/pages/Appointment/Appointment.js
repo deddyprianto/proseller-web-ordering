@@ -317,6 +317,7 @@ const Appointment = (props) => {
       );
     });
   };
+
   const Location = () => {
     const localStyle = {
       container: {
