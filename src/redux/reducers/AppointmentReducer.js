@@ -5,7 +5,7 @@ function AppointmentReducer(
     isOpenModalLeavePage: false,
     openPopupAppointment: true,
     locationAppointment: {},
-    popupLocation: {},
+    popupLocation: false,
   },
   action
 ) {

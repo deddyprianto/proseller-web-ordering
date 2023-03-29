@@ -37,7 +37,6 @@ const Location = (props) => {
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
-  const [openAccordion, setOpenAccordion] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
@@ -89,6 +88,7 @@ const Location = (props) => {
   useEffect(() => {
     return history.listen((location) => {
       if (history.action === 'PUSH') {
+        console.log(location.pathname);
         setLocationKeys([location.pathname]);
         if (location.pathname !== '/location') {
           dispatch({
@@ -98,15 +98,6 @@ const Location = (props) => {
           history.push('/location');
         }
       }
-      // if (history.action === 'POP') {
-      //   if (locationKeys[1] === location.pathname) {
-      //     setLocationKeys(([_, ...keys]) => keys);
-      //     // Handle forward event
-      //   } else {
-      //     setLocationKeys((keys) => [location.pathname, ...keys]);
-      //     // Handle back event
-      //   }
-      // }
     });
   }, [locationKeys]);
 
@@ -188,16 +179,6 @@ const Location = (props) => {
   };
   const LocationSelected = () => {
     const localStyle = {
-      container: {
-        width: '93%',
-        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-        margin: 'auto',
-        borderRadius: '10px',
-        padding: '10px 0px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        border: '1px solid red',
-      },
       containerAccordion: {
         width: '93%',
         display: 'flex',
@@ -224,7 +205,17 @@ const Location = (props) => {
       },
     };
     return (
-      <div style={localStyle.container}>
+      <div
+        style={{
+          width: '93%',
+          margin: 'auto',
+          borderRadius: '10px',
+          padding: '10px 0px',
+          marginTop: '10px',
+          marginBottom: '10px',
+          border: '1px solid red',
+        }}
+      >
         <div
           style={{
             display: 'grid',
@@ -250,7 +241,9 @@ const Location = (props) => {
                 : defaultOutlet.name}
             </div>
             <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
-              169 Bukit Merah Central, Singapore
+              {!isEmptyObject(selectedLocation)
+                ? selectedLocation?.address
+                : defaultOutlet?.address}
             </div>
             <div style={localStyle.containerAccordion}>
               <div
@@ -349,7 +342,7 @@ const Location = (props) => {
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500 }}>{item.name}</div>
             <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
-              169 Bukit Merah Central, Singapore
+              {item?.address}
             </div>
             <div style={localStyle.containerAccordion}>
               <div
@@ -413,7 +406,7 @@ const Location = (props) => {
         <ArrowBackIosIcon
           fontSize='large'
           onClick={() => {
-            history.goBack();
+            history.push('/appointment');
           }}
         />
         <p
@@ -448,19 +441,8 @@ const Location = (props) => {
 
   const RenderRowListLocation = () => {
     return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: '170px 1fr',
-          gap: '0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '"."\n    "."',
-        }}
-      >
-        <div>
-          <LocationSelected />
-        </div>
+      <div>
+        <LocationSelected />
         <div style={{ margin: '10px 0px' }}>
           <p style={{ marginLeft: '15px', color: 'black', fontWeight: 700 }}>
             Other Location
