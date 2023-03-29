@@ -22,6 +22,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
+import Box from '@mui/material/Box';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -60,6 +61,9 @@ const Appointment = (props) => {
   const classes = useStyles();
 
   // some selectors
+  const selectedLocation = useSelector(
+    (state) => state.appointmentReducer.locationAppointment
+  );
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const categoryTabAppointment = useSelector(
     (state) => state.product.categoryTabAppointment
@@ -69,7 +73,7 @@ const Appointment = (props) => {
   );
   const color = useSelector((state) => state.theme.color);
   const isOpenModalLeavePage = useSelector(
-    (state) => state.AppointmentReducer.isOpenModalLeavePage
+    (state) => state.appointmentReducer.isOpenModalLeavePage
   );
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
   const orderingMode = useSelector((state) => state.order.orderingMode);
@@ -138,6 +142,16 @@ const Appointment = (props) => {
       },
     },
     indicator: {
+      '& .MuiTabScrollButton-root': {
+        padding: 0,
+        margin: 0,
+        width: 15,
+      },
+      '& .MuiTabs-indicator': {
+        backgroundColor: color.primary,
+      },
+    },
+    indicatorForMobileView: {
       '& .MuiTabs-indicator': {
         backgroundColor: color.primary,
       },
@@ -269,6 +283,9 @@ const Appointment = (props) => {
         </div>
         <div
           style={{ color: color.primary, cursor: 'pointer', fontWeight: 500 }}
+          onClick={() => {
+            window.location.href = changeFormatURl('/location');
+          }}
         >
           Change
         </div>
@@ -290,7 +307,10 @@ const Appointment = (props) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const dayName = dayNames[dayOfWeek];
-    return defaultOutlet?.operationalHours.map((item, i) => {
+    const isSelectedLocationAppointment = !isEmptyObject(selectedLocation)
+      ? selectedLocation
+      : defaultOutlet;
+    return isSelectedLocationAppointment?.operationalHours.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
@@ -373,11 +393,15 @@ const Appointment = (props) => {
             }}
           />
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500, color: 'black' }}>
-              {defaultOutlet.name}
+            <div style={{ fontWeight: 500 }}>
+              {!isEmptyObject(selectedLocation)
+                ? selectedLocation.name
+                : defaultOutlet.name}
             </div>
-            <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
-              169 Bukit Merah Central, Singapore
+            <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
+              {!isEmptyObject(selectedLocation)
+                ? selectedLocation?.address
+                : defaultOutlet?.address}
             </div>
             <div style={localStyle.containerAccordion}>
               <div
@@ -528,7 +552,7 @@ const Appointment = (props) => {
     }
   };
 
-  const RenderTabHeader = () => {
+  const RenderTabHeaderMobile = () => {
     return (
       <div sx={{ width: '100%' }}>
         <div
@@ -539,7 +563,7 @@ const Appointment = (props) => {
           <Tabs
             value={selectedCategory.name}
             onChange={handleChange}
-            sx={styleSheet.indicator}
+            sx={styleSheet.indicatorForMobileView}
             variant='scrollable'
             scrollButtons='auto'
             aria-label='scrollable auto tabs example'
@@ -560,6 +584,39 @@ const Appointment = (props) => {
           </Tabs>
         </div>
       </div>
+    );
+  };
+
+  const RenderTabHeaderDekstop = () => {
+    return (
+      <Box
+        sx={{
+          width: '600px',
+        }}
+      >
+        <Tabs
+          value={selectedCategory.name}
+          onChange={handleChange}
+          sx={styleSheet.indicator}
+          variant='scrollable'
+          scrollButtons='auto'
+          aria-label='scrollable auto tabs example'
+        >
+          {categoryTabAppointment.map((item, i) => (
+            <Tab
+              icon={handleIconsTab(item)}
+              value={item.name}
+              onClick={() => {
+                setSelectedCategory(item);
+              }}
+              key={item.id}
+              label={item.name}
+              className={fontStyles.myFont}
+              sx={styleSheet.muiSelected}
+            />
+          ))}
+        </Tabs>
+      </Box>
     );
   };
   const RendernNotifSuccess = () => {
@@ -631,7 +688,11 @@ const Appointment = (props) => {
       <div style={localStyle.container}>
         <div style={localStyle.label}>Services</div>
         <TabsUnstyled value={`${selectedCategory.name}`}>
-          <RenderTabHeader />
+          {gadgetScreen ? (
+            <RenderTabHeaderMobile />
+          ) : (
+            <RenderTabHeaderDekstop />
+          )}
           {isLoading ? (
             <RenderAnimationLoading />
           ) : (
@@ -677,6 +738,7 @@ const Appointment = (props) => {
   };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
+      // LOL
       return (
         <div
           className={fontStyles.myFont}

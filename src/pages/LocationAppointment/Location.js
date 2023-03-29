@@ -32,7 +32,7 @@ const Location = (props) => {
   const history = useHistory();
   // some st
   const selectedLocation = useSelector(
-    (state) => state.AppointmentReducer.location
+    (state) => state.appointmentReducer.location
   );
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
@@ -45,8 +45,8 @@ const Location = (props) => {
   const classes = useStyles();
   // some sl
   const color = useSelector((state) => state.theme.color);
-  const isOpenModalLeavePageLocationPage = useSelector(
-    (state) => state.AppointmentReducer.isOpenModalLeavePageLocationPage
+  const popupLocation = useSelector(
+    (state) => state.appointmentReducer.popupLocation
   );
   const outlets = useSelector((state) => state.outlet.outlets);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
@@ -85,7 +85,7 @@ const Location = (props) => {
       gridTemplateAreas: '". . ."',
     },
   };
-
+  // some Effect
   useEffect(() => {
     return history.listen((location) => {
       if (history.action === 'PUSH') {
@@ -290,7 +290,7 @@ const Location = (props) => {
         borderRadius: '10px',
         padding: '10px 0px',
         marginBottom: '10px',
-        pointerEvents: isDisable && 'none',
+        pointerEvents: !isDisable && 'none',
       },
       containerAccordion: {
         width: '93%',
@@ -336,7 +336,7 @@ const Location = (props) => {
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
             cursor: 'pointer',
-            opacity: isDisable ? 0.4 : 1,
+            opacity: !isDisable ? 0.4 : 1,
           }}
         >
           <PlaceIcon
@@ -371,7 +371,7 @@ const Location = (props) => {
           >
             <div
               style={{
-                backgroundColor: isDisable ? 'red' : 'green',
+                backgroundColor: !isDisable ? 'red' : 'green',
                 display: 'flex',
                 justifyContent: 'space-evenly',
                 alignItems: 'center',
@@ -381,14 +381,14 @@ const Location = (props) => {
               }}
             >
               <AccessTimeIcon />
-              <div>{isDisable ? 'Close' : 'Open'}</div>
+              <div>{!isDisable ? 'Close' : 'Open'}</div>
             </div>
           </div>
         </div>
         <div style={localStyle.containerOpenNow}>
           <AccessTimeIcon style={{ fontSize: '20px' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            {isDisable ? 'Closed Today' : 'Open Now'}
+            {!isDisable ? 'Closed Today' : 'Open Now'}
           </div>
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
@@ -514,7 +514,7 @@ const Location = (props) => {
       <Dialog
         fullWidth
         maxWidth='xs'
-        open={isOpenModalLeavePageLocationPage}
+        open={popupLocation}
         onClose={() =>
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,

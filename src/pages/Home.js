@@ -48,7 +48,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 const Home = ({ ...props }) => {
   const openPopupAppointment = useSelector(
-    (state) => state.AppointmentReducer.openPopupAppointment
+    (state) => state.appointmentReducer.openPopupAppointment
   );
   const history = useHistory();
   const [width] = useWindowSize();
