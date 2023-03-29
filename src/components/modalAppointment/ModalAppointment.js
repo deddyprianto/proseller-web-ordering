@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const ModalAppointment = () => {
   const openPopupAppointment = useSelector(
-    (state) => state.AppointmentReducer.openPopupAppointment
+    (state) => state.appointmentReducer.openPopupAppointment
   );
   const dispatch = useDispatch();
   const history = useHistory();
