@@ -274,15 +274,16 @@ const Location = (props) => {
       </div>
     );
   };
+
   const ListLocations = ({ item, isDisable }) => {
     const localStyle = {
       container: {
         width: '93%',
-        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 18px 0px',
+        boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
         margin: 'auto',
         borderRadius: '10px',
         padding: '10px 0px',
-        marginBottom: '10px',
+        marginBottom: '15px',
         pointerEvents: !isDisable && 'none',
       },
       containerAccordion: {

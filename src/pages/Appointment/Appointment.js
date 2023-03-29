@@ -342,7 +342,7 @@ const Appointment = (props) => {
     const localStyle = {
       container: {
         width: '93%',
-        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 18px 0px',
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         margin: 'auto',
         borderRadius: '10px',
         padding: '10px 0px',
