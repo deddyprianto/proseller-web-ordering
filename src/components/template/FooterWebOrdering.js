@@ -52,6 +52,7 @@ const FooterWebOrdering = () => {
 
   useEffect(() => {
     if (!isLoggedIn) {
+      setNewNavbar(navBar);
       if (guessCheckout) {
         const spliceData = navBar;
         spliceData.splice(5, 0, { text: 'TrackOrder', path: '/trackorder' });

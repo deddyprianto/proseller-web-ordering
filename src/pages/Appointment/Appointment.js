@@ -23,6 +23,8 @@ import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
 import Box from '@mui/material/Box';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import MyLoader from './component/LoaderSkleton';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -46,7 +48,7 @@ const Appointment = (props) => {
   const [cutPrice, setCutPrice] = useState(true);
   const [openAccordion, setOpenAccordion] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(0);
   // initial
   const history = useHistory();
@@ -447,7 +449,6 @@ const Appointment = (props) => {
       </div>
     );
   };
-
   const IconsBlow = ({ name }) => {
     return (
       <svg
@@ -694,7 +695,7 @@ const Appointment = (props) => {
             <RenderTabHeaderDekstop />
           )}
           {isLoading ? (
-            <RenderAnimationLoading />
+            <MyLoader />
           ) : (
             <>
               {productServicesAppointment.map((item) => (
@@ -738,7 +739,6 @@ const Appointment = (props) => {
   };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
-      // LOL
       return (
         <div
           className={fontStyles.myFont}
@@ -776,7 +776,11 @@ const Appointment = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <LoadingOverlayCustom
+      active={isLoading}
+      spinner={<RenderAnimationLoading />}
+      text='Please wait...'
+    >
       {showNotif && <RendernNotifSuccess />}
       <ResponsiveLayout />
       <Dialog
@@ -872,7 +876,7 @@ const Appointment = (props) => {
           </button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </LoadingOverlayCustom>
   );
 };
 
