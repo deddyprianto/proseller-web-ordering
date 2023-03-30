@@ -15,6 +15,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
 import { CONSTANT } from 'helpers';
 import ModalAppointment from 'components/modalAppointment/ModalAppointment';
+import { useLocalStorage } from 'hooks/useLocalStorage';
 
 const base64 = require('base-64');
 
@@ -47,8 +48,12 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Home = ({ ...props }) => {
-  const openPopupAppointment = useSelector(
-    (state) => state.appointmentReducer.openPopupAppointment
+  const settingAppoinment = props.setting.setting.find((items) => {
+    return items.settingKey === 'EnableAppointment';
+  });
+  const [name, setName] = useLocalStorage(
+    'popup_appointment',
+    settingAppoinment?.settingValue
   );
   const history = useHistory();
   const [width] = useWindowSize();
@@ -93,21 +98,16 @@ const Home = ({ ...props }) => {
   }, [window.location.href, isLanding]);
 
   useEffect(() => {
+    if (name) {
+      setName(true);
+    }
+  }, [props.setting]);
+
+  useEffect(() => {
     if (isEmptyObject(props.defaultOutlet)) {
       history.push('/outlets');
     }
-    const settingAppoinment = props.setting.setting.find((items) => {
-      return items.settingKey === 'EnableAppointment';
-    });
-    if (openPopupAppointment) {
-      if (settingAppoinment?.settingValue) {
-        dispatch({
-          type: CONSTANT.OPEN_POPUP_APPOINTMENT,
-          payload: true,
-        });
-      }
-    }
-  }, [props.defaultOutlet, props.setting]);
+  }, [props.defaultOutlet]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -176,7 +176,7 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
-          <ModalAppointment />
+          <ModalAppointment name={name} setName={setName} />
         </div>
       );
     }
