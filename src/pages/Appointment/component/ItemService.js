@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
+import DetailAppointment from './DetailAppointment';
 import Dialog from '@mui/material/Dialog';
 
 const ItemService = ({
@@ -9,11 +10,15 @@ const ItemService = ({
   gadgetScreen,
   fullScreen,
   styleSheet,
-  setIsOpenModalDetail,
+  isCheckedService,
 }) => {
   // some state
+  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
 
   // some selectors
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
@@ -72,7 +77,7 @@ const ItemService = ({
     },
     gridContainerBottom: {
       display: 'grid',
-      gridTemplateColumns: '100px 1fr 80px',
+      gridTemplateColumns: '100px 1fr 90px',
       gridTemplateRows: '1fr',
       gap: '0px 0px',
       gridAutoFlow: 'row',
@@ -80,9 +85,13 @@ const ItemService = ({
       marginTop: '15px',
     },
     subContainerGrid: {
+      marginLeft: '5px',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: `${color.primary}10`,
+      borderRadius: '15px',
+      width: '71px',
     },
     label30mins: {
       fontSize: '13px',
@@ -108,13 +117,14 @@ const ItemService = ({
     },
     button: {
       justifySelf: 'center',
-      width: '100%',
+      width: '90%',
       display: 'flex',
       justifyContent: 'center',
       labelButton: {
-        width: '60px',
+        width: '100%',
         borderRadius: '5px',
-        fontSize: '12px',
+        fontSize: '14px',
+        fontWeight: 500,
         color: 'white',
       },
     },
@@ -214,7 +224,9 @@ const ItemService = ({
           <div style={localStyle.containerUnavailable.gridContainer}>
             <div style={localStyle.containerUnavailable.button}>
               <AccessTimeIcon sx={{ color: 'white' }} />
-              <div style={localStyle.containerUnavailable.label}>30 mins</div>
+              <div style={localStyle.containerUnavailable.label}>
+                {item?.duration}
+              </div>
             </div>
             <div style={localStyle.containerUnavailable.labelNotAvailable}>
               Not Available
@@ -246,9 +258,9 @@ const ItemService = ({
             </div>
             <div style={localStyle.containerLabel}>
               <div style={localStyle.containerLabel.container}>
-                {/* {props.check && (
+                {isCheckedService && (
                   <CheckCircleIcon sx={localStyle.containerLabel.icon} />
-                )} */}
+                )}
                 <div style={{ width: '100%' }}>
                   <div style={localStyle.containerLabel.label}>{item.name}</div>
                 </div>
@@ -277,8 +289,10 @@ const ItemService = ({
           </div>
           <div style={localStyle.gridContainerBottom}>
             <div style={localStyle.subContainerGrid}>
-              <AccessTimeIcon sx={{ color: color.primary }} />
-              <div style={localStyle.label30mins}>30 mins</div>
+              <AccessTimeIcon
+                sx={{ color: color.primary, padding: 0, margin: 0 }}
+              />
+              <div style={localStyle.label30mins}>{item?.duration}</div>
             </div>
             {item?.cutPrice ? (
               <div style={localStyle.containerCutPrice}>
@@ -303,7 +317,7 @@ const ItemService = ({
                 }}
                 style={localStyle.button.labelButton}
               >
-                BOOK
+                {isCheckedService ? 'UPDATE' : 'BOOK'}
               </button>
             </div>
           </div>
@@ -315,6 +329,22 @@ const ItemService = ({
   return (
     <React.Fragment>
       <RenderItemService />
+      <Dialog
+        fullScreen={fullScreen}
+        fullWidth
+        maxWidth='md'
+        open={isOpenModalDetail}
+        onClose={() => setIsOpenModalDetail(false)}
+      >
+        <DetailAppointment
+          handleCurrency={handleCurrency}
+          color={color}
+          gadgetScreen={gadgetScreen}
+          styleSheet={styleSheet}
+          setIsOpenModalDetail={setIsOpenModalDetail}
+          item={item}
+        />
+      </Dialog>
     </React.Fragment>
   );
 };

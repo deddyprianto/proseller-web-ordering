@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -25,6 +27,7 @@ import ItemService from './component/ItemService';
 import Box from '@mui/material/Box';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import MyLoader from './component/LoaderSkleton';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -41,28 +44,39 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [messageLoading, setMessageLoading] = useState('Please wait...');
+  const [showNotif, setShowNotif] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [showNotif, setShowNotif] = useState(false);
   const [cutPrice, setCutPrice] = useState(true);
   const [openAccordion, setOpenAccordion] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(0);
+
   // initial
   const history = useHistory();
   const dispatch = useDispatch();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const [width] = useWindowSize();
+  const [width, height] = useWindowSize();
   const gadgetScreen = width < 980;
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
 
-  // some selectors
+  // some sl
+  const responseAddTocart = useSelector(
+    (state) => state.appointmentReducer.responseAddTocart
+  );
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
+  const productServicesAppointment = useSelector(
+    (state) => state.product.productServicesAppointment
+  );
   const selectedLocation = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
@@ -70,17 +84,26 @@ const Appointment = (props) => {
   const categoryTabAppointment = useSelector(
     (state) => state.product.categoryTabAppointment
   );
-  const productServicesAppointment = useSelector(
-    (state) => state.product.productServicesAppointment
-  );
+
   const color = useSelector((state) => state.theme.color);
   const isOpenModalLeavePage = useSelector(
     (state) => state.appointmentReducer.isOpenModalLeavePage
   );
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
   const orderingMode = useSelector((state) => state.order.orderingMode);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
   // some fn
+  const handleCurrency = (price) => {
+    if (price) {
+      const result = price.toLocaleString(companyInfo.currency.locale, {
+        style: 'currency',
+        currency: companyInfo?.currency.code,
+      });
+
+      return result;
+    }
+  };
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -98,7 +121,7 @@ const Appointment = (props) => {
       marginLeft: 'auto',
       marginRight: 'auto',
       backgroundColor: 'white',
-      height: '99.3vh',
+      height: '92vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       display: 'grid',
@@ -168,6 +191,22 @@ const Appointment = (props) => {
   // some Effect
   useEffect(() => {
     const loadData = async () => {
+      try {
+        setIsLoading(true);
+        let data = await dispatch(OrderAction.getCartAppointment());
+        setIsLoading(false);
+        if (!isEmptyObject(data.data)) {
+          setShowNotif(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadData();
+  }, [responseAddTocart]);
+
+  useEffect(() => {
+    const loadData = async () => {
       setIsLoading(true);
       const data = await dispatch(
         ProductAction.fetchCategoryProduct({
@@ -221,8 +260,8 @@ const Appointment = (props) => {
   const IconSearch = () => {
     return (
       <svg
-        width={32}
-        height={32}
+        width={25}
+        height={25}
         viewBox='0 0 36 36'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
@@ -275,12 +314,12 @@ const Appointment = (props) => {
         margin: 'auto',
         justifyContent: 'space-between',
         marginTop: '25px',
-        fontSize: '14px',
+        fontSize: '16px',
       },
     };
     return (
       <div style={localStyle.container}>
-        <div style={{ fontWeight: 'bold', color: 'black' }}>
+        <div style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}>
           Chosen Location
         </div>
         <div
@@ -344,7 +383,7 @@ const Appointment = (props) => {
     const localStyle = {
       container: {
         width: '93%',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
         margin: 'auto',
         borderRadius: '10px',
         padding: '10px 0px',
@@ -370,7 +409,7 @@ const Appointment = (props) => {
         fontSize: '14px',
         marginLeft: '10px',
         marginRight: '5px',
-        fontWeight: 500,
+        fontWeight: 600,
         color: 'black',
       },
     };
@@ -392,10 +431,11 @@ const Appointment = (props) => {
               justifySelf: 'center',
               fontSize: '20px',
               marginTop: '5px',
+              color: 'black',
             }}
           />
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500 }}>
+            <div style={{ fontWeight: 600, color: 'black' }}>
               {!isEmptyObject(selectedLocation)
                 ? selectedLocation.name
                 : defaultOutlet.name}
@@ -415,10 +455,12 @@ const Appointment = (props) => {
               </div>
             </div>
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
+            800m
+          </div>
         </div>
         <div style={localStyle.containerOpenNow}>
-          <AccessTimeIcon style={{ fontSize: '20px' }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
@@ -623,11 +665,13 @@ const Appointment = (props) => {
   const RendernNotifSuccess = () => {
     const localStyle = {
       container: {
-        width: '100%',
+        width: gadgetScreen ? '100%' : '47%',
         display: 'flex',
         justifyContent: 'center',
         cursor: 'pointer',
         alignItems: 'center',
+        margin: 'auto',
+        marginTop: gadgetScreen ? '0px' : '5px',
       },
       subContainer: {
         width: '95%',
@@ -636,10 +680,7 @@ const Appointment = (props) => {
         alignItems: 'center',
         backgroundColor: color.primary,
         borderRadius: '5px',
-        position: 'absolute',
-        bottom: '80px',
         padding: '10px',
-        zIndex: '999',
       },
       containerLabel: {
         display: 'flex',
@@ -660,10 +701,12 @@ const Appointment = (props) => {
         <div style={localStyle.subContainer}>
           <div style={localStyle.containerLabel}>
             <CheckCircleIcon sx={localStyle.icon} />
-            <div style={localStyle.label}>1 Service Selected</div>
+            <div style={localStyle.label}>
+              {cartAppointment?.details?.length} Service Selected
+            </div>
           </div>
           <div style={{ ...localStyle.label, fontWeight: 'bold' }}>
-            SGD 15.00
+            {handleCurrency(cartAppointment?.totalNettAmount)}
           </div>
         </div>
       </div>
@@ -683,6 +726,7 @@ const Appointment = (props) => {
         margin: 0,
         color: 'black',
         marginBottom: '10px',
+        fontSize: '16px',
       },
     };
     return (
@@ -698,15 +742,21 @@ const Appointment = (props) => {
             <MyLoader />
           ) : (
             <>
-              {productServicesAppointment.map((item) => (
-                <ItemService
-                  setIsOpenModalDetail={setIsOpenModalDetail}
-                  item={item?.product}
-                  gadgetScreen={gadgetScreen}
-                  fullScreen={fullScreen}
-                  styleSheet={styleSheet}
-                />
-              ))}
+              {productServicesAppointment.map((item) => {
+                const isCheckedService = cartAppointment?.details?.some(
+                  (items) => items.product.name === item.product.name
+                );
+                return (
+                  <ItemService
+                    isCheckedService={isCheckedService}
+                    setIsOpenModalDetail={setIsOpenModalDetail}
+                    item={item?.product}
+                    gadgetScreen={gadgetScreen}
+                    fullScreen={fullScreen}
+                    styleSheet={styleSheet}
+                  />
+                );
+              })}
             </>
           )}
         </TabsUnstyled>
@@ -738,11 +788,20 @@ const Appointment = (props) => {
     }
   };
   const ResponsiveLayout = () => {
+    const isNotifShowWithIphoneSE = showNotif && height <= 667;
+    const isNotifShowWithIphone14 = showNotif && height >= 844;
     if (gadgetScreen) {
       return (
         <div
           className={fontStyles.myFont}
-          style={{ height: '90vh', overflowY: 'auto' }}
+          style={{
+            height: isNotifShowWithIphoneSE
+              ? '81vh'
+              : isNotifShowWithIphone14
+              ? '85vh'
+              : '90vh',
+            overflowY: 'auto',
+          }}
         >
           <Header />
           {!isEmptyObject(defaultOutlet) && (
@@ -761,7 +820,7 @@ const Appointment = (props) => {
           <div style={styleSheet.container}>
             <di
               style={{
-                marginTop: '15%',
+                marginTop: '20px',
               }}
             >
               <Header />
@@ -779,10 +838,10 @@ const Appointment = (props) => {
     <LoadingOverlayCustom
       active={isLoading}
       spinner={<RenderAnimationLoading />}
-      text='Please wait...'
+      text={messageLoading}
     >
-      {showNotif && <RendernNotifSuccess />}
       <ResponsiveLayout />
+      {showNotif && <RendernNotifSuccess />}
       <Dialog
         fullWidth
         maxWidth='xs'
@@ -855,7 +914,13 @@ const Appointment = (props) => {
             Cancel
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
+              if (cartAppointment?.details?.length > 0) {
+                setIsLoading(true);
+                setMessageLoading('Delete your cart...');
+                await dispatch(OrderAction.deleteCartAppointment());
+                setIsLoading(false);
+              }
               dispatch({
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
                 payload: false,
