@@ -8,13 +8,18 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import screen from 'hooks/useWindowSize';
+import { CONSTANT } from 'helpers';
 
 const FooterWebOrdering = () => {
+  const dispatch = useDispatch();
   const widthScreen = screen();
   const responsiveDesign = screen();
   const location = useLocation();
+  const indexFooterAppointment = useSelector(
+    (state) => state.appointmentReducer.indexFooter
+  );
   const allState = useSelector((state) => state);
   const navBar = useSelector((state) => state.theme.menu.navBar);
   const resetBottomNav = useSelector(
@@ -22,7 +27,6 @@ const FooterWebOrdering = () => {
   );
   const [appointmentMenu, setAppointmentMenu] = useState(false);
   const [newNavbar, setNewNavbar] = useState([]);
-  const [value, setValue] = useState(0);
   const { setting } = useSelector((state) => state.order);
   const [guessCheckout, setGuessCheckout] = useState();
   const [enableOrdering, setEnableOrdering] = useState(true);
@@ -46,7 +50,7 @@ const FooterWebOrdering = () => {
 
   useEffect(() => {
     if (resetBottomNav === 0) {
-      setValue(0);
+      dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 0 });
     }
   }, [location.pathname]);
 
@@ -266,9 +270,9 @@ const FooterWebOrdering = () => {
       >
         <BottomNavigation
           showLabels
-          value={value}
+          value={indexFooterAppointment}
           onChange={(event, newValue) => {
-            setValue(newValue);
+            dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
           }}
           sx={style.bottomNav}
         >
@@ -314,7 +318,7 @@ const FooterWebOrdering = () => {
                 }}
                 icon={iconCheck(
                   menu.text,
-                  value === index
+                  indexFooterAppointment === index
                     ? allState.theme.color.navigationIconSelectedColor
                     : allState.theme.color.navigationFontColor
 

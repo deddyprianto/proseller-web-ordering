@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useSelector } from 'react-redux';
-import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const RenderModifierOptions = ({
   productModifier,

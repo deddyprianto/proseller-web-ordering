@@ -18,22 +18,86 @@ const DetailAppointment = ({
   color,
   styleSheet,
   setIsOpenModalDetail,
-  item,
+  itemAppointment,
   handleCurrency,
+  productId,
 }) => {
   // initial
   const dispatch = useDispatch();
   //some state
+  const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addService, setAddService] = useState({});
-  const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [visible, setVisible] = useState(false);
   const [qty, setQty] = useState(1);
   // some selectors
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
   // some functions
+  const handleProductModifierSelected = () => {
+    console.log(1);
+    if (!isEmptyArray(cartAppointment?.details)) {
+      console.log(2);
+      const filterCart = cartAppointment?.details.find(
+        (itemCart) => itemCart.productID === productId
+      );
+      if (!isEmptyArray(filterCart?.product?.productModifiers)) {
+        let defaultValue = [];
+        filterCart.modifiers.forEach((item) => {
+          item.modifier.details.forEach((detail) => {
+            defaultValue.push({
+              modifierId: item?.modifierID,
+              modifierProductId: detail.productID,
+              name: detail.name,
+              price: detail.price,
+              qty: detail.quantity,
+              orderingStatus: detail?.orderingStatus,
+            });
+          });
+        });
+        setQty(filterCart?.quantity);
+        // setNotes(filterCart?.remark);
+        setSelectedProductModifiers(defaultValue);
+        // dispatch({
+        //   type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+        //   payload: defaultValue,
+        // });
+      }
+    }
+  };
+  const handleDisabledAddProductButton = () => {
+    if (!isEmptyArray(itemAppointment?.productModifiers) && !isLoading) {
+      let qtyModifierSelected = 0;
+      const productModifiers = itemAppointment.productModifiers.map(
+        (productModifier) => {
+          selectedProductModifiers.forEach((selectedProductModifier) => {
+            if (
+              productModifier.modifierID === selectedProductModifier.modifierId
+            ) {
+              qtyModifierSelected =
+                qtyModifierSelected + selectedProductModifier.qty;
+            }
+          });
+          const isMinZero = productModifier.modifier?.min || 0;
+          const result = qtyModifierSelected >= isMinZero;
+          qtyModifierSelected = 0;
+          return result;
+        }
+      );
+      const productModifierAllTrue = productModifiers.every((v) => v === true);
+      return !productModifierAllTrue;
+    }
+
+    if (!isLoading) {
+      return false;
+    }
+
+    return true;
+  };
   const handleAddCart = async () => {
     try {
       setIsLoading(true);
@@ -77,17 +141,21 @@ const DetailAppointment = ({
 
       const result = Object.values(productModifierMerged);
 
-      totalPrice = totalPrice + (item.retailPrice || 0);
+      totalPrice = totalPrice + (itemAppointment.retailPrice || 0);
 
       handlePrice(qty, totalPrice);
 
       return result;
     }
 
-    totalPrice = totalPrice + (item.retailPrice || 0);
+    totalPrice = totalPrice + (itemAppointment.retailPrice || 0);
     handlePrice(qty, totalPrice);
     return productModifiers;
   };
+  // some eff
+  useEffect(() => {
+    handleProductModifierSelected();
+  }, []);
 
   useEffect(() => {
     const productModifierFormated = handleProductModifierFormated(
@@ -96,7 +164,7 @@ const DetailAppointment = ({
     setAddService({
       outletId: defaultOutlet.sortKey,
       item: {
-        productId: `product::${item.id}`,
+        productId: `product::${itemAppointment.id}`,
         quantity: 1,
         modifierGroups: productModifierFormated,
       },
@@ -143,8 +211,8 @@ const DetailAppointment = ({
   };
   const RenderMainDetail = () => {
     const dataImage = [
-      { img: item.defaultImageURL },
-      { img: item.defaultImageURL },
+      { img: itemAppointment.defaultImageURL },
+      { img: itemAppointment.defaultImageURL },
     ];
     return (
       <div style={{ width: '90%', margin: '0px auto' }}>
@@ -166,7 +234,7 @@ const DetailAppointment = ({
             />
           </PhotoProvider>
           <img
-            src={item.defaultImageURL}
+            src={itemAppointment.defaultImageURL}
             alt='myPic'
             style={{ width: '100%', cursor: 'pointer', borderRadius: '10px' }}
             onClick={() => setVisible(true)}
@@ -195,7 +263,7 @@ const DetailAppointment = ({
             padding: 0,
           }}
         >
-          {item.name}
+          {itemAppointment.name}
         </p>
         <div
           style={{
@@ -215,7 +283,7 @@ const DetailAppointment = ({
           }}
         >
           <div style={{ color: 'rgba(255, 85, 99, 1)', fontWeight: 700 }}>
-            {handleCurrency(item.retailPrice)}
+            {handleCurrency(itemAppointment.retailPrice)}
           </div>
           <div
             style={{
@@ -242,7 +310,7 @@ const DetailAppointment = ({
             color: 'rgba(157, 157, 157, 1)',
           }}
         >
-          {item.description}
+          {itemAppointment.description}
         </p>
       </div>
     );
@@ -363,6 +431,7 @@ const DetailAppointment = ({
         }}
       >
         <button
+          disabled={handleDisabledAddProductButton()}
           onClick={handleAddCart}
           style={{
             width: '90%',
@@ -408,8 +477,8 @@ const DetailAppointment = ({
             <RenderModifier
               setSelectedProductModifiers={setSelectedProductModifiers}
               selectedProductModifiers={selectedProductModifiers}
-              productModifiers={item.productModifiers}
-              product={item}
+              productModifiers={itemAppointment.productModifiers}
+              product={itemAppointment}
             />
           </FormGroup>
         </div>

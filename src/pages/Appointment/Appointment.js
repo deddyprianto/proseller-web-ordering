@@ -96,9 +96,9 @@ const Appointment = (props) => {
   // some fn
   const handleCurrency = (price) => {
     if (price) {
-      const result = price.toLocaleString(companyInfo.currency.locale, {
+      const result = price.toLocaleString(companyInfo?.currency?.locale, {
         style: 'currency',
-        currency: companyInfo?.currency.code,
+        currency: companyInfo?.currency?.code,
       });
 
       return result;
@@ -597,7 +597,7 @@ const Appointment = (props) => {
 
   const RenderTabHeaderMobile = () => {
     return (
-      <div sx={{ width: '100%' }}>
+      <div style={{ width: '100%' }}>
         <div
           style={{
             marginBottom: '10px',
@@ -754,6 +754,7 @@ const Appointment = (props) => {
                     gadgetScreen={gadgetScreen}
                     fullScreen={fullScreen}
                     styleSheet={styleSheet}
+                    productId={item?.productID}
                   />
                 );
               })}

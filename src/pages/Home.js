@@ -176,7 +176,11 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
-          <ModalAppointment name={name} setName={setName} />
+          <ModalAppointment
+            name={name}
+            setName={setName}
+            isLoggedIn={props.isLoggedIn}
+          />
         </div>
       );
     }

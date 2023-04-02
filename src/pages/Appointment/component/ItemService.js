@@ -11,6 +11,7 @@ const ItemService = ({
   fullScreen,
   styleSheet,
   isCheckedService,
+  productId,
 }) => {
   // some state
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
@@ -23,11 +24,17 @@ const ItemService = ({
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
   // some functions
+  const handleConvertTime = (item) => {
+    const hours = Math.floor(item / 3600);
+    const minutes = Math.floor((item % 3600) / 60);
+    const formattedString = `${hours}hours ${minutes}mins`;
+    return formattedString;
+  };
   const handleCurrency = (price) => {
     if (price) {
-      const result = price.toLocaleString(companyInfo.currency.locale, {
+      const result = price.toLocaleString(companyInfo?.currency?.locale, {
         style: 'currency',
-        currency: companyInfo?.currency.code,
+        currency: companyInfo?.currency?.code,
       });
 
       return result;
@@ -77,7 +84,7 @@ const ItemService = ({
     },
     gridContainerBottom: {
       display: 'grid',
-      gridTemplateColumns: '100px 1fr 90px',
+      gridTemplateColumns: '130px 1fr 90px',
       gridTemplateRows: '1fr',
       gap: '0px 0px',
       gridAutoFlow: 'row',
@@ -91,12 +98,12 @@ const ItemService = ({
       alignItems: 'center',
       backgroundColor: `${color.primary}10`,
       borderRadius: '15px',
-      width: '71px',
     },
     label30mins: {
       fontSize: '13px',
       marginLeft: '5px',
       color: color.primary,
+      display: 'flex',
     },
     containerCutPrice: {
       justifySelf: 'end',
@@ -152,6 +159,7 @@ const ItemService = ({
         fontSize: '13px',
         marginLeft: '5px',
         color: 'white',
+        display: 'flex',
       },
       labelNotAvailable: {
         fontWeight: 500,
@@ -225,7 +233,17 @@ const ItemService = ({
             <div style={localStyle.containerUnavailable.button}>
               <AccessTimeIcon sx={{ color: 'white' }} />
               <div style={localStyle.containerUnavailable.label}>
-                {item?.duration}
+                <div style={{ marginRight: '5px' }}>
+                  {item?.duration
+                    ? `${Math.floor(item?.duration / 3600)}hours`
+                    : '0 hours'}
+                </div>
+                {item?.duration && (
+                  <div>
+                    {Math.floor((item?.duration % 3600) / 60) !== 0 &&
+                      `${Math.floor((item?.duration % 3600) / 60)}min`}
+                  </div>
+                )}
               </div>
             </div>
             <div style={localStyle.containerUnavailable.labelNotAvailable}>
@@ -292,7 +310,15 @@ const ItemService = ({
               <AccessTimeIcon
                 sx={{ color: color.primary, padding: 0, margin: 0 }}
               />
-              <div style={localStyle.label30mins}>{item?.duration}</div>
+              <div style={localStyle.label30mins}>
+                <div style={{ marginRight: '5px' }}>{`${Math.floor(
+                  item?.duration / 3600
+                )}hours`}</div>
+                <div>
+                  {Math.floor((item?.duration % 3600) / 60) !== 0 &&
+                    `${Math.floor((item?.duration % 3600) / 60)}min`}
+                </div>
+              </div>
             </div>
             {item?.cutPrice ? (
               <div style={localStyle.containerCutPrice}>
@@ -337,12 +363,13 @@ const ItemService = ({
         onClose={() => setIsOpenModalDetail(false)}
       >
         <DetailAppointment
+          productId={productId}
           handleCurrency={handleCurrency}
           color={color}
           gadgetScreen={gadgetScreen}
           styleSheet={styleSheet}
           setIsOpenModalDetail={setIsOpenModalDetail}
-          item={item}
+          itemAppointment={item}
         />
       </Dialog>
     </React.Fragment>
