@@ -3,8 +3,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import fontStyles from '../style/styles.module.css';
 import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import { PhotoProvider, PhotoSlider } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { useSelector, useDispatch } from 'react-redux';
@@ -249,7 +247,7 @@ const DetailAppointment = ({
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              padding: '3px',
+              padding: '0px 15px',
             }}
           >
             <div>1/{dataImage.length}</div>
@@ -261,6 +259,7 @@ const DetailAppointment = ({
             fontWeight: 'bold',
             margin: 0,
             padding: 0,
+            color: 'black',
           }}
         >
           {itemAppointment.name}
@@ -269,11 +268,29 @@ const DetailAppointment = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            color: 'rgba(183, 183, 183, 1)',
+            borderRadius: '15px',
           }}
         >
-          <AccessTimeIcon sx={{ fontSize: '20px' }} />
-          <div style={{ fontSize: '14px', marginLeft: '5px' }}>60 mins</div>
+          <AccessTimeIcon
+            sx={{ color: 'rgba(183, 183, 183, 1)', padding: 0, margin: 0 }}
+          />
+          <div
+            style={{
+              fontSize: '14px',
+              marginLeft: '5px',
+              color: 'rgba(183, 183, 183, 1)',
+              display: 'flex',
+              fontWeight: 500,
+            }}
+          >
+            <div style={{ marginRight: '5px' }}>{`${Math.floor(
+              itemAppointment?.duration / 3600
+            )}hours`}</div>
+            <div>
+              {Math.floor((itemAppointment?.duration % 3600) / 60) !== 0 &&
+                `${Math.floor((itemAppointment?.duration % 3600) / 60)}min`}
+            </div>
+          </div>
         </div>
         <div
           style={{
@@ -282,7 +299,9 @@ const DetailAppointment = ({
             fontSize: '14px',
           }}
         >
-          <div style={{ color: 'rgba(255, 85, 99, 1)', fontWeight: 700 }}>
+          <div
+            style={{ color: color.primary, fontWeight: 700, fontSize: '18px' }}
+          >
             {handleCurrency(itemAppointment.retailPrice)}
           </div>
           <div
@@ -297,14 +316,15 @@ const DetailAppointment = ({
           </div>
         </div>
 
-        <p style={{ fontWeight: 'bold', marginTop: '30px' }}>
+        <p style={{ fontWeight: 'bold', marginTop: '30px', color: 'black' }}>
           About this service
         </p>
         <p
           style={{
             margin: 0,
             padding: 0,
-            fontSize: '12px',
+            fontSize: '14px',
+            fontWeight: 500,
             opacity: 0.8,
             lineHeight: '20px',
             color: 'rgba(157, 157, 157, 1)',
@@ -320,12 +340,13 @@ const DetailAppointment = ({
       <div
         style={{
           ...styleSheet.gridStyle,
-          marginTop: '10px',
+          marginTop: '30px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
       >
         <ArrowBackIosIcon
+          sx={{ color: color.primary }}
           fontSize='large'
           onClick={() => {
             setIsOpenModalDetail(false);
@@ -337,7 +358,7 @@ const DetailAppointment = ({
             margin: 0,
             justifySelf: 'start',
             fontWeight: 'bold',
-            fontSize: '16px',
+            fontSize: '20px',
             color: 'rgba(255, 85, 99, 1)',
           }}
         >
@@ -350,69 +371,24 @@ const DetailAppointment = ({
   const RenderAddOnLabel = () => {
     return (
       <div style={{ width: '90%', margin: 'auto' }}>
-        <p style={{ marginTop: '20px', fontWeight: 'bold' }}>Add Ons</p>
-      </div>
-    );
-  };
-  const RenderItemAddOns = ({ modifier }) => {
-    return modifier.details.map((item) => {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <FormControlLabel
-            control={<Checkbox sx={styles.radioSizeModifier} />}
-            label={<div style={{ fontSize: '14px' }}>{item.name}</div>}
-          />
-          <div style={{ fontSize: '14px' }}>{handleCurrency(item.price)}</div>
-        </div>
-      );
-    });
-  };
-  const LabelGroup = ({ item }) => {
-    return (
-      <div style={{ display: 'flex' }}>
-        <div style={{ marginRight: '10px', fontSize: '14px', fontWeight: 600 }}>
-          {item.modifier.name}
-        </div>
-        <div
-          style={{
-            color: 'rgba(157, 157, 157, 1)',
-            marginRight: '5px',
-            fontSize: '12px',
-          }}
-        >
-          Min {item.modifier.min}
-        </div>
-        <div
-          style={{
-            color: 'rgba(157, 157, 157, 1)',
-            fontSize: '12px',
-          }}
-        >
-          Max {item.modifier.max}
-        </div>
+        <p style={{ marginTop: '20px', fontWeight: 'bold', color: 'black' }}>
+          Add Ons
+        </p>
       </div>
     );
   };
 
-  const RenderGroupAddOns = ({ item }) => {
-    return (
-      <div style={{ width: '90%', margin: 'auto', marginBottom: '20px' }}>
-        <LabelGroup item={item} />
-        <RenderItemAddOns modifier={item?.modifier} />
-      </div>
-    );
-  };
   const RenderPrice = () => {
     return (
       <div style={styles.modifierOption}>
         <div style={{ fontWeight: 700 }}>Price</div>
-        <div style={{ fontWeight: 'bold', color: 'rgba(255, 85, 99, 1)' }}>
+        <div
+          style={{
+            fontWeight: 'bold',
+            color: 'rgba(255, 85, 99, 1)',
+            fontSize: '18px',
+          }}
+        >
           {handleCurrency(totalPrice)}
         </div>
       </div>

@@ -13,7 +13,7 @@ const RenderModifierOptions = ({
     radioSizeModifier: {
       '& .MuiSvgIcon-root': {
         fontSize: 24,
-        color: '#667080',
+        color: 'rgba(157, 157, 157, 1)',
         borderRadius: '3px',
       },
     },
@@ -138,9 +138,15 @@ const RenderModifierOptions = ({
                 })}
               />
             }
-            label={<div style={{ fontSize: '14px' }}>{modifier.name}</div>}
+            label={
+              <div
+                style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}
+              >
+                {modifier.name}
+              </div>
+            }
           />
-          <div style={{ fontSize: '14px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
             {handleCurrency(modifier.price)}
           </div>
         </div>

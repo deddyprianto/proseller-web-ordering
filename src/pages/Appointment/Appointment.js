@@ -788,6 +788,7 @@ const Appointment = (props) => {
       return null;
     }
   };
+
   const ResponsiveLayout = () => {
     const isNotifShowWithIphoneSE = showNotif && height <= 667;
     const isNotifShowWithIphone14 = showNotif && height >= 844;
