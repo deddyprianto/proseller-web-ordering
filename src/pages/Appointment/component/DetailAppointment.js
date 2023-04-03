@@ -6,7 +6,7 @@ import FormGroup from '@mui/material/FormGroup';
 import { PhotoProvider, PhotoSlider } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import RenderModifier from './RenderModifier';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
@@ -36,13 +36,12 @@ const DetailAppointment = ({
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
   // some functions
+  const filterCart = cartAppointment?.details?.find(
+    (itemCart) => itemCart.productID === productId
+  );
+
   const handleProductModifierSelected = () => {
-    console.log(1);
     if (!isEmptyArray(cartAppointment?.details)) {
-      console.log(2);
-      const filterCart = cartAppointment?.details.find(
-        (itemCart) => itemCart.productID === productId
-      );
       if (!isEmptyArray(filterCart?.product?.productModifiers)) {
         let defaultValue = [];
         filterCart.modifiers.forEach((item) => {
@@ -96,14 +95,27 @@ const DetailAppointment = ({
 
     return true;
   };
-  const handleAddCart = async () => {
-    try {
-      setIsLoading(true);
-      await dispatch(OrderAction.addCartAppointment(addService));
-      setIsLoading(false);
-      setIsOpenModalDetail(false);
-    } catch (error) {
-      console.log(error);
+  const handleButtonCart = async () => {
+    if (!isEmptyObject(filterCart)) {
+      try {
+        setIsLoading(true);
+        await dispatch(
+          OrderAction.updateCartAppointment(addService, filterCart.id)
+        );
+        setIsLoading(false);
+        setIsOpenModalDetail(false);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        setIsLoading(true);
+        await dispatch(OrderAction.addCartAppointment(addService));
+        setIsLoading(false);
+        setIsOpenModalDetail(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   const handlePrice = (qty, totalPrice) => {
@@ -408,7 +420,7 @@ const DetailAppointment = ({
       >
         <button
           disabled={handleDisabledAddProductButton()}
-          onClick={handleAddCart}
+          onClick={handleButtonCart}
           style={{
             width: '90%',
             borderRadius: '5px',
@@ -417,16 +429,14 @@ const DetailAppointment = ({
             marginBottom: '10px',
           }}
         >
-          Add to Booking Cart
+          {!isEmptyObject(filterCart)
+            ? 'Update Booking Cart'
+            : 'Add to Booking Cart'}
         </button>
       </div>
     );
   };
-  // const ListAddOns = () => {
-  //   return item.productModifiers.map((item) => {
-  //     return <RenderModifier productModifiers={item} />;
-  //   });
-  // };
+
   return (
     <LoadingOverlayCustom
       active={isLoading}

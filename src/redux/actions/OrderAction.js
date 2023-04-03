@@ -888,16 +888,34 @@ const deleteCartAppointment = () => {
   };
 };
 
-const addCartAppointment = (payload) => {
+const addCartAppointment = (addService) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
-    const response = await axios.post(`${url}cart`, payload, {
+    const response = await axios.post(`${url}cart`, addService, {
       headers: {
         Authorization: `Bearer ${account.accessToken.jwtToken}`,
         'Content-Type': 'application/json',
       },
     });
     if (response.status === 201) {
+      dispatch({
+        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
+    return response;
+  };
+};
+const updateCartAppointment = (addService, productId) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.put(`${url}cart/${productId}`, addService, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data.message) {
       dispatch({
         type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
         payload: response.data.data,
@@ -1049,4 +1067,5 @@ export const OrderAction = {
   addCartAppointment,
   getCartAppointment,
   deleteCartAppointment,
+  updateCartAppointment,
 };

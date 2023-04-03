@@ -35,14 +35,14 @@ const RenderModifierOptions = ({
     price,
     name,
   }) => {
+    const mergeID = `${modifierId}${modifierProductId}`;
     const items = selectedProductModifiers;
 
     const modifierProductIds = selectedProductModifiers.map((item) => {
-      return item.modifierProductId;
+      return `${item.modifierId}${item.modifierProductId}`;
     });
 
-    const modifierProductIdIndex =
-      modifierProductIds.indexOf(modifierProductId);
+    const modifierProductIdIndex = modifierProductIds.indexOf(mergeID);
     if (modifierProductIdIndex !== -1) {
       items.splice(modifierProductIdIndex, 1);
       setSelectedProductModifiers([...items]);
@@ -67,6 +67,7 @@ const RenderModifierOptions = ({
 
     const isChecked = filterSelectedProductModifiers.find(
       (selectedProductModifier) =>
+        selectedProductModifier.modifierId === productModifier.modifierID &&
         selectedProductModifier.modifierProductId === modifier.productID
     );
 
