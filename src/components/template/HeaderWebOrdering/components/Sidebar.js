@@ -69,7 +69,9 @@ const Sidebar = ({ guessCheckout }) => {
     setOpen(open);
   };
   const handleLogout = () => {
-    localStorage.clear();
+  const appointmentPopup = localStorage.getItem('popup_appointment');
+  localStorage.clear();
+  localStorage.setItem('popup_appointment', appointmentPopup);
     window.location.reload();
     history.push('/');
   };

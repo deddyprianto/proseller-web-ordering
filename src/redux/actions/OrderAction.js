@@ -3,7 +3,7 @@ import { CONSTANT } from '../../helpers';
 import { OrderingService } from '../../Services/OrderingService';
 import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
 import config from '../../config';
-
+import axios from 'axios';
 import { lsLoad } from '../../helpers/localStorage';
 import { CRMService } from '../../Services/CRMService';
 
@@ -214,7 +214,7 @@ function getCart(isSetData = true) {
       'cart/getcart',
       'Bearer'
     );
-    
+
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== 'No details data') {
@@ -304,7 +304,7 @@ function updateCart(payload) {
     );
 
     dispatch(setData(response.data, CONSTANT.DATA_BASKET));
-    return response; 
+    return response;
   };
 }
 
@@ -857,6 +857,73 @@ const addCartToGuestMode = (guestID, defaultOutlet, selectedItem) => {
     return response;
   };
 };
+const getCartAppointment = () => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.get(`${url}cart`, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data) {
+      dispatch({
+        type: CONSTANT.CART_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
+    return response.data;
+  };
+};
+const deleteCartAppointment = () => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.delete(`${url}cart`, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response;
+  };
+};
+
+const addCartAppointment = (addService) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.post(`${url}cart`, addService, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.status === 201) {
+      dispatch({
+        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
+    return response;
+  };
+};
+const updateCartAppointment = (addService, productId) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.put(`${url}cart/${productId}`, addService, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data.message) {
+      dispatch({
+        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
+    return response;
+  };
+};
 
 const processUpdateCartGuestMode = (guestID, productUpdate) => {
   return async (dispatch) => {
@@ -997,4 +1064,8 @@ export const OrderAction = {
   deleteCartGuestMode,
   processUpdateCartGuestMode,
   addCartFromGuestCOtoCartLogin,
+  addCartAppointment,
+  getCartAppointment,
+  deleteCartAppointment,
+  updateCartAppointment,
 };
