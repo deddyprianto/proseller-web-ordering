@@ -289,7 +289,7 @@ class DetailProfile extends Component {
   viewRightPage(loadingShow) {
     let { referall, isEmenu, svc } = this.state;
     const { orderingSetting, setting, settingAppoinment } = this.props;
-    const showRewardMenu = isEmenu && settingAppoinment;
+    const showRewardMenu = isEmenu || settingAppoinment;
     let enableTermAndCondition = setting.find((items) => {
       return items.settingKey === 'TermCondition';
     });

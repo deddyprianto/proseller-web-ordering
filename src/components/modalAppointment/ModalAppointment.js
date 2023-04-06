@@ -61,7 +61,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
       <DialogTitle
         className={fontStyles.myFont}
         sx={{
-          fontWeight: 500,
+          fontWeight: 'bold',
           fontSize: '16px',
           textAlign: 'center',
           margin: 0,
@@ -70,7 +70,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
       >
         Appointment feature is here!
       </DialogTitle>
-      <div style={{ padding: '10px 20px' }}>
+      <div style={{ padding: '0px 20px' }}>
         <p
           className={fontStyles.myFont}
           style={{
@@ -80,8 +80,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
             fontWeight: 500,
           }}
         >
-          Welcome! You can booking an appointment by clicking calendar in menu
-          bar.
+          Welcome! You can booking an appointment by clicking BOOKING menu
         </p>
       </div>
       <DialogActions
@@ -103,7 +102,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
             fontWeight: 500,
           }}
           onClick={() => {
-            dispatch({type: CONSTANT.INDEX_FOOTER, payload: 2})
+            dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
             setName(false);
             history.push('/appointment');
           }}
