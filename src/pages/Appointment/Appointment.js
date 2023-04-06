@@ -1013,16 +1013,6 @@ const Appointment = (props) => {
         >
           <button
             onClick={async () => {
-              if (cartAppointment?.details?.length > 0) {
-                setIsLoading(true);
-                setMessageLoading('Delete your cart...');
-                await dispatch(OrderAction.deleteCartAppointment());
-                setIsLoading(false);
-              }
-              dispatch({
-                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
-                payload: false,
-              });
               window.location.href = changeFormatURl('/outlets');
               window.location.reload();
             }}
