@@ -26,6 +26,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
     (state) => state.order.selectedDeliveryProvider
   );
   const orderingMode = useSelector((state) => state.order.orderingMode);
+  const orderingSetting = useSelector((state) => state.order.orderingSetting);
 
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px' },
@@ -170,7 +171,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           stroke='white'
           strokeWidth='6'
           strokeLinecap='round'
-          strokelinejoin='round'
+          strokeLinejoin='round'
           fill={colorState.primary}
         />
         <path
@@ -178,7 +179,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           stroke='white'
           strokeWidth='6'
           strokeLinecap='round'
-          strokelinejoin='round'
+          strokeLinejoin='round'
           fill={colorState.primary}
         />
         <path
@@ -186,7 +187,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           stroke='white'
           strokeWidth='6'
           strokeLinecap='round'
-          strokelinejoin='round'
+          strokeLinejoin='round'
           fill={colorState.primary}
         />
       </svg>
@@ -294,11 +295,15 @@ const OrderingModeDialog = ({ open, onClose }) => {
             data[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
           )
         );
-        const orderingModesMapped = orderingModesFieldFiltered.map(
-          (mode) => mode
+
+        const intersectOrderingMode = orderingModesFieldFiltered.filter(
+          (mode) =>
+            orderingSetting?.AllowedOrderingMode?.some(
+              (item) => item === mode.name
+            )
         );
 
-        await setOrderingModes(orderingModesMapped);
+        await setOrderingModes(intersectOrderingMode);
       }
       setIsLoading(false);
     };
@@ -460,7 +465,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
             Cancel
           </button>
           <button
-          disabled={!orderingModeActive && true}
+            disabled={!orderingModeActive && true}
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}
             style={{
