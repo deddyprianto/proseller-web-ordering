@@ -42,6 +42,8 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
+    useState(false);
   const [messageLoading, setMessageLoading] = useState('Please wait...');
   const [showNotif, setShowNotif] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
@@ -187,6 +189,11 @@ const Appointment = (props) => {
   };
 
   // some Effect
+  useEffect(() => {
+    if (!isEmptyObject(defaultOutlet)) {
+      setOpenWarningOutletNotSelected(true);
+    }
+  }, [defaultOutlet]);
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -848,8 +855,12 @@ const Appointment = (props) => {
       spinner={<RenderAnimationLoading />}
       text={messageLoading}
     >
-      <ResponsiveLayout />
-      {showNotif && <RendernNotifSuccess />}
+      {openWarningOutletNotSelected && (
+        <React.Fragment>
+          <ResponsiveLayout />
+          {showNotif && <RendernNotifSuccess />}
+        </React.Fragment>
+      )}
       <Dialog
         fullWidth
         maxWidth='xs'
@@ -947,6 +958,85 @@ const Appointment = (props) => {
             }}
           >
             Yes, I’m Sure
+          </button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        fullWidth
+        maxWidth='xs'
+        open={!openWarningOutletNotSelected}
+        onClose={() =>
+          dispatch({ type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT, payload: false })
+        }
+        classes={{ paper: classes.paper }}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        ></div>
+        <DialogTitle
+          className={fontStyles.myFont}
+          sx={{
+            fontWeight: 600,
+            fontSize: '16px',
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          Outlet Not Selected
+        </DialogTitle>
+        <div style={{ marginTop: '20px' }}>
+          <div
+            className={fontStyles.myFont}
+            style={{
+              color: 'rgba(183, 183, 183, 1)',
+              fontSize: '14px',
+              textAlign: 'center',
+              fontWeight: 500,
+            }}
+          >
+            Please select an outlet first to access the appointment feature
+          </div>
+        </div>
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <button
+            onClick={async () => {
+              if (cartAppointment?.details?.length > 0) {
+                setIsLoading(true);
+                setMessageLoading('Delete your cart...');
+                await dispatch(OrderAction.deleteCartAppointment());
+                setIsLoading(false);
+              }
+              dispatch({
+                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+                payload: false,
+              });
+              window.location.href = changeFormatURl('/outlets');
+              window.location.reload();
+            }}
+            className={fontStyles.myFont}
+            style={{
+              color: 'white',
+              width: '100%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+              marginTop: '20px',
+            }}
+          >
+            OK
           </button>
         </DialogActions>
       </Dialog>
