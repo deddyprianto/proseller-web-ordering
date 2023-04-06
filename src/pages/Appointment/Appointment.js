@@ -699,8 +699,16 @@ const Appointment = (props) => {
         <div style={localStyle.subContainer}>
           <div style={localStyle.containerLabel}>
             <CheckCircleIcon sx={localStyle.icon} />
-            <div style={localStyle.label}>
-              {cartAppointment?.details?.length} Service Selected
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                color: 'white',
+                fontSize: '14px',
+              }}
+            >
+              <div>{cartAppointment?.details?.length}</div>
+              <div style={{ marginLeft: '5px' }}>Service Selected</div>
             </div>
           </div>
           <div style={{ ...localStyle.label, fontWeight: 'bold' }}>
@@ -879,6 +887,7 @@ const Appointment = (props) => {
               fontSize: '14px',
               textAlign: 'center',
               fontWeight: 500,
+              lineHeight: '21px',
             }}
           >
             Some booked services you have not submitted might not be saved in

@@ -311,12 +311,18 @@ const ItemService = ({
                 sx={{ color: color.primary, padding: 0, margin: 0 }}
               />
               <div style={localStyle.label30mins}>
-                <div style={{ marginRight: '5px' }}>{`${Math.floor(
-                  item?.duration / 3600
-                )}hours`}</div>
+                <div style={{ marginRight: '5px' }}>
+                  {item?.duration
+                    ? `${Math.floor(item?.duration / 3600)}hours`
+                    : '0 hours'}
+                </div>
                 <div>
-                  {Math.floor((item?.duration % 3600) / 60) !== 0 &&
-                    `${Math.floor((item?.duration % 3600) / 60)}min`}
+                  {item?.duration && (
+                    <div>
+                      {Math.floor((item?.duration % 3600) / 60) !== 0 &&
+                        `${Math.floor((item?.duration % 3600) / 60)}min`}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

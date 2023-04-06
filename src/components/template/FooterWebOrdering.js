@@ -272,7 +272,11 @@ const FooterWebOrdering = () => {
           showLabels
           value={indexFooterAppointment}
           onChange={(event, newValue) => {
-            dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
+            if (location.pathname === '/appointment') {
+              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
+            } else {
+              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
+            }
           }}
           sx={style.bottomNav}
         >
