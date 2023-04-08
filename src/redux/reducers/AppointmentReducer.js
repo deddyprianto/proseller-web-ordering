@@ -6,8 +6,9 @@ function AppointmentReducer(
     locationAppointment: {},
     popupLocation: false,
     cartAppointment: [],
-    responseAddTocart: {},
+    responseAddCart: {},
     indexFooter: 0,
+    searchBar: [],
   },
   action
 ) {
@@ -20,10 +21,12 @@ function AppointmentReducer(
       return { ...state, popupLocation: action.payload };
     case CONSTANT.CART_APPOINTMENT:
       return { ...state, cartAppointment: action.payload };
-    case CONSTANT.RESPONSEADDTOCART_APPOINTMENT:
-      return { ...state, responseAddTocart: action.payload };
+    case CONSTANT.RESPONSEADDCART_APPOINTMENT:
+      return { ...state, responseAddCart: action.payload };
     case CONSTANT.INDEX_FOOTER:
       return { ...state, indexFooter: action.payload };
+    case CONSTANT.SEARCHBAR:
+      return { ...state, searchBar: action.payload };
     default:
       return state;
   }

@@ -857,6 +857,25 @@ const addCartToGuestMode = (guestID, defaultOutlet, selectedItem) => {
     return response;
   };
 };
+const searchProdAppointment = (payload) => {
+  let url = config.getUrlProduct();
+  return async (dispatch) => {
+    const response = await axios.post(`${url}product/load`, payload, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data.status === 'SUCCESS') {
+      dispatch({
+        type: CONSTANT.SEARCHBAR,
+        payload: response.data.data,
+      });
+    } else {
+      throw response.data;
+    }
+  };
+};
 const getCartAppointment = () => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
@@ -899,7 +918,7 @@ const addCartAppointment = (addService) => {
     });
     if (response.status === 201) {
       dispatch({
-        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
         payload: response.data.data,
       });
     }
@@ -917,7 +936,7 @@ const updateCartAppointment = (addService, productId) => {
     });
     if (response.data.message) {
       dispatch({
-        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
         payload: response.data.data,
       });
     }
@@ -1068,4 +1087,5 @@ export const OrderAction = {
   getCartAppointment,
   deleteCartAppointment,
   updateCartAppointment,
+  searchProdAppointment,
 };

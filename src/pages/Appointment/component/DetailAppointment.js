@@ -34,7 +34,6 @@ const DetailAppointment = ({
     (state) => state.appointmentReducer.cartAppointment
   );
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
-
   // some functions
   const filterCart = cartAppointment?.details?.find(
     (itemCart) => itemCart.productID === productId

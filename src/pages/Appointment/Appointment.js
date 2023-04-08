@@ -26,6 +26,7 @@ import Box from '@mui/material/Box';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
+import SearchBar from './component/SearchBar';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -42,15 +43,15 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [showSearchBar, setShowSearchBar] = useState(false);
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
     useState(false);
   const [messageLoading, setMessageLoading] = useState('Please wait...');
-  const [showNotif, setShowNotif] = useState(false);
+  const [showNotify, setShowNotify] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [cutPrice, setCutPrice] = useState(true);
-  const [openAccordion, setOpenAccordion] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(0);
@@ -68,8 +69,8 @@ const Appointment = (props) => {
   const classes = useStyles();
 
   // some sl
-  const responseAddTocart = useSelector(
-    (state) => state.appointmentReducer.responseAddTocart
+  const responseAddCart = useSelector(
+    (state) => state.appointmentReducer.responseAddCart
   );
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
@@ -201,14 +202,14 @@ const Appointment = (props) => {
         let data = await dispatch(OrderAction.getCartAppointment());
         setIsLoading(false);
         if (!isEmptyObject(data.data)) {
-          setShowNotif(true);
+          setShowNotify(true);
         }
       } catch (error) {
         console.log(error);
       }
     };
     loadData();
-  }, [responseAddTocart]);
+  }, [responseAddCart]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -306,7 +307,9 @@ const Appointment = (props) => {
           }}
         />
         <div style={localStyle.label}>Appointment</div>
-        <IconSearch />
+        <div onClick={() => setShowSearchBar(true)}>
+          <IconSearch />
+        </div>
       </div>
     );
   };
@@ -368,9 +371,7 @@ const Appointment = (props) => {
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
               color:
-                dayName === item.nameOfDay
-                  ? 'black'
-                  : 'rrgba(183, 183, 183, 1)',
+                dayName === item.nameOfDay ? 'black' : 'rgba(183, 183, 183, 1)',
               fontWeight: dayName === item.nameOfDay ? 'bold' : 500,
             }}
           >
@@ -754,7 +755,7 @@ const Appointment = (props) => {
           {isLoading ? (
             <MyLoader />
           ) : (
-            <>
+            <React.Fragment>
               {productServicesAppointment.map((item) => {
                 const isCheckedService = cartAppointment?.details?.some(
                   (items) => items.product.name === item.product.name
@@ -768,10 +769,11 @@ const Appointment = (props) => {
                     fullScreen={fullScreen}
                     styleSheet={styleSheet}
                     productId={item?.productID}
+                    handleCurrency={handleCurrency}
                   />
                 );
               })}
-            </>
+            </React.Fragment>
           )}
         </TabsUnstyled>
       </div>
@@ -803,21 +805,19 @@ const Appointment = (props) => {
   };
 
   const ResponsiveLayout = () => {
-    const isNotifShowWithIphoneSE = showNotif && height <= 667;
-    const isNotifShowWithIphone14 = showNotif && height >= 844;
+    const isNotifShowWithIphoneSE = showNotify && height <= 667;
+    const isNotifShowWithIphone14 = showNotify && height >= 844;
+    const styleAppliedToDevice = {
+      height: isNotifShowWithIphoneSE
+        ? '81vh'
+        : isNotifShowWithIphone14
+        ? '85vh'
+        : '90vh',
+      overflowY: 'auto',
+    };
     if (gadgetScreen) {
       return (
-        <div
-          className={fontStyles.myFont}
-          style={{
-            height: isNotifShowWithIphoneSE
-              ? '81vh'
-              : isNotifShowWithIphone14
-              ? '85vh'
-              : '90vh',
-            overflowY: 'auto',
-          }}
-        >
+        <div className={fontStyles.myFont} style={styleAppliedToDevice}>
           <Header />
           {!isEmptyObject(defaultOutlet) && (
             <>
@@ -858,7 +858,7 @@ const Appointment = (props) => {
       {openWarningOutletNotSelected && (
         <React.Fragment>
           <ResponsiveLayout />
-          {showNotif && <RendernNotifSuccess />}
+          {showNotify && <RendernNotifSuccess />}
         </React.Fragment>
       )}
       <Dialog
@@ -1029,6 +1029,31 @@ const Appointment = (props) => {
             OK
           </button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        fullScreen={fullScreen}
+        fullWidth
+        maxWidth='md'
+        open={showSearchBar}
+        onClose={() => setShowSearchBar(false)}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        >
+          <SearchBar
+            defaultOutlet={defaultOutlet.id}
+            color={color}
+            setShowSearchBar={setShowSearchBar}
+            styleSheet={styleSheet}
+            gadgetScreen={gadgetScreen}
+            productServicesAppointment={productServicesAppointment}
+          />
+        </div>
       </Dialog>
     </LoadingOverlayCustom>
   );
