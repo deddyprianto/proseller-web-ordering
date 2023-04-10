@@ -906,18 +906,25 @@ const deleteCartAppointment = () => {
     return response;
   };
 };
-const deleteCartAppointmentID = (id) => {
+const deleteItemAppointment = (addService, productId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
-    const response = await axios.delete(`${url}cart/${id}`, {
+    const response = await axios.put(`${url}cart/${productId}`, addService, {
       headers: {
         Authorization: `Bearer ${account.accessToken.jwtToken}`,
         'Content-Type': 'application/json',
       },
     });
+    if (response.data.message) {
+      dispatch({
+        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
     return response;
   };
 };
+
 const getTimeSlotAppointment = (outletId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
@@ -1118,5 +1125,6 @@ export const OrderAction = {
   updateCartAppointment,
   searchProdAppointment,
   deleteCartAppointmentID,
+  deleteItemAppointment,
   getTimeSlotAppointment,
 };

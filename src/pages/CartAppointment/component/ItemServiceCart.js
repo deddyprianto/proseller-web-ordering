@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { OrderAction } from 'redux/actions/OrderAction';
 
-const ItemServiceCart = ({ item, setIsLoading }) => {
+const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
   const dispatch = useDispatch();
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
 
@@ -120,26 +120,19 @@ const ItemServiceCart = ({ item, setIsLoading }) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // setIsLoading(true);
-        console.log('lol');
-        // if (response?.resultCode === 200) {
-        //   // setRefreshData(!refreshData);
-        //   // Swal.fire('Deleted!', response.message, 'success');
-        //   // dispatch({
-        //   //   type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-        //   //   payload: {},
-        //   // });
-        //   // if (basket.details.length === 1) {
-        //   //   dispatch({
-        //   //     type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-        //   //     payload: '',
-        //   //   });
-        //   //   history.push('/');
-        //   // }
-        // } else {
-        //   Swal.fire('Cancelled!', response, 'error');
-        // }
-        // setIsLoading(false);
+        let payload = {
+          outletId: `outlet::${outletID.id}`,
+          item: {
+            productId: item.productID,
+            quantity: 0,
+          },
+        };
+        setIsLoading(true);
+        let data = await dispatch(
+          OrderAction.deleteItemAppointment(payload, item.id)
+        );
+        console.log(data);
+        setIsLoading(false);
       }
     });
   };

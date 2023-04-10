@@ -42,7 +42,6 @@ const Cart = (props) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   // some sl
-  const date = useSelector((state) => state.appointmentReducer.date);
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const responseAddTocart = useSelector(
@@ -420,9 +419,39 @@ const Cart = (props) => {
       </div>
     );
   };
+
   const Date = () => {
+    // //   dispatch({
+    //   type: CONSTANT.DATE_APPOINTMENT,
+    //   payload: changeFormatDate(item),
+    // });
+
+    const date = useSelector((state) => state.appointmentReducer.date);
     const [isOpenModalDate, setIsOpenModalDate] = useState(false);
     const [dateActive, setDateActive] = useState(getDateNow());
+    const sortDate = () => {
+      timeslot.sort((item) => {
+        if (date === item.date) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      const getDate = timeslot.map((item) => item.date);
+      const splitFormatDate = date.split('-').join('');
+
+      const dateFiltered = getDate.filter(
+        (item) => Number(item.split('-').join('')) >= Number(splitFormatDate)
+      );
+
+      const dateSorted = dateFiltered.sort(
+        (a, b) => Number(a.split('-').join('')) - Number(b.split('-').join(''))
+      );
+      return dateSorted;
+    };
+
+    const showListDate = date ? sortDate() : getAllDate();
+
     return (
       <React.Fragment>
         <div
@@ -463,9 +492,9 @@ const Cart = (props) => {
           <Swiper
             style={{ width: '100%', marginTop: '20px' }}
             slidesPerView='auto'
-            spaceBetween={20}
+            spaceBetween={15}
           >
-            {getAllDate().map((item) => {
+            {showListDate.map((item) => {
               return (
                 <SwiperSlide style={{ flexShrink: 'unset' }}>
                   <div
@@ -751,6 +780,7 @@ const Cart = (props) => {
         </p>
         {cartAppointment?.details?.map((item) => (
           <ItemServiceCart
+            outletID={defaultOutlet}
             key={item.id}
             item={item}
             setIsLoading={setIsLoading}
