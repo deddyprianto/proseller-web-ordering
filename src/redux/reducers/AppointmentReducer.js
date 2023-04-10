@@ -9,6 +9,8 @@ function AppointmentReducer(
     responseAddCart: {},
     indexFooter: 0,
     searchBar: [],
+    timeSlot: [],
+    date: '',
   },
   action
 ) {
@@ -27,6 +29,10 @@ function AppointmentReducer(
       return { ...state, indexFooter: action.payload };
     case CONSTANT.SEARCHBAR:
       return { ...state, searchBar: action.payload };
+    case CONSTANT.TIME_SLOT_APPOINTMENT:
+      return { ...state, timeSlot: action.payload };
+    case CONSTANT.DATE_APPOINTMENT:
+      return { ...state, date: action.payload };
     default:
       return state;
   }

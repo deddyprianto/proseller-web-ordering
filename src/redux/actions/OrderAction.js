@@ -906,6 +906,36 @@ const deleteCartAppointment = () => {
     return response;
   };
 };
+const deleteCartAppointmentID = (id) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.delete(`${url}cart/${id}`, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response;
+  };
+};
+const getTimeSlotAppointment = (outletId) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.get(`${url}timeslot/${outletId}`, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data) {
+      dispatch({
+        type: CONSTANT.TIME_SLOT_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
+    return response.data;
+  };
+};
 
 const addCartAppointment = (addService) => {
   let url = config.getUrlAppointment();
@@ -1087,4 +1117,6 @@ export const OrderAction = {
   deleteCartAppointment,
   updateCartAppointment,
   searchProdAppointment,
+  deleteCartAppointmentID,
+  getTimeSlotAppointment,
 };
