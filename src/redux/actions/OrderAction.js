@@ -1124,7 +1124,6 @@ export const OrderAction = {
   deleteCartAppointment,
   updateCartAppointment,
   searchProdAppointment,
-  deleteCartAppointmentID,
   deleteItemAppointment,
   getTimeSlotAppointment,
 };
