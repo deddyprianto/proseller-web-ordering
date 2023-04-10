@@ -1,6 +1,18 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import { useSelector, useDispatch } from 'react-redux';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import countryCodes from 'country-codes-list';
+import Swal from 'sweetalert2';
+import { useHistory } from 'react-router-dom';
+import moment from 'moment';
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
 
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -8,16 +20,16 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Drawer from '@mui/material/Drawer';
 
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import Swal from 'sweetalert2';
-import { useHistory } from 'react-router-dom';
-import moment from 'moment';
 
 import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
 import fontStyleCustom from './style/styles.module.css';
@@ -31,18 +43,6 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import TimeSlotDialog from 'components/timeSlot/TimeSlotGuestCo';
 import ModalFormDeliveryCustomerDetail from './ModalFormDeliveryCustomerDetail';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import InputBase from '@mui/material/InputBase';
-import countryCodes from 'country-codes-list';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import Drawer from '@mui/material/Drawer';
 import iconDown from 'assets/images/IconDown.png';
 import ProductAddModal from 'components/ProductList/components/ProductAddModal';
 import SearchInput, { createFilter } from 'react-search-input';
@@ -82,7 +82,7 @@ const CartGuestCheckout = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [refreshData, setRefreshData] = useState(false);
+  // const [refreshData, setRefreshData] = useState(false);
   const [idGuestCheckout, setIdGuestCheckout] = useState();
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
   const [openAccordion, setOpenAccordion] = useState(false);
@@ -131,6 +131,7 @@ const CartGuestCheckout = () => {
   const timeslot = useSelector((state) => state.guestCheckoutCart.timeslot);
   const time = useSelector((state) => state.guestCheckoutCart.time);
   const noTable = useSelector((state) => state.guestCheckoutCart.noTable);
+  const orderingSetting = useSelector((state) => state.order.orderingSetting);
 
   const loadingData = (role) => {
     return new Promise((resolve) => {
@@ -170,7 +171,7 @@ const CartGuestCheckout = () => {
     setShowErrorEmail(false);
   }, [
     idGuestCheckout,
-    refreshData,
+    // refreshData,
     saveEditResponse,
     orderingModeGuestCheckout,
     isCartDeleted,
@@ -231,7 +232,8 @@ const CartGuestCheckout = () => {
     if (isBasketEmpty || orderingModeGuestCheckout) {
       setOpenOrderingMode(false);
     } else {
-      setOpenOrderingMode(true);
+      handleOpenOrderingMode();
+      // setOpenOrderingMode(true);
     }
   }, [basket]);
 
@@ -620,6 +622,76 @@ const CartGuestCheckout = () => {
     return basket?.totalGrossAmount;
   };
 
+  const handleFilter = (value) => {
+    return value === 'TRUE';
+  };
+
+  const handleOpenOrderingMode = async () => {
+    const data = await dispatch(
+      OutletAction?.fetchSingleOutlet(basket?.outlet)
+    );
+
+    const orderingModesField = [
+      {
+        isEnabledFieldName: 'enableStorePickUp',
+        name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
+        displayName: data?.storePickUpName || null,
+      },
+      {
+        isEnabledFieldName: 'enableDelivery',
+        name: CONSTANT.ORDERING_MODE_DELIVERY,
+        displayName: data?.deliveryName || null,
+      },
+      {
+        isEnabledFieldName: 'enableTakeAway',
+        name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
+        displayName: data?.takeAwayName || null,
+      },
+      {
+        isEnabledFieldName: 'enableDineIn',
+        name: CONSTANT.ORDERING_MODE_DINE_IN,
+        displayName: data?.dineInName || null,
+      },
+    ];
+
+    const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
+      handleFilter(data[mode?.isEnabledFieldName]?.toString()?.toUpperCase())
+    );
+
+    const intersectOrderingMode = orderingModesFieldFiltered.filter((mode) =>
+      orderingSetting?.AllowedOrderingMode?.some((item) => item === mode.name)
+    );
+
+    if (intersectOrderingMode.length === 1) {
+      !orderingModeGuestCheckout &&
+        intersectOrderingMode.forEach(async (item) => {
+          await dispatch(
+            OrderAction.changeOrderingModeForGuestCheckout({
+              guestID: idGuestCheckout,
+              orderingMode: item.name,
+              provider: {},
+            })
+          );
+          dispatch({
+            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+            payload: item.name,
+          });
+          dispatch({
+            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
+            payload: item,
+          });
+          dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
+          dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
+          dispatch({
+            type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
+            payload: { deliveryAddress: null },
+          });
+        });
+    } else {
+      setOpenOrderingMode(true);
+    }
+  };
+
   const renderTitleNameForCart = () => {
     return (
       <div
@@ -633,7 +705,11 @@ const CartGuestCheckout = () => {
           marginBottom: '20px',
         }}
       >
-        <img src={IconsArrowLeft} onClick={() => history.push('/')} />
+        <img
+          alt='ic_arrow_left'
+          src={IconsArrowLeft}
+          onClick={() => history.push('/')}
+        />
         <div
           style={{
             fontSize: '16px',
@@ -957,7 +1033,7 @@ const CartGuestCheckout = () => {
                       )
                     );
                     if (response?.resultCode === 200) {
-                      setRefreshData(!refreshData);
+                      // setRefreshData(!refreshData);
                       Swal.fire('Deleted!', response.message, 'success');
 
                       dispatch({
@@ -1167,7 +1243,7 @@ const CartGuestCheckout = () => {
   const renderOrderingMode = () => {
     return (
       <div
-        onClick={() => setOpenOrderingMode(true)}
+        onClick={() => handleOpenOrderingMode()}
         style={{
           width: '100%',
           backgroundColor: 'white',
@@ -1190,7 +1266,7 @@ const CartGuestCheckout = () => {
             style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
             className={fontStyleCustom.myFont}
           >
-            Ordering Mode
+            Ordering Mode cart
           </Typography>
           <div
             style={{
@@ -1339,7 +1415,7 @@ const CartGuestCheckout = () => {
                   title: fontStyleCustom.fontTitleSweetAlert,
                 },
               }).then(() => {
-                setOpenOrderingMode(true);
+                handleOpenOrderingMode();
               });
             } else {
               handlePaymentGuestMode();
