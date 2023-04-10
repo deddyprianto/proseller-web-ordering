@@ -11,6 +11,8 @@ function AppointmentReducer(
     searchBar: [],
     timeSlot: [],
     date: '',
+    time: '',
+    dateSorted: [],
   },
   action
 ) {
@@ -33,6 +35,10 @@ function AppointmentReducer(
       return { ...state, timeSlot: action.payload };
     case CONSTANT.DATE_APPOINTMENT:
       return { ...state, date: action.payload };
+    case CONSTANT.TIME_APPOINTMENT:
+      return { ...state, time: action.payload };
+    case CONSTANT.DATE_SORTED:
+      return { ...state, dateSorted: action.payload };
     default:
       return state;
   }

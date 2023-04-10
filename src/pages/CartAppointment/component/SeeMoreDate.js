@@ -4,16 +4,17 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CONSTANT } from 'helpers';
 
 const SeeMoreDate = ({
   color,
   timeList,
   setIsOpenModalDate,
-  setDateActive,
-  dateActive,
+  setIsConfirmButtonPressed,
+  sortDate,
 }) => {
+  const dateRedux = useSelector((state) => state.appointmentReducer.date);
   const [dateChoosen, setDateChoosen] = useState('');
   const dispatch = useDispatch();
   const [selector, setSelector] = useState('');
@@ -155,7 +156,9 @@ const SeeMoreDate = ({
         </button>
         <button
           onClick={() => {
+            setIsConfirmButtonPressed(true);
             dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: dateChoosen });
+            dispatch({ type: CONSTANT.DATE_SORTED, payload: sortDate });
             setIsOpenModalDate(false);
           }}
           disabled={handleButtonDisable()}
@@ -263,7 +266,7 @@ const SeeMoreDate = ({
     const months = combineDateNMonth.slice(4, 6);
     const days = combineDateNMonth.slice(6, 8);
     const formattedDate = `${years}-${months}-${days}`;
-    const isActive = dateActive === formattedDate;
+    const isActive = dateRedux === formattedDate;
     const isThisMonth = selectedMonth === month;
 
     const availableDateFromAPI = timeList.some((item) => {
@@ -312,7 +315,10 @@ const SeeMoreDate = ({
         }}
         onClick={() => {
           setDateChoosen(formattedDate);
-          setDateActive(formattedDate);
+          dispatch({
+            type: CONSTANT.DATE_APPOINTMENT,
+            payload: formattedDate,
+          });
           if (date === 1) {
             handleMonthSlider('next');
           }

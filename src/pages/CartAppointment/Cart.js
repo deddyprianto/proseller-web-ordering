@@ -3,20 +3,13 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import PlaceIcon from '@mui/icons-material/Place';
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
-import 'swiper/swiper.scss';
 import DropDownCustomSelect from './component/DropDownCustomSelect';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import { makeStyles } from '@material-ui/core/styles';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import '../Appointment/style/loadingspin.css';
 import { isEmptyObject } from 'helpers/CheckEmpty';
-import moment from 'moment';
-import SeeMoreDate from './component/SeeMoreDate';
-import { CONSTANT } from 'helpers';
+import Date from './component/Date';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -34,11 +27,6 @@ const useWindowSize = () => {
 const Cart = (props) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectTimeDropDown, setSelectTimeDropDown] = useState('');
-  const useStyless = makeStyles(() => ({
-    paper: { minWidth: '340px', borderRadius: '100px' },
-  }));
-  const classes = useStyless();
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   // some sl
@@ -53,50 +41,6 @@ const Cart = (props) => {
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
-  // some fn
-  const getDateNow = () => {
-    const now = new window.Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
-  };
-
-  const changeFormatDate = (itemDate) => {
-    return itemDate.split(' ').join('-');
-  };
-  const getAllDate = () => {
-    let monthArr = [];
-    const weeks = moment().add(0, 'weeks').startOf('week');
-    for (let i = 0; i < 150; i++) {
-      monthArr.push(weeks.clone().add(i, 'day').format('YYYY MM DD'));
-    }
-
-    const dateNow = new window.Date();
-    dateNow.setHours(0, 0, 0, 0);
-    let timeStamp = new window.Date(dateNow).getTime();
-    const listDate = monthArr.filter(
-      (item) => new window.Date(item).getTime() >= timeStamp
-    );
-    return listDate;
-  };
-  const convertDateName = (dateStr) => {
-    const date = new window.Date(dateStr);
-    const dayOfWeek = date.getDay();
-    const weekdays = ['sun', 'mon', 'tue', 'wed', 'thurs', 'fri', 'sat'];
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const dayOfMonth = date.getDate().toString().padStart(2, '0');
-    return weekdays[dayOfWeek];
-  };
-  const convertDate = (dateStr) => {
-    const date = new window.Date(dateStr);
-    const dayOfWeek = date.getDay();
-    const weekdays = ['sun', 'mon', 'tue', 'wed', 'thurs', 'fri', 'sat'];
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const dayOfMonth = date.getDate().toString().padStart(2, '0');
-    return dayOfMonth;
-  };
   // some Effect
   useEffect(() => {
     const loadData = async () => {
@@ -133,18 +77,13 @@ const Cart = (props) => {
   };
   const styleSheet = {
     container: {
-      width: '45%',
+      width: '40%',
       marginLeft: 'auto',
       marginRight: 'auto',
       backgroundColor: 'white',
       height: '99.3vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
     },
     gridStyle3Col: {
@@ -191,7 +130,7 @@ const Cart = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           cursor: 'pointer',
-          marginTop: gadgetScreen ? '25px' : '0px',
+          marginTop: '20px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -420,160 +359,11 @@ const Cart = (props) => {
     );
   };
 
-  const Date = () => {
-    // //   dispatch({
-    //   type: CONSTANT.DATE_APPOINTMENT,
-    //   payload: changeFormatDate(item),
-    // });
-
-    const date = useSelector((state) => state.appointmentReducer.date);
-    const [isOpenModalDate, setIsOpenModalDate] = useState(false);
-    const [dateActive, setDateActive] = useState(getDateNow());
-    const sortDate = () => {
-      timeslot.sort((item) => {
-        if (date === item.date) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
-      const getDate = timeslot.map((item) => item.date);
-      const splitFormatDate = date.split('-').join('');
-
-      const dateFiltered = getDate.filter(
-        (item) => Number(item.split('-').join('')) >= Number(splitFormatDate)
-      );
-
-      const dateSorted = dateFiltered.sort(
-        (a, b) => Number(a.split('-').join('')) - Number(b.split('-').join(''))
-      );
-      return dateSorted;
-    };
-
-    const showListDate = date ? sortDate() : getAllDate();
-
-    return (
-      <React.Fragment>
-        <div
-          style={{
-            width: '93%',
-            margin: 'auto',
-            marginTop: '20px',
-            marginBottom: '20px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '14px',
-            }}
-          >
-            <div
-              style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}
-            >
-              Select Date
-            </div>
-            <div
-              onClick={() => setIsOpenModalDate(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: color.primary,
-                fontWeight: 500,
-                cursor: 'pointer',
-              }}
-            >
-              See More Date
-            </div>
-          </div>
-          <Swiper
-            style={{ width: '100%', marginTop: '20px' }}
-            slidesPerView='auto'
-            spaceBetween={15}
-          >
-            {showListDate.map((item) => {
-              return (
-                <SwiperSlide style={{ flexShrink: 'unset' }}>
-                  <div
-                    onClick={() => {
-                      setDateActive(changeFormatDate(item));
-                    }}
-                    style={{
-                      backgroundColor:
-                        dateActive === changeFormatDate(item)
-                          ? color.primary
-                          : 'rgba(249, 249, 249, 1)',
-                      borderRadius: '32px',
-                      height: '80px',
-                      width: '50px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      color:
-                        dateActive === changeFormatDate(item)
-                          ? 'white'
-                          : 'black',
-                      opacity: item.available && 0.3,
-                      pointerEvents: item.available && 'none',
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {convertDateName(item)}
-                    </div>
-                    <div style={{ fontSize: '22px', fontWeight: 600 }}>
-                      {convertDate(item)}
-                    </div>
-                  </div>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
-          <hr
-            style={{
-              backgroundColor: 'rgba(249, 249, 249, 1)',
-              margin: '20px 0px',
-            }}
-          />
-        </div>
-        <Dialog
-          classes={{ paper: classes.paper }}
-          fullWidth={false}
-          maxWidth='sm'
-          open={isOpenModalDate}
-          onClose={() => setIsOpenModalDate(false)}
-        >
-          <DialogContent>
-            <SeeMoreDate
-              color={color}
-              timeList={timeslot}
-              setIsOpenModalDate={setIsOpenModalDate}
-              setDateActive={setDateActive}
-              dateActive={dateActive}
-            />
-          </DialogContent>
-        </Dialog>
-      </React.Fragment>
-    );
-  };
-
   const Time = () => {
-    const [timeActive, setTimeActive] = useState('10.00');
-    const time = [
-      { time: '10.00' },
-      { time: '11.00' },
-      { time: '12.00' },
-      { time: '13.00' },
-    ];
+    const date = useSelector((state) => state.appointmentReducer.date);
+    const filterTimeSlot = timeslot.find((item) => item.date === date);
+    const [timeActive, setTimeActive] = useState('');
+
     return (
       <div
         style={{
@@ -588,9 +378,9 @@ const Cart = (props) => {
         </p>
         <div style={{ width: '100%' }}>
           <DropDownCustomSelect
-            setSelectTimeDropDown={setSelectTimeDropDown}
-            selectTimeDropDown={selectTimeDropDown}
-            timeList={time}
+            setTimeActive={setTimeActive}
+            timeActive={timeActive}
+            timeList={filterTimeSlot?.timeSlot}
           />
         </div>
         <hr
@@ -604,6 +394,8 @@ const Cart = (props) => {
   };
 
   const ServiceStylist = () => {
+    const date = useSelector((state) => state.appointmentReducer.date);
+    const time = useSelector((state) => state.appointmentReducer.time);
     const [isActiveStylist, setIsActiveStylist] = useState('');
     const stylist = [
       {
@@ -613,62 +405,67 @@ const Cart = (props) => {
         name: 'Floyd Miles',
       },
     ];
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
-        }}
-      >
-        <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
-          Select Stylist
-        </p>
+    if (date && time) {
+      return (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            fontWeight: 500,
+            width: '93%',
+            margin: 'auto',
             marginTop: '20px',
+            marginBottom: '20px',
           }}
         >
-          {stylist.map((item) => (
-            <div
-              onClick={() => setIsActiveStylist(item.name)}
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: isActiveStylist === item.name && color.primary,
-                color: isActiveStylist === item.name ? 'white' : 'black',
-                borderRadius: '8px',
-                padding: '10px',
-                fontSize: '14px',
-              }}
-            >
-              <img
+          <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
+            Select Stylist
+          </p>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              fontWeight: 500,
+              marginTop: '20px',
+            }}
+          >
+            {stylist.map((item) => (
+              <div
+                onClick={() => setIsActiveStylist(item.name)}
                 style={{
-                  borderRadius: '10px',
-                  width: '40px',
-                  height: '36px',
-                  marginRight: '10px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor:
+                    isActiveStylist === item.name && color.primary,
+                  color: isActiveStylist === item.name ? 'white' : 'black',
+                  borderRadius: '8px',
+                  padding: '10px',
+                  fontSize: '14px',
                 }}
-                alt='logo'
-              />
-              <div>{item.name}</div>
-            </div>
-          ))}
+              >
+                <img
+                  style={{
+                    borderRadius: '10px',
+                    width: '40px',
+                    height: '36px',
+                    marginRight: '10px',
+                  }}
+                  alt='logo'
+                />
+                <div>{item.name}</div>
+              </div>
+            ))}
+          </div>
+          <hr
+            style={{
+              backgroundColor: 'rgba(249, 249, 249, 1)',
+              margin: '20px 0px',
+            }}
+          />
         </div>
-        <hr
-          style={{
-            backgroundColor: 'rgba(249, 249, 249, 1)',
-            margin: '20px 0px',
-          }}
-        />
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
   const Notes = () => {
     return (
@@ -754,7 +551,9 @@ const Cart = (props) => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: color.primary,
+          backgroundColor: 'rgba(183, 183, 183, 1)',
+          cursor: 'pointer',
+          pointerEvents: 'none',
           color: 'white',
           borderRadius: '10px',
           padding: '5px',
@@ -807,7 +606,7 @@ const Cart = (props) => {
           <RenderItemService />
           <LabelAnythingelse />
           <SelectedOutlet />
-          <Date />
+          <Date timeslot={timeslot} color={color} />
           <Time />
           <ServiceStylist />
           <Notes />
@@ -819,23 +618,17 @@ const Cart = (props) => {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <di
-              style={{
-                marginTop: '15%',
-              }}
-            >
-              <Header />
-              <Timeline />
-              <RenderItemService />
-              <LabelAnythingelse />
-              <SelectedOutlet />
-              <Date />
-              <Time />
-              <ServiceStylist />
-              <Notes />
-              <Price />
-              <ButtonPrice />
-            </di>
+            <Header />
+            <Timeline />
+            <RenderItemService />
+            <LabelAnythingelse />
+            <SelectedOutlet />
+            <Date timeslot={timeslot} color={color} />
+            <Time />
+            <ServiceStylist />
+            <Notes />
+            <Price />
+            <ButtonPrice />
           </div>
         </div>
       );

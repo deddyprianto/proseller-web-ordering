@@ -9,19 +9,15 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import iconDown from 'assets/images/IconDown.png';
-import { isEmptyObject } from 'helpers/CheckEmpty';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styles from '../style/styles.module.css';
-const DropDownCustomSelect = ({
-  setSelectTimeDropDown,
-  selectTimeDropDown,
-  timeList,
-  getDateBaseOnClick,
-  valueEditTimeSlot: dateEdit,
-}) => {
+import { CONSTANT } from 'helpers';
+import { isEmptyArray } from 'helpers/CheckEmpty';
+
+const DropDownCustomSelect = ({ timeActive, setTimeActive, timeList }) => {
+  const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-  const color = useSelector((state) => state.theme.color);
   // let date = [];
   // if (getDateBaseOnClick) {
   //   timeList?.forEach((item) => {
@@ -49,18 +45,19 @@ const DropDownCustomSelect = ({
             whiteSpace: 'nowrap',
           }}
           header
-          key={item.time}
+          key={item}
         >
           <p
             style={{
               cursor: 'pointer',
             }}
             onClick={() => {
-              setSelectTimeDropDown(item.time);
+              dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: item });
+              setTimeActive(item);
               setDropdownOpen(false);
             }}
           >
-            {item.time}
+            {item}
           </p>
         </DropdownItem>
       );
@@ -89,14 +86,16 @@ const DropDownCustomSelect = ({
             fontSize: '16px',
             color: 'black',
             opacity: '.8',
-            paddingTop: selectTimeDropDown ? '15px' : '10px',
-            paddingBottom: selectTimeDropDown ? '15px' : '10px',
+            paddingTop: timeActive ? '15px' : '10px',
+            paddingBottom: timeActive ? '15px' : '10px',
             outline: 'none',
           }}
         >
-          {/* {dateEdit?.timeslot ? dateEdit.timeslot : selectTimeDropDown}
-           */}
-          {timeList[0].time}
+          {timeActive
+            ? timeActive
+            : !isEmptyArray(timeList)
+            ? timeList[0]
+            : 'Time not available'}
           <img src={iconDown} />
         </DropdownToggle>
         <DropdownMenu
