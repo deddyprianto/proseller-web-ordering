@@ -61,8 +61,8 @@ const PhoneForm = ({
     const emailFulfilled = userEmailValue || emailNotRequired;
 
     if (!isEmptyArray(isCustomFieldHaveValue)) {
-      const customField = isCustomFieldHaveValue.some(
-        (item) => isAllFieldHasBeenFullFiled[item.fieldName]
+      const customField = isCustomFieldHaveValue.every((item) =>
+        item.mandatory ? isAllFieldHasBeenFullFiled[item.fieldName] : true
       );
       const isAllFieldMandatoryFullfilled =
         agreeTC &&

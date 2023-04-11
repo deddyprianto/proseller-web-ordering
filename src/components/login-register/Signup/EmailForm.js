@@ -80,8 +80,8 @@ const EmailForm = ({
 
   const handleDisabelButtonForTNC = () => {
     if (!isEmptyArray(isCustomFieldHaveValue)) {
-      const customField = isCustomFieldHaveValue.some(
-        (item) => isAllFieldHasBeenFullFiled[item.fieldName]
+      const customField = isCustomFieldHaveValue.every((item) =>
+        item.mandatory ? isAllFieldHasBeenFullFiled[item.fieldName] : true
       );
       const isAllFieldMandatoryFullfilled =
         agreeTC && isTCAvailable && phone && nameValue && customField;
