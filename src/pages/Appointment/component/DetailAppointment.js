@@ -19,6 +19,7 @@ const DetailAppointment = ({
   itemAppointment,
   handleCurrency,
   productId,
+  convertTimeToStr,
 }) => {
   // initial
   const dispatch = useDispatch();
@@ -219,10 +220,6 @@ const DetailAppointment = ({
     );
   };
   const RenderMainDetail = () => {
-    const dataImage = [
-      { img: itemAppointment.defaultImageURL },
-      { img: itemAppointment.defaultImageURL },
-    ];
     return (
       <div style={{ width: '90%', margin: '0px auto' }}>
         <div
@@ -237,7 +234,10 @@ const DetailAppointment = ({
         >
           <PhotoProvider>
             <PhotoSlider
-              images={dataImage.map((item) => ({ src: item.img, key: item }))}
+              images={itemAppointment?.imageFiles.map((item) => ({
+                src: item,
+                key: item,
+              }))}
               visible={visible}
               onClose={() => setVisible(false)}
             />
@@ -261,7 +261,7 @@ const DetailAppointment = ({
               padding: '0px 15px',
             }}
           >
-            <div>1/{dataImage.length}</div>
+            <div>1/{itemAppointment?.imageFiles.length}</div>
           </div>
         </div>
         <p
@@ -282,9 +282,11 @@ const DetailAppointment = ({
             borderRadius: '15px',
           }}
         >
-          <AccessTimeIcon
-            sx={{ color: 'rgba(183, 183, 183, 1)', padding: 0, margin: 0 }}
-          />
+          {itemAppointment.duration && (
+            <AccessTimeIcon
+              sx={{ color: 'rgba(183, 183, 183, 1)', padding: 0, margin: 0 }}
+            />
+          )}
           <div
             style={{
               fontSize: '14px',
@@ -294,13 +296,7 @@ const DetailAppointment = ({
               fontWeight: 500,
             }}
           >
-            <div style={{ marginRight: '5px' }}>{`${Math.floor(
-              itemAppointment?.duration / 3600
-            )}hours`}</div>
-            <div>
-              {Math.floor((itemAppointment?.duration % 3600) / 60) !== 0 &&
-                `${Math.floor((itemAppointment?.duration % 3600) / 60)}min`}
-            </div>
+            {convertTimeToStr(itemAppointment?.duration)}
           </div>
         </div>
         <div
@@ -315,7 +311,7 @@ const DetailAppointment = ({
           >
             {handleCurrency(itemAppointment.retailPrice)}
           </div>
-          <div
+          {/* <div
             style={{
               marginLeft: '5px',
               textDecorationLine: 'line-through',
@@ -324,7 +320,7 @@ const DetailAppointment = ({
             }}
           >
             SGD 10.00
-          </div>
+          </div> */}
         </div>
 
         <p style={{ fontWeight: 'bold', marginTop: '30px', color: 'black' }}>

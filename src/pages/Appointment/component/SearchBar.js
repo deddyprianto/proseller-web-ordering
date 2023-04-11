@@ -105,7 +105,9 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
               width: '80%',
               border: 'none',
               borderRadius: '5px',
-              fontSize: '12px',
+              fontSize: '15px',
+              color: 'black',
+              fontWeight: 600,
             }}
           />
 
@@ -145,7 +147,7 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
           })}
         </div>
       )}
-      {isEmptyArray(searchBar) && inputValue.length > 3 && !isLoading ? (
+      {isEmptyArray(searchBar) && inputValue.length > 3 && !isLoading && (
         <div
           style={{
             color: 'rgba(255, 0, 0, 1)',
@@ -154,20 +156,6 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
           }}
         >
           Product not found
-        </div>
-      ) : (
-        <div
-          style={{
-            color: 'rgba(183, 183, 183, 1)',
-            margin: '0px 20px',
-            marginBottom: '30px',
-            fontSize: '13px',
-          }}
-        >
-          ex name services: Hair Cut <br />
-          {!isEmptyArray(searchBar) && (
-            <span> found {searchBar.length} service</span>
-          )}
         </div>
       )}
 

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import { useHistory } from 'react-router-dom';
@@ -40,6 +40,7 @@ const mapStateToProps = (state) => {
     isLoggedIn: state.auth.isLoggedIn,
     orderingMode: state.order.orderingMode,
     basketGuestCo: state.guestCheckoutCart.data,
+    basket: state.order.basket,
   };
 };
 
@@ -176,11 +177,13 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
-          <ModalAppointment
-            name={name}
-            setName={setName}
-            isLoggedIn={props.isLoggedIn}
-          />
+          {!isEmptyObject(props.basket) && (
+            <ModalAppointment
+              name={name}
+              setName={setName}
+              isLoggedIn={props.isLoggedIn}
+            />
+          )}
         </div>
       );
     }

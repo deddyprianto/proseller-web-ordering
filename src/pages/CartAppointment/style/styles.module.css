@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap');
+
+.styleBar::-webkit-scrollbar-track{
+  padding: 2px 0;
+  background-color: #ffffff;
+}
+.styleBar::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(255, 85, 99, 1);
+}
+.styleBar::-webkit-scrollbar {
+  width: 6px;
+  background-color: white;
+}
+.myFont{
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+::-webkit-input-placeholder {
+  text-transform: capitalize;
+}
+.filter {
+  position: relative;
+  -webkit-filter: contrast(110%) brightness(110%) sepia(30%) grayscale(100%);
+  filter: contrast(110%) brightness(110%) sepia(30%) grayscale(100%);
+}
+.filter::before {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+}

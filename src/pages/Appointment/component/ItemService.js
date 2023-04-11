@@ -16,7 +16,21 @@ const ItemService = ({
 }) => {
   // some state
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
+  // some fn
+  const convertTimeToStr = (seconds) => {
+    // Calculate the number of hours and minutes
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
 
+    // Create the formatted string
+    if (hours > 0) {
+      return `${hours}h ${minutes}min`;
+    } else if (minutes > 0) {
+      return `${minutes}min`;
+    } else {
+      return '';
+    }
+  };
   // some selectors
   const color = useSelector((state) => state.theme.color);
   // .scss
@@ -75,7 +89,7 @@ const ItemService = ({
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: `${color.primary}10`,
+      backgroundColor: item.duration && `${color.primary}10`,
       borderRadius: '15px',
     },
     label30mins: {
@@ -128,7 +142,8 @@ const ItemService = ({
         display: 'flex',
         alignItems: 'center',
         marginLeft: '6px',
-        backgroundColor: 'rgb(94, 94, 94)',
+        backgroundColor:
+          Math.floor(item?.duration / 3600) > 0 && 'rgb(94, 94, 94)',
         borderRadius: '16px',
         padding: '0px 10px',
         width: 'fit-content',
@@ -209,17 +224,7 @@ const ItemService = ({
             <div style={localStyle.containerUnavailable.button}>
               <AccessTimeIcon sx={{ color: 'white' }} />
               <div style={localStyle.containerUnavailable.label}>
-                <div style={{ marginRight: '5px' }}>
-                  {item?.duration
-                    ? `${Math.floor(item?.duration / 3600)}hours`
-                    : '0 hours'}
-                </div>
-                {item?.duration && (
-                  <div>
-                    {Math.floor((item?.duration % 3600) / 60) !== 0 &&
-                      `${Math.floor((item?.duration % 3600) / 60)}min`}
-                  </div>
-                )}
+                {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
               </div>
             </div>
             <div style={localStyle.containerUnavailable.labelNotAvailable}>
@@ -283,23 +288,13 @@ const ItemService = ({
           </div>
           <div style={localStyle.gridContainerBottom}>
             <div style={localStyle.subContainerGrid}>
-              <AccessTimeIcon
-                sx={{ color: color.primary, padding: 0, margin: 0 }}
-              />
+              {item.duration && (
+                <AccessTimeIcon
+                  sx={{ color: color.primary, padding: 0, margin: 0 }}
+                />
+              )}
               <div style={localStyle.label30mins}>
-                <div style={{ marginRight: '5px' }}>
-                  {item?.duration
-                    ? `${Math.floor(item?.duration / 3600)}hours`
-                    : '0 hours'}
-                </div>
-                <div>
-                  {item?.duration && (
-                    <div>
-                      {Math.floor((item?.duration % 3600) / 60) !== 0 &&
-                        `${Math.floor((item?.duration % 3600) / 60)}min`}
-                    </div>
-                  )}
-                </div>
+                {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
               </div>
             </div>
             {item?.cutPrice ? (
@@ -352,6 +347,7 @@ const ItemService = ({
           styleSheet={styleSheet}
           setIsOpenModalDetail={setIsOpenModalDetail}
           itemAppointment={item}
+          convertTimeToStr={convertTimeToStr}
         />
       </Dialog>
     </React.Fragment>
