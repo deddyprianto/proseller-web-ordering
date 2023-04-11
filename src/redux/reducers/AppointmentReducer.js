@@ -13,6 +13,8 @@ function AppointmentReducer(
     date: '',
     time: '',
     dateSorted: [],
+    staffServices: [],
+    textNotes: '',
   },
   action
 ) {
@@ -39,6 +41,10 @@ function AppointmentReducer(
       return { ...state, time: action.payload };
     case CONSTANT.DATE_SORTED:
       return { ...state, dateSorted: action.payload };
+    case CONSTANT.STAFF_SERVICES:
+      return { ...state, staffServices: action.payload };
+    case CONSTANT.TEXT_NOTE:
+      return { ...state, textNotes: action.payload };
     default:
       return state;
   }

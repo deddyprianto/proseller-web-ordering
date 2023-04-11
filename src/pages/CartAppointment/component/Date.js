@@ -8,6 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
 import SeeMoreDate from './SeeMoreDate';
 import { CONSTANT } from 'helpers';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const Date = ({ timeslot, color }) => {
   const [isConfirmButtonPressed, setIsConfirmButtonPressed] = useState(false);
@@ -38,7 +39,9 @@ const Date = ({ timeslot, color }) => {
   }, []);
 
   const changeFormatDate = (itemDate) => {
-    return itemDate.split(' ').join('-');
+    if (itemDate) {
+      return itemDate.split(' ').join('-');
+    }
   };
   const getAllDate = () => {
     let monthArr = [];
@@ -53,8 +56,8 @@ const Date = ({ timeslot, color }) => {
     const listDate = monthArr.filter(
       (item) => new window.Date(item).getTime() >= timeStamp
     );
-    // const dateSorted = listDate.map((a) => a.split(' ').join('-'));
-    return listDate;
+    const dateSorted = listDate.map((a) => a.split(' ').join('-'));
+    return dateSorted;
   };
 
   const convertDateName = (dateStr) => {
@@ -82,21 +85,21 @@ const Date = ({ timeslot, color }) => {
         return 1;
       }
     });
-    const getDate = timeslot.map((item) => item.date);
     const splitFormatDate = date.split('-').join('');
 
-    const dateFiltered = getDate.filter(
-      (item) => Number(item.split('-').join('')) >= Number(splitFormatDate)
+    const dateFiltered = timeslot.filter(
+      (item) => Number(item.date.split('-').join('')) >= Number(splitFormatDate)
     );
 
     const dateSorted = dateFiltered.sort(
-      (a, b) => Number(a.split('-').join('')) - Number(b.split('-').join(''))
+      (a, b) =>
+        Number(a.date.split('-').join('')) - Number(b.date.split('-').join(''))
     );
     return dateSorted;
   };
 
-  const showListDate = isConfirmButtonPressed ? dateSorted : getAllDate();
-
+  const showListDate = isConfirmButtonPressed ? dateSorted : timeslot;
+  console.log(showListDate);
   return (
     <React.Fragment>
       <div
@@ -139,17 +142,17 @@ const Date = ({ timeslot, color }) => {
         >
           {showListDate.map((item) => {
             return (
-              <SwiperSlide style={{ flexShrink: 'unset' }}>
+              <SwiperSlide key={item.date} style={{ flexShrink: 'unset' }}>
                 <div
                   onClick={() => {
                     dispatch({
                       type: CONSTANT.DATE_APPOINTMENT,
-                      payload: changeFormatDate(item),
+                      payload: changeFormatDate(item.date),
                     });
                   }}
                   style={{
                     backgroundColor:
-                      date === changeFormatDate(item)
+                      date === changeFormatDate(item?.date)
                         ? color.primary
                         : 'rgba(249, 249, 249, 1)',
                     borderRadius: '32px',
@@ -159,9 +162,10 @@ const Date = ({ timeslot, color }) => {
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    color: date === changeFormatDate(item) ? 'white' : 'black',
-                    opacity: item.available && 0.3,
-                    pointerEvents: item.available && 'none',
+                    color:
+                      date === changeFormatDate(item?.date) ? 'white' : 'black',
+                    opacity: isEmptyArray(item.timeSlot) && 0.3,
+                    pointerEvents: isEmptyArray(item.timeSlot) && 'none',
                   }}
                 >
                   <div
@@ -171,10 +175,10 @@ const Date = ({ timeslot, color }) => {
                       textTransform: 'capitalize',
                     }}
                   >
-                    {convertDateName(item)}
+                    {convertDateName(item?.date)}
                   </div>
                   <div style={{ fontSize: '22px', fontWeight: 600 }}>
-                    {convertDate(item)}
+                    {convertDate(item?.date)}
                   </div>
                 </div>
               </SwiperSlide>
@@ -201,7 +205,7 @@ const Date = ({ timeslot, color }) => {
             timeList={timeslot}
             setIsOpenModalDate={setIsOpenModalDate}
             setIsConfirmButtonPressed={setIsConfirmButtonPressed}
-            sortDate={sortDate()}
+            sortDate={sortDate}
           />
         </DialogContent>
       </Dialog>

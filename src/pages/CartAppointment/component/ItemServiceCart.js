@@ -22,7 +22,21 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
+  // some fn
+  const convertTimeToStr = (seconds) => {
+    // Calculate the number of hours and minutes
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
 
+    // Create the formatted string
+    if (hours > 0) {
+      return `${hours}h ${minutes}min`;
+    } else if (minutes > 0) {
+      return `${minutes}min`;
+    } else {
+      return '';
+    }
+  };
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -295,11 +309,20 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
               alignItems: 'center',
               backgroundColor: `${color.primary}10`,
               borderRadius: '10px',
-              width: '27%',
+              padding: '0px 7px',
             }}
           >
-            <AccessTimeIcon sx={{ fontSize: '20px' }} />
-            <div>30 mins</div>
+            {item?.duration && <AccessTimeIcon sx={{ fontSize: '20px' }} />}
+            <div
+              style={{
+                fontSize: '13px',
+                marginLeft: '5px',
+                color: color.primary,
+                display: 'flex',
+              }}
+            >
+              {convertTimeToStr(item?.duration)}
+            </div>
           </div>
           <div>{handleCurrency(item?.grossAmount)}</div>
         </div>

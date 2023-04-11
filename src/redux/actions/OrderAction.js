@@ -944,6 +944,28 @@ const getTimeSlotAppointment = (outletId) => {
   };
 };
 
+const loadStaffByTimeSlot = (date, timeslot) => {
+  let url = config.getUrlDomain();
+  return async (dispatch) => {
+    const response = await axios.get(
+      `${url}staff/api/staff/load?date=${date}&timeslot=${timeslot}`,
+      {
+        headers: {
+          Authorization: `Bearer ${account.accessToken.jwtToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (response.data.status === 'SUCCESS') {
+      dispatch({
+        type: CONSTANT.STAFF_SERVICES,
+        payload: response.data.data,
+      });
+    }
+    return response.data.data;
+  };
+};
+
 const addCartAppointment = (addService) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
@@ -1126,4 +1148,5 @@ export const OrderAction = {
   searchProdAppointment,
   deleteItemAppointment,
   getTimeSlotAppointment,
+  loadStaffByTimeSlot,
 };

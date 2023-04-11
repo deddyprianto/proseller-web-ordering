@@ -10,6 +10,9 @@ import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import '../Appointment/style/loadingspin.css';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import Date from './component/Date';
+import ServiceStylist from './component/ServiceStylist';
+import ButtonPrice from './component/ButtonPrice';
+import RenderNotes from './component/RenderNotes';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -30,6 +33,9 @@ const Cart = (props) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   // some sl
+  const locationAppointment = useSelector(
+    (state) => state.appointmentReducer.locationAppointment
+  );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const responseAddTocart = useSelector(
@@ -339,9 +345,15 @@ const Cart = (props) => {
             }}
           />
           <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
-            <div>Connection One</div>
+            <div>
+              {!isEmptyObject(locationAppointment)
+                ? locationAppointment.name
+                : defaultOutlet.name}
+            </div>
             <div style={{ color: 'rgba(157, 157, 157, 1)' }}>
-              169 Bukit Merah Central, Singapore
+              {!isEmptyObject(locationAppointment)
+                ? locationAppointment?.address
+                : defaultOutlet?.address}
             </div>
           </div>
           <div></div>
@@ -393,128 +405,6 @@ const Cart = (props) => {
     );
   };
 
-  const ServiceStylist = () => {
-    const date = useSelector((state) => state.appointmentReducer.date);
-    const time = useSelector((state) => state.appointmentReducer.time);
-    const [isActiveStylist, setIsActiveStylist] = useState('');
-    const stylist = [
-      {
-        name: 'Cody Fisher',
-      },
-      {
-        name: 'Floyd Miles',
-      },
-    ];
-    if (date && time) {
-      return (
-        <div
-          style={{
-            width: '93%',
-            margin: 'auto',
-            marginTop: '20px',
-            marginBottom: '20px',
-          }}
-        >
-          <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
-            Select Stylist
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              fontWeight: 500,
-              marginTop: '20px',
-            }}
-          >
-            {stylist.map((item) => (
-              <div
-                onClick={() => setIsActiveStylist(item.name)}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor:
-                    isActiveStylist === item.name && color.primary,
-                  color: isActiveStylist === item.name ? 'white' : 'black',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  fontSize: '14px',
-                }}
-              >
-                <img
-                  style={{
-                    borderRadius: '10px',
-                    width: '40px',
-                    height: '36px',
-                    marginRight: '10px',
-                  }}
-                  alt='logo'
-                />
-                <div>{item.name}</div>
-              </div>
-            ))}
-          </div>
-          <hr
-            style={{
-              backgroundColor: 'rgba(249, 249, 249, 1)',
-              margin: '20px 0px',
-            }}
-          />
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
-  const Notes = () => {
-    const [textNote, setTextNote] = useState('');
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-        }}
-      >
-        <p style={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
-          Add booking notes
-        </p>
-        <div
-          style={{
-            width: '100%',
-            border: '1px solid rgba(184, 184, 184, 1)',
-            borderRadius: '5px',
-            color: 'rgba(183, 183, 183, 1)',
-            fontSize: '14px',
-          }}
-        >
-          <textarea
-            onChange={(e) => setTextNote(e.target.value)}
-            placeholder='Example: Please confirm the availability'
-            style={{ border: 'none', outline: 'none', color: 'black' }}
-          ></textarea>
-          <p
-            style={{
-              padding: 0,
-              margin: 0,
-              textAlign: 'right',
-              fontSize: '12px',
-              paddingRight: '10px',
-            }}
-          >
-            {textNote.length}/140
-          </p>
-        </div>
-        <hr
-          style={{
-            backgroundColor: 'rgba(249, 249, 249, 1)',
-            margin: '20px 0px',
-          }}
-        />
-      </div>
-    );
-  };
   const Price = () => {
     return (
       <div
@@ -535,35 +425,6 @@ const Cart = (props) => {
         >
           {handleCurrency(cartAppointment?.totalNettAmount)}
         </div>
-      </div>
-    );
-  };
-
-  const ButtonPrice = () => {
-    return (
-      <div
-        onClick={() => {
-          window.location.href = changeFormatURl('/bookingsummary');
-        }}
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'rgba(183, 183, 183, 1)',
-          cursor: 'pointer',
-          pointerEvents: 'none',
-          color: 'white',
-          borderRadius: '10px',
-          padding: '5px',
-          fontSize: '16px',
-          fontWeight: 600,
-        }}
-      >
-        Book This Date
       </div>
     );
   };
@@ -610,10 +471,10 @@ const Cart = (props) => {
           <SelectedOutlet />
           <Date timeslot={timeslot} color={color} />
           <Time />
-          <ServiceStylist />
-          <Notes />
+          <ServiceStylist color={color} />
+          <RenderNotes />
           <Price />
-          <ButtonPrice />
+          <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
         </div>
       );
     } else {
@@ -627,10 +488,10 @@ const Cart = (props) => {
             <SelectedOutlet />
             <Date timeslot={timeslot} color={color} />
             <Time />
-            <ServiceStylist />
-            <Notes />
+            <ServiceStylist color={color} />
+            <RenderNotes />
             <Price />
-            <ButtonPrice />
+            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
           </div>
         </div>
       );

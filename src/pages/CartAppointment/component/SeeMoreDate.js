@@ -158,7 +158,7 @@ const SeeMoreDate = ({
           onClick={() => {
             setIsConfirmButtonPressed(true);
             dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: dateChoosen });
-            dispatch({ type: CONSTANT.DATE_SORTED, payload: sortDate });
+            dispatch({ type: CONSTANT.DATE_SORTED, payload: sortDate() });
             setIsOpenModalDate(false);
           }}
           disabled={handleButtonDisable()}

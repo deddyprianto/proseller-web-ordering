@@ -208,6 +208,20 @@ config.getUrlAppointment = () => {
   const remoteDomainName = storedDomainName || '';
   return `https://${remoteDomainName}/appointment/api/`;
 };
+
+config.getUrlDomain = () => {
+  let storedDomainName = '';
+  try {
+    storedDomainName = localStorage.getItem(`apiDomainName`);
+  } catch (error) {
+    console.log(error);
+    window.location.reload();
+  }
+
+  const remoteDomainName = storedDomainName || '';
+  return `https://${remoteDomainName}/`;
+};
+
 config.getUrlOrdering = () => {
   let storedDomainName = '';
   try {
