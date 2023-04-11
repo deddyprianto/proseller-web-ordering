@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { OrderAction } from 'redux/actions/OrderAction';
-import LoaderSkleton from './LoaderSkleton';
+import LoaderSkeleton from './LoaderSkeleton';
 import defaultImageURL from 'assets/images/iconPro1.png';
 const ServiceStylist = ({ color }) => {
   const dispatch = useDispatch();
@@ -100,7 +100,7 @@ const ServiceStylist = ({ color }) => {
   };
   return (
     <React.Fragment>
-      {isLoading ? <LoaderSkleton /> : <RenderStylistStaff />}
+      {isLoading ? <LoaderSkeleton /> : <RenderStylistStaff />}
     </React.Fragment>
   );
 };

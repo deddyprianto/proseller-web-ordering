@@ -1,7 +1,7 @@
 import React from 'react';
 import ContentLoader from 'react-content-loader';
 
-const LoaderSkleton = (props) => (
+const LoaderSkeleton = (props) => (
   <div style={{ width: '100%' }}>
     <ContentLoader
       speed={1}
@@ -23,4 +23,4 @@ const LoaderSkleton = (props) => (
   </div>
 );
 
-export default LoaderSkleton;
+export default LoaderSkeleton;
