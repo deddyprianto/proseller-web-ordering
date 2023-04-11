@@ -468,6 +468,7 @@ const Cart = (props) => {
     }
   };
   const Notes = () => {
+    const [textNote, setTextNote] = useState('');
     return (
       <div
         style={{
@@ -489,8 +490,9 @@ const Cart = (props) => {
           }}
         >
           <textarea
+            onChange={(e) => setTextNote(e.target.value)}
             placeholder='Example: Please confirm the availability'
-            style={{ border: 'none', outline: 'none' }}
+            style={{ border: 'none', outline: 'none', color: 'black' }}
           ></textarea>
           <p
             style={{
@@ -501,7 +503,7 @@ const Cart = (props) => {
               paddingRight: '10px',
             }}
           >
-            0/140
+            {textNote.length}/140
           </p>
         </div>
         <hr
@@ -525,13 +527,13 @@ const Cart = (props) => {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}>
+        <div style={{ fontWeight: 600, fontSize: '16px', color: 'black' }}>
           Estimated Price
         </div>
         <div
-          style={{ fontWeight: 'bold', color: color.primary, fontSize: '16px' }}
+          style={{ fontWeight: 'bold', color: color.primary, fontSize: '18px' }}
         >
-          SGD 15.00
+          {handleCurrency(cartAppointment?.totalNettAmount)}
         </div>
       </div>
     );

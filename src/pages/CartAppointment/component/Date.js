@@ -154,7 +154,7 @@ const Date = ({ timeslot, color }) => {
                         : 'rgba(249, 249, 249, 1)',
                     borderRadius: '32px',
                     height: '80px',
-                    width: '50px',
+                    width: '60px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
