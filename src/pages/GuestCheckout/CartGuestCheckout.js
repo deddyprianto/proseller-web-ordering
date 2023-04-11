@@ -82,7 +82,6 @@ const CartGuestCheckout = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  // const [refreshData, setRefreshData] = useState(false);
   const [idGuestCheckout, setIdGuestCheckout] = useState();
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
   const [openAccordion, setOpenAccordion] = useState(false);
@@ -171,7 +170,6 @@ const CartGuestCheckout = () => {
     setShowErrorEmail(false);
   }, [
     idGuestCheckout,
-    // refreshData,
     saveEditResponse,
     orderingModeGuestCheckout,
     isCartDeleted,
@@ -1033,7 +1031,6 @@ const CartGuestCheckout = () => {
                       )
                     );
                     if (response?.resultCode === 200) {
-                      // setRefreshData(!refreshData);
                       Swal.fire('Deleted!', response.message, 'success');
 
                       dispatch({
@@ -1266,7 +1263,7 @@ const CartGuestCheckout = () => {
             style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
             className={fontStyleCustom.myFont}
           >
-            Ordering Mode cart
+            Ordering Mode
           </Typography>
           <div
             style={{
