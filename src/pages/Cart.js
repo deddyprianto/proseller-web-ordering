@@ -4,36 +4,36 @@ import { connect } from 'react-redux';
 import config from 'config';
 import { useHistory } from 'react-router-dom';
 import _ from 'lodash';
+import moment from 'moment';
+import Swal from 'sweetalert2';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import Drawer from '@mui/material/Drawer';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
 import TimeSlotDialog from 'components/timeSlot/TimeSlotLogin';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import SelectProviderDialog from './DeliveryAddress/components/SelectProviderDialog';
-
-import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
-
-import { PaymentAction } from 'redux/actions/PaymentAction';
-import { OrderAction } from 'redux/actions/OrderAction';
-
-import { CONSTANT } from '../helpers/';
-import moment from 'moment';
-import Drawer from '@mui/material/Drawer';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import IconDown from 'assets/images/VectorDown.png';
 import iconRight from 'assets/images/iconRight.png';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Swal from 'sweetalert2';
 import OrderingModeTable from 'components/orderingModeTable';
+
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
+import { CONSTANT } from '../helpers/';
+
+import { PaymentAction } from 'redux/actions/PaymentAction';
+import { OrderAction } from 'redux/actions/OrderAction';
+import { OutletAction } from 'redux/actions/OutletAction';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -53,6 +53,7 @@ const mapStateToProps = (state) => {
     selectedDeliveryProvider: state.order.selectedDeliveryProvider,
     basketUpdate: state.order.basketUpdate,
     noTable: state.order.noTable,
+    orderingSetting: state.order.orderingSetting,
   };
 };
 
@@ -369,7 +370,7 @@ const Cart = ({ ...props }) => {
         !isEmptyArray(props.basket.details) &&
         props.isLoggedIn
       ) {
-        setOpenOrderingMode(true);
+        handleOpenOrderingMode();
       }
     };
 
@@ -444,8 +445,85 @@ const Cart = ({ ...props }) => {
     setOpenTimeSlot(false);
   };
 
-  const handleOpenOrderingMode = () => {
-    setOpenOrderingMode(true);
+  const handleFilter = (value) => {
+    return value === 'TRUE';
+  };
+
+  const handleOpenOrderingMode = async () => {
+    const data = await props.dispatch(
+      OutletAction?.fetchSingleOutlet(props?.basket?.outlet)
+    );
+
+    const orderingModesField = [
+      {
+        isEnabledFieldName: 'enableStorePickUp',
+        name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
+        displayName: data?.storePickUpName || null,
+      },
+      {
+        isEnabledFieldName: 'enableDelivery',
+        name: CONSTANT.ORDERING_MODE_DELIVERY,
+        displayName: data?.deliveryName || null,
+      },
+      {
+        isEnabledFieldName: 'enableTakeAway',
+        name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
+        displayName: data?.takeAwayName || null,
+      },
+      {
+        isEnabledFieldName: 'enableDineIn',
+        name: CONSTANT.ORDERING_MODE_DINE_IN,
+        displayName: data?.dineInName || null,
+      },
+    ];
+
+    const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
+      handleFilter(data[mode?.isEnabledFieldName]?.toString()?.toUpperCase())
+    );
+
+    const intersectOrderingMode = orderingModesFieldFiltered.filter((mode) =>
+      props.orderingSetting?.AllowedOrderingMode?.some(
+        (item) => item === mode.name
+      )
+    );
+
+    if (intersectOrderingMode.length === 1) {
+      !props.orderingMode &&
+        intersectOrderingMode.forEach(async (item) => {
+          props.dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
+          props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
+
+          props.dispatch({
+            type: 'SET_ORDERING_MODE',
+            payload: item.name,
+          });
+
+          const responseChangeOrderingMode = await props.dispatch(
+            OrderAction.changeOrderingMode({
+              orderingMode: item.name,
+              provider: props.selectedDeliveryProvider
+                ? props.selectedDeliveryProvider
+                : {},
+            })
+          );
+
+          await props.dispatch(
+            OrderAction.setData(
+              item.displayName,
+              'SET_ORDERING_MODE_DISPlAY_NAME'
+            )
+          );
+
+          await props.dispatch(
+            OrderAction.setData(
+              responseChangeOrderingMode.data,
+              CONSTANT.DATA_BASKET
+            )
+          );
+        });
+    } else {
+      setOpenOrderingMode(true);
+    }
   };
 
   const handleLogin = () => {
@@ -1778,6 +1856,7 @@ Cart.propTypes = {
   orderingMode: PropTypes.object,
   orderingModeDisplayName: PropTypes.object,
   selectedDeliveryProvider: PropTypes.object,
+  orderingSetting: PropTypes.array,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Cart);

@@ -19,13 +19,14 @@ import { CONSTANT } from 'helpers';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import fontStyles from './style/styles.module.css';
 
-
 const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
   const color = useSelector((state) => state.theme.color);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const orderingModeGuestCheckout = useSelector(
     (state) => state.guestCheckoutCart.orderingModeGuestCheckout
   );
+  const orderingSetting = useSelector((state) => state.order.orderingSetting);
+
   const [orderingModeActive, setOrderingModeActive] = useState();
   const [itemOrderingMode, setItemOrderingMode] = useState({});
   const useStyles = makeStyles(() => ({
@@ -268,11 +269,15 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
             data[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
           )
         );
-        const orderingModesMapped = orderingModesFieldFiltered.map(
-          (mode) => mode
+
+        const intersectOrderingMode = orderingModesFieldFiltered.filter(
+          (mode) =>
+            orderingSetting?.AllowedOrderingMode?.some(
+              (item) => item === mode.name
+            )
         );
 
-        await setOrderingModes(orderingModesMapped);
+        await setOrderingModes(intersectOrderingMode);
       }
       setIsLoading(false);
     };

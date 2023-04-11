@@ -964,7 +964,6 @@ const processUpdateCartGuestMode = (guestID, productUpdate) => {
       `guest/cart/update-item/${idGuest}`
     );
     if (response.status === 'SUCCESS') {
-      console.log('dedd =>', response);
       dispatch({
         type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
         payload: response.data,
