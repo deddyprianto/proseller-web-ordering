@@ -61,9 +61,17 @@ const PhoneForm = ({
     const emailFulfilled = userEmailValue || emailNotRequired;
 
     if (!isEmptyArray(isCustomFieldHaveValue)) {
-      const customField = isCustomFieldHaveValue.every((item) =>
-        item.mandatory ? isAllFieldHasBeenFullFiled[item.fieldName] : true
-      );
+      const customField = isCustomFieldHaveValue.every((item) => {
+        if (item.mandatory) {
+          return item.children
+            ? item.children.every(
+                (child) => isAllFieldHasBeenFullFiled[child.fieldName]
+              )
+            : isAllFieldHasBeenFullFiled[item.fieldName];
+        } else {
+          return true;
+        }
+      });
       const isAllFieldMandatoryFullfilled =
         agreeTC &&
         isTCAvailable &&
