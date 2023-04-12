@@ -29,7 +29,8 @@ const useStyles = (location) => {
         location.pathname === '/location' ||
         location.pathname === '/cartappointment' ||
         location.pathname === '/bookingsummary' ||
-        location.pathname === '/bookingsubmitted'
+        location.pathname === '/bookingsubmitted' ||
+        location.pathname === '/bookingconfirm'
           ? 'none'
           : 'flex',
       justifyContent: 'center',

@@ -6,7 +6,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
   return (
     <div
       onClick={() => {
-        window.location.href = changeFormatURl('/bookingsubmitted');
+        window.location.href = changeFormatURl('/bookingconfirm');
       }}
       style={{
         width: '93%',

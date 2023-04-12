@@ -22,6 +22,9 @@ const LocationAppointment = loadable(() =>
 const BookingSubmitted = loadable(() =>
   import('../../pages/BookingAppointmentSubmited')
 );
+const BookingConfirm = loadable(() =>
+  import('../../pages/BookingAppointmentConfirm')
+);
 const Cart = loadable(() => import('../../pages/Cart'));
 const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
 const Payment = loadable(() => import('pages/Payment'));
@@ -190,6 +193,9 @@ class Layout extends Component {
                 path='/bookingsubmitted'
                 component={BookingSubmitted}
               />
+            )}
+            {enableOrdering && (
+              <Route exact path='/bookingconfirm' component={BookingConfirm} />
             )}
             {enableOrdering && (
               <Route exact path='/location' component={LocationAppointment} />
