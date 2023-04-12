@@ -27,6 +27,7 @@ import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
+import ModalMap from './component/ModalMap';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -43,6 +44,7 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [openModalMap, setOpenModalMap] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
     useState(false);
@@ -451,21 +453,26 @@ const Appointment = (props) => {
                 ? selectedLocation?.address
                 : defaultOutlet?.address}
             </div>
-            <div style={localStyle.containerAccordion}>
-              <div
-                onClick={() => setOpenDropDownTime(!openDropDownTime)}
-                className={fontStyles.myFont}
-                style={localStyle.labelSeeDirection}
-              >
-                See Direction
+            {defaultOutlet?.latitude && defaultOutlet?.longitude && (
+              <div style={localStyle.containerAccordion}>
+                <div
+                  onClick={() => setOpenModalMap(true)}
+                  className={fontStyles.myFont}
+                  style={localStyle.labelSeeDirection}
+                >
+                  See Direction
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
             800m
           </div>
         </div>
-        <div style={localStyle.containerOpenNow}>
+        <div
+          style={localStyle.containerOpenNow}
+          onClick={() => setOpenDropDownTime(!openDropDownTime)}
+        >
           <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
@@ -1053,6 +1060,24 @@ const Appointment = (props) => {
             gadgetScreen={gadgetScreen}
             productServicesAppointment={productServicesAppointment}
           />
+        </div>
+      </Dialog>
+      <Dialog
+        fullScreen={fullScreen}
+        fullWidth
+        maxWidth='md'
+        open={openModalMap}
+        onClose={() => setOpenModalMap(false)}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        >
+          <ModalMap />
         </div>
       </Dialog>
     </LoadingOverlayCustom>
