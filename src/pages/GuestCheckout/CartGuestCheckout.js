@@ -2028,7 +2028,7 @@ const CartGuestCheckout = () => {
           }}
         >
           <div>
-            <h1 style={{ fontSize: '16px' }}>Customer Detail</h1>
+            <h1 style={{ fontSize: '16px' }}>Customer Details</h1>
           </div>
           <form
             onSubmit={formik.handleSubmit}
