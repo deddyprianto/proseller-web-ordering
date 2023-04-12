@@ -82,7 +82,11 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
       >
         <ArrowBackIosIcon
           onClick={() => setShowSearchBar(false)}
-          sx={{ justifySelf: 'center', color: color.primary }}
+          sx={{
+            justifySelf: 'center',
+            color: color.primary,
+            marginLeft: '10px',
+          }}
           fontSize='large'
         />
         <div
