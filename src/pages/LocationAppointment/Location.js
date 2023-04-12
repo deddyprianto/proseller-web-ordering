@@ -13,6 +13,9 @@ import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject } from 'helpers/CheckEmpty';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MapAppointment from 'pages/Appointment/component/MapAppointment';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -27,13 +30,13 @@ const useWindowSize = () => {
   return size;
 };
 const Location = (props) => {
+  const [openModalMap, setOpenModalMap] = useState(false);
   // some initial
   const dispatch = useDispatch();
   const history = useHistory();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   // some st
-  const selectedLocation = useSelector(
-    (state) => state.appointmentReducer.location
-  );
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
@@ -43,12 +46,14 @@ const Location = (props) => {
   }));
   const classes = useStyles();
   // some sl
+  const selectedLocation = useSelector(
+    (state) => state.appointmentReducer.locationAppointment
+  );
   const color = useSelector((state) => state.theme.color);
   const popupLocation = useSelector(
     (state) => state.appointmentReducer.popupLocation
   );
   const outlets = useSelector((state) => state.outlet.outlets);
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   // some fn
   const changeFormatURl = (path) => {
     const url = window.location.href;
@@ -102,10 +107,7 @@ const Location = (props) => {
   }, [locationKeys]);
 
   const RenderTimeList = () => {
-    const operationalHoursLocation = !isEmptyObject(selectedLocation)
-      ? selectedLocation
-      : defaultOutlet;
-    return operationalHoursLocation?.operationalHours.map((item, i) => {
+    return selectedLocation?.operationalHours.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
@@ -236,20 +238,21 @@ const Location = (props) => {
           />
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>
-              {!isEmptyObject(selectedLocation)
-                ? selectedLocation.name
-                : defaultOutlet.name}
+              {selectedLocation.name}
             </div>
-            <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
-              {!isEmptyObject(selectedLocation)
-                ? selectedLocation?.address
-                : defaultOutlet?.address}
+            <div
+              style={{
+                color: 'rgba(183, 183, 183, 1)',
+                fontWeight: 500,
+              }}
+            >
+              {selectedLocation?.address}
             </div>
-            <div style={localStyle.containerAccordion}>
+            <div
+              onClick={() => setOpenModalMap(true)}
+              style={localStyle.containerAccordion}
+            >
               <div
-                onClick={() =>
-                  setOpenDropDownTimeSelected(!openDropDownTimeSelected)
-                }
                 className={fontStyles.myFont}
                 style={localStyle.labelSeeDirection}
               >
@@ -259,7 +262,10 @@ const Location = (props) => {
           </div>
           <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
         </div>
-        <div style={localStyle.containerOpenNow}>
+        <div
+          onClick={() => setOpenDropDownTimeSelected(!openDropDownTimeSelected)}
+          style={localStyle.containerOpenNow}
+        >
           <AccessTimeIcon style={{ fontSize: '20px' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
@@ -308,6 +314,7 @@ const Location = (props) => {
         marginLeft: '10px',
         marginRight: '5px',
         fontWeight: 500,
+        color: 'black',
       },
     };
     return (
@@ -341,13 +348,12 @@ const Location = (props) => {
             }}
           />
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500 }}>{item.name}</div>
-            <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
+            <div style={{ fontWeight: 500, color: 'black' }}>{item.name}</div>
+            <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
               {item?.address}
             </div>
             <div style={localStyle.containerAccordion}>
               <div
-                onClick={() => setOpenDropDownTime(!openDropDownTime)}
                 className={fontStyles.myFont}
                 style={localStyle.labelSeeDirection}
               >
@@ -380,7 +386,7 @@ const Location = (props) => {
           </div>
         </div>
         <div style={localStyle.containerOpenNow}>
-          <AccessTimeIcon style={{ fontSize: '20px' }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             {!isDisable ? 'Closed Today' : 'Open Now'}
           </div>
@@ -589,6 +595,29 @@ const Location = (props) => {
             Yes, I’m Sure
           </button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        fullScreen={fullScreen}
+        fullWidth
+        maxWidth='md'
+        open={openModalMap}
+        onClose={() => setOpenModalMap(false)}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        >
+          <MapAppointment
+            color={color}
+            latitude={selectedLocation?.latitude}
+            longitude={selectedLocation?.longitude}
+            setOpenModalMap={setOpenModalMap}
+          />
+        </div>
       </Dialog>
     </React.Fragment>
   );

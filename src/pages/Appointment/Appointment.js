@@ -27,7 +27,7 @@ import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
-import ModalMap from './component/ModalMap';
+import MapAppointment from './component/MapAppointment';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -83,7 +83,8 @@ const Appointment = (props) => {
   const selectedLocation = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  const outlet = useSelector((state) => state.outlet.outlets);
+
   const categoryTabAppointment = useSelector(
     (state) => state.product.categoryTabAppointment
   );
@@ -193,10 +194,17 @@ const Appointment = (props) => {
 
   // some Effect
   useEffect(() => {
-    if (!isEmptyObject(defaultOutlet)) {
+    if (isEmptyObject(selectedLocation)) {
+      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isEmptyObject(selectedLocation)) {
       setOpenWarningOutletNotSelected(true);
     }
-  }, [defaultOutlet]);
+  }, [selectedLocation]);
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -211,14 +219,14 @@ const Appointment = (props) => {
       }
     };
     loadData();
-  }, [responseAddCart]);
+  }, [responseAddCart, selectedLocation]);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       const data = await dispatch(
         ProductAction.fetchCategoryProduct({
-          outlet: defaultOutlet,
+          outlet: selectedLocation,
           orderingMode: orderingSetting?.ShowOrderingModeModalFirst
             ? orderingMode
             : '',
@@ -229,7 +237,7 @@ const Appointment = (props) => {
       setIsLoading(false);
     };
     loadData();
-  }, []);
+  }, [selectedLocation]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -237,7 +245,7 @@ const Appointment = (props) => {
       await dispatch(
         ProductAction.fetchProductAppointment({
           category: selectedCategory,
-          outlet: defaultOutlet,
+          outlet: selectedLocation,
           skip: 0,
           take: 10,
           presetTypeName: 'appointment',
@@ -248,7 +256,7 @@ const Appointment = (props) => {
     if (!isEmptyObject(selectedCategory)) {
       loadData();
     }
-  }, [selectedCategory, categoryTabAppointment]);
+  }, [selectedCategory, categoryTabAppointment, selectedLocation]);
 
   useEffect(() => {
     return history.listen((location) => {
@@ -358,10 +366,7 @@ const Appointment = (props) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const dayName = dayNames[dayOfWeek];
-    const isSelectedLocationAppointment = !isEmptyObject(selectedLocation)
-      ? selectedLocation
-      : defaultOutlet;
-    return isSelectedLocationAppointment?.operationalHours.map((item, i) => {
+    return selectedLocation?.operationalHours.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
@@ -421,6 +426,7 @@ const Appointment = (props) => {
         color: 'black',
       },
     };
+
     return (
       <div style={localStyle.container}>
         <div
@@ -444,26 +450,41 @@ const Appointment = (props) => {
           />
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 600, color: 'black' }}>
-              {!isEmptyObject(selectedLocation)
-                ? selectedLocation.name
-                : defaultOutlet.name}
+              {selectedLocation.name}
             </div>
-            <div style={{ color: 'rgba(183, 183, 183, 1)' }}>
-              {!isEmptyObject(selectedLocation)
-                ? selectedLocation?.address
-                : defaultOutlet?.address}
-            </div>
-            {defaultOutlet?.latitude && defaultOutlet?.longitude && (
-              <div style={localStyle.containerAccordion}>
-                <div
-                  onClick={() => setOpenModalMap(true)}
-                  className={fontStyles.myFont}
-                  style={localStyle.labelSeeDirection}
+
+            <table>
+              <tr>
+                <td
+                  style={{
+                    width: '100%',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    padding: 0,
+                    margin: 0,
+                    fontSize: '12px',
+                    color: 'rgba(183, 183, 183, 1)',
+                    fontWeight: 500,
+                  }}
                 >
-                  See Direction
+                  {selectedLocation?.address}
+                </td>
+              </tr>
+            </table>
+            {selectedLocation?.latitude > 0 &&
+              selectedLocation?.longitude > 0 && (
+                <div style={localStyle.containerAccordion}>
+                  <div
+                    onClick={() => setOpenModalMap(true)}
+                    className={fontStyles.myFont}
+                    style={localStyle.labelSeeDirection}
+                  >
+                    See Direction
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
             800m
@@ -826,7 +847,7 @@ const Appointment = (props) => {
       return (
         <div className={fontStyles.myFont} style={styleAppliedToDevice}>
           <Header />
-          {!isEmptyObject(defaultOutlet) && (
+          {!isEmptyObject(selectedLocation) && (
             <>
               <Label />
               <Location />
@@ -1053,7 +1074,7 @@ const Appointment = (props) => {
           }}
         >
           <SearchBar
-            defaultOutlet={defaultOutlet.id}
+            defaultOutlet={selectedLocation.id}
             color={color}
             setShowSearchBar={setShowSearchBar}
             styleSheet={styleSheet}
@@ -1077,7 +1098,12 @@ const Appointment = (props) => {
             marginTop: '15px',
           }}
         >
-          <ModalMap />
+          <MapAppointment
+            color={color}
+            latitude={selectedLocation?.latitude}
+            longitude={selectedLocation?.longitude}
+            setOpenModalMap={setOpenModalMap}
+          />
         </div>
       </Dialog>
     </LoadingOverlayCustom>
