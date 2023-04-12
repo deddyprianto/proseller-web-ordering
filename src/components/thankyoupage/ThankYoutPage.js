@@ -73,7 +73,11 @@ const renderGrandTotalForGuestCheckMode = (
               {handleCurrency(trackorderBasket?.data?.totalNettAmount)}
             </p>
             <div style={{ marginLeft: '10px', marginTop: '7px' }}>
-              <img src={VectorDown} style={{ marginBottom: '5px' }} />
+              <img
+                src={VectorDown}
+                style={{ marginBottom: '5px' }}
+                alt='vector_down'
+              />
             </div>
           </div>
         </div>
@@ -114,112 +118,6 @@ const renderHeaderPayment = () => {
       >
         Payment
       </p>
-    </div>
-  );
-};
-const renderStatusCheck = (
-  copyToClipboard,
-  setCopyToClipboard,
-  setShowModalIfCopied,
-  showModalIfCopied,
-  color,
-  basket
-) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        flexDirection: 'column',
-        marginTop: '100px',
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: color.primary,
-          width: '115px',
-          height: '115px',
-          borderRadius: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <img src={IconCheck} />
-      </div>
-      <div
-        style={{
-          marginTop: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <p style={{ fontWeight: 700, fontSize: '16px' }}>
-          Thank you! Your order has been placed!
-        </p>
-        <p style={{ color: color.font, fontWeight: 500, fontSize: '14px' }}>
-          Ref No.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <p
-            style={{
-              color: color.primary,
-              textAlign: 'center',
-              fontWeight: 700,
-              fontSize: '20px',
-              margin: 0,
-              padding: 0,
-            }}
-          >
-            {basket?.data?.transactionRefNo}
-          </p>
-          <div style={{ marginLeft: '10px' }}>
-            <CopyToClipboard
-              text={basket?.data?.transactionRefNo}
-              onCopy={(text, result) => {
-                setCopyToClipboard(text);
-                setShowModalIfCopied(result);
-              }}
-            >
-              <img src={IconCopy} />
-            </CopyToClipboard>
-          </div>
-        </div>
-        <div style={{ height: '30px', marginTop: '3px' }}>
-          {showModalIfCopied && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <div>
-                <img
-                  src={IconCheckClipBoard}
-                  width={20}
-                  height={20}
-                  style={{ marginRight: '5px' }}
-                />
-              </div>
-              <p
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  margin: 0,
-                  padding: 0,
-                  color: 'green',
-                }}
-              >
-                Ref No has been copied
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
@@ -585,7 +483,10 @@ const renderCartProductList = (
                     </ul>
                   </div>
                   <div>
-                    <img src={renderImageProduct(item, color)} />
+                    <img
+                      src={renderImageProduct(item, color)}
+                      alt='product_image'
+                    />
                   </div>
                 </div>
                 <div
@@ -653,6 +554,21 @@ const ThankYoutPage = () => {
   const companyInfo = useSelector((state) => state.masterdata);
   const history = useHistory();
 
+  const styles = {
+    rootSubTotalItem: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: 10,
+      paddingRight: 10,
+      paddingTop: 10,
+    },
+    subTotal: {
+      fontWeight: 500,
+      color: 'black',
+      fontSize: 14,
+    },
+  };
+
   useEffect(() => {
     const fetchDataTrackOrder = async () => {
       if (location.search.split('=')[1]) {
@@ -674,21 +590,6 @@ const ThankYoutPage = () => {
       clearTimeout(cleanUp);
     };
   }, []);
-
-  const styles = {
-    rootSubTotalItem: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: 10,
-      paddingRight: 10,
-      paddingTop: 10,
-    },
-    subTotal: {
-      fontWeight: 500,
-      color: 'black',
-      fontSize: 14,
-    },
-  };
 
   useEffect(() => {
     const clear = setInterval(() => {
@@ -962,6 +863,139 @@ const ThankYoutPage = () => {
     );
   };
 
+  const renderStatusCheck = (trackorder) => {
+    const handleTrackOrder = async () => {
+      setIsLoading(true);
+
+      let response = await dispatch(
+        OrderAction.getTrackOrder(trackorder?.data?.transactionRefNo)
+      );
+
+      response?.resultCode === 200 && history.push('/ordertrackhistory');
+      setIsLoading(false);
+    };
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+          flexDirection: 'column',
+          marginTop: '100px',
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: color.primary,
+            width: '115px',
+            height: '115px',
+            borderRadius: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <img src={IconCheck} alt='ic_check' />
+        </div>
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <p style={{ fontWeight: 700, fontSize: '16px' }}>
+            Thank you! Your order has been placed!
+          </p>
+          <p style={{ color: color.font, fontWeight: 500, fontSize: '14px' }}>
+            Ref No.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <p
+              style={{
+                color: color.primary,
+                textAlign: 'center',
+                fontWeight: 700,
+                fontSize: '20px',
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              {trackorder?.data?.transactionRefNo}
+            </p>
+            <div style={{ marginLeft: '10px' }}>
+              <CopyToClipboard
+                text={trackorder?.data?.transactionRefNo}
+                onCopy={(text, result) => {
+                  setCopyToClipboard(text);
+                  setShowModalIfCopied(result);
+                }}
+              >
+                <img src={IconCopy} alt='ic_copy' />
+              </CopyToClipboard>
+            </div>
+          </div>
+          {showModalIfCopied && (
+            <div style={{ height: '30px', margin: '3px 0' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <img
+                    src={IconCheckClipBoard}
+                    alt='ic_check_clipboard'
+                    width={20}
+                    height={20}
+                    style={{ marginRight: '5px' }}
+                  />
+                </div>
+                <p
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    margin: 0,
+                    padding: 0,
+                    color: 'green',
+                  }}
+                >
+                  Ref No has been copied
+                </p>
+              </div>
+            </div>
+          )}
+
+          <button
+            style={{
+              fontFamily: 'Plus Jakarta Sans',
+              fontSize: '14px',
+              width: '100%',
+              textAlign: 'center',
+              color: color.primary,
+              padding: '5px 0',
+              margin: '16px 0 5px 0',
+              cursor: 'pointer',
+              border: '1px solid',
+              borderColor: color.primary,
+              borderRadius: '8px',
+              backgroundColor: 'white',
+            }}
+            onClick={() => !isLoading && handleTrackOrder()}
+          >
+            {isLoading ? '...loading' : 'Track Order'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -991,14 +1025,7 @@ const ThankYoutPage = () => {
             padding: '0 10px',
           }}
         >
-          {renderStatusCheck(
-            copyToClipboard,
-            setCopyToClipboard,
-            setShowModalIfCopied,
-            showModalIfCopied,
-            color,
-            basket?.trackorder
-          )}
+          {renderStatusCheck(basket?.trackorder)}
           {renderCartProduct(basket?.trackorder, color)}
 
           {renderCartProductList(
@@ -1085,7 +1112,7 @@ const ThankYoutPage = () => {
                         setShowModalIfCopied(result);
                       }}
                     >
-                      <img src={IconCopy} />
+                      <img src={IconCopy} alt='ic_copy' />
                     </CopyToClipboard>
                   </div>
                 </div>
@@ -1101,6 +1128,7 @@ const ThankYoutPage = () => {
                     <div>
                       <img
                         src={IconCheckClipBoard}
+                        alt='ic_check_clipboard'
                         width={20}
                         height={20}
                         style={{ marginRight: '5px' }}
