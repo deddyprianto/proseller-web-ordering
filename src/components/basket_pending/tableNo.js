@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 
 export default class TableNo extends Component {
   render() {
-    let props = this.props.data
+    let props = this.props.data;
+
+    const tableNoChecker = () => {
+      return (
+        (props.scanTable &&
+          (props.scanTable.table || props.scanTable.tableNo)) ||
+        props.dataBasket.tableNo
+      );
+    };
+
     return (
       <div
         style={{
@@ -12,20 +21,10 @@ export default class TableNo extends Component {
         }}
       >
         <div style={{ fontSize: 14 }}>
-          {props.orderingMode === 'TAKEAWAY' ||
-          props.orderingMode === 'STOREPICKUP' ||
-          props.orderingMode === 'STORECHECKOUT'
-            ? 'Queue No.'
-            : 'Table No.'}
+          {tableNoChecker() ? 'Table No.' : 'Queue No.'}
         </div>
         <div style={{ fontSize: 14, textTransform: 'uppercase' }}>
-          {props.orderingMode === 'TAKEAWAY' ||
-          props.orderingMode === 'STOREPICKUP' ||
-          props.orderingMode === 'STORECHECKOUT'
-            ? props.dataBasket.queueNo
-            : (props.scanTable &&
-                (props.scanTable.table || props.scanTable.tableNo)) ||
-              props.dataBasket.tableNo}
+          {tableNoChecker() || props.dataBasket.queueNo}
         </div>
       </div>
     );
