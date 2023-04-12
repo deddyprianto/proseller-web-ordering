@@ -6,7 +6,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
   return (
     <div
       onClick={() => {
-        window.location.href = changeFormatURl('/bookingsummary');
+        window.location.href = changeFormatURl('/bookingsubmitted');
       }}
       style={{
         width: '93%',
@@ -18,7 +18,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
         alignItems: 'center',
         backgroundColor: textNotes ? color.primary : 'rgba(183, 183, 183, 1)',
         cursor: 'pointer',
-        pointerEvents: 'none',
+        pointerEvents: !textNotes && 'none',
         color: 'white',
         borderRadius: '10px',
         padding: '5px',
