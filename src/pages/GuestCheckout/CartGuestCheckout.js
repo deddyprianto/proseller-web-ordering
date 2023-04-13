@@ -444,7 +444,7 @@ const CartGuestCheckout = () => {
       orderingModeGuestCheckout === 'DINEIN'
     ) {
       const { name, email, phoneNo } = formik.values;
-
+      console.log('click payment');
       if (name === '') {
         setShowErrorName(true);
       } else if (email.length && !formRegexMail) {
@@ -1262,6 +1262,8 @@ const CartGuestCheckout = () => {
     const reqAvailableTime = availableTime;
     const requiredForm = formik.values.name;
 
+    console.log('btn disabled', isAllItemUnavailable);
+
     const isDeliveryActive = availableTime
       ? reqTimeSlot && reqAvailableTime && reqProvider
       : reqDelivery && reqProvider;
@@ -2027,9 +2029,13 @@ const CartGuestCheckout = () => {
             flexDirection: 'column',
           }}
         >
-          <div>
-            <h1 style={{ fontSize: '16px' }}>Customer Details</h1>
-          </div>
+          <Typography
+            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
+            className={fontStyleCustom.myFont}
+          >
+            Customer Details
+          </Typography>
+
           <form
             onSubmit={formik.handleSubmit}
             autoComplete='off'
