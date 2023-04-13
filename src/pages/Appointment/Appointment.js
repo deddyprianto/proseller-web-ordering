@@ -27,7 +27,7 @@ import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
-import MapAppointment from './component/MapAppointment';
+
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -44,7 +44,6 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
-  const [openModalMap, setOpenModalMap] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
     useState(false);
@@ -477,7 +476,14 @@ const Appointment = (props) => {
               selectedLocation?.longitude > 0 && (
                 <div style={localStyle.containerAccordion}>
                   <div
-                    onClick={() => setOpenModalMap(true)}
+                    onClick={() => {
+                      window.open(
+                        'https://maps.google.com?q=' +
+                          selectedLocation?.latitude +
+                          ',' +
+                          selectedLocation?.longitude
+                      );
+                    }}
                     className={fontStyles.myFont}
                     style={localStyle.labelSeeDirection}
                   >
@@ -1080,29 +1086,6 @@ const Appointment = (props) => {
             styleSheet={styleSheet}
             gadgetScreen={gadgetScreen}
             productServicesAppointment={productServicesAppointment}
-          />
-        </div>
-      </Dialog>
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-        open={openModalMap}
-        onClose={() => setOpenModalMap(false)}
-      >
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '15px',
-          }}
-        >
-          <MapAppointment
-            color={color}
-            latitude={selectedLocation?.latitude}
-            longitude={selectedLocation?.longitude}
-            setOpenModalMap={setOpenModalMap}
           />
         </div>
       </Dialog>

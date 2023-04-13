@@ -12,10 +12,8 @@ import { CONSTANT } from 'helpers';
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { isEmptyObject } from 'helpers/CheckEmpty';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import MapAppointment from 'pages/Appointment/component/MapAppointment';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -248,17 +246,27 @@ const Location = (props) => {
             >
               {selectedLocation?.address}
             </div>
-            <div
-              onClick={() => setOpenModalMap(true)}
-              style={localStyle.containerAccordion}
-            >
-              <div
-                className={fontStyles.myFont}
-                style={localStyle.labelSeeDirection}
-              >
-                See Direction
-              </div>
-            </div>
+            {selectedLocation?.latitude > 0 &&
+              selectedLocation?.longitude > 0 && (
+                <div
+                  onClick={() => {
+                    window.open(
+                      'https://maps.google.com?q=' +
+                        selectedLocation?.latitude +
+                        ',' +
+                        selectedLocation?.longitude
+                    );
+                  }}
+                  style={localStyle.containerAccordion}
+                >
+                  <div
+                    className={fontStyles.myFont}
+                    style={localStyle.labelSeeDirection}
+                  >
+                    See Direction
+                  </div>
+                </div>
+              )}
           </div>
           <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
         </div>
@@ -580,7 +588,6 @@ const Location = (props) => {
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
                 payload: false,
               });
-
               window.location.href = changeFormatURl('/appointment');
             }}
             className={fontStyles.myFont}
@@ -595,29 +602,6 @@ const Location = (props) => {
             Yes, I’m Sure
           </button>
         </DialogActions>
-      </Dialog>
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-        open={openModalMap}
-        onClose={() => setOpenModalMap(false)}
-      >
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '15px',
-          }}
-        >
-          <MapAppointment
-            color={color}
-            latitude={selectedLocation?.latitude}
-            longitude={selectedLocation?.longitude}
-            setOpenModalMap={setOpenModalMap}
-          />
-        </div>
       </Dialog>
     </React.Fragment>
   );
