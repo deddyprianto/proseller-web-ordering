@@ -15,7 +15,7 @@ const useWindowSize = () => {
   }, []);
   return size;
 };
-const BookingConfirm = ({ props }) => {
+const BookingConfirm = (props) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
 
@@ -71,7 +71,7 @@ const BookingConfirm = ({ props }) => {
         <ArrowBackIosIcon
           fontSize='large'
           onClick={() => {
-            console.log('lol');
+            props.history.goBack();
           }}
         />
         <p
@@ -202,7 +202,8 @@ const BookingConfirm = ({ props }) => {
           margin: 'auto',
           marginTop: '40px',
           backgroundColor: `${color.primary}10`,
-          borderRadius: '20px',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
           padding: '10px 0px',
         }}
       >
@@ -303,14 +304,12 @@ const BookingConfirm = ({ props }) => {
     return (
       <div
         style={{
-          width: '90%',
+          width: '93%',
           margin: 'auto',
           backgroundColor: `${color.primary}10`,
-          borderRadius: '20px',
-          padding: '10px 0px',
         }}
       >
-        <div style={{ width: '90%', margin: 'auto', marginTop: '15px' }}>
+        <div style={{ width: '90%', margin: 'auto' }}>
           <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
             Booking Notes
           </div>
@@ -335,51 +334,56 @@ const BookingConfirm = ({ props }) => {
     return (
       <div
         style={{
-          width: '90%',
+          width: '93%',
           margin: 'auto',
-          marginTop: '40px',
+          backgroundColor: `${color.primary}10`,
+          borderBottomLeftRadius: '20px',
+          borderBottomRightRadius: '20px',
+          paddingBottom: '20px',
         }}
       >
-        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-          Service Detail
-        </div>
-        {name.map((item) => (
-          <div
-            style={{
-              marginTop: '10px',
-              width: '100%',
-              display: 'grid',
-              gridTemplateColumns: '1fr 100px',
-              gridTemplateRows: '1fr',
-              gridAutoColumns: '1fr',
-              gap: '0px 0px',
-              gridAutoFlow: 'row',
-              gridTemplateAreas: '". ."',
-            }}
-          >
-            <div
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                fontWeight: 500,
-                fontSize: '14px',
-              }}
-            >
-              {item.name}
-            </div>
-            <div
-              style={{
-                fontWeight: 'bold',
-                justifySelf: 'self-end',
-                color: color.primary,
-                fontSize: '14px',
-              }}
-            >
-              {item.price}
-            </div>
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+            Service Detail
           </div>
-        ))}
+          {name.map((item) => (
+            <div
+              style={{
+                marginTop: '10px',
+                width: '100%',
+                display: 'grid',
+                gridTemplateColumns: '1fr 100px',
+                gridTemplateRows: '1fr',
+                gridAutoColumns: '1fr',
+                gap: '0px 0px',
+                gridAutoFlow: 'row',
+                gridTemplateAreas: '". ."',
+              }}
+            >
+              <div
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                }}
+              >
+                {item.name}
+              </div>
+              <div
+                style={{
+                  fontWeight: 'bold',
+                  justifySelf: 'self-end',
+                  color: color.primary,
+                  fontSize: '14px',
+                }}
+              >
+                {item.price}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
@@ -387,59 +391,68 @@ const BookingConfirm = ({ props }) => {
     return (
       <div
         style={{
-          width: '90%',
+          width: '93%',
           margin: 'auto',
-          marginTop: '40px',
+          marginTop: '20px',
           marginBottom: '20px',
+          backgroundColor: `${color.primary}10`,
+          borderRadius: '20px',
+          padding: '15px 0px',
         }}
       >
-        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Information</div>
-        <div style={{ fontSize: '14px', fontWeight: 600 }}>Price & Payment</div>
-        <ul
-          style={{
-            fontSize: '14px',
-            color: color.primary,
-            margin: 0,
-            marginLeft: '25px',
-            fontWeight: 500,
-          }}
-        >
-          <li>Price above is estimation cannot be used as a reference</li>
-          <li>This booking can be paid at outlet</li>
-          <li>We only accept cashless payment</li>
-        </ul>
-        <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
-          Appointment
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+            Information
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 600 }}>
+            Price & Payment
+          </div>
+          <ul
+            style={{
+              fontSize: '14px',
+              color: color.primary,
+              margin: 0,
+              marginLeft: '25px',
+              fontWeight: 500,
+            }}
+          >
+            <li>Price above is estimation cannot be used as a reference</li>
+            <li>This booking can be paid at outlet</li>
+            <li>We only accept cashless payment</li>
+          </ul>
+          <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
+            Appointment
+          </div>
+          <ul
+            style={{
+              fontSize: '14px',
+              color: color.primary,
+              margin: 0,
+              marginLeft: '25px',
+              fontWeight: 500,
+            }}
+          >
+            <li>Please come 10 minutes before the appointment</li>
+            <li>Wearing mask is a must</li>
+          </ul>
+          <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
+            Cancellation Policy
+          </div>
+          <ul
+            style={{
+              fontSize: '14px',
+              color: color.primary,
+              margin: 0,
+              marginLeft: '25px',
+              fontWeight: 500,
+            }}
+          >
+            <li>
+              If you need to make any changes to your reservation, please
+              contact us at least 24 hours in advance.
+            </li>
+          </ul>
         </div>
-        <ul
-          style={{
-            fontSize: '14px',
-            color: color.primary,
-            margin: 0,
-            marginLeft: '25px',
-            fontWeight: 500,
-          }}
-        >
-          <li>Please come 10 minutes before the appointment</li>
-          <li>Wearing mask is a must</li>
-        </ul>
-        <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
-          Cancellation Policy
-        </div>
-        <ul
-          style={{
-            fontSize: '14px',
-            color: color.primary,
-            margin: 0,
-            marginLeft: '25px',
-            fontWeight: 500,
-          }}
-        >
-          <li>
-            If you need to make any changes to your reservation, please contact
-            us at least 24 hours in advance.
-          </li>
-        </ul>
       </div>
     );
   };
@@ -491,7 +504,52 @@ const BookingConfirm = ({ props }) => {
       </div>
     );
   };
-
+  const RenderHr = () => {
+    return (
+      <div
+        style={{
+          width: '93%',
+          backgroundColor: `${color.primary}10`,
+          padding: '10px 0px',
+          margin: 'auto',
+          display: 'grid',
+          gridTemplateColumns: '50px 1fr 50px',
+          gridTemplateRows: '1fr',
+          gridAutoColumns: '1fr',
+          gap: '0px 0px',
+          gridAutoFlow: 'row',
+          gridTemplateAreas: '". . ."',
+        }}
+      >
+        <div
+          style={{
+            width: '30px',
+            backgroundColor: 'white',
+            height: '40px',
+            borderRadius: '100%',
+            marginLeft: '-10px',
+            color: 'transparent',
+          }}
+        >
+          p
+        </div>
+        <div style={{ width: '100%', color: 'transparent' }}>p</div>
+        <div
+          style={{
+            justifySelf: 'end',
+            width: '30px',
+            backgroundColor: 'white',
+            height: '40px',
+            borderRadius: '100%',
+            marginRight: '-10px',
+            color: 'transparent',
+          }}
+        >
+          p
+        </div>
+      </div>
+    );
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
@@ -506,6 +564,7 @@ const BookingConfirm = ({ props }) => {
           <Timeline />
           <BookingDetail />
           <BookingNotes />
+          <RenderHr />
           <ServiceDetail />
           <Information />
           <Price />
@@ -522,7 +581,14 @@ const BookingConfirm = ({ props }) => {
               }}
             >
               <Header />
+              <Timeline />
               <BookingDetail />
+              <BookingNotes />
+              <RenderHr />
+              <ServiceDetail />
+              <Information />
+              <Price />
+              <ButtonPrice />
             </di>
           </div>
         </div>

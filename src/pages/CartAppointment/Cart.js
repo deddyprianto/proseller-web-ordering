@@ -37,7 +37,6 @@ const Cart = (props) => {
     (state) => state.appointmentReducer.locationAppointment
   );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const responseAddTocart = useSelector(
     (state) => state.appointmentReducer.responseAddTocart
   );
@@ -50,12 +49,12 @@ const Cart = (props) => {
   // some Effect
   useEffect(() => {
     const loadData = async () => {
-      await dispatch(OrderAction.getTimeSlotAppointment(defaultOutlet.id));
+      await dispatch(OrderAction.getTimeSlotAppointment(locationAppointment.id));
     };
-    if (!isEmptyObject(defaultOutlet)) {
+    if (!isEmptyObject(locationAppointment)) {
       loadData();
     }
-  }, [defaultOutlet]);
+  }, [locationAppointment]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -346,14 +345,10 @@ const Cart = (props) => {
           />
           <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
             <div>
-              {!isEmptyObject(locationAppointment)
-                ? locationAppointment.name
-                : defaultOutlet.name}
+            {locationAppointment.name}
             </div>
             <div style={{ color: 'rgba(157, 157, 157, 1)' }}>
-              {!isEmptyObject(locationAppointment)
-                ? locationAppointment?.address
-                : defaultOutlet?.address}
+            {locationAppointment?.address}
             </div>
           </div>
           <div></div>
@@ -442,7 +437,7 @@ const Cart = (props) => {
         </p>
         {cartAppointment?.details?.map((item) => (
           <ItemServiceCart
-            outletID={defaultOutlet}
+            outletID={locationAppointment}
             key={item.id}
             item={item}
             setIsLoading={setIsLoading}
