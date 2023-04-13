@@ -350,6 +350,12 @@ const OrderingTableDialogGuestCO = ({
     }
   };
 
+  const handleDisabledBtn = () => {
+    return defaultOutlet.tableNumber.sequencing === 'RANDOM' && !tableNoActive
+      ? true
+      : false;
+  };
+
   return (
     <Dialog
       fullWidth
@@ -414,7 +420,7 @@ const OrderingTableDialogGuestCO = ({
           Cancel
         </button>
         <button
-          disabled={!tableNoActive ? true : false}
+          disabled={handleDisabledBtn()}
           onClick={handleFormTable}
           className={fontStyles.myFont}
           style={{
