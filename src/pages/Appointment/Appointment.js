@@ -44,16 +44,14 @@ const useWindowSize = () => {
 
 const Appointment = (props) => {
   // some state
+  const [locationKeys, setLocationKeys] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
-    useState(false);
   const [messageLoading, setMessageLoading] = useState('Please wait...');
   const [showNotify, setShowNotify] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [cutPrice, setCutPrice] = useState(true);
-  const [locationKeys, setLocationKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(0);
 
@@ -70,6 +68,8 @@ const Appointment = (props) => {
   const classes = useStyles();
 
   // some sl
+  const menuSidebar = useSelector((state) => state.theme.menu);
+  const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
   const responseAddCart = useSelector(
     (state) => state.appointmentReducer.responseAddCart
   );
@@ -193,16 +193,18 @@ const Appointment = (props) => {
 
   // some Effect
   useEffect(() => {
+    dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: '' });
+    dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: '' });
+    dispatch({ type: CONSTANT.STAFFID_APPOINTMENT, payload: '' });
+    dispatch({ type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT, payload: {} });
+    dispatch({ type: CONSTANT.TEXT_NOTE, payload: '' });
+  }, []);
+
+  useEffect(() => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
     }
   }, []);
-
-  useEffect(() => {
-    if (!isEmptyObject(selectedLocation)) {
-      setOpenWarningOutletNotSelected(true);
-    }
-  }, [selectedLocation]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -889,12 +891,8 @@ const Appointment = (props) => {
       spinner={<RenderAnimationLoading />}
       text={messageLoading}
     >
-      {openWarningOutletNotSelected && (
-        <React.Fragment>
-          <ResponsiveLayout />
-          {showNotify && <RendernNotifSuccess />}
-        </React.Fragment>
-      )}
+      <ResponsiveLayout />
+      {showNotify && <RendernNotifSuccess />}
       <Dialog
         fullWidth
         maxWidth='xs'
@@ -979,8 +977,14 @@ const Appointment = (props) => {
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
                 payload: false,
               });
-              window.location.href = changeFormatURl('/');
-              window.location.reload();
+              let path;
+              menuSidebar.navBar.forEach((item, i) => {
+                if (i === indexPath) {
+                  path = item.path;
+                }
+              });
+              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
+              window.location.href = changeFormatURl(path);
             }}
             className={fontStyles.myFont}
             style={{
@@ -995,75 +999,7 @@ const Appointment = (props) => {
           </button>
         </DialogActions>
       </Dialog>
-      <Dialog
-        fullWidth
-        maxWidth='xs'
-        open={!openWarningOutletNotSelected}
-        onClose={() =>
-          dispatch({ type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT, payload: false })
-        }
-        classes={{ paper: classes.paper }}
-      >
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '15px',
-          }}
-        ></div>
-        <DialogTitle
-          className={fontStyles.myFont}
-          sx={{
-            fontWeight: 600,
-            fontSize: '16px',
-            textAlign: 'center',
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          Outlet Not Selected
-        </DialogTitle>
-        <div style={{ marginTop: '20px' }}>
-          <div
-            className={fontStyles.myFont}
-            style={{
-              color: 'rgba(183, 183, 183, 1)',
-              fontSize: '14px',
-              textAlign: 'center',
-              fontWeight: 500,
-            }}
-          >
-            Please select an outlet first to access the appointment feature
-          </div>
-        </div>
-        <DialogActions
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <button
-            onClick={async () => {
-              window.location.href = changeFormatURl('/outlets');
-              window.location.reload();
-            }}
-            className={fontStyles.myFont}
-            style={{
-              color: 'white',
-              width: '100%',
-              padding: '6px 0px',
-              borderRadius: '10px',
-              fontSize: '14px',
-              marginTop: '20px',
-            }}
-          >
-            OK
-          </button>
-        </DialogActions>
-      </Dialog>
+
       <Dialog
         fullScreen={fullScreen}
         fullWidth
@@ -1080,7 +1016,7 @@ const Appointment = (props) => {
           }}
         >
           <SearchBar
-            defaultOutlet={selectedLocation.id}
+            defaultOutlet={selectedLocation?.id}
             color={color}
             setShowSearchBar={setShowSearchBar}
             styleSheet={styleSheet}

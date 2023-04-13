@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 
@@ -15,17 +15,94 @@ const useWindowSize = () => {
   }, []);
   return size;
 };
+
 const BookingConfirm = (props) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
-
+  const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const responseSubmit = useSelector(
+    (state) => state.appointmentReducer.responseSubmit
+  );
+  // some fn
+  const convertFormatDate = (dateStr) => {
+    // Create a Date object from the date string
+    const date = new window.Date(dateStr);
+    // Define an array of month names
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
 
+    // Get the month name and day of the month as numbers
+    const monthName = months[date.getMonth()];
+    const dayOfMonth = date.getDate();
+
+    // Determine the suffix for the day of the month
+    let daySuffix;
+    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
+      daySuffix = 'st';
+    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
+      daySuffix = 'nd';
+    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
+      daySuffix = 'rd';
+    } else {
+      daySuffix = 'th';
+    }
+
+    // Create the formatted date string
+    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
+
+    return formattedDate;
+  };
+  const SelectedOutlet = outlet.find(
+    (item) => `outlet::${item.id}` === responseSubmit.outletId
+  );
+  const convertTimeToStr = (seconds) => {
+    // Calculate the number of hours and minutes
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    // Create the formatted string
+    if (hours > 0) {
+      return `${hours}h ${minutes}min`;
+    } else if (minutes > 0) {
+      return `${minutes}min`;
+    } else {
+      return '';
+    }
+  };
+  const handleCurrency = (price) => {
+    if (price) {
+      const result = price.toLocaleString(companyInfo?.currency?.locale, {
+        style: 'currency',
+        currency: companyInfo?.currency?.code,
+      });
+
+      return result;
+    }
+  };
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
   };
+
+  if (performance.getEntriesByType('navigation')[0].type === 'reload') {
+    window.location.href = '/'; // replace with the URL of your home page
+  }
+
   const styleSheet = {
     container: {
       width: '45%',
@@ -71,7 +148,7 @@ const BookingConfirm = (props) => {
         <ArrowBackIosIcon
           fontSize='large'
           onClick={() => {
-            props.history.goBack();
+            props.history.push('/appointment');
           }}
         />
         <p
@@ -143,7 +220,7 @@ const BookingConfirm = (props) => {
         <div
           style={{
             justifySelf: 'center',
-            fontWeight: 500,
+            fontWeight: 600,
             margin: '0px',
             color: color.primary,
           }}
@@ -184,7 +261,7 @@ const BookingConfirm = (props) => {
             style={{
               fontWeight: 500,
               marginLeft: '4px',
-              color: color.primary,
+              color: 'rgba(183, 183, 183, 1)',
             }}
           >
             Finis
@@ -208,7 +285,7 @@ const BookingConfirm = (props) => {
         }}
       >
         <div style={{ width: '90%', margin: 'auto', marginTop: '15px' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
             Booking Detail
           </div>
           <div
@@ -217,15 +294,19 @@ const BookingConfirm = (props) => {
               width: '100%',
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gridTemplateRows: '1fr 1fr 1fr',
+              gridTemplateRows: '1fr 1fr',
               gridAutoColumns: '1fr',
-              gap: '0px 0px',
+              gap: '27px 0px',
               gridAutoFlow: 'row',
-              gridTemplateAreas: '". ."\n    ". ."\n    "end-col end-col"',
+              gridTemplateAreas: '". ."\n    ". ."\n ',
             }}
           >
             <div>
-              <div style={{ fontWeight: 500, fontSize: '14px' }}>Date</div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Date
+              </div>
               <div
                 style={{
                   fontWeight: 700,
@@ -233,11 +314,13 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                January, 09th 2023
+                {convertFormatDate(responseSubmit.bookingDate)}
               </div>
             </div>
             <div>
-              <div style={{ fontWeight: 500, fontSize: '14px' }}>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
                 Start Time
               </div>
               <div
@@ -247,11 +330,16 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                14:30
+                {responseSubmit.serviceTime?.start} -{' '}
+                {responseSubmit.serviceTime?.end}
               </div>
             </div>
             <div>
-              <div style={{ fontWeight: 500, fontSize: '14px' }}>Stylist</div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Stylist
+              </div>
               <div
                 style={{
                   fontWeight: 700,
@@ -259,11 +347,15 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                Cody Fisher
+                {responseSubmit.staff.name}
               </div>
             </div>
             <div>
-              <div style={{ fontWeight: 500, fontSize: '14px' }}>Duration</div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Duration
+              </div>
               <div
                 style={{
                   fontWeight: 700,
@@ -271,29 +363,35 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                90 Minutes
+                {convertTimeToStr(responseSubmit?.totalDuration)}
               </div>
             </div>
-            <div style={{ gridArea: 'end-col' }}>
-              <div style={{ fontWeight: 500, fontSize: '14px' }}>Outlet</div>
-              <div
-                style={{
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  color: color.primary,
-                }}
-              >
-                Connection One
-              </div>
-              <div
-                style={{
-                  fontWeight: 700,
-                  color: 'rgba(157, 157, 157, 1)',
-                  fontSize: '14px',
-                }}
-              >
-                169 Bukit Merah Central, Singapore
-              </div>
+          </div>
+          <div
+            style={{ width: '100%', marginTop: '20px', marginBottom: '20px' }}
+          >
+            <div
+              style={{ fontWeight: 'bold', fontSize: '14px', color: 'black' }}
+            >
+              Outlet
+            </div>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: '14px',
+                color: color.primary,
+              }}
+            >
+              {SelectedOutlet.name}
+            </div>
+            <div
+              style={{
+                fontWeight: 600,
+                color: 'rgba(157, 157, 157, 1)',
+                fontSize: '14px',
+              }}
+            >
+              {SelectedOutlet?.address}
             </div>
           </div>
         </div>
@@ -310,27 +408,23 @@ const BookingConfirm = (props) => {
         }}
       >
         <div style={{ width: '90%', margin: 'auto' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
             Booking Notes
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '10px' }}>
-            At vero eos et accusamus et iusto odio dignios ducimus qui
-            blanditiis praesentium voluptat deleniti atque corrupti quos dolores
-            et qua
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'black',
+            }}
+          >
+            {responseSubmit.note ? responseSubmit.note : '-'}
           </div>
         </div>
       </div>
     );
   };
   const ServiceDetail = () => {
-    const name = [
-      {
-        name: 'Finishing Short Hair Cut Title Goes in Finishing Short Hair Cut Title Goes in',
-        price: 'SGD 15.00',
-      },
-      { name: 'Big Bouncy Blow-Dry', price: 'SGD 15.00' },
-      { name: 'Estimated Price', price: 'SGD 15.00' },
-    ];
     return (
       <div
         style={{
@@ -343,10 +437,10 @@ const BookingConfirm = (props) => {
         }}
       >
         <div style={{ width: '90%', margin: 'auto' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
             Service Detail
           </div>
-          {name.map((item) => (
+          {responseSubmit.details.map((item) => (
             <div
               style={{
                 marginTop: '10px',
@@ -367,9 +461,10 @@ const BookingConfirm = (props) => {
                   whiteSpace: 'nowrap',
                   fontWeight: 500,
                   fontSize: '14px',
+                  color: 'black',
                 }}
               >
-                {item.name}
+                {item.product.name}
               </div>
               <div
                 style={{
@@ -379,10 +474,43 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {item.price}
+                {handleCurrency(item.product.retailPrice)}
               </div>
             </div>
           ))}
+          <div
+            style={{
+              marginTop: '10px',
+              width: '100%',
+              display: 'grid',
+              gridTemplateColumns: '1fr 100px',
+              gridTemplateRows: '1fr',
+              gridAutoColumns: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 500,
+                fontSize: '14px',
+                color: 'black',
+              }}
+            >
+              Estimated Price
+            </div>
+            <div
+              style={{
+                fontWeight: 'bold',
+                justifySelf: 'self-end',
+                color: color.primary,
+                fontSize: '14px',
+              }}
+            >
+              {handleCurrency(responseSubmit.totalNettAmount)}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -401,16 +529,16 @@ const BookingConfirm = (props) => {
         }}
       >
         <div style={{ width: '90%', margin: 'auto' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
             Information
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 600 }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
             Price & Payment
           </div>
           <ul
             style={{
               fontSize: '14px',
-              color: color.primary,
+              color: 'black',
               margin: 0,
               marginLeft: '25px',
               fontWeight: 500,
@@ -420,13 +548,20 @@ const BookingConfirm = (props) => {
             <li>This booking can be paid at outlet</li>
             <li>We only accept cashless payment</li>
           </ul>
-          <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              marginTop: '10px',
+              color: 'black',
+            }}
+          >
             Appointment
           </div>
           <ul
             style={{
               fontSize: '14px',
-              color: color.primary,
+              color: 'black',
               margin: 0,
               marginLeft: '25px',
               fontWeight: 500,
@@ -435,13 +570,20 @@ const BookingConfirm = (props) => {
             <li>Please come 10 minutes before the appointment</li>
             <li>Wearing mask is a must</li>
           </ul>
-          <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              marginTop: '10px',
+              color: 'black',
+            }}
+          >
             Cancellation Policy
           </div>
           <ul
             style={{
               fontSize: '14px',
-              color: color.primary,
+              color: 'black',
               margin: 0,
               marginLeft: '25px',
               fontWeight: 500,
@@ -469,11 +611,13 @@ const BookingConfirm = (props) => {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ fontWeight: 600, fontSize: '16px' }}>Estimated Price</div>
+        <div style={{ fontWeight: 600, fontSize: '18px', color: 'black' }}>
+          Estimated Price
+        </div>
         <div
-          style={{ fontWeight: 'bold', color: color.primary, fontSize: '16px' }}
+          style={{ fontWeight: 'bold', color: color.primary, fontSize: '18px' }}
         >
-          SGD 15.00
+          {handleCurrency(responseSubmit?.totalNettAmount)}
         </div>
       </div>
     );
@@ -525,7 +669,7 @@ const BookingConfirm = (props) => {
           style={{
             width: '30px',
             backgroundColor: 'white',
-            height: '40px',
+            height: '37px',
             borderRadius: '100%',
             marginLeft: '-10px',
             color: 'transparent',
@@ -539,7 +683,7 @@ const BookingConfirm = (props) => {
             justifySelf: 'end',
             width: '30px',
             backgroundColor: 'white',
-            height: '40px',
+            height: '37px',
             borderRadius: '100%',
             marginRight: '-10px',
             color: 'transparent',

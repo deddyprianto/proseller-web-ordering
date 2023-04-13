@@ -928,19 +928,24 @@ const deleteItemAppointment = (addService, productId) => {
 const getTimeSlotAppointment = (outletId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
-    const response = await axios.get(`${url}timeslot/${outletId}`, {
-      headers: {
-        Authorization: `Bearer ${account.accessToken.jwtToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.data) {
+    try {
+      const response = await axios.get(`${url}timeslot/${outletId}`, {
+        headers: {
+          Authorization: `Bearer ${account.accessToken.jwtToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
       dispatch({
         type: CONSTANT.TIME_SLOT_APPOINTMENT,
         payload: response.data.data,
       });
+      return response.data;
+    } catch (error) {
+      dispatch({
+        type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
+        payload: error.response.data.message,
+      });
     }
-    return response.data;
   };
 };
 
@@ -999,7 +1004,7 @@ const submitCartAppointment = (payload) => {
         payload: response.data.data,
       });
     }
-    return response;
+    return response.data;
   };
 };
 const updateCartAppointment = (addService, productId) => {

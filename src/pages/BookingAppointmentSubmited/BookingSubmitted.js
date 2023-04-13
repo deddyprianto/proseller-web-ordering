@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
+import successsubmit from 'assets/gif/successsubmit.gif';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -14,17 +15,93 @@ const useWindowSize = () => {
   }, []);
   return size;
 };
-const BookingSubmitted = () => {
-  const color = useSelector((state) => state.theme.color);
 
+const BookingSubmitted = () => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
+  const outlet = useSelector((state) => state.outlet.outlets);
+  const color = useSelector((state) => state.theme.color);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const responseSubmit = useSelector(
+    (state) => state.appointmentReducer.responseSubmit
+  );
+  // some fn
+  const convertFormatDate = (dateStr) => {
+    // Create a Date object from the date string
+    const date = new window.Date(dateStr);
+    // Define an array of month names
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
 
+    // Get the month name and day of the month as numbers
+    const monthName = months[date.getMonth()];
+    const dayOfMonth = date.getDate();
+
+    // Determine the suffix for the day of the month
+    let daySuffix;
+    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
+      daySuffix = 'st';
+    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
+      daySuffix = 'nd';
+    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
+      daySuffix = 'rd';
+    } else {
+      daySuffix = 'th';
+    }
+
+    // Create the formatted date string
+    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
+
+    return formattedDate;
+  };
+  const SelectedOutlet = outlet.find(
+    (item) => `outlet::${item.id}` === responseSubmit.outletId
+  );
+  const convertTimeToStr = (seconds) => {
+    // Calculate the number of hours and minutes
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    // Create the formatted string
+    if (hours > 0) {
+      return `${hours}h ${minutes}min`;
+    } else if (minutes > 0) {
+      return `${minutes}min`;
+    } else {
+      return '';
+    }
+  };
+  const handleCurrency = (price) => {
+    if (price) {
+      const result = price.toLocaleString(companyInfo?.currency?.locale, {
+        style: 'currency',
+        currency: companyInfo?.currency?.code,
+      });
+
+      return result;
+    }
+  };
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
   };
+
+  if (performance.getEntriesByType('navigation')[0].type === 'reload') {
+    window.location.href = '/'; // replace with the URL of your home page
+  }
 
   const styleSheet = {
     container: {
@@ -90,7 +167,7 @@ const BookingSubmitted = () => {
     return (
       <div
         style={{
-          width: '65%',
+          width: '58%',
           marginTop: '35px',
           fontSize: '14px',
           display: 'flex',
@@ -104,7 +181,7 @@ const BookingSubmitted = () => {
         </div>
         <hr
           style={{
-            width: '36px',
+            width: '33px',
             padding: 0,
             margin: 0,
             backgroundColor: 'rgba(183, 183, 183, 1)',
@@ -131,7 +208,11 @@ const BookingSubmitted = () => {
           >
             2
           </div>
-          <div style={{ marginLeft: '10px' }}>Finish</div>
+          <div
+            style={{ marginLeft: '5px', color: color.primary, fontWeight: 600 }}
+          >
+            Finish
+          </div>
         </div>
       </div>
     );
@@ -150,8 +231,10 @@ const BookingSubmitted = () => {
           alignItems: 'center',
         }}
       >
-        <IconsReflexology />
-        <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+        <img src={successsubmit} alt='success' />
+        <div
+          style={{ fontSize: '22px', fontWeight: 'bold', color: color.primary }}
+        >
           Booking Submitted
         </div>
         <div
@@ -159,6 +242,7 @@ const BookingSubmitted = () => {
             fontWeight: 500,
             color: 'rgba(183, 183, 183, 1)',
             fontSize: '14px',
+            marginTop: '10px',
           }}
         >
           Thank you! Your booking has been submitted!
@@ -168,73 +252,108 @@ const BookingSubmitted = () => {
   };
   const BookingDetail = () => {
     return (
-      <div style={{ width: '90%', margin: 'auto', marginTop: '40px' }}>
-        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-          Booking Detail
-        </div>
-        <div
-          style={{
-            marginTop: '15px',
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gridTemplateRows: '1fr 1fr 1fr',
-            gridAutoColumns: '1fr',
-            gap: '0px 0px',
-            gridAutoFlow: 'row',
-            gridTemplateAreas: '". ."\n    ". ."\n    "end-col end-col"',
-          }}
-        >
-          <div>
-            <div style={{ fontWeight: 500, fontSize: '14px' }}>Date</div>
-            <div
-              style={{
-                fontWeight: 700,
-                color: color.primary,
-                fontSize: '14px',
-              }}
-            >
-              January, 09th 2023
+      <div
+        style={{
+          width: '93%',
+          margin: 'auto',
+          marginTop: '40px',
+          backgroundColor: `${color.primary}10`,
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          padding: '10px 0px',
+        }}
+      >
+        <div style={{ width: '90%', margin: 'auto', marginTop: '15px' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
+            Booking Detail
+          </div>
+          <div
+            style={{
+              marginTop: '15px',
+              width: '100%',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridTemplateRows: '1fr 1fr',
+              gridAutoColumns: '1fr',
+              gap: '27px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."\n    ". ."\n ',
+            }}
+          >
+            <div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Date
+              </div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: color.primary,
+                  fontSize: '14px',
+                }}
+              >
+                {convertFormatDate(responseSubmit.bookingDate)}
+              </div>
+            </div>
+            <div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Start Time
+              </div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: color.primary,
+                  fontSize: '14px',
+                }}
+              >
+                {responseSubmit.serviceTime?.start} -{' '}
+                {responseSubmit.serviceTime?.end}
+              </div>
+            </div>
+            <div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Stylist
+              </div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: color.primary,
+                  fontSize: '14px',
+                }}
+              >
+                {responseSubmit.staff.name}
+              </div>
+            </div>
+            <div>
+              <div
+                style={{ fontWeight: 600, fontSize: '14px', color: 'black' }}
+              >
+                Duration
+              </div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: color.primary,
+                  fontSize: '14px',
+                }}
+              >
+                {convertTimeToStr(responseSubmit?.totalDuration)}
+              </div>
             </div>
           </div>
-          <div>
-            <div style={{ fontWeight: 500, fontSize: '14px' }}>Start Time</div>
+          <div
+            style={{ width: '100%', marginTop: '20px', marginBottom: '20px' }}
+          >
             <div
-              style={{
-                fontWeight: 700,
-                color: color.primary,
-                fontSize: '14px',
-              }}
+              style={{ fontWeight: 'bold', fontSize: '14px', color: 'black' }}
             >
-              14:30
+              Outlet
             </div>
-          </div>
-          <div>
-            <div style={{ fontWeight: 500, fontSize: '14px' }}>Stylist</div>
-            <div
-              style={{
-                fontWeight: 700,
-                color: color.primary,
-                fontSize: '14px',
-              }}
-            >
-              Cody Fisher
-            </div>
-          </div>
-          <div>
-            <div style={{ fontWeight: 500, fontSize: '14px' }}>Duration</div>
-            <div
-              style={{
-                fontWeight: 700,
-                color: color.primary,
-                fontSize: '14px',
-              }}
-            >
-              90 Minutes
-            </div>
-          </div>
-          <div style={{ gridArea: 'end-col' }}>
-            <div style={{ fontWeight: 500, fontSize: '14px' }}>Outlet</div>
             <div
               style={{
                 fontWeight: 700,
@@ -242,16 +361,16 @@ const BookingSubmitted = () => {
                 color: color.primary,
               }}
             >
-              Connection One
+              {SelectedOutlet.name}
             </div>
             <div
               style={{
-                fontWeight: 700,
+                fontWeight: 600,
                 color: 'rgba(157, 157, 157, 1)',
                 fontSize: '14px',
               }}
             >
-              169 Bukit Merah Central, Singapore
+              {SelectedOutlet?.address}
             </div>
           </div>
         </div>
@@ -261,39 +380,84 @@ const BookingSubmitted = () => {
 
   const BookingNotes = () => {
     return (
-      <div style={{ width: '90%', margin: 'auto', marginTop: '40px' }}>
-        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-          Booking Notes
-        </div>
-        <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '10px' }}>
-          At vero eos et accusamus et iusto odio dignios ducimus qui blanditiis
-          praesentium voluptat deleniti atque corrupti quos dolores et qua
+      <div
+        style={{
+          width: '93%',
+          margin: 'auto',
+          backgroundColor: `${color.primary}10`,
+        }}
+      >
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
+            Booking Notes
+          </div>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'black',
+            }}
+          >
+            {responseSubmit.note ? responseSubmit.note : '-'}
+          </div>
         </div>
       </div>
     );
   };
-
   const ServiceDetail = () => {
-    const name = [
-      {
-        name: 'Finishing Short Hair Cut Title Goes in Finishing Short Hair Cut Title Goes in',
-        price: 'SGD 15.00',
-      },
-      { name: 'Big Bouncy Blow-Dry', price: 'SGD 15.00' },
-      { name: 'Estimated Price', price: 'SGD 15.00' },
-    ];
     return (
       <div
         style={{
-          width: '90%',
+          width: '93%',
           margin: 'auto',
-          marginTop: '40px',
+          backgroundColor: `${color.primary}10`,
+          borderBottomLeftRadius: '20px',
+          borderBottomRightRadius: '20px',
+          paddingBottom: '20px',
         }}
       >
-        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-          Service Detail
-        </div>
-        {name.map((item) => (
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
+            Service Detail
+          </div>
+          {responseSubmit.details.map((item) => (
+            <div
+              style={{
+                marginTop: '10px',
+                width: '100%',
+                display: 'grid',
+                gridTemplateColumns: '1fr 100px',
+                gridTemplateRows: '1fr',
+                gridAutoColumns: '1fr',
+                gap: '0px 0px',
+                gridAutoFlow: 'row',
+                gridTemplateAreas: '". ."',
+              }}
+            >
+              <div
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: 'black',
+                }}
+              >
+                {item.product.name}
+              </div>
+              <div
+                style={{
+                  fontWeight: 'bold',
+                  justifySelf: 'self-end',
+                  color: color.primary,
+                  fontSize: '14px',
+                }}
+              >
+                {handleCurrency(item.product.retailPrice)}
+              </div>
+            </div>
+          ))}
           <div
             style={{
               marginTop: '10px',
@@ -309,14 +473,12 @@ const BookingSubmitted = () => {
           >
             <div
               style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
                 fontWeight: 500,
                 fontSize: '14px',
+                color: 'black',
               }}
             >
-              {item.name}
+              Estimated Price
             </div>
             <div
               style={{
@@ -326,10 +488,10 @@ const BookingSubmitted = () => {
                 fontSize: '14px',
               }}
             >
-              {item.price}
+              {handleCurrency(responseSubmit.totalNettAmount)}
             </div>
           </div>
-        ))}
+        </div>
       </div>
     );
   };
@@ -337,59 +499,82 @@ const BookingSubmitted = () => {
     return (
       <div
         style={{
-          width: '90%',
+          width: '93%',
           margin: 'auto',
-          marginTop: '40px',
+          marginTop: '20px',
           marginBottom: '20px',
+          backgroundColor: `${color.primary}10`,
+          borderRadius: '20px',
+          padding: '15px 0px',
         }}
       >
-        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Information</div>
-        <div style={{ fontSize: '14px', fontWeight: 600 }}>Price & Payment</div>
-        <ul
-          style={{
-            fontSize: '14px',
-            color: color.primary,
-            margin: 0,
-            marginLeft: '25px',
-            fontWeight: 500,
-          }}
-        >
-          <li>Price above is estimation cannot be used as a reference</li>
-          <li>This booking can be paid at outlet</li>
-          <li>We only accept cashless payment</li>
-        </ul>
-        <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
-          Appointment
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
+            Information
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
+            Price & Payment
+          </div>
+          <ul
+            style={{
+              fontSize: '14px',
+              color: 'black',
+              margin: 0,
+              marginLeft: '25px',
+              fontWeight: 500,
+            }}
+          >
+            <li>Price above is estimation cannot be used as a reference</li>
+            <li>This booking can be paid at outlet</li>
+            <li>We only accept cashless payment</li>
+          </ul>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              marginTop: '10px',
+              color: 'black',
+            }}
+          >
+            Appointment
+          </div>
+          <ul
+            style={{
+              fontSize: '14px',
+              color: 'black',
+              margin: 0,
+              marginLeft: '25px',
+              fontWeight: 500,
+            }}
+          >
+            <li>Please come 10 minutes before the appointment</li>
+            <li>Wearing mask is a must</li>
+          </ul>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              marginTop: '10px',
+              color: 'black',
+            }}
+          >
+            Cancellation Policy
+          </div>
+          <ul
+            style={{
+              fontSize: '14px',
+              color: 'black',
+              margin: 0,
+              marginLeft: '25px',
+              fontWeight: 500,
+            }}
+          >
+            <li>
+              If you need to make any changes to your reservation, please
+              contact us at least 24 hours in advance.
+            </li>
+          </ul>
         </div>
-        <ul
-          style={{
-            fontSize: '14px',
-            color: color.primary,
-            margin: 0,
-            marginLeft: '25px',
-            fontWeight: 500,
-          }}
-        >
-          <li>Please come 10 minutes before the appointment</li>
-          <li>Wearing mask is a must</li>
-        </ul>
-        <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '10px' }}>
-          Cancellation Policy
-        </div>
-        <ul
-          style={{
-            fontSize: '14px',
-            color: color.primary,
-            margin: 0,
-            marginLeft: '25px',
-            fontWeight: 500,
-          }}
-        >
-          <li>
-            If you need to make any changes to your reservation, please contact
-            us at least 24 hours in advance.
-          </li>
-        </ul>
       </div>
     );
   };
@@ -420,7 +605,52 @@ const BookingSubmitted = () => {
       </div>
     );
   };
-
+  const RenderHr = () => {
+    return (
+      <div
+        style={{
+          width: '93%',
+          backgroundColor: `${color.primary}10`,
+          padding: '10px 0px',
+          margin: 'auto',
+          display: 'grid',
+          gridTemplateColumns: '50px 1fr 50px',
+          gridTemplateRows: '1fr',
+          gridAutoColumns: '1fr',
+          gap: '0px 0px',
+          gridAutoFlow: 'row',
+          gridTemplateAreas: '". . ."',
+        }}
+      >
+        <div
+          style={{
+            width: '30px',
+            backgroundColor: 'white',
+            height: '37px',
+            borderRadius: '100%',
+            marginLeft: '-10px',
+            color: 'transparent',
+          }}
+        >
+          p
+        </div>
+        <div style={{ width: '100%', color: 'transparent' }}>p</div>
+        <div
+          style={{
+            justifySelf: 'end',
+            width: '30px',
+            backgroundColor: 'white',
+            height: '37px',
+            borderRadius: '100%',
+            marginRight: '-10px',
+            color: 'transparent',
+          }}
+        >
+          p
+        </div>
+      </div>
+    );
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
@@ -432,6 +662,7 @@ const BookingSubmitted = () => {
           <MessageAndLabel />
           <BookingDetail />
           <BookingNotes />
+          <RenderHr />
           <ServiceDetail />
           <Information />
           <ButtonPrice />
@@ -441,13 +672,14 @@ const BookingSubmitted = () => {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <di
-              style={{
-                marginTop: '15%',
-              }}
-            >
-              <Timeline />
-            </di>
+            <Timeline />
+            <MessageAndLabel />
+            <BookingDetail />
+            <BookingNotes />
+            <RenderHr />
+            <ServiceDetail />
+            <Information />
+            <ButtonPrice />
           </div>
         </div>
       );

@@ -266,18 +266,20 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
             >
               {item?.product.name}
             </div>
-            <div>
-              <p
-                style={{
-                  color: 'rgba(183, 183, 183, 1)',
-                  padding: 0,
-                  margin: 0,
-                  fontWeight: 600,
-                }}
-              >
-                Add Ons
-              </p>
-            </div>
+            {!isEmptyArray(item?.modifiers) && (
+              <div>
+                <p
+                  style={{
+                    color: 'rgba(183, 183, 183, 1)',
+                    padding: 0,
+                    margin: 0,
+                    fontWeight: 600,
+                  }}
+                >
+                  Add Ons
+                </p>
+              </div>
+            )}
           </div>
           <div style={{ fontSize: '13px', fontWeight: 500, color: 'black' }}>
             {handleCurrency(item?.product.retailPrice)}
