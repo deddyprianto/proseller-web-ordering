@@ -443,8 +443,7 @@ const CartGuestCheckout = () => {
       orderingModeGuestCheckout === 'TAKEAWAY' ||
       orderingModeGuestCheckout === 'DINEIN'
     ) {
-      const { name, email, phoneNo } = formik.values;
-      console.log('click payment');
+      const { name, email } = formik.values;
       if (name === '') {
         setShowErrorName(true);
       } else if (email.length && !formRegexMail) {
@@ -1262,8 +1261,6 @@ const CartGuestCheckout = () => {
     const reqAvailableTime = availableTime;
     const requiredForm = formik.values.name;
 
-    console.log('btn disabled', isAllItemUnavailable);
-
     const isDeliveryActive = availableTime
       ? reqTimeSlot && reqAvailableTime && reqProvider
       : reqDelivery && reqProvider;
@@ -1276,9 +1273,10 @@ const CartGuestCheckout = () => {
       ? requiredForm && reqTimeSlot
       : requiredForm;
 
+    const checkTableNo = defaultOutlet.enableTableNumber ? noTable : true;
     const isDineInActive = availableTime
-      ? requiredForm && reqTimeSlot && noTable
-      : requiredForm && noTable;
+      ? requiredForm && reqTimeSlot && checkTableNo
+      : requiredForm && checkTableNo;
 
     switch (key) {
       case 'DELIVERY':
@@ -2258,7 +2256,11 @@ const CartGuestCheckout = () => {
                       }}
                     >
                       {phoneCountryCode}
-                      <img src={iconDown} style={{ marginLeft: '5px' }} />
+                      <img
+                        src={iconDown}
+                        style={{ marginLeft: '5px' }}
+                        alt='ic_down'
+                      />
                     </DropdownToggle>
                     <DropdownMenu
                       style={{
@@ -2294,7 +2296,11 @@ const CartGuestCheckout = () => {
                             onChange={(e) => setValueSearchCode(e)}
                           />
                         </div>
-                        <img src={search} style={{ marginRight: '10px' }} />
+                        <img
+                          src={search}
+                          style={{ marginRight: '10px' }}
+                          alt='ic_search'
+                        />
                       </div>
                       {filteredPhoneCode.map((item, i) => {
                         const getPhoneCodeFromStr = item.substring(
