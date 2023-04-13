@@ -984,6 +984,24 @@ const addCartAppointment = (addService) => {
     return response;
   };
 };
+const submitCartAppointment = (payload) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    const response = await axios.post(`${url}cart/submit`, payload, {
+      headers: {
+        Authorization: `Bearer ${account.accessToken.jwtToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.status === 201) {
+      dispatch({
+        type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
+        payload: response.data.data,
+      });
+    }
+    return response;
+  };
+};
 const updateCartAppointment = (addService, productId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
@@ -1149,4 +1167,5 @@ export const OrderAction = {
   deleteItemAppointment,
   getTimeSlotAppointment,
   loadStaffByTimeSlot,
+  submitCartAppointment,
 };

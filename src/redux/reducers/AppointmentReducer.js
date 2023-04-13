@@ -15,6 +15,7 @@ function AppointmentReducer(
     dateSorted: [],
     staffServices: [],
     textNotes: '',
+    responseSubmit: {},
   },
   action
 ) {
@@ -45,6 +46,8 @@ function AppointmentReducer(
       return { ...state, staffServices: action.payload };
     case CONSTANT.TEXT_NOTE:
       return { ...state, textNotes: action.payload };
+    case CONSTANT.RESPONSE_SUBMIT_APPOINTMENT:
+      return { ...state, responseSubmit: action.payload };
     default:
       return state;
   }

@@ -1,14 +1,25 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 const ButtonPrice = ({ changeFormatURl, color }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const payload = {
+    staffId: '{id}',
+    bookingTime: '{HH:mm}',
+    bookingDate: '{YYYY-MM-DD}',
+  };
+  const handleSubmit = async () => {
+    window.location.href = changeFormatURl('/bookingconfirm');
+  };
   const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
+
   return (
-    <div
-      onClick={() => {
-        window.location.href = changeFormatURl('/bookingconfirm');
-      }}
-      style={{
+    <LoadingButton
+      loading={isLoading}
+      onClick={handleSubmit}
+      sx={{
         width: '93%',
         margin: 'auto',
         marginTop: '20px',
@@ -24,10 +35,11 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
         padding: '5px',
         fontSize: '16px',
         fontWeight: 600,
+        textTransform: 'capitalize',
       }}
     >
       Book This Date
-    </div>
+    </LoadingButton>
   );
 };
 
