@@ -3,6 +3,8 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
+
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import { useHistory } from 'react-router-dom';
@@ -12,10 +14,10 @@ import OutletSelection from './OutletSelection';
 import { PromotionAction } from 'redux/actions/PromotionAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
-import Swal from 'sweetalert2';
 import { CONSTANT } from 'helpers';
 import ModalAppointment from 'components/modalAppointment/ModalAppointment';
 import { useLocalStorage } from 'hooks/useLocalStorage';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 const base64 = require('base-64');
 
@@ -41,6 +43,7 @@ const mapStateToProps = (state) => {
     orderingMode: state.order.orderingMode,
     basketGuestCo: state.guestCheckoutCart.data,
     basket: state.order.basket,
+    color: state.theme.color,
   };
 };
 
@@ -87,7 +90,22 @@ const Home = ({ ...props }) => {
         const outletById = await props.dispatch(
           OutletAction.getOutletById(outletId)
         );
-        if (outletById) {
+        if (outletById.orderingStatus === 'UNAVAILABLE') {
+          Swal.fire({
+            title: '<p>The outlet is not available</p>',
+            html: `<h5 style='color:#B7B7B7; font-size:14px'>${outletById.name} is currently not available, please select another outlet</h5>`,
+            allowOutsideClick: false,
+            confirmButtonText: 'OK',
+            confirmButtonColor: props.color?.primary,
+            width: '40em',
+            customClass: {
+              confirmButton: fontStyleCustom.buttonSweetAlert,
+              title: fontStyleCustom.fontTitleSweetAlert,
+            },
+          }).then(() => {
+            history.push('/outlets');
+          });
+        } else {
           await props.dispatch(OutletAction.setDefaultOutlet(outletById));
           history.push('/');
         }
