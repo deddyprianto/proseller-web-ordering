@@ -213,6 +213,7 @@ const PhoneForm = ({
               }}
             >
               <CheckBox
+                id='tnc-checkbox'
                 className='form-check-input'
                 handleChange={() => setAgreeTC(!agreeTC)}
                 selected={agreeTC}

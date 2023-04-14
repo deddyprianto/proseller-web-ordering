@@ -1713,6 +1713,7 @@ const ProductAddModal = ({
 
     return (
       <Button
+        id='add-to-cart-button'
         style={styles.addButton}
         disabled={handleDisabledAddProductButton()}
         onClick={() => {

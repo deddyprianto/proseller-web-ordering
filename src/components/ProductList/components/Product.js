@@ -403,6 +403,7 @@ const Product = ({ item, ...props }) => {
                 />
               </div>
               <Button
+                id='add-item-button'
                 className={classes.button}
                 startIcon={
                   totalQty ? (

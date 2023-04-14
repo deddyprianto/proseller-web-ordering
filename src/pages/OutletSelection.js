@@ -221,6 +221,7 @@ class OutletSelection extends Component {
                               }}
                             >
                               <div
+                                id='outlet-name-option'
                                 className='customer-group-name'
                                 style={{
                                   fontWeight: 'bold',
