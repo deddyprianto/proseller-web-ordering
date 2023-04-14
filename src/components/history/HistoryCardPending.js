@@ -40,6 +40,10 @@ const InboxCard = (props) => {
     });
   }
 
+  const checkQueueNo = () => {
+    return items.queueNo ? items.queueNo + ' - ' : '';
+  };
+
   return (
     <div
       style={{
@@ -95,7 +99,7 @@ const InboxCard = (props) => {
             className='modal-title'
             style={{ fontWeight: 'bold', fontSize: 10, lineHeight: '17px' }}
           >
-            {`${items.queueNo} - ${items.details.length} items - ${getCurrency(
+            {`${checkQueueNo()} ${items.details.length} items - ${getCurrency(
               items.totalNettAmount - discount
             )}`}
           </div>
