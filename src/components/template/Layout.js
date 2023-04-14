@@ -19,6 +19,12 @@ const Cartappointment = loadable(() => import('../../pages/CartAppointment'));
 const LocationAppointment = loadable(() =>
   import('../../pages/LocationAppointment')
 );
+const BookingSubmitted = loadable(() =>
+  import('../../pages/BookingAppointmentSubmited')
+);
+const BookingConfirm = loadable(() =>
+  import('../../pages/BookingAppointmentConfirm')
+);
 const Cart = loadable(() => import('../../pages/Cart'));
 const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
 const Payment = loadable(() => import('pages/Payment'));
@@ -180,6 +186,16 @@ class Layout extends Component {
                 path='/cartappointment'
                 component={Cartappointment}
               />
+            )}
+            {enableOrdering && (
+              <Route
+                exact
+                path='/bookingsubmitted'
+                component={BookingSubmitted}
+              />
+            )}
+            {enableOrdering && (
+              <Route exact path='/bookingconfirm' component={BookingConfirm} />
             )}
             {enableOrdering && (
               <Route exact path='/location' component={LocationAppointment} />

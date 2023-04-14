@@ -1,13 +1,34 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { OrderAction } from 'redux/actions/OrderAction';
+import loader from '../style/styles.module.css';
 
 const ButtonPrice = ({ changeFormatURl, color }) => {
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
+  const date = useSelector((state) => state.appointmentReducer.date);
+  const time = useSelector((state) => state.appointmentReducer.time);
+  const staffID = useSelector((state) => state.appointmentReducer.staffID);
+
+  const handleSubmit = async () => {
+    const payload = {
+      staffId: staffID,
+      bookingTime: time,
+      bookingDate: date,
+      note: textNotes,
+    };
+    setIsLoading(true);
+    const data = await dispatch(OrderAction.submitCartAppointment(payload));
+    setIsLoading(false);
+    if (data.message === 'Cart submitted successfully') {
+      window.location.href = changeFormatURl('/bookingconfirm');
+    }
+  };
+
   return (
     <div
-      onClick={() => {
-        window.location.href = changeFormatURl('/bookingsummary');
-      }}
+      onClick={handleSubmit}
       style={{
         width: '93%',
         margin: 'auto',
@@ -16,17 +37,19 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: textNotes ? color.primary : 'rgba(183, 183, 183, 1)',
-        cursor: 'pointer',
-        pointerEvents: 'none',
         color: 'white',
         borderRadius: '10px',
         padding: '5px',
         fontSize: '16px',
         fontWeight: 600,
+        textTransform: 'capitalize',
+        backgroundColor:
+          date && time && staffID ? color.primary : 'rgba(183, 183, 183, 1)',
+        cursor: date && time && staffID ? 'pointer' : 'not-allowed',
+        pointerEvents: !date && !time && !staffID && 'none',
       }}
     >
-      Book This Date
+      {isLoading ? <span className={loader.loader}></span> : 'Book this date'}
     </div>
   );
 };

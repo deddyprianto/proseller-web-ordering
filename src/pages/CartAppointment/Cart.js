@@ -13,6 +13,8 @@ import Date from './component/Date';
 import ServiceStylist from './component/ServiceStylist';
 import ButtonPrice from './component/ButtonPrice';
 import RenderNotes from './component/RenderNotes';
+import { CONSTANT } from 'helpers';
+import Swal from 'sweetalert2';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -33,11 +35,14 @@ const Cart = (props) => {
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
   // some sl
+  const messageTimeSlot = useSelector(
+    (state) => state.appointmentReducer.messageTimeSlot
+  );
+  const outlet = useSelector((state) => state.outlet.outlets);
   const locationAppointment = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const responseAddTocart = useSelector(
     (state) => state.appointmentReducer.responseAddTocart
   );
@@ -49,13 +54,49 @@ const Cart = (props) => {
 
   // some Effect
   useEffect(() => {
+    if (isEmptyObject(locationAppointment)) {
+      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+    }
+  }, []);
+  useEffect(() => {
+    if (isEmptyObject(locationAppointment)) {
+      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (messageTimeSlot) {
+      Swal.fire({
+        icon: 'info',
+        iconColor: '#333',
+        title: messageTimeSlot,
+        allowOutsideClick: false,
+        confirmButtonText: 'Go to location page',
+        confirmButtonColor: color.primary,
+        customClass: {
+          confirmButton: fontStyles.buttonSweetAlert,
+          icon: fontStyles.customIconColor,
+        },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          props.history.push('/location');
+        }
+      });
+    }
+  }, [messageTimeSlot]);
+
+  useEffect(() => {
     const loadData = async () => {
-      await dispatch(OrderAction.getTimeSlotAppointment(defaultOutlet.id));
+      setIsLoading(true);
+      await dispatch(
+        OrderAction.getTimeSlotAppointment(locationAppointment.id)
+      );
+      setIsLoading(false);
     };
-    if (!isEmptyObject(defaultOutlet)) {
+    if (!isEmptyObject(locationAppointment)) {
       loadData();
     }
-  }, [defaultOutlet]);
+  }, [locationAppointment]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -203,7 +244,7 @@ const Cart = (props) => {
           </div>
           <div
             style={{
-              fontWeight: 500,
+              fontWeight: 600,
               margin: '0px 4px',
               color: color.primary,
             }}
@@ -286,123 +327,128 @@ const Cart = (props) => {
     );
   };
   const SelectedOutlet = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-        }}
-      >
+    if (!isEmptyObject(locationAppointment)) {
+      return (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '14px',
+            width: '93%',
+            margin: 'auto',
+            marginTop: '20px',
           }}
         >
-          <div style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}>
-            Selected Outlet
-          </div>
           <div
-            onClick={() => props.history.push('/location')}
             style={{
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              justifyContent: 'center',
-              color: color.primary,
-              fontWeight: 500,
-              cursor: 'pointer',
+              fontSize: '14px',
             }}
           >
-            Change Outlet
+            <div
+              style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}
+            >
+              Selected Outlet
+            </div>
+            <div
+              onClick={() => props.history.push('/location')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: color.primary,
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              Change Outlet
+            </div>
           </div>
-        </div>
-        <div
-          style={{
-            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-            padding: '10px 5px',
-            borderRadius: '10px',
-            width: '100%',
-            margin: 'auto',
-            display: 'grid',
-            gridTemplateColumns: '1fr 250px 1fr 1fr',
-            gridTemplateRows: '1fr',
-            gap: '0px 0px',
-            gridAutoFlow: 'row',
-            gridTemplateAreas: '". . ."',
-            cursor: 'pointer',
-            marginTop: '10px',
-          }}
-        >
-          <PlaceIcon
-            sx={{
-              justifySelf: 'end',
-              fontSize: '20px',
-              marginTop: '5px',
-              marginRight: '5px',
+          <div
+            style={{
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+              padding: '10px 5px',
+              borderRadius: '10px',
+              width: '100%',
+              margin: 'auto',
+              display: 'grid',
+              gridTemplateColumns: '1fr 250px 1fr 1fr',
+              gridTemplateRows: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". . ."',
+              cursor: 'pointer',
+              marginTop: '10px',
+            }}
+          >
+            <PlaceIcon
+              sx={{
+                justifySelf: 'end',
+                fontSize: '20px',
+                marginTop: '5px',
+                marginRight: '5px',
+              }}
+            />
+            <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
+              <div>{locationAppointment?.name}</div>
+              <div style={{ color: 'rgba(157, 157, 157, 1)' }}>
+                {locationAppointment?.address}
+              </div>
+            </div>
+            <div></div>
+            <div
+              style={{ justifySelf: 'end', fontWeight: 500, color: 'black' }}
+            >
+              800m
+            </div>
+          </div>
+          <hr
+            style={{
+              backgroundColor: 'rgba(249, 249, 249, 1)',
+              margin: '20px 0px',
             }}
           />
-          <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
-            <div>
-              {!isEmptyObject(locationAppointment)
-                ? locationAppointment.name
-                : defaultOutlet.name}
-            </div>
-            <div style={{ color: 'rgba(157, 157, 157, 1)' }}>
-              {!isEmptyObject(locationAppointment)
-                ? locationAppointment?.address
-                : defaultOutlet?.address}
-            </div>
-          </div>
-          <div></div>
-          <div style={{ justifySelf: 'end', fontWeight: 500, color: 'black' }}>
-            800m
-          </div>
         </div>
-        <hr
-          style={{
-            backgroundColor: 'rgba(249, 249, 249, 1)',
-            margin: '20px 0px',
-          }}
-        />
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   const Time = () => {
     const date = useSelector((state) => state.appointmentReducer.date);
-    const filterTimeSlot = timeslot.find((item) => item.date === date);
+    const filterTimeSlot = timeslot?.find((item) => item.date === date);
     const [timeActive, setTimeActive] = useState('');
-
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
-        }}
-      >
-        <p style={{ fontWeight: 'bold', fontSize: '14px', color: 'black' }}>
-          Select Time
-        </p>
-        <div style={{ width: '100%' }}>
-          <DropDownCustomSelect
-            setTimeActive={setTimeActive}
-            timeActive={timeActive}
-            timeList={filterTimeSlot?.timeSlot}
+    if (!messageTimeSlot) {
+      return (
+        <div
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '20px',
+            marginBottom: '20px',
+          }}
+        >
+          <p style={{ fontWeight: 'bold', fontSize: '14px', color: 'black' }}>
+            Select Time
+          </p>
+          <div style={{ width: '100%' }}>
+            <DropDownCustomSelect
+              setTimeActive={setTimeActive}
+              timeActive={timeActive}
+              timeList={filterTimeSlot?.timeSlot}
+            />
+          </div>
+          <hr
+            style={{
+              backgroundColor: 'rgba(249, 249, 249, 1)',
+              margin: '20px 0px',
+            }}
           />
         </div>
-        <hr
-          style={{
-            backgroundColor: 'rgba(249, 249, 249, 1)',
-            margin: '20px 0px',
-          }}
-        />
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   const Price = () => {
@@ -442,7 +488,7 @@ const Cart = (props) => {
         </p>
         {cartAppointment?.details?.map((item) => (
           <ItemServiceCart
-            outletID={defaultOutlet}
+            outletID={locationAppointment}
             key={item.id}
             item={item}
             setIsLoading={setIsLoading}

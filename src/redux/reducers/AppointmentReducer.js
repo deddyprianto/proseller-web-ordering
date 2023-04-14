@@ -15,6 +15,10 @@ function AppointmentReducer(
     dateSorted: [],
     staffServices: [],
     textNotes: '',
+    responseSubmit: {},
+    staffID: '',
+    messageTimeSlot: '',
+    indexPath: 0,
   },
   action
 ) {
@@ -45,6 +49,14 @@ function AppointmentReducer(
       return { ...state, staffServices: action.payload };
     case CONSTANT.TEXT_NOTE:
       return { ...state, textNotes: action.payload };
+    case CONSTANT.RESPONSE_SUBMIT_APPOINTMENT:
+      return { ...state, responseSubmit: action.payload };
+    case CONSTANT.STAFFID_APPOINTMENT:
+      return { ...state, staffID: action.payload };
+    case CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT:
+      return { ...state, messageTimeSlot: action.payload };
+    case CONSTANT.INDEX_PATH_APPOINTMENT:
+      return { ...state, indexPath: action.payload };
     default:
       return state;
   }

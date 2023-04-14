@@ -19,6 +19,9 @@ const Date = ({ timeslot, color }) => {
   }));
   const classes = useStyless();
   const date = useSelector((state) => state.appointmentReducer.date);
+  const messageTimeSlot = useSelector(
+    (state) => state.appointmentReducer.messageTimeSlot
+  );
   const dateSorted = useSelector(
     (state) => state.appointmentReducer.dateSorted
   );
@@ -99,99 +102,104 @@ const Date = ({ timeslot, color }) => {
   };
 
   const showListDate = isConfirmButtonPressed ? dateSorted : timeslot;
-  console.log(showListDate);
   return (
     <React.Fragment>
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
-        }}
-      >
+      {!messageTimeSlot ? (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '14px',
+            width: '93%',
+            margin: 'auto',
+            marginTop: '20px',
+            marginBottom: '20px',
           }}
         >
-          <div style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}>
-            Select Date
-          </div>
           <div
-            onClick={() => setIsOpenModalDate(true)}
             style={{
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              justifyContent: 'center',
-              color: color.primary,
-              fontWeight: 500,
-              cursor: 'pointer',
+              fontSize: '14px',
             }}
           >
-            See More Date
+            <div
+              style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}
+            >
+              Select Date
+            </div>
+            <div
+              onClick={() => setIsOpenModalDate(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: color.primary,
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              See More Date
+            </div>
           </div>
-        </div>
-        <Swiper
-          style={{ width: '100%', marginTop: '20px' }}
-          slidesPerView='auto'
-          spaceBetween={15}
-        >
-          {showListDate.map((item) => {
-            return (
-              <SwiperSlide key={item.date} style={{ flexShrink: 'unset' }}>
-                <div
-                  onClick={() => {
-                    dispatch({
-                      type: CONSTANT.DATE_APPOINTMENT,
-                      payload: changeFormatDate(item.date),
-                    });
-                  }}
-                  style={{
-                    backgroundColor:
-                      date === changeFormatDate(item?.date)
-                        ? color.primary
-                        : 'rgba(249, 249, 249, 1)',
-                    borderRadius: '32px',
-                    height: '80px',
-                    width: '60px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    color:
-                      date === changeFormatDate(item?.date) ? 'white' : 'black',
-                    opacity: isEmptyArray(item.timeSlot) && 0.3,
-                    pointerEvents: isEmptyArray(item.timeSlot) && 'none',
-                  }}
-                >
+          <Swiper
+            style={{ width: '100%', marginTop: '20px' }}
+            slidesPerView='auto'
+            spaceBetween={15}
+          >
+            {showListDate.map((item) => {
+              return (
+                <SwiperSlide key={item.date} style={{ flexShrink: 'unset' }}>
                   <div
+                    onClick={() => {
+                      dispatch({
+                        type: CONSTANT.DATE_APPOINTMENT,
+                        payload: changeFormatDate(item.date),
+                      });
+                    }}
                     style={{
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      textTransform: 'capitalize',
+                      backgroundColor:
+                        date === changeFormatDate(item?.date)
+                          ? color.primary
+                          : 'rgba(249, 249, 249, 1)',
+                      borderRadius: '32px',
+                      height: '80px',
+                      width: '60px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      color:
+                        date === changeFormatDate(item?.date)
+                          ? 'white'
+                          : 'black',
+                      opacity: isEmptyArray(item.timeSlot) && 0.3,
+                      pointerEvents: isEmptyArray(item.timeSlot) && 'none',
                     }}
                   >
-                    {convertDateName(item?.date)}
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {convertDateName(item?.date)}
+                    </div>
+                    <div style={{ fontSize: '22px', fontWeight: 600 }}>
+                      {convertDate(item?.date)}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '22px', fontWeight: 600 }}>
-                    {convertDate(item?.date)}
-                  </div>
-                </div>
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
-        <hr
-          style={{
-            backgroundColor: 'rgba(249, 249, 249, 1)',
-            margin: '20px 0px',
-          }}
-        />
-      </div>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+          <hr
+            style={{
+              backgroundColor: 'rgba(249, 249, 249, 1)',
+              margin: '20px 0px',
+            }}
+          />
+        </div>
+      ): null}
       <Dialog
         classes={{ paper: classes.paper }}
         fullWidth={false}

@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoaderSkeleton from './LoaderSkeleton';
 import defaultImageURL from 'assets/images/iconPro1.png';
+import { CONSTANT } from 'helpers';
+
 const ServiceStylist = ({ color }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -13,12 +15,14 @@ const ServiceStylist = ({ color }) => {
   const staffServices = useSelector(
     (state) => state.appointmentReducer.staffServices
   );
+
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
         await dispatch(OrderAction.loadStaffByTimeSlot(date, time));
         setIsLoading(false);
+        setIsActiveStylist('');
       } catch (error) {
         console.log(error);
       }
@@ -54,7 +58,13 @@ const ServiceStylist = ({ color }) => {
             {staffServices.map((item) => (
               <div
                 key={item.id}
-                onClick={() => setIsActiveStylist(item.name)}
+                onClick={() => {
+                  dispatch({
+                    type: CONSTANT.STAFFID_APPOINTMENT,
+                    payload: item.id,
+                  });
+                  setIsActiveStylist(item.name);
+                }}
                 style={{
                   width: '50%',
                   display: 'flex',

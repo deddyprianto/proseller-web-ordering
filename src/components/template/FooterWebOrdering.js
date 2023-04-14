@@ -274,6 +274,10 @@ const FooterWebOrdering = () => {
           onChange={(event, newValue) => {
             if (location.pathname === '/appointment') {
               dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
+              dispatch({
+                type: CONSTANT.INDEX_PATH_APPOINTMENT,
+                payload: newValue,
+              });
             } else {
               dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
             }

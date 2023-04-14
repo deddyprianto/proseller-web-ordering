@@ -330,6 +330,10 @@ const Location = (props) => {
         style={localStyle.container}
         onClick={() => {
           dispatch({
+            type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
+            payload: '',
+          });
+          dispatch({
             type: CONSTANT.LOCATION_APPOINTMENT,
             payload: item,
           });
