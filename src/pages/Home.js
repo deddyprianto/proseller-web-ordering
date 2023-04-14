@@ -123,7 +123,10 @@ const Home = ({ ...props }) => {
   }, [props.setting]);
 
   useEffect(() => {
-    if (isEmptyObject(props.defaultOutlet)) {
+    if (
+      isEmptyObject(props.defaultOutlet) ||
+      props.defaultOutlet.orderingStatus === 'UNAVAILABLE'
+    ) {
       history.push('/outlets');
     }
   }, [props.defaultOutlet]);
