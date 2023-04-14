@@ -114,7 +114,7 @@ const Home = ({ ...props }) => {
     if (isLanding) {
       loadData();
     }
-  }, [window.location.href, isLanding]);
+  }, [window.location.href, isLanding, props.color]);
 
   useEffect(() => {
     if (name) {
