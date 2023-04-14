@@ -47,6 +47,11 @@ const HistoryPending = ({ dataPending, dataPendingLength }) => {
           </Grid>
         );
       })}
+      <div style={{ width: '100%' }}>
+        <p className='default-font' style={{ color: '#9D9D9D' }}>
+          You are all caught up
+        </p>
+      </div>
     </Grid>
   );
 };
