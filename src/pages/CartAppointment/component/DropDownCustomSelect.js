@@ -9,23 +9,16 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import iconDown from 'assets/images/IconDown.png';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from '../style/styles.module.css';
 import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
-const DropDownCustomSelect = ({ timeActive, setTimeActive, timeList }) => {
+const DropDownCustomSelect = ({ timeList }) => {
+  const timeActiveDropDown = useSelector((state) => state.appointmentReducer.timeActiveDropDown);
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-  // let date = [];
-  // if (getDateBaseOnClick) {
-  //   timeList?.forEach((item) => {
-  //     if (item.date === getDateBaseOnClick) {
-  //       date = item.timeSlot;
-  //     }
-  //   });
-  // }
 
   const renderTimeListDropdown = () => {
     return timeList?.map((item) => {
@@ -53,7 +46,7 @@ const DropDownCustomSelect = ({ timeActive, setTimeActive, timeList }) => {
             }}
             onClick={() => {
               dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: item });
-              setTimeActive(item);
+              dispatch( {type:CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT , payload:item});
               setDropdownOpen(false);
             }}
           >
@@ -86,13 +79,13 @@ const DropDownCustomSelect = ({ timeActive, setTimeActive, timeList }) => {
             fontSize: '16px',
             color: 'black',
             opacity: '.8',
-            paddingTop: timeActive ? '15px' : '10px',
-            paddingBottom: timeActive ? '15px' : '10px',
+            paddingTop: timeActiveDropDown ? '15px' : '10px',
+            paddingBottom: timeActiveDropDown ? '15px' : '10px',
             outline: 'none',
           }}
         >
-          {timeActive
-            ? timeActive
+          {timeActiveDropDown
+            ? timeActiveDropDown
             : !isEmptyArray(timeList)
             ? timeList[0]
             : 'Time not available'}

@@ -417,7 +417,6 @@ const Cart = (props) => {
   const Time = () => {
     const date = useSelector((state) => state.appointmentReducer.date);
     const filterTimeSlot = timeslot?.find((item) => item.date === date);
-    const [timeActive, setTimeActive] = useState('');
     if (!messageTimeSlot) {
       return (
         <div
@@ -432,11 +431,7 @@ const Cart = (props) => {
             Select Time
           </p>
           <div style={{ width: '100%' }}>
-            <DropDownCustomSelect
-              setTimeActive={setTimeActive}
-              timeActive={timeActive}
-              timeList={filterTimeSlot?.timeSlot}
-            />
+            <DropDownCustomSelect timeList={filterTimeSlot?.timeSlot} />
           </div>
           <hr
             style={{

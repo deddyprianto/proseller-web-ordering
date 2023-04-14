@@ -12,17 +12,19 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
   const staffID = useSelector((state) => state.appointmentReducer.staffID);
 
   const handleSubmit = async () => {
-    const payload = {
-      staffId: staffID,
-      bookingTime: time,
-      bookingDate: date,
-      note: textNotes,
-    };
-    setIsLoading(true);
-    const data = await dispatch(OrderAction.submitCartAppointment(payload));
-    setIsLoading(false);
-    if (data.message === 'Cart submitted successfully') {
-      window.location.href = changeFormatURl('/bookingconfirm');
+    if (date && time && staffID) {
+      const payload = {
+        staffId: staffID,
+        bookingTime: time,
+        bookingDate: date,
+        note: textNotes,
+      };
+      setIsLoading(true);
+      const data = await dispatch(OrderAction.submitCartAppointment(payload));
+      setIsLoading(false);
+      if (data.message === 'Cart submitted successfully') {
+        window.location.href = changeFormatURl('/bookingconfirm');
+      }
     }
   };
 
