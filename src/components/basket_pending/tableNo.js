@@ -5,11 +5,14 @@ export default class TableNo extends Component {
     let props = this.props.data;
 
     const tableNoChecker = () => {
-      return (
-        (props.scanTable &&
-          (props.scanTable.table || props.scanTable.tableNo)) ||
-        props.dataBasket.tableNo
-      );
+      if (props.orderingMode === 'DINEIN') {
+        return (
+          (props.scanTable &&
+            (props.scanTable.table || props.scanTable.tableNo)) ||
+          props.dataBasket.tableNo
+        );
+      }
+      return;
     };
 
     return (
