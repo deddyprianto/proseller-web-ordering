@@ -91,20 +91,9 @@ const Home = ({ ...props }) => {
           OutletAction.getOutletById(outletId)
         );
         if (outletById.orderingStatus === 'UNAVAILABLE') {
-          Swal.fire({
-            title: '<p>The outlet is not available</p>',
-            html: `<h5 style='color:#B7B7B7; font-size:14px'>${outletById.name} is currently not available, please select another outlet</h5>`,
-            allowOutsideClick: false,
-            confirmButtonText: 'OK',
-            confirmButtonColor: props.color?.primary,
-            width: '40em',
-            customClass: {
-              confirmButton: fontStyleCustom.buttonSweetAlert,
-              title: fontStyleCustom.fontTitleSweetAlert,
-            },
-          }).then(() => {
-            history.push('/outlets');
-          });
+          setTimeout(() => {
+            handleAlert(outletById);
+          }, 500);
         } else {
           await props.dispatch(OutletAction.setDefaultOutlet(outletById));
           history.push('/');
@@ -208,6 +197,23 @@ const Home = ({ ...props }) => {
         </div>
       );
     }
+  };
+
+  const handleAlert = (item) => {
+    Swal.fire({
+      title: '<p>The outlet is not available</p>',
+      html: `<h5 style='color:#B7B7B7; font-size:14px'>${item.name} is currently not available, please select another outlet</h5>`,
+      allowOutsideClick: false,
+      confirmButtonText: 'OK',
+      confirmButtonColor: props.color?.primary,
+      width: '40em',
+      customClass: {
+        confirmButton: fontStyleCustom.buttonSweetAlert,
+        title: fontStyleCustom.fontTitleSweetAlert,
+      },
+    }).then(() => {
+      history.push('/outlets');
+    });
   };
 
   return <div style={styles.root}>{renderProductListOrOutletSelection()}</div>;
