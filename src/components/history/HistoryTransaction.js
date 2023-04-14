@@ -111,17 +111,8 @@ const HistoryTransaction = ({ countryCode }) => {
         {loading && <RenderAnimationLoading />}
         {isEmptyData && (
           <div style={{ width: '100%' }}>
-            <p
-              style={{
-                textAlign: 'left',
-                fontSize: '14px',
-                fontWeight: 600,
-                marginLeft: '7px',
-                color: '#ec4646',
-                fontStyle: 'italic',
-              }}
-            >
-              You have reached the end of the list.
+            <p className='default-font' style={{ color: '#9D9D9D' }}>
+              You are all caught up
             </p>
           </div>
         )}
