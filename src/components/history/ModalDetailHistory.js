@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import moment from "moment";
-import { isEmptyArray } from "../../helpers/CheckEmpty";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import { isEmptyArray } from '../../helpers/CheckEmpty';
 
 class ModalDetailHistory extends Component {
   getCurrency = (price) => {
     if (this.props.companyInfo) {
       if (price !== undefined) {
         const { currency } = this.props.companyInfo;
-        if (!price || price === "-") price = 0;
+        if (!price || price === '-') price = 0;
         let result = price.toLocaleString(currency.locale, {
-          style: "currency",
+          style: 'currency',
           currency: currency.code,
         });
         return result;
@@ -19,47 +19,55 @@ class ModalDetailHistory extends Component {
   };
 
   renderOtherPaymentMethod = () => {
-    try{
-      let data = []
+    try {
+      let data = [];
       const { detail } = this.props;
-      if (detail.payments.length > 0){
+      if (detail.payments.length > 0) {
         for (let i = 0; i < detail.payments.length; i++) {
-          if (detail.payments[i].isVoucher !== true && detail.payments[i].isPoint !== true && detail.payments[i].isAppPayment !== true) {
+          if (
+            detail.payments[i].isVoucher !== true &&
+            detail.payments[i].isPoint !== true &&
+            detail.payments[i].isAppPayment !== true
+          ) {
             data.push(
               <div
                 style={{
                   marginLeft: 10,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
-                <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                <div style={{ fontSize: 14, fontWeight: 'bold' }}>
                   {detail.payments[i].paymentType}
                 </div>
-                <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                <div style={{ fontSize: 14, fontWeight: 'bold' }}>
                   {this.getCurrency(detail.payments[i].paymentAmount)}
                 </div>
               </div>
-            )
+            );
           }
         }
-        return data
+        return data;
       }
-      return null
-    }catch(e){
-      return null
+      return null;
+    } catch (e) {
+      return null;
     }
-  }
+  };
 
   render() {
     const { detail } = this.props;
-    let discount = 0
-    if(detail.payments){
-      detail.payments.forEach(items => {
-        if(items.paymentType === "voucher" || items.paymentType === "point" || items.paymentType === "Store Value Card"){
-          discount += items.paymentAmount
+    let discount = 0;
+    if (detail.payments) {
+      detail.payments.forEach((items) => {
+        if (
+          items.paymentType === 'voucher' ||
+          items.paymentType === 'point' ||
+          items.paymentType === 'Store Value Card'
+        ) {
+          discount += items.paymentAmount;
         }
       });
     }
@@ -230,45 +238,47 @@ class ModalDetailHistory extends Component {
                       />
                     </div>
                   ) : (
-                    <div>
-                      <div
-                        style={{
-                          marginLeft: 5,
-                          marginRight: 5,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                        }}
-                      >
+                    detail.queueNo && (
+                      <div>
                         <div
                           style={{
-                            fontSize: 14,
-                            textAlign: 'left',
-                            lineHeight: '17px',
+                            marginLeft: 5,
+                            marginRight: 5,
+                            display: 'flex',
+                            justifyContent: 'space-between',
                           }}
                         >
-                          QUEUE NO.
+                          <div
+                            style={{
+                              fontSize: 14,
+                              textAlign: 'left',
+                              lineHeight: '17px',
+                            }}
+                          >
+                            QUEUE NO.
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 'bold',
+                              textAlign: 'right',
+                              lineHeight: '17px',
+                            }}
+                          >
+                            {detail.queueNo}
+                          </div>
                         </div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 'bold',
-                            textAlign: 'right',
-                            lineHeight: '17px',
-                          }}
-                        >
-                          {detail.queueNo}
-                        </div>
-                      </div>
 
-                      <div
-                        style={{
-                          backgroundColor: '#CDCDCD',
-                          height: 1,
-                          marginTop: 10,
-                          marginBottom: 10,
-                        }}
-                      />
-                    </div>
+                        <div
+                          style={{
+                            backgroundColor: '#CDCDCD',
+                            height: 1,
+                            marginTop: 10,
+                            marginBottom: 10,
+                          }}
+                        />
+                      </div>
+                    )
                   )}
                   <div
                     style={{
