@@ -91,9 +91,14 @@ const Home = ({ ...props }) => {
           OutletAction.getOutletById(outletId)
         );
         if (outletById.orderingStatus === 'UNAVAILABLE') {
-          setTimeout(() => {
-            handleAlert(outletById);
-          }, 500);
+          const settings = await props.dispatch(
+            OrderAction.getSettingOrdering()
+          );
+          const primaryColor = settings.settings.find((items) => {
+            return items.settingKey === 'PrimaryColor';
+          });
+
+          handleAlert(outletById, primaryColor.settingValue);
         } else {
           await props.dispatch(OutletAction.setDefaultOutlet(outletById));
           history.push('/');
@@ -103,7 +108,7 @@ const Home = ({ ...props }) => {
     if (isLanding) {
       loadData();
     }
-  }, [window.location.href, isLanding, props.color]);
+  }, [window.location.href, isLanding]);
 
   useEffect(() => {
     if (name) {
@@ -199,13 +204,13 @@ const Home = ({ ...props }) => {
     }
   };
 
-  const handleAlert = (item) => {
+  const handleAlert = (item, color) => {
     Swal.fire({
       title: '<p>The outlet is not available</p>',
       html: `<h5 style='color:#B7B7B7; font-size:14px'>${item.name} is currently not available, please select another outlet</h5>`,
       allowOutsideClick: false,
       confirmButtonText: 'OK',
-      confirmButtonColor: props.color?.primary,
+      confirmButtonColor: color,
       width: '40em',
       customClass: {
         confirmButton: fontStyleCustom.buttonSweetAlert,
