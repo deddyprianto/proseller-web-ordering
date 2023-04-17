@@ -615,6 +615,9 @@ const Cart = ({ ...props }) => {
   };
 
   const handleConfirmAndPay = () => {
+    !props.defaultOutlet.enableTableNumber &&
+      props.dispatch({ type: CONSTANT.NO_TABLE, payload: '' });
+
     if (
       props.basket &&
       props.deliveryAddress &&
