@@ -41,7 +41,7 @@ const InboxCard = (props) => {
   }
 
   const checkQueueNo = () => {
-    if (items.orderingMode === 'DINEIN') {
+    if (items.orderingMode === 'DINEIN' && items.tableNo) {
       return items.tableNo ? items.tableNo + ' - ' : '';
     } else {
       return items.queueNo ? items.queueNo + ' - ' : '';
