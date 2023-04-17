@@ -124,6 +124,8 @@ const LoginRegister = (props) => {
             setSeconds(59);
             setCounter('59');
 
+            minutesTimer >= 0 && (secondsTimer = 59);
+
             if (minutesTimer < 0 && secondsTimer === 0) {
               clearInterval(timer);
               setBtnSend(true);
@@ -474,6 +476,8 @@ const LoginRegister = (props) => {
             setMinutes(minutesTimer);
             setCounter('59');
             setSeconds(59);
+
+            minutesTimer >= 0 && (secondsTimer = 59);
 
             if (minutesTimer < 0 && seconds === 0) {
               clearInterval(timer);
@@ -852,6 +856,8 @@ const LoginRegister = (props) => {
           setSeconds(59);
           setMinutes(minutesTimer);
           setCounterMinutes(counterMinutesTimer);
+
+          minutesTimer >= 0 && (secondsTimer = 59);
 
           if (minutesTimer < 0 && secondsTimer === 0) {
             setBtnSend(true);
