@@ -6,7 +6,6 @@ import loadable from '@loadable/component';
 import { HistoryAction } from '../redux/actions/HistoryAction';
 import { MasterDataAction } from '../redux/actions/MasterDataAction';
 import config from '../config';
-import LoadingOverlay from 'react-loading-overlay';
 
 const HistoryTransaction = loadable(() =>
   import('../components/history/HistoryTransaction')

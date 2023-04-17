@@ -34,7 +34,9 @@ const DetailAppointment = ({
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  const selectedLocation = useSelector(
+    (state) => state.appointmentReducer.locationAppointment
+  );
   // some functions
   const filterCart = cartAppointment?.details?.find(
     (itemCart) => itemCart.productID === productId
@@ -172,7 +174,7 @@ const DetailAppointment = ({
       selectedProductModifiers
     );
     setAddService({
-      outletId: defaultOutlet.sortKey,
+      outletId: `outlet::${selectedLocation.id}`,
       item: {
         productId: `product::${itemAppointment.id}`,
         quantity: 1,
@@ -410,7 +412,6 @@ const DetailAppointment = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          marginTop: '10px',
         }}
       >
         <button
@@ -447,7 +448,7 @@ const DetailAppointment = ({
           gap: '0px 0px',
           gridAutoFlow: 'row',
           gridTemplateAreas: '"."\n    "."',
-          height: '100vh',
+          height: '95vh',
         }}
       >
         <div style={{ overflowY: 'auto', height: '100%' }}>

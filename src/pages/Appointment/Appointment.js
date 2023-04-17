@@ -204,7 +204,7 @@ const Appointment = (props) => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
     }
-  }, []);
+  }, [outlet]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -844,11 +844,7 @@ const Appointment = (props) => {
     const isNotifShowWithIphoneSE = showNotify && height <= 667;
     const isNotifShowWithIphone14 = showNotify && height >= 844;
     const styleAppliedToDevice = {
-      height: isNotifShowWithIphoneSE
-        ? '81vh'
-        : isNotifShowWithIphone14
-        ? '85vh'
-        : '90vh',
+      height: showNotify ? '77vh' : '85vh',
       overflowY: 'auto',
     };
     if (gadgetScreen) {

@@ -57,7 +57,7 @@ const Cart = (props) => {
     if (isEmptyObject(locationAppointment)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
     }
-  }, []);
+  }, [outlet]);
   useEffect(() => {
     if (isEmptyObject(locationAppointment)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
