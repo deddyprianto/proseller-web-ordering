@@ -247,19 +247,7 @@ const HeaderWebOrdering = () => {
       setLogo(handleAllowedURL(logoCompany?.settingValue));
     }
   };
-  const dispatchActionOrderingStatus = (dispatch) => {
-    if (defaultOutlet.orderingStatus === 'UNAVAILABLE' && outlets.length > 1) {
-      const firstAvailableOutlet = outlets.find(
-        (outlet) => outlet.orderingStatus === 'AVAILABLE'
-      );
-      if (firstAvailableOutlet) {
-        dispatch({
-          type: CONSTANT.DEFAULT_OUTLET,
-          data: firstAvailableOutlet,
-        });
-      }
-    }
-  };
+
   const handleUpdateEnableOrdering = (setEnableOrdering) => {
     const enableOrdering = setting?.find((items) => {
       return items.settingKey === 'EnableOrdering';
@@ -277,7 +265,6 @@ const HeaderWebOrdering = () => {
       return items.settingKey === 'Logo';
     });
     dispatch(OutletAction.fetchAllOutlet(true));
-    dispatchActionOrderingStatus(dispatch);
     handleLogo(infoCompany, logoCompany);
     handleUpdateEnableOrdering(setEnableOrdering);
   }, [setting]);
