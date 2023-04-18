@@ -1051,7 +1051,7 @@ const Payment = ({ ...props }) => {
         (payment) => payment.paymentID === paymentID && payment.forceNewTab
       );
       if (isOpenNewTab) {
-        win = window.open("/#/waiting-payment", "_blank");
+        win = window.open('/#/waiting-payment', '_blank');
       }
     }
 
@@ -1068,7 +1068,7 @@ const Payment = ({ ...props }) => {
       win?.close();
       Swal.fire({
         title: '<p>The outlet is not available</p>',
-        html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.defaultOutlet.name} is currently not available, please select another outlet</h5>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.defaultOutlet.name} is currently offline, please select another outlet</h5>`,
         allowOutsideClick: false,
         confirmButtonText: 'OK',
         confirmButtonColor: props.color?.primary,
@@ -1186,7 +1186,7 @@ const Payment = ({ ...props }) => {
         response?.data?.action?.type === 'url'
       ) {
         win.location = response.data.action.url;
-        
+
         setReferenceNumberConfirmation(response?.data?.referenceNo);
         // setUrlConfirmationDialog(response.data.action.url);
         handleAfterPaymentSuccess(payload, response);
