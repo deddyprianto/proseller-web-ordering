@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import HistoryLogin from './Histories/component/HistoryLogin';
 import HistoryAppointment from './Histories/component/HistoryAppointment';
 
 const History = (props) => {
+  const [appointmentFeature, setAppointmentFeature] = useState(false);
   const [tabStateButton, setTabStateButton] = useState('ordered');
   const color = useSelector((state) => state.theme.color);
+  const setting = useSelector((state) => state.order.setting);
+
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue) {
+      setAppointmentFeature(settingAppoinment.settingValue);
+    }
+  }, [setting]);
 
   const Header = () => {
     const styleSheet = {
@@ -143,27 +154,29 @@ const History = (props) => {
         >
           Orders
         </button>
-        <button
-          onClick={() => setTabStateButton('appointment')}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '7px 10px',
-            width: '150px',
-            fontWeight: 600,
-            border:
-              tabStateButton === 'appointment'
-                ? 'none'
-                : `1px solid ${color.primary}`,
-            backgroundColor:
-              tabStateButton === 'appointment' ? color.primary : 'white',
-            color: tabStateButton === 'appointment' ? 'white' : color.primary,
-            fontSize: '14px',
-          }}
-        >
-          Appointment
-        </button>
+        {appointmentFeature && (
+          <button
+            onClick={() => setTabStateButton('appointment')}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '7px 10px',
+              width: '150px',
+              fontWeight: 600,
+              border:
+                tabStateButton === 'appointment'
+                  ? 'none'
+                  : `1px solid ${color.primary}`,
+              backgroundColor:
+                tabStateButton === 'appointment' ? color.primary : 'white',
+              color: tabStateButton === 'appointment' ? 'white' : color.primary,
+              fontSize: '14px',
+            }}
+          >
+            Appointment
+          </button>
+        )}
       </div>
     );
   };
