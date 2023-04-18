@@ -90,6 +90,9 @@ const Home = ({ ...props }) => {
         const outletById = await props.dispatch(
           OutletAction.getOutletById(outletId)
         );
+
+        await props.dispatch(OutletAction.setDefaultOutlet(outletById));
+
         if (outletById.orderingStatus === 'UNAVAILABLE') {
           const settings = await props.dispatch(
             OrderAction.getSettingOrdering()
@@ -100,7 +103,6 @@ const Home = ({ ...props }) => {
 
           handleAlert(outletById, primaryColor.settingValue);
         } else {
-          await props.dispatch(OutletAction.setDefaultOutlet(outletById));
           history.push('/');
         }
       }
@@ -117,7 +119,10 @@ const Home = ({ ...props }) => {
   }, [props.setting]);
 
   useEffect(() => {
-    if (isEmptyObject(props.defaultOutlet)) {
+    if (
+      isEmptyObject(props.defaultOutlet) ||
+      (props.defaultOutlet.orderingStatus === 'UNAVAILABLE' && !isLanding)
+    ) {
       history.push('/outlets');
     }
   }, [props.defaultOutlet]);
