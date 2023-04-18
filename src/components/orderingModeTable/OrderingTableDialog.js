@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -43,6 +43,19 @@ const OrderingTableDialog = ({
   const [isActiveTable, setIsActiveTable] = useState(false);
   const [inputNumberTable, setInputNumberTable] = useState('');
   const [inputLetterTable, setInputLetterTable] = useState('');
+
+  useEffect(() => {
+    let isCleanFnComponent = true;
+    if (isCleanFnComponent) {
+      dispatch({
+        type: CONSTANT.NO_TABLE,
+        payload: '',
+      });
+    }
+    return () => {
+      isCleanFnComponent = false;
+    };
+  }, []);
 
   const dataMerchantFinal = [];
   for (let i = 0; i < defaultOutlet.tableNumber?.list.length; i += 20) {
