@@ -68,58 +68,71 @@ const HistoryTransaction = ({ countryCode }) => {
   return (
     <>
       <ModalDetailHistory detail={detailData} countryCode />
-      <Grid
-        container
-        direction='row'
-        justifyContent='space-between'
-        alignItems='center'
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, md: 12 }}
+      <div
+        style={{
+          width: '95%',
+          margin: 'auto',
+          marginTop: '20px',
+          height: '55vh',
+          overflowY: 'scroll',
+        }}
       >
-        {historyTransaction.map((items, index) => {
-          if (historyTransaction.length === index + 1) {
-            return (
-              <Grid
-                ref={lastEl}
-                item
-                xs={4}
-                md={6}
-                key={index}
-                data-toggle='modal'
-                data-target='#detail-transaction-modal'
-                onClick={() => setDetailData(items)}
+        <Grid
+          container
+          direction='row'
+          justifyContent='space-between'
+          alignItems='center'
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, md: 12 }}
+        >
+          {historyTransaction.map((items, index) => {
+            if (historyTransaction.length === index + 1) {
+              return (
+                <Grid
+                  ref={lastEl}
+                  item
+                  xs={4}
+                  md={6}
+                  key={index}
+                  data-toggle='modal'
+                  data-target='#detail-transaction-modal'
+                  onClick={() => setDetailData(items)}
+                >
+                  <HistoryCard items={items} countryCode={countryCode} />
+                </Grid>
+              );
+            } else {
+              return (
+                <Grid
+                  item
+                  xs={4}
+                  md={6}
+                  key={index}
+                  data-toggle='modal'
+                  data-target='#detail-transaction-modal'
+                  onClick={() => setDetailData(items)}
+                >
+                  <HistoryCard items={items} countryCode={countryCode} />
+                </Grid>
+              );
+            }
+          })}
+          {loading && <RenderAnimationLoading />}
+          {isEmptyData && (
+            <div style={{ width: '100%' }}>
+              <p
+                className='default-font'
+                style={{ color: '#9D9D9D', marginLeft: '20px' }}
               >
-                <HistoryCard items={items} countryCode={countryCode} />
-              </Grid>
-            );
-          } else {
-            return (
-              <Grid
-                item
-                xs={4}
-                md={6}
-                key={index}
-                data-toggle='modal'
-                data-target='#detail-transaction-modal'
-                onClick={() => setDetailData(items)}
-              >
-                <HistoryCard items={items} countryCode={countryCode} />
-              </Grid>
-            );
-          }
-        })}
-        {loading && <RenderAnimationLoading />}
-        {isEmptyData && (
-          <div style={{ width: '100%' }}>
-            <p className='default-font' style={{ color: '#9D9D9D' }}>
-              You are all caught up
-            </p>
-          </div>
-        )}
-        {error?.message && (
-          <p style={{ marginLeft: '10px' }}>{error?.message}</p>
-        )}
-      </Grid>
+                You are all caught up
+              </p>
+            </div>
+          )}
+          {error?.message && (
+            <p style={{ marginLeft: '10px' }}>{error?.message}</p>
+          )}
+        </Grid>
+      </div>
     </>
   );
 };
