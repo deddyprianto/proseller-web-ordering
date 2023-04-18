@@ -427,6 +427,7 @@ const OrderingTableDialog = ({
         </button>
         <button
           onClick={handleFormTable}
+          disabled={!isActiveTable}
           className={fontStyles.myFont}
           style={{
             color: 'white',
