@@ -20,6 +20,7 @@ function AppointmentReducer(
     messageTimeSlot: '',
     indexPath: 0,
     timeActiveDropDown: '',
+    bookingHistory: [],
   },
   action
 ) {
@@ -60,6 +61,8 @@ function AppointmentReducer(
       return { ...state, indexPath: action.payload };
     case CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT:
       return { ...state, timeActiveDropDown: action.payload };
+    case CONSTANT.BOOKING_HISTORY:
+      return { ...state, bookingHistory: action.payload };
     default:
       return state;
   }

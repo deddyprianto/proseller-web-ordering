@@ -1,25 +1,20 @@
 import config from 'config';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { HistoryAction } from 'redux/actions/HistoryAction';
 import fontStyles from '../style/styles.module.css';
-import loadable from '@loadable/component';
-import { MasterDataAction } from 'redux/actions/MasterDataAction';
+import HistoryTransaction from 'components/history/HistoryTransaction';
+import HistoryPending from 'components/history/HistoryPending';
 
-const HistoryTransaction = loadable(() =>
-  import('components/history/HistoryTransaction')
-);
-const HistoryPending = loadable(() =>
-  import('components/history/HistoryPending')
-);
 const History = () => {
+  const dispatch = useDispatch();
   const [stateTabs, setStateTabs] = useState('ordered');
   const [isLoading, setIsLoading] = useState(false);
   const [isTransaction, setIsTransaction] = useState(false);
   const [dataPending, setDataPending] = useState([]);
   const [dataPendingLength, setDataPendingLength] = useState(0);
-  const [countryCode, setCountryCode] = useState('ID');
   const color = useSelector((state) => state.theme.color);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
   const style = {
     muiSelected: {
@@ -41,36 +36,27 @@ const History = () => {
 
   useEffect(() => {
     const getDataBasketPending = async () => {
-      let infoCompany = await this.props.dispatch(
-        MasterDataAction.getInfoCompany()
-      );
-      setCountryCode(infoCompany.countryCode);
-      let response = await this.props.dispatch(
+      let response = await dispatch(
         HistoryAction.getBasketPending({
-          take: 1000,
+          take: 100,
           skip: 0,
         })
       );
       if (response.resultCode === 200) {
-        this.setState(response.data);
+        setDataPending(response.data);
         if (response.data.dataPendingLength > 0) {
-          this.setState({ isTransaction: false });
+          setIsTransaction(false);
         }
       }
     };
     getDataBasketPending();
-  }, []);
+  }, [stateTabs]);
 
   useEffect(() => {
     setIsLoading(true);
     localStorage.removeItem(`${config.prefix}_dataBasket`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    try {
-      document.getElementsByClassName('modal-backdrop')[0].remove();
-    } catch (e) {
-      console.log(e);
-    }
   }, []);
 
   const RenderTabHeaderMobile = () => {
@@ -124,13 +110,13 @@ const History = () => {
 
   const RenderConditionalCP = () => {
     if (stateTabs === 'ordered') {
-      return <HistoryTransaction countryCode={countryCode} />;
+      return <HistoryTransaction countryCode={companyInfo?.countryCode} />;
     } else if (stateTabs === 'pendingorder') {
       return (
         <HistoryPending
           dataPending={dataPending}
           dataPendingLength={dataPendingLength}
-          countryCode={countryCode}
+          countryCode={companyInfo?.countryCode}
         />
       );
     }

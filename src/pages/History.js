@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import HistoryLogin from './Histories/component/HistoryLogin';
+import HistoryAppointment from './Histories/component/HistoryAppointment';
 
 const History = (props) => {
   const [tabStateButton, setTabStateButton] = useState('ordered');
@@ -113,7 +114,7 @@ const History = (props) => {
     return (
       <div
         style={{
-          width: '90%',
+          width: '92%',
           margin: 'auto',
           display: 'flex',
           alignItems: 'center',
@@ -133,7 +134,7 @@ const History = (props) => {
             color: tabStateButton === 'ordered' ? 'white' : color.primary,
             justifyContent: 'center',
             alignItems: 'center',
-            padding: '3px 10px',
+            padding: '7px 10px',
             width: '100px',
             marginRight: '10px',
             fontWeight: 600,
@@ -148,7 +149,7 @@ const History = (props) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: '3px 10px',
+            padding: '7px 10px',
             width: '150px',
             fontWeight: 600,
             border:
@@ -168,13 +169,9 @@ const History = (props) => {
   };
   const RenderMain = () => {
     if (tabStateButton === 'ordered') {
-      return (
-        <div>
-          <HistoryLogin />
-        </div>
-      );
-    } else {
-      return <div>appointment</div>;
+      return <HistoryLogin />;
+    } else if (tabStateButton === 'appointment') {
+      return <HistoryAppointment />;
     }
   };
   return (
