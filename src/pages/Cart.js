@@ -253,6 +253,7 @@ const Cart = ({ ...props }) => {
   const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
 
   const [dataCalculateFee, setDataCalculateFee] = useState();
+  const [isSelectedOrderingMode, setIsSelectedOrderingMode] = useState(false);
 
   useEffect(() => {
     if (props.orderingMode !== 'DELIVERY') {
@@ -450,6 +451,50 @@ const Cart = ({ ...props }) => {
   };
 
   const handleOpenOrderingMode = async () => {
+    const intersectOrderingMode = await getIntersectOrderingMode();
+
+    if (intersectOrderingMode.length === 1) {
+      !isSelectedOrderingMode &&
+        intersectOrderingMode.forEach(async (item) => {
+          props.dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
+          props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
+
+          props.dispatch({
+            type: 'SET_ORDERING_MODE',
+            payload: item.name,
+          });
+
+          const responseChangeOrderingMode = await props.dispatch(
+            OrderAction.changeOrderingMode({
+              orderingMode: item.name,
+              provider: props.selectedDeliveryProvider
+                ? props.selectedDeliveryProvider
+                : {},
+            })
+          );
+
+          await props.dispatch(
+            OrderAction.setData(
+              item.displayName,
+              'SET_ORDERING_MODE_DISPlAY_NAME'
+            )
+          );
+
+          await props.dispatch(
+            OrderAction.setData(
+              responseChangeOrderingMode.data,
+              CONSTANT.DATA_BASKET
+            )
+          );
+
+          setIsSelectedOrderingMode(true);
+        });
+    } else {
+      setOpenOrderingMode(true);
+    }
+  };
+
+  const getIntersectOrderingMode = async () => {
     const data = await props.dispatch(
       OutletAction?.fetchSingleOutlet(props?.basket?.outlet)
     );
@@ -487,43 +532,7 @@ const Cart = ({ ...props }) => {
       )
     );
 
-    if (intersectOrderingMode.length === 1) {
-      !props.orderingMode &&
-        intersectOrderingMode.forEach(async (item) => {
-          props.dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
-          props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
-
-          props.dispatch({
-            type: 'SET_ORDERING_MODE',
-            payload: item.name,
-          });
-
-          const responseChangeOrderingMode = await props.dispatch(
-            OrderAction.changeOrderingMode({
-              orderingMode: item.name,
-              provider: props.selectedDeliveryProvider
-                ? props.selectedDeliveryProvider
-                : {},
-            })
-          );
-
-          await props.dispatch(
-            OrderAction.setData(
-              item.displayName,
-              'SET_ORDERING_MODE_DISPlAY_NAME'
-            )
-          );
-
-          await props.dispatch(
-            OrderAction.setData(
-              responseChangeOrderingMode.data,
-              CONSTANT.DATA_BASKET
-            )
-          );
-        });
-    } else {
-      setOpenOrderingMode(true);
-    }
+    return intersectOrderingMode;
   };
 
   const handleLogin = () => {
@@ -1536,12 +1545,22 @@ const Cart = ({ ...props }) => {
         }}
       >
         <Button
-          onClick={() => {
+          onClick={async () => {
             if (props.isLoggedIn) {
-              if (props.defaultOutlet.orderingStatus === 'UNAVAILABLE') {
+              const currentOutlet = await props.dispatch(
+                OutletAction.getOutletById(props.defaultOutlet.id)
+              );
+              const intersectOrderingMode = await getIntersectOrderingMode();
+
+              const checkOrderingMode = intersectOrderingMode?.find(
+                (val) => val.name === props.orderingMode
+              );
+
+              if (currentOutlet.orderingStatus === 'UNAVAILABLE') {
                 Swal.fire({
                   title: '<p>The outlet is not available</p>',
-                  text: `${props.defaultOutlet.name} is currently not available,please select another outlet`,
+                  html: `<h5 style='color:#B7B7B7; font-size:14px'>${currentOutlet.name} is currently offline,<br>please select another outlet</h5>`,
+                  width: '40em',
                   allowOutsideClick: false,
                   confirmButtonText: 'OK',
                   confirmButtonColor: props.color?.primary,
@@ -1552,6 +1571,23 @@ const Cart = ({ ...props }) => {
                 }).then(() => {
                   history.push('/outlets');
                 });
+              } else if (!checkOrderingMode) {
+                Swal.fire({
+                  title: '<p>Ordering mode is not available</p>',
+                  html: `<h5 style='color:#B7B7B7; font-size:14px'>${props.orderingMode} is currently not available,<br>please select another ordering mode</h5>`,
+                  allowOutsideClick: false,
+                  width: '40em',
+                  confirmButtonText: 'OK',
+                  confirmButtonColor: props.color?.primary,
+                  customClass: {
+                    confirmButton: fontStyleCustom.buttonSweetAlert,
+                    title: fontStyleCustom.fontTitleSweetAlert,
+                  },
+                })
+                  .then(async () => {
+                    setIsSelectedOrderingMode(false);
+                  })
+                  .finally(() => handleOpenOrderingMode());
               } else {
                 handleConfirmAndPay();
               }
