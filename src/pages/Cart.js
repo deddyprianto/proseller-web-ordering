@@ -397,6 +397,7 @@ const Cart = ({ ...props }) => {
         await props.dispatch(
           OrderAction.setData(null, 'SET_ORDERING_MODE_DISPlAY_NAME')
         );
+        await props.dispatch({ type: CONSTANT.NO_TABLE, payload: '' });
         localStorage.removeItem(`${config.prefix}_delivery_providers`);
         localStorage.removeItem(`${config.prefix}_delivery_address`);
         localStorage.removeItem(`${config.prefix}_ordering_mode`);
