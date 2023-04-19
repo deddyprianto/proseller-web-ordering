@@ -18,7 +18,7 @@ const useWindowSize = () => {
   return size;
 };
 
-const ItemHistory = ({ item, color }) => {
+const ItemHistory = ({ item, color, tabName }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
@@ -107,7 +107,7 @@ const ItemHistory = ({ item, color }) => {
           className={fontStyles.myFont}
           onClick={() => setIsOpenModalDetail(true)}
           style={{
-            width: '92%',
+            width: '91%',
             margin: 'auto',
             borderRadius: '10px',
             boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
@@ -120,20 +120,46 @@ const ItemHistory = ({ item, color }) => {
             style={{
               width: '95%',
               margin: 'auto',
-              display: 'flex',
-              alignItems: 'center',
+              display: 'grid',
+              gridTemplateColumns: '1fr 214px 82px',
+              gridTemplateRows: '1fr',
+              gridAutoColumns: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". . ."',
               fontSize: '16px',
               fontWeight: 500,
               color: 'black',
               marginTop: '15px',
+              alignItems: 'center',
             }}
           >
             <AppointmentIcon />
-            <div style={{ marginLeft: '10px', fontSize: '16px' }}>
-              {changeFormatDate(item.bookingDate)}
+            <div
+              style={{ display: 'flex', width: '100%', alignItems: 'center' }}
+            >
+              <div style={{ fontSize: '16px' }}>
+                {changeFormatDate(item.bookingDate)}
+              </div>
+              <div style={{ margin: '0px 10px', fontSize: '16px' }}>-</div>
+              <div style={{ fontSize: '16px' }}>{item.bookingTime.start}</div>
             </div>
-            <div style={{ margin: '0px 10px', fontSize: '16px' }}>-</div>
-            <div style={{ fontSize: '16px' }}>{item.bookingTime.start}</div>
+            {tabName === 'COMPLETED' && (
+              <div
+                style={{
+                  backgroundColor: 'rgba(56, 164, 5, 1)',
+                  borderRadius: '20px',
+                  padding: '0px 10px',
+                  color: 'white',
+                  fontSize: '13px',
+                  width: '100%',
+                  height: '30px',
+                  fontWeight: 600,
+                }}
+              >
+                25 points
+              </div>
+            )}
           </div>
           <div
             style={{
@@ -202,6 +228,7 @@ const ItemHistory = ({ item, color }) => {
         onClose={() => setIsOpenModalDetail(false)}
       >
         <DetailHistoryAppointment
+          tabName={tabName}
           handleCurrency={handleCurrency}
           item={item}
           setIsOpenModalDetail={setIsOpenModalDetail}

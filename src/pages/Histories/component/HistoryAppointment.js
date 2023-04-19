@@ -16,12 +16,26 @@ const HistoryAppointment = () => {
     (state) => state.appointmentReducer.bookingHistory
   );
   const color = useSelector((state) => state.theme.color);
+  // some fn
+  const getDate = () => {
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
 
+    return dateStr;
+  };
+  const getTime = () => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    return timeStr.split(' ')[0];
+  };
+  // some eff
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
-      const data = await dispatch(OrderAction.getBooikingHistory(tabNameAPI));
-      console.log(data);
+      await dispatch(OrderAction.getBooikingHistory(tabNameAPI));
       setIsLoading(false);
     };
     if (tabName) {
@@ -34,6 +48,9 @@ const HistoryAppointment = () => {
       '&.MuiButtonBase-root': {
         fontSize: '14px',
         textTransform: 'capitalize',
+        '&:hover': {
+          color: 'rgba(138, 141, 142, 1)',
+        },
       },
       '&.Mui-selected': {
         color: color.primary,
@@ -67,7 +84,10 @@ const HistoryAppointment = () => {
       <div style={{ width: '100%', marginTop: '20px' }}>
         <div
           style={{
+            width: '95%',
+            margin: 'auto',
             marginBottom: '10px',
+            borderBottom: '1px solid rgba(138, 141, 142, .4)',
           }}
         >
           <Tabs
@@ -88,9 +108,9 @@ const HistoryAppointment = () => {
               sx={styleSheet.muiSelected}
             />
             <Tab
-              value='CONFIRMED'
+              value='UPCOMING'
               onClick={() => {
-                setTabName('CONFIRMED');
+                setTabName('UPCOMING');
                 setTabNameAPI('CONFIRMED');
               }}
               label='Up coming'
@@ -150,7 +170,52 @@ const HistoryAppointment = () => {
       </div>
     );
   };
-
+  const RenderItemHistory = () => {
+    if (tabNameAPI === 'CONFIRMED') {
+      if (tabName === 'UPCOMING') {
+        const filterBookingHistory = bookingHistory.filter((item) => {
+          const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
+          const compareDate =
+            new Date(combineDateTime).getTime() > new Date().getTime();
+          return compareDate;
+        });
+        return filterBookingHistory.map((item) => (
+          <ItemHistory
+            key={item.id}
+            item={item}
+            color={color}
+            tabName={tabName}
+          />
+        ));
+      } else if (tabName === 'ONGOING') {
+        const filterBookingHistory = bookingHistory.filter((item) => {
+          const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
+          const compareDate =
+            new Date(combineDateTime).getTime() >= new Date().getTime();
+          return compareDate;
+        });
+        return filterBookingHistory.map((item) => (
+          <ItemHistory
+            key={item.id}
+            item={item}
+            color={color}
+            tabName={tabName}
+          />
+        ));
+      } else {
+        return null;
+      }
+    } else {
+      return bookingHistory.map((item) => (
+        <ItemHistory
+          key={item.id}
+          item={item}
+          color={color}
+          tabName={tabName}
+        />
+      ));
+    }
+  };
   return (
     <React.Fragment>
       <RenderTabHeaderMobile />
@@ -158,9 +223,7 @@ const HistoryAppointment = () => {
         <RenderAnimationLoading />
       ) : (
         <div style={{ height: '60vh', overflowY: 'auto' }}>
-          {bookingHistory?.map((item) => {
-            return <ItemHistory key={item.id} item={item} color={color} />;
-          })}
+          <RenderItemHistory />
         </div>
       )}
     </React.Fragment>

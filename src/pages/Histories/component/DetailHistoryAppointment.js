@@ -7,6 +7,7 @@ const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
   item,
   handleCurrency,
+  tabName,
 }) => {
   const color = useSelector((state) => state.theme.color);
   // some fn
@@ -172,26 +173,63 @@ const DetailHistoryAppointment = ({
     );
   };
   const RenderNotify = () => {
+    const backgroundColorCustom =
+      tabName === 'SUBMITTED'
+        ? 'rgba(255, 253, 217, 1)'
+        : tabName === 'UPCOMING'
+        ? 'rgba(205, 241, 255, 1)'
+        : tabName === 'ONGOING'
+        ? 'rgba(255, 245, 245, 1)'
+        : tabName === 'COMPLETED'
+        ? 'rgba(236, 255, 227, 1)'
+        : 'rgba(255, 189, 189, 1)';
+    const fontColor =
+      tabName === 'SUBMITTED'
+        ? 'rgba(255, 153, 0, 1)'
+        : tabName === 'UPCOMING'
+        ? 'rgba(31, 148, 255, 1)'
+        : tabName === 'ONGOING'
+        ? 'rgba(255, 85, 99, 1)'
+        : tabName === 'COMPLETED'
+        ? 'rgba(56, 164, 5, 1)'
+        : 'rgba(206, 17, 17, 1)';
+    const title =
+      tabName === 'SUBMITTED'
+        ? 'Booking Submitted'
+        : tabName === 'UPCOMING'
+        ? 'Booking Confirmed'
+        : tabName === 'ONGOING'
+        ? 'Appointment Ongoing'
+        : tabName === 'COMPLETED'
+        ? 'Booking Completed'
+        : 'Booking Cancelled';
+    const description =
+      tabName === 'SUBMITTED'
+        ? ' Hang on! Your booking needs to be confirmed. Our staff will directly contact you within 24H.'
+        : tabName === 'UPCOMING'
+        ? 'Yeay your booking is already confirmed, Hope you can make it in time. See you there.'
+        : tabName === 'ONGOING'
+        ? 'Have a pleasant experience!'
+        : tabName === 'COMPLETED'
+        ? 'Thank you for choosing us. See you next time!'
+        : `Your booking has been cancelled because [reason]`;
     return (
       <div
         className={fontStyles.myFont}
         style={{
-          width: '90%',
+          width: '92%',
           margin: 'auto',
-          backgroundColor: 'rgba(255, 253, 217, 1)',
-          color: 'rgba(255, 153, 0, 1)',
+          backgroundColor: backgroundColorCustom,
+          color: fontColor,
           borderRadius: '10px',
           marginTop: '20px',
           padding: '9px',
-          borderLeft: '5px solid rgba(255, 153, 0, 1)',
+          borderLeft: `5px solid ${fontColor}`,
         }}
       >
-        <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
-          Booking Submitted
-        </div>
-        <div style={{ fontWeight: 500, fontSize: '14px', lineHeight: '20px' }}>
-          Hang on! Your booking needs to be confirmed. Our staff will directly
-          contact you within 24H.
+        <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{title}</div>
+        <div style={{ fontWeight: 500, fontSize: '13px', lineHeight: '20px' }}>
+          {description}
         </div>
       </div>
     );
@@ -216,7 +254,6 @@ const DetailHistoryAppointment = ({
             color: color.primary,
             fontWeight: 'bold',
             fontSize: '18px',
-            marginTop: '10px',
           }}
         >
           {item.bookingId}
@@ -528,32 +565,121 @@ const DetailHistoryAppointment = ({
             <li>Please come 10 minutes before the appointment</li>
             <li>Wearing mask is a must</li>
           </ul>
+          {tabName === 'ONGOING' && (
+            <React.Fragment>
+              <div
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  marginTop: '10px',
+                  color: 'black',
+                }}
+              >
+                Cancellation Policy
+              </div>
+              <ul
+                style={{
+                  fontSize: '14px',
+                  color: 'black',
+                  margin: 0,
+                  marginLeft: '25px',
+                  fontWeight: 500,
+                }}
+              >
+                <li>
+                  If you need to make any changes to your reservation, please
+                  contact us at least 24 hours in advance.
+                </li>
+              </ul>
+            </React.Fragment>
+          )}
         </div>
       </div>
     );
   };
   const ButtonPrice = () => {
-    return (
-      <div
-        className={fontStyles.myFont}
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: color.primary,
-          color: 'white',
-          borderRadius: '10px',
-          padding: '5px',
-          fontSize: '14px',
-          fontWeight: 600,
-        }}
-      >
-        Contact Us
-      </div>
-    );
+    if (tabName === 'CANCELLED') {
+      return null;
+    } else if (tabName === 'COMPLETED') {
+      return (
+        <div
+          style={{
+            width: '93%',
+            margin: 'auto',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gridTemplateRows: '1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 10px',
+            gridAutoFlow: 'row',
+            marginTop: '20px',
+          }}
+        >
+          <div
+            className={fontStyles.myFont}
+            style={{
+              width: '100%',
+
+              margin: 'auto',
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              color: color.primary,
+              borderRadius: '10px',
+              padding: '5px',
+              fontSize: '14px',
+              fontWeight: 600,
+              border: `1px solid ${color.primary}`,
+            }}
+          >
+            Contact Us
+          </div>
+          <div
+            className={fontStyles.myFont}
+            style={{
+              width: '100%',
+              margin: 'auto',
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: color.primary,
+              color: 'white',
+              borderRadius: '10px',
+              padding: '5px',
+              fontSize: '14px',
+              fontWeight: 600,
+            }}
+          >
+            View Order Detail
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div
+          className={fontStyles.myFont}
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: color.primary,
+            color: 'white',
+            borderRadius: '10px',
+            padding: '5px',
+            fontSize: '14px',
+            fontWeight: 600,
+          }}
+        >
+          Contact Us
+        </div>
+      );
+    }
   };
   const RenderTextNotif = () => {
     return (
@@ -565,12 +691,59 @@ const DetailHistoryAppointment = ({
           margin: 'auto',
           fontWeight: 500,
           color: 'black',
+          marginTop: '10px',
         }}
       >
         Contact our staff for{' '}
         <span style={{ fontWeight: 'bold' }}>
           reschedule and other informations
         </span>
+      </div>
+    );
+  };
+  const RenderHr = () => {
+    return (
+      <div
+        style={{
+          width: '93%',
+          backgroundColor: `${color.primary}10`,
+          padding: '10px 0px',
+          margin: 'auto',
+          display: 'grid',
+          gridTemplateColumns: '50px 1fr 50px',
+          gridTemplateRows: '1fr',
+          gridAutoColumns: '1fr',
+          gap: '0px 0px',
+          gridAutoFlow: 'row',
+          gridTemplateAreas: '". . ."',
+        }}
+      >
+        <div
+          style={{
+            width: '30px',
+            backgroundColor: 'white',
+            height: '37px',
+            borderRadius: '100%',
+            marginLeft: '-10px',
+            color: 'transparent',
+          }}
+        >
+          p
+        </div>
+        <div style={{ width: '100%', color: 'transparent' }}>p</div>
+        <div
+          style={{
+            justifySelf: 'end',
+            width: '30px',
+            backgroundColor: 'white',
+            height: '37px',
+            borderRadius: '100%',
+            marginRight: '-10px',
+            color: 'transparent',
+          }}
+        >
+          p
+        </div>
       </div>
     );
   };
@@ -581,6 +754,7 @@ const DetailHistoryAppointment = ({
       <RenderIDBooking />
       <BookingDetail />
       <BookingNotes />
+      <RenderHr />
       <ServiceDetail />
       <Information />
       <RenderTextNotif />

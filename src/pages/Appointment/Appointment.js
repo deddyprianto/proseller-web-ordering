@@ -158,6 +158,9 @@ const Appointment = (props) => {
       '&.MuiButtonBase-root': {
         fontSize: '14px',
         textTransform: 'capitalize',
+        '&:hover': {
+          color: 'rgba(138, 141, 142, 1)',
+        },
       },
       '&.Mui-selected': {
         color: color.primary,
