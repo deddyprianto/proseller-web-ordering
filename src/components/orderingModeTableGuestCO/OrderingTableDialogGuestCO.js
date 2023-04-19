@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -40,11 +40,11 @@ const OrderingTableDialogGuestCO = ({
       },
     },
   };
-  const numberTable = useRef();
-  const numberTableLetter = useRef();
-  const letterPrefixing = useRef();
+
   const dispatch = useDispatch();
   const [isError, setIsError] = useState(false);
+  const [inputNumberTable, setInputNumberTable] = useState('');
+  const [inputLetterTable, setInputLetterTable] = useState('');
 
   const dataMerchantFinal = [];
   for (let i = 0; i < defaultOutlet.tableNumber?.list.length; i += 20) {
@@ -111,7 +111,9 @@ const OrderingTableDialogGuestCO = ({
                 }}
               >
                 <input
-                  ref={letterPrefixing}
+                  value={inputLetterTable}
+                  onChange={(e) => setInputLetterTable(e.target.value)}
+                  type='text'
                   placeholder='Your table Letter'
                   style={{
                     border: 'none',
@@ -146,7 +148,9 @@ const OrderingTableDialogGuestCO = ({
                 }}
               >
                 <input
-                  ref={numberTableLetter}
+                  value={inputNumberTable}
+                  onChange={(e) => setInputNumberTable(e.target.value)}
+                  type='number'
                   placeholder='Your table number'
                   style={{
                     border: 'none',
@@ -198,7 +202,8 @@ const OrderingTableDialogGuestCO = ({
             >
               <input
                 type='number'
-                ref={numberTable}
+                value={inputNumberTable}
+                onChange={(e) => setInputNumberTable(e.target.value)}
                 placeholder='Your table number'
                 style={{ border: 'none', outline: 'none', width: '100%' }}
               />
@@ -298,9 +303,9 @@ const OrderingTableDialogGuestCO = ({
       if (
         defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER'
       ) {
-        const numberFromInput = Number(numberTableLetter.current.value);
-        const letterFromInput = letterPrefixing.current.value;
-        const letterToUppercase = letterFromInput.toUpperCase();
+        const numberFormInput = Number(inputNumberTable);
+        const letterFormInput = inputLetterTable;
+        const letterToUppercase = letterFormInput.toUpperCase();
         const resGenerateNumber = generateNumbersInRange();
         const resGenerateLetter = generateLettersInRange(
           defaultOutlet.tableNumber?.letterPrefixing?.start,
@@ -312,16 +317,16 @@ const OrderingTableDialogGuestCO = ({
         );
 
         const isNumberNotFound = resGenerateNumber.find(
-          (item) => item === numberFromInput
+          (item) => item === numberFormInput
         );
         if (!isLetterNotFound || !isNumberNotFound) {
           setIsError(true);
-          numberTableLetter.current.value = '';
-          letterPrefixing.current.value = '';
+          setInputNumberTable('');
+          setInputLetterTable('');
         } else {
           setIsError(false);
-          const changeBacKToString = numberFromInput.toString();
-          const combineLetterAndNumber = `${letterFromInput}${changeBacKToString}`;
+          const changeBacKToString = numberFormInput.toString();
+          const combineLetterAndNumber = `${letterFormInput}${changeBacKToString}`;
           dispatch({
             type: CONSTANT.NO_TABLE_GUESTCO,
             payload: combineLetterAndNumber,
@@ -329,17 +334,17 @@ const OrderingTableDialogGuestCO = ({
           onClose();
         }
       } else {
-        const numberFromInput = Number(numberTable.current.value);
+        const numberFormInput = Number(inputNumberTable);
         const resGenerateNumber = generateNumbersInRange();
         const isNumberNotFound = resGenerateNumber.find(
-          (item) => item === numberFromInput
+          (item) => item === numberFormInput
         );
         if (!isNumberNotFound) {
           setIsError(true);
-          numberTable.current.value = '';
+          setInputNumberTable('');
         } else {
           setIsError(false);
-          const changeBacKToString = numberFromInput.toString();
+          const changeBacKToString = numberFormInput.toString();
           dispatch({
             type: CONSTANT.NO_TABLE_GUESTCO,
             payload: changeBacKToString,
@@ -351,9 +356,13 @@ const OrderingTableDialogGuestCO = ({
   };
 
   const handleDisabledBtn = () => {
-    return defaultOutlet.tableNumber.sequencing === 'RANDOM' && !tableNoActive
-      ? true
-      : false;
+    if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
+      return !tableNoActive;
+    }
+    if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
+      return !inputLetterTable || !inputNumberTable;
+    }
+    return !inputNumberTable;
   };
 
   return (
