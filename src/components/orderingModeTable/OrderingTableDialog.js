@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
@@ -25,7 +25,6 @@ const OrderingTableDialog = ({
   colorState,
   gadgetScreen,
 }) => {
-  const tableNo = useSelector((state) => state.order.noTable);
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -43,19 +42,6 @@ const OrderingTableDialog = ({
   const [isActiveTable, setIsActiveTable] = useState(false);
   const [inputNumberTable, setInputNumberTable] = useState('');
   const [inputLetterTable, setInputLetterTable] = useState('');
-
-  useEffect(() => {
-    let isCleanFnComponent = true;
-    if (isCleanFnComponent) {
-      dispatch({
-        type: CONSTANT.NO_TABLE,
-        payload: '',
-      });
-    }
-    return () => {
-      isCleanFnComponent = false;
-    };
-  }, []);
 
   const dataMerchantFinal = [];
   for (let i = 0; i < defaultOutlet.tableNumber?.list.length; i += 20) {
@@ -242,7 +228,6 @@ const OrderingTableDialog = ({
           key={item}
           onClick={() => {
             setIsActiveTable(item);
-            dispatch({ type: CONSTANT.NO_TABLE, payload: item });
           }}
           style={{
             display: 'flex',
@@ -251,12 +236,14 @@ const OrderingTableDialog = ({
             width: '75px',
             border: `1px solid ${colorState.primary}`,
             borderRadius: '10px',
-            color: tableNo === item ? 'white' : colorState.primary,
-            backgroundColor: tableNo === item && colorState.primary,
+            color: isActiveTable === item ? 'white' : colorState.primary,
+            backgroundColor: isActiveTable === item && colorState.primary,
             cursor: 'pointer',
           }}
         >
-          <DineInIcon color={tableNo === item ? 'white' : colorState.primary} />
+          <DineInIcon
+            color={isActiveTable === item ? 'white' : colorState.primary}
+          />
           <div style={{ fontSize: '12px', marginLeft: '4px' }}>{item}</div>
         </div>
       );
