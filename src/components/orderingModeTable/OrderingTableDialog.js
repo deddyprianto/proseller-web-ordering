@@ -160,7 +160,7 @@ const OrderingTableDialog = ({
               >
                 <input
                   value={inputNumberTable}
-                  type='text'
+                  type='number'
                   onChange={(e) => setInputNumberTable(e.target.value)}
                   placeholder='Your table number'
                   style={{
@@ -362,6 +362,16 @@ const OrderingTableDialog = ({
     }
   };
 
+  const handleDisabledConfirmBtn = () => {
+    if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
+      return !isActiveTable;
+    }
+    if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
+      return !inputLetterTable || !inputNumberTable;
+    }
+    return !inputNumberTable;
+  };
+
   return (
     <Dialog
       fullWidth
@@ -427,7 +437,7 @@ const OrderingTableDialog = ({
         </button>
         <button
           onClick={handleFormTable}
-          disabled={!isActiveTable}
+          disabled={handleDisabledConfirmBtn()}
           className={fontStyles.myFont}
           style={{
             color: 'white',
