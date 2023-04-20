@@ -1,192 +1,199 @@
-/* eslint-disable react/prop-types */
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Button } from 'reactstrap';
-import loadable from '@loadable/component';
-import { HistoryAction } from '../redux/actions/HistoryAction';
-import { MasterDataAction } from '../redux/actions/MasterDataAction';
-import config from '../config';
-import LoadingOverlay from 'react-loading-overlay';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import HistoryLogin from './Histories/component/HistoryLogin';
+import HistoryAppointment from './Histories/component/HistoryAppointment';
 
-const HistoryTransaction = loadable(() =>
-  import('../components/history/HistoryTransaction')
-);
-const HistoryPending = loadable(() =>
-  import('../components/history/HistoryPending')
-);
+const History = (props) => {
+  const [appointmentFeature, setAppointmentFeature] = useState(false);
+  const [tabStateButton, setTabStateButton] = useState('ordered');
+  const color = useSelector((state) => state.theme.color);
+  const setting = useSelector((state) => state.order.setting);
 
-class History extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoading: false,
-      isTransaction: true,
-      dataPending: [],
-      dataPendingLength: 0,
-      countryCode: 'ID',
-    };
-  }
-
-  async componentDidMount() {
-    this.setState({ isLoading: true });
-
-    localStorage.removeItem(`${config.prefix}_dataBasket`);
-    localStorage.removeItem(`${config.prefix}_selectedVoucher`);
-    localStorage.removeItem(`${config.prefix}_selectedPoint`);
-    try {
-      document.getElementsByClassName('modal-backdrop')[0].remove();
-    } catch (e) {
-      console.log(e);
-    }
-
-    if (!this.props.isLoggedIn) return;
-
-    await this.getDataBasketPending();
-
-    // this.timeGetBasket = setInterval(async () => {
-    // await this.getDataBasketPending();
-    // }, 5000);
-    let infoCompany = await this.props.dispatch(
-      MasterDataAction.getInfoCompany()
-    );
-    this.setState({
-      countryCode: infoCompany.countryCode,
-      isLoading: false,
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
     });
-  }
-
-  async getDataBasketPending() {
-    let response = await this.props.dispatch(
-      HistoryAction.getBasketPending({
-        take: 1000,
-        skip: 0,
-      })
-    );
-    if (response.resultCode === 200) {
-      this.setState(response.data);
-      if (response.data.dataPendingLength > 0) {
-        this.setState({ isTransaction: false });
-      }
+    if (settingAppoinment?.settingValue) {
+      setAppointmentFeature(settingAppoinment.settingValue);
     }
-  }
+  }, [setting]);
 
-  render() {
-    let { countryCode, dataPendingLength, dataPending, isTransaction } =
-      this.state;
-
-    if (!this.props.isLoggedIn) {
-      return (
-        <div
-          className='col-full'
-          style={{
-            marginTop: config.prefix === 'emenu' ? 90 : 110,
-            marginBottom: 50,
-            padding: 0,
-          }}
-        >
-          <div id='primary' className='content-area'>
-            <div
-              className='stretch-full-width'
-              style={{ display: 'flex', justifyContent: 'center' }}
-            >
-              <main id='main' className='site-main' style={{ width: '100%' }}>
-                <div>
-                  <center>
-                    <img
-                      width='500'
-                      src={config.url_loginImage}
-                      alt='is empty'
-                      style={{ marginTop: 30 }}
-                    />
-                    <button
-                      data-toggle='modal'
-                      data-target='#login-register-modal'
-                      type='button'
-                      style={{ padding: 10, marginTop: 40 }}
-                    >
-                      Login
-                    </button>
-                  </center>
-                </div>
-              </main>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
+  const Header = () => {
+    const styleSheet = {
+      container: {
+        width: '45%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        backgroundColor: 'white',
+        height: '92vh',
+        borderRadius: '8px',
+        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridTemplateRows: '1fr 85px',
+        gap: '0px 15px',
+        gridTemplateAreas: '"."\n    "."',
+        overflowY: 'auto',
+      },
+      gridStyle: {
+        display: 'grid',
+        gridTemplateColumns: '50px 1fr 50px',
+        gridTemplateRows: '1fr',
+        gap: '0px 0px',
+        gridAutoFlow: 'row',
+        gridTemplateAreas: '". . ."',
+        cursor: 'pointer',
+      },
+      paper: {
+        maxHeight: 500,
+        overflow: 'auto',
+        backgroundColor: 'white',
+      },
+      categoryName: {
+        color: 'gray',
+        fontSize: '15px',
+        fontWeight: 500,
+        textTransform: 'capitalize',
+      },
+      muiSelected: {
+        '&.MuiButtonBase-root': {
+          fontSize: '14px',
+          textTransform: 'capitalize',
+        },
+        '&.Mui-selected': {
+          color: color.primary,
+          fontSize: '14px',
+          textTransform: 'capitalize',
+        },
+        '&.MuiTab-labelIcon': {
+          fontSize: '14px',
+          textTransform: 'capitalize',
+        },
+      },
+      indicator: {
+        '& .MuiTabScrollButton-root': {
+          padding: 0,
+          margin: 0,
+          width: 15,
+        },
+        '& .MuiTabs-indicator': {
+          backgroundColor: color.primary,
+        },
+      },
+      indicatorForMobileView: {
+        '& .MuiTabs-indicator': {
+          backgroundColor: color.primary,
+        },
+      },
+      inputDropdown: {
+        '&.MuiSelect-select': {
+          border: 'none',
+        },
+      },
+    };
+    const localStyle = {
+      container: {
+        ...styleSheet.gridStyle,
+        marginTop: '25px',
+        alignItems: 'center',
+        justifyItems: 'center',
+      },
+      label: {
+        padding: 0,
+        margin: 0,
+        justifySelf: 'start',
+        fontWeight: 700,
+        fontSize: '20px',
+        color: color.primary,
+      },
+    };
     return (
-      <div
-        className='col-full'
-        style={{
-          marginTop: config.prefix === 'emenu' ? 100 : 0,
-          marginBottom: 50,
-        }}
-      >
-        <div id='primary' className='content-area'>
-          <div className='stretch-full-width'>
-            <div
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                marginTop: '65px',
-              }}
-            >
-              <Button
-                className={isTransaction ? 'use-select' : 'un-select'}
-                style={{ height: 50, fontWeight: 'bold' }}
-                onClick={() => this.setState({ isTransaction: true })}
-              >
-                Orders
-              </Button>
-              <Button
-                className={!isTransaction ? 'use-select' : 'un-select'}
-                style={{ height: 50, fontWeight: 'bold' }}
-                onClick={() => {
-                  this.setState({ isTransaction: false });
-                }}
-              >
-                {`Pending Orders ${
-                  dataPendingLength > 0 ? `(${dataPendingLength})` : ''
-                }`}
-              </Button>
-            </div>
-            <main
-              id='main'
-              className='site-main'
-              style={{
-                textAlign: 'center',
-                marginTop: '10px',
-              }}
-            >
-              <div>
-                {isTransaction && (
-                  <HistoryTransaction countryCode={countryCode} />
-                )}
-                {!isTransaction && (
-                  <HistoryPending
-                    dataPending={dataPending}
-                    dataPendingLength={dataPendingLength}
-                    countryCode={countryCode}
-                  />
-                )}
-              </div>
-            </main>
-          </div>
-        </div>
+      <div style={localStyle.container}>
+        <ArrowBackIosIcon
+          sx={{ color: color.primary, marginLeft: '10px' }}
+          fontSize='large'
+          onClick={() => {
+            props.history.push('/');
+          }}
+        />
+        <div style={localStyle.label}>History</div>
       </div>
     );
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {
-    isLoggedIn: state.auth.isLoggedIn,
   };
+  const TabHistories = () => {
+    return (
+      <div
+        style={{
+          width: '92%',
+          margin: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          marginTop: '20px',
+        }}
+      >
+        <button
+          onClick={() => setTabStateButton('ordered')}
+          style={{
+            display: 'flex',
+            border:
+              tabStateButton === 'ordered'
+                ? 'none'
+                : `1px solid ${color.primary}`,
+            backgroundColor:
+              tabStateButton === 'ordered' ? color.primary : 'white',
+            color: tabStateButton === 'ordered' ? 'white' : color.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '7px 10px',
+            width: '100px',
+            marginRight: '10px',
+            fontWeight: 600,
+            fontSize: '14px',
+          }}
+        >
+          Orders
+        </button>
+        {appointmentFeature && (
+          <button
+            onClick={() => setTabStateButton('appointment')}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '7px 10px',
+              width: '150px',
+              fontWeight: 600,
+              border:
+                tabStateButton === 'appointment'
+                  ? 'none'
+                  : `1px solid ${color.primary}`,
+              backgroundColor:
+                tabStateButton === 'appointment' ? color.primary : 'white',
+              color: tabStateButton === 'appointment' ? 'white' : color.primary,
+              fontSize: '14px',
+            }}
+          >
+            Appointment
+          </button>
+        )}
+      </div>
+    );
+  };
+  const RenderMain = () => {
+    if (tabStateButton === 'ordered') {
+      return <HistoryLogin />;
+    } else if (tabStateButton === 'appointment') {
+      return <HistoryAppointment />;
+    }
+  };
+  return (
+    <React.Fragment>
+      <Header />
+      <TabHistories />
+      <RenderMain />
+    </React.Fragment>
+  );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(History);
+export default History;

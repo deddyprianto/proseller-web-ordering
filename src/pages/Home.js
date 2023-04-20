@@ -12,7 +12,7 @@ import { OutletAction } from 'redux/actions/OutletAction';
 import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
-import { isEmptyObject } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import ModalAppointment from 'components/modalAppointment/ModalAppointment';
@@ -44,6 +44,7 @@ const mapStateToProps = (state) => {
     basketGuestCo: state.guestCheckoutCart.data,
     basket: state.order.basket,
     color: state.theme.color,
+    product: state.product.productList,
   };
 };
 
@@ -194,7 +195,7 @@ const Home = ({ ...props }) => {
         <div style={styles.rootProduct}>
           <Banner />
           <ProductList />
-          {!isEmptyObject(props.basket) && (
+          {!isEmptyArray(props.product) && (
             <ModalAppointment
               name={name}
               setName={setName}

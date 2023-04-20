@@ -391,6 +391,7 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
           color={color}
           handleCurrency={handleCurrency}
           setIsOpenModalDetail={setIsOpenModalDetail}
+          convertTimeToStr={convertTimeToStr}
         />
       </Dialog>
     </React.Fragment>

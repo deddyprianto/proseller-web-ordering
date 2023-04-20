@@ -27,7 +27,7 @@ import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
-
+import Paper from '@mui/material/Paper';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -158,6 +158,9 @@ const Appointment = (props) => {
       '&.MuiButtonBase-root': {
         fontSize: '14px',
         textTransform: 'capitalize',
+        '&:hover': {
+          color: 'rgba(138, 141, 142, 1)',
+        },
       },
       '&.Mui-selected': {
         color: color.primary,
@@ -204,7 +207,7 @@ const Appointment = (props) => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
     }
-  }, []);
+  }, [outlet]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -713,7 +716,7 @@ const Appointment = (props) => {
         cursor: 'pointer',
         alignItems: 'center',
         margin: 'auto',
-        marginTop: gadgetScreen ? '0px' : '5px',
+        marginBottom: '2px',
       },
       subContainer: {
         width: '95%',
@@ -844,24 +847,50 @@ const Appointment = (props) => {
     const isNotifShowWithIphoneSE = showNotify && height <= 667;
     const isNotifShowWithIphone14 = showNotify && height >= 844;
     const styleAppliedToDevice = {
-      height: isNotifShowWithIphoneSE
-        ? '81vh'
-        : isNotifShowWithIphone14
-        ? '85vh'
-        : '90vh',
+      height: showNotify ? '77vh' : '85vh',
       overflowY: 'auto',
     };
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont} style={styleAppliedToDevice}>
+        <div className={fontStyles.myFont}>
           <Header />
           {!isEmptyObject(selectedLocation) && (
-            <>
+            <div
+              style={{
+                paddingBottom: 120,
+              }}
+            >
               <Label />
               <Location />
               <DropDownTime />
               <Services />
-            </>
+            </div>
+          )}
+          {showNotify && (
+            <Paper
+              variant='elevation'
+              square={gadgetScreen}
+              elevation={0}
+              sx={
+                gadgetScreen
+                  ? {
+                      zIndex: '999',
+                      width: '100%',
+                      margin: 0,
+                      top: 'auto',
+                      right: 'auto',
+                      bottom: gadgetScreen.height < 500 ? 0 : 70,
+                      left: 'auto',
+                      position: 'fixed',
+                    }
+                  : {
+                      padding: 0,
+                      margin: 0,
+                    }
+              }
+            >
+              <RendernNotifSuccess />
+            </Paper>
           )}
         </div>
       );
@@ -886,13 +915,8 @@ const Appointment = (props) => {
   };
 
   return (
-    <LoadingOverlayCustom
-      active={isLoading}
-      spinner={<RenderAnimationLoading />}
-      text={messageLoading}
-    >
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
       <ResponsiveLayout />
-      {showNotify && <RendernNotifSuccess />}
       <Dialog
         fullWidth
         maxWidth='xs'

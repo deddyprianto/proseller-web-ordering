@@ -151,6 +151,14 @@ const Date = ({ timeslot, color }) => {
                   <div
                     onClick={() => {
                       dispatch({
+                        type: CONSTANT.TIME_APPOINTMENT,
+                        payload: '',
+                      });
+                      dispatch({
+                        type: CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT,
+                        payload: '',
+                      });
+                      dispatch({
                         type: CONSTANT.DATE_APPOINTMENT,
                         payload: changeFormatDate(item.date),
                       });

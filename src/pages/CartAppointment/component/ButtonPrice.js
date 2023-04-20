@@ -12,17 +12,19 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
   const staffID = useSelector((state) => state.appointmentReducer.staffID);
 
   const handleSubmit = async () => {
-    const payload = {
-      staffId: staffID,
-      bookingTime: time,
-      bookingDate: date,
-      note: textNotes,
-    };
-    setIsLoading(true);
-    const data = await dispatch(OrderAction.submitCartAppointment(payload));
-    setIsLoading(false);
-    if (data.message === 'Cart submitted successfully') {
-      window.location.href = changeFormatURl('/bookingconfirm');
+    if (date && time && staffID) {
+      const payload = {
+        staffId: staffID,
+        bookingTime: time,
+        bookingDate: date,
+        note: textNotes,
+      };
+      setIsLoading(true);
+      const data = await dispatch(OrderAction.submitCartAppointment(payload));
+      setIsLoading(false);
+      if (data.message === 'Cart submitted successfully') {
+        window.location.href = changeFormatURl('/bookingconfirm');
+      }
     }
   };
 
@@ -32,8 +34,6 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
       style={{
         width: '93%',
         margin: 'auto',
-        marginTop: '20px',
-        marginBottom: '20px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -47,6 +47,8 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
           date && time && staffID ? color.primary : 'rgba(183, 183, 183, 1)',
         cursor: date && time && staffID ? 'pointer' : 'not-allowed',
         pointerEvents: !date && !time && !staffID && 'none',
+        marginBottom: '5px',
+        marginTop: '5px',
       }}
     >
       {isLoading ? <span className={loader.loader}></span> : 'Book this date'}

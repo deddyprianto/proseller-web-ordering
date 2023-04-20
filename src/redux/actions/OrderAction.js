@@ -948,6 +948,29 @@ const getTimeSlotAppointment = (outletId) => {
     }
   };
 };
+const getBooikingHistory = (categoryBooking) => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(
+        `${url}customer/appointment?status=${categoryBooking}&skip=0&take=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${account.accessToken.jwtToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      dispatch({
+        type: CONSTANT.BOOKING_HISTORY,
+        payload: response.data.data,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+};
 
 const loadStaffByTimeSlot = (date, timeslot) => {
   let url = config.getUrlDomain();
@@ -1173,4 +1196,5 @@ export const OrderAction = {
   getTimeSlotAppointment,
   loadStaffByTimeSlot,
   submitCartAppointment,
+  getBooikingHistory,
 };

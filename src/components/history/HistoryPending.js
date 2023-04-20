@@ -27,32 +27,45 @@ const HistoryPending = ({ dataPending, dataPendingLength }) => {
   }
 
   return (
-    <Grid
-      container
-      direction='row'
-      justifyContent='space-between'
-      alignItems='center'
-      spacing={{ xs: 2, md: 3 }}
-      columns={{ xs: 4, md: 12 }}
+    <div
+      style={{
+        width: '95%',
+        margin: 'auto',
+        marginTop: '20px',
+        height: '55vh',
+        overflowY: 'scroll',
+      }}
     >
-      {dataPending.map((items, index) => {
-        return (
-          <Grid item xs={4} md={6} key={index}>
-            <Link
-              to={items.isPaymentComplete ? '/history/detail' : '/basket'}
-              onClick={() => setLocalStorageItem(items)}
-            >
-              <HistoryCard items={items} />
-            </Link>
-          </Grid>
-        );
-      })}
-      <div style={{ width: '100%' }}>
-        <p className='default-font' style={{ color: '#9D9D9D' }}>
-          You are all caught up
-        </p>
-      </div>
-    </Grid>
+      <Grid
+        container
+        direction='row'
+        justifyContent='space-between'
+        alignItems='center'
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 4, md: 12 }}
+      >
+        {dataPending.map((items, index) => {
+          return (
+            <Grid item xs={4} md={6} key={index}>
+              <Link
+                to={items.isPaymentComplete ? '/history/detail' : '/basket'}
+                onClick={() => setLocalStorageItem(items)}
+              >
+                <HistoryCard items={items} />
+              </Link>
+            </Grid>
+          );
+        })}
+        <div style={{ width: '100%' }}>
+          <p
+            className='default-font'
+            style={{ color: '#9D9D9D', marginLeft: '20px' }}
+          >
+            You are all caught up
+          </p>
+        </div>
+      </Grid>
+    </div>
   );
 };
 
