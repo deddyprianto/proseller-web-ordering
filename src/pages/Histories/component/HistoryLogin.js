@@ -11,8 +11,7 @@ const History = () => {
   const [stateTabs, setStateTabs] = useState('ordered');
   const [isLoading, setIsLoading] = useState(false);
   const [isTransaction, setIsTransaction] = useState(false);
-  const [dataPending, setDataPending] = useState([]);
-  const [dataPendingLength, setDataPendingLength] = useState(0);
+  const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
@@ -114,8 +113,8 @@ const History = () => {
     } else if (stateTabs === 'pendingorder') {
       return (
         <HistoryPending
-          dataPending={dataPending}
-          dataPendingLength={dataPendingLength}
+          dataPending={dataPending?.dataPending}
+          dataPendingLength={dataPending?.dataPendingLength}
           countryCode={companyInfo?.countryCode}
         />
       );

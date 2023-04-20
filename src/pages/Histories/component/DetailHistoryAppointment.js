@@ -2,6 +2,7 @@ import React from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useSelector } from 'react-redux';
 import fontStyles from '../style/styles.module.css';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -454,8 +455,8 @@ const DetailHistoryAppointment = ({
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  fontWeight: 500,
-                  fontSize: '14px',
+                  fontWeight: 600,
+                  fontSize: '13px',
                   color: 'black',
                 }}
               >
@@ -475,7 +476,7 @@ const DetailHistoryAppointment = ({
           ))}
           <div
             style={{
-              marginTop: '10px',
+              marginTop: '25px',
               width: '100%',
               display: 'grid',
               gridTemplateColumns: '1fr 100px',
@@ -488,12 +489,12 @@ const DetailHistoryAppointment = ({
           >
             <div
               style={{
-                fontWeight: 500,
-                fontSize: '14px',
+                fontWeight: 600,
+                fontSize: '13px',
                 color: 'black',
               }}
             >
-              Estimated Price
+              Estimated Duration
             </div>
             <div
               style={{
@@ -511,91 +512,97 @@ const DetailHistoryAppointment = ({
     );
   };
   const Information = () => {
-    return (
-      <div
-        className={fontStyles.myFont}
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '10px',
-          backgroundColor: `${color.primary}10`,
-          borderRadius: '20px',
-          padding: '15px 0px',
-        }}
-      >
-        <div style={{ width: '90%', margin: 'auto' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
-            Information
+    if (tabName === 'COMPLETED') {
+      return null;
+    } else {
+      return (
+        <div
+          className={fontStyles.myFont}
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '10px',
+            backgroundColor: `${color.primary}10`,
+            borderRadius: '20px',
+            padding: '15px 0px',
+          }}
+        >
+          <div style={{ width: '90%', margin: 'auto' }}>
+            <div
+              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
+            >
+              Information
+            </div>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
+              Price & Payment
+            </div>
+            <ul
+              style={{
+                fontSize: '14px',
+                color: 'black',
+                margin: 0,
+                marginLeft: '25px',
+                fontWeight: 500,
+              }}
+            >
+              <li>Price above is estimation cannot be used as a reference</li>
+              <li>This booking can be paid at outlet</li>
+              <li>We only accept cashless payment</li>
+            </ul>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: 600,
+                marginTop: '10px',
+                color: 'black',
+              }}
+            >
+              Appointment
+            </div>
+            <ul
+              style={{
+                fontSize: '14px',
+                color: 'black',
+                margin: 0,
+                marginLeft: '25px',
+                fontWeight: 500,
+              }}
+            >
+              <li>Please come 10 minutes before the appointment</li>
+              <li>Wearing mask is a must</li>
+            </ul>
+            {tabName === 'ONGOING' && (
+              <React.Fragment>
+                <div
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    marginTop: '10px',
+                    color: 'black',
+                  }}
+                >
+                  Cancellation Policy
+                </div>
+                <ul
+                  style={{
+                    fontSize: '14px',
+                    color: 'black',
+                    margin: 0,
+                    marginLeft: '25px',
+                    fontWeight: 500,
+                  }}
+                >
+                  <li>
+                    If you need to make any changes to your reservation, please
+                    contact us at least 24 hours in advance.
+                  </li>
+                </ul>
+              </React.Fragment>
+            )}
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-            Price & Payment
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>Price above is estimation cannot be used as a reference</li>
-            <li>This booking can be paid at outlet</li>
-            <li>We only accept cashless payment</li>
-          </ul>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              marginTop: '10px',
-              color: 'black',
-            }}
-          >
-            Appointment
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>Please come 10 minutes before the appointment</li>
-            <li>Wearing mask is a must</li>
-          </ul>
-          {tabName === 'ONGOING' && (
-            <React.Fragment>
-              <div
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  marginTop: '10px',
-                  color: 'black',
-                }}
-              >
-                Cancellation Policy
-              </div>
-              <ul
-                style={{
-                  fontSize: '14px',
-                  color: 'black',
-                  margin: 0,
-                  marginLeft: '25px',
-                  fontWeight: 500,
-                }}
-              >
-                <li>
-                  If you need to make any changes to your reservation, please
-                  contact us at least 24 hours in advance.
-                </li>
-              </ul>
-            </React.Fragment>
-          )}
         </div>
-      </div>
-    );
+      );
+    }
   };
   const ButtonPrice = () => {
     if (tabName === 'CANCELLED') {
@@ -682,24 +689,30 @@ const DetailHistoryAppointment = ({
     }
   };
   const RenderTextNotif = () => {
-    return (
-      <div
-        className={fontStyles.myFont}
-        style={{
-          fontSize: '14px',
-          width: '90%',
-          margin: 'auto',
-          fontWeight: 500,
-          color: 'black',
-          marginTop: '10px',
-        }}
-      >
-        Contact our staff for{' '}
-        <span style={{ fontWeight: 'bold' }}>
-          reschedule and other informations
-        </span>
-      </div>
-    );
+    if (tabName === 'COMPLETED' || tabName === 'CANCELLED') {
+      return null;
+    } else {
+      return (
+        <div
+          className={fontStyles.myFont}
+          style={{
+            fontSize: '14px',
+            width: '90%',
+            margin: 'auto',
+            fontWeight: 500,
+            color: 'black',
+            marginTop: '40px',
+            marginBottom: '10px',
+            lineHeight: '20px',
+          }}
+        >
+          Contact our staff for{' '}
+          <span style={{ fontWeight: 'bold' }}>
+            reschedule and other informations
+          </span>
+        </div>
+      );
+    }
   };
   const RenderHr = () => {
     return (
@@ -747,6 +760,69 @@ const DetailHistoryAppointment = ({
       </div>
     );
   };
+  const RenderPoints = () => {
+    if (tabName === 'COMPLETED') {
+      return (
+        <div
+          className={fontStyles.myFont}
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '10px',
+            backgroundColor: `${color.primary}10`,
+            borderRadius: '20px',
+            padding: '15px 0px',
+          }}
+        >
+          <div style={{ width: '90%', margin: 'auto' }}>
+            <div
+              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
+            >
+              Rewards Earned
+            </div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'black' }}>
+              Points
+            </div>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: color.primary,
+              }}
+            >
+              {item?.rewards?.points} Points
+            </div>
+            <div
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: 'black',
+                marginTop: '10px',
+              }}
+            >
+              Voucher
+            </div>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: color.primary,
+              }}
+            >
+              <ul style={{ padding: 0, margin: 0, marginLeft: '20px' }}>
+                {!isEmptyArray(item?.rewards?.vouchers) &&
+                  item?.rewards?.vouchers.map((item) => {
+                    return <li>{item.voucherName}</li>;
+                  })}
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
   return (
     <React.Fragment>
       <RenderHeader />
@@ -756,6 +832,7 @@ const DetailHistoryAppointment = ({
       <BookingNotes />
       <RenderHr />
       <ServiceDetail />
+      <RenderPoints />
       <Information />
       <RenderTextNotif />
       <ButtonPrice />

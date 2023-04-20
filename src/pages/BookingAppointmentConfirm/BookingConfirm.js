@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
+import Paper from '@mui/material/Paper';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -605,8 +606,7 @@ const BookingConfirm = (props) => {
         style={{
           width: '93%',
           margin: 'auto',
-          marginTop: '40px',
-          marginBottom: '20px',
+          marginTop: '10px',
           display: 'flex',
           justifyContent: 'space-between',
         }}
@@ -631,8 +631,7 @@ const BookingConfirm = (props) => {
         style={{
           width: '93%',
           margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
+          marginTop: '5px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -642,6 +641,7 @@ const BookingConfirm = (props) => {
           padding: '5px',
           fontSize: '14px',
           fontWeight: 600,
+          marginBottom: '5px',
         }}
       >
         Confirm Booking
@@ -697,22 +697,47 @@ const BookingConfirm = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div
-          className={fontStyles.myFont}
-          style={{
-            height: '90vh',
-            overflowY: 'auto',
-          }}
-        >
-          <Header />
-          <Timeline />
-          <BookingDetail />
-          <BookingNotes />
-          <RenderHr />
-          <ServiceDetail />
-          <Information />
-          <Price />
-          <ButtonPrice />
+        <div className={fontStyles.myFont}>
+          <div
+            style={{
+              paddingBottom: 200,
+            }}
+          >
+            <Header />
+            <Timeline />
+            <BookingDetail />
+            <BookingNotes />
+            <RenderHr />
+            <ServiceDetail />
+            <Information />
+          </div>
+          <Paper
+            variant='elevation'
+            square={gadgetScreen}
+            elevation={0}
+            sx={
+              gadgetScreen
+                ? {
+                    zIndex: '999',
+                    width: '100%',
+                    margin: 0,
+                    top: 'auto',
+                    right: 'auto',
+                    bottom: gadgetScreen.height < 500 ? 0 : 70,
+                    left: 'auto',
+                    position: 'fixed',
+                    padding: '0px 10px',
+                    backgroundColor: '#F2F2F2',
+                  }
+                : {
+                    padding: 0,
+                    margin: 0,
+                  }
+            }
+          >
+            <Price />
+            <ButtonPrice />
+          </Paper>
         </div>
       );
     } else {

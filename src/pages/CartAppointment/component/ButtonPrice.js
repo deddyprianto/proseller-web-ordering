@@ -34,8 +34,6 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
       style={{
         width: '93%',
         margin: 'auto',
-        marginTop: '20px',
-        marginBottom: '20px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -49,6 +47,8 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
           date && time && staffID ? color.primary : 'rgba(183, 183, 183, 1)',
         cursor: date && time && staffID ? 'pointer' : 'not-allowed',
         pointerEvents: !date && !time && !staffID && 'none',
+        marginBottom: '5px',
+        marginTop: '5px',
       }}
     >
       {isLoading ? <span className={loader.loader}></span> : 'Book this date'}

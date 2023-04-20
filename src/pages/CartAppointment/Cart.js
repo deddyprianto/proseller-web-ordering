@@ -7,7 +7,6 @@ import DropDownCustomSelect from './component/DropDownCustomSelect';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import '../Appointment/style/loadingspin.css';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import Date from './component/Date';
 import ServiceStylist from './component/ServiceStylist';
@@ -15,6 +14,7 @@ import ButtonPrice from './component/ButtonPrice';
 import RenderNotes from './component/RenderNotes';
 import { CONSTANT } from 'helpers';
 import Swal from 'sweetalert2';
+import Paper from '@mui/material/Paper';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -148,24 +148,7 @@ const Cart = (props) => {
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
   };
-  const RenderAnimationLoading = () => {
-    return (
-      <div className='lds-spinner'>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    );
-  };
+
   const Header = () => {
     return (
       <div
@@ -452,10 +435,9 @@ const Cart = (props) => {
         style={{
           width: '93%',
           margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
           display: 'flex',
           justifyContent: 'space-between',
+          paddingTop: '10px',
         }}
       >
         <div style={{ fontWeight: 600, fontSize: '16px', color: 'black' }}>
@@ -501,21 +483,49 @@ const Cart = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div
-          className={fontStyles.myFont}
-          style={{ height: '90vh', overflowY: 'auto' }}
-        >
-          <Header />
-          <Timeline />
-          <RenderItemService />
-          <LabelAnythingelse />
-          <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} />
-          <Time />
-          <ServiceStylist color={color} />
-          <RenderNotes />
-          <Price />
-          <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+        <div className={fontStyles.myFont}>
+          <div
+            style={{
+              paddingBottom: 130,
+            }}
+          >
+            <Header />
+            <Timeline />
+            <RenderItemService />
+            <LabelAnythingelse />
+            <SelectedOutlet />
+            <Date timeslot={timeslot} color={color} />
+            <Time />
+            <ServiceStylist color={color} />
+            <RenderNotes />
+          </div>
+          <Paper
+            variant='elevation'
+            square={gadgetScreen}
+            elevation={0}
+            sx={
+              gadgetScreen
+                ? {
+                    zIndex: '999',
+                    width: '100%',
+                    margin: 0,
+                    top: 'auto',
+                    right: 'auto',
+                    bottom: gadgetScreen.height < 500 ? 0 : 70,
+                    left: 'auto',
+                    position: 'fixed',
+                    padding: '0px 10px',
+                    backgroundColor: '#F2F2F2',
+                  }
+                : {
+                    padding: 0,
+                    margin: 0,
+                  }
+            }
+          >
+            <Price />
+            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+          </Paper>
         </div>
       );
     } else {
@@ -539,11 +549,7 @@ const Cart = (props) => {
     }
   };
   return (
-    <LoadingOverlayCustom
-      active={isLoading}
-      spinner={<RenderAnimationLoading />}
-      text='please wait...'
-    >
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
       <ResponsiveLayout />
     </LoadingOverlayCustom>
   );

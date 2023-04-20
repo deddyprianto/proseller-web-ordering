@@ -10,7 +10,7 @@ import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import RenderModifier from './RenderModifier';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import '../style/loadingspin.css';
+
 
 const DetailAppointment = ({
   color,
@@ -199,28 +199,11 @@ const DetailAppointment = ({
       alignItems: 'center',
       justifyContent: 'space-between',
       margin: 'auto',
+      padding: '5px 0px',
     },
   };
 
   // COMPONENTS
-  const RenderAnimationLoading = () => {
-    return (
-      <div className='lds-spinner_detailapp'>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    );
-  };
   const RenderMainDetail = () => {
     return (
       <div style={{ width: '90%', margin: '0px auto' }}>
@@ -412,6 +395,7 @@ const DetailAppointment = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          marginTop: '5px',
         }}
       >
         <button
@@ -422,7 +406,7 @@ const DetailAppointment = ({
             borderRadius: '5px',
             fontSize: '13px',
             padding: '10px',
-            marginBottom: '10px',
+            marginBottom: '5px',
           }}
         >
           {!isEmptyObject(filterCart)
@@ -432,39 +416,23 @@ const DetailAppointment = ({
       </div>
     );
   };
-
   return (
-    <LoadingOverlayCustom
-      active={isLoading}
-      spinner={<RenderAnimationLoading />}
-      text='Add item to your cart...'
-    >
-      <div
-        className={fontStyles.myFont}
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: '1fr 100px',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '"."\n    "."',
-          height: '95vh',
-        }}
-      >
-        <div style={{ overflowY: 'auto', height: '100%' }}>
-          <RenderHeader />
-          <RenderMainDetail />
-          <FormGroup>
-            <RenderAddOnLabel />
-            <RenderModifier
-              setSelectedProductModifiers={setSelectedProductModifiers}
-              selectedProductModifiers={selectedProductModifiers}
-              productModifiers={itemAppointment.productModifiers}
-              product={itemAppointment}
-            />
-          </FormGroup>
-        </div>
-        <div style={{ alignSelf: 'center' }}>
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+      <div className={fontStyles.myFont}>
+        <RenderHeader />
+        <RenderMainDetail />
+        <FormGroup>
+          <RenderAddOnLabel />
+          <RenderModifier
+            setSelectedProductModifiers={setSelectedProductModifiers}
+            selectedProductModifiers={selectedProductModifiers}
+            productModifiers={itemAppointment.productModifiers}
+            product={itemAppointment}
+          />
+        </FormGroup>
+        <div
+          style={{ position: 'sticky', bottom: 0, backgroundColor: '#F2F2F2' }}
+        >
           <RenderPrice />
           <RenderButtonPrice />
         </div>

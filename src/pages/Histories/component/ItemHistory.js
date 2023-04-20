@@ -157,7 +157,7 @@ const ItemHistory = ({ item, color, tabName }) => {
                   fontWeight: 600,
                 }}
               >
-                25 points
+                {item?.rewards?.points} points
               </div>
             )}
           </div>
@@ -207,7 +207,7 @@ const ItemHistory = ({ item, color, tabName }) => {
           >
             <div>D1005</div>
             <div style={{ margin: '0px 10px' }}> - </div>
-            <div>1 Service</div>
+            <div>{item?.details?.length} Service</div>
             <div style={{ margin: '0px 10px' }}> - </div>
             <div>{handleCurrency(item.totalNettAmount)}</div>
           </div>

@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import successsubmit from 'assets/gif/successsubmit.gif';
-
+import Paper from '@mui/material/Paper';
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -588,8 +588,6 @@ const BookingSubmitted = () => {
         style={{
           width: '93%',
           margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -654,18 +652,46 @@ const BookingSubmitted = () => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div
-          className={fontStyles.myFont}
-          style={{ height: '90vh', overflowY: 'auto' }}
-        >
-          <Timeline />
-          <MessageAndLabel />
-          <BookingDetail />
-          <BookingNotes />
-          <RenderHr />
-          <ServiceDetail />
-          <Information />
-          <ButtonPrice />
+        <div className={fontStyles.myFont}>
+          <div
+            style={{
+              paddingBottom: 200,
+            }}
+          >
+            <Timeline />
+            <MessageAndLabel />
+            <BookingDetail />
+            <BookingNotes />
+            <RenderHr />
+            <ServiceDetail />
+            <Information />
+          </div>
+          <Paper
+            variant='elevation'
+            square={gadgetScreen}
+            elevation={0}
+            sx={
+              gadgetScreen
+                ? {
+                    zIndex: '999',
+                    width: '100%',
+                    margin: 0,
+                    top: 'auto',
+                    right: 'auto',
+                    bottom: gadgetScreen.height < 500 ? 0 : 70,
+                    left: 'auto',
+                    position: 'fixed',
+                    padding: '10px 5px',
+                    backgroundColor: '#F2F2F2',
+                  }
+                : {
+                    padding: 0,
+                    margin: 0,
+                  }
+            }
+          >
+            <ButtonPrice />
+          </Paper>
         </div>
       );
     } else {
