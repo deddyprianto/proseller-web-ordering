@@ -682,7 +682,7 @@ const BookingSubmitted = () => {
                     left: 'auto',
                     position: 'fixed',
                     padding: '10px 5px',
-                    backgroundColor: '#F2F2F2',
+                    backgroundColor: '#eaeaea',
                   }
                 : {
                     padding: 0,
@@ -713,9 +713,9 @@ const BookingSubmitted = () => {
   };
 
   return (
-    <div>
+    <React.Fragment>
       <ResponsiveLayout />
-    </div>
+    </React.Fragment>
   );
 };
 

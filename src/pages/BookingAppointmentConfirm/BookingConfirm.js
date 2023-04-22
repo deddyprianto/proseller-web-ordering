@@ -727,7 +727,7 @@ const BookingConfirm = (props) => {
                     left: 'auto',
                     position: 'fixed',
                     padding: '0px 10px',
-                    backgroundColor: '#F2F2F2',
+                    backgroundColor: '#eaeaea',
                   }
                 : {
                     padding: 0,

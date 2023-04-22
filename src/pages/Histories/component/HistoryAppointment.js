@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import fontStyles from '../style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
 import ItemHistory from './ItemHistory';
-import '../style/styles.module.css';
+import MyLoader from 'pages/Appointment/component/LoaderSkleton';
 
 const HistoryAppointment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -152,24 +152,6 @@ const HistoryAppointment = () => {
       </div>
     );
   };
-  const RenderAnimationLoading = () => {
-    return (
-      <div className='lds-spinner' style={{ marginTop: '200px' }}>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    );
-  };
   const RenderItemHistory = () => {
     if (tabNameAPI === 'CONFIRMED') {
       if (tabName === 'UPCOMING') {
@@ -220,7 +202,9 @@ const HistoryAppointment = () => {
     <React.Fragment>
       <RenderTabHeaderMobile />
       {isLoading ? (
-        <RenderAnimationLoading />
+        <div style={{ width: '95%', margin: 'auto' }}>
+          <MyLoader />
+        </div>
       ) : (
         <div style={{ height: '60vh', overflowY: 'auto' }}>
           <RenderItemHistory />
