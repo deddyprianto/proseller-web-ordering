@@ -245,6 +245,7 @@ const ItemService = ({
               gap: '0px 0px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
+              padding: gadgetScreen ? '0px' : '0px 10px',
             }}
           >
             <div style={localStyle.containerImg}>
@@ -332,24 +333,17 @@ const ItemService = ({
   return (
     <React.Fragment>
       <RenderItemService />
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-        open={isOpenModalDetail}
-        onClose={() => setIsOpenModalDetail(false)}
-      >
-        <DetailAppointment
-          productId={productId}
-          handleCurrency={handleCurrency}
-          color={color}
-          gadgetScreen={gadgetScreen}
-          styleSheet={styleSheet}
-          setIsOpenModalDetail={setIsOpenModalDetail}
-          itemAppointment={item}
-          convertTimeToStr={convertTimeToStr}
-        />
-      </Dialog>
+      <DetailAppointment
+        productId={productId}
+        handleCurrency={handleCurrency}
+        color={color}
+        gadgetScreen={gadgetScreen}
+        styleSheet={styleSheet}
+        setIsOpenModalDetail={setIsOpenModalDetail}
+        itemAppointment={item}
+        convertTimeToStr={convertTimeToStr}
+        isOpenModalDetail={isOpenModalDetail}
+      />
     </React.Fragment>
   );
 };

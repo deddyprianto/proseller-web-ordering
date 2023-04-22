@@ -417,24 +417,16 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
     return (
       <React.Fragment>
         <RenderResult />
-        <Dialog
-          fullScreen={fullScreen}
-          fullWidth
-          maxWidth='md'
-          open={isOpenModalDetail}
-          onClose={() => setIsOpenModalDetail(false)}
-          classes={{ paper: classes.paper }}
-        >
-          <DetailAppointment
-            itemAppointment={item}
-            productId={id}
-            styleSheet={styleSheet}
-            color={color}
-            handleCurrency={handleCurrency}
-            setIsOpenModalDetail={setIsOpenModalDetail}
-            convertTimeToStr={convertTimeToStr}
-          />
-        </Dialog>
+        <DetailAppointment
+          itemAppointment={item}
+          productId={id}
+          styleSheet={styleSheet}
+          color={color}
+          handleCurrency={handleCurrency}
+          setIsOpenModalDetail={setIsOpenModalDetail}
+          isOpenModalDetail={isOpenModalDetail}
+          convertTimeToStr={convertTimeToStr}
+        />
       </React.Fragment>
     );
 };

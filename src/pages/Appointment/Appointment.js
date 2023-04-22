@@ -124,7 +124,7 @@ const Appointment = (props) => {
       marginLeft: 'auto',
       marginRight: 'auto',
       backgroundColor: 'white',
-      height: '92vh',
+      height: showNotify ? '90vh' : '98vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       display: 'grid',
@@ -133,6 +133,7 @@ const Appointment = (props) => {
       gap: '0px 15px',
       gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
+      marginTop: '10px',
     },
     gridStyle: {
       display: 'grid',
@@ -298,7 +299,7 @@ const Appointment = (props) => {
     const localStyle = {
       container: {
         ...styleSheet.gridStyle,
-        marginTop: gadgetScreen ? '25px' : '0px',
+        marginTop: '25px',
         alignItems: 'center',
         justifyItems: 'center',
       },
@@ -679,10 +680,12 @@ const Appointment = (props) => {
     return (
       <Box
         sx={{
-          width: '600px',
+          width: '580px',
+          marginBottom: '20px',
         }}
       >
         <Tabs
+          centered
           value={selectedCategory.name}
           onChange={handleChange}
           sx={styleSheet.indicator}
@@ -792,7 +795,7 @@ const Appointment = (props) => {
             <RenderTabHeaderDekstop />
           )}
           {isLoading ? (
-            <MyLoader />
+            <RenderAnimationLoading />
           ) : (
             <React.Fragment>
               {productServicesAppointment.map((item) => {
@@ -898,24 +901,44 @@ const Appointment = (props) => {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <di
-              style={{
-                marginTop: '20px',
-              }}
-            >
-              <Header />
-              <Label />
-              <Location />
-              <Services />
-            </di>
+            <Header />
+            <Label />
+            <Location />
+            <Services />
           </div>
+          {showNotify && (
+            <Paper
+              variant='elevation'
+              square={gadgetScreen}
+              elevation={0}
+              sx={
+                gadgetScreen
+                  ? {
+                      zIndex: '999',
+                      width: '100%',
+                      margin: 0,
+                      top: 'auto',
+                      right: 'auto',
+                      bottom: 70,
+                      left: 'auto',
+                      position: 'fixed',
+                    }
+                  : {
+                      padding: 0,
+                      margin: 0,
+                    }
+              }
+            >
+              <RendernNotifSuccess />
+            </Paper>
+          )}
         </div>
       );
     }
   };
 
   return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+    <React.Fragment>
       <ResponsiveLayout />
       <Dialog
         fullWidth
@@ -1049,7 +1072,7 @@ const Appointment = (props) => {
           />
         </div>
       </Dialog>
-    </LoadingOverlayCustom>
+    </React.Fragment>
   );
 };
 

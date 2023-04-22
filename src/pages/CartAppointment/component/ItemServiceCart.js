@@ -3,7 +3,6 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { isEmptyArray } from 'helpers/CheckEmpty';
-import Dialog from '@mui/material/Dialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@mui/material/styles';
@@ -11,11 +10,16 @@ import DetailAppointment from 'pages/Appointment/component/DetailAppointment';
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { OrderAction } from 'redux/actions/OrderAction';
+import { useHistory } from 'react-router-dom';
 
 const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
 
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const theme = useTheme();
@@ -122,7 +126,6 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
     },
   };
 
-  // some fn
   const handleDeleteCart = () => {
     Swal.fire({
       title: 'Are you sure?',
@@ -142,10 +145,10 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
           },
         };
         setIsLoading(true);
-        let data = await dispatch(
-          OrderAction.deleteItemAppointment(payload, item.id)
-        );
-        console.log(data);
+        await dispatch(OrderAction.deleteItemAppointment(payload, item.id));
+        if (cartAppointment?.details.length === 1) {
+          history.push('/appointment');
+        }
         setIsLoading(false);
       }
     });
@@ -376,24 +379,16 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
         </div>
       </div>
 
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-        open={isOpenModalDetail}
-        onClose={() => setIsOpenModalDetail(false)}
-        classes={{ paper: classes.paper }}
-      >
-        <DetailAppointment
-          itemAppointment={item.product}
-          productId={item.productID}
-          styleSheet={styleSheet}
-          color={color}
-          handleCurrency={handleCurrency}
-          setIsOpenModalDetail={setIsOpenModalDetail}
-          convertTimeToStr={convertTimeToStr}
-        />
-      </Dialog>
+      <DetailAppointment
+        itemAppointment={item.product}
+        productId={item.productID}
+        styleSheet={styleSheet}
+        color={color}
+        handleCurrency={handleCurrency}
+        setIsOpenModalDetail={setIsOpenModalDetail}
+        convertTimeToStr={convertTimeToStr}
+        isOpenModalDetail={isOpenModalDetail}
+      />
     </React.Fragment>
   );
 };

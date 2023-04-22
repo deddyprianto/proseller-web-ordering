@@ -34,7 +34,10 @@ const Cart = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
-  // some sl
+
+  const responseAddCart = useSelector(
+    (state) => state.appointmentReducer.responseAddCart
+  );
   const messageTimeSlot = useSelector(
     (state) => state.appointmentReducer.messageTimeSlot
   );
@@ -43,21 +46,18 @@ const Cart = (props) => {
     (state) => state.appointmentReducer.locationAppointment
   );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
-  const responseAddTocart = useSelector(
-    (state) => state.appointmentReducer.responseAddTocart
-  );
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
-  // some Effect
   useEffect(() => {
     if (isEmptyObject(locationAppointment)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
     }
   }, [outlet]);
+
   useEffect(() => {
     if (isEmptyObject(locationAppointment)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
@@ -109,10 +109,10 @@ const Cart = (props) => {
       }
     };
     loadData();
-  }, [responseAddTocart]);
+  }, [responseAddCart]);
 
-  //some fn
-  const handleCurrency = (price) => {
+  const handleCurrency = (value) => {
+    const price = value || 0;
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
         style: 'currency',
