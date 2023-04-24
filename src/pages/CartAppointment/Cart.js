@@ -3,7 +3,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import PlaceIcon from '@mui/icons-material/Place';
-import DropDownCustomSelect from './component/DropDownCustomSelect';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
@@ -15,12 +14,13 @@ import RenderNotes from './component/RenderNotes';
 import { CONSTANT } from 'helpers';
 import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
+import Time from './component/Time';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
     function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
+      setSize([window.innerWidth]);
     }
     window.addEventListener('resize', updateSize);
     updateSize();
@@ -34,7 +34,8 @@ const Cart = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
-
+  // some sl
+  const setting = useSelector((state) => state.order.setting);
   const responseAddCart = useSelector(
     (state) => state.appointmentReducer.responseAddCart
   );
@@ -51,18 +52,12 @@ const Cart = (props) => {
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-
+  // some eff
   useEffect(() => {
     if (isEmptyObject(locationAppointment)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
     }
   }, [outlet]);
-
-  useEffect(() => {
-    if (isEmptyObject(locationAppointment)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-    }
-  }, []);
 
   useEffect(() => {
     if (messageTimeSlot) {
@@ -87,11 +82,15 @@ const Cart = (props) => {
 
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
-      await dispatch(
-        OrderAction.getTimeSlotAppointment(locationAppointment.id)
-      );
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await dispatch(
+          OrderAction.getTimeSlotAppointment(locationAppointment.id)
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
     };
     if (!isEmptyObject(locationAppointment)) {
       loadData();
@@ -111,6 +110,10 @@ const Cart = (props) => {
     loadData();
   }, [responseAddCart]);
 
+  // some fn
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
   const handleCurrency = (value) => {
     const price = value || 0;
     if (price) {
@@ -160,7 +163,8 @@ const Cart = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           cursor: 'pointer',
-          marginTop: '20px',
+          marginTop: '10px',
+          marginBottom: '10px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -177,7 +181,7 @@ const Cart = (props) => {
             margin: 0,
             justifySelf: 'start',
             fontWeight: 700,
-            fontSize: '20px',
+            fontSize: '18px',
             color: color.primary,
           }}
         >
@@ -192,7 +196,8 @@ const Cart = (props) => {
       <div
         style={{
           width: '100%',
-          marginTop: '35px',
+          marginTop: '15px',
+          marginBottom: '10px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -396,60 +401,35 @@ const Cart = (props) => {
       return null;
     }
   };
-
-  const Time = () => {
-    const date = useSelector((state) => state.appointmentReducer.date);
-    const filterTimeSlot = timeslot?.find((item) => item.date === date);
-    if (!messageTimeSlot) {
+  const Price = () => {
+    if (settingAppoinment?.settingValue) {
       return (
         <div
           style={{
-            width: '93%',
+            width: '95%',
             margin: 'auto',
-            marginTop: '20px',
-            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: '10px',
           }}
         >
-          <p style={{ fontWeight: 'bold', fontSize: '14px', color: 'black' }}>
-            Select Time
-          </p>
-          <div style={{ width: '100%' }}>
-            <DropDownCustomSelect timeList={filterTimeSlot?.timeSlot} />
+          <div style={{ fontWeight: 600, fontSize: '16px', color: 'black' }}>
+            Estimated Price
           </div>
-          <hr
+          <div
             style={{
-              backgroundColor: 'rgba(249, 249, 249, 1)',
-              margin: '20px 0px',
+              fontWeight: 'bold',
+              color: color.primary,
+              fontSize: '18px',
             }}
-          />
+          >
+            {handleCurrency(cartAppointment?.totalNettAmount)}
+          </div>
         </div>
       );
     } else {
       return null;
     }
-  };
-
-  const Price = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          paddingTop: '10px',
-        }}
-      >
-        <div style={{ fontWeight: 600, fontSize: '16px', color: 'black' }}>
-          Estimated Price
-        </div>
-        <div
-          style={{ fontWeight: 'bold', color: color.primary, fontSize: '18px' }}
-        >
-          {handleCurrency(cartAppointment?.totalNettAmount)}
-        </div>
-      </div>
-    );
   };
   const RenderItemService = () => {
     return (
@@ -469,6 +449,7 @@ const Cart = (props) => {
             key={item.id}
             item={item}
             setIsLoading={setIsLoading}
+            settingAppoinment={settingAppoinment?.settingValue}
           />
         ))}
         <hr
@@ -480,52 +461,78 @@ const Cart = (props) => {
       </div>
     );
   };
+  const RenderBottomCartNav = () => {
+    return (
+      <Paper
+        variant='elevation'
+        square={gadgetScreen}
+        elevation={0}
+        sx={
+          gadgetScreen
+            ? {
+                zIndex: '999',
+                width: '100%',
+                margin: 0,
+                top: 'auto',
+                right: 'auto',
+                bottom: gadgetScreen.height < 500 ? 0 : 70,
+                left: 'auto',
+                position: 'fixed',
+                padding: '0px 10px',
+                backgroundColor: '#F2F2F2',
+              }
+            : {
+                padding: 0,
+                margin: 0,
+              }
+        }
+      >
+        <Price />
+        <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+      </Paper>
+    );
+  };
+
+  const RenderMainContent = () => {
+    return (
+      <div style={{ height: '80vh ', overflowY: 'auto' }}>
+        <div
+          style={{
+            paddingBottom: 130,
+          }}
+        >
+          <RenderItemService />
+          <LabelAnythingelse />
+          <SelectedOutlet />
+          <Date timeslot={timeslot} color={color} />
+          <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+          <ServiceStylist color={color} />
+          <RenderNotes />
+        </div>
+        <RenderBottomCartNav />
+      </div>
+    );
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont}>
-          <div
-            style={{
-              paddingBottom: 130,
-            }}
-          >
+        <div
+          className={fontStyles.myFont}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '90px 1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."',
+          }}
+        >
+          <div>
             <Header />
             <Timeline />
-            <RenderItemService />
-            <LabelAnythingelse />
-            <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} />
-            <Time />
-            <ServiceStylist color={color} />
-            <RenderNotes />
           </div>
-          <Paper
-            variant='elevation'
-            square={gadgetScreen}
-            elevation={0}
-            sx={
-              gadgetScreen
-                ? {
-                    zIndex: '999',
-                    width: '100%',
-                    margin: 0,
-                    top: 'auto',
-                    right: 'auto',
-                    bottom: gadgetScreen.height < 500 ? 0 : 70,
-                    left: 'auto',
-                    position: 'fixed',
-                    padding: '0px 10px',
-                    backgroundColor: '#eaeaea',
-                  }
-                : {
-                    padding: 0,
-                    margin: 0,
-                  }
-            }
-          >
-            <Price />
-            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
-          </Paper>
+          <RenderMainContent />
         </div>
       );
     } else {

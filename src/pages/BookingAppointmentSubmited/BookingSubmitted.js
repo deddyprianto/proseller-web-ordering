@@ -1,8 +1,10 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState, createRef } from 'react';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import successsubmit from 'assets/gif/successsubmit.gif';
 import Paper from '@mui/material/Paper';
+import Confetti from 'react-confetti';
+
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -17,15 +19,34 @@ const useWindowSize = () => {
 };
 
 const BookingSubmitted = () => {
+  const ref = createRef();
+  const [showConfetti, setShowConfetti] = useState(true);
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
+  // some sl
+  const setting = useSelector((state) => state.order.setting);
   const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const responseSubmit = useSelector(
     (state) => state.appointmentReducer.responseSubmit
   );
+  useEffect(() => {
+    const cleanUp = setTimeout(() => {
+      setShowConfetti(false);
+    }, 10000);
+    return () => {
+      clearTimeout(cleanUp);
+    };
+  }, []);
   // some fn
+  const settingAppoinmentShowPrice = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'EnableAdditionalInfoBookingSummary';
+  });
+
   const convertFormatDate = (dateStr) => {
     // Create a Date object from the date string
     const date = new window.Date(dateStr);
@@ -168,7 +189,8 @@ const BookingSubmitted = () => {
       <div
         style={{
           width: '58%',
-          marginTop: '35px',
+          marginTop: '10px',
+          marginBottom: '10px',
           fontSize: '14px',
           display: 'flex',
           alignItems: 'center',
@@ -439,7 +461,7 @@ const BookingSubmitted = () => {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   fontSize: '14px',
                   color: 'black',
                 }}
@@ -454,7 +476,9 @@ const BookingSubmitted = () => {
                   fontSize: '14px',
                 }}
               >
-                {handleCurrency(item.product.retailPrice)}
+                {settingAppoinmentShowPrice?.settingValue
+                  ? handleCurrency(item.product.retailPrice)
+                  : convertTimeToStr(item.product.duration)}
               </div>
             </div>
           ))}
@@ -473,7 +497,7 @@ const BookingSubmitted = () => {
           >
             <div
               style={{
-                fontWeight: 500,
+                fontWeight: 600,
                 fontSize: '14px',
                 color: 'black',
               }}
@@ -488,7 +512,9 @@ const BookingSubmitted = () => {
                 fontSize: '14px',
               }}
             >
-              {handleCurrency(responseSubmit.totalNettAmount)}
+              {settingAppoinmentShowPrice?.settingValue
+                ? handleCurrency(responseSubmit.totalNettAmount)
+                : convertTimeToStr(responseSubmit.totalDuration)}
             </div>
           </div>
         </div>
@@ -496,87 +522,36 @@ const BookingSubmitted = () => {
     );
   };
   const Information = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
-          backgroundColor: `${color.primary}10`,
-          borderRadius: '20px',
-          padding: '15px 0px',
-        }}
-      >
-        <div style={{ width: '90%', margin: 'auto' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
-            Information
+    if (settingAppoinment?.settingValue) {
+      const settingTextInformation = setting.find((items) => {
+        return items.settingKey === 'AdditionalInfoBookingSummaryText';
+      });
+      return (
+        <div
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '20px',
+            marginBottom: '20px',
+            backgroundColor: `${color.primary}10`,
+            borderRadius: '20px',
+            padding: '15px 0px',
+          }}
+        >
+          <div style={{ width: '90%', margin: 'auto' }}>
+            <div
+              style={{ color: 'black', fontWeight: 500, fontSize: '14px' }}
+              ref={ref}
+              dangerouslySetInnerHTML={{
+                __html: settingTextInformation?.settingValue,
+              }}
+            />
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-            Price & Payment
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>Price above is estimation cannot be used as a reference</li>
-            <li>This booking can be paid at outlet</li>
-            <li>We only accept cashless payment</li>
-          </ul>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              marginTop: '10px',
-              color: 'black',
-            }}
-          >
-            Appointment
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>Please come 10 minutes before the appointment</li>
-            <li>Wearing mask is a must</li>
-          </ul>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              marginTop: '10px',
-              color: 'black',
-            }}
-          >
-            Cancellation Policy
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>
-              If you need to make any changes to your reservation, please
-              contact us at least 24 hours in advance.
-            </li>
-          </ul>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   const ButtonPrice = () => {
@@ -649,49 +624,67 @@ const BookingSubmitted = () => {
       </div>
     );
   };
+  const RenderMainContent = () => {
+    return (
+      <div style={{ height: '80vh ', overflowY: 'auto' }}>
+        <div
+          style={{
+            paddingBottom: 100,
+          }}
+        >
+          <MessageAndLabel />
+          <BookingDetail />
+          <BookingNotes />
+          <RenderHr />
+          <ServiceDetail />
+          <Information />
+        </div>
+        <Paper
+          variant='elevation'
+          square={gadgetScreen}
+          elevation={0}
+          sx={
+            gadgetScreen
+              ? {
+                  zIndex: '999',
+                  width: '100%',
+                  margin: 0,
+                  top: 'auto',
+                  right: 'auto',
+                  bottom: gadgetScreen.height < 500 ? 0 : 70,
+                  left: 'auto',
+                  position: 'fixed',
+                  padding: '10px 5px',
+                  backgroundColor: 'white',
+                }
+              : {
+                  padding: 0,
+                  margin: 0,
+                }
+          }
+        >
+          <ButtonPrice />
+        </Paper>
+      </div>
+    );
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont}>
-          <div
-            style={{
-              paddingBottom: 200,
-            }}
-          >
-            <Timeline />
-            <MessageAndLabel />
-            <BookingDetail />
-            <BookingNotes />
-            <RenderHr />
-            <ServiceDetail />
-            <Information />
-          </div>
-          <Paper
-            variant='elevation'
-            square={gadgetScreen}
-            elevation={0}
-            sx={
-              gadgetScreen
-                ? {
-                    zIndex: '999',
-                    width: '100%',
-                    margin: 0,
-                    top: 'auto',
-                    right: 'auto',
-                    bottom: gadgetScreen.height < 500 ? 0 : 70,
-                    left: 'auto',
-                    position: 'fixed',
-                    padding: '10px 5px',
-                    backgroundColor: '#eaeaea',
-                  }
-                : {
-                    padding: 0,
-                    margin: 0,
-                  }
-            }
-          >
-            <ButtonPrice />
-          </Paper>
+        <div
+          className={fontStyles.myFont}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '50px 1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."',
+          }}
+        >
+          <Timeline />
+          <RenderMainContent />
         </div>
       );
     } else {
@@ -715,6 +708,7 @@ const BookingSubmitted = () => {
   return (
     <React.Fragment>
       <ResponsiveLayout />
+      {showConfetti && <Confetti />}
     </React.Fragment>
   );
 };

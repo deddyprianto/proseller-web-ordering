@@ -12,11 +12,16 @@ const HistoryAppointment = () => {
   const dispatch = useDispatch();
   const [tabName, setTabName] = useState('SUBMITTED');
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
+  // some sl
+  const setting = useSelector((state) => state.order.setting);
   const bookingHistory = useSelector(
     (state) => state.appointmentReducer.bookingHistory
   );
   const color = useSelector((state) => state.theme.color);
   // some fn
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
   const getDate = () => {
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10);
@@ -182,6 +187,7 @@ const HistoryAppointment = () => {
             item={item}
             color={color}
             tabName={tabName}
+            settingAppoinment={settingAppoinment?.settingValue}
           />
         ));
       } else {

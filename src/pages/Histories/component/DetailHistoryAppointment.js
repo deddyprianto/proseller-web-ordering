@@ -9,6 +9,7 @@ const DetailHistoryAppointment = ({
   item,
   handleCurrency,
   tabName,
+  settingAppoinment,
 }) => {
   const color = useSelector((state) => state.theme.color);
   // some fn
@@ -470,7 +471,9 @@ const DetailHistoryAppointment = ({
                   fontSize: '14px',
                 }}
               >
-                {handleCurrency(item.product.retailPrice)}
+                {settingAppoinment
+                  ? handleCurrency(item.product.retailPrice)
+                  : convertTimeToStr(item.product.duration)}
               </div>
             </div>
           ))}
@@ -504,7 +507,9 @@ const DetailHistoryAppointment = ({
                 fontSize: '14px',
               }}
             >
-              {handleCurrency(item.totalNettAmount)}
+              {settingAppoinment
+                ? handleCurrency(item.totalNettAmount)
+                : convertTimeToStr(item.totalDuration)}
             </div>
           </div>
         </div>

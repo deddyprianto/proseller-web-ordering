@@ -12,7 +12,12 @@ import Swal from 'sweetalert2';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { useHistory } from 'react-router-dom';
 
-const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
+const ItemServiceCart = ({
+  item,
+  setIsLoading,
+  outletID,
+  settingAppoinment,
+}) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
@@ -203,7 +208,8 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
                   color: 'black',
                 }}
               >
-                +{handleCurrency(itemModifier.retailPrice)}
+                {settingAppoinment &&
+                  `+${handleCurrency(itemModifier.retailPrice)}`}
               </div>
             </li>
           </ul>
@@ -285,7 +291,7 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
             )}
           </div>
           <div style={{ fontSize: '13px', fontWeight: 500, color: 'black' }}>
-            {handleCurrency(item?.product.retailPrice)}
+            {settingAppoinment && handleCurrency(item?.product.retailPrice)}
           </div>
         </div>
         <RenderAddOn modifier={item?.modifiers} />
@@ -329,7 +335,7 @@ const ItemServiceCart = ({ item, setIsLoading, outletID }) => {
               {convertTimeToStr(item?.duration)}
             </div>
           </div>
-          <div>{handleCurrency(item?.grossAmount)}</div>
+          <div>{settingAppoinment && handleCurrency(item?.grossAmount)}</div>
         </div>
         <hr
           style={{

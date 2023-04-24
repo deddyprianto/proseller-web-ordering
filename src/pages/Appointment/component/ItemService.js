@@ -13,6 +13,7 @@ const ItemService = ({
   isCheckedService,
   productId,
   handleCurrency,
+  settingAppoinment,
 }) => {
   // some state
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
@@ -310,7 +311,7 @@ const ItemService = ({
             ) : (
               <div style={localStyle.containerPrice}>
                 <div style={localStyle.containerPrice.labelPrice}>
-                  {handleCurrency(item.retailPrice)}
+                  {settingAppoinment && handleCurrency(item.retailPrice)}
                 </div>
               </div>
             )}
@@ -343,6 +344,7 @@ const ItemService = ({
         itemAppointment={item}
         convertTimeToStr={convertTimeToStr}
         isOpenModalDetail={isOpenModalDetail}
+        settingAppoinment={settingAppoinment}
       />
     </React.Fragment>
   );

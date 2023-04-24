@@ -6,7 +6,6 @@ import loader from '../style/styles.module.css';
 const ButtonPrice = ({ changeFormatURl, color }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
   const date = useSelector((state) => state.appointmentReducer.date);
   const time = useSelector((state) => state.appointmentReducer.time);
   const staffID = useSelector((state) => state.appointmentReducer.staffID);
@@ -17,7 +16,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
         staffId: staffID,
         bookingTime: time,
         bookingDate: date,
-        note: textNotes,
+        note: 'extNotes',
       };
       setIsLoading(true);
       const data = await dispatch(OrderAction.submitCartAppointment(payload));
@@ -32,7 +31,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
     <div
       onClick={handleSubmit}
       style={{
-        width: '93%',
+        width: '95%',
         margin: 'auto',
         display: 'flex',
         justifyContent: 'center',

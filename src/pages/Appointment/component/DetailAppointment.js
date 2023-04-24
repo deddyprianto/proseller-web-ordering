@@ -26,6 +26,7 @@ const DetailAppointment = ({
   handleCurrency,
   productId,
   convertTimeToStr,
+  settingAppoinment,
 }) => {
   // initial
   const dispatch = useDispatch();
@@ -314,7 +315,7 @@ const DetailAppointment = ({
           <div
             style={{ color: color.primary, fontWeight: 700, fontSize: '18px' }}
           >
-            {handleCurrency(itemAppointment.retailPrice)}
+            {settingAppoinment && handleCurrency(itemAppointment.retailPrice)}
           </div>
           {/* <div
             style={{
@@ -390,20 +391,24 @@ const DetailAppointment = ({
   };
 
   const RenderPrice = () => {
-    return (
-      <div style={styles.modifierOption}>
-        <div style={{ fontWeight: 700 }}>Price</div>
-        <div
-          style={{
-            fontWeight: 'bold',
-            color: 'rgba(255, 85, 99, 1)',
-            fontSize: '18px',
-          }}
-        >
-          {handleCurrency(totalPrice)}
+    if (settingAppoinment) {
+      return (
+        <div style={styles.modifierOption}>
+          <div style={{ fontWeight: 700 }}>Price</div>
+          <div
+            style={{
+              fontWeight: 'bold',
+              color: 'rgba(255, 85, 99, 1)',
+              fontSize: '18px',
+            }}
+          >
+            {handleCurrency(totalPrice)}
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   const RenderButtonPrice = () => {
@@ -453,6 +458,7 @@ const DetailAppointment = ({
           <FormGroup>
             <RenderAddOnLabel />
             <RenderModifier
+              settingAppoinment={settingAppoinment}
               setSelectedProductModifiers={setSelectedProductModifiers}
               selectedProductModifiers={selectedProductModifiers}
               productModifiers={itemAppointment.productModifiers}

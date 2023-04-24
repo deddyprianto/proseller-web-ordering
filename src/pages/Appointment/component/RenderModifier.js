@@ -9,6 +9,7 @@ const RenderModifier = ({
   product,
   selectedProductModifiers,
   setSelectedProductModifiers,
+  settingAppoinment,
 }) => {
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
@@ -94,6 +95,7 @@ const RenderModifier = ({
           <RenderHeaderModifier productModifier={productModifier} />
           <FormGroup>
             <RenderModifierOptions
+                settingAppoinment={settingAppoinment}
               defaultOutlet={defaultOutlet}
               selectedProductModifiers={selectedProductModifiers}
               setSelectedProductModifiers={setSelectedProductModifiers}

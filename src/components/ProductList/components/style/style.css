@@ -1,9 +1,11 @@
 .lds-spinner {
   position: relative;
   height: 80px;
-  width: 80%;
-  display: flex;
-  justify-content: center;
+  width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+padding-right: 80px;
 }
 .lds-spinner div {
   transform-origin: 35px 35px;
