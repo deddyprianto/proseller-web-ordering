@@ -6,7 +6,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import { isEmptyObject } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import Date from './component/Date';
 import ServiceStylist from './component/ServiceStylist';
 import ButtonPrice from './component/ButtonPrice';
@@ -15,25 +15,14 @@ import { CONSTANT } from 'helpers';
 import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
 import Time from './component/Time';
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import screen from 'hooks/useWindowSize';
 
 const Cart = (props) => {
+  const responsiveDesign = screen();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [width] = useWindowSize();
-  const gadgetScreen = width < 980;
+
+  const gadgetScreen = responsiveDesign.width < 980;
   // some sl
   const setting = useSelector((state) => state.order.setting);
   const responseAddCart = useSelector(
@@ -54,8 +43,10 @@ const Cart = (props) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   // some eff
   useEffect(() => {
-    if (isEmptyObject(locationAppointment)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+    if (!isEmptyArray(outlet)) {
+      if (isEmptyObject(locationAppointment)) {
+        dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+      }
     }
   }, [outlet]);
 
@@ -124,27 +115,6 @@ const Cart = (props) => {
 
       return result;
     }
-  };
-  const styleSheet = {
-    container: {
-      width: '40%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      backgroundColor: 'white',
-      height: '99.3vh',
-      borderRadius: '8px',
-      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      overflowY: 'auto',
-    },
-    gridStyle3Col: {
-      display: 'grid',
-      gridTemplateColumns: '50px 1fr 50px',
-      gridTemplateRows: '1fr',
-      gap: '0px 0px',
-      gridAutoFlow: 'row',
-      gridTemplateAreas: '". . ."',
-      cursor: 'pointer',
-    },
   };
   const changeFormatURl = (path) => {
     const url = window.location.href;
@@ -461,7 +431,7 @@ const Cart = (props) => {
       </div>
     );
   };
-  const RenderBottomCartNav = () => {
+  const RenderNavigationBottom = () => {
     return (
       <Paper
         variant='elevation'
@@ -475,7 +445,7 @@ const Cart = (props) => {
                 margin: 0,
                 top: 'auto',
                 right: 'auto',
-                bottom: gadgetScreen.height < 500 ? 0 : 70,
+                bottom: responsiveDesign.height < 500 ? 0 : 70,
                 left: 'auto',
                 position: 'fixed',
                 padding: '0px 10px',
@@ -509,36 +479,44 @@ const Cart = (props) => {
           <ServiceStylist color={color} />
           <RenderNotes />
         </div>
-        <RenderBottomCartNav />
+        <RenderNavigationBottom />
       </div>
     );
   };
-  const ResponsiveLayout = () => {
-    if (gadgetScreen) {
-      return (
-        <div
-          className={fontStyles.myFont}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr',
-            gridTemplateRows: '90px 1fr',
-            gridAutoColumns: '1fr',
-            gap: '0px 0px',
-            gridAutoFlow: 'row',
-            gridTemplateAreas: '"."\n    "."',
-          }}
-        >
-          <div>
+
+  return (
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+      {gadgetScreen ? (
+        <div className={fontStyles.myFont}>
+          <div
+            style={{ paddingBottom: responsiveDesign.height < 600 ? 100 : 200 }}
+          >
             <Header />
             <Timeline />
+            <RenderItemService />
+            <LabelAnythingelse />
+            <SelectedOutlet />
+            <Date timeslot={timeslot} color={color} />
+            <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+            <ServiceStylist color={color} />
+            <RenderNotes />
           </div>
-          <RenderMainContent />
+          <RenderNavigationBottom />
         </div>
-      );
-    } else {
-      return (
+      ) : (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div style={styleSheet.container}>
+          <div
+            style={{
+              width: '40%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              backgroundColor: 'white',
+              height: '99.3vh',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              overflowY: 'auto',
+            }}
+          >
             <Header />
             <Timeline />
             <RenderItemService />
@@ -552,12 +530,7 @@ const Cart = (props) => {
             <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
           </div>
         </div>
-      );
-    }
-  };
-  return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
-      <ResponsiveLayout />
+      )}
     </LoadingOverlayCustom>
   );
 };
