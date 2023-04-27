@@ -484,55 +484,57 @@ const Cart = (props) => {
     );
   };
 
-  return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
-      {gadgetScreen ? (
-        <div className={fontStyles.myFont}>
-          <div
-            style={{ paddingBottom: responsiveDesign.height < 600 ? 100 : 200 }}
-          >
-            <Header />
-            <Timeline />
-            <RenderItemService />
-            <LabelAnythingelse />
-            <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} />
-            <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
-            <ServiceStylist color={color} />
-            <RenderNotes />
-          </div>
-          <RenderNavigationBottom />
+return (
+  <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+    {gadgetScreen ? (
+      <div className={fontStyles.myFont}>
+        <div
+          style={{
+            paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
+          }}
+        >
+          <Header />
+          <Timeline />
+          <RenderItemService />
+          <LabelAnythingelse />
+          <SelectedOutlet />
+          <Date timeslot={timeslot} color={color} />
+          <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+          <ServiceStylist color={color} />
+          <RenderNotes />
         </div>
-      ) : (
-        <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div
-            style={{
-              width: '40%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              backgroundColor: 'white',
-              height: '99.3vh',
-              borderRadius: '8px',
-              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-              overflowY: 'auto',
-            }}
-          >
-            <Header />
-            <Timeline />
-            <RenderItemService />
-            <LabelAnythingelse />
-            <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} />
-            <Time />
-            <ServiceStylist color={color} />
-            <RenderNotes />
-            <Price />
-            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
-          </div>
+        {responsiveDesign.height > 600 && <RenderNavigationBottom />}
+      </div>
+    ) : (
+      <div className={fontStyles.myFont} style={{ width: '100vw' }}>
+        <div
+          style={{
+            width: '40%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            height: '99.3vh',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            overflowY: 'auto',
+          }}
+        >
+          <Header />
+          <Timeline />
+          <RenderItemService />
+          <LabelAnythingelse />
+          <SelectedOutlet />
+          <Date timeslot={timeslot} color={color} />
+          <Time />
+          <ServiceStylist color={color} />
+          <RenderNotes />
+          <Price />
+          <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
         </div>
-      )}
-    </LoadingOverlayCustom>
-  );
+      </div>
+    )}
+  </LoadingOverlayCustom>
+);
 };
 
 export default Cart;

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import successsubmit from 'assets/gif/successsubmit.gif';
 import Paper from '@mui/material/Paper';
 import Confetti from 'react-confetti';
+import { CONSTANT } from 'helpers';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -19,6 +20,7 @@ const useWindowSize = () => {
 };
 
 const BookingSubmitted = () => {
+  const dispatch = useDispatch();
   const ref = createRef();
   const [showConfetti, setShowConfetti] = useState(true);
   const [width] = useWindowSize();
@@ -558,6 +560,7 @@ const BookingSubmitted = () => {
     return (
       <div
         onClick={() => {
+          dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
           window.location.href = changeFormatURl('/history');
         }}
         style={{
