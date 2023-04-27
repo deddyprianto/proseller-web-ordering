@@ -10,9 +10,15 @@ import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import RenderModifier from './RenderModifier';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const DetailAppointment = ({
+  isOpenModalDetail,
   color,
   styleSheet,
   setIsOpenModalDetail,
@@ -20,9 +26,13 @@ const DetailAppointment = ({
   handleCurrency,
   productId,
   convertTimeToStr,
+  settingAppoinment,
 }) => {
   // initial
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   //some state
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -193,13 +203,24 @@ const DetailAppointment = ({
       },
     },
     modifierOption: {
-      width: '90%',
+      width: '100%',
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      margin: 'auto',
-      padding: '5px 0px',
+      marginTop: '2px',
+    },
+    modalModif: {
+      '&.MuiTypography-root': {
+        padding: 0,
+        margin: 0,
+        marginTop: '10px',
+        marginBottom: '10px',
+      },
+      '&.MuiDialogContent-root': {
+        padding: 0,
+        margin: 0,
+      },
     },
   };
 
@@ -294,7 +315,7 @@ const DetailAppointment = ({
           <div
             style={{ color: color.primary, fontWeight: 700, fontSize: '18px' }}
           >
-            {handleCurrency(itemAppointment.retailPrice)}
+            {settingAppoinment && handleCurrency(itemAppointment.retailPrice)}
           </div>
           {/* <div
             style={{
@@ -332,7 +353,6 @@ const DetailAppointment = ({
       <div
         style={{
           ...styleSheet.gridStyle,
-          marginTop: '30px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -371,20 +391,24 @@ const DetailAppointment = ({
   };
 
   const RenderPrice = () => {
-    return (
-      <div style={styles.modifierOption}>
-        <div style={{ fontWeight: 700 }}>Price</div>
-        <div
-          style={{
-            fontWeight: 'bold',
-            color: 'rgba(255, 85, 99, 1)',
-            fontSize: '18px',
-          }}
-        >
-          {handleCurrency(totalPrice)}
+    if (settingAppoinment) {
+      return (
+        <div style={styles.modifierOption}>
+          <div style={{ fontWeight: 700 }}>Price</div>
+          <div
+            style={{
+              fontWeight: 'bold',
+              color: 'rgba(255, 85, 99, 1)',
+              fontSize: '18px',
+            }}
+          >
+            {handleCurrency(totalPrice)}
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   const RenderButtonPrice = () => {
@@ -402,7 +426,7 @@ const DetailAppointment = ({
           disabled={handleDisabledAddProductButton()}
           onClick={handleButtonCart}
           style={{
-            width: '90%',
+            width: '100%',
             borderRadius: '5px',
             fontSize: '13px',
             padding: '10px',
@@ -418,25 +442,41 @@ const DetailAppointment = ({
   };
   return (
     <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
-      <div className={fontStyles.myFont}>
-        <RenderHeader />
-        <RenderMainDetail />
-        <FormGroup>
-          <RenderAddOnLabel />
-          <RenderModifier
-            setSelectedProductModifiers={setSelectedProductModifiers}
-            selectedProductModifiers={selectedProductModifiers}
-            productModifiers={itemAppointment.productModifiers}
-            product={itemAppointment}
-          />
-        </FormGroup>
-        <div
-          style={{ position: 'sticky', bottom: 0, backgroundColor: '#F2F2F2' }}
+      <Dialog
+        className={fontStyles.myfont}
+        fullScreen={fullScreen}
+        fullWidth
+        maxWidth='md'
+        open={isOpenModalDetail}
+        onClose={() => setIsOpenModalDetail(false)}
+      >
+        <DialogTitle sx={styles.modalModif}>
+          <RenderHeader />
+        </DialogTitle>
+        <DialogContent sx={styles.modalModif}>
+          <RenderMainDetail />
+          <FormGroup>
+            <RenderAddOnLabel />
+            <RenderModifier
+              settingAppoinment={settingAppoinment}
+              setSelectedProductModifiers={setSelectedProductModifiers}
+              selectedProductModifiers={selectedProductModifiers}
+              productModifiers={itemAppointment.productModifiers}
+              product={itemAppointment}
+            />
+          </FormGroup>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            backgroundColor: '#F2F2F2',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
           <RenderPrice />
           <RenderButtonPrice />
-        </div>
-      </div>
+        </DialogActions>
+      </Dialog>
     </LoadingOverlayCustom>
   );
 };

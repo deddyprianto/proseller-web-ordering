@@ -3,11 +3,10 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import PlaceIcon from '@mui/icons-material/Place';
-import DropDownCustomSelect from './component/DropDownCustomSelect';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import { isEmptyObject } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import Date from './component/Date';
 import ServiceStylist from './component/ServiceStylist';
 import ButtonPrice from './component/ButtonPrice';
@@ -15,26 +14,20 @@ import RenderNotes from './component/RenderNotes';
 import { CONSTANT } from 'helpers';
 import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import Time from './component/Time';
+import screen from 'hooks/useWindowSize';
 
 const Cart = (props) => {
+  const responsiveDesign = screen();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [width] = useWindowSize();
-  const gadgetScreen = width < 980;
+
+  const gadgetScreen = responsiveDesign.width < 980;
   // some sl
+  const setting = useSelector((state) => state.order.setting);
+  const responseAddCart = useSelector(
+    (state) => state.appointmentReducer.responseAddCart
+  );
   const messageTimeSlot = useSelector(
     (state) => state.appointmentReducer.messageTimeSlot
   );
@@ -43,26 +36,19 @@ const Cart = (props) => {
     (state) => state.appointmentReducer.locationAppointment
   );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
-  const responseAddTocart = useSelector(
-    (state) => state.appointmentReducer.responseAddTocart
-  );
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-
-  // some Effect
+  // some eff
   useEffect(() => {
-    if (isEmptyObject(locationAppointment)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+    if (!isEmptyArray(outlet)) {
+      if (isEmptyObject(locationAppointment)) {
+        dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+      }
     }
   }, [outlet]);
-  useEffect(() => {
-    if (isEmptyObject(locationAppointment)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-    }
-  }, []);
 
   useEffect(() => {
     if (messageTimeSlot) {
@@ -87,11 +73,15 @@ const Cart = (props) => {
 
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
-      await dispatch(
-        OrderAction.getTimeSlotAppointment(locationAppointment.id)
-      );
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await dispatch(
+          OrderAction.getTimeSlotAppointment(locationAppointment.id)
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
     };
     if (!isEmptyObject(locationAppointment)) {
       loadData();
@@ -109,10 +99,14 @@ const Cart = (props) => {
       }
     };
     loadData();
-  }, [responseAddTocart]);
+  }, [responseAddCart]);
 
-  //some fn
-  const handleCurrency = (price) => {
+  // some fn
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
+  const handleCurrency = (value) => {
+    const price = value || 0;
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
         style: 'currency',
@@ -121,27 +115,6 @@ const Cart = (props) => {
 
       return result;
     }
-  };
-  const styleSheet = {
-    container: {
-      width: '40%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      backgroundColor: 'white',
-      height: '99.3vh',
-      borderRadius: '8px',
-      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      overflowY: 'auto',
-    },
-    gridStyle3Col: {
-      display: 'grid',
-      gridTemplateColumns: '50px 1fr 50px',
-      gridTemplateRows: '1fr',
-      gap: '0px 0px',
-      gridAutoFlow: 'row',
-      gridTemplateAreas: '". . ."',
-      cursor: 'pointer',
-    },
   };
   const changeFormatURl = (path) => {
     const url = window.location.href;
@@ -160,7 +133,8 @@ const Cart = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           cursor: 'pointer',
-          marginTop: '20px',
+          marginTop: '10px',
+          marginBottom: '10px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -177,7 +151,7 @@ const Cart = (props) => {
             margin: 0,
             justifySelf: 'start',
             fontWeight: 700,
-            fontSize: '20px',
+            fontSize: '18px',
             color: color.primary,
           }}
         >
@@ -192,7 +166,8 @@ const Cart = (props) => {
       <div
         style={{
           width: '100%',
-          marginTop: '35px',
+          marginTop: '15px',
+          marginBottom: '10px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -396,60 +371,35 @@ const Cart = (props) => {
       return null;
     }
   };
-
-  const Time = () => {
-    const date = useSelector((state) => state.appointmentReducer.date);
-    const filterTimeSlot = timeslot?.find((item) => item.date === date);
-    if (!messageTimeSlot) {
+  const Price = () => {
+    if (settingAppoinment?.settingValue) {
       return (
         <div
           style={{
-            width: '93%',
+            width: '95%',
             margin: 'auto',
-            marginTop: '20px',
-            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: '10px',
           }}
         >
-          <p style={{ fontWeight: 'bold', fontSize: '14px', color: 'black' }}>
-            Select Time
-          </p>
-          <div style={{ width: '100%' }}>
-            <DropDownCustomSelect timeList={filterTimeSlot?.timeSlot} />
+          <div style={{ fontWeight: 600, fontSize: '16px', color: 'black' }}>
+            Estimated Price
           </div>
-          <hr
+          <div
             style={{
-              backgroundColor: 'rgba(249, 249, 249, 1)',
-              margin: '20px 0px',
+              fontWeight: 'bold',
+              color: color.primary,
+              fontSize: '18px',
             }}
-          />
+          >
+            {handleCurrency(cartAppointment?.totalNettAmount)}
+          </div>
         </div>
       );
     } else {
       return null;
     }
-  };
-
-  const Price = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          paddingTop: '10px',
-        }}
-      >
-        <div style={{ fontWeight: 600, fontSize: '16px', color: 'black' }}>
-          Estimated Price
-        </div>
-        <div
-          style={{ fontWeight: 'bold', color: color.primary, fontSize: '18px' }}
-        >
-          {handleCurrency(cartAppointment?.totalNettAmount)}
-        </div>
-      </div>
-    );
   };
   const RenderItemService = () => {
     return (
@@ -469,6 +419,7 @@ const Cart = (props) => {
             key={item.id}
             item={item}
             setIsLoading={setIsLoading}
+            settingAppoinment={settingAppoinment?.settingValue}
           />
         ))}
         <hr
@@ -480,79 +431,110 @@ const Cart = (props) => {
       </div>
     );
   };
-  const ResponsiveLayout = () => {
-    if (gadgetScreen) {
-      return (
-        <div className={fontStyles.myFont}>
-          <div
-            style={{
-              paddingBottom: 130,
-            }}
-          >
-            <Header />
-            <Timeline />
-            <RenderItemService />
-            <LabelAnythingelse />
-            <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} />
-            <Time />
-            <ServiceStylist color={color} />
-            <RenderNotes />
-          </div>
-          <Paper
-            variant='elevation'
-            square={gadgetScreen}
-            elevation={0}
-            sx={
-              gadgetScreen
-                ? {
-                    zIndex: '999',
-                    width: '100%',
-                    margin: 0,
-                    top: 'auto',
-                    right: 'auto',
-                    bottom: gadgetScreen.height < 500 ? 0 : 70,
-                    left: 'auto',
-                    position: 'fixed',
-                    padding: '0px 10px',
-                    backgroundColor: '#F2F2F2',
-                  }
-                : {
-                    padding: 0,
-                    margin: 0,
-                  }
-            }
-          >
-            <Price />
-            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
-          </Paper>
-        </div>
-      );
-    } else {
-      return (
-        <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div style={styleSheet.container}>
-            <Header />
-            <Timeline />
-            <RenderItemService />
-            <LabelAnythingelse />
-            <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} />
-            <Time />
-            <ServiceStylist color={color} />
-            <RenderNotes />
-            <Price />
-            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
-          </div>
-        </div>
-      );
-    }
+  const RenderNavigationBottom = () => {
+    return (
+      <Paper
+        variant='elevation'
+        square={gadgetScreen}
+        elevation={0}
+        sx={
+          gadgetScreen
+            ? {
+                zIndex: '999',
+                width: '100%',
+                margin: 0,
+                top: 'auto',
+                right: 'auto',
+                bottom: responsiveDesign.height < 500 ? 0 : 70,
+                left: 'auto',
+                position: 'fixed',
+                padding: '0px 10px',
+                backgroundColor: '#F2F2F2',
+              }
+            : {
+                padding: 0,
+                margin: 0,
+              }
+        }
+      >
+        <Price />
+        <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+      </Paper>
+    );
   };
-  return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
-      <ResponsiveLayout />
-    </LoadingOverlayCustom>
-  );
+
+  const RenderMainContent = () => {
+    return (
+      <div style={{ height: '80vh ', overflowY: 'auto' }}>
+        <div
+          style={{
+            paddingBottom: 130,
+          }}
+        >
+          <RenderItemService />
+          <LabelAnythingelse />
+          <SelectedOutlet />
+          <Date timeslot={timeslot} color={color} />
+          <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+          <ServiceStylist color={color} />
+          <RenderNotes />
+        </div>
+        <RenderNavigationBottom />
+      </div>
+    );
+  };
+
+return (
+  <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+    {gadgetScreen ? (
+      <div className={fontStyles.myFont}>
+        <div
+          style={{
+            paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
+          }}
+        >
+          <Header />
+          <Timeline />
+          <RenderItemService />
+          <LabelAnythingelse />
+          <SelectedOutlet />
+          <Date timeslot={timeslot} color={color} />
+          <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+          <ServiceStylist color={color} />
+          <RenderNotes />
+        </div>
+        {responsiveDesign.height > 600 && <RenderNavigationBottom />}
+      </div>
+    ) : (
+      <div className={fontStyles.myFont} style={{ width: '100vw' }}>
+        <div
+          style={{
+            width: '40%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            height: '99.3vh',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            overflowY: 'auto',
+          }}
+        >
+          <Header />
+          <Timeline />
+          <RenderItemService />
+          <LabelAnythingelse />
+          <SelectedOutlet />
+          <Date timeslot={timeslot} color={color} />
+          <Time />
+          <ServiceStylist color={color} />
+          <RenderNotes />
+          <Price />
+          <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+        </div>
+      </div>
+    )}
+  </LoadingOverlayCustom>
+);
 };
 
 export default Cart;

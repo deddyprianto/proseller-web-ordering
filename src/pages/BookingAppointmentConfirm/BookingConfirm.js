@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
@@ -18,8 +18,10 @@ const useWindowSize = () => {
 };
 
 const BookingConfirm = (props) => {
+  const ref = createRef();
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
+  const setting = useSelector((state) => state.order.setting);
   const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -27,10 +29,15 @@ const BookingConfirm = (props) => {
     (state) => state.appointmentReducer.responseSubmit
   );
   // some fn
+  const settingAppoinmentShowPrice = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'EnableAdditionalInfoBookingSummary';
+  });
+
   const convertFormatDate = (dateStr) => {
-    // Create a Date object from the date string
     const date = new window.Date(dateStr);
-    // Define an array of month names
     const months = [
       'January',
       'February',
@@ -45,12 +52,8 @@ const BookingConfirm = (props) => {
       'November',
       'December',
     ];
-
-    // Get the month name and day of the month as numbers
     const monthName = months[date.getMonth()];
     const dayOfMonth = date.getDate();
-
-    // Determine the suffix for the day of the month
     let daySuffix;
     if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
       daySuffix = 'st';
@@ -62,7 +65,6 @@ const BookingConfirm = (props) => {
       daySuffix = 'th';
     }
 
-    // Create the formatted date string
     const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
 
     return formattedDate;
@@ -141,7 +143,8 @@ const BookingConfirm = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           cursor: 'pointer',
-          marginTop: gadgetScreen ? '25px' : '0px',
+          margin: '10px',
+          marginBottom: '10px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -158,7 +161,7 @@ const BookingConfirm = (props) => {
             margin: 0,
             justifySelf: 'start',
             fontWeight: 700,
-            fontSize: '20px',
+            fontSize: '18px',
             color: color.primary,
           }}
         >
@@ -172,7 +175,8 @@ const BookingConfirm = (props) => {
       <div
         style={{
           width: '100%',
-          marginTop: '35px',
+          marginTop: '10px',
+          marginBottom: '10px',
           fontSize: '14px',
           display: 'grid',
           gridTemplateColumns: '123px 1fr 99px',
@@ -278,7 +282,7 @@ const BookingConfirm = (props) => {
         style={{
           width: '93%',
           margin: 'auto',
-          marginTop: '40px',
+          marginTop: '20px',
           backgroundColor: `${color.primary}10`,
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
@@ -460,7 +464,7 @@ const BookingConfirm = (props) => {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   fontSize: '14px',
                   color: 'black',
                 }}
@@ -475,7 +479,9 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {handleCurrency(item.product.retailPrice)}
+                {settingAppoinmentShowPrice?.settingValue
+                  ? handleCurrency(item.product.retailPrice)
+                  : convertTimeToStr(item.product.duration)}
               </div>
             </div>
           ))}
@@ -494,7 +500,7 @@ const BookingConfirm = (props) => {
           >
             <div
               style={{
-                fontWeight: 500,
+                fontWeight: 600,
                 fontSize: '14px',
                 color: 'black',
               }}
@@ -509,144 +515,171 @@ const BookingConfirm = (props) => {
                 fontSize: '14px',
               }}
             >
-              {handleCurrency(responseSubmit.totalNettAmount)}
+              {settingAppoinmentShowPrice?.settingValue
+                ? handleCurrency(responseSubmit.totalNettAmount)
+                : convertTimeToStr(responseSubmit.totalDuration)}
             </div>
           </div>
         </div>
       </div>
     );
   };
+
   const Information = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '20px',
-          marginBottom: '20px',
-          backgroundColor: `${color.primary}10`,
-          borderRadius: '20px',
-          padding: '15px 0px',
-        }}
-      >
-        <div style={{ width: '90%', margin: 'auto' }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
-            Information
+    if (settingAppoinment?.settingValue) {
+      const settingTextInformation = setting.find((items) => {
+        return items.settingKey === 'AdditionalInfoBookingSummaryText';
+      });
+      return (
+        <div
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '20px',
+            marginBottom: '20px',
+            backgroundColor: `${color.primary}10`,
+            borderRadius: '20px',
+            padding: '15px 0px',
+          }}
+        >
+          <div style={{ width: '90%', margin: 'auto' }}>
+            <div
+              style={{ color: 'black', fontWeight: 500, fontSize: '14px' }}
+              ref={ref}
+              dangerouslySetInnerHTML={{
+                __html: settingTextInformation?.settingValue,
+              }}
+            />
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-            Price & Payment
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>Price above is estimation cannot be used as a reference</li>
-            <li>This booking can be paid at outlet</li>
-            <li>We only accept cashless payment</li>
-          </ul>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              marginTop: '10px',
-              color: 'black',
-            }}
-          >
-            Appointment
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>Please come 10 minutes before the appointment</li>
-            <li>Wearing mask is a must</li>
-          </ul>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              marginTop: '10px',
-              color: 'black',
-            }}
-          >
-            Cancellation Policy
-          </div>
-          <ul
-            style={{
-              fontSize: '14px',
-              color: 'black',
-              margin: 0,
-              marginLeft: '25px',
-              fontWeight: 500,
-            }}
-          >
-            <li>
-              If you need to make any changes to your reservation, please
-              contact us at least 24 hours in advance.
-            </li>
-          </ul>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   const Price = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '10px',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ fontWeight: 600, fontSize: '18px', color: 'black' }}>
-          Estimated Price
-        </div>
+    if (settingAppoinmentShowPrice?.settingValue) {
+      return (
         <div
-          style={{ fontWeight: 'bold', color: color.primary, fontSize: '18px' }}
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '10px',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
         >
-          {handleCurrency(responseSubmit?.totalNettAmount)}
+          <div style={{ fontWeight: 600, fontSize: '18px', color: 'black' }}>
+            Estimated Price
+          </div>
+          <div
+            style={{
+              fontWeight: 'bold',
+              color: color.primary,
+              fontSize: '18px',
+            }}
+          >
+            {handleCurrency(responseSubmit?.totalNettAmount)}
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
   const ButtonPrice = () => {
-    return (
-      <div
-        onClick={() => {
-          window.location.href = changeFormatURl('/bookingsubmitted');
-        }}
-        style={{
-          width: '93%',
-          margin: 'auto',
-          marginTop: '5px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: color.primary,
-          color: 'white',
-          borderRadius: '10px',
-          padding: '5px',
-          fontSize: '14px',
-          fontWeight: 600,
-          marginBottom: '5px',
-        }}
-      >
-        Confirm Booking
-      </div>
-    );
+    if (settingAppoinmentShowPrice?.settingValue) {
+      return (
+        <div
+          onClick={() => {
+            window.location.href = changeFormatURl('/bookingsubmitted');
+          }}
+          style={{
+            width: '93%',
+            margin: 'auto',
+            marginTop: '5px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: color.primary,
+            color: 'white',
+            borderRadius: '10px',
+            padding: '5px',
+            fontSize: '14px',
+            fontWeight: 600,
+            marginBottom: '5px',
+          }}
+        >
+          Confirm Booking
+        </div>
+      );
+    } else {
+      return (
+        <div style={{ padding: '10px 0px', width: '99%', margin: 'auto' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridTemplateRows: '1fr',
+              gridAutoColumns: '1fr',
+              gap: '0px 10px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'white',
+                border: `1px solid ${color.primary}`,
+                color: color.primary,
+                borderRadius: '10px',
+                padding: '5px',
+                fontSize: '14px',
+                fontWeight: 600,
+                marginBottom: '5px',
+              }}
+            >
+              Contact Us
+            </div>
+            <div
+              onClick={() => {
+                window.location.href = changeFormatURl('/bookingsubmitted');
+              }}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                borderRadius: '10px',
+                padding: '5px',
+                fontSize: '14px',
+                fontWeight: 600,
+                marginBottom: '5px',
+              }}
+            >
+              Confirm Booking
+            </div>
+          </div>
+          <p
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              textAlign: 'center',
+              padding: 0,
+              margin: 0,
+              color: 'black',
+            }}
+          >
+            Please contact us regarding the total payment
+          </p>
+        </div>
+      );
+    }
   };
   const RenderHr = () => {
     return (
@@ -694,15 +727,78 @@ const BookingConfirm = (props) => {
       </div>
     );
   };
+  const RenderMainContent = () => {
+    return (
+      <div style={{ height: '80vh ', overflowY: 'auto' }}>
+        <div
+          style={{
+            paddingBottom: 150,
+          }}
+        >
+          <BookingDetail />
+          <BookingNotes />
+          <RenderHr />
+          <ServiceDetail />
+          <Information />
+        </div>
+        <Paper
+          variant='elevation'
+          square={gadgetScreen}
+          elevation={0}
+          sx={
+            gadgetScreen
+              ? {
+                  zIndex: '999',
+                  width: '100%',
+                  margin: 0,
+                  top: 'auto',
+                  right: 'auto',
+                  bottom: gadgetScreen.height < 500 ? 0 : 70,
+                  left: 'auto',
+                  position: 'fixed',
+                  padding: '0px 10px',
+                  backgroundColor: settingAppoinmentShowPrice?.settingValue
+                    ? '#eaeaea'
+                    : 'white',
+                }
+              : {
+                  padding: 0,
+                  margin: 0,
+                }
+          }
+        >
+          <Price />
+          <ButtonPrice />
+        </Paper>
+      </div>
+    );
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont}>
-          <div
-            style={{
-              paddingBottom: 200,
-            }}
-          >
+        <div
+          className={fontStyles.myFont}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '77px 1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."',
+          }}
+        >
+          <div>
+            <Header />
+            <Timeline />
+          </div>
+          <RenderMainContent />
+        </div>
+      );
+    } else {
+      return (
+        <div className={fontStyles.myFont} style={{ width: '100vw' }}>
+          <div style={styleSheet.container}>
             <Header />
             <Timeline />
             <BookingDetail />
@@ -710,55 +806,8 @@ const BookingConfirm = (props) => {
             <RenderHr />
             <ServiceDetail />
             <Information />
-          </div>
-          <Paper
-            variant='elevation'
-            square={gadgetScreen}
-            elevation={0}
-            sx={
-              gadgetScreen
-                ? {
-                    zIndex: '999',
-                    width: '100%',
-                    margin: 0,
-                    top: 'auto',
-                    right: 'auto',
-                    bottom: gadgetScreen.height < 500 ? 0 : 70,
-                    left: 'auto',
-                    position: 'fixed',
-                    padding: '0px 10px',
-                    backgroundColor: '#F2F2F2',
-                  }
-                : {
-                    padding: 0,
-                    margin: 0,
-                  }
-            }
-          >
             <Price />
             <ButtonPrice />
-          </Paper>
-        </div>
-      );
-    } else {
-      return (
-        <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div style={styleSheet.container}>
-            <di
-              style={{
-                marginTop: '15%',
-              }}
-            >
-              <Header />
-              <Timeline />
-              <BookingDetail />
-              <BookingNotes />
-              <RenderHr />
-              <ServiceDetail />
-              <Information />
-              <Price />
-              <ButtonPrice />
-            </di>
           </div>
         </div>
       );

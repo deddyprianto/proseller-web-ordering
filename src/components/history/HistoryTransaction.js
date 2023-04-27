@@ -45,10 +45,7 @@ const HistoryTransaction = ({ countryCode }) => {
   }
   const RenderAnimationLoading = () => {
     return (
-      <div
-        className='lds-spinner'
-        style={{ marginTop: historyTransaction.length === 0 ? '200px' : '0px' }}
-      >
+      <div className='lds-spinner'>
         <div></div>
         <div></div>
         <div></div>

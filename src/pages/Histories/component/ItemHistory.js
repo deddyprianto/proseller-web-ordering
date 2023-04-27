@@ -18,7 +18,7 @@ const useWindowSize = () => {
   return size;
 };
 
-const ItemHistory = ({ item, color, tabName }) => {
+const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
@@ -232,6 +232,7 @@ const ItemHistory = ({ item, color, tabName }) => {
           handleCurrency={handleCurrency}
           item={item}
           setIsOpenModalDetail={setIsOpenModalDetail}
+          settingAppoinment={settingAppoinment}
         />
       </Dialog>
     </React.Fragment>

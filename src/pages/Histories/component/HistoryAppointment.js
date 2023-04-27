@@ -5,18 +5,23 @@ import Tab from '@mui/material/Tab';
 import fontStyles from '../style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
 import ItemHistory from './ItemHistory';
-import '../style/styles.module.css';
+import MyLoader from 'pages/Appointment/component/LoaderSkleton';
 
 const HistoryAppointment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [tabName, setTabName] = useState('SUBMITTED');
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
+  // some sl
+  const setting = useSelector((state) => state.order.setting);
   const bookingHistory = useSelector(
     (state) => state.appointmentReducer.bookingHistory
   );
   const color = useSelector((state) => state.theme.color);
   // some fn
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
   const getDate = () => {
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10);
@@ -152,24 +157,6 @@ const HistoryAppointment = () => {
       </div>
     );
   };
-  const RenderAnimationLoading = () => {
-    return (
-      <div className='lds-spinner' style={{ marginTop: '200px' }}>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    );
-  };
   const RenderItemHistory = () => {
     if (tabNameAPI === 'CONFIRMED') {
       if (tabName === 'UPCOMING') {
@@ -200,6 +187,7 @@ const HistoryAppointment = () => {
             item={item}
             color={color}
             tabName={tabName}
+            settingAppoinment={settingAppoinment?.settingValue}
           />
         ));
       } else {
@@ -220,7 +208,9 @@ const HistoryAppointment = () => {
     <React.Fragment>
       <RenderTabHeaderMobile />
       {isLoading ? (
-        <RenderAnimationLoading />
+        <div style={{ width: '95%', margin: 'auto' }}>
+          <MyLoader />
+        </div>
       ) : (
         <div style={{ height: '60vh', overflowY: 'auto' }}>
           <RenderItemHistory />

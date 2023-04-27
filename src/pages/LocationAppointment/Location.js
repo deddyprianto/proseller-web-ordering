@@ -14,6 +14,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -44,6 +45,10 @@ const Location = (props) => {
   }));
   const classes = useStyles();
   // some sl
+  const outlet = useSelector((state) => state.outlet.outlets);
+  const isLocationSelected = useSelector(
+    (state) => state.appointmentReducer.isLocationSelected
+  );
   const selectedLocation = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
@@ -89,11 +94,17 @@ const Location = (props) => {
   };
   // some Effect
   useEffect(() => {
+    if (isEmptyObject(selectedLocation)) {
+      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
+    }
+  }, [outlet]);
+
+  useEffect(() => {
     return history.listen((location) => {
       if (history.action === 'PUSH') {
         console.log(location.pathname);
         setLocationKeys([location.pathname]);
-        if (location.pathname !== '/location') {
+        if (location.pathname !== '/location' && isLocationSelected) {
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
             payload: true,
@@ -236,7 +247,7 @@ const Location = (props) => {
           />
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>
-              {selectedLocation.name}
+              {selectedLocation?.name}
             </div>
             <div
               style={{
@@ -329,6 +340,7 @@ const Location = (props) => {
       <div
         style={localStyle.container}
         onClick={() => {
+          dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
           dispatch({
             type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
             payload: '',
@@ -417,7 +429,7 @@ const Location = (props) => {
       <div
         style={{
           ...styleSheet.gridStyle,
-          marginTop: gadgetScreen ? '25px' : '0px',
+          marginTop: '25px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -458,7 +470,7 @@ const Location = (props) => {
     );
   };
 
-  const RenderRowListLocation = () => {
+  const RenderListLocation = () => {
     return (
       <div>
         <LocationSelected />
@@ -487,21 +499,17 @@ const Location = (props) => {
         >
           <RenderHeader />
           <RenderLabel />
-          <RenderRowListLocation />
+          <RenderListLocation />
         </div>
       );
     } else {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <di
-              style={{
-                marginTop: '15%',
-              }}
-            >
+            <di>
               <RenderHeader />
               <RenderLabel />
-              <RenderRowListLocation />
+              <RenderListLocation />
             </di>
           </div>
         </div>
@@ -588,6 +596,7 @@ const Location = (props) => {
           </button>
           <button
             onClick={() => {
+              dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: false });
               dispatch({
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
                 payload: false,

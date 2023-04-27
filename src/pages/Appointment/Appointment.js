@@ -68,6 +68,7 @@ const Appointment = (props) => {
   const classes = useStyles();
 
   // some sl
+  const setting = useSelector((state) => state.order.setting);
   const menuSidebar = useSelector((state) => state.theme.menu);
   const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
   const responseAddCart = useSelector(
@@ -97,6 +98,9 @@ const Appointment = (props) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
   // some fn
+  const settingAppoinment = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -124,7 +128,7 @@ const Appointment = (props) => {
       marginLeft: 'auto',
       marginRight: 'auto',
       backgroundColor: 'white',
-      height: '92vh',
+      height: showNotify ? '90vh' : '98vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       display: 'grid',
@@ -133,6 +137,7 @@ const Appointment = (props) => {
       gap: '0px 15px',
       gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
+      marginTop: '10px',
     },
     gridStyle: {
       display: 'grid',
@@ -298,7 +303,8 @@ const Appointment = (props) => {
     const localStyle = {
       container: {
         ...styleSheet.gridStyle,
-        marginTop: gadgetScreen ? '25px' : '0px',
+        marginTop: '10px',
+        marginBottom: '10px',
         alignItems: 'center',
         justifyItems: 'center',
       },
@@ -679,10 +685,12 @@ const Appointment = (props) => {
     return (
       <Box
         sx={{
-          width: '600px',
+          width: '580px',
+          marginBottom: '20px',
         }}
       >
         <Tabs
+          centered
           value={selectedCategory.name}
           onChange={handleChange}
           sx={styleSheet.indicator}
@@ -733,37 +741,72 @@ const Appointment = (props) => {
         alignItems: 'center',
       },
       label: { color: 'white', fontSize: '14px' },
-      icon: { color: 'white', marginRight: '10px' },
+      icon: { color: 'white', marginRight: '10px', fontSize: '20px' },
     };
-    return (
-      <div
-        onClick={() => {
-          window.location.href = changeFormatURl('/cartappointment');
-        }}
-        className={fontStyles.myFont}
-        style={localStyle.container}
-      >
-        <div style={localStyle.subContainer}>
-          <div style={localStyle.containerLabel}>
-            <CheckCircleIcon sx={localStyle.icon} />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                color: 'white',
-                fontSize: '14px',
-              }}
-            >
-              <div>{cartAppointment?.details?.length}</div>
-              <div style={{ marginLeft: '5px' }}>Service Selected</div>
+    if (showNotify) {
+      return (
+        <Paper
+          variant='elevation'
+          square={gadgetScreen}
+          elevation={0}
+          sx={
+            gadgetScreen
+              ? {
+                  zIndex: '999',
+                  width: '100%',
+                  margin: 0,
+                  top: 'auto',
+                  right: 'auto',
+                  bottom: gadgetScreen.height < 500 ? 0 : 70,
+                  left: 'auto',
+                  position: 'fixed',
+                }
+              : {
+                  padding: 0,
+                  margin: 0,
+                }
+          }
+        >
+          <div
+            onClick={() => {
+              window.location.href = changeFormatURl('/cartappointment');
+            }}
+            className={fontStyles.myFont}
+            style={localStyle.container}
+          >
+            <div style={localStyle.subContainer}>
+              <div style={localStyle.containerLabel}>
+                <CheckCircleIcon sx={localStyle.icon} />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'white',
+                    fontSize: '14px',
+                  }}
+                >
+                  <div>{cartAppointment?.details?.length}</div>
+                  <div style={{ marginLeft: '5px' }}>Service Selected</div>
+                </div>
+              </div>
+              <div
+                style={{
+                  ...localStyle.label,
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                }}
+              >
+                {settingAppoinment?.settingValue
+                  ? handleCurrency(cartAppointment?.totalNettAmount)
+                  : 'See all'}
+              </div>
             </div>
           </div>
-          <div style={{ ...localStyle.label, fontWeight: 'bold' }}>
-            {handleCurrency(cartAppointment?.totalNettAmount)}
-          </div>
-        </div>
-      </div>
-    );
+        </Paper>
+      );
+    } else {
+      return null;
+    }
   };
 
   const Services = () => {
@@ -792,7 +835,7 @@ const Appointment = (props) => {
             <RenderTabHeaderDekstop />
           )}
           {isLoading ? (
-            <MyLoader />
+            <RenderAnimationLoading />
           ) : (
             <React.Fragment>
               {productServicesAppointment.map((item) => {
@@ -801,6 +844,7 @@ const Appointment = (props) => {
                 );
                 return (
                   <ItemService
+                    settingAppoinment={settingAppoinment?.settingValue}
                     isCheckedService={isCheckedService}
                     setIsOpenModalDetail={setIsOpenModalDetail}
                     item={item?.product}
@@ -842,6 +886,27 @@ const Appointment = (props) => {
       return null;
     }
   };
+  const RenderMainContent = () => {
+    if (!isEmptyObject(selectedLocation)) {
+      return (
+        <div style={{ height: '80vh ', overflowY: 'auto' }}>
+          <div
+            style={{
+              paddingBottom: 100,
+            }}
+          >
+            <Label />
+            <Location />
+            <DropDownTime />
+            <Services />
+          </div>
+          <RendernNotifSuccess />
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
 
   const ResponsiveLayout = () => {
     const isNotifShowWithIphoneSE = showNotify && height <= 667;
@@ -852,70 +917,40 @@ const Appointment = (props) => {
     };
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont}>
+        <div
+          className={fontStyles.myFont}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '60px 1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."',
+          }}
+        >
           <Header />
-          {!isEmptyObject(selectedLocation) && (
-            <div
-              style={{
-                paddingBottom: 120,
-              }}
-            >
-              <Label />
-              <Location />
-              <DropDownTime />
-              <Services />
-            </div>
-          )}
-          {showNotify && (
-            <Paper
-              variant='elevation'
-              square={gadgetScreen}
-              elevation={0}
-              sx={
-                gadgetScreen
-                  ? {
-                      zIndex: '999',
-                      width: '100%',
-                      margin: 0,
-                      top: 'auto',
-                      right: 'auto',
-                      bottom: gadgetScreen.height < 500 ? 0 : 70,
-                      left: 'auto',
-                      position: 'fixed',
-                    }
-                  : {
-                      padding: 0,
-                      margin: 0,
-                    }
-              }
-            >
-              <RendernNotifSuccess />
-            </Paper>
-          )}
+          <RenderMainContent />
         </div>
       );
     } else {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <di
-              style={{
-                marginTop: '20px',
-              }}
-            >
-              <Header />
-              <Label />
-              <Location />
-              <Services />
-            </di>
+            <Header />
+            <Label />
+            <Location />
+            <DropDownTime />
+            <Services />
           </div>
+          <RendernNotifSuccess />
         </div>
       );
     }
   };
 
   return (
-    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+    <React.Fragment>
       <ResponsiveLayout />
       <Dialog
         fullWidth
@@ -1049,7 +1084,7 @@ const Appointment = (props) => {
           />
         </div>
       </Dialog>
-    </LoadingOverlayCustom>
+    </React.Fragment>
   );
 };
 

@@ -49,9 +49,13 @@ const ServiceStylist = ({ color }) => {
           <div
             style={{
               width: '100%',
-              flexWrap: 'wrap',
-              display: 'flex',
-              alignItems: 'center',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridTemplateRows: '1fr',
+              gridAutoColumns: '1fr',
+              gap: '10px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
               fontWeight: 500,
             }}
           >
@@ -63,16 +67,14 @@ const ServiceStylist = ({ color }) => {
                     type: CONSTANT.STAFFID_APPOINTMENT,
                     payload: item.id,
                   });
-                  setIsActiveStylist(item.name);
+                  setIsActiveStylist(item.id);
                 }}
                 style={{
-                  width: '50%',
+                  width: '100%',
                   display: 'flex',
-                  justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor:
-                    isActiveStylist === item.name && color.primary,
-                  color: isActiveStylist === item.name ? 'white' : 'black',
+                  backgroundColor: isActiveStylist === item.id && color.primary,
+                  color: isActiveStylist === item.id ? 'white' : 'black',
                   borderRadius: '8px',
                   padding: '10px',
                   fontSize: '14px',
@@ -92,7 +94,7 @@ const ServiceStylist = ({ color }) => {
                   }}
                   alt='logo'
                 />
-                <div style={{ lineHeight: '18px' }}>{item.name}</div>
+                <div>{item.name}</div>
               </div>
             ))}
           </div>

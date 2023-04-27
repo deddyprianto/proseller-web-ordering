@@ -32,7 +32,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
     <div
       onClick={handleSubmit}
       style={{
-        width: '93%',
+        width: '95%',
         margin: 'auto',
         display: 'flex',
         justifyContent: 'center',

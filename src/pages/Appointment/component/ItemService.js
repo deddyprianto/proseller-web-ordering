@@ -13,6 +13,7 @@ const ItemService = ({
   isCheckedService,
   productId,
   handleCurrency,
+  settingAppoinment,
 }) => {
   // some state
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
@@ -245,6 +246,7 @@ const ItemService = ({
               gap: '0px 0px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
+              padding: gadgetScreen ? '0px' : '0px 10px',
             }}
           >
             <div style={localStyle.containerImg}>
@@ -309,7 +311,7 @@ const ItemService = ({
             ) : (
               <div style={localStyle.containerPrice}>
                 <div style={localStyle.containerPrice.labelPrice}>
-                  {handleCurrency(item.retailPrice)}
+                  {settingAppoinment && handleCurrency(item.retailPrice)}
                 </div>
               </div>
             )}
@@ -332,24 +334,18 @@ const ItemService = ({
   return (
     <React.Fragment>
       <RenderItemService />
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-        open={isOpenModalDetail}
-        onClose={() => setIsOpenModalDetail(false)}
-      >
-        <DetailAppointment
-          productId={productId}
-          handleCurrency={handleCurrency}
-          color={color}
-          gadgetScreen={gadgetScreen}
-          styleSheet={styleSheet}
-          setIsOpenModalDetail={setIsOpenModalDetail}
-          itemAppointment={item}
-          convertTimeToStr={convertTimeToStr}
-        />
-      </Dialog>
+      <DetailAppointment
+        productId={productId}
+        handleCurrency={handleCurrency}
+        color={color}
+        gadgetScreen={gadgetScreen}
+        styleSheet={styleSheet}
+        setIsOpenModalDetail={setIsOpenModalDetail}
+        itemAppointment={item}
+        convertTimeToStr={convertTimeToStr}
+        isOpenModalDetail={isOpenModalDetail}
+        settingAppoinment={settingAppoinment}
+      />
     </React.Fragment>
   );
 };

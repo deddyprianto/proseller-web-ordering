@@ -7,6 +7,7 @@ const RenderModifierOptions = ({
   productModifier,
   selectedProductModifiers,
   setSelectedProductModifiers,
+  settingAppoinment,
 }) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const styles = {
@@ -148,7 +149,7 @@ const RenderModifierOptions = ({
             }
           />
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-            {handleCurrency(modifier.price)}
+            {settingAppoinment && handleCurrency(modifier.price)}
           </div>
         </div>
       );

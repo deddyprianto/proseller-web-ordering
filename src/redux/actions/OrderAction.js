@@ -917,7 +917,7 @@ const deleteItemAppointment = (addService, productId) => {
     });
     if (response.data.message) {
       dispatch({
-        type: CONSTANT.RESPONSEADDTOCART_APPOINTMENT,
+        type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
         payload: response.data.data,
       });
     }
