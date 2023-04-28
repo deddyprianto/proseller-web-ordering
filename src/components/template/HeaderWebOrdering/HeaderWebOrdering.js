@@ -170,6 +170,7 @@ const useStyles = (location) => {
     logoAndOuletName: {
       width: mobileSize ? '97px' : '9.5em',
       height: 50,
+      marginBottom: mobileSize ? 0 : '10px',
     },
   };
 
@@ -493,7 +494,7 @@ const HeaderWebOrdering = () => {
           </div> */}
         </Link>
       )}
-      {companyName !== 'PinkCity' && renderOutletNamed()}
+      {renderOutletNamed()}
     </div>
   );
   const renderRouteMenu = () => {
