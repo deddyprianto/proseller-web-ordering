@@ -2,7 +2,6 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
-import PlaceIcon from '@mui/icons-material/Place';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -188,6 +187,26 @@ const Location = (props) => {
       return null;
     }
   };
+  const PlaceIcon = () => {
+    return (
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='20'
+        height='20'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke={color.primary}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        className='feather feather-map-pin'
+      >
+        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
+        <circle cx={12} cy={10} r={3} />
+      </svg>
+    );
+  };
+
   const LocationSelected = () => {
     const localStyle = {
       containerAccordion: {
@@ -222,7 +241,6 @@ const Location = (props) => {
           margin: 'auto',
           borderRadius: '10px',
           padding: '10px 0px',
-          marginTop: '10px',
           marginBottom: '10px',
           border: '1px solid red',
         }}
@@ -238,13 +256,9 @@ const Location = (props) => {
             cursor: 'pointer',
           }}
         >
-          <PlaceIcon
-            style={{
-              justifySelf: 'center',
-              fontSize: '20px',
-              marginTop: '5px',
-            }}
-          />
+          <div style={{ justifySelf: 'center', marginTop: '6px' }}>
+            <PlaceIcon />
+          </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>
               {selectedLocation?.name}
@@ -364,13 +378,9 @@ const Location = (props) => {
             opacity: !isDisable ? 0.4 : 1,
           }}
         >
-          <PlaceIcon
-            style={{
-              justifySelf: 'center',
-              fontSize: '20px',
-              marginTop: '5px',
-            }}
-          />
+          <div style={{ justifySelf: 'center', marginTop: '6px' }}>
+            <PlaceIcon />
+          </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>{item.name}</div>
             <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
@@ -439,6 +449,7 @@ const Location = (props) => {
           onClick={() => {
             history.push('/appointment');
           }}
+          sx={{ color: color.primary }}
         />
         <p
           style={{
@@ -474,8 +485,14 @@ const Location = (props) => {
     return (
       <div>
         <LocationSelected />
-        <div style={{ margin: '10px 0px' }}>
-          <p style={{ marginLeft: '15px', color: 'black', fontWeight: 700 }}>
+        <div style={{ marginTop: '43px' }}>
+          <p
+            style={{
+              marginLeft: '15px',
+              color: 'black',
+              fontWeight: 700,
+            }}
+          >
             Other Location
           </p>
           {outlets.map((item) => (

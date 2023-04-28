@@ -23,8 +23,6 @@ import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
 import Box from '@mui/material/Box';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
 import Paper from '@mui/material/Paper';
