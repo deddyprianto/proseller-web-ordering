@@ -76,7 +76,7 @@ HistoryPending.defaultProps = {
 
 HistoryPending.propTypes = {
   dataPending: PropTypes.arrayOf(PropTypes.object),
-  dataPendingLength: PropTypes.string,
+  dataPendingLength: PropTypes.number,
 };
 
 export default HistoryPending;
