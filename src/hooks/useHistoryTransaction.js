@@ -34,7 +34,7 @@ export default function useHistoryTransaction({ take, skip, pageNumber }) {
           setIsEmptyData(true);
         }
         setLoading(false);
-        setHasMore(response.data.length > 0);
+        setHasMore(response.dataLength > response.data.length);
       } catch (error) {
         setError(error);
       }
