@@ -186,6 +186,7 @@ const HeaderWebOrdering = () => {
   const [showMenu, setShowMenu] = useState(true);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [logo, setLogo] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [basketLength, setBasketLength] = useState(0);
   const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
@@ -266,9 +267,10 @@ const HeaderWebOrdering = () => {
       return items.settingKey === 'Logo';
     });
     dispatch(OutletAction.fetchAllOutlet(true));
+    setCompanyName(infoCompany?.companyName);
     handleLogo(infoCompany, logoCompany);
     handleUpdateEnableOrdering(setEnableOrdering);
-  }, [setting]);
+  }, [setting, localStorage.getItem(`${config.prefix}_infoCompany`)]);
 
   useEffect(() => {
     if (history.location.pathname === '/') {
@@ -477,7 +479,7 @@ const HeaderWebOrdering = () => {
       }}
     >
       {logo && (
-        <Link style={styles.logoAndOuletName}>
+        <Link style={styles.logoAndOuletName} to='/'>
           <ImageContainer image={logo} />
           {/* <div
             style={{
@@ -491,7 +493,7 @@ const HeaderWebOrdering = () => {
           </div> */}
         </Link>
       )}
-      {renderOutletNamed()}
+      {companyName !== 'PinkCity' && renderOutletNamed()}
     </div>
   );
   const renderRouteMenu = () => {
@@ -521,8 +523,20 @@ const HeaderWebOrdering = () => {
       ? styles.wrapNavbarForMobile
       : styles.wrapNavbar;
     return (
-      <div style={styles.container}>
-        <div style={styleWarp}>
+      <div
+        style={
+          companyName === 'PinkCity'
+            ? { ...styles.container, backgroundColor: '#FFFFFF' }
+            : styles.container
+        }
+      >
+        <div
+          style={
+            companyName === 'PinkCity'
+              ? { ...styleWarp, backgroundColor: '#FFFFFF' }
+              : styleWarp
+          }
+        >
           {renderSiderBar()}
           {renderLogoAndOutletNamed()}
           {renderRouteMenu()}
@@ -535,6 +549,11 @@ const HeaderWebOrdering = () => {
   const onLogoImageLoaded = ({ img }) => {};
   return (
     <>
+      <span
+        data-toggle='modal'
+        data-target='#login-register-modal'
+        id='login-register-btn'
+      />
       {renderLoginRegister()}
       {renderNavbarResponsive()}
     </>

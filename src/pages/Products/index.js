@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
-import _ from "lodash";
-import { Link } from "react-router-dom";
-import Shimmer from "react-shimmer-effect";
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
+import Shimmer from 'react-shimmer-effect';
 
-import { ProductAction } from "../../redux/actions/ProductAction";
+import { ProductAction } from '../../redux/actions/ProductAction';
 
-import Product from "../../components/ordering/Product";
-import SearchBox from "../../components/ordering/SearchBox";
-import UpdateProductModal from "../../components/ordering/UpdateProductModal";
-import ModalProduct from "../../components/ordering/ModalProduct";
+import Product from '../../components/ordering/Product';
+import SearchBox from '../../components/ordering/SearchBox';
+import UpdateProductModal from '../../components/ordering/UpdateProductModal';
+import ModalProduct from '../../components/ordering/ModalProduct';
 
 import {
   getInitialProductValue,
   getFormattedPrice,
-} from "../../helpers/ProductHelper";
-import useFilter from "../../hooks/useFilter";
+} from '../../helpers/ProductHelper';
+import useFilter from '../../hooks/useFilter';
+import useMobileSize from 'hooks/useMobileSize';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.hostname.includes("emenu");
+const IS_EMENU = window.location.hostname.includes('emenu');
 
 export const Products = ({
   categories,
@@ -41,7 +42,7 @@ export const Products = ({
   setting,
 }) => {
   const classes = useStyles({ color: theme.color });
-
+  const mobileSize = useMobileSize();
   const { categoryId } = useParams();
   const [categoryNotFound, setCategoryNotFound] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
@@ -58,7 +59,7 @@ export const Products = ({
   useEffect(() => {
     if (selectedCategory) {
       if (_.isEmpty(selectedOutlet)) {
-        history.push("/outlets");
+        history.push('/outlets');
       } else {
         if (setting.ShowOrderingModeModalFirst) {
           fetchProducts(selectedCategory, selectedOutlet, 0, 100, orderingMode);
@@ -81,11 +82,14 @@ export const Products = ({
       }
     }
   }, [categories, selectedCategory, selectedOutlet]);
-  // console.log(filteredProducts, 'filteredProducts')
+
   return (
-    <div className="col-full" style={{ marginTop: "5rem", width: "100%" }}>
-      <div id="primary" className="content-area" style={{ paddingBottom: 100 }}>
-        <main id="main" className="site-main">
+    <div
+      className='col-full'
+      style={{ marginTop: mobileSize ? '7rem' : '10rem', width: '100%' }}
+    >
+      <div id='primary' className='content-area' style={{ paddingBottom: 100 }}>
+        <main id='main' className='site-main'>
           {showUpdateModal && (
             <UpdateProductModal
               color={theme.color.primary}
@@ -116,38 +120,38 @@ export const Products = ({
             <div>
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  margin: "1rem",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  margin: '1rem',
                 }}
               >
-                <Link to={"/menu"}>
+                <Link to={'/menu'}>
                   <div>
-                    <i className="fa fa-arrow-left" /> Back
+                    <i className='fa fa-arrow-left' /> Back
                   </div>
                 </Link>
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   {selectedCategory && selectedCategory.defaultImageURL && (
                     <img
                       src={selectedCategory.defaultImageURL}
                       alt={selectedCategory.name}
                       style={{
-                        width: "auto",
-                        height: "2.2rem",
+                        width: 'auto',
+                        height: '2.2rem',
                       }}
                     ></img>
                   )}
                   <h5
-                    style={{ margin: 0, marginLeft: "1rem" }}
-                    className="customer-group-name"
+                    style={{ margin: 0, marginLeft: '1rem' }}
+                    className='customer-group-name'
                   >
                     {selectedCategory &&
                       (selectedCategory.name || selectedCategory.term)}
                   </h5>
                 </div>
               </div>
-              <div style={{ margin: "1rem", marginBottom: 20 }}>
+              <div style={{ margin: '1rem', marginBottom: 20 }}>
                 <SearchBox />
               </div>
               {/* <div style={{ margin: "1rem" }}>
@@ -158,17 +162,17 @@ export const Products = ({
                   style={{ fontSize: "1.5rem" }}
                 ></input>
               </div> */}
-              <div style={{ marginTop: "1rem" }}>
+              <div style={{ marginTop: '1rem' }}>
                 {isLoading ? (
                   <div>
                     {SHIMMER_ARRAY.map((no) => (
                       <Shimmer key={no}>
                         <div
                           style={{
-                            width: "100%",
+                            width: '100%',
                             height: 100,
-                            alignSelf: "center",
-                            borderRadius: "8px",
+                            alignSelf: 'center',
+                            borderRadius: '8px',
                             marginBottom: 10,
                           }}
                         />
@@ -179,14 +183,14 @@ export const Products = ({
                   <div>{error.message}</div>
                 ) : (
                   <div
-                    className="full-width list-view columns-2 archive woocommerce-page html-change"
-                    id="product-catalog"
+                    className='full-width list-view columns-2 archive woocommerce-page html-change'
+                    id='product-catalog'
                     style={{ paddingTop: 30 }}
                   >
-                    <div className="tab-content">
-                      <div className="tab-pane active" id="h1-tab-products-2">
-                        <ul className="products">
-                          <div className="grid-products">
+                    <div className='tab-content'>
+                      <div className='tab-pane active' id='h1-tab-products-2'>
+                        <ul className='products'>
+                          <div className='grid-products'>
                             {filteredProducts &&
                               filteredProducts.map((product) => {
                                 const productInBasket =
@@ -196,8 +200,8 @@ export const Products = ({
                                     (item) => item.product.id === product.id
                                   );
                                 const label = productInBasket
-                                  ? "Update"
-                                  : "Add";
+                                  ? 'Update'
+                                  : 'Add';
                                 const quantity =
                                   productInBasket && productInBasket.quantity
                                     ? productInBasket.quantity
@@ -211,7 +215,7 @@ export const Products = ({
                                     showUpdateModal={(item) => {
                                       setSelectedProduct(item);
                                       setProductIsExistInBasket(
-                                        label === "Update"
+                                        label === 'Update'
                                       );
                                       setShowUpdateModal(true);
                                     }}
@@ -224,8 +228,8 @@ export const Products = ({
                         </ul>
                         {filteredProducts === null ? (
                           <h4
-                            style={{ textAlign: "center" }}
-                            className="customer-group-name"
+                            style={{ textAlign: 'center' }}
+                            className='customer-group-name'
                           >
                             Sorry, products not found :(
                           </h4>
@@ -266,11 +270,11 @@ const mapDispatchToProps = (dispatch) => {
           skip,
           take,
           outletID: `outlet::${outlet.id}`,
-          sortBy: "name",
-          sortDirection: "asc",
+          sortBy: 'name',
+          sortDirection: 'asc',
           filters: [
             {
-              id: "search",
+              id: 'search',
               value: category.term,
             },
           ],
@@ -281,8 +285,8 @@ const mapDispatchToProps = (dispatch) => {
           take,
           outletID: `outlet::${outlet.id}`,
           categoryID: `category::${category.id}`,
-          sortBy: "name",
-          sortDirection: "asc",
+          sortBy: 'name',
+          sortDirection: 'asc',
         };
       }
 
