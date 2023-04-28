@@ -18,8 +18,11 @@ import { CONSTANT } from 'helpers';
 import ModalAppointment from 'components/modalAppointment/ModalAppointment';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import LayoutTypeA from 'components/template/LayoutTypeA';
+import config from 'config';
 
 const base64 = require('base-64');
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -184,12 +187,23 @@ const Home = ({ ...props }) => {
   }, []);
 
   const renderProductListOrOutletSelection = () => {
+    let infoCompany = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
+    );
+
     if (
       props.setting.outletSelection === 'MANUAL' &&
       !props.defaultOutlet?.id &&
       !isEmenu
     ) {
       return <OutletSelection />;
+    } else if (infoCompany?.companyName === 'PinkCity') {
+      return (
+        <div style={styles.rootProduct}>
+          <Banner />
+          <LayoutTypeA />
+        </div>
+      );
     } else {
       return (
         <div style={styles.rootProduct}>
