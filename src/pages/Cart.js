@@ -490,6 +490,21 @@ const Cart = ({ ...props }) => {
 
           setIsSelectedOrderingMode(true);
         });
+    } else if (intersectOrderingMode.length < 1) {
+      Swal.fire({
+        title: '<p>No Ordering Mode Available</p>',
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: props.color?.primary,
+        width: '40em',
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
+        },
+      }).then(() => {
+        history.push('/outlets');
+      });
     } else {
       setOpenOrderingMode(true);
     }
