@@ -59,7 +59,7 @@ const InboxCard = (props) => {
         justifyContent: 'space-between',
         alignItems: 'center',
         borderRadius: 5,
-        marginBottom: 10,
+        marginBottom: 5,
         cursor: 'pointer',
         height: 80,
         width: '100%',

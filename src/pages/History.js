@@ -38,7 +38,7 @@ const History = (props) => {
       },
       gridStyle: {
         display: 'grid',
-        gridTemplateColumns: '50px 1fr 50px',
+        gridTemplateColumns: '28px 1fr 50px',
         gridTemplateRows: '1fr',
         gap: '0px 0px',
         gridAutoFlow: 'row',
@@ -95,7 +95,7 @@ const History = (props) => {
     const localStyle = {
       container: {
         ...styleSheet.gridStyle,
-        marginTop: '25px',
+        marginTop: '67px',
         alignItems: 'center',
         justifyItems: 'center',
       },
@@ -104,15 +104,14 @@ const History = (props) => {
         margin: 0,
         justifySelf: 'start',
         fontWeight: 700,
-        fontSize: '20px',
+        fontSize: '18px',
         color: color.primary,
       },
     };
     return (
       <div style={localStyle.container}>
         <ArrowBackIosIcon
-          sx={{ color: color.primary, marginLeft: '10px' }}
-          fontSize='large'
+          sx={{ color: color.primary, marginLeft: '10px', fontSize: '18px' }}
           onClick={() => {
             props.history.push('/');
           }}
@@ -122,39 +121,39 @@ const History = (props) => {
     );
   };
   const TabHistories = () => {
-    return (
-      <div
-        style={{
-          width: '92%',
-          margin: 'auto',
-          display: 'flex',
-          alignItems: 'center',
-          marginTop: '20px',
-        }}
-      >
-        <button
-          onClick={() => setTabStateButton('ordered')}
+    if (appointmentFeature) {
+      return (
+        <div
           style={{
+            width: '92%',
+            margin: 'auto',
             display: 'flex',
-            border:
-              tabStateButton === 'ordered'
-                ? 'none'
-                : `1px solid ${color.primary}`,
-            backgroundColor:
-              tabStateButton === 'ordered' ? color.primary : 'white',
-            color: tabStateButton === 'ordered' ? 'white' : color.primary,
-            justifyContent: 'center',
             alignItems: 'center',
-            padding: '7px 10px',
-            width: '100px',
-            marginRight: '10px',
-            fontWeight: 600,
-            fontSize: '14px',
+            marginTop: '20px',
           }}
         >
-          Orders
-        </button>
-        {appointmentFeature && (
+          <button
+            onClick={() => setTabStateButton('ordered')}
+            style={{
+              display: 'flex',
+              border:
+                tabStateButton === 'ordered'
+                  ? 'none'
+                  : `1px solid ${color.primary}`,
+              backgroundColor:
+                tabStateButton === 'ordered' ? color.primary : 'white',
+              color: tabStateButton === 'ordered' ? 'white' : color.primary,
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '7px 10px',
+              width: '100px',
+              marginRight: '10px',
+              fontWeight: 600,
+              fontSize: '14px',
+            }}
+          >
+            Orders
+          </button>
           <button
             onClick={() => setTabStateButton('appointment')}
             style={{
@@ -176,9 +175,11 @@ const History = (props) => {
           >
             Appointment
           </button>
-        )}
-      </div>
-    );
+        </div>
+      );
+    } else {
+      return null;
+    }
   };
   const RenderMain = () => {
     if (tabStateButton === 'ordered') {
