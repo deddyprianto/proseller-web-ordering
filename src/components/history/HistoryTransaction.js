@@ -70,8 +70,8 @@ const HistoryTransaction = ({ countryCode }) => {
           width: '95%',
           margin: 'auto',
           marginTop: '20px',
-          height: '55vh',
-          overflowY: 'scroll',
+          height: '75vh',
+          overflowY: 'auto',
         }}
       >
         <Grid
@@ -81,6 +81,7 @@ const HistoryTransaction = ({ countryCode }) => {
           alignItems='center'
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, md: 12 }}
+          sx={{ paddingBottom: '50px' }}
         >
           {historyTransaction.map((items, index) => {
             if (historyTransaction.length === index + 1) {

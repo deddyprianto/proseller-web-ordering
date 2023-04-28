@@ -58,12 +58,12 @@ const History = () => {
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
   }, []);
 
-  const RenderTabHeaderMobile = () => {
+  const RenderHeaderTab = () => {
     return (
       <div style={{ width: '100%' }}>
         <div
           style={{
-            marginTop: '30px',
+            marginTop: '15px',
             width: '100%',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -107,7 +107,7 @@ const History = () => {
     );
   };
 
-  const RenderConditionalCP = () => {
+  const RenderMain = () => {
     if (stateTabs === 'ordered') {
       return <HistoryTransaction countryCode={companyInfo?.countryCode} />;
     } else if (stateTabs === 'pendingorder') {
@@ -123,8 +123,8 @@ const History = () => {
 
   return (
     <div className={fontStyles.myFont}>
-      <RenderTabHeaderMobile />
-      <RenderConditionalCP />
+      <RenderHeaderTab />
+      <RenderMain />
     </div>
   );
 };
