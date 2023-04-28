@@ -154,7 +154,7 @@ const WebOrderingCategories = ({
         {categories.map((item, i) => (
           <li
             id={`cat-${i}`}
-            lassName="nav-item category-item"
+            className="nav-item category-item"
             style={{
               cursor: "pointer",
               marginRight: 40,
