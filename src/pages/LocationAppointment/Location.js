@@ -11,29 +11,15 @@ import { CONSTANT } from 'helpers';
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { isEmptyObject } from 'helpers/CheckEmpty';
+import screen from 'hooks/useWindowSize';
 
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
 const Location = (props) => {
-  const [openModalMap, setOpenModalMap] = useState(false);
   // some initial
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const dispatch = useDispatch();
   const history = useHistory();
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   // some st
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
@@ -44,10 +30,15 @@ const Location = (props) => {
   }));
   const classes = useStyles();
   // some sl
-  const outlet = useSelector((state) => state.outlet.outlets);
-  const isLocationSelected = useSelector(
-    (state) => state.appointmentReducer.isLocationSelected
+  const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
+  const menuSidebar = useSelector((state) => state.theme.menu);
+  const indexFooter = useSelector(
+    (state) => state.appointmentReducer.indexFooter
   );
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
+  const outlet = useSelector((state) => state.outlet.outlets);
   const selectedLocation = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
@@ -63,34 +54,6 @@ const Location = (props) => {
     return urlConvert;
   };
 
-  const [width] = useWindowSize();
-  const gadgetScreen = width < 980;
-
-  const styleSheet = {
-    container: {
-      width: '45%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      backgroundColor: 'white',
-      height: '99.3vh',
-      borderRadius: '8px',
-      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
-      overflowY: 'auto',
-    },
-    gridStyle: {
-      display: 'grid',
-      gridTemplateColumns: '50px 1fr 70px',
-      gridTemplateRows: '1fr',
-      gap: '0px 0px',
-      gridAutoFlow: 'row',
-      gridTemplateAreas: '". . ."',
-    },
-  };
   // some Effect
   useEffect(() => {
     if (isEmptyObject(selectedLocation)) {
@@ -103,7 +66,10 @@ const Location = (props) => {
       if (history.action === 'PUSH') {
         console.log(location.pathname);
         setLocationKeys([location.pathname]);
-        if (location.pathname !== '/location' && isLocationSelected) {
+        if (
+          location.pathname !== '/location' &&
+          !isEmptyObject(cartAppointment)
+        ) {
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
             payload: true,
@@ -299,7 +265,7 @@ const Location = (props) => {
           onClick={() => setOpenDropDownTimeSelected(!openDropDownTimeSelected)}
           style={localStyle.containerOpenNow}
         >
-          <AccessTimeIcon style={{ fontSize: '20px' }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
@@ -386,14 +352,16 @@ const Location = (props) => {
             <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
               {item?.address}
             </div>
-            <div style={localStyle.containerAccordion}>
-              <div
-                className={fontStyles.myFont}
-                style={localStyle.labelSeeDirection}
-              >
-                See Direction
+            {item?.latitude > 0 && item?.longitude > 0 && (
+              <div style={localStyle.containerAccordion}>
+                <div
+                  className={fontStyles.myFont}
+                  style={localStyle.labelSeeDirection}
+                >
+                  See Direction
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div
             style={{
@@ -420,7 +388,7 @@ const Location = (props) => {
           </div>
         </div>
         <div style={localStyle.containerOpenNow}>
-          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             {!isDisable ? 'Closed Today' : 'Open Now'}
           </div>
@@ -438,7 +406,12 @@ const Location = (props) => {
     return (
       <div
         style={{
-          ...styleSheet.gridStyle,
+          display: 'grid',
+          gridTemplateColumns: '50px 1fr 70px',
+          gridTemplateRows: '1fr',
+          gap: '0px 0px',
+          gridAutoFlow: 'row',
+          gridTemplateAreas: '". . ."',
           marginTop: '25px',
           alignItems: 'center',
           justifyItems: 'center',
@@ -482,8 +455,14 @@ const Location = (props) => {
   };
 
   const RenderListLocation = () => {
+    let filterOutletSelected = [];
+    if (!isEmptyObject(selectedLocation)) {
+      filterOutletSelected = outlets.filter(
+        (item) => item.id !== selectedLocation.id
+      );
+    }
     return (
-      <div>
+      <React.Fragment>
         <LocationSelected />
         <div style={{ marginTop: '43px' }}>
           <p
@@ -495,7 +474,7 @@ const Location = (props) => {
           >
             Other Location
           </p>
-          {outlets.map((item) => (
+          {filterOutletSelected.map((item) => (
             <ListLocations
               key={item.name}
               item={item}
@@ -503,7 +482,7 @@ const Location = (props) => {
             />
           ))}
         </div>
-      </div>
+      </React.Fragment>
     );
   };
 
@@ -522,7 +501,23 @@ const Location = (props) => {
     } else {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div style={styleSheet.container}>
+          <div
+            style={{
+              width: '45%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              backgroundColor: 'white',
+              height: '99.3vh',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gridTemplateRows: '1fr 85px',
+              gap: '0px 15px',
+              gridTemplateAreas: '"."\n    "."',
+              overflowY: 'auto',
+            }}
+          >
             <di>
               <RenderHeader />
               <RenderLabel />
@@ -618,7 +613,14 @@ const Location = (props) => {
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
                 payload: false,
               });
-              window.location.href = changeFormatURl('/appointment');
+              let path;
+              menuSidebar.navBar.forEach((item, i) => {
+                if (i === indexPath) {
+                  path = item.path;
+                }
+              });
+              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
+              window.location.href = changeFormatURl(path);
             }}
             className={fontStyles.myFont}
             style={{

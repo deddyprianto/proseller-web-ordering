@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import PlaceIcon from '@mui/icons-material/Place';
 import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -26,19 +25,7 @@ import Box from '@mui/material/Box';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
 import Paper from '@mui/material/Paper';
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import screen from 'hooks/useWindowSize';
 
 const Appointment = (props) => {
   // some state
@@ -58,8 +45,8 @@ const Appointment = (props) => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const [width, height] = useWindowSize();
-  const gadgetScreen = width < 980;
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -279,7 +266,25 @@ const Appointment = (props) => {
       }
     });
   }, [locationKeys]);
-
+  const PlaceIcon = () => {
+    return (
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='20'
+        height='20'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke={color.primary}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        className='feather feather-map-pin'
+      >
+        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
+        <circle cx={12} cy={10} r={3} />
+      </svg>
+    );
+  };
   const IconSearch = () => {
     return (
       <svg
@@ -448,14 +453,14 @@ const Appointment = (props) => {
             cursor: 'pointer',
           }}
         >
-          <PlaceIcon
+          <div
             style={{
               justifySelf: 'center',
-              fontSize: '20px',
               marginTop: '5px',
-              color: 'black',
             }}
-          />
+          >
+            <PlaceIcon />
+          </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 600, color: 'black' }}>
               {selectedLocation.name}
@@ -509,7 +514,7 @@ const Appointment = (props) => {
           style={localStyle.containerOpenNow}
           onClick={() => setOpenDropDownTime(!openDropDownTime)}
         >
-          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
@@ -907,12 +912,6 @@ const Appointment = (props) => {
   };
 
   const ResponsiveLayout = () => {
-    const isNotifShowWithIphoneSE = showNotify && height <= 667;
-    const isNotifShowWithIphone14 = showNotify && height >= 844;
-    const styleAppliedToDevice = {
-      height: showNotify ? '77vh' : '85vh',
-      overflowY: 'auto',
-    };
     if (gadgetScreen) {
       return (
         <div
