@@ -4,7 +4,7 @@ import { HistoryAction } from 'redux/actions/HistoryAction';
 
 export default function useHistoryTransaction({ take, skip, pageNumber }) {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [historyTransaction, setHistoryTransaction] = useState([]);
   const [hasMore, setHasMore] = useState(false);
@@ -21,22 +21,36 @@ export default function useHistoryTransaction({ take, skip, pageNumber }) {
             page: pageNumber,
           })
         );
+
         if (response.ResultCode === 200) {
           setHistoryTransaction((prevTransaction) => {
             if (hasMore) {
-              return [...new Set([...prevTransaction, ...response.data])];
+              return [
+                ...new Map(
+                  [...prevTransaction, ...response.data].map((item) => [
+                    item['id'],
+                    item,
+                  ])
+                ).values(),
+              ];
             } else {
               return [...new Set([...response.data])];
             }
           });
         }
+
         if (response.data.length === 0) {
           setIsEmptyData(true);
         }
-        setLoading(false);
-        setHasMore(response.dataLength > response.data.length);
+
+        const totalPage = Math.ceil(response.dataLength / take);
+        response.data.length
+          ? setHasMore(totalPage > pageNumber)
+          : setHasMore(false);
       } catch (error) {
         setError(error);
+      } finally {
+        setLoading(false);
       }
     };
     loadData();

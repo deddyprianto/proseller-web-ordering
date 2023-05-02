@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
@@ -19,21 +19,27 @@ const HistoryTransaction = ({ countryCode }) => {
       pageNumber,
     });
 
-  const observer = useRef();
-  const lastEl = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setSkip((prev) => prev + 10);
-          setPageNumber((prev) => prev + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
+  const gridRef = useRef();
+
+  useEffect(() => {
+    if (loading) return;
+    let tempRef = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        setSkip((prev) => prev + 10);
+        setPageNumber((prev) => prev + 1);
+      }
+    });
+    if (gridRef.current) {
+      observer.observe(gridRef.current);
+      tempRef = gridRef.current;
+    }
+
+    return () => {
+      if (tempRef) observer.unobserve(tempRef);
+    };
+  }, [loading, hasMore]);
 
   if (historyTransaction.length === 0 && !loading) {
     return (
@@ -87,7 +93,7 @@ const HistoryTransaction = ({ countryCode }) => {
             if (historyTransaction.length === index + 1) {
               return (
                 <Grid
-                  ref={lastEl}
+                  ref={gridRef}
                   item
                   xs={4}
                   md={6}
