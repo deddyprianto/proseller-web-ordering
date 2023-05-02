@@ -9,8 +9,6 @@ import HistoryPending from 'components/history/HistoryPending';
 const History = () => {
   const dispatch = useDispatch();
   const [stateTabs, setStateTabs] = useState('ordered');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTransaction, setIsTransaction] = useState(false);
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -43,16 +41,12 @@ const History = () => {
       );
       if (response.resultCode === 200) {
         setDataPending(response.data);
-        if (response.data.dataPendingLength > 0) {
-          setIsTransaction(false);
-        }
       }
     };
     getDataBasketPending();
   }, [stateTabs]);
 
   useEffect(() => {
-    setIsLoading(true);
     localStorage.removeItem(`${config.prefix}_dataBasket`);
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
