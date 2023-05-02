@@ -474,7 +474,7 @@ const Cart = (props) => {
           <RenderItemService />
           <LabelAnythingelse />
           <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} />
+          <Date timeslot={timeslot} color={color} isLoading={isLoading} />
           <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
           <ServiceStylist color={color} />
           <RenderNotes />
@@ -498,7 +498,7 @@ return (
           <RenderItemService />
           <LabelAnythingelse />
           <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} />
+          <Date timeslot={timeslot} color={color} isLoading={isLoading} />
           <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
           <ServiceStylist color={color} />
           <RenderNotes />
@@ -524,7 +524,7 @@ return (
           <RenderItemService />
           <LabelAnythingelse />
           <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} />
+          <Date timeslot={timeslot} color={color} isLoading={isLoading} />
           <Time />
           <ServiceStylist color={color} />
           <RenderNotes />

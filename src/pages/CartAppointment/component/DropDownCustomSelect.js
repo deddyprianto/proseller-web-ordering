@@ -1,7 +1,4 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Dropdown,
   DropdownToggle,
@@ -15,10 +12,18 @@ import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const DropDownCustomSelect = ({ timeList }) => {
-  const timeActiveDropDown = useSelector((state) => state.appointmentReducer.timeActiveDropDown);
+  const timeActiveDropDown = useSelector(
+    (state) => state.appointmentReducer.timeActiveDropDown
+  );
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
+  // some eff
+  useEffect(() => {
+    if (timeList?.length > 0) {
+      dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: timeList[0] });
+    }
+  }, [timeList]);
 
   const renderTimeListDropdown = () => {
     return timeList?.map((item) => {
@@ -46,7 +51,10 @@ const DropDownCustomSelect = ({ timeList }) => {
             }}
             onClick={() => {
               dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: item });
-              dispatch( {type:CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT , payload:item});
+              dispatch({
+                type: CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT,
+                payload: item,
+              });
               setDropdownOpen(false);
             }}
           >
