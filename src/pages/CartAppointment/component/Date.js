@@ -126,7 +126,7 @@ const Date = ({ timeslot, color, isLoading }) => {
     return dateSorted;
   };
 
-  const RenderListDate = () => {
+  const renderListDate = () => {
     if (isLoading) {
       return <LoaderSkeleton />;
     } else if (!messageTimeSlot) {
@@ -233,7 +233,7 @@ const Date = ({ timeslot, color, isLoading }) => {
   };
   return (
     <React.Fragment>
-      <RenderListDate />
+      {renderListDate()}
       <Dialog
         classes={{ paper: classes.paper }}
         fullWidth={false}
