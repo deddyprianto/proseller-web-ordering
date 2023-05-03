@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
@@ -31,14 +31,11 @@ const Appointment = (props) => {
   // some state
   const [locationKeys, setLocationKeys] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [messageLoading, setMessageLoading] = useState('Please wait...');
   const [showNotify, setShowNotify] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [cutPrice, setCutPrice] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [value, setValue] = useState(0);
 
   // initial
   const history = useHistory();
@@ -95,9 +92,6 @@ const Appointment = (props) => {
 
       return result;
     }
-  };
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
   };
 
   const changeFormatURl = (path) => {
@@ -659,7 +653,6 @@ const Appointment = (props) => {
         >
           <Tabs
             value={selectedCategory.name}
-            onChange={handleChange}
             sx={styleSheet.indicatorForMobileView}
             variant='scrollable'
             scrollButtons='auto'
@@ -695,7 +688,6 @@ const Appointment = (props) => {
         <Tabs
           centered
           value={selectedCategory.name}
-          onChange={handleChange}
           sx={styleSheet.indicator}
           variant='scrollable'
           scrollButtons='auto'
@@ -1025,7 +1017,6 @@ const Appointment = (props) => {
             onClick={async () => {
               if (cartAppointment?.details?.length > 0) {
                 setIsLoading(true);
-                setMessageLoading('Delete your cart...');
                 await dispatch(OrderAction.deleteCartAppointment());
                 setIsLoading(false);
               }
