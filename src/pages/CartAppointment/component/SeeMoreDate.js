@@ -252,10 +252,10 @@ const SeeMoreDate = ({
   };
 
   const renderDeliveryDateItem = (item) => {
-    const itemDate = item.split(' ');
-    const date = Number(itemDate[2]);
-    const month = itemDate[1];
-    const year = itemDate[0];
+    const splitItem = item.split(' ');
+    const date = Number(splitItem[2]);
+    const month = splitItem[1];
+    const year = splitItem[0];
     const combineDateNMonth = moment()
       .year(year)
       .month(month)

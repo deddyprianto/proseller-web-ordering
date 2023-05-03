@@ -256,8 +256,6 @@ const FooterWebOrdering = () => {
       return 'none';
     } else if (location.pathname === '/ordertrackhistory') {
       return 'none';
-    } else if (location.pathname === '/location') {
-      return 'none';
     } else {
       return '';
     }

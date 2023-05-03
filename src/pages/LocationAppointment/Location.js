@@ -493,7 +493,10 @@ const Location = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont}>
+        <div
+          className={fontStyles.myFont}
+          style={{ height: '90vh', overflowY: 'auto' }}
+        >
           <RenderHeader />
           <RenderLabel />
           <RenderListLocation />
