@@ -1,11 +1,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import DropDownCustomSelect from './DropDownCustomSelect';
+import LoaderSkeleton from './LoaderSkeleton';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const Time = ({ messageTimeSlot, timeslot }) => {
   const date = useSelector((state) => state.appointmentReducer.date);
   const filterTimeSlot = timeslot?.find((item) => item.date === date);
-  if (!messageTimeSlot) {
+  if (isEmptyArray(timeslot)) {
+    return <LoaderSkeleton />;
+  } else if (!messageTimeSlot) {
     return (
       <div
         style={{

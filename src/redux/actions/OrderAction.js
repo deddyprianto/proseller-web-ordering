@@ -929,16 +929,22 @@ const getTimeSlotAppointment = (outletId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
     try {
+      dispatch({
+        type: CONSTANT.TIME_SLOT_APPOINTMENT,
+        payload: [],
+      });
       const response = await axios.get(`${url}timeslot/${outletId}`, {
         headers: {
           Authorization: `Bearer ${account.accessToken.jwtToken}`,
           'Content-Type': 'application/json',
         },
       });
-      dispatch({
-        type: CONSTANT.TIME_SLOT_APPOINTMENT,
-        payload: response.data.data,
-      });
+      if (response.data.message === 'Timeslot retrieved successfully') {
+        dispatch({
+          type: CONSTANT.TIME_SLOT_APPOINTMENT,
+          payload: response.data.data,
+        });
+      } 
       return response.data;
     } catch (error) {
       dispatch({

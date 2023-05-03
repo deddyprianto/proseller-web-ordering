@@ -12,7 +12,7 @@ import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import LoaderSkeleton from './LoaderSkeleton';
 
-const Date = ({ timeslot, color, isLoading }) => {
+const Date = ({ timeslot, color }) => {
   const [isConfirmButtonPressed, setIsConfirmButtonPressed] = useState(false);
   const [isOpenModalDate, setIsOpenModalDate] = useState(false);
   const dispatch = useDispatch();
@@ -127,7 +127,7 @@ const Date = ({ timeslot, color, isLoading }) => {
   };
 
   const renderListDate = () => {
-    if (isLoading) {
+    if (isEmptyArray(timeslot)) {
       return <LoaderSkeleton />;
     } else if (!messageTimeSlot) {
       return (
