@@ -24,6 +24,9 @@ const Cart = (props) => {
 
   const gadgetScreen = responsiveDesign.width < 980;
   // some sl
+  const responseSubmit = useSelector(
+    (state) => state.appointmentReducer.responseSubmit
+  );
   const setting = useSelector((state) => state.order.setting);
   const responseAddCart = useSelector(
     (state) => state.appointmentReducer.responseAddCart
@@ -50,6 +53,23 @@ const Cart = (props) => {
     }
   }, [outlet]);
 
+  useEffect(() => {
+    if (responseSubmit.error) {
+      Swal.fire({
+        icon: 'info',
+        iconColor: '#333',
+        title: responseSubmit.error,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color.primary,
+        customClass: {
+          confirmButton: fontStyles.buttonSweetAlert,
+          icon: fontStyles.customIconColor,
+        },
+      });
+    }
+  }, [responseSubmit]);
+  
   useEffect(() => {
     if (messageTimeSlot) {
       Swal.fire({
