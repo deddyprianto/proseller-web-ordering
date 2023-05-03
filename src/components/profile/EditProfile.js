@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/no-access-state-in-setstate */
-/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
@@ -267,95 +264,39 @@ class EditProfile extends Component {
       payload.newPhoneNumber = this.state.dataCustomer.phoneNumber;
     if (this.state.defaultEdit.email)
       payload.newEmail = this.state.dataCustomer.email;
-    let listName = '';
-    for (const key in payload) {
-      let check = this.validationField(key, payload[key]);
-      if (!check.status) listName += check.displayName + ', ';
-    }
-    const nricField = payload['nric(last4digits)'];
-    if (
-      payload.birthDate === '' ||
-      payload.gender === '' ||
-      payload.outletsignup === '' ||
-      payload.street === '' ||
-      payload.unitNo === '' ||
-      nricField === ''
-    ) {
-      let objNotice = {};
-      if (payload.birthDate === '') {
-        objNotice = { ...objNotice, Birthdate: payload.birthDate };
-      }
-      if (payload.gender === '') {
-        objNotice = { ...objNotice, Gender: payload.gender };
-      }
-      if (payload.outletsignup === '') {
-        objNotice = { ...objNotice, 'Outlet Sign UP': payload.outletsignup };
-      }
-      if (payload.street === '') {
-        objNotice = { ...objNotice, Street: payload.street };
-      }
-      if (payload.unitNo === '') {
-        objNotice = { ...objNotice, 'Unit No.': payload.unitNo };
-      }
-      if (payload['nric(last4digits)'] === '') {
-        objNotice = {
-          ...objNotice,
-          'NRIC (Last 4 Digits)': payload['nric(last4digits)'],
-        };
-      }
 
-      const nameField = Object.keys(objNotice);
+    account.idToken.payload = this.state.dataCustomer;
 
-      const elementArrayPassed = nameField.map((item, index) => {
-        if (nameField.length === 1) {
-          return `${item}`;
-        } else if (nameField.length - 1 === index) {
-          return `and ${item}`;
-        } else if (nameField.length === 2) {
-          return `${item}`;
-        } else {
-          return `${item},`;
-        }
-      });
+    let response = await this.props.dispatch(
+      CustomerAction.updateCustomerProfile(payload)
+    );
+
+    if (response.ResultCode === 200) {
+      await this.props.dispatch(
+        AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN)
+      );
+      lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
+      let message = 'Profile Updated';
+      if (this.state.editPassword) message = 'Profile & Password Updated';
 
       Swal.fire({
-        icon: 'warning',
-        title: 'Warning Field',
-        text: `Field ${elementArrayPassed.join(' ')} must be fulfilled.`,
-        showConfirmButton: true,
+        icon: 'success',
+        timer: 2000,
+        title: message,
+        showConfirmButton: false,
       });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } else {
-      account.idToken.payload = this.state.dataCustomer;
-      let response = await this.props.dispatch(
-        CustomerAction.updateCustomerProfile(payload)
-      );
-      if (response.ResultCode === 200) {
-        await this.props.dispatch(
-          AuthActions.setData({ Data: account }, CONSTANT.KEY_AUTH_LOGIN)
-        );
-        lsStore(`${config.prefix}_account`, encryptor.encrypt(account), true);
-        let message = 'Profile Updated';
-        if (this.state.editPassword) message = 'Profile & Password Updated';
-
-        Swal.fire({
-          icon: 'success',
-          timer: 2000,
-          title: message,
-          showConfirmButton: false,
-        });
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          timer: 1500,
-          title: response.message,
-          showConfirmButton: false,
-        });
-      }
-      this.setState({ isLoading: false });
+      Swal.fire({
+        icon: 'error',
+        timer: 1500,
+        title: response.message,
+        showConfirmButton: false,
+      });
     }
+
     this.setState({ isLoading: false });
   }
 
@@ -627,25 +568,26 @@ class EditProfile extends Component {
       return true;
     }
   }
-  handledisableButton(payload) {
-    if (payload.birthDate === '') {
-      return true;
-    } else if (payload.gender === '') {
-      return true;
-    } else if (payload.outletsignup === '') {
-      return true;
-    } else if (payload.street === '') {
-      return true;
-    } else if (!payload.unitNo) {
-      return true;
-    } else if (payload['nric(last4digits)'] === '') {
-      return true;
-    } else {
-      return false;
-    }
+  handledisableButton() {
+    const customFieldFilled = this.props.isCustomFieldHaveValue.every(
+      (item) => {
+        if (item.mandatory) {
+          return item.children
+            ? item.children.every(
+                (child) =>
+                  this.props.isAllFieldHasBeenFullFiled[child.fieldName]
+              )
+            : this.props.isAllFieldHasBeenFullFiled[item.fieldName];
+        } else {
+          return true;
+        }
+      }
+    );
+
+    return !customFieldFilled;
   }
   render() {
-    let { loadingShow, titleEditAccount, isLoading, dataCustomer } = this.state;
+    let { loadingShow, titleEditAccount, isLoading } = this.state;
     return (
       <LoadingOverlay active={isLoading} spinner text='Loading...'>
         <div
@@ -687,7 +629,7 @@ class EditProfile extends Component {
                   <div style={{ marginTop: -20 }}>
                     {this.viewPage(this.props.fields)}
                     <Button
-                      disabled={this.handledisableButton(dataCustomer)}
+                      disabled={this.handledisableButton()}
                       className='button'
                       style={{
                         width: '100%',
@@ -720,6 +662,8 @@ const mapStateToProps = (state) => {
     account: state.auth.account.idToken.payload,
     fields: state.customer.fields,
     setting: state.order.setting,
+    isAllFieldHasBeenFullFiled: state.customer.isAllFieldHasBeenFullFiled,
+    isCustomFieldHaveValue: state.customer.isCustomFieldHaveValue,
   };
 };
 
@@ -728,4 +672,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);
-
