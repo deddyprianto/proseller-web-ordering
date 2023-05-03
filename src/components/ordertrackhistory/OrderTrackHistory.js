@@ -77,7 +77,11 @@ const OrderTrackHistory = () => {
                 {handleCurrency(basket?.trackorder?.data?.totalNettAmount)}
               </p>
               <div style={{ marginLeft: '10px', marginTop: '7px' }}>
-                <img src={VectorDown} style={{ marginBottom: '5px' }} />
+                <img
+                  src={VectorDown}
+                  style={{ marginBottom: '5px' }}
+                  alt='vector_down'
+                />
               </div>
             </div>
           </div>
@@ -227,10 +231,10 @@ const OrderTrackHistory = () => {
             </div>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0, margin: 0 }}>
-            {basket?.trackorder?.data?.details.map((item) => {
+            {basket?.trackorder?.data?.details.map((item, i) => {
               return (
                 <div
-                  key={item?.productID}
+                  key={item?.productID || i}
                   className={style.myFont}
                   style={{
                     width: '100%',
@@ -333,7 +337,10 @@ const OrderTrackHistory = () => {
                       </ul>
                     </div>
                     <div>
-                      <img src={renderImageProduct(item, color)} />
+                      <img
+                        src={renderImageProduct(item, color)}
+                        alt='product_image'
+                      />
                     </div>
                   </div>
                   <div
@@ -352,25 +359,27 @@ const OrderTrackHistory = () => {
                     />
                   </div>
                   <table>
-                    <tr>
-                      <td
-                        className={style.title}
-                        style={{
-                          textAlign: 'left',
-                          width: '85%',
-                          display: '-webkit-box',
-                          WebkitLineClamp: '3',
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          padding: 0,
-                          paddingLeft: '10px',
-                          margin: 0,
-                        }}
-                      >
-                        <span style={{ fontWeight: 700 }}>Notes: </span>
-                        {item?.remark}
-                      </td>
-                    </tr>
+                    <tbody>
+                      <tr>
+                        <td
+                          className={style.title}
+                          style={{
+                            textAlign: 'left',
+                            width: '85%',
+                            display: '-webkit-box',
+                            WebkitLineClamp: '3',
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            padding: 0,
+                            paddingLeft: '10px',
+                            margin: 0,
+                          }}
+                        >
+                          <span style={{ fontWeight: 700 }}>Notes: </span>
+                          {item?.remark}
+                        </td>
+                      </tr>
+                    </tbody>
                   </table>
                 </div>
               );
@@ -393,10 +402,10 @@ const OrderTrackHistory = () => {
   };
 
   const renderTimeLineComponent = ({ i, item, color, matches, arrData }) => {
-    console.log('dedd =>', item);
     const time = formatAMPM(new Date(item.date));
     return (
       <div
+        key={i}
         style={{
           display: 'grid',
           gridTemplateColumns: '70px 50px 1fr',
@@ -443,6 +452,7 @@ const OrderTrackHistory = () => {
               <img
                 src={IconChecklis}
                 style={{ backgroundColor: color.primary, borderRadius: '50%' }}
+                alt='ic_checklist'
               />
             )}
           </div>
@@ -550,6 +560,30 @@ const OrderTrackHistory = () => {
     );
   };
 
+  const cartProductItem = (props) => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '16px',
+        }}
+      >
+        <p className={style.title2}>{props.title}</p>
+        <p className={style.title}>{props.value}</p>
+      </div>
+    );
+  };
+
+  const tableNoChecker = () => {
+    if (basket?.trackorder?.data?.orderingMode === 'DINEIN') {
+      return basket?.trackorder?.data?.tableNo;
+    }
+    return;
+  };
+
   const renderCartProduct = () => {
     return (
       <div
@@ -564,19 +598,18 @@ const OrderTrackHistory = () => {
         }}
       >
         <p style={{ fontWeight: 700 }}>Ordering Details</p>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <p className={style.title2}>Ordering Type</p>
-          <p className={style.title}>
-            {basket?.trackorder?.data?.orderingMode}
-          </p>
-        </div>
+
+        {cartProductItem({
+          title: 'Ordering Type',
+          value: basket?.trackorder?.data?.orderingMode,
+        })}
+
+        {(basket?.trackorder?.data?.queueNo ||
+          basket?.trackorder?.data?.tableNo) &&
+          cartProductItem({
+            title: `${tableNoChecker() ? 'Table No.' : 'Queue No.'}`,
+            value: tableNoChecker() || basket?.trackorder?.data?.queueNo,
+          })}
 
         <div
           style={{
@@ -589,40 +622,49 @@ const OrderTrackHistory = () => {
               <p className={style.title2}>Customer Detail</p>
 
               <table>
-                <tr>
-                  <td style={{ padding: 0, margin: 0 }} className={style.title}>
-                    {basket?.trackorder?.data?.deliveryAddress?.name}
-                    <span style={{ marginLeft: '5px', marginRight: '5px' }}>
-                      |
-                    </span>
-                    {basket?.trackorder?.data?.deliveryAddress?.phoneNo}, <br />
-                    {basket?.trackorder?.data?.deliveryAddress?.email}
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    className={style.title}
-                    style={{
-                      textAlign: 'left',
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '3',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {basket?.trackorder?.data?.deliveryAddress?.address ||
-                      basket?.data?.deliveryAddress?.addressName}
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, margin: 0 }} className={style.title}>
-                    {basket?.trackorder?.data?.deliveryAddress?.unitNo},
-                    {basket?.trackorder?.data?.deliveryAddress?.postalCode}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{ padding: 0, margin: 0 }}
+                      className={style.title}
+                    >
+                      {basket?.trackorder?.data?.deliveryAddress?.name}
+                      <span style={{ marginLeft: '5px', marginRight: '5px' }}>
+                        |
+                      </span>
+                      {basket?.trackorder?.data?.deliveryAddress?.phoneNo},{' '}
+                      <br />
+                      {basket?.trackorder?.data?.deliveryAddress?.email}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      className={style.title}
+                      style={{
+                        textAlign: 'left',
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '3',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                    >
+                      {basket?.trackorder?.data?.deliveryAddress?.address ||
+                        basket?.data?.deliveryAddress?.addressName}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style={{ padding: 0, margin: 0 }}
+                      className={style.title}
+                    >
+                      {basket?.trackorder?.data?.deliveryAddress?.unitNo},
+                      {basket?.trackorder?.data?.deliveryAddress?.postalCode}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </>
           )}
@@ -663,35 +705,19 @@ const OrderTrackHistory = () => {
           </div>
         )}
 
-        <div
-          style={{
-            margin: '20px 0 0 0',
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <p className={style.title2}>Date & Time</p>
-          <p className={style.title}>
-            {basket?.trackorder?.data?.orderActionDate} at{' '}
-            {basket?.trackorder?.data?.orderActionTime}
-          </p>
-        </div>
-        <div
-          style={{
-            margin: '20px 0 0 0',
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <p className={style.title2}>Order Status</p>
-          <p className={style.title}>
-            {basket?.trackorder?.data?.status.split('_').join(' ')}
-          </p>
-        </div>
+        {cartProductItem({
+          title: 'Date & Time',
+          value: `${
+            basket?.trackorder?.data?.orderActionDate +
+            ' at ' +
+            basket?.trackorder?.data?.orderActionTime
+          }`,
+        })}
+
+        {cartProductItem({
+          title: 'Order Status',
+          value: basket?.trackorder?.data?.status.split('_').join(' '),
+        })}
       </div>
     );
   };
@@ -975,7 +1001,7 @@ const OrderTrackHistory = () => {
       </div>
     );
   };
-  console.log('%cdedd =>', 'color: green;', 'RE-RENDERS');
+
   return (
     <div style={{ width: '100vw' }}>
       <div
