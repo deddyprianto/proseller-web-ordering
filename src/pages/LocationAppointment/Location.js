@@ -209,6 +209,7 @@ const Location = (props) => {
           padding: '10px 0px',
           marginBottom: '10px',
           border: '1px solid red',
+          marginTop: '16px',
         }}
       >
         <div
