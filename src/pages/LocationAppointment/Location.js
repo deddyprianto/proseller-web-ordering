@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
@@ -161,7 +161,7 @@ const Location = (props) => {
         height='20'
         viewBox='0 0 24 24'
         fill='none'
-        stroke={color.primary}
+        stroke='black'
         strokeWidth={1.5}
         strokeLinecap='round'
         strokeLinejoin='round'
@@ -209,7 +209,6 @@ const Location = (props) => {
           padding: '10px 0px',
           marginBottom: '10px',
           border: '1px solid red',
-          marginTop: '16px',
         }}
       >
         <div
@@ -260,13 +259,15 @@ const Location = (props) => {
                 </div>
               )}
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
+          <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
+            800m
+          </div>
         </div>
         <div
           onClick={() => setOpenDropDownTimeSelected(!openDropDownTimeSelected)}
           style={localStyle.containerOpenNow}
         >
-          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
@@ -389,7 +390,7 @@ const Location = (props) => {
           </div>
         </div>
         <div style={localStyle.containerOpenNow}>
-          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             {!isDisable ? 'Closed Today' : 'Open Now'}
           </div>
@@ -611,14 +612,7 @@ const Location = (props) => {
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
                 payload: false,
               });
-              let path;
-              menuSidebar.navBar.forEach((item, i) => {
-                if (i === indexPath) {
-                  path = item.path;
-                }
-              });
-              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
-              window.location.href = changeFormatURl(path);
+              window.location.href = changeFormatURl('/appointment');
             }}
             className={fontStyles.myFont}
             style={{
