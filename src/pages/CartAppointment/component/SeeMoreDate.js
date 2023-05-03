@@ -6,6 +6,7 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { CONSTANT } from 'helpers';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const SeeMoreDate = ({
   color,
@@ -256,15 +257,15 @@ const SeeMoreDate = ({
     const date = Number(splitItem[2]);
     const month = splitItem[1];
     const year = splitItem[0];
-    const combineDateNMonth = moment()
+    const availableDateFromLocal = moment()
       .year(year)
       .month(month)
       .date(date)
       .format('YYYYMMDD');
 
-    const years = combineDateNMonth.slice(0, 4);
-    const months = combineDateNMonth.slice(4, 6);
-    const days = combineDateNMonth.slice(6, 8);
+    const years = availableDateFromLocal.slice(0, 4);
+    const months = availableDateFromLocal.slice(4, 6);
+    const days = availableDateFromLocal.slice(6, 8);
     const formattedDate = `${years}-${months}-${days}`;
     const isActive = dateRedux === formattedDate;
     const isThisMonth = selectedMonth === month;
@@ -273,7 +274,9 @@ const SeeMoreDate = ({
       const arr = item.date.split('-');
       const stringToInt = arr.join('');
 
-      return combineDateNMonth === stringToInt;
+      return (
+        availableDateFromLocal === stringToInt && !isEmptyArray(item.timeSlot)
+      );
     });
 
     const styleFontDate = !isThisMonth
