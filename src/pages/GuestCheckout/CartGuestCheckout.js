@@ -91,11 +91,6 @@ const CartGuestCheckout = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-  // const styleDrawerPaper = {
-  //   '& .MuiDrawer-paper': {
-  //     width: !matches ? '50%' : '100%',
-  //   },
-  // };
 
   const basket = useSelector((state) => state.guestCheckoutCart.data);
   const saveEditResponse = useSelector(
@@ -231,7 +226,6 @@ const CartGuestCheckout = () => {
       setOpenOrderingMode(false);
     } else {
       handleOpenOrderingMode();
-      // setOpenOrderingMode(true);
     }
   }, [basket]);
 
@@ -378,8 +372,7 @@ const CartGuestCheckout = () => {
       const convertPhoneNumberTostring = values.phoneNo.toString();
       let val = convertPhoneNumberTostring.split();
       val.unshift(phoneCountryCode);
-      const finalValues = { ...values, phoneNo: val.join('') };
-      // handleSaveAddressModeGuestCheckout(finalValues);
+
       resetForm();
       Swal.fire({
         position: 'top',
@@ -390,7 +383,7 @@ const CartGuestCheckout = () => {
       });
     },
   });
-  const validateEmailRegex = /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const validateEmailRegex = /^[\w-.+]+@([\w-]+\.)+[\w-]{2,4}$/;
 
   let email = formik.values.email?.toLowerCase();
   const formRegexMail = validateEmailRegex.test(email);
@@ -550,15 +543,6 @@ const CartGuestCheckout = () => {
     localStorage.removeItem(`${config.prefix}_locationPinned`);
   };
 
-  const handleSubtotalForGuestCheckout = () => {
-    if (basket?.totalDiscountAmount !== 0) {
-      const subTotalAfterDiscount =
-        basket?.totalGrossAmount - basket.totalDiscountAmount;
-      return subTotalAfterDiscount;
-    }
-    return basket?.totalGrossAmount;
-  };
-
   const handleFilter = (value) => {
     return value === 'TRUE';
   };
@@ -624,6 +608,21 @@ const CartGuestCheckout = () => {
             payload: { deliveryAddress: null },
           });
         });
+    } else if (intersectOrderingMode.length < 1) {
+      Swal.fire({
+        title: '<p>No Ordering Mode Available</p>',
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color?.primary,
+        width: '40em',
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
+        },
+      }).then(() => {
+        history.push('/outlets');
+      });
     } else {
       setOpenOrderingMode(true);
     }
@@ -1553,14 +1552,13 @@ const CartGuestCheckout = () => {
       type: CONSTANT.SET_DELIVERY_PROVIDER_GUEST_CHECKOUT,
       payload: item,
     });
-    const response = await dispatch(
+    await dispatch(
       OrderAction.changeOrderingModeForGuestCheckout({
         orderingMode: 'DELIVERY',
         provider: item,
         guestID: basket.guestID,
       })
     );
-    console.log(response);
     setIsLoading(false);
   };
   const deliveryIcon = (colorState) => {
@@ -2152,7 +2150,7 @@ const CartGuestCheckout = () => {
               }}
             >
               <div style={{ width: '30px', paddingTop: '5px' }}>
-                <img src={iconSeru} />
+                <img src={iconSeru} alt='ic_seru' />
               </div>
               <p
                 style={{
