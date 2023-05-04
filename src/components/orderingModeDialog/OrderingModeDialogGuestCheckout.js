@@ -7,9 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Grid from '@mui/material/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { OutletAction } from 'redux/actions/OutletAction';
@@ -27,8 +25,11 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
   );
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
 
-  const [orderingModeActive, setOrderingModeActive] = useState();
-  const [itemOrderingMode, setItemOrderingMode] = useState({});
+  const orderingModeActive = useSelector(
+    (state) => state.order.orderingModeActive
+  );
+  const itemOrderingMode = useSelector((state) => state.order.itemOrderingMode);
+
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px' },
   }));
@@ -143,7 +144,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           stroke='white'
           strokeWidth='6'
           strokeLinecap='round'
-          strokelinejoin='round'
+          strokeLinejoin='round'
           fill={color.primary}
         />
         <path
@@ -151,7 +152,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           stroke='white'
           strokeWidth='6'
           strokeLinecap='round'
-          strokelinejoin='round'
+          strokeLinejoin='round'
           fill={color.primary}
         />
         <path
@@ -159,7 +160,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           stroke='white'
           strokeWidth='6'
           strokeLinecap='round'
-          strokelinejoin='round'
+          strokeLinejoin='round'
           fill={color.primary}
         />
       </svg>
@@ -330,8 +331,8 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
         <div
           key={item.name}
           onClick={() => {
-            setItemOrderingMode(item);
-            setOrderingModeActive(item);
+            dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
+            dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
             dispatch({
               type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
               payload: '',
@@ -465,7 +466,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
 };
 
 OrderingModeDialog.propTypes = {
-  idGuestCheckout: PropTypes.func.isRequired,
+  idGuestCheckout: PropTypes.string.isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };

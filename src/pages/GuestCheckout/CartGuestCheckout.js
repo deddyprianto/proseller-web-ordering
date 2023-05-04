@@ -221,13 +221,16 @@ const CartGuestCheckout = () => {
   }, [orderingModeGuestCheckout]);
 
   useEffect(() => {
-    const isBasketEmpty = basket?.message === 'Cart it empty.';
-    if (isBasketEmpty || orderingModeGuestCheckout) {
-      setOpenOrderingMode(false);
-    } else {
-      handleOpenOrderingMode();
-    }
-  }, [basket]);
+    const checkOrderingMode = async () => {
+      if (!isEmptyArray(basket.details)) {
+        !orderingModeGuestCheckout
+          ? handleOpenOrderingMode()
+          : handleNoAvailableOrderingMode();
+      }
+    };
+
+    checkOrderingMode();
+  }, [basket.details?.length]);
 
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
@@ -548,6 +551,64 @@ const CartGuestCheckout = () => {
   };
 
   const handleOpenOrderingMode = async () => {
+    const intersectOrderingMode = await getIntersectOrderingMode();
+
+    if (intersectOrderingMode.length === 1 && !orderingModeGuestCheckout) {
+      intersectOrderingMode.forEach(async (item) => {
+        await dispatch(
+          OrderAction.changeOrderingModeForGuestCheckout({
+            guestID: idGuestCheckout,
+            orderingMode: item.name,
+            provider: {},
+          })
+        );
+        dispatch({
+          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+          payload: item.name,
+        });
+        dispatch({
+          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
+          payload: item,
+        });
+        dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
+        dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
+        dispatch({
+          type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
+          payload: { deliveryAddress: null },
+        });
+      });
+    } else if (intersectOrderingMode.length < 1) {
+      modalNoAvailableOrderingMode();
+    } else {
+      setOpenOrderingMode(true);
+    }
+  };
+
+  const handleNoAvailableOrderingMode = async () => {
+    const intersectOrderingMode = await getIntersectOrderingMode();
+    if (intersectOrderingMode.length < 1) {
+      modalNoAvailableOrderingMode();
+    }
+  };
+
+  const modalNoAvailableOrderingMode = () => {
+    Swal.fire({
+      title: '<p>No Ordering Mode Available</p>',
+      html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
+      allowOutsideClick: false,
+      confirmButtonText: 'OK',
+      confirmButtonColor: color?.primary,
+      width: '40em',
+      customClass: {
+        confirmButton: fontStyleCustom.buttonSweetAlert,
+        title: fontStyleCustom.fontTitleSweetAlert,
+      },
+    }).then(() => {
+      history.push('/outlets');
+    });
+  };
+
+  const getIntersectOrderingMode = async () => {
     const data = await dispatch(
       OutletAction?.fetchSingleOutlet(basket?.outlet)
     );
@@ -583,49 +644,7 @@ const CartGuestCheckout = () => {
       orderingSetting?.AllowedOrderingMode?.some((item) => item === mode.name)
     );
 
-    if (intersectOrderingMode.length === 1) {
-      !orderingModeGuestCheckout &&
-        intersectOrderingMode.forEach(async (item) => {
-          await dispatch(
-            OrderAction.changeOrderingModeForGuestCheckout({
-              guestID: idGuestCheckout,
-              orderingMode: item.name,
-              provider: {},
-            })
-          );
-          dispatch({
-            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-            payload: item.name,
-          });
-          dispatch({
-            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
-            payload: item,
-          });
-          dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
-          dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
-          dispatch({
-            type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
-            payload: { deliveryAddress: null },
-          });
-        });
-    } else if (intersectOrderingMode.length < 1) {
-      Swal.fire({
-        title: '<p>No Ordering Mode Available</p>',
-        html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: color?.primary,
-        width: '40em',
-        customClass: {
-          confirmButton: fontStyleCustom.buttonSweetAlert,
-          title: fontStyleCustom.fontTitleSweetAlert,
-        },
-      }).then(() => {
-        history.push('/outlets');
-      });
-    } else {
-      setOpenOrderingMode(true);
-    }
+    return intersectOrderingMode;
   };
 
   const renderTitleNameForCart = () => {
