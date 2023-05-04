@@ -366,17 +366,15 @@ const Cart = ({ ...props }) => {
 
   useEffect(() => {
     const checkLoginAndOrderingMode = async () => {
-      if (
-        !props.orderingMode &&
-        !isEmptyArray(props.basket.details) &&
-        props.isLoggedIn
-      ) {
-        handleOpenOrderingMode();
+      if (!isEmptyArray(props.basket.details) && props.isLoggedIn) {
+        !props.orderingMode
+          ? handleOpenOrderingMode()
+          : handleNoAvailableOrderingMode();
       }
     };
 
     checkLoginAndOrderingMode();
-  }, []);
+  }, [props.basket.details?.length]);
 
   useEffect(() => {
     const handleRemoveOrderingMode = async () => {
@@ -454,60 +452,70 @@ const Cart = ({ ...props }) => {
   const handleOpenOrderingMode = async () => {
     const intersectOrderingMode = await getIntersectOrderingMode();
 
-    if (intersectOrderingMode.length === 1) {
-      !isSelectedOrderingMode &&
-        intersectOrderingMode.forEach(async (item) => {
-          props.dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
-          props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
+    if (intersectOrderingMode.length === 1 && !isSelectedOrderingMode) {
+      intersectOrderingMode.forEach(async (item) => {
+        props.dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
+        props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
 
-          props.dispatch({
-            type: 'SET_ORDERING_MODE',
-            payload: item.name,
-          });
-
-          const responseChangeOrderingMode = await props.dispatch(
-            OrderAction.changeOrderingMode({
-              orderingMode: item.name,
-              provider: props.selectedDeliveryProvider
-                ? props.selectedDeliveryProvider
-                : {},
-            })
-          );
-
-          await props.dispatch(
-            OrderAction.setData(
-              item.displayName,
-              'SET_ORDERING_MODE_DISPlAY_NAME'
-            )
-          );
-
-          await props.dispatch(
-            OrderAction.setData(
-              responseChangeOrderingMode.data,
-              CONSTANT.DATA_BASKET
-            )
-          );
-
-          setIsSelectedOrderingMode(true);
+        props.dispatch({
+          type: 'SET_ORDERING_MODE',
+          payload: item.name,
         });
-    } else if (intersectOrderingMode.length < 1) {
-      Swal.fire({
-        title: '<p>No Ordering Mode Available</p>',
-        html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: props.color?.primary,
-        width: '40em',
-        customClass: {
-          confirmButton: fontStyleCustom.buttonSweetAlert,
-          title: fontStyleCustom.fontTitleSweetAlert,
-        },
-      }).then(() => {
-        history.push('/outlets');
+
+        const responseChangeOrderingMode = await props.dispatch(
+          OrderAction.changeOrderingMode({
+            orderingMode: item.name,
+            provider: props.selectedDeliveryProvider
+              ? props.selectedDeliveryProvider
+              : {},
+          })
+        );
+
+        await props.dispatch(
+          OrderAction.setData(
+            item.displayName,
+            'SET_ORDERING_MODE_DISPlAY_NAME'
+          )
+        );
+
+        await props.dispatch(
+          OrderAction.setData(
+            responseChangeOrderingMode.data,
+            CONSTANT.DATA_BASKET
+          )
+        );
+
+        setIsSelectedOrderingMode(true);
       });
+    } else if (intersectOrderingMode.length < 1) {
+      modalNoAvailableOrderingMode();
     } else {
       setOpenOrderingMode(true);
     }
+  };
+
+  const handleNoAvailableOrderingMode = async () => {
+    const intersectOrderingMode = await getIntersectOrderingMode();
+    if (intersectOrderingMode.length < 1) {
+      modalNoAvailableOrderingMode();
+    }
+  };
+
+  const modalNoAvailableOrderingMode = () => {
+    Swal.fire({
+      title: '<p>No Ordering Mode Available</p>',
+      html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
+      allowOutsideClick: false,
+      confirmButtonText: 'OK',
+      confirmButtonColor: props.color?.primary,
+      width: '40em',
+      customClass: {
+        confirmButton: fontStyleCustom.buttonSweetAlert,
+        title: fontStyleCustom.fontTitleSweetAlert,
+      },
+    }).then(() => {
+      history.push('/outlets');
+    });
   };
 
   const getIntersectOrderingMode = async () => {
