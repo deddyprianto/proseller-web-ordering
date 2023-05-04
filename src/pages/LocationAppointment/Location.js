@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
+import { getDistance } from 'geolib';
 
 const Location = (props) => {
   // some initial
@@ -20,6 +21,7 @@ const Location = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   // some st
+  const [getLocationMeters, setGetLocationMeters] = useState('');
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
@@ -50,6 +52,31 @@ const Location = (props) => {
   };
 
   // some Effect
+  useEffect(() => {
+    if (selectedLocation?.latitude > 0 && selectedLocation?.longitude > 0) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const getMeterLocation = getDistance(
+            {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            {
+              latitude: selectedLocation?.latitude,
+              longitude: selectedLocation?.longitude,
+            }
+          );
+          setGetLocationMeters(getMeterLocation);
+        },
+        (error) =>
+          console.log(
+            `the system wants to access your device's location ${error.message}`
+          ),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, [selectedLocation]);
+
   useEffect(() => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
@@ -212,7 +239,7 @@ const Location = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 50px',
+            gridTemplateColumns: '40px 1fr 70px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -257,8 +284,15 @@ const Location = (props) => {
                 </div>
               )}
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
-            800m
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'black',
+              justifySelf: 'center',
+            }}
+          >
+            {getLocationMeters && `${getLocationMeters}m`}
           </div>
         </div>
         <div
@@ -465,15 +499,16 @@ const Location = (props) => {
       <React.Fragment>
         <LocationSelected />
         <div style={{ marginTop: '43px' }}>
-          <p
+          <div
             style={{
               marginLeft: '15px',
               color: 'black',
               fontWeight: 700,
+              marginBottom: '8px',
             }}
           >
             Other Location
-          </p>
+          </div>
           {filterOutletSelected.map((item) => (
             <ListLocations
               key={item.name}

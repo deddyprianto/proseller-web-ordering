@@ -16,10 +16,12 @@ import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
 import Time from './component/Time';
 import screen from 'hooks/useWindowSize';
+import { getDistance } from 'geolib';
 
 const Cart = (props) => {
   const responsiveDesign = screen();
   const dispatch = useDispatch();
+  const [getLocationMeters, setGetLocationMeters] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const gadgetScreen = responsiveDesign.width < 980;
@@ -46,6 +48,34 @@ const Cart = (props) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   // some eff
   useEffect(() => {
+    if (
+      locationAppointment?.latitude > 0 &&
+      locationAppointment?.longitude > 0
+    ) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const getMeterLocation = getDistance(
+            {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            {
+              latitude: locationAppointment?.latitude,
+              longitude: locationAppointment?.longitude,
+            }
+          );
+          setGetLocationMeters(getMeterLocation);
+        },
+        (error) =>
+          console.log(
+            `the system wants to access your device's location ${error.message}`
+          ),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, [locationAppointment]);
+
+  useEffect(() => {
     if (!isEmptyArray(outlet)) {
       if (isEmptyObject(locationAppointment)) {
         dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
@@ -69,7 +99,7 @@ const Cart = (props) => {
       });
     }
   }, [responseSubmit]);
-  
+
   useEffect(() => {
     if (messageTimeSlot) {
       Swal.fire({
@@ -374,9 +404,14 @@ const Cart = (props) => {
             </div>
             <div></div>
             <div
-              style={{ justifySelf: 'end', fontWeight: 500, color: 'black' }}
+              style={{
+                justifySelf: 'center',
+                fontWeight: 500,
+                color: 'black',
+                fontSize: '14px',
+              }}
             >
-              800m
+              {getLocationMeters && `${getLocationMeters}m`}
             </div>
           </div>
           <hr
@@ -504,57 +539,57 @@ const Cart = (props) => {
     );
   };
 
-return (
-  <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
-    {gadgetScreen ? (
-      <div className={fontStyles.myFont}>
-        <div
-          style={{
-            paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
-          }}
-        >
-          <Header />
-          <Timeline />
-          <RenderItemService />
-          <LabelAnythingelse />
-          <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-          <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
-          <ServiceStylist color={color} />
-          <RenderNotes />
+  return (
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+      {gadgetScreen ? (
+        <div className={fontStyles.myFont}>
+          <div
+            style={{
+              paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
+            }}
+          >
+            <Header />
+            <Timeline />
+            <RenderItemService />
+            <LabelAnythingelse />
+            <SelectedOutlet />
+            <Date timeslot={timeslot} color={color} isLoading={isLoading} />
+            <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+            <ServiceStylist color={color} />
+            <RenderNotes />
+          </div>
+          {responsiveDesign.height > 600 && <RenderNavigationBottom />}
         </div>
-        {responsiveDesign.height > 600 && <RenderNavigationBottom />}
-      </div>
-    ) : (
-      <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-        <div
-          style={{
-            width: '40%',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            backgroundColor: 'white',
-            height: '99.3vh',
-            borderRadius: '8px',
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-            overflowY: 'auto',
-          }}
-        >
-          <Header />
-          <Timeline />
-          <RenderItemService />
-          <LabelAnythingelse />
-          <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-          <Time />
-          <ServiceStylist color={color} />
-          <RenderNotes />
-          <Price />
-          <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+      ) : (
+        <div className={fontStyles.myFont} style={{ width: '100vw' }}>
+          <div
+            style={{
+              width: '40%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              backgroundColor: 'white',
+              height: '99.3vh',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              overflowY: 'auto',
+            }}
+          >
+            <Header />
+            <Timeline />
+            <RenderItemService />
+            <LabelAnythingelse />
+            <SelectedOutlet />
+            <Date timeslot={timeslot} color={color} isLoading={isLoading} />
+            <Time />
+            <ServiceStylist color={color} />
+            <RenderNotes />
+            <Price />
+            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+          </div>
         </div>
-      </div>
-    )}
-  </LoadingOverlayCustom>
-);
+      )}
+    </LoadingOverlayCustom>
+  );
 };
 
 export default Cart;
