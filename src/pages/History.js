@@ -95,7 +95,7 @@ const History = (props) => {
     const localStyle = {
       container: {
         ...styleSheet.gridStyle,
-        marginTop: '67px',
+        marginTop: appointmentFeature ? '67px' : '23px',
         alignItems: 'center',
         justifyItems: 'center',
       },
