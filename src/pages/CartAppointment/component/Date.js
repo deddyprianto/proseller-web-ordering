@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
@@ -105,15 +104,17 @@ const Date = ({ timeslot, color }) => {
       payload: changeFormatDate(item.date),
     });
   };
-  const sortDate = () => {
+
+  const sortDate = (dateChoosen) => {
     timeslot.sort((item) => {
-      if (date === item.date) {
+      if (dateChoosen === item.date) {
         return -1;
       } else {
         return 1;
       }
     });
-    const splitFormatDate = date.split('-').join('');
+
+    const splitFormatDate = dateChoosen.split('-').join('');
 
     const dateFiltered = timeslot.filter(
       (item) => Number(item.date.split('-').join('')) >= Number(splitFormatDate)
