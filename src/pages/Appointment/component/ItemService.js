@@ -3,12 +3,10 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
 import DetailAppointment from './DetailAppointment';
-import Dialog from '@mui/material/Dialog';
 
 const ItemService = ({
   item,
   gadgetScreen,
-  fullScreen,
   styleSheet,
   isCheckedService,
   productId,
@@ -25,9 +23,9 @@ const ItemService = ({
 
     // Create the formatted string
     if (hours > 0) {
-      return `${hours}h ${minutes}min`;
+      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
     } else if (minutes > 0) {
-      return `${minutes}min`;
+      return `${minutes}mins`;
     } else {
       return '';
     }
