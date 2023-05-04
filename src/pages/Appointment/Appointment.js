@@ -1,6 +1,5 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import PlaceIcon from '@mui/icons-material/Place';
 import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -23,45 +22,30 @@ import TabsUnstyled from '@mui/base/TabsUnstyled';
 import './style/loadingspin.css';
 import ItemService from './component/ItemService';
 import Box from '@mui/material/Box';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import MyLoader from './component/LoaderSkleton';
 import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
 import Paper from '@mui/material/Paper';
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import screen from 'hooks/useWindowSize';
+import { getDistance } from 'geolib';
 
 const Appointment = (props) => {
   // some state
+  const [getLocationMeters, setGetLocationMeters] = useState('');
   const [locationKeys, setLocationKeys] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [messageLoading, setMessageLoading] = useState('Please wait...');
   const [showNotify, setShowNotify] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [cutPrice, setCutPrice] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [value, setValue] = useState(0);
 
   // initial
   const history = useHistory();
   const dispatch = useDispatch();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const [width, height] = useWindowSize();
-  const gadgetScreen = width < 980;
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -110,9 +94,6 @@ const Appointment = (props) => {
 
       return result;
     }
-  };
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
   };
 
   const changeFormatURl = (path) => {
@@ -201,6 +182,30 @@ const Appointment = (props) => {
 
   // some Effect
   useEffect(() => {
+    if (selectedLocation?.latitude > 0 && selectedLocation?.longitude > 0) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const getMeterLocation = getDistance(
+            {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            {
+              latitude: selectedLocation?.latitude,
+              longitude: selectedLocation?.longitude,
+            }
+          );
+          setGetLocationMeters(getMeterLocation);
+        },
+        (error) =>
+          console.log(
+            `the system wants to access your device's location ${error.message}`
+          ),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, [selectedLocation]);
+  useEffect(() => {
     dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.STAFFID_APPOINTMENT, payload: '' });
@@ -281,7 +286,25 @@ const Appointment = (props) => {
       }
     });
   }, [locationKeys]);
-
+  const PlaceIcon = () => {
+    return (
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='20'
+        height='20'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke={color.primary}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        className='feather feather-map-pin'
+      >
+        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
+        <circle cx={12} cy={10} r={3} />
+      </svg>
+    );
+  };
   const IconSearch = () => {
     return (
       <svg
@@ -442,7 +465,7 @@ const Appointment = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 50px',
+            gridTemplateColumns: '40px 1fr 70px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -450,14 +473,14 @@ const Appointment = (props) => {
             cursor: 'pointer',
           }}
         >
-          <PlaceIcon
+          <div
             style={{
               justifySelf: 'center',
-              fontSize: '20px',
               marginTop: '5px',
-              color: 'black',
             }}
-          />
+          >
+            <PlaceIcon />
+          </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 600, color: 'black' }}>
               {selectedLocation.name}
@@ -503,15 +526,22 @@ const Appointment = (props) => {
                 </div>
               )}
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-            800m
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'black',
+              justifySelf: 'center',
+            }}
+          >
+            {getLocationMeters && `${getLocationMeters}m`}
           </div>
         </div>
         <div
           style={localStyle.containerOpenNow}
           onClick={() => setOpenDropDownTime(!openDropDownTime)}
         >
-          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
+          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
@@ -656,7 +686,6 @@ const Appointment = (props) => {
         >
           <Tabs
             value={selectedCategory.name}
-            onChange={handleChange}
             sx={styleSheet.indicatorForMobileView}
             variant='scrollable'
             scrollButtons='auto'
@@ -692,7 +721,6 @@ const Appointment = (props) => {
         <Tabs
           centered
           value={selectedCategory.name}
-          onChange={handleChange}
           sx={styleSheet.indicator}
           variant='scrollable'
           scrollButtons='auto'
@@ -909,12 +937,6 @@ const Appointment = (props) => {
   };
 
   const ResponsiveLayout = () => {
-    const isNotifShowWithIphoneSE = showNotify && height <= 667;
-    const isNotifShowWithIphone14 = showNotify && height >= 844;
-    const styleAppliedToDevice = {
-      height: showNotify ? '77vh' : '85vh',
-      overflowY: 'auto',
-    };
     if (gadgetScreen) {
       return (
         <div
@@ -1028,7 +1050,6 @@ const Appointment = (props) => {
             onClick={async () => {
               if (cartAppointment?.details?.length > 0) {
                 setIsLoading(true);
-                setMessageLoading('Delete your cart...');
                 await dispatch(OrderAction.deleteCartAppointment());
                 setIsLoading(false);
               }

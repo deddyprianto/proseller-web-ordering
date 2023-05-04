@@ -1,9 +1,7 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
-import PlaceIcon from '@mui/icons-material/Place';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -12,30 +10,18 @@ import { CONSTANT } from 'helpers';
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { isEmptyObject } from 'helpers/CheckEmpty';
+import screen from 'hooks/useWindowSize';
+import { getDistance } from 'geolib';
 
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
 const Location = (props) => {
-  const [openModalMap, setOpenModalMap] = useState(false);
   // some initial
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const dispatch = useDispatch();
   const history = useHistory();
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   // some st
+  const [getLocationMeters, setGetLocationMeters] = useState('');
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
@@ -44,11 +30,12 @@ const Location = (props) => {
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
+
   // some sl
-  const outlet = useSelector((state) => state.outlet.outlets);
-  const isLocationSelected = useSelector(
-    (state) => state.appointmentReducer.isLocationSelected
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
   );
+  const outlet = useSelector((state) => state.outlet.outlets);
   const selectedLocation = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
@@ -64,35 +51,32 @@ const Location = (props) => {
     return urlConvert;
   };
 
-  const [width] = useWindowSize();
-  const gadgetScreen = width < 980;
-
-  const styleSheet = {
-    container: {
-      width: '45%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      backgroundColor: 'white',
-      height: '99.3vh',
-      borderRadius: '8px',
-      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
-      overflowY: 'auto',
-    },
-    gridStyle: {
-      display: 'grid',
-      gridTemplateColumns: '50px 1fr 70px',
-      gridTemplateRows: '1fr',
-      gap: '0px 0px',
-      gridAutoFlow: 'row',
-      gridTemplateAreas: '". . ."',
-    },
-  };
   // some Effect
+  useEffect(() => {
+    if (selectedLocation?.latitude > 0 && selectedLocation?.longitude > 0) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const getMeterLocation = getDistance(
+            {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            {
+              latitude: selectedLocation?.latitude,
+              longitude: selectedLocation?.longitude,
+            }
+          );
+          setGetLocationMeters(getMeterLocation);
+        },
+        (error) =>
+          console.log(
+            `the system wants to access your device's location ${error.message}`
+          ),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, [selectedLocation]);
+
   useEffect(() => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
@@ -104,7 +88,10 @@ const Location = (props) => {
       if (history.action === 'PUSH') {
         console.log(location.pathname);
         setLocationKeys([location.pathname]);
-        if (location.pathname !== '/location' && isLocationSelected) {
+        if (
+          location.pathname !== '/location' &&
+          !isEmptyObject(cartAppointment)
+        ) {
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
             payload: true,
@@ -140,30 +127,7 @@ const Location = (props) => {
       );
     });
   };
-  const DropDownTime = () => {
-    if (openDropDownTime) {
-      return (
-        <div
-          style={{
-            position: 'absolute',
-            backgroundColor: 'white',
-            height: '270px',
-            width: '60%',
-            padding: '0px 10px',
-            borderRadius: '5px',
-            zIndex: 999,
-            left: 13,
-            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-            overflowY: 'auto',
-          }}
-        >
-          <RenderTimeList />
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
+
   const DropDownTimeSelected = () => {
     if (openDropDownTimeSelected) {
       return (
@@ -188,6 +152,52 @@ const Location = (props) => {
       return null;
     }
   };
+  const PlaceIcon = () => {
+    return (
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='20'
+        height='20'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='black'
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        className='feather feather-map-pin'
+      >
+        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
+        <circle cx={12} cy={10} r={3} />
+      </svg>
+    );
+  };
+
+  const HistoryTimeIcon = ({ color }) => {
+    return (
+      <svg
+        width={18}
+        height={19}
+        viewBox='0 0 18 19'
+        fill={color}
+        xmlns='http://www.w3.org/2000/svg'
+        {...props}
+      >
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
+          fill={color}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
+          fill={color}
+        />
+      </svg>
+    );
+  };
+
   const LocationSelected = () => {
     const localStyle = {
       containerAccordion: {
@@ -222,7 +232,6 @@ const Location = (props) => {
           margin: 'auto',
           borderRadius: '10px',
           padding: '10px 0px',
-          marginTop: '10px',
           marginBottom: '10px',
           border: '1px solid red',
         }}
@@ -230,7 +239,7 @@ const Location = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 50px',
+            gridTemplateColumns: '40px 1fr 70px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -238,13 +247,9 @@ const Location = (props) => {
             cursor: 'pointer',
           }}
         >
-          <PlaceIcon
-            style={{
-              justifySelf: 'center',
-              fontSize: '20px',
-              marginTop: '5px',
-            }}
-          />
+          <div style={{ justifySelf: 'center', marginTop: '6px' }}>
+            <PlaceIcon />
+          </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>
               {selectedLocation?.name}
@@ -279,13 +284,22 @@ const Location = (props) => {
                 </div>
               )}
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 500 }}>800m</div>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'black',
+              justifySelf: 'center',
+            }}
+          >
+            {getLocationMeters && `${getLocationMeters}m`}
+          </div>
         </div>
         <div
           onClick={() => setOpenDropDownTimeSelected(!openDropDownTimeSelected)}
           style={localStyle.containerOpenNow}
         >
-          <AccessTimeIcon style={{ fontSize: '20px' }} />
+          <HistoryTimeIcon color='black' />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
@@ -364,26 +378,24 @@ const Location = (props) => {
             opacity: !isDisable ? 0.4 : 1,
           }}
         >
-          <PlaceIcon
-            style={{
-              justifySelf: 'center',
-              fontSize: '20px',
-              marginTop: '5px',
-            }}
-          />
+          <div style={{ justifySelf: 'center', marginTop: '6px' }}>
+            <PlaceIcon />
+          </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>{item.name}</div>
             <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
               {item?.address}
             </div>
-            <div style={localStyle.containerAccordion}>
-              <div
-                className={fontStyles.myFont}
-                style={localStyle.labelSeeDirection}
-              >
-                See Direction
+            {item?.latitude > 0 && item?.longitude > 0 && (
+              <div style={localStyle.containerAccordion}>
+                <div
+                  className={fontStyles.myFont}
+                  style={localStyle.labelSeeDirection}
+                >
+                  See Direction
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div
             style={{
@@ -404,13 +416,13 @@ const Location = (props) => {
                 borderRadius: '5px',
               }}
             >
-              <AccessTimeIcon />
+              <HistoryTimeIcon color='white' />
               <div>{!isDisable ? 'Close' : 'Open'}</div>
             </div>
           </div>
         </div>
         <div style={localStyle.containerOpenNow}>
-          <AccessTimeIcon style={{ fontSize: '20px', color: 'black' }} />
+          <HistoryTimeIcon color='black' />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             {!isDisable ? 'Closed Today' : 'Open Now'}
           </div>
@@ -428,7 +440,12 @@ const Location = (props) => {
     return (
       <div
         style={{
-          ...styleSheet.gridStyle,
+          display: 'grid',
+          gridTemplateColumns: '50px 1fr 70px',
+          gridTemplateRows: '1fr',
+          gap: '0px 0px',
+          gridAutoFlow: 'row',
+          gridTemplateAreas: '". . ."',
           marginTop: '25px',
           alignItems: 'center',
           justifyItems: 'center',
@@ -439,6 +456,7 @@ const Location = (props) => {
           onClick={() => {
             history.push('/appointment');
           }}
+          sx={{ color: color.primary }}
         />
         <p
           style={{
@@ -471,14 +489,27 @@ const Location = (props) => {
   };
 
   const RenderListLocation = () => {
+    let filterOutletSelected = [];
+    if (!isEmptyObject(selectedLocation)) {
+      filterOutletSelected = outlets.filter(
+        (item) => item.id !== selectedLocation.id
+      );
+    }
     return (
-      <div>
+      <React.Fragment>
         <LocationSelected />
-        <div style={{ margin: '10px 0px' }}>
-          <p style={{ marginLeft: '15px', color: 'black', fontWeight: 700 }}>
+        <div style={{ marginTop: '43px' }}>
+          <div
+            style={{
+              marginLeft: '15px',
+              color: 'black',
+              fontWeight: 700,
+              marginBottom: '8px',
+            }}
+          >
             Other Location
-          </p>
-          {outlets.map((item) => (
+          </div>
+          {filterOutletSelected.map((item) => (
             <ListLocations
               key={item.name}
               item={item}
@@ -486,17 +517,14 @@ const Location = (props) => {
             />
           ))}
         </div>
-      </div>
+      </React.Fragment>
     );
   };
 
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div
-          className={fontStyles.myFont}
-          style={{ height: '90vh', overflowY: 'auto' }}
-        >
+        <div className={fontStyles.myFont} style={{ height: '100vh' }}>
           <RenderHeader />
           <RenderLabel />
           <RenderListLocation />
@@ -505,7 +533,23 @@ const Location = (props) => {
     } else {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div style={styleSheet.container}>
+          <div
+            style={{
+              width: '45%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              backgroundColor: 'white',
+              height: '99.3vh',
+              borderRadius: '8px',
+              boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gridTemplateRows: '1fr 85px',
+              gap: '0px 15px',
+              gridTemplateAreas: '"."\n    "."',
+              overflowY: 'auto',
+            }}
+          >
             <di>
               <RenderHeader />
               <RenderLabel />
@@ -601,6 +645,7 @@ const Location = (props) => {
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
                 payload: false,
               });
+              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
               window.location.href = changeFormatURl('/appointment');
             }}
             className={fontStyles.myFont}
