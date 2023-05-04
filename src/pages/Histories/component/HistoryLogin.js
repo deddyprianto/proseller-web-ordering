@@ -2,7 +2,6 @@ import config from 'config';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { HistoryAction } from 'redux/actions/HistoryAction';
-import fontStyles from '../style/styles.module.css';
 import HistoryTransaction from 'components/history/HistoryTransaction';
 import HistoryPending from 'components/history/HistoryPending';
 
@@ -116,10 +115,10 @@ const History = () => {
   };
 
   return (
-    <div className={fontStyles.myFont}>
+    <React.Fragment>
       <RenderHeaderTab />
       <RenderMain />
-    </div>
+    </React.Fragment>
   );
 };
 
