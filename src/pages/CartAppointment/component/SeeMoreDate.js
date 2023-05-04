@@ -6,6 +6,7 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { CONSTANT } from 'helpers';
+import { isEmptyArray } from 'helpers/CheckEmpty';
 
 const SeeMoreDate = ({
   color,
@@ -17,11 +18,8 @@ const SeeMoreDate = ({
   const dateRedux = useSelector((state) => state.appointmentReducer.date);
   const [dateChoosen, setDateChoosen] = useState('');
   const dispatch = useDispatch();
-  const [selector, setSelector] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
-  const [months, setMonths] = useState([]);
   const [dates, setDates] = useState([]);
 
   const days = ['San', 'Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat'];
@@ -121,15 +119,12 @@ const SeeMoreDate = ({
     const currentDates = getDates();
     setDates(currentDates);
   }, [selectedYear, selectedMonth]);
+
   useEffect(() => {
     const currentYear = moment().format('YYYY');
     const currentMonth = moment().format('MMM');
-    const currentDate = Number(moment().format('DD'));
-    const monthList = moment.months();
     setSelectedYear(currentYear);
     setSelectedMonth(currentMonth);
-    setSelectedDate(currentDate);
-    setMonths(monthList);
   }, []);
 
   const renderConfirmButton = () => {
@@ -158,7 +153,10 @@ const SeeMoreDate = ({
           onClick={() => {
             setIsConfirmButtonPressed(true);
             dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: dateChoosen });
-            dispatch({ type: CONSTANT.DATE_SORTED, payload: sortDate() });
+            dispatch({
+              type: CONSTANT.DATE_SORTED,
+              payload: sortDate(dateChoosen),
+            });
             setIsOpenModalDate(false);
           }}
           disabled={handleButtonDisable()}
@@ -193,9 +191,6 @@ const SeeMoreDate = ({
         {renderConditionButtonNextPrev()}
         <Stack direction='row'>
           <Typography
-            onClick={() => {
-              setSelector('month');
-            }}
             style={{
               fontSize: 12,
               fontWeight: 'bold',
@@ -206,9 +201,6 @@ const SeeMoreDate = ({
             {selectedMonth}
           </Typography>
           <Typography
-            onClick={() => {
-              setSelector('year');
-            }}
             style={{
               fontSize: 12,
               fontWeight: 'bold',
@@ -233,7 +225,7 @@ const SeeMoreDate = ({
   };
   const renderDeliveryDayItem = (item) => {
     return (
-      <div key={item} style={{ textAlign: 'center', width: 26, height: 26 }}>
+      <div key={item}>
         <Typography style={{ fontSize: 10, color: color.primary }}>
           {item}
         </Typography>
@@ -252,28 +244,33 @@ const SeeMoreDate = ({
   };
 
   const renderDeliveryDateItem = (item) => {
-    const itemDate = item.split(' ');
-    const date = Number(itemDate[2]);
-    const month = itemDate[1];
-    const year = itemDate[0];
-    const combineDateNMonth = moment()
+    const splitItem = item.split(' ');
+    const date = Number(splitItem[2]);
+    const month = splitItem[1];
+    const year = splitItem[0];
+    const availableDateFromLocal = moment()
       .year(year)
       .month(month)
       .date(date)
       .format('YYYYMMDD');
 
-    const years = combineDateNMonth.slice(0, 4);
-    const months = combineDateNMonth.slice(4, 6);
-    const days = combineDateNMonth.slice(6, 8);
+    const years = availableDateFromLocal.slice(0, 4);
+    const months = availableDateFromLocal.slice(4, 6);
+    const days = availableDateFromLocal.slice(6, 8);
     const formattedDate = `${years}-${months}-${days}`;
-    const isActive = dateRedux === formattedDate;
+
+    const isActive = !dateChoosen
+      ? dateRedux === formattedDate
+      : dateChoosen === formattedDate;
     const isThisMonth = selectedMonth === month;
 
     const availableDateFromAPI = timeList.some((item) => {
       const arr = item.date.split('-');
       const stringToInt = arr.join('');
 
-      return combineDateNMonth === stringToInt;
+      return (
+        availableDateFromLocal === stringToInt && !isEmptyArray(item.timeSlot)
+      );
     });
 
     const styleFontDate = !isThisMonth
@@ -300,7 +297,7 @@ const SeeMoreDate = ({
             borderRadius: 100,
             color: 'white',
           }
-        : { textAlign: 'center', width: 26, height: 26 };
+        : { textAlign: 'center' };
 
     return (
       <div
@@ -309,16 +306,10 @@ const SeeMoreDate = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '5px',
           pointerEvents: !availableDateFromAPI && 'none',
-          height: '40px',
         }}
         onClick={() => {
           setDateChoosen(formattedDate);
-          dispatch({
-            type: CONSTANT.DATE_APPOINTMENT,
-            payload: formattedDate,
-          });
           if (date === 1) {
             handleMonthSlider('next');
           }
@@ -346,9 +337,15 @@ const SeeMoreDate = ({
         <div
           key={i}
           style={{
-            display: 'flex',
             width: '100%',
-            justifyContent: 'space-between',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+            gridTemplateRows: '1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '". . . . . . ."',
+            height: '50px',
           }}
         >
           {date.map((item) => {

@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SeeMoreDate from './SeeMoreDate';
 import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import LoaderSkeleton from './LoaderSkeleton';
 
 const Date = ({ timeslot, color }) => {
   const [isConfirmButtonPressed, setIsConfirmButtonPressed] = useState(false);
@@ -18,6 +19,9 @@ const Date = ({ timeslot, color }) => {
     paper: { minWidth: '340px', borderRadius: '100px' },
   }));
   const classes = useStyless();
+  const isListDateSelected = useSelector(
+    (state) => state.appointmentReducer.isDateSelected
+  );
   const date = useSelector((state) => state.appointmentReducer.date);
   const messageTimeSlot = useSelector(
     (state) => state.appointmentReducer.messageTimeSlot
@@ -33,14 +37,17 @@ const Date = ({ timeslot, color }) => {
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
+  const showListDate = isConfirmButtonPressed ? dateSorted : timeslot;
 
   useEffect(() => {
+    const dateNow = showListDate.find((item) => item.timeSlot.length > 0);
     dispatch({
       type: CONSTANT.DATE_APPOINTMENT,
-      payload: changeFormatDate(getDateNow()),
+      payload: changeFormatDate(dateNow?.date),
     });
-  }, []);
+  }, [timeslot]);
 
+  // some fn
   const changeFormatDate = (itemDate) => {
     if (itemDate) {
       return itemDate.split(' ').join('-');
@@ -79,16 +86,35 @@ const Date = ({ timeslot, color }) => {
     const dayOfMonth = date.getDate().toString().padStart(2, '0');
     return dayOfMonth;
   };
+  const handleSelectedDate = (item) => {
+    dispatch({
+      type: CONSTANT.IS_DATE_SELECTED,
+      payload: true,
+    });
+    dispatch({
+      type: CONSTANT.TIME_APPOINTMENT,
+      payload: '',
+    });
+    dispatch({
+      type: CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT,
+      payload: '',
+    });
+    dispatch({
+      type: CONSTANT.DATE_APPOINTMENT,
+      payload: changeFormatDate(item.date),
+    });
+  };
 
-  const sortDate = () => {
+  const sortDate = (dateChoosen) => {
     timeslot.sort((item) => {
-      if (date === item.date) {
+      if (dateChoosen === item.date) {
         return -1;
       } else {
         return 1;
       }
     });
-    const splitFormatDate = date.split('-').join('');
+
+    const splitFormatDate = dateChoosen.split('-').join('');
 
     const dateFiltered = timeslot.filter(
       (item) => Number(item.date.split('-').join('')) >= Number(splitFormatDate)
@@ -101,10 +127,11 @@ const Date = ({ timeslot, color }) => {
     return dateSorted;
   };
 
-  const showListDate = isConfirmButtonPressed ? dateSorted : timeslot;
-  return (
-    <React.Fragment>
-      {!messageTimeSlot ? (
+  const renderListDate = () => {
+    if (isEmptyArray(timeslot)) {
+      return <LoaderSkeleton />;
+    } else if (!messageTimeSlot) {
+      return (
         <div
           style={{
             width: '93%',
@@ -146,28 +173,24 @@ const Date = ({ timeslot, color }) => {
             spaceBetween={15}
           >
             {showListDate.map((item) => {
+              const isDateSelected = date === changeFormatDate(item?.date);
+              const dateNow = showListDate.find(
+                (item) => item.timeSlot.length > 0
+              );
+              const dateAvailable = dateNow.date === item.date;
+              const checkDate = !isListDateSelected
+                ? dateAvailable
+                : isDateSelected;
               return (
                 <SwiperSlide key={item.date} style={{ flexShrink: 'unset' }}>
                   <div
                     onClick={() => {
-                      dispatch({
-                        type: CONSTANT.TIME_APPOINTMENT,
-                        payload: '',
-                      });
-                      dispatch({
-                        type: CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT,
-                        payload: '',
-                      });
-                      dispatch({
-                        type: CONSTANT.DATE_APPOINTMENT,
-                        payload: changeFormatDate(item.date),
-                      });
+                      handleSelectedDate(item);
                     }}
                     style={{
-                      backgroundColor:
-                        date === changeFormatDate(item?.date)
-                          ? color.primary
-                          : 'rgba(249, 249, 249, 1)',
+                      backgroundColor: checkDate
+                        ? color.primary
+                        : 'rgba(249, 249, 249, 1)',
                       borderRadius: '32px',
                       height: '80px',
                       width: '60px',
@@ -175,10 +198,7 @@ const Date = ({ timeslot, color }) => {
                       flexDirection: 'column',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      color:
-                        date === changeFormatDate(item?.date)
-                          ? 'white'
-                          : 'black',
+                      color: checkDate ? 'white' : 'black',
                       opacity: isEmptyArray(item.timeSlot) && 0.3,
                       pointerEvents: isEmptyArray(item.timeSlot) && 'none',
                     }}
@@ -207,7 +227,14 @@ const Date = ({ timeslot, color }) => {
             }}
           />
         </div>
-      ): null}
+      );
+    } else {
+      return null;
+    }
+  };
+  return (
+    <React.Fragment>
+      {renderListDate()}
       <Dialog
         classes={{ paper: classes.paper }}
         fullWidth={false}

@@ -929,16 +929,22 @@ const getTimeSlotAppointment = (outletId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
     try {
+      dispatch({
+        type: CONSTANT.TIME_SLOT_APPOINTMENT,
+        payload: [],
+      });
       const response = await axios.get(`${url}timeslot/${outletId}`, {
         headers: {
           Authorization: `Bearer ${account.accessToken.jwtToken}`,
           'Content-Type': 'application/json',
         },
       });
-      dispatch({
-        type: CONSTANT.TIME_SLOT_APPOINTMENT,
-        payload: response.data.data,
-      });
+      if (response.data.message === 'Timeslot retrieved successfully') {
+        dispatch({
+          type: CONSTANT.TIME_SLOT_APPOINTMENT,
+          payload: response.data.data,
+        });
+      } 
       return response.data;
     } catch (error) {
       dispatch({
@@ -1015,19 +1021,25 @@ const addCartAppointment = (addService) => {
 const submitCartAppointment = (payload) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
+  try {
     const response = await axios.post(`${url}cart/submit`, payload, {
       headers: {
         Authorization: `Bearer ${account.accessToken.jwtToken}`,
         'Content-Type': 'application/json',
       },
     });
-    if (response.status === 201) {
-      dispatch({
-        type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
-        payload: response.data.data,
-      });
-    }
+    dispatch({
+      type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
+      payload: response.data.data,
+    });
     return response.data;
+  } catch (error) {
+    dispatch({
+      type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
+      payload: { error: error.response.data.message },
+    });
+  }
+
   };
 };
 const updateCartAppointment = (addService, productId) => {

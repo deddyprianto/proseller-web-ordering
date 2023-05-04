@@ -22,6 +22,7 @@ function AppointmentReducer(
     timeActiveDropDown: '',
     bookingHistory: [],
     isLocationSelected: false,
+    isDateSelected: false,
   },
   action
 ) {
@@ -66,6 +67,8 @@ function AppointmentReducer(
       return { ...state, bookingHistory: action.payload };
     case CONSTANT.IS_LOCATION_SELECTED:
       return { ...state, isLocationSelected: action.payload };
+    case CONSTANT.IS_DATE_SELECTED:
+      return { ...state, isDateSelected: action.payload };
     default:
       return state;
   }
