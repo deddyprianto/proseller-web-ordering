@@ -5,7 +5,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -321,6 +320,30 @@ const Appointment = (props) => {
       </svg>
     );
   };
+  const HistoryTimeIcon = ({ color }) => {
+    return (
+      <svg
+        width={18}
+        height={19}
+        viewBox='0 0 18 19'
+        fill={color}
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
+          fill={color}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
+          fill={color}
+        />
+      </svg>
+    );
+  };
 
   const Header = () => {
     const localStyle = {
@@ -541,7 +564,7 @@ const Appointment = (props) => {
           style={localStyle.containerOpenNow}
           onClick={() => setOpenDropDownTime(!openDropDownTime)}
         >
-          <AccessTimeIcon style={{ fontSize: '20px', color: color.primary }} />
+          <HistoryTimeIcon color={color.primary} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             Open now 13:00 - 22.00
           </div>
