@@ -226,7 +226,7 @@ export const Products = ({
                               })}
                           </div>
                         </ul>
-                        {filteredProducts === null ? (
+                        {!filteredProducts.length ? (
                           <h4
                             style={{ textAlign: 'center' }}
                             className='customer-group-name'
