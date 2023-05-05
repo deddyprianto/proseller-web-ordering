@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
 import DetailAppointment from './DetailAppointment';
+import filterImage from '../style/styles.module.css';
 
 const ItemService = ({
   item,
@@ -12,15 +13,12 @@ const ItemService = ({
   handleCurrency,
   settingAppoinment,
 }) => {
-  // some state
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
-  // some fn
+  const color = useSelector((state) => state.theme.color);
+
   const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
     if (hours > 0) {
       return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
     } else if (minutes > 0) {
@@ -29,9 +27,7 @@ const ItemService = ({
       return '';
     }
   };
-  // some selectors
-  const color = useSelector((state) => state.theme.color);
-  // .scss
+
   const localStyle = {
     container: {
       width: '100%',
@@ -126,6 +122,7 @@ const ItemService = ({
       labelTitle: {
         fontSize: '13px',
         fontWeight: '600',
+        color: 'rgba(183, 183, 183, 1)',
       },
       labelSubTitle: {
         fontSize: '13px',
@@ -152,7 +149,6 @@ const ItemService = ({
         fontWeight: 500,
         fontSize: '16px',
         justifySelf: 'end',
-        marginRight: '10px',
         color: 'rgba(206, 17, 17, 1)',
       },
       gridContainer: {
@@ -195,7 +191,15 @@ const ItemService = ({
   const RenderItemService = () => {
     if (item.orderingStatus === 'UNAVAILABLE') {
       return (
-        <div style={localStyle.container}>
+        <div
+          style={{
+            width: '100%',
+            borderRadius: '6px',
+            padding: '12px',
+            marginBottom: '15px',
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+          }}
+        >
           <div
             style={{
               display: 'grid',
@@ -209,6 +213,7 @@ const ItemService = ({
           >
             <div style={localStyle.containerImg}>
               <img
+                className={filterImage.filter}
                 src={item.defaultImageURL}
                 style={{ borderRadius: '10px' }}
               />
@@ -231,7 +236,7 @@ const ItemService = ({
                       fontSize: '12px',
                       color: 'rgba(183, 183, 183, 1)',
                       fontWeight: 500,
-                      lineHeight: '19px',
+                      lineHeight: '18px',
                     }}
                   >
                     {item.description}
@@ -241,9 +246,30 @@ const ItemService = ({
             </div>
           </div>
           <div style={localStyle.containerUnavailable.gridContainer}>
-            <div style={localStyle.containerUnavailable.button}>
-              <HistoryTimeIcon color={color.primary} />
-              <div style={localStyle.containerUnavailable.label}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: item?.duration
+                  ? 'rgba(183, 183, 183, 1)'
+                  : 'transparent',
+                borderRadius: '15px',
+                width: '60%',
+              }}
+            >
+              {item?.duration && (
+                <HistoryTimeIcon color='rgba(255, 255, 255, 1)' />
+              )}
+              <div
+                style={{
+                  fontSize: '13px',
+                  marginLeft: '5px',
+                  color: 'rgba(255, 255, 255, 1)',
+                  display: 'flex',
+                  fontWeight: 500,
+                }}
+              >
                 {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
               </div>
             </div>
@@ -299,7 +325,7 @@ const ItemService = ({
                       fontSize: '12px',
                       color: 'rgba(183, 183, 183, 1)',
                       fontWeight: 500,
-                      lineHeight: '19px',
+                      lineHeight: '18px',
                     }}
                   >
                     {item.description}

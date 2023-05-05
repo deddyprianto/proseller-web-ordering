@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DetailAppointment from './DetailAppointment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import screen from 'hooks/useWindowSize';
+import filterImage from '../style/styles.module.css';
 
 const ResultSearch = ({ item, id, isCheckedService }) => {
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const setting = useSelector((state) => state.order.setting);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -36,6 +39,30 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
       });
       return result;
     }
+  };
+  const HistoryTimeIcon = ({ color }) => {
+    return (
+      <svg
+        width={18}
+        height={19}
+        viewBox='0 0 18 19'
+        fill={color}
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
+          fill={color}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
+          fill={color}
+        />
+      </svg>
+    );
   };
   const styleSheet = {
     container: {
@@ -115,7 +142,7 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
         width: '100%',
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '6px',
-        padding: '10px 0px',
+        padding: '12px',
         marginBottom: '15px',
       },
       containerImg: {
@@ -161,12 +188,7 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
         marginTop: '15px',
       },
       subContainerGrid: {
-        marginLeft: '5px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: item?.duration && `${color.primary}10`,
-        borderRadius: '15px',
+        width: '100%',
       },
       label30mins: {
         fontSize: '13px',
@@ -251,7 +273,15 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
 
     if (item.orderingStatus === 'UNAVAILABLE') {
       return (
-        <div style={localStyle.container}>
+        <div
+          style={{
+            width: '100%',
+            borderRadius: '6px',
+            padding: '12px',
+            marginBottom: '15px',
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+          }}
+        >
           <div
             style={{
               display: 'grid',
@@ -265,6 +295,7 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
           >
             <div style={localStyle.containerImg}>
               <img
+                className={filterImage.filter}
                 src={item.defaultImageURL}
                 style={{ borderRadius: '10px' }}
               />
@@ -287,20 +318,41 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
                       fontSize: '12px',
                       color: 'rgba(183, 183, 183, 1)',
                       fontWeight: 500,
+                      lineHeight: '18px',
                     }}
                   >
-                    Cutting Short hair description if any can goes here for
-                    example
+                    {item.description}
                   </td>
                 </tr>
               </table>
             </div>
           </div>
           <div style={localStyle.containerUnavailable.gridContainer}>
-            <div style={localStyle.containerUnavailable.button}>
-              {item?.duration && <AccessTimeIcon sx={{ color: 'white' }} />}
-              <div style={localStyle.containerUnavailable.label}>
-                {convertTimeToStr(item?.duration)}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: item?.duration
+                  ? 'rgba(183, 183, 183, 1)'
+                  : 'transparent',
+                borderRadius: '15px',
+                width: '60%',
+              }}
+            >
+              {item?.duration && (
+                <HistoryTimeIcon color='rgba(255, 255, 255, 1)' />
+              )}
+              <div
+                style={{
+                  fontSize: '13px',
+                  marginLeft: '5px',
+                  color: 'rgba(255, 255, 255, 1)',
+                  display: 'flex',
+                  fontWeight: 500,
+                }}
+              >
+                {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
               </div>
             </div>
             <div style={localStyle.containerUnavailable.labelNotAvailable}>
@@ -321,6 +373,7 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
               gap: '0px 0px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
+              padding: gadgetScreen ? '0px' : '0px 10px',
             }}
           >
             <div style={localStyle.containerImg}>
@@ -354,10 +407,10 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
                       fontSize: '12px',
                       color: 'rgba(183, 183, 183, 1)',
                       fontWeight: 500,
+                      lineHeight: '18px',
                     }}
                   >
-                    Cutting Short hair description if any can goes here for
-                    example
+                    {item.description}
                   </td>
                 </tr>
               </table>
@@ -365,13 +418,22 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
           </div>
           <div style={localStyle.gridContainerBottom}>
             <div style={localStyle.subContainerGrid}>
-              {item?.duration && (
-                <AccessTimeIcon
-                  sx={{ color: color.primary, padding: 0, margin: 0 }}
-                />
-              )}
-              <div style={localStyle.label30mins}>
-                {convertTimeToStr(item?.duration)}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: item.duration && `${color.primary}10`,
+                  borderRadius: '15px',
+                  width: '75%',
+                }}
+              >
+                {item.duration && <HistoryTimeIcon color={color.primary} />}
+                <div style={localStyle.label30mins}>
+                  {item?.duration && (
+                    <div>{convertTimeToStr(item.duration)}</div>
+                  )}
+                </div>
               </div>
             </div>
             {item?.cutPrice ? (
