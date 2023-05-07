@@ -16,7 +16,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import noimage from 'assets/images/noimage.png';
+import calendarIcon from 'assets/images/calendarIcon.png';
 
 const DetailAppointment = ({
   isOpenModalDetail,
@@ -253,7 +253,7 @@ const DetailAppointment = ({
             src={
               itemAppointment.defaultImageURL
                 ? itemAppointment.defaultImageURL
-                : noimage
+                : calendarIcon
             }
             alt='myPic'
             style={{ width: '100%', cursor: 'pointer', borderRadius: '10px' }}
