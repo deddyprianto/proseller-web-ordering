@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import fontStyles from '../style/styles.module.css';
 import FormGroup from '@mui/material/FormGroup';
 import { PhotoProvider, PhotoSlider } from 'react-photo-view';
@@ -226,6 +225,30 @@ const DetailAppointment = ({
   };
 
   // COMPONENTS
+  const HistoryTimeIcon = ({ color }) => {
+    return (
+      <svg
+        width={18}
+        height={19}
+        viewBox='0 0 18 19'
+        fill={color}
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
+          fill={color}
+        />
+        <path
+          fillRule='evenodd'
+          clipRule='evenodd'
+          d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
+          fill={color}
+        />
+      </svg>
+    );
+  };
   const RenderMainDetail = () => {
     return (
       <div style={{ width: '90%', margin: '0px auto' }}>
@@ -241,6 +264,7 @@ const DetailAppointment = ({
         >
           <PhotoProvider>
             <PhotoSlider
+              maskOpacity={0.5}
               images={itemAppointment?.imageFiles.map((item) => ({
                 src: item,
                 key: item,
@@ -297,9 +321,7 @@ const DetailAppointment = ({
           }}
         >
           {itemAppointment.duration && (
-            <AccessTimeIcon
-              sx={{ color: 'rgba(183, 183, 183, 1)', padding: 0, margin: 0 }}
-            />
+            <HistoryTimeIcon color={'rgba(183, 183, 183, 1)'} />
           )}
           <div
             style={{
@@ -336,23 +358,41 @@ const DetailAppointment = ({
             SGD 10.00
           </div> */}
         </div>
-
-        <p style={{ fontWeight: 'bold', marginTop: '30px', color: 'black' }}>
-          About this service
-        </p>
-        <p
+        <hr
           style={{
-            margin: 0,
-            padding: 0,
-            fontSize: '14px',
-            fontWeight: 500,
-            opacity: 0.8,
-            lineHeight: '20px',
-            color: 'rgba(157, 157, 157, 1)',
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            marginTop: '15px',
           }}
-        >
-          {itemAppointment.description}
-        </p>
+        />
+        {itemAppointment.description && (
+          <React.Fragment>
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                fontWeight: 'bold',
+                marginTop: '15px',
+                color: 'black',
+              }}
+            >
+              About this service
+            </p>
+            <p
+              style={{
+                margin: 0,
+                padding: 0,
+                fontSize: '14px',
+                fontWeight: 500,
+                opacity: 0.8,
+                lineHeight: '20px',
+                color: 'rgba(157, 157, 157, 1)',
+                marginTop: '16px',
+              }}
+            >
+              {itemAppointment.description}
+            </p>
+          </React.Fragment>
+        )}
       </div>
     );
   };
@@ -463,16 +503,18 @@ const DetailAppointment = ({
         </DialogTitle>
         <DialogContent sx={styles.modalModif}>
           <RenderMainDetail />
-          <FormGroup>
-            <RenderAddOnLabel />
-            <RenderModifier
-              settingAppoinment={settingAppoinment}
-              setSelectedProductModifiers={setSelectedProductModifiers}
-              selectedProductModifiers={selectedProductModifiers}
-              productModifiers={itemAppointment.productModifiers}
-              product={itemAppointment}
-            />
-          </FormGroup>
+          {itemAppointment.productModifiers.length > 0 && (
+            <FormGroup>
+              <RenderAddOnLabel />
+              <RenderModifier
+                settingAppoinment={settingAppoinment}
+                setSelectedProductModifiers={setSelectedProductModifiers}
+                selectedProductModifiers={selectedProductModifiers}
+                productModifiers={itemAppointment.productModifiers}
+                product={itemAppointment}
+              />
+            </FormGroup>
+          )}
         </DialogContent>
         <DialogActions
           sx={{
