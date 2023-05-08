@@ -10,11 +10,16 @@ const RenderModifierOptions = ({
   settingAppoinment,
 }) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const color = useSelector((state) => state.theme.color);
+
   const styles = {
     radioSizeModifier: {
-      '& .MuiSvgIcon-root': {
-        fontSize: 24,
+      '&.MuiCheckbox-root': {
         color: 'rgba(157, 157, 157, 1)',
+        borderRadius: '3px',
+      },
+      '&.Mui-checked': {
+        color: color.primary,
         borderRadius: '3px',
       },
     },
@@ -119,9 +124,13 @@ const RenderModifierOptions = ({
               opacity: modifier.orderingStatus === 'UNAVAILABLE' && 0.5,
               pointerEvents:
                 modifier.orderingStatus === 'UNAVAILABLE' && 'none',
+              marginTop: '10px',
             }}
             control={
               <Checkbox
+                style={{
+                  transform: 'scale(1.5)',
+                }}
                 name={modifier.productID}
                 onChange={() => {
                   handleModifierOptionSelected({
