@@ -80,7 +80,7 @@ function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
           }`
         );
         if (!isEmptyArray(data.data)) {
-          if (presetType === 'appointment') {
+          if (presetType === 'webOrdering-appointment') {
             dispatch({
               type: CONSTANT.LIST_CATEGORY_APPOINTMENT,
               data: data.data,
