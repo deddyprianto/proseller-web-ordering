@@ -180,7 +180,6 @@ const Location = (props) => {
         viewBox='0 0 18 19'
         fill={color}
         xmlns='http://www.w3.org/2000/svg'
-        {...props}
       >
         <path
           fillRule='evenodd'

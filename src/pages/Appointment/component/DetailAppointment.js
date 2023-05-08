@@ -16,6 +16,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import calendarIcon from 'assets/images/calendarIcon.png';
 
 const DetailAppointment = ({
   isOpenModalDetail,
@@ -249,26 +250,33 @@ const DetailAppointment = ({
             />
           </PhotoProvider>
           <img
-            src={itemAppointment.defaultImageURL}
+            src={
+              itemAppointment.defaultImageURL
+                ? itemAppointment.defaultImageURL
+                : calendarIcon
+            }
             alt='myPic'
             style={{ width: '100%', cursor: 'pointer', borderRadius: '10px' }}
             onClick={() => setVisible(true)}
           />
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '6px',
-              position: 'absolute',
-              bottom: 4,
-              right: 4,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0px 15px',
-            }}
-          >
-            <div>1/{itemAppointment?.imageFiles.length}</div>
-          </div>
+
+          {itemAppointment?.imageFiles.length > 0 && (
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '6px',
+                position: 'absolute',
+                bottom: 4,
+                right: 4,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '0px 15px',
+              }}
+            >
+              <div>1/{itemAppointment?.imageFiles.length}</div>
+            </div>
+          )}
         </div>
         <p
           style={{
