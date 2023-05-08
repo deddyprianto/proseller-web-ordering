@@ -949,7 +949,6 @@ const Appointment = (props) => {
   const RenderMainContent = () => {
     function handleScroll() {
       if (openDropDownTime) {
-        console.log('kondisi terpenuhi');
         setOpenDropDownTime(false);
       }
     }
