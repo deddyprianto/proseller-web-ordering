@@ -348,7 +348,13 @@ const Appointment = (props) => {
   const Header = () => {
     const localStyle = {
       container: {
-        ...styleSheet.gridStyle,
+        display: 'grid',
+        gridTemplateColumns: '50px 1fr 50px',
+        gridTemplateRows: '1fr',
+        gap: '0px 0px',
+        gridAutoFlow: 'row',
+        gridTemplateAreas: '". . ."',
+        cursor: 'pointer',
         marginTop: '10px',
         marginBottom: '10px',
         alignItems: 'center',
@@ -361,19 +367,27 @@ const Appointment = (props) => {
         fontWeight: 700,
         fontSize: '20px',
         color: color.primary,
+        marginLeft: '10px',
       },
     };
     return (
       <div style={localStyle.container}>
         <ArrowBackIosIcon
-          sx={{ color: color.primary }}
+          sx={{ color: color.primary, marginLeft: '20px' }}
           fontSize='large'
           onClick={() => {
             props.history.push('/');
           }}
         />
         <div style={localStyle.label}>Appointment</div>
-        <div onClick={() => setShowSearchBar(true)}>
+        <div
+          onClick={() => setShowSearchBar(true)}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <IconSearch />
         </div>
       </div>
@@ -384,10 +398,8 @@ const Appointment = (props) => {
     const localStyle = {
       container: {
         display: 'flex',
-        width: '93%',
-        margin: 'auto',
         justifyContent: 'space-between',
-        marginTop: '25px',
+        marginTop: '15px',
         fontSize: '16px',
       },
     };
@@ -451,11 +463,10 @@ const Appointment = (props) => {
   const Location = () => {
     const localStyle = {
       container: {
-        width: '93%',
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-        margin: 'auto',
         borderRadius: '10px',
         padding: '10px 0px',
+        marginTop: '16px',
       },
       containerAccordion: {
         width: '93%',
@@ -863,8 +874,6 @@ const Appointment = (props) => {
   const Services = () => {
     const localStyle = {
       container: {
-        width: '93%',
-        margin: 'auto',
         marginTop: '25px',
       },
       label: {
@@ -920,7 +929,7 @@ const Appointment = (props) => {
           style={{
             position: 'absolute',
             backgroundColor: 'white',
-            height: '270px',
+            height: '310px',
             width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
@@ -938,12 +947,23 @@ const Appointment = (props) => {
     }
   };
   const RenderMainContent = () => {
+    function handleScroll() {
+      if (openDropDownTime) {
+        setOpenDropDownTime(false);
+      }
+    }
     if (!isEmptyObject(selectedLocation)) {
       return (
-        <div style={{ height: '80vh ', overflowY: 'auto' }}>
+        <div
+          class='my-container'
+          style={{ height: '80vh ', overflowY: 'auto' }}
+          onScroll={handleScroll}
+        >
           <div
             style={{
               paddingBottom: 100,
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
             <Label />
