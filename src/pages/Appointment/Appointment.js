@@ -119,6 +119,15 @@ const Appointment = (props) => {
       overflowY: 'auto',
       marginTop: '10px',
     },
+    gridStyle: {
+      display: 'grid',
+      gridTemplateColumns: '50px 1fr 50px',
+      gridTemplateRows: '1fr',
+      gap: '0px 0px',
+      gridAutoFlow: 'row',
+      gridTemplateAreas: '". . ."',
+      cursor: 'pointer',
+    },
     paper: {
       maxHeight: 500,
       overflow: 'auto',
@@ -390,7 +399,7 @@ const Appointment = (props) => {
       container: {
         display: 'flex',
         justifyContent: 'space-between',
-        marginTop: '25px',
+        marginTop: '15px',
         fontSize: '16px',
       },
     };
@@ -457,6 +466,7 @@ const Appointment = (props) => {
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
         borderRadius: '10px',
         padding: '10px 0px',
+        marginTop: '16px',
       },
       containerAccordion: {
         width: '93%',
@@ -919,7 +929,7 @@ const Appointment = (props) => {
           style={{
             position: 'absolute',
             backgroundColor: 'white',
-            height: '270px',
+            height: '310px',
             width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
@@ -937,9 +947,19 @@ const Appointment = (props) => {
     }
   };
   const RenderMainContent = () => {
+    function handleScroll() {
+      if (openDropDownTime) {
+        console.log('kondisi terpenuhi');
+        setOpenDropDownTime(false);
+      }
+    }
     if (!isEmptyObject(selectedLocation)) {
       return (
-        <div style={{ height: '80vh ', overflowY: 'auto' }}>
+        <div
+          class='my-container'
+          style={{ height: '80vh ', overflowY: 'auto' }}
+          onScroll={handleScroll}
+        >
           <div
             style={{
               paddingBottom: 100,
