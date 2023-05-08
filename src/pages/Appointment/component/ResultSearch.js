@@ -18,15 +18,12 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
     return items.settingKey === 'ShowServicePrice';
   });
   const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
     if (hours > 0) {
-      return `${hours}h ${minutes}min`;
+      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
     } else if (minutes > 0) {
-      return `${minutes}min`;
+      return `${minutes}mins`;
     } else {
       return '';
     }
