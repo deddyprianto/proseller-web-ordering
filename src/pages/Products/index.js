@@ -16,10 +16,7 @@ import {
   getInitialProductValue,
   getFormattedPrice,
 } from '../../helpers/ProductHelper';
-import useFilter from '../../hooks/useFilter';
 import useMobileSize from 'hooks/useMobileSize';
-
-import useStyles from './styles';
 
 const SHIMMER_ARRAY = [1, 2, 3];
 const IS_EMENU = window.location.hostname.includes('emenu');
@@ -41,7 +38,6 @@ export const Products = ({
   orderingMode,
   setting,
 }) => {
-  const classes = useStyles({ color: theme.color });
   const mobileSize = useMobileSize();
   const { categoryId } = useParams();
   const [categoryNotFound, setCategoryNotFound] = useState(false);
@@ -49,7 +45,6 @@ export const Products = ({
   const [productIsExistInBasket, setProductIsExistInBasket] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [isAddNewExistingProduct, setIsAddNewExistingProduct] = useState(false);
-  const [filteredProducts, handleFilterKeywordChange] = useFilter(products);
 
   const selectProduct = (product, mode) => {
     const initialValue = getInitialProductValue(product, mode);
@@ -154,14 +149,6 @@ export const Products = ({
               <div style={{ margin: '1rem', marginBottom: 20 }}>
                 <SearchBox />
               </div>
-              {/* <div style={{ margin: "1rem" }}>
-                <input
-                  onChange={handleFilterKeywordChange}
-                  className={`form-control ${classes.searchBox}`}
-                  placeholder="Search"
-                  style={{ fontSize: "1.5rem" }}
-                ></input>
-              </div> */}
               <div style={{ marginTop: '1rem' }}>
                 {isLoading ? (
                   <div>
@@ -191,49 +178,46 @@ export const Products = ({
                       <div className='tab-pane active' id='h1-tab-products-2'>
                         <ul className='products'>
                           <div className='grid-products'>
-                            {filteredProducts &&
-                              filteredProducts.map((product) => {
-                                const productInBasket =
-                                  basket &&
-                                  basket.details &&
-                                  basket.details.find(
-                                    (item) => item.product.id === product.id
-                                  );
-                                const label = productInBasket
-                                  ? 'Update'
-                                  : 'Add';
-                                const quantity =
-                                  productInBasket && productInBasket.quantity
-                                    ? productInBasket.quantity
-                                    : 0;
-                                return (
-                                  <Product
-                                    labelButton={label}
-                                    quantity={quantity}
-                                    selectProduct={selectProduct}
-                                    productConfig={theme}
-                                    showUpdateModal={(item) => {
-                                      setSelectedProduct(item);
-                                      setProductIsExistInBasket(
-                                        label === 'Update'
-                                      );
-                                      setShowUpdateModal(true);
-                                    }}
-                                    key={product.id}
-                                    item={product}
-                                  />
+                            {products?.map((product) => {
+                              const productInBasket =
+                                basket &&
+                                basket.details &&
+                                basket.details.find(
+                                  (item) => item.product.id === product.id
                                 );
-                              })}
+                              const label = productInBasket ? 'Update' : 'Add';
+                              const quantity =
+                                productInBasket && productInBasket.quantity
+                                  ? productInBasket.quantity
+                                  : 0;
+                              return (
+                                <Product
+                                  labelButton={label}
+                                  quantity={quantity}
+                                  selectProduct={selectProduct}
+                                  productConfig={theme}
+                                  showUpdateModal={(item) => {
+                                    setSelectedProduct(item);
+                                    setProductIsExistInBasket(
+                                      label === 'Update'
+                                    );
+                                    setShowUpdateModal(true);
+                                  }}
+                                  key={product.id}
+                                  item={product}
+                                />
+                              );
+                            })}
                           </div>
                         </ul>
-                        {!filteredProducts.length ? (
+                        {!products?.length && (
                           <h4
                             style={{ textAlign: 'center' }}
                             className='customer-group-name'
                           >
                             Sorry, products not found :(
                           </h4>
-                        ) : null}
+                        )}
                       </div>
                     </div>
                   </div>
