@@ -113,11 +113,13 @@ const Appointment = (props) => {
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       display: 'grid',
       gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
+      gridTemplateRows: '1fr 55px',
       gap: '0px 15px',
       gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
       marginTop: '10px',
+      paddingLeft: '16px',
+      paddingRight: '16px',
     },
     gridStyle: {
       display: 'grid',
@@ -243,7 +245,7 @@ const Appointment = (props) => {
           orderingMode: orderingSetting?.ShowOrderingModeModalFirst
             ? orderingMode
             : '',
-          presetType: 'appointment',
+          presetType: 'webOrdering-appointment',
         })
       );
       setSelectedCategory(data.data[0]);
@@ -261,7 +263,7 @@ const Appointment = (props) => {
           outlet: selectedLocation,
           skip: 0,
           take: 10,
-          presetTypeName: 'appointment',
+          presetTypeName: 'webOrdering-appointment',
         })
       );
       setIsLoading(false);
@@ -517,7 +519,7 @@ const Appointment = (props) => {
           </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 600, color: 'black' }}>
-              {selectedLocation.name}
+              {selectedLocation?.name}
             </div>
 
             <table>
@@ -727,7 +729,6 @@ const Appointment = (props) => {
           >
             {categoryTabAppointment.map((item, i) => (
               <Tab
-                icon={handleIconsTab(item)}
                 value={item.name}
                 onClick={() => {
                   setSelectedCategory(item);
@@ -762,7 +763,6 @@ const Appointment = (props) => {
         >
           {categoryTabAppointment.map((item, i) => (
             <Tab
-              icon={handleIconsTab(item)}
               value={item.name}
               onClick={() => {
                 setSelectedCategory(item);
@@ -980,6 +980,11 @@ const Appointment = (props) => {
   };
 
   const ResponsiveLayout = () => {
+    function handleScroll() {
+      if (openDropDownTime) {
+        setOpenDropDownTime(false);
+      }
+    }
     if (gadgetScreen) {
       return (
         <div
@@ -1001,7 +1006,11 @@ const Appointment = (props) => {
     } else {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
-          <div style={styleSheet.container}>
+          <div
+            style={styleSheet.container}
+            class='my-container'
+            onScroll={handleScroll}
+          >
             <Header />
             <Label />
             <Location />
