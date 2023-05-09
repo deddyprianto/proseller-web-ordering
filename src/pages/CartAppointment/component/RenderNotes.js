@@ -8,8 +8,6 @@ const RenderNotes = () => {
   return (
     <div
       style={{
-        width: '93%',
-        margin: 'auto',
         marginTop: '20px',
       }}
     >
