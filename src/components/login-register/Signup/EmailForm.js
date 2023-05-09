@@ -224,7 +224,11 @@ const EmailForm = ({
                 className='card card-body'
                 style={{ textAlign: 'justify', fontSize: 11 }}
               >
-                <textarea disabled rows={10}>
+                <textarea
+                  rows={10}
+                  readOnly
+                  style={{ backgroundColor: '#F8F8F8' }}
+                >
                   {termsAndConditions}
                 </textarea>
               </div>
