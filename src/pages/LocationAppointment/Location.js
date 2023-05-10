@@ -12,7 +12,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
-import { getDistance } from 'geolib';
+import Swal from 'sweetalert2';
+import { OrderAction } from 'redux/actions/OrderAction';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const Location = (props) => {
   // some initial
@@ -21,7 +23,7 @@ const Location = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   // some st
-  const [getLocationMeters, setGetLocationMeters] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
@@ -45,6 +47,46 @@ const Location = (props) => {
   );
   const outlets = useSelector((state) => state.outlet.outlets);
   // some fn
+  const handleSelectedOutlet = (item) => {
+    if (cartAppointment?.details?.length > 0) {
+      Swal.fire({
+        title: 'Change Outlet ?',
+        text: 'You will delete your cart at the previous outlet',
+        icon: 'warning',
+        confirmButtonText: 'Sure',
+        showCancelButton: true,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          if (cartAppointment?.details?.length > 0) {
+            setIsLoading(true);
+            await dispatch(OrderAction.deleteCartAppointment());
+            setIsLoading(false);
+          }
+          dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
+          dispatch({
+            type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
+            payload: '',
+          });
+          dispatch({
+            type: CONSTANT.LOCATION_APPOINTMENT,
+            payload: item,
+          });
+          history.goBack();
+        }
+      });
+    } else {
+      dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
+      dispatch({
+        type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
+        payload: '',
+      });
+      dispatch({
+        type: CONSTANT.LOCATION_APPOINTMENT,
+        payload: item,
+      });
+      history.goBack();
+    }
+  };
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
@@ -52,33 +94,6 @@ const Location = (props) => {
   };
 
   // some Effect
-  useEffect(() => {
-    if (selectedLocation?.latitude > 0 && selectedLocation?.longitude > 0) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const getMeterLocation = getDistance(
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            },
-            {
-              latitude: selectedLocation?.latitude,
-              longitude: selectedLocation?.longitude,
-            }
-          );
-          const kilometers = getMeterLocation / 1000;
-
-          setGetLocationMeters(kilometers);
-        },
-        (error) =>
-          console.log(
-            `the system wants to access your device's location ${error.message}`
-          ),
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
-    }
-  }, [selectedLocation]);
-
   useEffect(() => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
@@ -292,7 +307,7 @@ const Location = (props) => {
               marginRight: '5px',
             }}
           >
-            {getLocationMeters && `${getLocationMeters}km`}
+            {selectedLocation?.distance && `${selectedLocation?.distance}km`}
           </div>
         </div>
         <div
@@ -351,18 +366,7 @@ const Location = (props) => {
     return (
       <div
         style={localStyle.container}
-        onClick={() => {
-          dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
-          dispatch({
-            type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-            payload: '',
-          });
-          dispatch({
-            type: CONSTANT.LOCATION_APPOINTMENT,
-            payload: item,
-          });
-          history.goBack();
-        }}
+        onClick={() => handleSelectedOutlet(item)}
       >
         <div
           style={{
@@ -380,7 +384,24 @@ const Location = (props) => {
             <PlaceIcon />
           </div>
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500, color: 'black' }}>{item.name}</div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{ fontWeight: 500, color: 'black', marginRight: '5px' }}
+              >
+                {item.name}
+              </div>
+              <div
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: 'black',
+                  justifySelf: 'end',
+                  marginRight: '10px',
+                }}
+              >
+                {item?.distance && `( ${item?.distance}km) `}
+              </div>
+            </div>
             <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
               {item?.address}
             </div>
@@ -560,7 +581,11 @@ const Location = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <LoadingOverlayCustom
+      active={isLoading}
+      spinner
+      text='Deleted your cart...'
+    >
       <ResponsiveLayout />
       <Dialog
         fullWidth
@@ -659,7 +684,7 @@ const Location = (props) => {
           </button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </LoadingOverlayCustom>
   );
 };
 
