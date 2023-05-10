@@ -66,7 +66,9 @@ const Location = (props) => {
               longitude: selectedLocation?.longitude,
             }
           );
-          setGetLocationMeters(getMeterLocation);
+          const kilometers = getMeterLocation / 1000;
+
+          setGetLocationMeters(kilometers);
         },
         (error) =>
           console.log(
@@ -227,8 +229,6 @@ const Location = (props) => {
     return (
       <div
         style={{
-          width: '93%',
-          margin: 'auto',
           borderRadius: '10px',
           padding: '10px 0px',
           marginBottom: '10px',
@@ -238,7 +238,7 @@ const Location = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 70px',
+            gridTemplateColumns: '40px 1fr 100px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -288,10 +288,11 @@ const Location = (props) => {
               fontSize: '14px',
               fontWeight: 500,
               color: 'black',
-              justifySelf: 'center',
+              justifySelf: 'end',
+              marginRight: '5px',
             }}
           >
-            {getLocationMeters && `${getLocationMeters}m`}
+            {getLocationMeters && `${getLocationMeters}km`}
           </div>
         </div>
         <div
@@ -316,9 +317,7 @@ const Location = (props) => {
   const ListLocations = ({ item, isDisable }) => {
     const localStyle = {
       container: {
-        width: '93%',
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
-        margin: 'auto',
         borderRadius: '10px',
         padding: '10px 0px',
         marginBottom: '15px',
@@ -440,7 +439,7 @@ const Location = (props) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '50px 1fr 70px',
+          gridTemplateColumns: '23px 1fr 70px',
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
@@ -477,8 +476,6 @@ const Location = (props) => {
       <div
         style={{
           display: 'flex',
-          width: '93%',
-          margin: 'auto',
           marginTop: '25px',
         }}
       >
@@ -500,7 +497,6 @@ const Location = (props) => {
         <div style={{ marginTop: '43px' }}>
           <div
             style={{
-              marginLeft: '15px',
               color: 'black',
               fontWeight: 700,
               marginBottom: '8px',
@@ -523,7 +519,10 @@ const Location = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont} style={{ height: '100vh' }}>
+        <div
+          className={fontStyles.myFont}
+          style={{ height: '100vh', paddingLeft: '16px', paddingRight: '16px' }}
+        >
           <RenderHeader />
           <RenderLabel />
           <RenderListLocation />

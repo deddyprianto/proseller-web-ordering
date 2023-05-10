@@ -196,7 +196,9 @@ const Appointment = (props) => {
               longitude: selectedLocation?.longitude,
             }
           );
-          setGetLocationMeters(getMeterLocation);
+          const kilometers = getMeterLocation / 1000;
+
+          setGetLocationMeters(kilometers);
         },
         (error) =>
           console.log(
@@ -501,7 +503,7 @@ const Appointment = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 70px',
+            gridTemplateColumns: '40px 1fr 100px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -567,10 +569,11 @@ const Appointment = (props) => {
               fontSize: '14px',
               fontWeight: 500,
               color: 'black',
-              justifySelf: 'center',
+              justifySelf: 'end',
+              marginRight: '5px',
             }}
           >
-            {getLocationMeters && `${getLocationMeters}m`}
+            {getLocationMeters && `${getLocationMeters}km`}
           </div>
         </div>
         <div
