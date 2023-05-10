@@ -13,8 +13,6 @@ const Time = ({ messageTimeSlot, timeslot }) => {
     return (
       <div
         style={{
-          width: '93%',
-          margin: 'auto',
           marginTop: '20px',
           marginBottom: '20px',
         }}

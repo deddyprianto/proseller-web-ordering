@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { isEmptyArray } from 'helpers/CheckEmpty';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@mui/material/styles';
 import DetailAppointment from 'pages/Appointment/component/DetailAppointment';
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { useHistory } from 'react-router-dom';
+import { IconDelete, IconList } from './icons/Icons';
+import calendarIcon from 'assets/images/calendarIcon.png';
 
 const ItemServiceCart = ({
   item,
@@ -27,21 +25,14 @@ const ItemServiceCart = ({
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  const theme = useTheme();
-  const useStyles = makeStyles(() => ({
-    paper: { minWidth: '350px', overflow: 'hidden' },
-  }));
   // some fn
   const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
     if (hours > 0) {
-      return `${hours}h ${minutes}min`;
+      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
     } else if (minutes > 0) {
-      return `${minutes}min`;
+      return `${minutes}mins`;
     } else {
       return '';
     }
@@ -56,8 +47,6 @@ const ItemServiceCart = ({
       return result;
     }
   };
-  const classes = useStyles();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const styleSheet = {
     container: {
       width: '45%',
@@ -159,29 +148,22 @@ const ItemServiceCart = ({
     });
   };
 
-  const IconList = () => {
-    return (
-      <svg
-        width={4}
-        height={4}
-        viewBox='0 0 4 4'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <circle cx={2} cy={2} r={2} fill='black' />
-      </svg>
-    );
-  };
   const RenderAddOn = ({ modifier }) => {
     if (!isEmptyArray(modifier)) {
       return modifier.map((item) => {
         return item.modifier.details.map((itemModifier) => (
-          <ul style={{ padding: 0, margin: 0, listStyleType: 'none' }}>
+          <ul
+            style={{
+              padding: 0,
+              margin: 0,
+              listStyleType: 'none',
+            }}
+          >
             <li
               style={{
                 width: '100%',
                 display: 'grid',
-                gridTemplateColumns: '1fr 164px 1fr',
+                gridTemplateColumns: '1fr 140px 1fr',
                 gridTemplateRows: '1fr',
                 gap: '0px',
                 gridAutoFlow: 'row',
@@ -253,7 +235,11 @@ const ItemServiceCart = ({
             }}
           >
             <img
-              src={item?.product.defaultImageURL}
+              src={
+                item?.product.defaultImageURL
+                  ? item?.product.defaultImageURL
+                  : calendarIcon
+              }
               style={{ borderRadius: '10px', height: '55px' }}
               alt='logo'
             />
@@ -261,6 +247,7 @@ const ItemServiceCart = ({
           <div
             style={{
               fontSize: '14px',
+              marginLeft: '10px',
             }}
           >
             <div
@@ -268,7 +255,7 @@ const ItemServiceCart = ({
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                fontWeight: 500,
+                fontWeight: 600,
                 width: '90%',
                 color: 'black',
               }}
@@ -363,8 +350,16 @@ const ItemServiceCart = ({
               alignItems: 'center',
             }}
           >
-            <DeleteIcon sx={{ fontSize: '20px', marginRight: '5px' }} />
-            <div>Delete</div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '5px',
+              }}
+            >
+              <IconDelete color={color.primary} />
+            </div>
+            <div style={{ fontWeight: 600 }}>DELETE</div>
           </div>
           <div
             onClick={() => setIsOpenModalDetail(true)}
@@ -380,7 +375,7 @@ const ItemServiceCart = ({
             }}
           >
             <EditIcon sx={{ marginRight: '5px' }} />
-            <p style={{ margin: 0, padding: 0 }}>Edit</p>
+            <p style={{ margin: 0, padding: 0, fontWeight: 600 }}>EDIT</p>
           </div>
         </div>
       </div>

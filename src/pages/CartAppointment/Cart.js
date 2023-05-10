@@ -230,7 +230,7 @@ const Cart = (props) => {
         />
         <div
           style={{
-            width: '75%',
+            width: '80%',
             display: 'flex',
             alignItems: 'center',
             fontSize: '14px',
@@ -265,6 +265,7 @@ const Cart = (props) => {
               padding: 0,
               margin: '0px 3px',
               backgroundColor: 'rgba(183, 183, 183, 1)',
+              height: '2px',
             }}
           />
           <div
@@ -295,7 +296,7 @@ const Cart = (props) => {
   };
   const LabelAnythingelse = () => {
     return (
-      <div style={{ width: '93%', margin: 'auto' }}>
+      <div>
         <div
           style={{
             marginTop: '30px',
@@ -339,8 +340,6 @@ const Cart = (props) => {
       return (
         <div
           style={{
-            width: '93%',
-            margin: 'auto',
             marginTop: '20px',
           }}
         >
@@ -460,8 +459,6 @@ const Cart = (props) => {
     return (
       <div
         style={{
-          width: '93%',
-          margin: 'auto',
           marginTop: '15px',
         }}
       >
@@ -546,6 +543,8 @@ const Cart = (props) => {
           <div
             style={{
               paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
             <Header />
@@ -572,6 +571,8 @@ const Cart = (props) => {
               borderRadius: '8px',
               boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
               overflowY: 'auto',
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
             <Header />
