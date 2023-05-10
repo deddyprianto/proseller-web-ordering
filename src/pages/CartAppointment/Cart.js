@@ -177,7 +177,7 @@ const Cart = (props) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '50px 1fr 50px',
+          gridTemplateColumns: '23px 1fr 50px',
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
