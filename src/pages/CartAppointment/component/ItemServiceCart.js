@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { useHistory } from 'react-router-dom';
 import { IconDelete, IconList } from './icons/Icons';
+import calendarIcon from 'assets/images/calendarIcon.png';
 
 const ItemServiceCart = ({
   item,
@@ -234,7 +235,11 @@ const ItemServiceCart = ({
             }}
           >
             <img
-              src={item?.product.defaultImageURL}
+              src={
+                item?.product.defaultImageURL
+                  ? item?.product.defaultImageURL
+                  : calendarIcon
+              }
               style={{ borderRadius: '10px', height: '55px' }}
               alt='logo'
             />

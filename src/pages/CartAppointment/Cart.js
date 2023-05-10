@@ -571,6 +571,8 @@ const Cart = (props) => {
               borderRadius: '8px',
               boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
               overflowY: 'auto',
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
             <Header />
