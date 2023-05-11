@@ -90,6 +90,7 @@ const CartGuestCheckout = () => {
   const [openTimeSlot, setOpenTimeSlot] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
+  const [isSelectedOrderingMode, setIsSelectedOrderingMode] = useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const basket = useSelector((state) => state.guestCheckoutCart.data);
@@ -550,33 +551,35 @@ const CartGuestCheckout = () => {
     return value === 'TRUE';
   };
 
-  const handleOpenOrderingMode = async () => {
+  const handleOpenOrderingMode = async (isSelected = true) => {
     const intersectOrderingMode = await getIntersectOrderingMode();
 
-    if (intersectOrderingMode.length === 1 && !orderingModeGuestCheckout) {
-      intersectOrderingMode.forEach(async (item) => {
-        await dispatch(
-          OrderAction.changeOrderingModeForGuestCheckout({
-            guestID: idGuestCheckout,
-            orderingMode: item.name,
-            provider: {},
-          })
-        );
-        dispatch({
-          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-          payload: item.name,
+    if (intersectOrderingMode.length === 1) {
+      (!isSelectedOrderingMode || !isSelected) &&
+        intersectOrderingMode.forEach(async (item) => {
+          await dispatch(
+            OrderAction.changeOrderingModeForGuestCheckout({
+              guestID: idGuestCheckout,
+              orderingMode: item.name,
+              provider: {},
+            })
+          );
+          dispatch({
+            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+            payload: item.name,
+          });
+          dispatch({
+            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
+            payload: item,
+          });
+          dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
+          dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
+          dispatch({
+            type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
+            payload: { deliveryAddress: null },
+          });
+          setIsSelectedOrderingMode(true);
         });
-        dispatch({
-          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
-          payload: item,
-        });
-        dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
-        dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
-        dispatch({
-          type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
-          payload: { deliveryAddress: null },
-        });
-      });
     } else if (intersectOrderingMode.length < 1) {
       modalNoAvailableOrderingMode();
     } else {
@@ -593,10 +596,10 @@ const CartGuestCheckout = () => {
 
   const modalNoAvailableOrderingMode = () => {
     Swal.fire({
-      title: '<p>No Ordering Mode Available</p>',
-      html: `<h5 style='color:#B7B7B7; font-size:14px'>There is no available ordering modes, please select another outlet</h5>`,
+      title: `<p style='padding-top: 10px'>No Ordering Mode Available</p>`,
+      html: `<h5 style='color:#B7B7B7; font-size:14px'>There are no available ordering modes, please select another outlet</h5>`,
       allowOutsideClick: false,
-      confirmButtonText: 'OK',
+      confirmButtonText: 'Select Outlet',
       confirmButtonColor: color?.primary,
       width: '40em',
       customClass: {
@@ -1332,16 +1335,20 @@ const CartGuestCheckout = () => {
         <Button
           onClick={async () => {
             setIsLoading(true);
-            const getAllOutlets = await dispatch(
-              OutletAction.fetchAllOutlet(true)
+            const currentOutlet = await dispatch(
+              OutletAction.getOutletById(defaultOutlet.id)
             );
             setIsLoading(false);
-            const filterOutletUnavailable = getAllOutlets.find(
-              (item) => item.name === defaultOutlet.name
+
+            const intersectOrderingMode = await getIntersectOrderingMode();
+
+            const checkOrderingMode = intersectOrderingMode?.find(
+              (val) => val.name === itemOrderingMode.name
             );
-            if (filterOutletUnavailable.orderingStatus === 'UNAVAILABLE') {
+
+            if (currentOutlet.orderingStatus === 'UNAVAILABLE') {
               Swal.fire({
-                title: '<p>The outlet is not available</p>',
+                title: `<p style='padding-top: 10px'>The outlet is not available</p>`,
                 html: `<h5 style='color:#B7B7B7; font-size:14px'>${defaultOutlet.name} is currently not available, please select another outlet</h5>`,
                 width: '40em',
                 allowOutsideClick: false,
@@ -1354,11 +1361,11 @@ const CartGuestCheckout = () => {
               }).then(() => {
                 history.push('/outlets');
               });
-            } else if (
-              !filterOutletUnavailable?.[itemOrderingMode?.isEnabledFieldName]
-            ) {
+            } else if (intersectOrderingMode.length < 1) {
+              modalNoAvailableOrderingMode();
+            } else if (!checkOrderingMode) {
               Swal.fire({
-                title: '<p>Ordering mode is not available</p>',
+                title: `<p style='padding-top: 10px'>Ordering mode is not available</p>`,
                 html: `<h5 style='color:#B7B7B7; font-size:14px'>${itemOrderingMode.name} is currently not available, please select another ordering mode</h5>`,
                 allowOutsideClick: false,
                 width: '40em',
@@ -1369,7 +1376,8 @@ const CartGuestCheckout = () => {
                   title: fontStyleCustom.fontTitleSweetAlert,
                 },
               }).then(() => {
-                handleOpenOrderingMode();
+                setIsSelectedOrderingMode(false);
+                handleOpenOrderingMode(false);
               });
             } else {
               handlePaymentGuestMode();
