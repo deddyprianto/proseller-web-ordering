@@ -394,7 +394,7 @@ const Location = (props) => {
                 style={{
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: 'black',
+                  color: 'rgba(183, 183, 183, 1)',
                   justifySelf: 'end',
                   marginRight: '10px',
                 }}
