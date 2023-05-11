@@ -314,32 +314,8 @@ const Cart = (props) => {
             marginTop: '20px',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '14px',
-            }}
-          >
-            <div
-              style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}
-            >
-              Selected Outlet
-            </div>
-            <div
-              onClick={() => props.history.push('/location')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: color.primary,
-                fontWeight: 500,
-                cursor: 'pointer',
-              }}
-            >
-              Change Outlet
-            </div>
+          <div style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}>
+            Selected Outlet
           </div>
           <div
             style={{
