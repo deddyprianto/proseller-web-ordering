@@ -12,7 +12,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
-import { getDistance } from 'geolib';
+import { OrderAction } from 'redux/actions/OrderAction';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 const Location = (props) => {
   // some initial
@@ -21,7 +22,7 @@ const Location = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   // some st
-  const [getLocationMeters, setGetLocationMeters] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
@@ -45,6 +46,25 @@ const Location = (props) => {
   );
   const outlets = useSelector((state) => state.outlet.outlets);
   // some fn
+  const handleSelectedOutlet = (item) => {
+    if (cartAppointment?.details?.length > 0) {
+      dispatch({
+        type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
+        payload: true,
+      });
+    } else {
+      dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
+      dispatch({
+        type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
+        payload: '',
+      });
+      dispatch({
+        type: CONSTANT.LOCATION_APPOINTMENT,
+        payload: item,
+      });
+      history.goBack();
+    }
+  };
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
@@ -52,31 +72,6 @@ const Location = (props) => {
   };
 
   // some Effect
-  useEffect(() => {
-    if (selectedLocation?.latitude > 0 && selectedLocation?.longitude > 0) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const getMeterLocation = getDistance(
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            },
-            {
-              latitude: selectedLocation?.latitude,
-              longitude: selectedLocation?.longitude,
-            }
-          );
-          setGetLocationMeters(getMeterLocation);
-        },
-        (error) =>
-          console.log(
-            `the system wants to access your device's location ${error.message}`
-          ),
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
-    }
-  }, [selectedLocation]);
-
   useEffect(() => {
     if (isEmptyObject(selectedLocation)) {
       dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
@@ -227,8 +222,6 @@ const Location = (props) => {
     return (
       <div
         style={{
-          width: '93%',
-          margin: 'auto',
           borderRadius: '10px',
           padding: '10px 0px',
           marginBottom: '10px',
@@ -238,7 +231,7 @@ const Location = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 70px',
+            gridTemplateColumns: '40px 1fr 100px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -288,10 +281,11 @@ const Location = (props) => {
               fontSize: '14px',
               fontWeight: 500,
               color: 'black',
-              justifySelf: 'center',
+              justifySelf: 'end',
+              marginRight: '5px',
             }}
           >
-            {getLocationMeters && `${getLocationMeters}m`}
+            {selectedLocation?.distance && `${selectedLocation?.distance}km`}
           </div>
         </div>
         <div
@@ -316,9 +310,7 @@ const Location = (props) => {
   const ListLocations = ({ item, isDisable }) => {
     const localStyle = {
       container: {
-        width: '93%',
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
-        margin: 'auto',
         borderRadius: '10px',
         padding: '10px 0px',
         marginBottom: '15px',
@@ -352,18 +344,7 @@ const Location = (props) => {
     return (
       <div
         style={localStyle.container}
-        onClick={() => {
-          dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
-          dispatch({
-            type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-            payload: '',
-          });
-          dispatch({
-            type: CONSTANT.LOCATION_APPOINTMENT,
-            payload: item,
-          });
-          history.goBack();
-        }}
+        onClick={() => handleSelectedOutlet(item)}
       >
         <div
           style={{
@@ -381,7 +362,24 @@ const Location = (props) => {
             <PlaceIcon />
           </div>
           <div style={{ fontSize: '14px' }}>
-            <div style={{ fontWeight: 500, color: 'black' }}>{item.name}</div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{ fontWeight: 500, color: 'black', marginRight: '5px' }}
+              >
+                {item.name}
+              </div>
+              <div
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: 'rgba(183, 183, 183, 1)',
+                  justifySelf: 'end',
+                  marginRight: '10px',
+                }}
+              >
+                {item?.distance && `( ${item?.distance}km) `}
+              </div>
+            </div>
             <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
               {item?.address}
             </div>
@@ -440,7 +438,7 @@ const Location = (props) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '50px 1fr 70px',
+          gridTemplateColumns: '23px 1fr 70px',
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
@@ -477,8 +475,6 @@ const Location = (props) => {
       <div
         style={{
           display: 'flex',
-          width: '93%',
-          margin: 'auto',
           marginTop: '25px',
         }}
       >
@@ -500,7 +496,6 @@ const Location = (props) => {
         <div style={{ marginTop: '43px' }}>
           <div
             style={{
-              marginLeft: '15px',
               color: 'black',
               fontWeight: 700,
               marginBottom: '8px',
@@ -523,7 +518,10 @@ const Location = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={fontStyles.myFont} style={{ height: '100vh' }}>
+        <div
+          className={fontStyles.myFont}
+          style={{ height: '100vh', paddingLeft: '16px', paddingRight: '16px' }}
+        >
           <RenderHeader />
           <RenderLabel />
           <RenderListLocation />
@@ -561,7 +559,11 @@ const Location = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <LoadingOverlayCustom
+      active={isLoading}
+      spinner
+      text='Deleted your cart...'
+    >
       <ResponsiveLayout />
       <Dialog
         fullWidth
@@ -638,7 +640,12 @@ const Location = (props) => {
             Cancel
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
+              if (cartAppointment?.details?.length > 0) {
+                setIsLoading(true);
+                await dispatch(OrderAction.deleteCartAppointment());
+                setIsLoading(false);
+              }
               dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: false });
               dispatch({
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
@@ -660,7 +667,7 @@ const Location = (props) => {
           </button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </LoadingOverlayCustom>
   );
 };
 

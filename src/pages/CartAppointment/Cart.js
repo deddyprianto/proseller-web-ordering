@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,12 +16,10 @@ import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
 import Time from './component/Time';
 import screen from 'hooks/useWindowSize';
-import { getDistance } from 'geolib';
 
 const Cart = (props) => {
   const responsiveDesign = screen();
   const dispatch = useDispatch();
-  const [getLocationMeters, setGetLocationMeters] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const gadgetScreen = responsiveDesign.width < 980;
@@ -46,35 +44,8 @@ const Cart = (props) => {
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  // some eff
-  useEffect(() => {
-    if (
-      locationAppointment?.latitude > 0 &&
-      locationAppointment?.longitude > 0
-    ) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const getMeterLocation = getDistance(
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            },
-            {
-              latitude: locationAppointment?.latitude,
-              longitude: locationAppointment?.longitude,
-            }
-          );
-          setGetLocationMeters(getMeterLocation);
-        },
-        (error) =>
-          console.log(
-            `the system wants to access your device's location ${error.message}`
-          ),
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
-    }
-  }, [locationAppointment]);
 
+  // some eff
   useEffect(() => {
     if (!isEmptyArray(outlet)) {
       if (isEmptyObject(locationAppointment)) {
@@ -378,7 +349,7 @@ const Cart = (props) => {
               width: '100%',
               margin: 'auto',
               display: 'grid',
-              gridTemplateColumns: '1fr 250px 1fr 1fr',
+              gridTemplateColumns: '25px 1fr 100px',
               gridTemplateRows: '1fr',
               gap: '0px 0px',
               gridAutoFlow: 'row',
@@ -401,16 +372,19 @@ const Cart = (props) => {
                 {locationAppointment?.address}
               </div>
             </div>
-            <div></div>
             <div
               style={{
-                justifySelf: 'center',
                 fontWeight: 500,
-                color: 'black',
+                color: 'rgba(183, 183, 183, 1)',
                 fontSize: '14px',
+                width: '100%',
+                lineHeight: '20px',
+                display: 'flex',
+                justifyContent: 'flex-end',
               }}
             >
-              {getLocationMeters && `${getLocationMeters}m`}
+              {locationAppointment?.distance &&
+                `( ${locationAppointment?.distance}km) `}
             </div>
           </div>
           <hr

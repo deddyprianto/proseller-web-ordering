@@ -25,11 +25,9 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
 import Paper from '@mui/material/Paper';
 import screen from 'hooks/useWindowSize';
-import { getDistance } from 'geolib';
 
 const Appointment = (props) => {
   // some state
-  const [getLocationMeters, setGetLocationMeters] = useState('');
   const [locationKeys, setLocationKeys] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showNotify, setShowNotify] = useState(false);
@@ -182,30 +180,6 @@ const Appointment = (props) => {
   };
 
   // some Effect
-  useEffect(() => {
-    if (selectedLocation?.latitude > 0 && selectedLocation?.longitude > 0) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const getMeterLocation = getDistance(
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            },
-            {
-              latitude: selectedLocation?.latitude,
-              longitude: selectedLocation?.longitude,
-            }
-          );
-          setGetLocationMeters(getMeterLocation);
-        },
-        (error) =>
-          console.log(
-            `the system wants to access your device's location ${error.message}`
-          ),
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
-    }
-  }, [selectedLocation]);
   useEffect(() => {
     dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: '' });
@@ -501,7 +475,7 @@ const Appointment = (props) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '40px 1fr 70px',
+            gridTemplateColumns: '40px 1fr 100px',
             gridTemplateRows: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -567,10 +541,11 @@ const Appointment = (props) => {
               fontSize: '14px',
               fontWeight: 500,
               color: 'black',
-              justifySelf: 'center',
+              justifySelf: 'end',
+              marginRight: '5px',
             }}
           >
-            {getLocationMeters && `${getLocationMeters}m`}
+            {selectedLocation?.distance && `${selectedLocation?.distance}km`}
           </div>
         </div>
         <div
