@@ -12,7 +12,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
-import Swal from 'sweetalert2';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
@@ -49,30 +48,9 @@ const Location = (props) => {
   // some fn
   const handleSelectedOutlet = (item) => {
     if (cartAppointment?.details?.length > 0) {
-      Swal.fire({
-        title: 'Change Outlet ?',
-        text: 'You will delete your cart at the previous outlet',
-        icon: 'warning',
-        confirmButtonText: 'Sure',
-        showCancelButton: true,
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          if (cartAppointment?.details?.length > 0) {
-            setIsLoading(true);
-            await dispatch(OrderAction.deleteCartAppointment());
-            setIsLoading(false);
-          }
-          dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
-          dispatch({
-            type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-            payload: '',
-          });
-          dispatch({
-            type: CONSTANT.LOCATION_APPOINTMENT,
-            payload: item,
-          });
-          history.goBack();
-        }
+      dispatch({
+        type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
+        payload: true,
       });
     } else {
       dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
@@ -662,7 +640,12 @@ const Location = (props) => {
             Cancel
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
+              if (cartAppointment?.details?.length > 0) {
+                setIsLoading(true);
+                await dispatch(OrderAction.deleteCartAppointment());
+                setIsLoading(false);
+              }
               dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: false });
               dispatch({
                 type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
