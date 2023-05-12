@@ -67,9 +67,9 @@ const Appointment = (props) => {
   );
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
-  const selectedLocation = !selectedLocationPersisted
-    ? defaultOutlet
-    : selectedLocationPersisted;
+  const selectedLocation = selectedLocationPersisted
+    ? selectedLocationPersisted
+    : defaultOutlet;
 
   const categoryTabAppointment = useSelector(
     (state) => state.product.categoryTabAppointment
@@ -934,6 +934,7 @@ const Appointment = (props) => {
       </div>
     );
   };
+  console.log({ productServicesAppointment });
   const DropDownTime = () => {
     if (openDropDownTime) {
       return (

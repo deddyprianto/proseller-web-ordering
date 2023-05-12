@@ -338,7 +338,7 @@ const ItemServiceCart = ({
             alignItems: 'center',
             color: color.primary,
             fontWeight: 500,
-            width: '90%',
+            width: '96%',
             margin: 'auto',
             fontSize: '14px',
           }}
@@ -391,6 +391,7 @@ const ItemServiceCart = ({
         setIsOpenModalDetail={setIsOpenModalDetail}
         convertTimeToStr={convertTimeToStr}
         isOpenModalDetail={isOpenModalDetail}
+        settingAppoinment={settingAppoinment}
       />
     </React.Fragment>
   );
