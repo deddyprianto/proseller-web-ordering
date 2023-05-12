@@ -11,6 +11,7 @@ const ItemService = ({
   isCheckedService,
   productId,
   handleCurrency,
+  selectedLocation,
   settingAppoinment,
 }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
@@ -390,6 +391,7 @@ const ItemService = ({
     <React.Fragment>
       <RenderItemService />
       <DetailAppointment
+        selectedLocation={selectedLocation}
         productId={productId}
         handleCurrency={handleCurrency}
         color={color}

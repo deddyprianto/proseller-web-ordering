@@ -6,12 +6,11 @@ import PlaceIcon from '@mui/icons-material/Place';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 import Date from './component/Date';
 import ServiceStylist from './component/ServiceStylist';
 import ButtonPrice from './component/ButtonPrice';
 import RenderNotes from './component/RenderNotes';
-import { CONSTANT } from 'helpers';
 import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
 import Time from './component/Time';
@@ -20,6 +19,8 @@ import screen from 'hooks/useWindowSize';
 const Cart = (props) => {
   const responsiveDesign = screen();
   const dispatch = useDispatch();
+  const [selectedLocationPersisted, setSelectedLocationPersisted] =
+    useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const gadgetScreen = responsiveDesign.width < 980;
@@ -34,25 +35,25 @@ const Cart = (props) => {
   const messageTimeSlot = useSelector(
     (state) => state.appointmentReducer.messageTimeSlot
   );
-  const outlet = useSelector((state) => state.outlet.outlets);
-  const locationAppointment = useSelector(
-    (state) => state.appointmentReducer.locationAppointment
-  );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
+  const locationAppointment = !selectedLocationPersisted
+    ? defaultOutlet
+    : selectedLocationPersisted;
   // some eff
   useEffect(() => {
-    if (!isEmptyArray(outlet)) {
-      if (isEmptyObject(locationAppointment)) {
-        dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-      }
-    }
-  }, [outlet]);
+    const locationPersisted = localStorage.getItem(
+      'LOCATION_APPOINTMENT_PERSISTED'
+    );
+    const selectedLocationPersisted = JSON.parse(locationPersisted);
+    setSelectedLocationPersisted(selectedLocationPersisted);
+  }, []);
 
   useEffect(() => {
     if (responseSubmit.error) {
@@ -417,6 +418,7 @@ const Cart = (props) => {
         </p>
         {cartAppointment?.details?.map((item) => (
           <ItemServiceCart
+            selectedLocation={locationAppointment}
             outletID={locationAppointment}
             key={item.id}
             item={item}

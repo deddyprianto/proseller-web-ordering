@@ -28,6 +28,8 @@ import screen from 'hooks/useWindowSize';
 
 const Appointment = (props) => {
   // some state
+  const [selectedLocationPersisted, setSelectedLocationPersisted] =
+    useState(null);
   const [locationKeys, setLocationKeys] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showNotify, setShowNotify] = useState(false);
@@ -61,10 +63,11 @@ const Appointment = (props) => {
   const productServicesAppointment = useSelector(
     (state) => state.product.productServicesAppointment
   );
-  const selectedLocation = useSelector(
-    (state) => state.appointmentReducer.locationAppointment
-  );
-  const outlet = useSelector((state) => state.outlet.outlets);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+
+  const selectedLocation = !selectedLocationPersisted
+    ? defaultOutlet
+    : selectedLocationPersisted;
 
   const categoryTabAppointment = useSelector(
     (state) => state.product.categoryTabAppointment
@@ -79,6 +82,28 @@ const Appointment = (props) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
   // some fn
+  const handleButtonSure = async () => {
+    if (cartAppointment?.details?.length > 0) {
+      setIsLoading(true);
+      await dispatch(OrderAction.deleteCartAppointment());
+      setIsLoading(false);
+    }
+    dispatch({
+      type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+      payload: false,
+    });
+    let path;
+    menuSidebar.navBar.forEach((item, i) => {
+      if (i === indexPath) {
+        path = item.path;
+      }
+    });
+    if (selectedLocationPersisted) {
+      localStorage.removeItem('LOCATION_APPOINTMENT_PERSISTED');
+    }
+    dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
+    window.location.href = changeFormatURl(path);
+  };
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
@@ -181,18 +206,20 @@ const Appointment = (props) => {
 
   // some Effect
   useEffect(() => {
+    const locationPersisted = localStorage.getItem(
+      'LOCATION_APPOINTMENT_PERSISTED'
+    );
+    const selectedLocationPersisted = JSON.parse(locationPersisted);
+    setSelectedLocationPersisted(selectedLocationPersisted);
+  }, []);
+
+  useEffect(() => {
     dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.STAFFID_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT, payload: {} });
     dispatch({ type: CONSTANT.TEXT_NOTE, payload: '' });
   }, []);
-
-  useEffect(() => {
-    if (isEmptyObject(selectedLocation)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-    }
-  }, [outlet]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -261,6 +288,7 @@ const Appointment = (props) => {
       }
     });
   }, [locationKeys]);
+
   const PlaceIcon = () => {
     return (
       <svg
@@ -879,6 +907,7 @@ const Appointment = (props) => {
                 );
                 return (
                   <ItemService
+                    selectedLocation={selectedLocation}
                     settingAppoinment={settingAppoinment?.settingValue}
                     isCheckedService={isCheckedService}
                     setIsOpenModalDetail={setIsOpenModalDetail}
@@ -1074,25 +1103,7 @@ const Appointment = (props) => {
             Cancel
           </button>
           <button
-            onClick={async () => {
-              if (cartAppointment?.details?.length > 0) {
-                setIsLoading(true);
-                await dispatch(OrderAction.deleteCartAppointment());
-                setIsLoading(false);
-              }
-              dispatch({
-                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
-                payload: false,
-              });
-              let path;
-              menuSidebar.navBar.forEach((item, i) => {
-                if (i === indexPath) {
-                  path = item.path;
-                }
-              });
-              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
-              window.location.href = changeFormatURl(path);
-            }}
+            onClick={handleButtonSure}
             className={fontStyles.myFont}
             style={{
               color: 'white',

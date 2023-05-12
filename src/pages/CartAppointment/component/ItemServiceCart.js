@@ -15,6 +15,7 @@ const ItemServiceCart = ({
   setIsLoading,
   outletID,
   settingAppoinment,
+  selectedLocation,
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -381,6 +382,7 @@ const ItemServiceCart = ({
       </div>
 
       <DetailAppointment
+        selectedLocation={selectedLocation}
         itemAppointment={item.product}
         productId={item.productID}
         styleSheet={styleSheet}
