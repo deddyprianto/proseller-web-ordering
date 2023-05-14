@@ -70,7 +70,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
       >
         Appointment feature is here!
       </DialogTitle>
-      <div style={{ padding: '0px 20px' }}>
+      <div style={{ padding: '0px 20px', marginTop: '16px' }}>
         <p
           className={fontStyles.myFont}
           style={{
@@ -98,7 +98,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
             width: '100%',
             padding: '10px 0px',
             borderRadius: '10px',
-            fontSize: '12px',
+            fontSize: '14px',
             fontWeight: 500,
           }}
           onClick={() => {
