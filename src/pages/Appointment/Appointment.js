@@ -934,7 +934,6 @@ const Appointment = (props) => {
       </div>
     );
   };
-  console.log({ productServicesAppointment });
   const DropDownTime = () => {
     if (openDropDownTime) {
       return (
