@@ -830,7 +830,7 @@ const Appointment = (props) => {
                   margin: 0,
                   top: 'auto',
                   right: 'auto',
-                  bottom: gadgetScreen.height < 500 ? 0 : 70,
+                  bottom: gadgetScreen.height < 500 ? 0 : 80,
                   left: 'auto',
                   position: 'fixed',
                 }
