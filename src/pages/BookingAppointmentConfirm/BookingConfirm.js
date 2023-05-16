@@ -175,17 +175,18 @@ const BookingConfirm = (props) => {
       <div
         style={{
           width: '100%',
-          marginTop: '10px',
-          marginBottom: '10px',
           fontSize: '14px',
           display: 'grid',
-          gridTemplateColumns: '123px 1fr 99px',
+          gridTemplateColumns: gadgetScreen
+            ? '123px 1fr 99px'
+            : '1fr 155px 1fr',
           gridTemplateRows: '1fr',
           gridAutoColumns: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           alignItems: 'center',
+          padding: '10px 0px',
         }}
       >
         <div
@@ -200,7 +201,7 @@ const BookingConfirm = (props) => {
           </div>
           <hr
             style={{
-              width: '36px',
+              width: gadgetScreen ? '20px' : '100px',
               padding: 0,
               margin: 0,
               backgroundColor: 'rgba(183, 183, 183, 1)',
@@ -236,13 +237,13 @@ const BookingConfirm = (props) => {
         <div
           style={{
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: gadgetScreen ? 'center' : 'space-between',
             alignItems: 'center',
           }}
         >
           <hr
             style={{
-              width: '36px',
+              width: gadgetScreen ? '30px' : '150px',
               padding: 0,
               margin: '0px 3px',
               backgroundColor: 'rgba(183, 183, 183, 1)',
@@ -258,6 +259,7 @@ const BookingConfirm = (props) => {
               color: 'white',
               borderRadius: '100%',
               fontWeight: 500,
+              marginLeft: '4px',
             }}
           >
             3
@@ -544,7 +546,17 @@ const BookingConfirm = (props) => {
         >
           <div style={{ width: '90%', margin: 'auto' }}>
             <div
-              style={{ color: 'black', fontWeight: 500, fontSize: '14px' }}
+              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
+            >
+              Information
+            </div>
+            <div
+              style={{
+                color: 'black',
+                fontWeight: 500,
+                fontSize: '14px',
+                marginTop: '16px',
+              }}
               ref={ref}
               dangerouslySetInnerHTML={{
                 __html: settingTextInformation?.settingValue,
@@ -781,7 +793,7 @@ const BookingConfirm = (props) => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '77px 1fr',
+            gridTemplateRows: '95px 1fr',
             gridAutoColumns: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
