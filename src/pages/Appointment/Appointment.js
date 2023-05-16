@@ -1067,27 +1067,41 @@ const Appointment = (props) => {
         >
           Leaving Appointment Page
         </DialogTitle>
-        <div style={{ marginTop: '20px' }}>
-          <div
-            className={fontStyles.myFont}
-            style={{
-              color: 'rgba(183, 183, 183, 1)',
-              fontSize: '14px',
-              textAlign: 'center',
-              fontWeight: 500,
-              lineHeight: '21px',
-            }}
-          >
-            Some booked services you have not submitted might not be saved in
-            our system. Are you sure?
-          </div>
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            height: '2px',
+            marginTop: '16px',
+          }}
+        />
+        <div
+          className={fontStyles.myFont}
+          style={{
+            color: 'rgba(183, 183, 183, 1)',
+            fontSize: '14px',
+            textAlign: 'center',
+            fontWeight: 500,
+            lineHeight: '21px',
+          }}
+        >
+          Some booked services you have not submitted might not be saved in our
+          system. Are you sure?
         </div>
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            height: '2px',
+            marginTop: '16px',
+          }}
+        />
         <DialogActions
           sx={{
             display: 'flex',
-            justifyContent: 'space-around',
+            justifyContent: 'space-evenly',
             alignItems: 'center',
             width: '100%',
+            paddingLeft: '16px',
+            paddingRight: '16px',
           }}
         >
           <button
@@ -1106,6 +1120,7 @@ const Appointment = (props) => {
               padding: '6px 0px',
               borderRadius: '10px',
               fontSize: '14px',
+              marginRight: '10px',
             }}
           >
             Cancel
