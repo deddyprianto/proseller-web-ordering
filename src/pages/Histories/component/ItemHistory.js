@@ -66,8 +66,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='30'
-        height='30'
+        width='22'
+        height='22'
         viewBox='0 0 24 24'
         fill='none'
         stroke={color.primary}
@@ -84,8 +84,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const AppointmentIcon = () => {
     return (
       <svg
-        width='20'
-        height='20'
+        width='22'
+        height='22'
         viewBox='0 0 240 240'
         fill='white'
         xmlns='http://www.w3.org/2000/svg'
@@ -120,23 +120,22 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
             style={{
               width: '95%',
               margin: 'auto',
-              display: 'grid',
-              gridTemplateColumns: '1fr 214px 82px',
-              gridTemplateRows: '1fr',
-              gridAutoColumns: '1fr',
-              gap: '0px 0px',
-              gridAutoFlow: 'row',
-              gridTemplateAreas: '". . ."',
+              display: 'flex',
+              alignItems: 'center',
               fontSize: '16px',
               fontWeight: 500,
               color: 'black',
               marginTop: '15px',
-              alignItems: 'center',
             }}
           >
             <AppointmentIcon />
             <div
-              style={{ display: 'flex', width: '100%', alignItems: 'center' }}
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                marginLeft: '15px',
+              }}
             >
               <div style={{ fontSize: '16px' }}>
                 {changeFormatDate(item.bookingDate)}
@@ -169,7 +168,9 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               marginTop: '10px',
             }}
           >
-            <PlaceIcon />
+            <div style={{ marginTop: '5px' }}>
+              <PlaceIcon />
+            </div>
             <div>
               <div
                 style={{
@@ -214,7 +215,118 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
         </div>
       );
     } else {
-      <div>Dekstop</div>;
+      return (
+        <div
+          className={fontStyles.myFont}
+          onClick={() => setIsOpenModalDetail(true)}
+          style={{
+            width: '91%',
+            margin: 'auto',
+            borderRadius: '10px',
+            boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '5px 0px',
+          }}
+        >
+          <div
+            style={{
+              width: '95%',
+              margin: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '16px',
+              fontWeight: 500,
+              color: 'black',
+              marginTop: '15px',
+            }}
+          >
+            <AppointmentIcon />
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                marginLeft: '10px',
+              }}
+            >
+              <div style={{ fontSize: '16px' }}>
+                {changeFormatDate(item.bookingDate)}
+              </div>
+              <div style={{ margin: '0px 10px', fontSize: '16px' }}>-</div>
+              <div style={{ fontSize: '16px' }}>{item.bookingTime.start}</div>
+            </div>
+            {tabName === 'COMPLETED' && (
+              <div
+                style={{
+                  backgroundColor: 'rgba(56, 164, 5, 1)',
+                  borderRadius: '20px',
+                  padding: '0px 10px',
+                  color: 'white',
+                  fontSize: '13px',
+                  width: '100%',
+                  height: '30px',
+                  fontWeight: 600,
+                }}
+              >
+                {item?.rewards?.points} points
+              </div>
+            )}
+          </div>
+          <div
+            style={{
+              width: '95%',
+              margin: 'auto',
+              display: 'flex',
+              marginTop: '10px',
+            }}
+          >
+            <div style={{ marginTop: '5px' }}>
+              <PlaceIcon />
+            </div>
+            <div>
+              <div
+                style={{
+                  color: 'black',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  marginLeft: '10px',
+                }}
+              >
+                {item.outlet?.name}
+              </div>
+              <div
+                style={{
+                  color: 'rgba(157, 157, 157, 1)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  marginLeft: '10px',
+                }}
+              >
+                {item.outlet?.address}
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              width: '95%',
+              margin: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '10px',
+              fontSize: '14px',
+              color: 'rgba(157, 157, 157, 1)',
+              fontWeight: 500,
+            }}
+          >
+            <div>D1005</div>
+            <div style={{ margin: '0px 10px' }}> - </div>
+            <div>{item?.details?.length} Service</div>
+            <div style={{ margin: '0px 10px' }}> - </div>
+            <div>{handleCurrency(item.totalNettAmount)}</div>
+          </div>
+        </div>
+      );
     }
   };
   return (
