@@ -6,16 +6,17 @@ import PlaceIcon from '@mui/icons-material/Place';
 import ItemServiceCart from './component/ItemServiceCart';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
-import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import Date from './component/Date';
 import ServiceStylist from './component/ServiceStylist';
 import ButtonPrice from './component/ButtonPrice';
 import RenderNotes from './component/RenderNotes';
-import { CONSTANT } from 'helpers';
 import Swal from 'sweetalert2';
 import Paper from '@mui/material/Paper';
 import Time from './component/Time';
 import screen from 'hooks/useWindowSize';
+import { getDistance } from 'geolib';
+import config from 'config';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const Cart = (props) => {
   const responsiveDesign = screen();
@@ -34,26 +35,13 @@ const Cart = (props) => {
   const messageTimeSlot = useSelector(
     (state) => state.appointmentReducer.messageTimeSlot
   );
-  const outlet = useSelector((state) => state.outlet.outlets);
-  const locationAppointment = useSelector(
-    (state) => state.appointmentReducer.locationAppointment
-  );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-
   // some eff
-  useEffect(() => {
-    if (!isEmptyArray(outlet)) {
-      if (isEmptyObject(locationAppointment)) {
-        dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-      }
-    }
-  }, [outlet]);
-
   useEffect(() => {
     if (responseSubmit.error) {
       Swal.fire({
@@ -97,17 +85,17 @@ const Cart = (props) => {
       try {
         setIsLoading(true);
         await dispatch(
-          OrderAction.getTimeSlotAppointment(locationAppointment.id)
+          OrderAction.getTimeSlotAppointment(cartAppointment.outlet.id)
         );
         setIsLoading(false);
       } catch (error) {
         console.log(error);
       }
     };
-    if (!isEmptyObject(locationAppointment)) {
+    if (!isEmptyObject(cartAppointment)) {
       loadData();
     }
-  }, [locationAppointment]);
+  }, [cartAppointment]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -123,6 +111,15 @@ const Cart = (props) => {
   }, [responseAddCart]);
 
   // some fn
+  let distance = '';
+  const locationCustomer = JSON.parse(
+    localStorage.getItem(`${config.prefix}_locationCustomer`)
+  );
+  if (locationCustomer) {
+    distance = Number(
+      (getDistance(locationCustomer, cartAppointment.outlet) / 1000).toFixed(2)
+    );
+  }
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
@@ -307,97 +304,68 @@ const Cart = (props) => {
     );
   };
   const SelectedOutlet = () => {
-    if (!isEmptyObject(locationAppointment)) {
-      return (
+    return (
+      <div
+        style={{
+          marginTop: '20px',
+        }}
+      >
+        <div style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}>
+          Selected Outlet
+        </div>
         <div
           style={{
-            marginTop: '20px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+            padding: '10px 5px',
+            borderRadius: '10px',
+            width: '100%',
+            margin: 'auto',
+            display: 'grid',
+            gridTemplateColumns: '25px 1fr 100px',
+            gridTemplateRows: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '". . ."',
+            cursor: 'pointer',
+            marginTop: '10px',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '14px',
-            }}
-          >
-            <div
-              style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}
-            >
-              Selected Outlet
-            </div>
-            <div
-              onClick={() => props.history.push('/location')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: color.primary,
-                fontWeight: 500,
-                cursor: 'pointer',
-              }}
-            >
-              Change Outlet
-            </div>
-          </div>
-          <div
-            style={{
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-              padding: '10px 5px',
-              borderRadius: '10px',
-              width: '100%',
-              margin: 'auto',
-              display: 'grid',
-              gridTemplateColumns: '25px 1fr 100px',
-              gridTemplateRows: '1fr',
-              gap: '0px 0px',
-              gridAutoFlow: 'row',
-              gridTemplateAreas: '". . ."',
-              cursor: 'pointer',
-              marginTop: '10px',
-            }}
-          >
-            <PlaceIcon
-              sx={{
-                justifySelf: 'end',
-                fontSize: '20px',
-                marginTop: '5px',
-                marginRight: '5px',
-              }}
-            />
-            <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
-              <div>{locationAppointment?.name}</div>
-              <div style={{ color: 'rgba(157, 157, 157, 1)' }}>
-                {locationAppointment?.address}
-              </div>
-            </div>
-            <div
-              style={{
-                fontWeight: 500,
-                color: 'rgba(183, 183, 183, 1)',
-                fontSize: '14px',
-                width: '100%',
-                lineHeight: '20px',
-                display: 'flex',
-                justifyContent: 'flex-end',
-              }}
-            >
-              {locationAppointment?.distance &&
-                `( ${locationAppointment?.distance}km) `}
-            </div>
-          </div>
-          <hr
-            style={{
-              backgroundColor: 'rgba(249, 249, 249, 1)',
-              margin: '20px 0px',
+          <PlaceIcon
+            sx={{
+              justifySelf: 'end',
+              fontSize: '20px',
+              marginTop: '5px',
+              marginRight: '5px',
             }}
           />
+          <div style={{ fontSize: '14px', fontWeight: 500, color: 'black' }}>
+            <div>{cartAppointment?.outlet?.name}</div>
+            <div style={{ color: 'rgba(157, 157, 157, 1)' }}>
+              {cartAppointment?.outlet?.address}
+            </div>
+          </div>
+          <div
+            style={{
+              fontWeight: 500,
+              color: 'rgba(183, 183, 183, 1)',
+              fontSize: '14px',
+              width: '100%',
+              lineHeight: '20px',
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
+            {distance && `${distance}km`}
+          </div>
         </div>
-      );
-    } else {
-      return null;
-    }
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            margin: '20px 0px',
+          }}
+        />
+      </div>
+    );
   };
   const Price = () => {
     if (settingAppoinment?.settingValue) {
@@ -441,7 +409,8 @@ const Cart = (props) => {
         </p>
         {cartAppointment?.details?.map((item) => (
           <ItemServiceCart
-            outletID={locationAppointment}
+            selectedLocation={cartAppointment?.outlet}
+            outletID={cartAppointment?.outlet}
             key={item.id}
             item={item}
             setIsLoading={setIsLoading}

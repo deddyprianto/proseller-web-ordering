@@ -23,6 +23,7 @@ function AppointmentReducer(
     bookingHistory: [],
     isLocationSelected: false,
     isDateSelected: false,
+    locationAppointmentPersisted: {},
   },
   action
 ) {
@@ -69,6 +70,13 @@ function AppointmentReducer(
       return { ...state, isLocationSelected: action.payload };
     case CONSTANT.IS_DATE_SELECTED:
       return { ...state, isDateSelected: action.payload };
+    case CONSTANT.LOCATION_APPOINTMENT_PERSISTED: {
+      localStorage.setItem(
+        'LOCATION_APPOINTMENT_PERSISTED',
+        JSON.stringify(action.payload)
+      );
+      return { ...state, locationAppointmentPersisted: action.payload };
+    }
     default:
       return state;
   }

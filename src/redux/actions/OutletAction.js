@@ -216,7 +216,6 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
         const distance = Number(
           (geolib.getDistance(locationCustomer, outlet) / 1000).toFixed(2)
         );
-
         return { ...outlet, orderValidation, outletStatus, distance };
       });
 

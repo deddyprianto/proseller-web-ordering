@@ -200,7 +200,7 @@ const Date = ({ timeslot, color }) => {
                       opacity: isEmptyArray(item.timeSlot) && 0.3,
                       pointerEvents: isEmptyArray(item.timeSlot) && 'none',
                       boxShadow: checkDate
-                        ? '1px 1px 4px rgba(0, 0, 0, 0.6)'
+                        ? '1px 1px 4px rgba(0, 0, 0, 0.4)'
                         : 'none',
                     }}
                   >

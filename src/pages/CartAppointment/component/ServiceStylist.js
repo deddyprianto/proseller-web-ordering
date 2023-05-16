@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoaderSkeleton from './LoaderSkeleton';
-import defaultImageURL from 'assets/images/iconPro1.png';
+import defaultImageURL from 'assets/images/defaultPicStylist.png';
 import { CONSTANT } from 'helpers';
 
 const ServiceStylist = ({ color }) => {

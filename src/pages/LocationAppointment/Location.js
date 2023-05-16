@@ -15,44 +15,59 @@ import screen from 'hooks/useWindowSize';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
-const Location = (props) => {
+const Location = () => {
   // some initial
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
   const dispatch = useDispatch();
   const history = useHistory();
+  const useStyles = makeStyles(() => ({
+    paper: { minWidth: '350px', overflow: 'hidden' },
+  }));
+  const classes = useStyles();
   // some st
   const [isLoading, setIsLoading] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
-  const useStyles = makeStyles(() => ({
-    paper: { minWidth: '350px', overflow: 'hidden' },
-  }));
-  const classes = useStyles();
-
-  // some sl
+  const [selectedLocationPersisted, setSelectedLocationPersisted] =
+    useState(null);
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
-  );
-  const outlet = useSelector((state) => state.outlet.outlets);
-  const selectedLocation = useSelector(
-    (state) => state.appointmentReducer.locationAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const popupLocation = useSelector(
     (state) => state.appointmentReducer.popupLocation
   );
   const outlets = useSelector((state) => state.outlet.outlets);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  //
+  const selectedLocation = !selectedLocationPersisted
+    ? defaultOutlet
+    : selectedLocationPersisted;
+
   // some fn
   const handleSelectedOutlet = (item) => {
     if (cartAppointment?.details?.length > 0) {
+      dispatch({
+        type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
+        payload: item,
+      });
+      dispatch({
+        type: CONSTANT.LOCATION_APPOINTMENT,
+        payload: item,
+      });
       dispatch({
         type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
         payload: true,
       });
     } else {
+      dispatch({
+        type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
+        payload: item,
+      });
+      // setLocation(JSON.stringify(item));
       dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
       dispatch({
         type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
@@ -73,10 +88,12 @@ const Location = (props) => {
 
   // some Effect
   useEffect(() => {
-    if (isEmptyObject(selectedLocation)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-    }
-  }, [outlet]);
+    const locationPersisted = localStorage.getItem(
+      'LOCATION_APPOINTMENT_PERSISTED'
+    );
+    const selectedLocationPersisted = JSON.parse(locationPersisted);
+    setSelectedLocationPersisted(selectedLocationPersisted);
+  }, []);
 
   useEffect(() => {
     return history.listen((location) => {

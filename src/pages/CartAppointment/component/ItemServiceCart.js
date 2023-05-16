@@ -15,6 +15,7 @@ const ItemServiceCart = ({
   setIsLoading,
   outletID,
   settingAppoinment,
+  selectedLocation,
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -337,7 +338,7 @@ const ItemServiceCart = ({
             alignItems: 'center',
             color: color.primary,
             fontWeight: 500,
-            width: '90%',
+            width: '96%',
             margin: 'auto',
             fontSize: '14px',
           }}
@@ -381,6 +382,7 @@ const ItemServiceCart = ({
       </div>
 
       <DetailAppointment
+        selectedLocation={selectedLocation}
         itemAppointment={item.product}
         productId={item.productID}
         styleSheet={styleSheet}
@@ -389,6 +391,7 @@ const ItemServiceCart = ({
         setIsOpenModalDetail={setIsOpenModalDetail}
         convertTimeToStr={convertTimeToStr}
         isOpenModalDetail={isOpenModalDetail}
+        settingAppoinment={settingAppoinment}
       />
     </React.Fragment>
   );

@@ -27,6 +27,7 @@ const DetailAppointment = ({
   productId,
   convertTimeToStr,
   settingAppoinment,
+  selectedLocation,
 }) => {
   // initial
   const dispatch = useDispatch();
@@ -43,9 +44,6 @@ const DetailAppointment = ({
   // some selectors
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
-  );
-  const selectedLocation = useSelector(
-    (state) => state.appointmentReducer.locationAppointment
   );
   // some functions
   const filterCart = cartAppointment?.details?.find(
