@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Product from './Product';
-import { OrderAction } from '../../redux/actions/OrderAction';
-import { ProductAction } from '../../redux/actions/ProductAction';
+import Product from 'components/ProductList/components/Product';
+import { OrderAction } from 'redux/actions/OrderAction';
+import { ProductAction } from 'redux/actions/ProductAction';
 import ModalProduct from './ModalProduct';
 import LoaderCircle from '../loading/LoaderCircle';
-import config from '../../config';
+import config from 'config';
 import UpdateProductModal from './UpdateProductModal';
 import { Link } from 'react-router-dom';
-import { isEmptyObject, isEmptyArray } from '../../helpers/CheckEmpty';
-import { CONSTANT } from '../../helpers';
-import { getInitialProductValue } from '../../helpers/ProductHelper';
+import { isEmptyObject, isEmptyArray } from 'helpers/CheckEmpty';
+import { CONSTANT } from 'helpers';
+import { getInitialProductValue } from 'helpers/ProductHelper';
 import _ from 'lodash';
 
 class Ordering extends Component {
@@ -36,6 +36,8 @@ class Ordering extends Component {
       addNew: false,
       itemToShow: 8,
       expanded: false,
+      size: { width: 0, height: 0 },
+      isMobileSize: false,
     };
   }
 
@@ -49,6 +51,9 @@ class Ordering extends Component {
       'scroll',
       isEmenu ? this.handleScrollEmenu : this.handleScrollWebOrdering
     );
+
+    this.updateSize();
+    window.addEventListener('resize', this.updateSize);
 
     let defaultOutlet = this.props.defaultOutlet;
     if (defaultOutlet && defaultOutlet.id) {
@@ -132,7 +137,22 @@ class Ordering extends Component {
       'scroll',
       isEmenu ? this.handleScrollEmenu() : this.handleScrollWebOrdering()
     );
+    window.removeEventListener('resize', this.updateSize);
   }
+
+  updateSize = () => {
+    const { innerWidth, innerHeight } = window;
+    this.setState({ size: { width: innerWidth, height: innerHeight } });
+    this.checkMobileSize(innerWidth);
+  };
+
+  checkMobileSize = (width) => {
+    if (width < 640) {
+      this.setState({ isMobileSize: true });
+    } else {
+      this.setState({ isMobileSize: false });
+    }
+  };
 
   handleScrollWebOrdering = (e) => {
     try {
@@ -461,9 +481,13 @@ class Ordering extends Component {
   };
 
   render() {
-    let { categories, loading, finished, loadingSearching, offlineMessage } =
-      this.state;
-    const { orderingSetting } = this.props;
+    let {
+      categories,
+      loading,
+      loadingSearching,
+      offlineMessage,
+      isMobileSize,
+    } = this.state;
     let products = [];
 
     const categoryRefs =
@@ -528,7 +552,7 @@ class Ordering extends Component {
     }
 
     return (
-      <div className='col-full' style={{ marginTop: 130 }}>
+      <div className='col-full' style={{ marginTop: isMobileSize ? 68 : 98 }}>
         <div className='row'>
           <div className='col-md-8'>
             <Link to={'/menu'}>
@@ -661,19 +685,9 @@ class Ordering extends Component {
                                 }
                                 return (
                                   item.product && (
-                                    <Product
-                                      labelButton={this.getLabelButton(item)}
-                                      quantity={this.getQuantityProduct(item)}
-                                      selectProduct={this.selectProduct}
-                                      showUpdateModal={(item) =>
-                                        this.setState({
-                                          showUpdateModal: true,
-                                          selectedProduct: item,
-                                        })
-                                      }
-                                      key={j}
-                                      item={item}
-                                    />
+                                    <div style={{ padding: '5px 0' }}>
+                                      <Product key={j} item={item} />
+                                    </div>
                                   )
                                 );
                               })}
@@ -681,21 +695,23 @@ class Ordering extends Component {
                           </>
                         ))}
 
-                      {!loadingSearching && !loading && products.length === 0 && (
-                        <div>
-                          <img
-                            src={config.url_emptyImage}
-                            alt='is empty'
-                            style={{ marginTop: 30 }}
-                          />
-                          <h3
-                            className='color text-center'
-                            style={{ fontSize: 16 }}
-                          >
-                            Oppss.. Item Not Found.
-                          </h3>
-                        </div>
-                      )}
+                      {!loadingSearching &&
+                        !loading &&
+                        products.length === 0 && (
+                          <div>
+                            <img
+                              src={config.url_emptyImage}
+                              alt='is empty'
+                              style={{ marginTop: 30 }}
+                            />
+                            <h3
+                              className='color text-center'
+                              style={{ fontSize: 16 }}
+                            >
+                              Oppss.. Item Not Found.
+                            </h3>
+                          </div>
+                        )}
                     </ul>
                     {loading && <LoaderCircle />}
                   </div>
