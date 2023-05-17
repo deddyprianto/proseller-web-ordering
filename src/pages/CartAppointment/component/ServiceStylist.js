@@ -63,7 +63,7 @@ const ServiceStylist = ({ color }) => {
                 onClick={() => {
                   dispatch({
                     type: CONSTANT.STAFFID_APPOINTMENT,
-                    payload: item.id,
+                    payload: { id: item.id, name: item.name },
                   });
                   setIsActiveStylist(item.id);
                 }}

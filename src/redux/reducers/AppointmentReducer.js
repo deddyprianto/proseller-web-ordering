@@ -24,6 +24,7 @@ function AppointmentReducer(
     isLocationSelected: false,
     isDateSelected: false,
     locationAppointmentPersisted: {},
+    cartSave: {},
   },
   action
 ) {
@@ -77,6 +78,8 @@ function AppointmentReducer(
       );
       return { ...state, locationAppointmentPersisted: action.payload };
     }
+    case CONSTANT.CART_SAVE_APPOINTMENT:
+      return { ...state, cartSave: action.payload };
     default:
       return state;
   }

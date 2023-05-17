@@ -227,6 +227,10 @@ const Appointment = (props) => {
     dispatch({ type: CONSTANT.STAFFID_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT, payload: {} });
     dispatch({ type: CONSTANT.TEXT_NOTE, payload: '' });
+    dispatch({
+      type: CONSTANT.CART_SAVE_APPOINTMENT,
+      payload: {},
+    });
   }, []);
 
   useEffect(() => {
@@ -807,6 +811,8 @@ const Appointment = (props) => {
         backgroundColor: color.primary,
         borderRadius: '5px',
         padding: '10px',
+        boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 11px',
+        border: '1px solid white',
       },
       containerLabel: {
         display: 'flex',

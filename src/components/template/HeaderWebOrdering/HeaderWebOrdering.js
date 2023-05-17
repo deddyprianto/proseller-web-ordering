@@ -113,7 +113,6 @@ const useStyles = (location) => {
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 0,
-      width: '50%',
     },
     childList: {
       paddingTop: '1rem',
@@ -188,6 +187,7 @@ const HeaderWebOrdering = () => {
   const [logo, setLogo] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [basketLength, setBasketLength] = useState(0);
+  const [appointmentMenu, setAppointmentMenu] = useState(false);
   const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
@@ -199,6 +199,14 @@ const HeaderWebOrdering = () => {
     (state) => state.guestCheckoutCart.response
   );
   const data = useSelector((state) => state.guestCheckoutCart.data);
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue) {
+      setAppointmentMenu(settingAppoinment.settingValue);
+    }
+  }, [setting]);
 
   useEffect(() => {
     const enableOrderingChecker = () => {
@@ -372,6 +380,15 @@ const HeaderWebOrdering = () => {
       );
     }
   };
+  const linkAppoinment = () => {
+    if (isLoggedIn && appointmentMenu) {
+      return (
+        <ListItem>
+          <Link to='/appointment'>Booking</Link>
+        </ListItem>
+      );
+    }
+  };
   const linkHistory = () => {
     if (isLoggedIn) {
       return (
@@ -504,6 +521,7 @@ const HeaderWebOrdering = () => {
           {linkTrackOrder()}
           {linkProfile()}
           {linkHistory()}
+          {linkAppoinment()}
           {linkInbox()}
           {linkVoucher()}
           {linkLogout()}
@@ -546,7 +564,6 @@ const HeaderWebOrdering = () => {
     );
   };
 
-  const onLogoImageLoaded = ({ img }) => {};
   return (
     <>
       <span
