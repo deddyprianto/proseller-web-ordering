@@ -171,6 +171,7 @@ const Cart = (props) => {
             fontWeight: 700,
             fontSize: '18px',
             color: color.primary,
+            marginLeft: '10px',
           }}
         >
           Appointment Booking
@@ -180,87 +181,170 @@ const Cart = (props) => {
   };
 
   const Timeline = () => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          marginTop: '15px',
-          marginBottom: '10px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
+    if (gadgetScreen) {
+      return (
         <div
           style={{
-            width: '25%',
-          }}
-        />
-        <div
-          style={{
-            width: '80%',
+            width: '100%',
+            marginTop: '15px',
+            marginBottom: '10px',
             display: 'flex',
+            justifyContent: 'center',
             alignItems: 'center',
-            fontSize: '14px',
-            justifyContent: 'end',
           }}
         >
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: color.primary,
-              color: 'white',
-              borderRadius: '100%',
-            }}
-          >
-            1
-          </div>
-          <div
-            style={{
-              fontWeight: 600,
-              margin: '0px 4px',
-              color: color.primary,
-            }}
-          >
-            Fill Booking Details
-          </div>
-          <hr
-            style={{
-              width: '36px',
-              padding: 0,
-              margin: '0px 3px',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-              height: '2px',
+              width: '25%',
             }}
           />
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-              color: 'white',
-              borderRadius: '100%',
+              width: '80%',
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '14px',
+              justifyContent: 'end',
             }}
           >
-            2
-          </div>
-          <div
-            style={{
-              fontWeight: 500,
-              marginLeft: '4px',
-              color: 'rgba(183, 183, 183, 1)',
-            }}
-          >
-            conf
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                borderRadius: '100%',
+              }}
+            >
+              1
+            </div>
+            <div
+              style={{
+                fontWeight: 600,
+                margin: '0px 4px',
+                color: color.primary,
+              }}
+            >
+              Fill Booking Details
+            </div>
+            <hr
+              style={{
+                width: '36px',
+                padding: 0,
+                margin: '0px 3px',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                height: '2px',
+              }}
+            />
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                color: 'white',
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+            <div
+              style={{
+                fontWeight: 500,
+                marginLeft: '4px',
+                color: 'rgba(183, 183, 183, 1)',
+              }}
+            >
+              conf
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div
+          style={{
+            width: '100%',
+            marginTop: '25px',
+            marginBottom: '10px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: '25%',
+            }}
+          />
+          <div
+            style={{
+              width: '80%',
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '14px',
+            }}
+          >
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                borderRadius: '100%',
+              }}
+            >
+              1
+            </div>
+            <div
+              style={{
+                fontWeight: 600,
+                margin: '0px 4px',
+                color: color.primary,
+              }}
+            >
+              Fill Booking Details
+            </div>
+            <hr
+              style={{
+                width: '40%',
+                padding: 0,
+                margin: '0px 3px',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                height: '2px',
+              }}
+            />
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                color: 'white',
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+            <div
+              style={{
+                fontWeight: 500,
+                marginLeft: '4px',
+                color: 'rgba(183, 183, 183, 1)',
+              }}
+            >
+              conf
+            </div>
+          </div>
+        </div>
+      );
+    }
   };
   const LabelAnythingelse = () => {
     return (
@@ -453,7 +537,11 @@ const Cart = (props) => {
         }
       >
         <Price />
-        <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+        <ButtonPrice
+          changeFormatURl={changeFormatURl}
+          color={color}
+          cartAppointment={cartAppointment}
+        />
       </Paper>
     );
   };

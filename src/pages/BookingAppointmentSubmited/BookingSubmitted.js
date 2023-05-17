@@ -27,7 +27,6 @@ const BookingSubmitted = () => {
   const gadgetScreen = width < 980;
   // some sl
   const setting = useSelector((state) => state.order.setting);
-  const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const responseSubmit = useSelector(
@@ -89,19 +88,13 @@ const BookingSubmitted = () => {
 
     return formattedDate;
   };
-  const SelectedOutlet = outlet.find(
-    (item) => `outlet::${item.id}` === responseSubmit.outletId
-  );
   const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
     if (hours > 0) {
-      return `${hours}h ${minutes}min`;
+      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
     } else if (minutes > 0) {
-      return `${minutes}min`;
+      return `${minutes}mins`;
     } else {
       return '';
     }
@@ -135,11 +128,6 @@ const BookingSubmitted = () => {
       height: '99.3vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
     },
     gridStyle3Col: {
@@ -187,59 +175,123 @@ const BookingSubmitted = () => {
     );
   };
   const Timeline = () => {
-    return (
-      <div
-        style={{
-          width: '58%',
-          marginTop: '10px',
-          marginBottom: '10px',
-          fontSize: '14px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontWeight: 500,
-        }}
-      >
-        <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
-          m Your Booking
-        </div>
-        <hr
-          style={{
-            width: '33px',
-            padding: 0,
-            margin: 0,
-            backgroundColor: 'rgba(183, 183, 183, 1)',
-          }}
-        />
+    if (gadgetScreen) {
+      return (
         <div
           style={{
+            width: '58%',
+            marginTop: '10px',
+            marginBottom: '10px',
+            fontSize: '14px',
             display: 'flex',
-            justifyContent: 'center',
             alignItems: 'center',
+            justifyContent: 'space-between',
+            fontWeight: 500,
           }}
         >
+          <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
+            m Your Booking
+          </div>
+          <hr
+            style={{
+              width: '33px',
+              padding: 0,
+              margin: 0,
+              backgroundColor: 'rgba(183, 183, 183, 1)',
+            }}
+          />
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: color.primary,
-              color: 'white',
-              fontWeight: 500,
-              borderRadius: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            2
-          </div>
-          <div
-            style={{ marginLeft: '5px', color: color.primary, fontWeight: 600 }}
-          >
-            Finish
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                fontWeight: 500,
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+            <div
+              style={{
+                marginLeft: '5px',
+                color: color.primary,
+                fontWeight: 600,
+              }}
+            >
+              Finish
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div
+          style={{
+            width: '58%',
+            marginTop: '20px',
+            marginBottom: '10px',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontWeight: 500,
+          }}
+        >
+          <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
+            m Your Booking
+          </div>
+          <hr
+            style={{
+              width: '50%',
+              padding: 0,
+              margin: 0,
+              backgroundColor: 'rgba(183, 183, 183, 1)',
+            }}
+          />
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                fontWeight: 500,
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+            <div
+              style={{
+                marginLeft: '5px',
+                color: color.primary,
+                fontWeight: 600,
+              }}
+            >
+              Finish
+            </div>
+          </div>
+        </div>
+      );
+    }
   };
 
   const MessageAndLabel = () => {
@@ -385,7 +437,7 @@ const BookingSubmitted = () => {
                 color: color.primary,
               }}
             >
-              {SelectedOutlet.name}
+              {responseSubmit.outlet.name}
             </div>
             <div
               style={{
@@ -394,7 +446,7 @@ const BookingSubmitted = () => {
                 fontSize: '14px',
               }}
             >
-              {SelectedOutlet?.address}
+              {responseSubmit.outlet?.address}
             </div>
           </div>
         </div>
@@ -542,7 +594,17 @@ const BookingSubmitted = () => {
         >
           <div style={{ width: '90%', margin: 'auto' }}>
             <div
-              style={{ color: 'black', fontWeight: 500, fontSize: '14px' }}
+              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
+            >
+              Information
+            </div>
+            <div
+              style={{
+                color: 'black',
+                fontWeight: 500,
+                fontSize: '14px',
+                marginTop: '16px',
+              }}
               ref={ref}
               dangerouslySetInnerHTML={{
                 __html: settingTextInformation?.settingValue,

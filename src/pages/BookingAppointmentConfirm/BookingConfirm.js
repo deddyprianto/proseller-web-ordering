@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import Paper from '@mui/material/Paper';
+import { useDispatch } from 'react-redux';
+import loader from './style/styles.module.css';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -18,17 +21,36 @@ const useWindowSize = () => {
 };
 
 const BookingConfirm = (props) => {
+  const dispatch = useDispatch();
   const ref = createRef();
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
+  const [isLoading, setIsLoading] = useState(false);
   const setting = useSelector((state) => state.order.setting);
-  const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  const responseSubmit = useSelector(
-    (state) => state.appointmentReducer.responseSubmit
-  );
+  const date = useSelector((state) => state.appointmentReducer.date);
+  const time = useSelector((state) => state.appointmentReducer.time);
+  const staff = useSelector((state) => state.appointmentReducer.staffID);
+  const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
+  const cartSave = useSelector((state) => state.appointmentReducer.cartSave);
   // some fn
+  const handleConfirmButton = async () => {
+    if (date && time && staff) {
+      const payload = {
+        staffId: staff.id,
+        bookingTime: time,
+        bookingDate: date,
+        note: textNotes,
+      };
+      setIsLoading(true);
+      const data = await dispatch(OrderAction.submitCartAppointment(payload));
+      setIsLoading(false);
+      if (data.message === 'Cart submitted successfully') {
+        window.location.href = changeFormatURl('/bookingsubmitted');
+      }
+    }
+  };
   const settingAppoinmentShowPrice = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
@@ -69,19 +91,13 @@ const BookingConfirm = (props) => {
 
     return formattedDate;
   };
-  const SelectedOutlet = outlet.find(
-    (item) => `outlet::${item.id}` === responseSubmit.outletId
-  );
   const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
     if (hours > 0) {
-      return `${hours}h ${minutes}min`;
+      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
     } else if (minutes > 0) {
-      return `${minutes}min`;
+      return `${minutes}mins`;
     } else {
       return '';
     }
@@ -115,11 +131,6 @@ const BookingConfirm = (props) => {
       height: '99.3vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
     },
     gridStyle3Col: {
@@ -187,6 +198,7 @@ const BookingConfirm = (props) => {
           gridTemplateAreas: '". . ."',
           alignItems: 'center',
           padding: '10px 0px',
+          marginTop: gadgetScreen ? '0px' : '20px',
         }}
       >
         <div
@@ -321,7 +333,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {convertFormatDate(responseSubmit.bookingDate)}
+                {convertFormatDate(date)}
               </div>
             </div>
             <div>
@@ -337,8 +349,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {responseSubmit.serviceTime?.start} -{' '}
-                {responseSubmit.serviceTime?.end}
+                {time}
               </div>
             </div>
             <div>
@@ -354,7 +365,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {responseSubmit.staff.name}
+                {staff.name}
               </div>
             </div>
             <div>
@@ -370,7 +381,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {convertTimeToStr(responseSubmit?.totalDuration)}
+                {convertTimeToStr(cartSave.totalDuration)}
               </div>
             </div>
           </div>
@@ -389,7 +400,7 @@ const BookingConfirm = (props) => {
                 color: color.primary,
               }}
             >
-              {SelectedOutlet.name}
+              {cartSave.outlet.name}
             </div>
             <div
               style={{
@@ -398,7 +409,7 @@ const BookingConfirm = (props) => {
                 fontSize: '14px',
               }}
             >
-              {SelectedOutlet?.address}
+              {cartSave.outlet?.address}
             </div>
           </div>
         </div>
@@ -425,7 +436,7 @@ const BookingConfirm = (props) => {
               color: 'black',
             }}
           >
-            {responseSubmit.note ? responseSubmit.note : '-'}
+            {textNotes ? textNotes : '-'}
           </div>
         </div>
       </div>
@@ -447,7 +458,7 @@ const BookingConfirm = (props) => {
           <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
             Service Detail
           </div>
-          {responseSubmit.details.map((item) => (
+          {cartSave.details.map((item) => (
             <div
               style={{
                 marginTop: '10px',
@@ -518,8 +529,8 @@ const BookingConfirm = (props) => {
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
-                ? handleCurrency(responseSubmit.totalNettAmount)
-                : convertTimeToStr(responseSubmit.totalDuration)}
+                ? handleCurrency(cartSave.totalNettAmount)
+                : convertTimeToStr(cartSave.totalDuration)}
             </div>
           </div>
         </div>
@@ -592,7 +603,7 @@ const BookingConfirm = (props) => {
               fontSize: '18px',
             }}
           >
-            {handleCurrency(responseSubmit?.totalNettAmount)}
+            {handleCurrency(cartSave.totalNettAmount)}
           </div>
         </div>
       );
@@ -604,9 +615,7 @@ const BookingConfirm = (props) => {
     if (settingAppoinmentShowPrice?.settingValue) {
       return (
         <div
-          onClick={() => {
-            window.location.href = changeFormatURl('/bookingsubmitted');
-          }}
+          onClick={handleConfirmButton}
           style={{
             width: '93%',
             margin: 'auto',
@@ -623,7 +632,11 @@ const BookingConfirm = (props) => {
             marginBottom: '5px',
           }}
         >
-          Confirm Booking
+          {isLoading ? (
+            <span className={loader.loader}></span>
+          ) : (
+            'Confirm Booking'
+          )}
         </div>
       );
     } else {
@@ -658,9 +671,7 @@ const BookingConfirm = (props) => {
               Contact Us
             </div>
             <div
-              onClick={() => {
-                window.location.href = changeFormatURl('/bookingsubmitted');
-              }}
+              onClick={handleConfirmButton}
               style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -674,7 +685,11 @@ const BookingConfirm = (props) => {
                 marginBottom: '5px',
               }}
             >
-              Confirm Booking
+              {isLoading ? (
+                <span className={loader.loader}></span>
+              ) : (
+                'Confirm Booking'
+              )}
             </div>
           </div>
           <p
