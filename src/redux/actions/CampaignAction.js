@@ -157,7 +157,7 @@ function getCampaignByPoints(payload = null) {
 function setData(data, constant) {
   return {
     type: constant,
-    data: data.Data,
+    data: data?.Data,
   };
 }
 

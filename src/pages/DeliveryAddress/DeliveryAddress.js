@@ -21,6 +21,7 @@ import validationPostalCode from 'helpers/PostalCodeCheck';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import { CONSTANT } from 'helpers';
+import useMobileSize from 'hooks/useMobileSize';
 
 const DeliveryAddress = () => {
   const history = useHistory();
@@ -28,6 +29,8 @@ const DeliveryAddress = () => {
   const profileMatch = useRouteMatch('/profile/delivery-address');
 
   const state = useSelector((state) => state);
+
+  const mobileSize = useMobileSize();
 
   const style = {
     buttonAddAddress: {
@@ -70,9 +73,10 @@ const DeliveryAddress = () => {
     boxContent: {
       flexDirection: 'row',
       position: 'fixed',
+      alignItems: 'center',
       zIndex: 10,
       width: 'auto',
-      marginTop: '1px',
+      marginTop: mobileSize ? 0 : 1,
       boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
       display: 'flex',
       height: 40,
