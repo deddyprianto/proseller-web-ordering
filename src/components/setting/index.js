@@ -15,16 +15,39 @@ class Setting extends Component {
       loadingShow: true,
       isLoading: false,
       dataCustomer: {},
+      size: { width: 0, height: 0 },
+      isMobileSize: false,
     };
   }
 
   componentDidMount = async () => {
+    this.updateSize();
+    window.addEventListener('resize', this.updateSize);
+
     let dataCustomer = await this.props.dispatch(
       CustomerAction.getCustomerProfile()
     );
     if (dataCustomer.ResultCode === 200)
       this.setState({ dataCustomer: dataCustomer.Data[0] });
     this.setState({ loadingShow: false });
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateSize);
+  }
+
+  updateSize = () => {
+    const { innerWidth, innerHeight } = window;
+    this.setState({ size: { width: innerWidth, height: innerHeight } });
+    this.checkMobileSize(innerWidth);
+  };
+
+  checkMobileSize = (width) => {
+    if (width < 640) {
+      this.setState({ isMobileSize: true });
+    } else {
+      this.setState({ isMobileSize: false });
+    }
   };
 
   viewShimmer = (isHeight = 100) => {
@@ -58,11 +81,11 @@ class Setting extends Component {
       enableEReceiptNotification:
         this.state.dataCustomer.enableEReceiptNotification,
     };
-    // console.log(payload)
+
     let response = await this.props.dispatch(
       CustomerAction.updateCustomerProfile(payload)
     );
-    // console.log(response)
+
     if (response.ResultCode === 200) {
       Swal.fire({
         icon: 'success',
@@ -82,11 +105,13 @@ class Setting extends Component {
   };
 
   render() {
-    let { loadingShow, dataCustomer, isLoading } = this.state;
+    let { loadingShow, dataCustomer, isLoading, isMobileSize } = this.state;
     return (
       <div
         className='col-full'
-        style={{ marginTop: config.prefix === 'emenu' ? 120 : 140 }}
+        style={{
+          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 66 : 76,
+        }}
       >
         <div id='primary' className='content-area'>
           <div className='stretch-full-width'>
@@ -96,12 +121,10 @@ class Setting extends Component {
                 position: 'fixed',
                 zIndex: 10,
                 width: '100%',
-                marginTop: -60,
                 boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
                 display: 'flex',
                 height: 40,
-                left: 0,
-                right: 0,
+                alignItems: 'center',
               }}
               className='background-theme'
             >
@@ -118,12 +141,12 @@ class Setting extends Component {
               style={{ textAlign: 'center' }}
             >
               {loadingShow ? (
-                <Row>
+                <Row style={{ paddingTop: 55 }}>
                   <Col sm={6}>{this.viewShimmer()}</Col>
                   <Col sm={6}>{this.viewShimmer()}</Col>
                 </Row>
               ) : (
-                <Row>
+                <Row style={{ paddingTop: 55 }}>
                   <Col sm={6}>
                     <div
                       style={{
