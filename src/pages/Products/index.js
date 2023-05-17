@@ -5,17 +5,17 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Shimmer from 'react-shimmer-effect';
 
-import { ProductAction } from '../../redux/actions/ProductAction';
+import { ProductAction } from 'redux/actions/ProductAction';
 
-import Product from '../../components/ordering/Product';
-import SearchBox from '../../components/ordering/SearchBox';
-import UpdateProductModal from '../../components/ordering/UpdateProductModal';
-import ModalProduct from '../../components/ordering/ModalProduct';
+import Product from 'components/ProductList/components/Product';
+import SearchBox from 'components/ordering/SearchBox';
+import UpdateProductModal from 'components/ordering/UpdateProductModal';
+import ModalProduct from 'components/ordering/ModalProduct';
 
 import {
   getInitialProductValue,
   getFormattedPrice,
-} from '../../helpers/ProductHelper';
+} from 'helpers/ProductHelper';
 import useMobileSize from 'hooks/useMobileSize';
 
 const SHIMMER_ARRAY = [1, 2, 3];
@@ -179,33 +179,10 @@ export const Products = ({
                         <ul className='products'>
                           <div className='grid-products'>
                             {products?.map((product) => {
-                              const productInBasket =
-                                basket &&
-                                basket.details &&
-                                basket.details.find(
-                                  (item) => item.product.id === product.id
-                                );
-                              const label = productInBasket ? 'Update' : 'Add';
-                              const quantity =
-                                productInBasket && productInBasket.quantity
-                                  ? productInBasket.quantity
-                                  : 0;
                               return (
-                                <Product
-                                  labelButton={label}
-                                  quantity={quantity}
-                                  selectProduct={selectProduct}
-                                  productConfig={theme}
-                                  showUpdateModal={(item) => {
-                                    setSelectedProduct(item);
-                                    setProductIsExistInBasket(
-                                      label === 'Update'
-                                    );
-                                    setShowUpdateModal(true);
-                                  }}
-                                  key={product.id}
-                                  item={product}
-                                />
+                                <div style={{ padding: '5px 0' }}>
+                                  <Product key={product.id} item={product} />
+                                </div>
                               );
                             })}
                           </div>
