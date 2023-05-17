@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState, Fragment } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { ProductAction } from 'redux/actions/ProductAction';
@@ -7,58 +7,43 @@ import config from 'config';
 
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import { CONSTANT } from 'helpers';
-import { getInitialProductValue } from 'helpers/ProductHelper';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import ModalProduct from 'components/ordering/ModalProduct';
-import UpdateProductModal from 'components/ordering/UpdateProductModal';
+import Loading from 'components/loading/Loading';
 
-const Product = React.lazy(() => import('components/ordering/Product'));
+const Product = React.lazy(() =>
+  import('components/ProductList/components/Product')
+);
 const RetailHeaderCategory = React.lazy(() =>
   import('components/ordering/RetailHeaderCategory')
 );
 const SearchBox = React.lazy(() => import('components/ordering/SearchBox'));
 const LoaderCircle = React.lazy(() => import('../loading/LoaderCircle'));
 
-const mapStateToProps = (state) => {
-  return {
-    defaultOutlet: state.outlet.defaultOutlet,
-    products: state.product.products,
-    basket: state.order.basket,
-    theme: state.theme,
-    companyInfo: state.masterdata.companyInfo.data,
-    categories: state.product.categoryList,
-    setting: state.order.orderingSetting,
-    orderingMode: state.order.orderingMode,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
-
 const Ordering = (props) => {
   const [tempDefaultOutlet, setTempDefaultOutlet] = useState({});
   const [processing, setProcessing] = useState(true);
   const [tempProducts, setTempProducts] = useState([]);
   const [productsBackup, setProductsBackup] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState({});
   const [tempCategories, setTempCategories] = useState([]);
-  const [selectedItem, setSelectedItem] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [finished, setFinished] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingSearching, setLoadingSearching] = useState(false);
   const [offlineMessage, setOfflineMessage] = useState('');
-  const [isEmenu, setIsMenu] = useState(
-    window.location.hostname.includes('emenu')
-  );
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [addNew, setAddNew] = useState(false);
   const [categoryLength, setCategoryLength] = useState(0);
   const [indexLoaded, setIndexLoaded] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
 
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  const basket = useSelector((state) => state.order.basket);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const categories = useSelector((state) => state.product.categoryList);
+  const orderingMode = useSelector((state) => state.order.orderingMode);
+
+  const dispatch = useDispatch();
   const history = useHistory();
+
+  const isEmenu = window.location.hostname.includes('emenu');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,16 +51,14 @@ const Ordering = (props) => {
       localStorage.removeItem(`${config.prefix}_selectedVoucher`);
       localStorage.removeItem(`${config.prefix}_selectedPoint`);
 
-      let newDefaultOutlet = props.defaultOutlet;
+      let newDefaultOutlet = defaultOutlet;
       if (newDefaultOutlet && newDefaultOutlet.id) {
         newDefaultOutlet = config.getValidation(newDefaultOutlet);
       }
 
-      await props.dispatch(OrderAction.getCart());
+      await dispatch(OrderAction.getCart());
       setTempDefaultOutlet(newDefaultOutlet);
-      props.dispatch(
-        ProductAction.fetchCategoryList({ skip: 0, take: 8 }, null)
-      );
+      dispatch(ProductAction.fetchCategoryList({ skip: 0, take: 8 }, null));
       fetchCategories(newDefaultOutlet);
 
       if (newDefaultOutlet.id !== tempDefaultOutlet?.id) {
@@ -88,13 +71,12 @@ const Ordering = (props) => {
 
     return () => {
       setProcessing(false);
-      const { isEmenu } = props;
       window.removeEventListener(
         'scroll',
         isEmenu ? handleScrollEmenu() : handleScrollWebOrdering()
       );
     };
-  }, [props.defaultOutlet]);
+  }, [defaultOutlet]);
 
   const handleScrollWebOrdering = (e) => {
     if (
@@ -105,7 +87,7 @@ const Ordering = (props) => {
       return;
     }
     setIsFetching(true);
-    this.fetchMoreData();
+    fetchMoreData();
   };
 
   const handleScrollEmenu = (e) => {
@@ -128,7 +110,7 @@ const Ordering = (props) => {
   const fetchCategories = async (outlet) => {
     try {
       setLoading(true);
-      const categories = await props.dispatch(
+      const categories = await dispatch(
         ProductAction.fetchCategoryProduct({
           outlet: outlet,
           payload: { skip: 0, take: 50 },
@@ -170,17 +152,17 @@ const Ordering = (props) => {
         props.orderingSetting &&
         props.orderingSetting.ShowOrderingModeModalFirst
       ) {
-        data = await props.dispatch(
+        data = await dispatch(
           ProductAction.fetchProduct(
             categories[i],
             outlet,
             0,
             100,
-            props.orderingMode
+            orderingMode
           )
         );
       } else {
-        data = await props.dispatch(
+        data = await dispatch(
           ProductAction.fetchProduct(categories[i], outlet, 0, 100)
         );
       }
@@ -195,7 +177,7 @@ const Ordering = (props) => {
       i++;
     } while (data.dataLength < 20);
 
-    props.dispatch({
+    dispatch({
       type: CONSTANT.LIST_CATEGORY,
       data: tempProducts,
     });
@@ -208,15 +190,10 @@ const Ordering = (props) => {
     setFinished(true);
   };
 
-  const selectProduct = async (productSelected, mode) => {
-    const product = getInitialProductValue(productSelected, mode);
-    setSelectedItem(product);
-  };
-
   const getLabelButton = (item) => {
     try {
-      if (!isEmptyObject(props.basket)) {
-        const find = props.basket.details.find(
+      if (!isEmptyObject(basket)) {
+        const find = basket.details.find(
           (data) => data.product.id === item.product.id
         );
         if (find !== undefined) return 'Update';
@@ -226,22 +203,6 @@ const Ordering = (props) => {
       }
     } catch (e) {
       return 'Add';
-    }
-  };
-
-  const getQuantityProduct = (item) => {
-    try {
-      if (!isEmptyObject(props.basket)) {
-        const find = props.basket.details.find(
-          (data) => data.product.id === item.product.id
-        );
-        if (find !== undefined) return `${find.quantity}x`;
-        else return false;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
     }
   };
 
@@ -295,8 +256,8 @@ const Ordering = (props) => {
   };
 
   const getCurrency = (price) => {
-    if (props.companyInfo) {
-      const { currency } = props.companyInfo;
+    if (companyInfo) {
+      const { currency } = companyInfo;
 
       if (!price || price === '-') price = 0;
       let result = price.toLocaleString(currency.locale, {
@@ -329,17 +290,17 @@ const Ordering = (props) => {
       props.orderingSetting &&
       props.orderingSetting.ShowOrderingModeModalFirst
     ) {
-      data = await props.dispatch(
+      data = await dispatch(
         ProductAction.fetchProduct(
           category,
           tempDefaultOutlet,
           0,
           100,
-          props.orderingMode
+          orderingMode
         )
       );
     } else {
-      data = await props.dispatch(
+      data = await dispatch(
         ProductAction.fetchProduct(category, tempDefaultOutlet, 0, 100)
       );
     }
@@ -356,12 +317,12 @@ const Ordering = (props) => {
     setIndexLoaded(indexLoaded + 1);
 
     if (data.data.length === 0) {
-      this.fetchMoreData();
+      fetchMoreData();
     }
   };
 
   const goToCategory = async (category) => {
-    const isParent = await props.dispatch(
+    const isParent = await dispatch(
       ProductAction.isParentCategory(category.sortKey)
     );
 
@@ -371,7 +332,7 @@ const Ordering = (props) => {
         state: category,
       });
     } else {
-      props.dispatch(ProductAction.setSelectedCategory(category));
+      dispatch(ProductAction.setSelectedCategory(category));
       history.push(`category/${category.id}/products`);
     }
   };
@@ -438,24 +399,6 @@ const Ordering = (props) => {
       data-toggle='modal'
       data-target='#modal-product'
     >
-      {getLabelButton(selectedItem).toLowerCase() === 'update' &&
-        showUpdateModal && (
-          <UpdateProductModal
-            color={props.theme.color.primary}
-            product={selectedProduct}
-            productInCart={
-              props.basket &&
-              props.basket.details.filter((item) => {
-                return item.productID === selectedItem.productID;
-              })
-            }
-            onClose={() => setShowUpdateModal(false)}
-            setAddNew={(addNew) => setAddNew(addNew)}
-            setSelectedItem={(item) => selectedItem(item)}
-            getCurrency={(price) => getCurrency(price)}
-          ></UpdateProductModal>
-        )}
-      <ModalProduct addNew={addNew} selectedItem={selectedItem} />
       <Suspense fallback={<p>....</p>}>
         <SearchBox />
         <RetailHeaderCategory
@@ -464,7 +407,7 @@ const Ordering = (props) => {
           finished={finished}
           setLoading={(status) => setLoading(status)}
           searchProduct={(query) => searchProduct(query)}
-          categories={props.categories || []}
+          categories={categories || []}
           selectedCategory={selectedCategory}
           setSelectedCategory={(category) => goToCategory(category)}
         />
@@ -504,20 +447,13 @@ const Ordering = (props) => {
                     <div className='grid-products'>
                       {cat.items.map((item, j) => {
                         return (
-                          <Suspense fallback={<p>...</p>} key={j}>
-                            <Product
-                              labelButton={getLabelButton(item)}
-                              quantity={getQuantityProduct(item)}
-                              history={props.history}
-                              selectProduct={selectProduct}
-                              productConfig={props.theme}
-                              showUpdateModal={(item) => {
-                                setShowUpdateModal(true);
-                                setSelectedProduct(item);
-                              }}
-                              key={j}
-                              item={item}
-                            />
+                          <Suspense
+                            fallback={<Loading loadingType='NestedList' />}
+                            key={j}
+                          >
+                            <div style={{ padding: '5px 15px' }}>
+                              <Product item={item}></Product>
+                            </div>
                           </Suspense>
                         );
                       })}
@@ -538,4 +474,4 @@ const Ordering = (props) => {
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Ordering);
+export default Ordering;
