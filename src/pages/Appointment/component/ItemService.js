@@ -3,6 +3,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
 import DetailAppointment from './DetailAppointment';
 import filterImage from '../style/styles.module.css';
+import calendarIcon from 'assets/images/calendarIcon.png';
 
 const ItemService = ({
   item,
@@ -42,7 +43,7 @@ const ItemService = ({
       justifyContent: 'center',
       paddingLeft: '5px',
       marginTop: '5px',
-      width: '100%',
+      width: '95%',
       height: '50px',
     },
     containerLabel: {
@@ -215,8 +216,9 @@ const ItemService = ({
             <div style={localStyle.containerImg}>
               <img
                 className={filterImage.filter}
-                src={item.defaultImageURL}
-                style={{ borderRadius: '10px' }}
+                src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
+                style={{ borderRadius: '10px', width: '100%' }}
+                alt='icon'
               />
             </div>
             <div style={localStyle.containerUnavailable}>
@@ -297,9 +299,11 @@ const ItemService = ({
           >
             <div style={localStyle.containerImg}>
               <img
-                src={item.defaultImageURL}
+                alt='icon'
+                src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
                 style={{
                   borderRadius: '10px',
+                  width: '100%',
                 }}
               />
             </div>

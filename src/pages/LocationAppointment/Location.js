@@ -95,25 +95,6 @@ const Location = () => {
     setSelectedLocationPersisted(selectedLocationPersisted);
   }, []);
 
-  useEffect(() => {
-    return history.listen((location) => {
-      if (history.action === 'PUSH') {
-        console.log(location.pathname);
-        setLocationKeys([location.pathname]);
-        if (
-          location.pathname !== '/location' &&
-          !isEmptyObject(cartAppointment)
-        ) {
-          dispatch({
-            type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
-            payload: true,
-          });
-          history.push('/location');
-        }
-      }
-    });
-  }, [locationKeys]);
-
   const RenderTimeList = () => {
     return selectedLocation?.operationalHours.map((item, i) => {
       return (
