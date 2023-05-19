@@ -1,9 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import loadable from '@loadable/component';
-import moment from 'moment';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import { AuthActions } from './redux/actions/AuthAction';
 import { Redirect, Switch, Route, HashRouter } from 'react-router-dom';
@@ -23,6 +21,7 @@ import messages_en from './languages/en.json';
 import config from './config';
 
 import { lsLoad } from './helpers/localStorage';
+import { isEmpty } from 'helpers/utils';
 
 import jss from 'jss';
 import preset from 'jss-preset-default';
@@ -59,7 +58,6 @@ const App = (props) => {
   } = props;
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
-
   const [enableOrdering, setEnableOrdering] = useState(false);
   const domainNameExist = props.domainName && props.domainName.length > 0;
   const initialDomainNameExists = domainNameExist;
@@ -90,8 +88,9 @@ const App = (props) => {
   const handleReLogin = async (account) => {
     account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
     let timeExp = account.accessToken.payload.exp * 1000 - 60000;
-    let timeNow = moment().format();
-    if (moment(timeNow).isSameOrAfter(timeExp)) {
+    let timeNow = new Date();
+
+    if (timeNow >= new Date(timeExp)) {
       await props.dispatch(AuthActions.refreshToken());
     }
   };
@@ -180,7 +179,7 @@ const App = (props) => {
         if (find !== undefined) outletSelectionMode = find.settingValue;
       }
       if (outletSelectionMode !== 'MANUAL') {
-        if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
+        if (isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
           defaultOutlet = await props.dispatch(
             OutletAction.fetchDefaultOutlet()
           );
@@ -219,7 +218,7 @@ const App = (props) => {
   useEffect(() => {
     localStorage.setItem('APP_VERSION_WEBORDERING', props.version);
   }, []);
-  
+
   useEffect(() => {
     if (setting) {
       let enableOrdering = setting.find((items) => {

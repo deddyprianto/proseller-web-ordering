@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import filter from 'lodash/filter';
 import indexOf from 'lodash/indexOf';
+import loadable from '@loadable/component';
 
 import config from 'config';
 
@@ -16,9 +17,10 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
-import ProductAddModal from './ProductAddModal';
-import ProductUpdateModal from './ProductUpdateModal';
 import ImageContainer from 'components/imageContainer';
+
+const ProductAddModal = loadable(() => import('./ProductAddModal'));
+const ProductUpdateModal = loadable(() => import('./ProductUpdateModal'));
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -322,6 +324,8 @@ const Product = ({ item, ...props }) => {
             image={renderImageProduct(item)}
             alt={item?.product?.name || ''}
             title={item?.product?.name}
+            width={640}
+            height={360}
           />
         </div>
         <div className={classes.itemBody}>
@@ -400,6 +404,8 @@ const Product = ({ item, ...props }) => {
                   image={renderImageProduct(item)}
                   alt={item?.product?.name || ''}
                   title={item?.product?.name}
+                  width={640}
+                  height={360}
                 />
               </div>
               <Button

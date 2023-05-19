@@ -37,7 +37,7 @@ import { CONSTANT } from 'helpers';
 import Product from './components/Product';
 import Loading from 'components/loading/Loading';
 import useProductList from 'hooks/useProductList';
-import Swal from 'sweetalert2';
+
 import './components/style/style.css';
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -470,7 +470,7 @@ ProductList.propTypes = {
   dispatch: PropTypes.func,
   orderingMode: PropTypes.string,
   orderingSetting: PropTypes.object,
-  promotion: PropTypes.object,
+  promotion: PropTypes.array,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList);

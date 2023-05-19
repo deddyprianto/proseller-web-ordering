@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
 import { useHistory } from 'react-router-dom';
-import _ from 'lodash';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 
@@ -30,6 +29,7 @@ import OrderingModeTable from 'components/orderingModeTable';
 
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { CONSTANT } from '../helpers/';
+import { isEmpty } from 'helpers/utils';
 
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -283,7 +283,7 @@ const Cart = ({ ...props }) => {
           OrderAction.getCalculateFee(payload)
         );
 
-        if (!_.isEmpty(responseCalculateFee)) {
+        if (!isEmpty(responseCalculateFee)) {
           setDataCalculateFee(responseCalculateFee);
         }
 

@@ -10,50 +10,52 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>Proseller</title>
     <link
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="this.rel='stylesheet'"
       type="text/css"
       href="%PUBLIC_URL%/assets/css/bootstrap.min.css"
       media="all"
     />
     <link
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      crossorigin
+      onload="this.rel='stylesheet'"
       type="text/css"
       href="%PUBLIC_URL%/assets/css/font-awesome.min.css"
       media="all"
     />
     <link
-      rel="stylesheet"
+      rel="prefetch stylesheet"
       type="text/css"
       href="%PUBLIC_URL%/assets/css/animate.min.css"
       media="all"
     />
     <link
-      rel="stylesheet"
+      rel="prefetch stylesheet"
+      crossorigin
       type="text/css"
       href="%PUBLIC_URL%/assets/css/font-pizzaro.min.css"
       media="all"
     />
     <link
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="this.rel='stylesheet'"
       type="text/css"
-      href="%PUBLIC_URL%/assets/css/style.css"
+      href="%PUBLIC_URL%/assets/css/style.min.css"
       media="all"
     />
     <link
-      rel="stylesheet"
+      rel="prefetch stylesheet"
       type="text/css"
       href="%PUBLIC_URL%/assets/css/jquery.mCustomScrollbar.min.css"
       media="all"
     />
     <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CYanone+Kaffeesatz:200,300,400,700"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
+      rel="preconnect"
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
-      rel="stylesheet"
     />
     <link
       id="icon-theme"
@@ -69,31 +71,27 @@
     <div id="root"></div>
 
     <script
+      defer
       type="text/javascript"
       src="%PUBLIC_URL%/assets/js/jquery.min.js"
     ></script>
     <script
-      type="text/javascript"
-      src="%PUBLIC_URL%/assets/js/tether.min.js"
-    ></script>
-    <script
+      defer
       type="text/javascript"
       src="%PUBLIC_URL%/assets/js/bootstrap.min.js"
     ></script>
     <script
+      defer
       type="text/javascript"
       src="%PUBLIC_URL%/assets/js/owl.carousel.min.js"
     ></script>
-
     <script
-      type="text/javascript"
-      src="%PUBLIC_URL%/assets/js/social.share.min.js"
-    ></script>
-    <script
+      defer
       type="text/javascript"
       src="%PUBLIC_URL%/assets/js/jquery.mCustomScrollbar.concat.min.js"
     ></script>
     <script
+      defer
       type="text/javascript"
       src="%PUBLIC_URL%/assets/js/scripts.min.js"
     ></script>

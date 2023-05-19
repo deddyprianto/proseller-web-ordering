@@ -2,8 +2,7 @@ import { CONSTANT } from '../../helpers';
 import { MasterDataService } from '../../Services/MasterDataService';
 import { isEmptyObject } from '../../helpers/CheckEmpty';
 import config from '../../config';
-import _ from 'lodash';
-import moment from 'moment-timezone';
+import orderBy from 'lodash/orderBy';
 const geolib = require('geolib');
 
 const orderingModesField = [
@@ -219,7 +218,7 @@ function fetchAllOutlet(getDefaultOutlet, locationCustomer) {
         return { ...outlet, orderValidation, outletStatus, distance };
       });
 
-      const outlets = _.orderBy(unsortedOutlets, ['distance'], ['asc']);
+      const outlets = orderBy(unsortedOutlets, ['distance'], ['asc']);
       dispatch(setData(outlets, CONSTANT.LIST_OUTLET));
       return outlets;
     }
@@ -253,10 +252,12 @@ function getOperationalHours(outlet) {
      * @type moment
      * @description Current client's date and time converted to outlet's timezone.
      */
-    const now = moment().tz(OUTLET_TIMEZONE);
 
-    const todaysDate = now.format('YYYY-MM-DD');
-    const todaysDayOfWeek = now.day();
+    const now = new Date(
+      new Date().toLocaleString('en-US', { timeZone: OUTLET_TIMEZONE })
+    );
+    const todaysDate = now.toISOString().split('T')[0];
+    const todaysDayOfWeek = now.getUTCDay();
 
     /**
      * @type object
@@ -274,11 +275,16 @@ function getOperationalHours(outlet) {
 
     const { open, close } = todaysOperationalHours;
 
-    const openAt = moment.tz(`${todaysDate} ${open}`, OUTLET_TIMEZONE);
-
-    const closedAt = moment.tz(`${todaysDate} ${close}`, OUTLET_TIMEZONE);
-
-    const isOpen = now.isBetween(openAt, closedAt);
+    const openAt = new Date(`${todaysDate} ${open}`).toLocaleString('en-US', {
+      timeZone: OUTLET_TIMEZONE,
+    });
+    const closedAt = new Date(`${todaysDate} ${close}`).toLocaleString(
+      'en-US',
+      { timeZone: OUTLET_TIMEZONE }
+    );
+    const isOpen =
+      now.getTime() >= new Date(openAt).getTime() &&
+      now.getTime() <= new Date(closedAt).getTime();
 
     return { openAt, closedAt, isOpen };
   } catch (e) {

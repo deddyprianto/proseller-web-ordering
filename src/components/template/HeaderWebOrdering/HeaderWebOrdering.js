@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, withRouter, useHistory, useLocation } from 'react-router-dom';
@@ -9,14 +8,14 @@ import Typography from '@mui/material/Typography';
 import PlaceIcon from '@mui/icons-material/Place';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ShoppingBasket from '@mui/icons-material/ShoppingBasket';
-import { CONSTANT } from '../../../helpers';
+
 import config from '../../../config';
 import { OutletAction } from '../../../redux/actions/OutletAction';
 import LoginRegister from '../../login-register';
 import useMobileSize from 'hooks/useMobileSize';
 import Sidebar from './components/Sidebar';
 import { getLogoInfo } from '../../../redux/actions/LogoAction';
-import ImageContainer from 'components/imageContainer';
+import ImageContainer from 'components/imageContainer/ImageContainer';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = (location) => {
@@ -167,7 +166,6 @@ const useStyles = (location) => {
     },
     logoAndOuletName: {
       width: mobileSize ? '97px' : '9.5em',
-      height: 50,
       marginBottom: mobileSize ? 0 : '10px',
     },
   };
@@ -495,21 +493,16 @@ const HeaderWebOrdering = () => {
         justifyContent: 'center',
       }}
     >
-      {logo && (
-        <Link style={styles.logoAndOuletName} to='/'>
-          <ImageContainer image={logo} />
-          {/* <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <img style={styles.logoAndOuletName} src={logo} />
-          </div> */}
-        </Link>
-      )}
+      <Link
+        style={{
+          ...styles.logoAndOuletName,
+          visibility: logo ? 'visible' : 'hidden',
+          height: logo ? 50 : 0,
+        }}
+        to='/'
+      >
+        <ImageContainer image={logo} fetchpriority='high' />
+      </Link>
       {renderOutletNamed()}
     </div>
   );

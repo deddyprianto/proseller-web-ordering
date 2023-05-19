@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -15,6 +14,7 @@ import Grid from '@mui/material/Grid';
 import { OrderAction } from 'redux/actions/OrderAction';
 import Loading from 'components/loading/Loading';
 import { CONSTANT } from 'helpers';
+import { isEmpty } from 'helpers/utils';
 
 const SelectProviderDialog = ({ open, onClose }) => {
   const colorState = useSelector((state) => state.theme.color);
@@ -89,7 +89,7 @@ const SelectProviderDialog = ({ open, onClose }) => {
         OrderAction.getCalculateFee(payload)
       );
 
-      if (!_.isEmpty(responseCalculateFee)) {
+      if (!isEmpty(responseCalculateFee)) {
         setDataCalculateFee(responseCalculateFee);
       }
 

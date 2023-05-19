@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Shimmer from 'react-shimmer-effect';
 
@@ -17,6 +16,7 @@ import {
   getFormattedPrice,
 } from 'helpers/ProductHelper';
 import useMobileSize from 'hooks/useMobileSize';
+import { isEmpty } from 'helpers/utils';
 
 const SHIMMER_ARRAY = [1, 2, 3];
 const IS_EMENU = window.location.hostname.includes('emenu');
@@ -53,7 +53,7 @@ export const Products = ({
 
   useEffect(() => {
     if (selectedCategory) {
-      if (_.isEmpty(selectedOutlet)) {
+      if (isEmpty(selectedOutlet)) {
         history.push('/outlets');
       } else {
         if (setting.ShowOrderingModeModalFirst) {
