@@ -1,5 +1,5 @@
 import logo from './assets/images/logo_placeholder.png';
-import emptyImage from './assets/images/empty.png';
+import emptyImage from './assets/images/empty.webp';
 import loginImage from './assets/images/login.svg';
 
 let config = {};
