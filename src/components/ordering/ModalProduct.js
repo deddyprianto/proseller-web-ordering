@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import _ from "lodash";
 import { isEmptyObject, isEmptyArray } from "../../helpers/CheckEmpty";
 import { isEmptyData } from "../../helpers/CheckEmpty";
 import { OrderAction } from "../../redux/actions/OrderAction";
 import config from "../../config";
 import Variant from "./Variant";
 import Swal from "sweetalert2";
+import { isEmpty } from "helpers/utils";
 
 class ModalProduct extends Component {
   constructor(props) {
@@ -326,7 +326,7 @@ class ModalProduct extends Component {
       await this.setState({ disableButton: true });
       if (
         (selectedItem.mode === "Add" || this.props.addNew) &&
-        !_.isEmpty(this.state.selectedItem)
+        !isEmpty(this.state.selectedItem)
       ) {
         console.log("Dispatching processAddCart");
         this.props.dispatch(
@@ -1040,7 +1040,7 @@ class ModalProduct extends Component {
       this.props.orderingSetting &&
       this.props.orderingSetting.ShowOrderingModeModalFirst
     ) {
-      if (this.props.orderingMode && !_.isEmpty(this.props.basket)) {
+      if (this.props.orderingMode && !isEmpty(this.props.basket)) {
         Swal.fire({
           title: "Change ordering mode?",
           text: "Changing ordering mode will remove item(s) in your cart",

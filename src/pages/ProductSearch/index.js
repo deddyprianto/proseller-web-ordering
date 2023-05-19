@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import Shimmer from 'react-shimmer-effect';
 
@@ -14,6 +13,7 @@ import {
   getInitialProductValue,
   getFormattedPrice,
 } from 'helpers/ProductHelper';
+import { isEmpty } from 'helpers/utils';
 
 import useQuery from 'hooks/useQuery';
 
@@ -52,7 +52,7 @@ export const ProductSearch = ({
   };
 
   useEffect(() => {
-    if (_.isEmpty(selectedOutlet)) {
+    if (isEmpty(selectedOutlet)) {
       history.push('/outlets');
     } else {
       searchProducts(keyword, selectedOutlet, 0, 100);
