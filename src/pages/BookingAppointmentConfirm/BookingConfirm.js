@@ -154,7 +154,7 @@ const BookingConfirm = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           cursor: 'pointer',
-          margin: '10px',
+          marginTop: '20px',
           marginBottom: '10px',
           alignItems: 'center',
           justifyItems: 'center',
@@ -197,8 +197,8 @@ const BookingConfirm = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           alignItems: 'center',
-          padding: '10px 0px',
-          marginTop: gadgetScreen ? '0px' : '20px',
+          padding: '0px',
+          marginTop: gadgetScreen ? '30px' : '20px',
         }}
       >
         <div
@@ -255,9 +255,9 @@ const BookingConfirm = (props) => {
         >
           <hr
             style={{
-              width: gadgetScreen ? '30px' : '150px',
+              width: gadgetScreen ? '20px' : '150px',
               padding: 0,
-              margin: '0px 3px',
+              margin: '0px 5px',
               backgroundColor: 'rgba(183, 183, 183, 1)',
             }}
           />
@@ -808,7 +808,7 @@ const BookingConfirm = (props) => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '95px 1fr',
+            gridTemplateRows: '110px 1fr',
             gridAutoColumns: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
