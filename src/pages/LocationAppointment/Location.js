@@ -30,11 +30,13 @@ const Location = () => {
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
-  const [locationKeys, setLocationKeys] = useState([]);
   const [selectedLocationPersisted, setSelectedLocationPersisted] =
     useState(null);
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
+  );
+  const locationAppointment = useSelector(
+    (state) => state.appointmentReducer.locationAppointment
   );
   const color = useSelector((state) => state.theme.color);
   const popupLocation = useSelector(
@@ -50,10 +52,6 @@ const Location = () => {
   // some fn
   const handleSelectedOutlet = (item) => {
     if (cartAppointment?.details?.length > 0) {
-      dispatch({
-        type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
-        payload: item,
-      });
       dispatch({
         type: CONSTANT.LOCATION_APPOINTMENT,
         payload: item,
@@ -94,25 +92,6 @@ const Location = () => {
     const selectedLocationPersisted = JSON.parse(locationPersisted);
     setSelectedLocationPersisted(selectedLocationPersisted);
   }, []);
-
-  useEffect(() => {
-    return history.listen((location) => {
-      if (history.action === 'PUSH') {
-        console.log(location.pathname);
-        setLocationKeys([location.pathname]);
-        if (
-          location.pathname !== '/location' &&
-          !isEmptyObject(cartAppointment)
-        ) {
-          dispatch({
-            type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
-            payload: true,
-          });
-          history.push('/location');
-        }
-      }
-    });
-  }, [locationKeys]);
 
   const RenderTimeList = () => {
     return selectedLocation?.operationalHours.map((item, i) => {
@@ -658,6 +637,10 @@ const Location = () => {
           </button>
           <button
             onClick={async () => {
+              dispatch({
+                type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
+                payload: locationAppointment,
+              });
               if (cartAppointment?.details?.length > 0) {
                 setIsLoading(true);
                 await dispatch(OrderAction.deleteCartAppointment());

@@ -3,6 +3,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
 import DetailAppointment from './DetailAppointment';
 import filterImage from '../style/styles.module.css';
+import calendarIcon from 'assets/images/calendarIcon.png';
 
 const ItemService = ({
   item,
@@ -38,11 +39,8 @@ const ItemService = ({
       marginBottom: '15px',
     },
     containerImg: {
-      display: 'flex',
-      justifyContent: 'center',
-      paddingLeft: '5px',
       marginTop: '5px',
-      width: '100%',
+      width: '95%',
       height: '50px',
     },
     containerLabel: {
@@ -204,7 +202,7 @@ const ItemService = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '70px 1fr',
+              gridTemplateColumns: '52px 1fr',
               gridTemplateRows: '1fr',
               gridAutoColumns: '1fr',
               gap: '0px 0px',
@@ -215,8 +213,9 @@ const ItemService = ({
             <div style={localStyle.containerImg}>
               <img
                 className={filterImage.filter}
-                src={item.defaultImageURL}
-                style={{ borderRadius: '10px' }}
+                src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
+                style={{ borderRadius: '10px', width: '48px', height: '48px' }}
+                alt='icon'
               />
             </div>
             <div style={localStyle.containerUnavailable}>
@@ -286,7 +285,7 @@ const ItemService = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '70px 1fr',
+              gridTemplateColumns: '52px 1fr',
               gridTemplateRows: '1fr',
               gridAutoColumns: '1fr',
               gap: '0px 0px',
@@ -297,10 +296,9 @@ const ItemService = ({
           >
             <div style={localStyle.containerImg}>
               <img
-                src={item.defaultImageURL}
-                style={{
-                  borderRadius: '10px',
-                }}
+                alt='icon'
+                src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
+                style={{ borderRadius: '10px', width: '48px', height: '48px' }}
               />
             </div>
             <div style={localStyle.containerLabel}>
