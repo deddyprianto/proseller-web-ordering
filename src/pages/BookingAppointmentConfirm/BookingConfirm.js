@@ -182,30 +182,22 @@ const BookingConfirm = (props) => {
     );
   };
   const Timeline = () => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          fontSize: '14px',
-          display: 'grid',
-          gridTemplateColumns: gadgetScreen
-            ? '123px 1fr 99px'
-            : '1fr 155px 1fr',
-          gridTemplateRows: '1fr',
-          gridAutoColumns: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          alignItems: 'center',
-          padding: '0px',
-          marginTop: gadgetScreen ? '30px' : '20px',
-        }}
-      >
+    if (gadgetScreen) {
+      return (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
+            width: '100%',
+            fontSize: '14px',
+            display: 'grid',
+            gridTemplateColumns: '60px 40px 177px 40px 1fr',
+            gridTemplateRows: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '". . . . ."',
+            padding: '0px',
+            marginTop: '30px',
             alignItems: 'center',
+            justifyItems: 'center',
           }}
         >
           <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
@@ -213,7 +205,7 @@ const BookingConfirm = (props) => {
           </div>
           <hr
             style={{
-              width: gadgetScreen ? '20px' : '100px',
+              width: '25px',
               padding: 0,
               margin: 0,
               backgroundColor: 'rgba(183, 183, 183, 1)',
@@ -221,73 +213,185 @@ const BookingConfirm = (props) => {
           />
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: color.primary,
-              color: 'white',
-              fontWeight: 500,
-              borderRadius: '100%',
+              justifySelf: 'center',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            2
+            <div>
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  lineHeight: '24px',
+                  textAlign: 'center',
+                  backgroundColor: color.primary,
+                  color: 'white',
+                  fontWeight: 500,
+                  borderRadius: '100%',
+                }}
+              >
+                2
+              </div>
+            </div>
+            <div
+              style={{
+                fontWeight: 600,
+                color: color.primary,
+                marginLeft: '5px',
+              }}
+            >
+              Confirm Your Booking
+            </div>
           </div>
-        </div>
-
-        <div
-          style={{
-            justifySelf: 'center',
-            fontWeight: 600,
-            margin: '0px',
-            color: color.primary,
-          }}
-        >
-          Confirm Your Booking
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: gadgetScreen ? 'center' : 'space-between',
-            alignItems: 'center',
-          }}
-        >
           <hr
             style={{
-              width: gadgetScreen ? '20px' : '150px',
+              width: '25px',
               padding: 0,
-              margin: '0px 5px',
+              marginTop: '15px',
               backgroundColor: 'rgba(183, 183, 183, 1)',
             }}
           />
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-              color: 'white',
-              borderRadius: '100%',
-              fontWeight: 500,
-              marginLeft: '4px',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
             }}
           >
-            3
-          </div>
-          <div
-            style={{
-              fontWeight: 500,
-              marginLeft: '4px',
-              color: 'rgba(183, 183, 183, 1)',
-            }}
-          >
-            Finis
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                color: 'white',
+                borderRadius: '100%',
+                fontWeight: 500,
+                marginRight: '2px',
+              }}
+            >
+              3
+            </div>
+            <div
+              style={{
+                fontWeight: 500,
+                color: 'rgba(183, 183, 183, 1)',
+              }}
+            >
+              Finis
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div
+          style={{
+            width: '100%',
+            fontSize: '14px',
+            display: 'grid',
+            gridTemplateColumns: '1fr 155px 1fr',
+            gridTemplateRows: '1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '". . ."',
+            alignItems: 'center',
+            padding: '0px',
+            marginTop: gadgetScreen ? '30px' : '20px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
+              g Details
+            </div>
+            <hr
+              style={{
+                width: '150px',
+                padding: 0,
+                margin: 0,
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+              }}
+            />
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                fontWeight: 500,
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            style={{
+              justifySelf: 'center',
+              fontWeight: 600,
+              margin: '0px',
+              color: color.primary,
+            }}
+          >
+            Confirm Your Booking
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: gadgetScreen ? 'center' : 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <hr
+              style={{
+                width: '170px',
+                padding: 0,
+                margin: '0px 5px',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+              }}
+            />
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                color: 'white',
+                borderRadius: '100%',
+                fontWeight: 500,
+                marginLeft: '4px',
+              }}
+            >
+              3
+            </div>
+            <div
+              style={{
+                fontWeight: 500,
+                marginLeft: '4px',
+                color: 'rgba(183, 183, 183, 1)',
+              }}
+            >
+              Finis
+            </div>
+          </div>
+        </div>
+      );
+    }
+   
   };
 
   const BookingDetail = () => {
