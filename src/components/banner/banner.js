@@ -52,6 +52,8 @@ const Banner = (props) => {
           <img
             src={item.defaultImageURL}
             alt={item.name}
+            srcSet={`${item.defaultImageURL} 300w, ${item.defaultImageURL} 768w, ${item.defaultImageURL} 1280w`}
+            sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
             width='100%'
             height={300}
             style={{
@@ -71,6 +73,8 @@ const Banner = (props) => {
         <img
           src={item.defaultImageURL}
           alt={item.name}
+          srcSet={`${item.defaultImageURL} 300w, ${item.defaultImageURL} 768w, ${item.defaultImageURL} 1280w`}
+          sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
           width='100%'
           height={300}
           style={{
