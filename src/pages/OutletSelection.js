@@ -1,17 +1,25 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
-import { Col, Row } from 'reactstrap';
+import loadable from '@loadable/component';
 import Shimmer from 'react-shimmer-effect';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import { OutletAction } from '../redux/actions/OutletAction';
 import { OrderAction } from '../redux/actions/OrderAction';
 import config from '../config';
 import { CONSTANT } from 'helpers';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { isEmpty } from 'helpers/utils';
 
 const Swal = require('sweetalert2');
+
+const Col = loadable(() =>
+  import('libraries/reactstrap').then((module) => module.Col)
+);
+const Row = loadable(() =>
+  import('libraries/reactstrap').then((module) => module.Row)
+);
+
 class OutletSelection extends Component {
   constructor(props) {
     super(props);
@@ -128,7 +136,7 @@ class OutletSelection extends Component {
   handleSelectOutlet = async (outlet) => {
     await this.setState({ loadingShow: true });
     await this.props.dispatch(OutletAction.setDefaultOutlet(outlet));
-    if (!_.isEmpty(this.props.setting)) {
+    if (!isEmpty(this.props.setting)) {
       const { ShowOrderingModeModalFirst } = this.props.setting;
       if (this.props.orderingModes.length === 1) {
         await this.props.dispatch({
