@@ -39,9 +39,6 @@ const ItemService = ({
       marginBottom: '15px',
     },
     containerImg: {
-      display: 'flex',
-      justifyContent: 'center',
-      paddingLeft: '5px',
       marginTop: '5px',
       width: '95%',
       height: '50px',
@@ -205,7 +202,7 @@ const ItemService = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '70px 1fr',
+              gridTemplateColumns: '52px 1fr',
               gridTemplateRows: '1fr',
               gridAutoColumns: '1fr',
               gap: '0px 0px',
@@ -217,7 +214,7 @@ const ItemService = ({
               <img
                 className={filterImage.filter}
                 src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
-                style={{ borderRadius: '10px', width: '100%' }}
+                style={{ borderRadius: '10px', width: '48px', height: '48px' }}
                 alt='icon'
               />
             </div>
@@ -288,7 +285,7 @@ const ItemService = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '70px 1fr',
+              gridTemplateColumns: '52px 1fr',
               gridTemplateRows: '1fr',
               gridAutoColumns: '1fr',
               gap: '0px 0px',
@@ -301,10 +298,7 @@ const ItemService = ({
               <img
                 alt='icon'
                 src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
-                style={{
-                  borderRadius: '10px',
-                  width: '100%',
-                }}
+                style={{ borderRadius: '10px', width: '48px', height: '48px' }}
               />
             </div>
             <div style={localStyle.containerLabel}>
