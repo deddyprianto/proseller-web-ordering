@@ -548,6 +548,7 @@ const ProductCart = ({ item, ...props }) => {
             >
               {(!props.isDisable || !isEmptyArray(item?.modifiers)) && (
                 <Button
+                  id='edit-item-button'
                   sx={{
                     width: '80px',
                     border: `1px solid ${props.color?.primary}`,
@@ -566,6 +567,7 @@ const ProductCart = ({ item, ...props }) => {
                 </Button>
               )}
               <div
+                id='delete-item-button'
                 style={{
                   display: 'flex',
                   alignItems: 'center',

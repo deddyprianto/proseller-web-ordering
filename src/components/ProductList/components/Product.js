@@ -345,7 +345,10 @@ const Product = ({ item, ...props }) => {
   };
 
   return (
-    <div className={isUnavailable ? classes.disabledProduct : ''}>
+    <div
+      id='select-item-container'
+      className={isUnavailable ? classes.disabledProduct : ''}
+    >
       {isOpenAddModal && (
         <ProductAddModal
           open={isOpenAddModal}

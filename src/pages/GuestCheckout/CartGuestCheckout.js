@@ -704,6 +704,7 @@ const CartGuestCheckout = () => {
         </div>
         <div>
           <Button
+            id='add-more-button'
             onClick={() => history.push('/')}
             startIcon={<img src={addIcon} alt='addIcon' />}
             sx={{
@@ -952,6 +953,7 @@ const CartGuestCheckout = () => {
           >
             {(!isDisable || !isEmptyArray(itemDetails.modifiers)) && (
               <Button
+                id='edit-item-button'
                 sx={{
                   width: '80px',
                   border: `1px solid ${color?.primary}`,
@@ -972,6 +974,7 @@ const CartGuestCheckout = () => {
               </Button>
             )}
             <div
+              id='delete-item-button'
               onClick={() => {
                 Swal.fire({
                   title: 'Are you sure?',
@@ -1200,6 +1203,7 @@ const CartGuestCheckout = () => {
   const renderOrderingMode = () => {
     return (
       <div
+        id='ordering-mode-option'
         onClick={() => handleOpenOrderingMode()}
         style={{
           width: '100%',

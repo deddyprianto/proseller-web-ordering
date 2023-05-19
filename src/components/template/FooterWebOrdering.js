@@ -299,6 +299,7 @@ const FooterWebOrdering = () => {
             if (!isLoggedIn && menu.text === 'Login') {
               return (
                 <BottomNavigationAction
+                  id='login-navbar-button'
                   key={index}
                   tabIndex={index}
                   label='LOGIN'
@@ -320,6 +321,7 @@ const FooterWebOrdering = () => {
             }
             return (
               <BottomNavigationAction
+                id={`${menu?.text?.toLowerCase()}-navbar-button`}
                 key={index}
                 tabIndex={index}
                 label={menu.text.toUpperCase()}
