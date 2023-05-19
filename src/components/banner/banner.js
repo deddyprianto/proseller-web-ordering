@@ -16,7 +16,7 @@ import style from './pagination.scss';
 import SwiperCore, { Pagination, Navigation, Autoplay } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
-const Banner = () => {
+const Banner = (props) => {
   const { logo } = useSelector((state) => state.getSpaceLogo);
   const [banners, setBanners] = useState([]);
 
@@ -28,7 +28,10 @@ const Banner = () => {
         'promobanners/load'
       );
       if (result) {
-        setBanners(result.data);
+        const temp = result?.data?.filter(
+          (val) => val.outlet === 'ALL' || val.outlet?.includes(props.outletId)
+        );
+        setBanners(temp);
       }
     };
 
