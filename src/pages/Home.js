@@ -200,14 +200,14 @@ const Home = ({ ...props }) => {
     } else if (infoCompany?.companyName === 'PinkCity') {
       return (
         <div style={styles.rootProduct}>
-          <Banner />
+          <Banner outletId={props.defaultOutlet?.id} />
           <LayoutTypeA />
         </div>
       );
     } else {
       return (
         <div style={styles.rootProduct}>
-          <Banner />
+          <Banner outletId={props.defaultOutlet?.id} />
           <ProductList />
           {!isEmptyArray(props.product) && (
             <ModalAppointment
