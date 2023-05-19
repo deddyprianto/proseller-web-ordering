@@ -4,22 +4,26 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
+import loadable from '@loadable/component';
 
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import { useHistory } from 'react-router-dom';
 import { OutletAction } from 'redux/actions/OutletAction';
-import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
-import ModalAppointment from 'components/modalAppointment/ModalAppointment';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
-import LayoutTypeA from 'components/template/LayoutTypeA';
 import config from 'config';
+
+const LayoutTypeA = loadable(() => import('components/template/LayoutTypeA'));
+const ModalAppointment = loadable(() =>
+  import('components/modalAppointment/ModalAppointment')
+);
+const OutletSelection = loadable(() => import('./OutletSelection'));
 
 const base64 = require('base-64');
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -74,6 +78,7 @@ const Home = ({ ...props }) => {
     rootProduct: {
       paddingLeft: gadgetScreen ? '3%' : '10%',
       paddingRight: gadgetScreen ? '3%' : '10%',
+      height: '100%',
     },
   };
   const isEmenu = window.location.hostname.includes('emenu');
@@ -196,19 +201,20 @@ const Home = ({ ...props }) => {
       !props.defaultOutlet?.id &&
       !isEmenu
     ) {
-      return <OutletSelection />;
-    } else if (infoCompany?.companyName === 'PinkCity') {
       return (
-        <div style={styles.rootProduct}>
-          <Banner outletId={props.defaultOutlet?.id} />
-          <LayoutTypeA />
+        <div style={{ height: '100%' }}>
+          <OutletSelection />
         </div>
       );
     } else {
       return (
         <div style={styles.rootProduct}>
-          <Banner outletId={props.defaultOutlet?.id} />
-          <ProductList />
+          <Banner />
+          {infoCompany?.companyName === 'PinkCity' ? (
+            <LayoutTypeA />
+          ) : (
+            <ProductList />
+          )}
           {!isEmptyArray(props.product) && (
             <ModalAppointment
               name={name}
