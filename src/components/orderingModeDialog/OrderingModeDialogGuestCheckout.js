@@ -329,6 +329,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
     return orderingModes.map((item) => {
       return (
         <div
+          id={`${item?.name?.toLowerCase()}-option`}
           key={item.name}
           onClick={() => {
             dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
@@ -434,6 +435,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           }}
         >
           <button
+            id='cancel-button'
             onClick={onClose}
             className={fontStyles.myFont}
             style={{
@@ -448,6 +450,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
             Cancel
           </button>
           <button
+            id='confirm-button'
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}
             style={{

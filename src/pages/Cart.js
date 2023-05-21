@@ -920,6 +920,7 @@ const Cart = ({ ...props }) => {
   const RenderOrderingMode = () => {
     return (
       <div
+        id='ordering-mode-option'
         onClick={() => {
           if (!props.isLoggedIn) {
             handleLogin();

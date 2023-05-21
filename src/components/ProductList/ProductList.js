@@ -313,7 +313,10 @@ const ProductList = ({ ...props }) => {
   const renderTabHeader = () => {
     const categoryTab = categories.slice(0, limitCategoryTabHeader);
     return (
-      <TabsList sx={{ marginTop: isBannerSetToTrue && '103px' }}>
+      <TabsList
+        id='product-group-header-option'
+        sx={{ marginTop: isBannerSetToTrue && '103px' }}
+      >
         {categoryTab.map((category, index) => {
           return (
             <Tab
@@ -355,7 +358,7 @@ const ProductList = ({ ...props }) => {
     return (
       <Box sx={styles.tabList}>
         <Collapse in={isMore}>
-          <Paper style={styles.paper}>
+          <Paper id='product-preset-group-dropdown' style={styles.paper}>
             {categoryTabList.map((category, index) => {
               return (
                 <div className={classes.itemMoreHover} key={index}>

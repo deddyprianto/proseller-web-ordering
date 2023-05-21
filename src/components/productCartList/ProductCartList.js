@@ -112,6 +112,7 @@ const ProductCartList = ({ ...props }) => {
         </div>
         <div>
           <Button
+            id='add-more-button'
             onClick={() => history.push('/')}
             startIcon={<img src={addIcon} alt='addIcon' />}
             sx={{

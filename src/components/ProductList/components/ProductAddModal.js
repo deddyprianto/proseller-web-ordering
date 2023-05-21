@@ -1144,7 +1144,7 @@ const ProductAddModal = ({
         <div key={index}>
           <FormControlLabel
             value={option}
-            control={<Radio sx={styles.radioSize} />}
+            control={<Radio id='item-variant-option' sx={styles.radioSize} />}
             label={<Typography style={styles.optionTitle}>{option}</Typography>}
             onClick={() => {
               handleVariantOptionSelected({
@@ -1196,6 +1196,7 @@ const ProductAddModal = ({
       return (
         <div style={styles.rootMofidierOptions}>
           <IconButton
+            id='modifier-minus-button'
             style={styles.buttonIconProductModifier}
             disabled={
               handleDisabledRemoveButtonProductModifier({
@@ -1220,6 +1221,7 @@ const ProductAddModal = ({
             {selectedProductModifier.qty}
           </Typography>
           <IconButton
+            id='modifier-plus-button'
             style={styles.buttonIconProductModifier}
             disabled={
               handleDisabledAddButtonProductModifier({
@@ -1423,6 +1425,7 @@ const ProductAddModal = ({
                 value={modifier.productID}
                 control={
                   <Radio
+                    id='item-variant-option'
                     sx={styles.radioSizeModifier}
                     name={modifier.productID}
                     onChange={() => {
@@ -1512,6 +1515,7 @@ const ProductAddModal = ({
                 }}
                 control={
                   <Checkbox
+                    id='item-modifier-option'
                     sx={styles.radioSizeModifier}
                     name={modifier.productID}
                     onChange={() => {
@@ -1675,6 +1679,7 @@ const ProductAddModal = ({
       return (
         <div style={styles.buttonCloseGadgetSize}>
           <IconButton
+            id='exit-button'
             style={styles.buttonIconClose}
             disabled={isLoading}
             onClick={() => {
@@ -1713,7 +1718,9 @@ const ProductAddModal = ({
 
     return (
       <Button
-        id='add-to-cart-button'
+        id={`${
+          !isEmptyObject(selectedProduct) ? 'update' : 'add-to'
+        }-cart-button`}
         style={styles.addButton}
         disabled={handleDisabledAddProductButton()}
         onClick={() => {
@@ -1746,6 +1753,7 @@ const ProductAddModal = ({
             <Typography style={styles.optionalTypography}>Optional</Typography>
           </div>
           <textarea
+            id='special-instruction-input'
             style={styles.specialInstructionInput}
             value={notes}
             onChange={(event) => {
@@ -1851,6 +1859,7 @@ const ProductAddModal = ({
           <Typography style={styles.itemQty}>Item Quantity</Typography>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <IconButton
+              id='item-quantity-minus-button'
               style={styles.buttonIcon}
               disabled={qty === 0 || decreaseQtyButtonDisabled}
               onClick={() => {
@@ -1861,6 +1870,7 @@ const ProductAddModal = ({
             </IconButton>
             <Typography style={styles.qty}>{qty}</Typography>
             <IconButton
+              id='item-quantity-plus-button'
               disabled={increaseQtyButtonDisabled}
               style={styles.buttonIcon}
               onClick={() => {
