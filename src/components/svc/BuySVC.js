@@ -121,7 +121,7 @@ class BuySVC extends Component {
     let { loadingShow, svc, dataDetail, detailPurchase, isMobileSize } =
       this.state;
     return (
-      <div style={{ marginTop: isMobileSize ? 66 : 76 }}>
+      <div style={{ marginTop: isMobileSize ? 65 : 75, marginBottom: 80 }}>
         <ModalDetailSVC
           backupOutlet={this.state.backupOutlet}
           detailPurchase={detailPurchase}
