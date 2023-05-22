@@ -180,7 +180,7 @@ const BookingSubmitted = () => {
         <div
           style={{
             width: '58%',
-            marginTop: '10px',
+            marginTop: '40px',
             marginBottom: '10px',
             fontSize: '14px',
             display: 'flex',
@@ -194,7 +194,7 @@ const BookingSubmitted = () => {
           </div>
           <hr
             style={{
-              width: '33px',
+              width: '27px',
               padding: 0,
               margin: 0,
               backgroundColor: 'rgba(183, 183, 183, 1)',
@@ -741,7 +741,7 @@ const BookingSubmitted = () => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '50px 1fr',
+            gridTemplateRows: '70px 1fr',
             gridAutoColumns: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',

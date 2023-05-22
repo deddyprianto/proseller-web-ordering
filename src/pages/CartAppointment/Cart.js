@@ -151,7 +151,7 @@ const Cart = (props) => {
           gridAutoFlow: 'row',
           gridTemplateAreas: '". . ."',
           cursor: 'pointer',
-          marginTop: '10px',
+          marginTop: '29px',
           marginBottom: '10px',
           alignItems: 'center',
           justifyItems: 'center',
@@ -186,7 +186,7 @@ const Cart = (props) => {
         <div
           style={{
             width: '100%',
-            marginTop: '15px',
+            marginTop: '30px',
             marginBottom: '10px',
             display: 'flex',
             justifyContent: 'center',
@@ -195,7 +195,7 @@ const Cart = (props) => {
         >
           <div
             style={{
-              width: '25%',
+              width: '20%',
             }}
           />
           <div
@@ -225,17 +225,19 @@ const Cart = (props) => {
                 fontWeight: 600,
                 margin: '0px 4px',
                 color: color.primary,
+                marginLeft: '5px',
+                marginRight: '10px',
               }}
             >
               Fill Booking Details
             </div>
             <hr
               style={{
-                width: '36px',
+                width: '30px',
                 padding: 0,
-                margin: '0px 3px',
+                margin: 0,
                 backgroundColor: 'rgba(183, 183, 183, 1)',
-                height: '2px',
+                height: '1px',
               }}
             />
             <div
@@ -247,6 +249,7 @@ const Cart = (props) => {
                 backgroundColor: 'rgba(183, 183, 183, 1)',
                 color: 'white',
                 borderRadius: '100%',
+                marginLeft: '10px',
               }}
             >
               2
