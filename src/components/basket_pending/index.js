@@ -681,7 +681,7 @@ class Basket extends Component {
       <div
         className='col-full'
         style={{
-          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 66 : 76,
+          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 65 : 75,
         }}
         id='cardItem'
       >

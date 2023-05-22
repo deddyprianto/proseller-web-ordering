@@ -63,7 +63,10 @@ class StoreValueCard extends Component {
   render() {
     let { isMobileSize } = this.state;
     return (
-      <div className='col-full' style={{ marginTop: isMobileSize ? 66 : 76 }}>
+      <div
+        className='col-full'
+        style={{ marginTop: isMobileSize ? 65 : 75, marginBottom: 10 }}
+      >
         <div id='primary' className='content-area'>
           <div className='stretch-full-width'>
             <div
