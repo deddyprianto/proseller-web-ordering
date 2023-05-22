@@ -209,7 +209,7 @@ const Home = ({ ...props }) => {
     } else {
       return (
         <div style={styles.rootProduct}>
-          <Banner />
+          <Banner outletId={props.defaultOutlet?.id} />
           {infoCompany?.companyName === 'PinkCity' ? (
             <LayoutTypeA />
           ) : (
