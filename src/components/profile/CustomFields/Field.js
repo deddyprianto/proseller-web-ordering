@@ -91,6 +91,7 @@ const Field = ({
         <div style={{ display: 'flex' }}>
           {field.options.map((option, key) => (
             <div
+              id={`${field.fieldName}-${option.value}-radio`}
               key={key}
               style={{
                 display: 'flex',
@@ -208,6 +209,7 @@ const Field = ({
             style={{ backgroundColor: 'white', borderRadius: 7 }}
           >
             <div
+              id={`${field?.fieldName?.toLowerCase()}-input`}
               onClick={() => {
                 const isDefaultValueBirthDateExist = dataCustomer?.birthDate;
                 if (!isDefaultValueBirthDateExist) {
