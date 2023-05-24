@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import HistoryLogin from './Histories/component/HistoryLogin';
 import HistoryAppointment from './Histories/component/HistoryAppointment';
+import fontStyles from './Histories/style/styles.module.css';
 
 const History = (props) => {
   const [appointmentFeature, setAppointmentFeature] = useState(false);
@@ -133,6 +134,7 @@ const History = (props) => {
           }}
         >
           <button
+            className={fontStyles.myFont}
             onClick={() => setTabStateButton('ordered')}
             style={{
               display: 'flex',
@@ -152,9 +154,10 @@ const History = (props) => {
               fontSize: '14px',
             }}
           >
-            Orders
+            Ordered
           </button>
           <button
+            className={fontStyles.myFont}
             onClick={() => setTabStateButton('appointment')}
             style={{
               display: 'flex',

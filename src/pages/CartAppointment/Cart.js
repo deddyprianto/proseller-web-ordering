@@ -169,7 +169,7 @@ const Cart = (props) => {
             margin: 0,
             justifySelf: 'start',
             fontWeight: 700,
-            fontSize: '18px',
+            fontSize: '20px',
             color: color.primary,
             marginLeft: '10px',
           }}
@@ -186,25 +186,23 @@ const Cart = (props) => {
         <div
           style={{
             width: '100%',
-            marginTop: '30px',
-            marginBottom: '10px',
             display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: 'flex-end',
+            marginTop: '33px',
           }}
         >
           <div
             style={{
-              width: '20%',
-            }}
-          />
-          <div
-            style={{
-              width: '80%',
-              display: 'flex',
+              width: '77%',
+              marginBottom: '10px',
+              display: 'grid',
+              gridTemplateColumns: '1fr 145px 35px 40px 1fr',
+              gridTemplateRows: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". . . . ."',
+              justifyItems: 'center',
               alignItems: 'center',
-              fontSize: '14px',
-              justifyContent: 'end',
             }}
           >
             <div
@@ -227,6 +225,7 @@ const Cart = (props) => {
                 color: color.primary,
                 marginLeft: '5px',
                 marginRight: '10px',
+                fontSize: '14px',
               }}
             >
               Fill Booking Details
@@ -249,7 +248,6 @@ const Cart = (props) => {
                 backgroundColor: 'rgba(183, 183, 183, 1)',
                 color: 'white',
                 borderRadius: '100%',
-                marginLeft: '10px',
               }}
             >
               2
@@ -257,7 +255,6 @@ const Cart = (props) => {
             <div
               style={{
                 fontWeight: 500,
-                marginLeft: '4px',
                 color: 'rgba(183, 183, 183, 1)',
               }}
             >
