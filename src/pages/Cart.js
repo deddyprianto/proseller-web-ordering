@@ -295,13 +295,6 @@ const Cart = ({ ...props }) => {
   }, [props.deliveryAddress, props.basket]);
 
   useEffect(() => {
-    props.dispatch({
-      type: 'SAVE_DETAIL_TOP_UP_SVC',
-      payload: {},
-    });
-  }, []);
-
-  useEffect(() => {
     if (props.history.location.state?.data) {
       props.dispatch({ type: 'SET_ORDERING_MODE', payload: '' });
       props.dispatch({ type: 'ORDERING_MODE_ACTIVE', data: '' });
@@ -322,12 +315,21 @@ const Cart = ({ ...props }) => {
   }, [props.basketUpdate, props.basket?.details?.length]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadData = async () => {
       setIsLoading(true);
       await props.dispatch(OrderAction.checkOfflineCart());
       setIsLoading(false);
     };
-    loadData();
+
+    if (isMounted) {
+      loadData();
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -365,6 +367,7 @@ const Cart = ({ ...props }) => {
   }, [props.orderingMode]);
 
   useEffect(() => {
+    let isMounted = true;
     const checkLoginAndOrderingMode = async () => {
       if (!isEmptyArray(props.basket.details) && props.isLoggedIn) {
         !props.orderingMode
@@ -373,7 +376,13 @@ const Cart = ({ ...props }) => {
       }
     };
 
-    checkLoginAndOrderingMode();
+    if (isMounted) {
+      checkLoginAndOrderingMode();
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, [props.basket.details?.length]);
 
   useEffect(() => {
@@ -519,6 +528,7 @@ const Cart = ({ ...props }) => {
   };
 
   const getIntersectOrderingMode = async () => {
+    setIsLoading(true);
     const data = await props.dispatch(
       OutletAction?.fetchSingleOutlet(props?.basket?.outlet)
     );
@@ -555,6 +565,8 @@ const Cart = ({ ...props }) => {
         (item) => item === mode.name
       )
     );
+
+    setIsLoading(false);
 
     return intersectOrderingMode;
   };
@@ -1896,12 +1908,12 @@ Cart.defaultProps = {
   isLoggedIn: false,
   deliveryAddress: {},
   defaultOutlet: {},
-  orderingMode: {},
+  orderingMode: '',
   orderingModeDisplayName: '',
-  orderActionDate: {},
-  orderActionTime: {},
+  orderActionDate: '',
+  orderActionTime: '',
   orderActionTimeSlot: {},
-  history: null,
+  history: {},
   selectedDeliveryProvider: {},
   dispatch: null,
 };
@@ -1913,15 +1925,14 @@ Cart.propTypes = {
   defaultOutlet: PropTypes.object,
   deliveryAddress: PropTypes.object,
   dispatch: PropTypes.func,
-  history: PropTypes.func,
   isLoggedIn: PropTypes.bool,
-  orderActionDate: PropTypes.object,
-  orderActionTime: PropTypes.object,
+  orderActionDate: PropTypes.string,
+  orderActionTime: PropTypes.string,
   orderActionTimeSlot: PropTypes.object,
-  orderingMode: PropTypes.object,
-  orderingModeDisplayName: PropTypes.object,
+  orderingMode: PropTypes.string,
+  orderingModeDisplayName: PropTypes.string,
   selectedDeliveryProvider: PropTypes.object,
-  orderingSetting: PropTypes.array,
+  orderingSetting: PropTypes.object,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Cart);
