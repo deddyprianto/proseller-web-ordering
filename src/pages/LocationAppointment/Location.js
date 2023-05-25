@@ -541,6 +541,8 @@ const Location = () => {
               gap: '0px 15px',
               gridTemplateAreas: '"."\n    "."',
               overflowY: 'auto',
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
             <di>

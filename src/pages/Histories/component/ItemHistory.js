@@ -22,7 +22,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
-  const [width, height] = useWindowSize();
+  const [width] = useWindowSize();
   const gadgetScreen = width < 980;
 
   const theme = useTheme();
@@ -66,8 +66,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='22'
-        height='22'
+        width='25'
+        height='25'
         viewBox='0 0 24 24'
         fill='none'
         stroke={color.primary}
@@ -84,8 +84,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const AppointmentIcon = () => {
     return (
       <svg
-        width='22'
-        height='22'
+        width='28'
+        height='28'
         viewBox='0 0 240 240'
         fill='white'
         xmlns='http://www.w3.org/2000/svg'
@@ -116,12 +116,17 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
             padding: '5px 0px',
           }}
         >
+          {/* row CALENDER ICON */}
           <div
             style={{
               width: '95%',
               margin: 'auto',
-              display: 'flex',
-              alignItems: 'center',
+              display: 'grid',
+              gridTemplateColumns: '30px 1fr 77px',
+              gridTemplateRows: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
               fontSize: '16px',
               fontWeight: 500,
               color: 'black',
@@ -134,7 +139,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
                 display: 'flex',
                 width: '100%',
                 alignItems: 'center',
-                marginLeft: '15px',
+                marginLeft: '10px',
+                fontWeight: 'bold',
               }}
             >
               <div style={{ fontSize: '16px' }}>
@@ -148,27 +154,39 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
                 style={{
                   backgroundColor: 'rgba(56, 164, 5, 1)',
                   borderRadius: '20px',
-                  padding: '0px 10px',
                   color: 'white',
                   fontSize: '13px',
-                  width: '100%',
-                  height: '30px',
                   fontWeight: 600,
+                  width: '100%',
+                  textAlign: 'center',
                 }}
               >
                 {item?.rewards?.points} points
               </div>
             )}
           </div>
+          {/* ROW PLACE ICON */}
           <div
             style={{
               width: '95%',
               margin: 'auto',
-              display: 'flex',
-              marginTop: '10px',
+              marginTop: '15px',
+              display: 'grid',
+              gridTemplateColumns: '30px 1fr',
+              gridTemplateRows: '1fr',
+              gap: '0px 0px',
+              gridAutoFlow: 'row',
+              gridTemplateAreas: '". ."',
             }}
           >
-            <div style={{ marginTop: '5px' }}>
+            <div
+              style={{
+                justifySelf: 'center',
+                marginTop: '5px',
+                marginRight: '2px',
+                fontWeight: 'bold',
+              }}
+            >
               <PlaceIcon />
             </div>
             <div>
@@ -176,7 +194,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
                 style={{
                   color: 'black',
                   fontSize: '16px',
-                  fontWeight: 500,
+                  fontWeight: 'bold',
                   marginLeft: '10px',
                 }}
               >
@@ -203,12 +221,15 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               marginTop: '10px',
               fontSize: '14px',
               color: 'rgba(157, 157, 157, 1)',
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
-            <div>D1005</div>
-            <div style={{ margin: '0px 10px' }}> - </div>
-            <div>{item?.details?.length} Service</div>
+            <div>
+              <span style={{ marginRight: '3px' }}>
+                {item?.details?.length}
+              </span>{' '}
+              Service
+            </div>
             <div style={{ margin: '0px 10px' }}> - </div>
             <div>{handleCurrency(item.totalNettAmount)}</div>
           </div>

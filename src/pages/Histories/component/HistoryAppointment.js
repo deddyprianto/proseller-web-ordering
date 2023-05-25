@@ -52,6 +52,7 @@ const HistoryAppointment = () => {
     muiSelected: {
       '&.MuiButtonBase-root': {
         fontSize: '14px',
+        fontWeight: 700,
         textTransform: 'capitalize',
         '&:hover': {
           color: 'rgba(138, 141, 142, 1)',
@@ -118,7 +119,7 @@ const HistoryAppointment = () => {
                 setTabName('UPCOMING');
                 setTabNameAPI('CONFIRMED');
               }}
-              label='Up coming'
+              label='Upcoming'
               className={fontStyles.myFont}
               sx={styleSheet.muiSelected}
             />
@@ -178,7 +179,7 @@ const HistoryAppointment = () => {
         const filterBookingHistory = bookingHistory.filter((item) => {
           const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
           const compareDate =
-            new Date(combineDateTime).getTime() >= new Date().getTime();
+            new Date(combineDateTime).getTime() <= new Date().getTime();
           return compareDate;
         });
         return filterBookingHistory.map((item) => (
@@ -212,7 +213,7 @@ const HistoryAppointment = () => {
           <MyLoader />
         </div>
       ) : (
-        <div style={{ height: '60vh', overflowY: 'auto' }}>
+        <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 70 }}>
           <RenderItemHistory />
         </div>
       )}

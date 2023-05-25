@@ -401,6 +401,7 @@ const DetailAppointment = ({
           ...styleSheet.gridStyle,
           alignItems: 'center',
           justifyItems: 'center',
+          paddingTop: '10px',
         }}
       >
         <ArrowBackIosIcon

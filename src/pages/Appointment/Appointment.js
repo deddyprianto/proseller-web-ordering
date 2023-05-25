@@ -477,6 +477,23 @@ const Appointment = (props) => {
   };
 
   const Location = () => {
+    const dayNames = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const dayName = dayNames[dayOfWeek];
+    const operationalHoursActive = selectedLocation.operationalHours.find(
+      (item) => item.nameOfDay === dayName
+    );
+
     const localStyle = {
       container: {
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
@@ -594,7 +611,8 @@ const Appointment = (props) => {
         >
           <HistoryTimeIcon color={color.primary} />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            Open now 13:00 - 22.00
+            <span style={{ marginRight: '4px' }}>Open now</span>{' '}
+            {operationalHoursActive?.open} - {operationalHoursActive?.close}
           </div>
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
@@ -951,7 +969,7 @@ const Appointment = (props) => {
             width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
-            zIndex: 999,
+            zIndex: 9999999,
             left: 13,
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
             overflowY: 'auto',

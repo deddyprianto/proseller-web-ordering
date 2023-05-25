@@ -4,7 +4,7 @@
   width: 80%;
   display: flex;
   justify-content: center;
-  padding-right: 85x;
+  padding-right: 10px;
   margin-top: 20px;
 }
 .lds-spinner div {
