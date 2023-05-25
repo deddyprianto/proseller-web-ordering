@@ -6,6 +6,7 @@ import config from '../../config';
 import axios from 'axios';
 import { lsLoad } from '../../helpers/localStorage';
 import { CRMService } from '../../Services/CRMService';
+import { isEmpty } from 'helpers/utils';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
@@ -755,6 +756,8 @@ function checkOfflineCart() {
         `${config.prefix}_offlineCart`
       );
 
+      const cartRes = await dispatch(getCart());
+
       const offlineCart = JSON.parse(getOfflineCart);
 
       if (account && !isEmptyObject(offlineCart)) {
@@ -762,7 +765,19 @@ function checkOfflineCart() {
           outletID: offlineCart.outletID,
           details: [],
         };
-        offlineCart.details.forEach(async (item) => {
+
+        const uniqueItems = !isEmpty(cartRes.data)
+          ? offlineCart?.details?.filter(
+              (itemB) =>
+                !cartRes?.data?.details.some(
+                  (itemA) => itemA.productID === itemB.productID
+                )
+            )
+          : [];
+
+        const temp = uniqueItems.length ? uniqueItems : offlineCart.details;
+
+        temp?.forEach((item) => {
           let product = {
             productID: item.productID,
             unitPrice: item.unitPrice,
@@ -776,9 +791,8 @@ function checkOfflineCart() {
           payload.details.push(product);
         });
 
-        await dispatch(addCart(payload));
-
-        await dispatch(getCart());
+        (isEmpty(cartRes.data) || uniqueItems.length) &&
+          (await dispatch(addCart(payload)));
 
         localStorage.removeItem(`${config.prefix}_offlineCart`);
       }
@@ -944,7 +958,7 @@ const getTimeSlotAppointment = (outletId) => {
           type: CONSTANT.TIME_SLOT_APPOINTMENT,
           payload: response.data.data,
         });
-      } 
+      }
       return response.data;
     } catch (error) {
       dispatch({
@@ -1021,25 +1035,24 @@ const addCartAppointment = (addService) => {
 const submitCartAppointment = (payload) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
-  try {
-    const response = await axios.post(`${url}cart/submit`, payload, {
-      headers: {
-        Authorization: `Bearer ${account.accessToken.jwtToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    dispatch({
-      type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
-      payload: response.data.data,
-    });
-    return response.data;
-  } catch (error) {
-    dispatch({
-      type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
-      payload: { error: error.response.data.message },
-    });
-  }
-
+    try {
+      const response = await axios.post(`${url}cart/submit`, payload, {
+        headers: {
+          Authorization: `Bearer ${account.accessToken.jwtToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      dispatch({
+        type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
+        payload: response.data.data,
+      });
+      return response.data;
+    } catch (error) {
+      dispatch({
+        type: CONSTANT.RESPONSE_SUBMIT_APPOINTMENT,
+        payload: { error: error.response.data.message },
+      });
+    }
   };
 };
 const updateCartAppointment = (addService, productId) => {
