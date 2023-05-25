@@ -179,7 +179,7 @@ const HistoryAppointment = () => {
         const filterBookingHistory = bookingHistory.filter((item) => {
           const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
           const compareDate =
-            new Date(combineDateTime).getTime() >= new Date().getTime();
+            new Date(combineDateTime).getTime() <= new Date().getTime();
           return compareDate;
         });
         return filterBookingHistory.map((item) => (
