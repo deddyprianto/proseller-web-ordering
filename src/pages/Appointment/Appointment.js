@@ -252,7 +252,7 @@ const Appointment = (props) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      if (selectedLocation.id) {
+      if (selectedLocation?.id) {
         const data = await dispatch(
           ProductAction.fetchCategoryProduct({
             outlet: selectedLocation,

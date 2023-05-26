@@ -181,14 +181,15 @@ const DetailAppointment = ({
     const productModifierFormated = handleProductModifierFormated(
       selectedProductModifiers
     );
-    setAddService({
-      outletId: `outlet::${selectedLocation.id}`,
-      item: {
-        productId: `product::${itemAppointment.id}`,
-        quantity: 1,
-        modifierGroups: productModifierFormated,
-      },
-    });
+    selectedLocation?.id &&
+      setAddService({
+        outletId: `outlet::${selectedLocation.id}`,
+        item: {
+          productId: `product::${itemAppointment.id}`,
+          quantity: 1,
+          modifierGroups: productModifierFormated,
+        },
+      });
   }, [selectedProductModifiers]);
 
   // some .scss
