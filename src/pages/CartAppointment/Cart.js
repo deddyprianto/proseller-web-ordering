@@ -24,7 +24,7 @@ const Cart = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const gadgetScreen = responsiveDesign.width < 980;
-  // some sl
+
   const responseSubmit = useSelector(
     (state) => state.appointmentReducer.responseSubmit
   );
@@ -41,7 +41,14 @@ const Cart = (props) => {
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  // some eff
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      props.history.push('/outlets');
+    }
+  }, []);
+
   useEffect(() => {
     if (responseSubmit.error) {
       Swal.fire({
@@ -107,15 +114,14 @@ const Cart = (props) => {
         console.log(error);
       }
     };
-    loadData();
+    isLoggedIn && loadData();
   }, [responseAddCart]);
 
-  // some fn
   let distance = '';
   const locationCustomer = JSON.parse(
     localStorage.getItem(`${config.prefix}_locationCustomer`)
   );
-  if (locationCustomer) {
+  if (locationCustomer && cartAppointment.outlet?.length) {
     distance = Number(
       (getDistance(locationCustomer, cartAppointment.outlet) / 1000).toFixed(2)
     );
