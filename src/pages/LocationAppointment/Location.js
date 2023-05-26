@@ -10,13 +10,12 @@ import { CONSTANT } from 'helpers';
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { isEmpty } from 'helpers/utils';
 
 const Location = () => {
-  // some initial
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
   const dispatch = useDispatch();
@@ -25,13 +24,16 @@ const Location = () => {
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
-  // some st
+
   const [isLoading, setIsLoading] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
   const [selectedLocationPersisted, setSelectedLocationPersisted] =
     useState(null);
+  const [otherOutletDropdownSelected, setOtherOutletDropdownSelected] =
+    useState(0);
+
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
@@ -44,12 +46,19 @@ const Location = () => {
   );
   const outlets = useSelector((state) => state.outlet.outlets);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
-  //
+
+  useEffect(() => {
+    const locationPersisted = localStorage.getItem(
+      'LOCATION_APPOINTMENT_PERSISTED'
+    );
+    const selectedLocationPersisted = JSON.parse(locationPersisted);
+    setSelectedLocationPersisted(selectedLocationPersisted);
+  }, []);
+
   const selectedLocation = !selectedLocationPersisted
     ? defaultOutlet
     : selectedLocationPersisted;
 
-  // some fn
   const handleSelectedOutlet = (item) => {
     if (cartAppointment?.details?.length > 0) {
       dispatch({
@@ -84,14 +93,10 @@ const Location = () => {
     return urlConvert;
   };
 
-  // some Effect
-  useEffect(() => {
-    const locationPersisted = localStorage.getItem(
-      'LOCATION_APPOINTMENT_PERSISTED'
-    );
-    const selectedLocationPersisted = JSON.parse(locationPersisted);
-    setSelectedLocationPersisted(selectedLocationPersisted);
-  }, []);
+  const seeDirectionHandler = (lat, long) => {
+    const gMapAPI = 'https://maps.google.com?q=';
+    return window.open(gMapAPI + lat + ',' + long);
+  };
 
   const RenderTimeList = () => {
     return selectedLocation?.operationalHours.map((item, i) => {
@@ -119,8 +124,8 @@ const Location = () => {
     });
   };
 
-  const DropDownTimeSelected = () => {
-    if (openDropDownTimeSelected) {
+  const DropDownTimeSelected = (props) => {
+    if (props.isOpen) {
       return (
         <div
           style={{
@@ -232,7 +237,6 @@ const Location = () => {
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
-            cursor: 'pointer',
           }}
         >
           <div style={{ justifySelf: 'center', marginTop: '6px' }}>
@@ -252,18 +256,14 @@ const Location = () => {
             </div>
             {selectedLocation?.latitude > 0 &&
               selectedLocation?.longitude > 0 && (
-                <div
-                  onClick={() => {
-                    window.open(
-                      'https://maps.google.com?q=' +
-                        selectedLocation?.latitude +
-                        ',' +
-                        selectedLocation?.longitude
-                    );
-                  }}
-                  style={localStyle.containerAccordion}
-                >
+                <div style={localStyle.containerAccordion}>
                   <div
+                    onClick={() =>
+                      seeDirectionHandler(
+                        selectedLocation?.latitude,
+                        selectedLocation?.longitude
+                      )
+                    }
                     className={fontStyles.myFont}
                     style={localStyle.labelSeeDirection}
                   >
@@ -298,7 +298,7 @@ const Location = () => {
             <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           )}
         </div>
-        <DropDownTimeSelected />
+        <DropDownTimeSelected isOpen={openDropDownTimeSelected} />
       </div>
     );
   };
@@ -311,6 +311,7 @@ const Location = () => {
         padding: '10px 0px',
         marginBottom: '15px',
         pointerEvents: !isDisable && 'none',
+        cursor: 'pointer',
       },
       containerAccordion: {
         width: '93%',
@@ -350,7 +351,6 @@ const Location = () => {
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
-            cursor: 'pointer',
             opacity: !isDisable ? 0.4 : 1,
           }}
         >
@@ -382,6 +382,10 @@ const Location = () => {
             {item?.latitude > 0 && item?.longitude > 0 && (
               <div style={localStyle.containerAccordion}>
                 <div
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    seeDirectionHandler(item.latitude, item.longitude);
+                  }}
                   className={fontStyles.myFont}
                   style={localStyle.labelSeeDirection}
                 >
@@ -390,31 +394,18 @@ const Location = () => {
               </div>
             )}
           </div>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              width: '90%',
-              margin: '0px auto',
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: !isDisable ? 'red' : 'green',
-                display: 'flex',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-                color: 'white',
-                fontWeight: 500,
-                borderRadius: '5px',
-              }}
-            >
-              <HistoryTimeIcon color='white' />
-              <div>{!isDisable ? 'Close' : 'Open'}</div>
-            </div>
-          </div>
         </div>
-        <div style={localStyle.containerOpenNow}>
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            if (otherOutletDropdownSelected === item.id) {
+              setOtherOutletDropdownSelected('');
+            } else {
+              setOtherOutletDropdownSelected(item.id);
+            }
+          }}
+          style={localStyle.containerOpenNow}
+        >
           <HistoryTimeIcon color='black' />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             {!isDisable ? 'Closed Today' : 'Open Now'}
@@ -425,6 +416,9 @@ const Location = () => {
             <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           )}
         </div>
+        <DropDownTimeSelected
+          isOpen={otherOutletDropdownSelected === item.id}
+        />
       </div>
     );
   };
@@ -481,9 +475,9 @@ const Location = () => {
 
   const RenderListLocation = () => {
     let filterOutletSelected = [];
-    if (!isEmptyObject(selectedLocation)) {
+    if (!isEmpty(selectedLocation)) {
       filterOutletSelected = outlets.filter(
-        (item) => item.id !== selectedLocation.id
+        (item) => item.id !== selectedLocation.id && !isEmpty(item.timeSlots)
       );
     }
     return (
@@ -499,13 +493,14 @@ const Location = () => {
           >
             Other Location
           </div>
-          {filterOutletSelected.map((item) => (
-            <ListLocations
-              key={item.name}
-              item={item}
-              isDisable={item.outletStatus}
-            />
-          ))}
+          {!isEmpty(filterOutletSelected) &&
+            filterOutletSelected.map((item) => (
+              <ListLocations
+                key={item.name}
+                item={item}
+                isDisable={item.outletStatus}
+              />
+            ))}
         </div>
       </React.Fragment>
     );

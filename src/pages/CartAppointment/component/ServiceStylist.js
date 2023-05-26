@@ -49,11 +49,8 @@ const ServiceStylist = ({ color }) => {
               width: '100%',
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gridTemplateRows: '1fr',
-              gridAutoColumns: '1fr',
-              gap: '10px',
+              gridAutoRows: '1fr',
               gridAutoFlow: 'row',
-              gridTemplateAreas: '". ."',
               fontWeight: 500,
             }}
           >
@@ -79,14 +76,13 @@ const ServiceStylist = ({ color }) => {
                   opacity: !item.isAvailable && 0.3,
                   pointerEvents: !item.isAvailable && 'none',
                   cursor: !item.isAvailable ? 'not-allowed' : 'pointer',
-                  marginTop: '15px',
                 }}
               >
                 <img
                   src={item.image ? item.image : defaultImageURL}
                   style={{
                     borderRadius: '10px',
-                    width: '40px',
+                    width: '36px',
                     height: '36px',
                     marginRight: '10px',
                   }}

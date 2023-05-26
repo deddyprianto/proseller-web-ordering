@@ -252,16 +252,18 @@ const Appointment = (props) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      const data = await dispatch(
-        ProductAction.fetchCategoryProduct({
-          outlet: selectedLocation,
-          orderingMode: orderingSetting?.ShowOrderingModeModalFirst
-            ? orderingMode
-            : '',
-          presetType: 'webOrdering-appointment',
-        })
-      );
-      setSelectedCategory(data.data[0]);
+      if (selectedLocation.id) {
+        const data = await dispatch(
+          ProductAction.fetchCategoryProduct({
+            outlet: selectedLocation,
+            orderingMode: orderingSetting?.ShowOrderingModeModalFirst
+              ? orderingMode
+              : '',
+            presetType: 'webOrdering-appointment',
+          })
+        );
+        setSelectedCategory(data.data[0]);
+      }
       setIsLoading(false);
     };
     loadData();
@@ -466,7 +468,9 @@ const Appointment = (props) => {
               fontWeight: dayName === item.nameOfDay ? 'bold' : 500,
             }}
           >
-            <div style={{ fontSize: '14px' }}>{item.nameOfDay}</div>
+            <div style={{ fontSize: '14px' }}>
+              {dayName === item.nameOfDay ? 'Today' : item.nameOfDay}
+            </div>
             <div style={{ fontSize: '14px' }}>
               {item.open} - {item.close}
             </div>

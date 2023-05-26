@@ -3,8 +3,7 @@ import { ProductService } from '../../Services/ProductService';
 import { isEmptyArray } from '../../helpers/CheckEmpty';
 import config from '../../config';
 
-
-const PRESET_TYPE = 'webOrdering';
+const PRESET_TYPE = config.prefix === 'emenu' ? 'eMenu' : 'webOrdering';
 
 const clearCategoryProducts = () => ({ type: 'CLEAR_CATEGORY_PRODUCTS' });
 const fetchProductStarted = () => ({ type: 'GET_PRODUCT_LIST_STARTED' });
@@ -80,14 +79,13 @@ function fetchCategoryProduct({ outlet, payload, orderingMode, presetType }) {
           }`
         );
         if (!isEmptyArray(data.data)) {
-          if (presetType === 'webOrdering-appointment') {
-            dispatch({
-              type: CONSTANT.LIST_CATEGORY_APPOINTMENT,
-              data: data.data,
-            });
-          } else {
-            dispatch(setData(data.data, CONSTANT.LIST_CATEGORY));
-          }
+          const constantType =
+            presetType === 'webOrdering-appointment'
+              ? CONSTANT.LIST_CATEGORY_APPOINTMENT
+              : CONSTANT.LIST_CATEGORY;
+
+          dispatch(setData(data.data, constantType));
+
           return data;
         } else {
           return [];
