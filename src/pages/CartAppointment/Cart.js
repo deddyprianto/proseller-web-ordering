@@ -151,7 +151,7 @@ const Cart = (props) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '23px 1fr 50px',
+          gridTemplateColumns: '30px 1fr 50px',
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
@@ -164,6 +164,7 @@ const Cart = (props) => {
         }}
       >
         <ArrowBackIosIcon
+          sx={{ marginLeft: '10px', color: color.primary }}
           fontSize='large'
           onClick={() => {
             props.history.goBack();
@@ -320,9 +321,10 @@ const Cart = (props) => {
               style={{
                 width: '40%',
                 padding: 0,
-                margin: '0px 3px',
+                margin: '0px 10px',
                 backgroundColor: 'rgba(183, 183, 183, 1)',
-                height: '2px',
+                height: '1px',
+                opacity: 0.6,
               }}
             />
             <div
@@ -499,6 +501,7 @@ const Cart = (props) => {
         </p>
         {cartAppointment?.details?.map((item) => (
           <ItemServiceCart
+            gadgetScreen={gadgetScreen}
             selectedLocation={cartAppointment?.outlet}
             outletID={cartAppointment?.outlet}
             key={item.id}
@@ -622,7 +625,11 @@ const Cart = (props) => {
             <ServiceStylist color={color} />
             <RenderNotes />
             <Price />
-            <ButtonPrice changeFormatURl={changeFormatURl} color={color} />
+            <ButtonPrice
+              changeFormatURl={changeFormatURl}
+              color={color}
+              cartAppointment={cartAppointment}
+            />
           </div>
         </div>
       )}

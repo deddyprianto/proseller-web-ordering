@@ -175,7 +175,7 @@ const Date = ({ timeslot, color }) => {
               const dateNow = showListDate.find(
                 (item) => item.timeSlot.length > 0
               );
-              const dateAvailable = dateNow.date === item.date;
+              const dateAvailable = dateNow?.date === item.date;
               const checkDate = !isListDateSelected
                 ? dateAvailable
                 : isDateSelected;

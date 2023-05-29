@@ -33,7 +33,7 @@ const DropDownCustomSelect = ({ timeList }) => {
             cursor: 'pointer',
             fontFamily: 'Plus Jakarta Sans',
             color: 'black',
-            fontWeight: 500,
+            fontWeight: 600,
             fontSize: '16px',
             padding: '5px 0 0 0',
             margin: 0,
