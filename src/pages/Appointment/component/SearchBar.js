@@ -75,9 +75,9 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
           gridTemplateRows: '1fr',
           gridAutoFlow: 'row',
           gridTemplateAreas: '". ."',
-          opacity: 0.7,
           alignItems: 'center',
-          margin: '20px 0px',
+          margin: '10px 0',
+          paddingLeft: '5px',
         }}
       >
         <ArrowBackIosIcon
@@ -98,6 +98,7 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            opacity: 0.7,
           }}
         >
           <input

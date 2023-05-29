@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from '../style/styles.module.css';
 import FormGroup from '@mui/material/FormGroup';
 import { PhotoProvider, PhotoSlider } from 'react-photo-view';
@@ -16,6 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import calendarIcon from 'assets/images/calendarIcon.png';
+import AppointmentHeader from 'components/appointmentHeader';
 
 const DetailAppointment = ({
   isOpenModalDetail,
@@ -29,23 +29,20 @@ const DetailAppointment = ({
   settingAppoinment,
   selectedLocation,
 }) => {
-  // initial
   const dispatch = useDispatch();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  //some state
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addService, setAddService] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
   const [visible, setVisible] = useState(false);
   const [qty, setQty] = useState(1);
-  // some selectors
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
-  // some functions
+
   const filterCart = cartAppointment?.details?.find(
     (itemCart) => itemCart.productID === productId
   );
@@ -67,12 +64,7 @@ const DetailAppointment = ({
           });
         });
         setQty(filterCart?.quantity);
-        // setNotes(filterCart?.remark);
         setSelectedProductModifiers(defaultValue);
-        // dispatch({
-        //   type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
-        //   payload: defaultValue,
-        // });
       }
     }
   };
@@ -172,7 +164,7 @@ const DetailAppointment = ({
     handlePrice(qty, totalPrice);
     return productModifiers;
   };
-  // some eff
+
   useEffect(() => {
     handleProductModifierSelected();
   }, []);
@@ -192,7 +184,6 @@ const DetailAppointment = ({
       });
   }, [selectedProductModifiers]);
 
-  // some .scss
   const styles = {
     radioSizeModifier: {
       '& .MuiSvgIcon-root': {
@@ -213,8 +204,7 @@ const DetailAppointment = ({
       '&.MuiTypography-root': {
         padding: 0,
         margin: 0,
-        marginTop: '10px',
-        marginBottom: '10px',
+        marginTop: '4px',
       },
       '&.MuiDialogContent-root': {
         padding: 0,
@@ -223,7 +213,6 @@ const DetailAppointment = ({
     },
   };
 
-  // COMPONENTS
   const HistoryTimeIcon = ({ color }) => {
     return (
       <svg
@@ -346,16 +335,6 @@ const DetailAppointment = ({
           >
             {settingAppoinment && handleCurrency(itemAppointment.retailPrice)}
           </div>
-          {/* <div
-            style={{
-              marginLeft: '5px',
-              textDecorationLine: 'line-through',
-              opacity: 0.5,
-              fontWeight: 700,
-            }}
-          >
-            SGD 10.00
-          </div> */}
         </div>
         <hr
           style={{
@@ -392,38 +371,6 @@ const DetailAppointment = ({
             </p>
           </React.Fragment>
         )}
-      </div>
-    );
-  };
-  const RenderHeader = () => {
-    return (
-      <div
-        style={{
-          ...styleSheet.gridStyle,
-          alignItems: 'center',
-          justifyItems: 'center',
-          paddingTop: '10px',
-        }}
-      >
-        <ArrowBackIosIcon
-          sx={{ color: color.primary }}
-          fontSize='large'
-          onClick={() => {
-            setIsOpenModalDetail(false);
-          }}
-        />
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 'bold',
-            fontSize: '20px',
-            color: 'rgba(255, 85, 99, 1)',
-          }}
-        >
-          Service Detail
-        </p>
       </div>
     );
   };
@@ -499,7 +446,11 @@ const DetailAppointment = ({
         onClose={() => setIsOpenModalDetail(false)}
       >
         <DialogTitle sx={styles.modalModif}>
-          <RenderHeader />
+          <AppointmentHeader
+            color={color}
+            onBack={() => setIsOpenModalDetail(false)}
+            label='Service Detail'
+          />
         </DialogTitle>
         <DialogContent sx={styles.modalModif}>
           <RenderMainDetail />

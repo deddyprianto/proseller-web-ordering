@@ -1,5 +1,5 @@
 import loadable from '@loadable/component';
 
 export default loadable(() =>
-  import(/* webpackChunkName: "delivery-address" */ './Appointment')
+  import(/* webpackChunkName: "appointment" */ './Appointment')
 );

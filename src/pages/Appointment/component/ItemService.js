@@ -225,25 +225,27 @@ const ItemService = ({
                 {item.name}
               </div>
               <table>
-                <tr>
-                  <td
-                    style={{
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                      fontSize: '12px',
-                      color: 'rgba(183, 183, 183, 1)',
-                      fontWeight: 500,
-                      lineHeight: '18px',
-                    }}
-                  >
-                    {item.description}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                        fontSize: '12px',
+                        color: 'rgba(183, 183, 183, 1)',
+                        fontWeight: 500,
+                        lineHeight: '18px',
+                      }}
+                    >
+                      {item.description}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -313,25 +315,27 @@ const ItemService = ({
                 </div>
               </div>
               <table>
-                <tr>
-                  <td
-                    style={{
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                      fontSize: '12px',
-                      color: 'rgba(183, 183, 183, 1)',
-                      fontWeight: 500,
-                      lineHeight: '18px',
-                    }}
-                  >
-                    {item.description}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                        fontSize: '12px',
+                        color: 'rgba(183, 183, 183, 1)',
+                        fontWeight: 500,
+                        lineHeight: '18px',
+                      }}
+                    >
+                      {item.description}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>

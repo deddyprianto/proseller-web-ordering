@@ -1,11 +1,11 @@
 import React, { useLayoutEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import Paper from '@mui/material/Paper';
 import { useDispatch } from 'react-redux';
 import loader from './style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
+import AppointmentHeader from 'components/appointmentHeader';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -132,6 +132,7 @@ const BookingConfirm = (props) => {
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       overflowY: 'auto',
+      marginTop: '10px',
     },
     gridStyle3Col: {
       display: 'grid',
@@ -142,55 +143,6 @@ const BookingConfirm = (props) => {
       gridTemplateAreas: '". . ."',
       cursor: 'pointer',
     },
-  };
-  const Header = () => {
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '40px 1fr 50px',
-          gridTemplateRows: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          cursor: 'pointer',
-          marginTop: '20px',
-          marginBottom: '10px',
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <ArrowBackIosIcon
-            sx={{ color: color.primary }}
-            fontSize='large'
-            onClick={() => {
-              props.history.goBack();
-            }}
-          />
-        </div>
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 700,
-            fontSize: '18px',
-            color: color.primary,
-            marginLeft: '10px',
-          }}
-        >
-          Booking Summary
-        </p>
-      </div>
-    );
   };
   const Timeline = () => {
     if (gadgetScreen) {
@@ -927,10 +879,15 @@ const BookingConfirm = (props) => {
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '"."\n    "."',
+            paddingTop: '6px',
           }}
         >
           <div>
-            <Header />
+            <AppointmentHeader
+              color={color}
+              label='Booking Summary'
+              onBack={() => props.history.push('/appointment')}
+            />
             <Timeline />
           </div>
           <RenderMainContent />
@@ -940,7 +897,13 @@ const BookingConfirm = (props) => {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <Header />
+            <div style={{ paddingLeft: '16px' }}>
+              <AppointmentHeader
+                color={color}
+                label='Booking Summary'
+                onBack={() => props.history.push('/appointment')}
+              />
+            </div>
             <Timeline />
             <BookingDetail />
             <BookingNotes />
