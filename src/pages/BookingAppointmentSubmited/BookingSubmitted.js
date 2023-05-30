@@ -5,6 +5,7 @@ import successsubmit from 'assets/gif/successsubmit.gif';
 import Paper from '@mui/material/Paper';
 import Confetti from 'react-confetti';
 import { CONSTANT } from 'helpers';
+import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -25,7 +26,7 @@ const BookingSubmitted = () => {
   const [showConfetti, setShowConfetti] = useState(true);
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
-  // some sl
+
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -40,7 +41,7 @@ const BookingSubmitted = () => {
       clearTimeout(cleanUp);
     };
   }, []);
-  // some fn
+
   const settingAppoinmentShowPrice = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
@@ -48,57 +49,6 @@ const BookingSubmitted = () => {
     return items.settingKey === 'EnableAdditionalInfoBookingSummary';
   });
 
-  const convertFormatDate = (dateStr) => {
-    // Create a Date object from the date string
-    const date = new window.Date(dateStr);
-    // Define an array of month names
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    // Get the month name and day of the month as numbers
-    const monthName = months[date.getMonth()];
-    const dayOfMonth = date.getDate();
-
-    // Determine the suffix for the day of the month
-    let daySuffix;
-    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
-      daySuffix = 'st';
-    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
-      daySuffix = 'nd';
-    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
-      daySuffix = 'rd';
-    } else {
-      daySuffix = 'th';
-    }
-
-    // Create the formatted date string
-    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
-
-    return formattedDate;
-  };
-  const convertTimeToStr = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
-    } else if (minutes > 0) {
-      return `${minutes}mins`;
-    } else {
-      return '';
-    }
-  };
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -116,7 +66,7 @@ const BookingSubmitted = () => {
   };
 
   if (performance.getEntriesByType('navigation')[0].type === 'reload') {
-    window.location.href = '/'; // replace with the URL of your home page
+    window.location.href = '/';
   }
 
   const styleSheet = {
@@ -141,39 +91,6 @@ const BookingSubmitted = () => {
     },
   };
 
-  const IconsReflexology = () => {
-    return (
-      <svg
-        width='18'
-        height='18'
-        viewBox='0 0 18 18'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M3 13.5C3.41421 13.5 3.75 13.1642 3.75 12.75C3.75 12.3358 3.41421 12 3 12C2.58579 12 2.25 12.3358 2.25 12.75C2.25 13.1642 2.58579 13.5 3 13.5Z'
-          stroke={color.primary}
-          stroke-width='1.25'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-        />
-        <path
-          d='M6.75 4.5C7.16421 4.5 7.5 4.16421 7.5 3.75C7.5 3.33579 7.16421 3 6.75 3C6.33579 3 6 3.33579 6 3.75C6 4.16421 6.33579 4.5 6.75 4.5Z'
-          stroke={color.primary}
-          stroke-width='1.25'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-        />
-        <path
-          d='M3 16.5L6 15V12.75H15M8.25 15H15M6 10.5L8.25 9L9 6C11.25 6.75 11.25 9 11.25 10.5'
-          stroke={color.primary}
-          stroke-width='1.25'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-        />
-      </svg>
-    );
-  };
   const Timeline = () => {
     if (gadgetScreen) {
       return (
