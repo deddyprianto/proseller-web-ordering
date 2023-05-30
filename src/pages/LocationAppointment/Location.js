@@ -149,6 +149,7 @@ const Location = () => {
       return null;
     }
   };
+
   const PlaceIcon = () => {
     return (
       <svg
@@ -191,6 +192,42 @@ const Location = () => {
           fill={color}
         />
       </svg>
+    );
+  };
+
+  const LabelOpenTime = ({ style, data }) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    const appointmentTimeSlot = !isEmpty(data) && data[0];
+    const startHour = appointmentTimeSlot?.start?.slice(0, 2);
+    const startMinutes = appointmentTimeSlot?.start?.slice(-2);
+    const endHour = appointmentTimeSlot?.end?.slice(0, 2);
+    const endMinutes = appointmentTimeSlot?.end?.slice(-2);
+
+    const startTimeInMinutes = startHour * 60 + Number(startMinutes);
+    const endTimeInMinutes = endHour * 60 + endMinutes;
+
+    const currentTimeInMinutes = currentHour * 60 + Number(currentMinutes);
+
+    let label = '';
+
+    if (
+      currentTimeInMinutes >= startTimeInMinutes &&
+      currentTimeInMinutes <= endTimeInMinutes
+    ) {
+      label = `Open now at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+    } else if (currentTimeInMinutes <= startTimeInMinutes) {
+      label = `Later at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+    } else {
+      label = 'See operational hour';
+    }
+
+    return (
+      <div className={fontStyles.myFont} style={style}>
+        {label}
+      </div>
     );
   };
 
@@ -290,9 +327,10 @@ const Location = () => {
           style={localStyle.containerOpenNow}
         >
           <HistoryTimeIcon color='black' />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            Open now 13:00 - 22.00
-          </div>
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={selectedLocation?.appointmentTimeSlot}
+          />
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
@@ -408,9 +446,10 @@ const Location = () => {
           style={localStyle.containerOpenNow}
         >
           <HistoryTimeIcon color='black' />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            {!isDisable ? 'Closed Today' : 'Open Now'}
-          </div>
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={item?.appointmentTimeSlot}
+          />
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
@@ -441,7 +480,8 @@ const Location = () => {
     let filterOutletSelected = [];
     if (!isEmpty(selectedLocation)) {
       filterOutletSelected = outlets.filter(
-        (item) => item.id !== selectedLocation.id && !isEmpty(item.timeSlots)
+        (item) =>
+          item.id !== selectedLocation.id && !isEmpty(item.appointmentTimeSlot)
       );
     }
     return (
