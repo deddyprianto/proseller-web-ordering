@@ -441,7 +441,7 @@ const HeaderWebOrdering = () => {
   };
 
   const renderBasket = () => {
-    if (enableOrdering) {
+    if (enableOrdering && location.pathname !== '/outlets') {
       return (
         <Link
           id='cart-icon'
