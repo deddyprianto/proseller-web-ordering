@@ -1,32 +1,15 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Dialog from '@mui/material/Dialog';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 import DetailHistoryAppointment from './DetailHistoryAppointment';
 import fontStyles from '../style/styles.module.css';
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import screen from 'hooks/useWindowSize';
 
 const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
-  const [width] = useWindowSize();
-  const gadgetScreen = width < 980;
-
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   // some fn
   const handleCurrency = (price) => {
     if (price) {
@@ -66,8 +49,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='24'
-        height='24'
+        width='25'
+        height='25'
         viewBox='0 0 24 24'
         fill='none'
         stroke={color.primary}
@@ -81,11 +64,11 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
       </svg>
     );
   };
-  const AppointmentIcon = () => {
+  const CalenderIcon = () => {
     return (
       <svg
-        width='24'
-        height='24'
+        width='28'
+        height='28'
         viewBox='0 0 240 240'
         fill='white'
         xmlns='http://www.w3.org/2000/svg'
@@ -110,7 +93,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
             width: '91%',
             margin: 'auto',
             borderRadius: '10px',
-            boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             marginTop: '10px',
             marginBottom: '10px',
             padding: '5px 0px',
@@ -127,27 +110,34 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               gap: '0px 0px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
-              fontSize: '16px',
-              fontWeight: 500,
-              color: 'black',
               marginTop: '15px',
             }}
           >
-            <AppointmentIcon />
+            <CalenderIcon />
             <div
               style={{
                 display: 'flex',
                 width: '100%',
                 alignItems: 'center',
                 marginLeft: '10px',
-                fontWeight: 'bold',
+                color: 'black',
               }}
             >
-              <div style={{ fontSize: '16px' }}>
+              <div style={{ fontWeight: 600, fontSize: '15px' }}>
                 {changeFormatDate(item.bookingDate)}
               </div>
-              <div style={{ margin: '0px 10px', fontSize: '16px' }}>-</div>
-              <div style={{ fontSize: '16px' }}>{item.bookingTime.start}</div>
+              <div
+                style={{
+                  margin: '0px 10px',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                }}
+              >
+                -
+              </div>
+              <div style={{ fontWeight: 600, fontSize: '15px' }}>
+                {item.bookingTime.start}
+              </div>
             </div>
             {tabName === 'COMPLETED' && (
               <div
@@ -156,7 +146,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
                   borderRadius: '20px',
                   color: 'white',
                   fontSize: '13px',
-                  fontWeight: 600,
+                  fontWeight: 500,
                   width: '100%',
                   textAlign: 'center',
                 }}
@@ -183,7 +173,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               style={{
                 justifySelf: 'center',
                 marginTop: '5px',
-                marginRight: '5px',
+                marginRight: '2px',
                 fontWeight: 'bold',
               }}
             >
@@ -193,8 +183,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               <div
                 style={{
                   color: 'black',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
+                  fontSize: '15px',
+                  fontWeight: 600,
                   marginLeft: '10px',
                 }}
               >
@@ -219,7 +209,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               display: 'flex',
               alignItems: 'center',
               marginTop: '10px',
-              fontSize: '14px',
+              fontSize: '12px',
               color: 'rgba(157, 157, 157, 1)',
               fontWeight: 600,
             }}
@@ -256,13 +246,13 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               margin: 'auto',
               display: 'flex',
               alignItems: 'center',
-              fontSize: '16px',
+              fontSize: '15px',
               fontWeight: 500,
               color: 'black',
               marginTop: '15px',
             }}
           >
-            <AppointmentIcon />
+            <CalenderIcon />
             <div
               style={{
                 display: 'flex',
@@ -271,11 +261,11 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
                 marginLeft: '10px',
               }}
             >
-              <div style={{ fontSize: '16px' }}>
+              <div style={{ fontSize: '15px' }}>
                 {changeFormatDate(item.bookingDate)}
               </div>
-              <div style={{ margin: '0px 10px', fontSize: '16px' }}>-</div>
-              <div style={{ fontSize: '16px' }}>{item.bookingTime.start}</div>
+              <div style={{ margin: '0px 10px', fontSize: '15px' }}>-</div>
+              <div style={{ fontSize: '15px' }}>{item.bookingTime.start}</div>
             </div>
             {tabName === 'COMPLETED' && (
               <div
@@ -353,21 +343,14 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   return (
     <React.Fragment>
       <ResponsiveLayout />
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth='md'
-        open={isOpenModalDetail}
-        onClose={() => setIsOpenModalDetail(false)}
-      >
-        <DetailHistoryAppointment
-          tabName={tabName}
-          handleCurrency={handleCurrency}
-          item={item}
-          setIsOpenModalDetail={setIsOpenModalDetail}
-          settingAppoinment={settingAppoinment}
-        />
-      </Dialog>
+      <DetailHistoryAppointment
+        tabName={tabName}
+        handleCurrency={handleCurrency}
+        item={item}
+        setIsOpenModalDetail={setIsOpenModalDetail}
+        isOpenModalDetail={isOpenModalDetail}
+        settingAppoinment={settingAppoinment}
+      />
     </React.Fragment>
   );
 };

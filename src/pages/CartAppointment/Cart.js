@@ -569,7 +569,7 @@ const Cart = (props) => {
             <LabelAnythingelse />
             <SelectedOutlet />
             <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-            <Time />
+            <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
             <ServiceStylist color={color} />
             <RenderNotes />
             <Price />

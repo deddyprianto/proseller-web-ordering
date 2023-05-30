@@ -3,6 +3,12 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useSelector } from 'react-redux';
 import fontStyles from '../style/styles.module.css';
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -10,10 +16,13 @@ const DetailHistoryAppointment = ({
   handleCurrency,
   tabName,
   settingAppoinment,
+  isOpenModalDetail,
 }) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const color = useSelector((state) => state.theme.color);
   // some fn
-
   const convertTimeToStr = (seconds) => {
     // Calculate the number of hours and minutes
     const hours = Math.floor(seconds / 3600);
@@ -141,6 +150,18 @@ const DetailHistoryAppointment = ({
         border: 'none',
       },
     },
+    modalModif: {
+      '&.MuiTypography-root': {
+        padding: 0,
+        margin: 0,
+        marginTop: '10px',
+        marginBottom: '10px',
+      },
+      '&.MuiDialogContent-root': {
+        padding: 0,
+        margin: 0,
+      },
+    },
   };
 
   const RenderHeader = () => {
@@ -148,7 +169,6 @@ const DetailHistoryAppointment = ({
       <div
         style={{
           ...styleSheet.gridStyle,
-          marginTop: '25px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -631,9 +651,7 @@ const DetailHistoryAppointment = ({
             className={fontStyles.myFont}
             style={{
               width: '100%',
-
               margin: 'auto',
-              marginBottom: '20px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -676,7 +694,6 @@ const DetailHistoryAppointment = ({
           style={{
             width: '93%',
             margin: 'auto',
-            marginBottom: '20px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -706,7 +723,6 @@ const DetailHistoryAppointment = ({
             margin: 'auto',
             fontWeight: 500,
             color: 'black',
-            marginTop: '40px',
             marginBottom: '10px',
             lineHeight: '20px',
           }}
@@ -829,19 +845,37 @@ const DetailHistoryAppointment = ({
     }
   };
   return (
-    <React.Fragment>
-      <RenderHeader />
-      <RenderNotify />
-      <RenderIDBooking />
-      <BookingDetail />
-      <BookingNotes />
-      <RenderHr />
-      <ServiceDetail />
-      <RenderPoints />
-      <Information />
-      <RenderTextNotif />
-      <ButtonPrice />
-    </React.Fragment>
+    <Dialog
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth='md'
+      open={isOpenModalDetail}
+      onClose={() => setIsOpenModalDetail(false)}
+    >
+      <DialogTitle sx={styleSheet.modalModif}>
+        <RenderHeader />
+      </DialogTitle>
+      <DialogContent sx={styleSheet.modalModif}>
+        <RenderNotify />
+        <RenderIDBooking />
+        <BookingDetail />
+        <BookingNotes />
+        <RenderHr />
+        <ServiceDetail />
+        <RenderPoints />
+        <Information />
+      </DialogContent>
+
+      <DialogActions
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <RenderTextNotif />
+        <ButtonPrice />
+      </DialogActions>
+    </Dialog>
   );
 };
 
