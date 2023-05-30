@@ -9,6 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -22,62 +23,11 @@ const DetailHistoryAppointment = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const color = useSelector((state) => state.theme.color);
-  // some fn
-  const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+  const setting = useSelector((state) => state.order.setting);
 
-    // Create the formatted string
-    if (hours > 0) {
-      return `${hours}h ${minutes}min`;
-    } else if (minutes > 0) {
-      return `${minutes}min`;
-    } else {
-      return '';
-    }
-  };
-
-  const convertFormatDate = (dateStr) => {
-    // Create a Date object from the date string
-    const date = new window.Date(dateStr);
-    // Define an array of month names
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    // Get the month name and day of the month as numbers
-    const monthName = months[date.getMonth()];
-    const dayOfMonth = date.getDate();
-
-    // Determine the suffix for the day of the month
-    let daySuffix;
-    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
-      daySuffix = 'st';
-    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
-      daySuffix = 'nd';
-    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
-      daySuffix = 'rd';
-    } else {
-      daySuffix = 'th';
-    }
-
-    // Create the formatted date string
-    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
-
-    return formattedDate;
-  };
+  const additionInfoBookSummarySetting = setting.find((items) => {
+    return items.settingKey === 'AdditionalInfoBookingSummaryText';
+  });
 
   const styleSheet = {
     container: {
@@ -344,7 +294,7 @@ const DetailHistoryAppointment = ({
                   fontSize: '14px',
                 }}
               >
-                {item.serviceTime?.start} - {item.serviceTime?.end}
+                {item.serviceTime?.start}
               </div>
             </div>
             <div>
@@ -517,7 +467,7 @@ const DetailHistoryAppointment = ({
                 color: 'black',
               }}
             >
-              Estimated Duration
+              Estimated {settingAppoinment ? 'Price' : 'Duration'}
             </div>
             <div
               style={{
@@ -537,97 +487,37 @@ const DetailHistoryAppointment = ({
     );
   };
   const Information = () => {
-    if (tabName === 'COMPLETED') {
-      return null;
-    } else {
-      return (
-        <div
-          className={fontStyles.myFont}
-          style={{
-            width: '93%',
-            margin: 'auto',
-            marginTop: '10px',
-            backgroundColor: `${color.primary}10`,
-            borderRadius: '20px',
-            padding: '15px 0px',
-          }}
-        >
-          <div style={{ width: '90%', margin: 'auto' }}>
-            <div
-              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
-            >
-              Information
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-              Price & Payment
-            </div>
-            <ul
-              style={{
-                fontSize: '14px',
-                color: 'black',
-                margin: 0,
-                marginLeft: '25px',
-                fontWeight: 500,
-              }}
-            >
-              <li>Price above is estimation cannot be used as a reference</li>
-              <li>This booking can be paid at outlet</li>
-              <li>We only accept cashless payment</li>
-            </ul>
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 600,
-                marginTop: '10px',
-                color: 'black',
-              }}
-            >
-              Appointment
-            </div>
-            <ul
-              style={{
-                fontSize: '14px',
-                color: 'black',
-                margin: 0,
-                marginLeft: '25px',
-                fontWeight: 500,
-              }}
-            >
-              <li>Please come 10 minutes before the appointment</li>
-              <li>Wearing mask is a must</li>
-            </ul>
-            {tabName === 'ONGOING' && (
-              <React.Fragment>
-                <div
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    marginTop: '10px',
-                    color: 'black',
-                  }}
-                >
-                  Cancellation Policy
-                </div>
-                <ul
-                  style={{
-                    fontSize: '14px',
-                    color: 'black',
-                    margin: 0,
-                    marginLeft: '25px',
-                    fontWeight: 500,
-                  }}
-                >
-                  <li>
-                    If you need to make any changes to your reservation, please
-                    contact us at least 24 hours in advance.
-                  </li>
-                </ul>
-              </React.Fragment>
-            )}
+    return (
+      <div
+        className={fontStyles.myFont}
+        style={{
+          width: '93%',
+          margin: 'auto',
+          marginTop: '10px',
+          backgroundColor: `${color.primary}10`,
+          borderRadius: '20px',
+          padding: '15px 0px',
+          marginBottom: tabName === 'CANCELLED' ? '10px' : 0,
+        }}
+      >
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
+            Information
           </div>
+          <div
+            style={{
+              color: 'black',
+              fontWeight: 500,
+              fontSize: '14px',
+              marginTop: '10px',
+            }}
+            dangerouslySetInnerHTML={{
+              __html: additionInfoBookSummarySetting?.settingValue,
+            }}
+          />
         </div>
-      );
-    }
+      </div>
+    );
   };
   const ButtonPrice = () => {
     if (tabName === 'CANCELLED') {

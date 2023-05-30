@@ -160,40 +160,23 @@ const HistoryAppointment = () => {
   };
   const RenderItemHistory = () => {
     if (tabNameAPI === 'CONFIRMED') {
-      if (tabName === 'UPCOMING') {
-        const filterBookingHistory = bookingHistory.filter((item) => {
-          const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
-          const compareDate =
-            new Date(combineDateTime).getTime() > new Date().getTime();
-          return compareDate;
-        });
-        return filterBookingHistory.map((item) => (
-          <ItemHistory
-            key={item.id}
-            item={item}
-            color={color}
-            tabName={tabName}
-          />
-        ));
-      } else if (tabName === 'ONGOING') {
-        const filterBookingHistory = bookingHistory.filter((item) => {
-          const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
-          const compareDate =
-            new Date(combineDateTime).getTime() <= new Date().getTime();
-          return compareDate;
-        });
-        return filterBookingHistory.map((item) => (
-          <ItemHistory
-            key={item.id}
-            item={item}
-            color={color}
-            tabName={tabName}
-            settingAppoinment={settingAppoinment?.settingValue}
-          />
-        ));
-      } else {
-        return null;
-      }
+      const filterBookingHistory = bookingHistory.filter((item) => {
+        const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
+        const compareDate =
+          tabName === 'UPCOMING'
+            ? new Date(combineDateTime).getTime() > new Date().getTime()
+            : new Date(combineDateTime).getTime() <= new Date().getTime();
+        return compareDate;
+      });
+      return filterBookingHistory.map((item) => (
+        <ItemHistory
+          key={item.id}
+          item={item}
+          color={color}
+          tabName={tabName}
+          settingAppoinment={settingAppoinment?.settingValue}
+        />
+      ));
     } else {
       return bookingHistory.map((item) => (
         <ItemHistory
@@ -201,6 +184,7 @@ const HistoryAppointment = () => {
           item={item}
           color={color}
           tabName={tabName}
+          settingAppoinment={settingAppoinment?.settingValue}
         />
       ));
     }
