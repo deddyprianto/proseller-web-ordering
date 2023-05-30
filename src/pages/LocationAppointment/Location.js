@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
-import { CONSTANT } from 'helpers';
-import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
+import fontStyles from './style/styles.module.css';
+import { CONSTANT } from 'helpers';
+import { useHistory } from 'react-router-dom';
 import screen from 'hooks/useWindowSize';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import { isEmpty } from 'helpers/utils';
+import AppointmentHeader from 'components/appointmentHeader';
 
 const Location = () => {
   const responsiveDesign = screen();
@@ -148,6 +149,7 @@ const Location = () => {
       return null;
     }
   };
+
   const PlaceIcon = () => {
     return (
       <svg
@@ -190,6 +192,42 @@ const Location = () => {
           fill={color}
         />
       </svg>
+    );
+  };
+
+  const LabelOpenTime = ({ style, data }) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    const appointmentTimeSlot = !isEmpty(data) && data[0];
+    const startHour = appointmentTimeSlot?.start?.slice(0, 2);
+    const startMinutes = appointmentTimeSlot?.start?.slice(-2);
+    const endHour = appointmentTimeSlot?.end?.slice(0, 2);
+    const endMinutes = appointmentTimeSlot?.end?.slice(-2);
+
+    const startTimeInMinutes = startHour * 60 + Number(startMinutes);
+    const endTimeInMinutes = endHour * 60 + endMinutes;
+
+    const currentTimeInMinutes = currentHour * 60 + Number(currentMinutes);
+
+    let label = '';
+
+    if (
+      currentTimeInMinutes >= startTimeInMinutes &&
+      currentTimeInMinutes <= endTimeInMinutes
+    ) {
+      label = `Open now at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+    } else if (currentTimeInMinutes <= startTimeInMinutes) {
+      label = `Later at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+    } else {
+      label = 'See operational hour';
+    }
+
+    return (
+      <div className={fontStyles.myFont} style={style}>
+        {label}
+      </div>
     );
   };
 
@@ -289,9 +327,10 @@ const Location = () => {
           style={localStyle.containerOpenNow}
         >
           <HistoryTimeIcon color='black' />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            Open now 13:00 - 22.00
-          </div>
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={selectedLocation?.appointmentTimeSlot}
+          />
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
@@ -407,9 +446,10 @@ const Location = () => {
           style={localStyle.containerOpenNow}
         >
           <HistoryTimeIcon color='black' />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            {!isDisable ? 'Closed Today' : 'Open Now'}
-          </div>
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={item?.appointmentTimeSlot}
+          />
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
@@ -423,49 +463,12 @@ const Location = () => {
     );
   };
 
-  const RenderHeader = () => {
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '23px 1fr 70px',
-          gridTemplateRows: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          marginTop: '25px',
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <ArrowBackIosIcon
-          fontSize='large'
-          onClick={() => {
-            history.push('/appointment');
-          }}
-          sx={{ color: color.primary }}
-        />
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 700,
-            fontSize: '20px',
-            color: color.primary,
-          }}
-        >
-          Location
-        </p>
-      </div>
-    );
-  };
   const RenderLabel = () => {
     return (
       <div
         style={{
           display: 'flex',
-          marginTop: '25px',
+          marginTop: '15px',
         }}
       >
         <p style={{ fontWeight: 'bold', color: 'black' }}>Chosen Location</p>
@@ -477,7 +480,8 @@ const Location = () => {
     let filterOutletSelected = [];
     if (!isEmpty(selectedLocation)) {
       filterOutletSelected = outlets.filter(
-        (item) => item.id !== selectedLocation.id && !isEmpty(item.timeSlots)
+        (item) =>
+          item.id !== selectedLocation.id && !isEmpty(item.appointmentTimeSlot)
       );
     }
     return (
@@ -511,11 +515,30 @@ const Location = () => {
       return (
         <div
           className={fontStyles.myFont}
-          style={{ height: '100vh', paddingLeft: '16px', paddingRight: '16px' }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '60px 1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."',
+          }}
         >
-          <RenderHeader />
-          <RenderLabel />
-          <RenderListLocation />
+          <AppointmentHeader
+            color={color}
+            label='Location'
+            onBack={() => history.goBack()}
+          />
+          <div
+            style={{
+              paddingLeft: '16px',
+              paddingRight: '16px',
+            }}
+          >
+            <RenderLabel />
+            <RenderListLocation />
+          </div>
         </div>
       );
     } else {
@@ -527,24 +550,23 @@ const Location = () => {
               marginLeft: 'auto',
               marginRight: 'auto',
               backgroundColor: 'white',
-              height: '99.3vh',
               borderRadius: '8px',
               boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
               display: 'grid',
-              gridTemplateColumns: '1fr',
-              gridTemplateRows: '1fr 85px',
-              gap: '0px 15px',
-              gridTemplateAreas: '"."\n    "."',
               overflowY: 'auto',
               paddingLeft: '16px',
               paddingRight: '16px',
             }}
           >
-            <di>
-              <RenderHeader />
+            <AppointmentHeader
+              color={color}
+              label='Location'
+              onBack={() => history.goBack()}
+            />
+            <div>
               <RenderLabel />
               <RenderListLocation />
-            </di>
+            </div>
           </div>
         </div>
       );

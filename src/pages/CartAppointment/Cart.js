@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from './style/styles.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -17,6 +16,7 @@ import screen from 'hooks/useWindowSize';
 import { getDistance } from 'geolib';
 import config from 'config';
 import { isEmptyObject } from 'helpers/CheckEmpty';
+import AppointmentHeader from 'components/appointmentHeader';
 
 const Cart = (props) => {
   const responsiveDesign = screen();
@@ -144,47 +144,6 @@ const Cart = (props) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
-  };
-
-  const Header = () => {
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '30px 1fr 50px',
-          gridTemplateRows: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          cursor: 'pointer',
-          marginTop: '29px',
-          marginBottom: '10px',
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <ArrowBackIosIcon
-          sx={{ marginLeft: '10px', color: color.primary }}
-          fontSize='large'
-          onClick={() => {
-            props.history.goBack();
-          }}
-        />
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 700,
-            fontSize: '20px',
-            color: color.primary,
-            marginLeft: '10px',
-          }}
-        >
-          Appointment Booking
-        </p>
-      </div>
-    );
   };
 
   const Timeline = () => {
@@ -555,47 +514,32 @@ const Cart = (props) => {
     );
   };
 
-  const RenderMainContent = () => {
-    return (
-      <div style={{ height: '80vh ', overflowY: 'auto' }}>
-        <div
-          style={{
-            paddingBottom: 130,
-          }}
-        >
-          <RenderItemService />
-          <LabelAnythingelse />
-          <SelectedOutlet />
-          <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-          <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
-          <ServiceStylist color={color} />
-          <RenderNotes />
-        </div>
-        <RenderNavigationBottom />
-      </div>
-    );
-  };
-
   return (
     <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
       {gadgetScreen ? (
         <div className={fontStyles.myFont}>
-          <div
-            style={{
-              paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
-              paddingLeft: '16px',
-              paddingRight: '16px',
-            }}
-          >
-            <Header />
-            <Timeline />
-            <RenderItemService />
-            <LabelAnythingelse />
-            <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-            <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
-            <ServiceStylist color={color} />
-            <RenderNotes />
+          <div style={{ paddingTop: '6px' }}>
+            <AppointmentHeader
+              color={color}
+              label='Appointment Booking'
+              onBack={() => props.history.goBack()}
+            />
+            <div
+              style={{
+                paddingBottom: responsiveDesign.height > 600 ? 200 : 20,
+                paddingLeft: '16px',
+                paddingRight: '16px',
+              }}
+            >
+              <Timeline />
+              <RenderItemService />
+              <LabelAnythingelse />
+              <SelectedOutlet />
+              <Date timeslot={timeslot} color={color} isLoading={isLoading} />
+              <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+              <ServiceStylist color={color} />
+              <RenderNotes />
+            </div>
           </div>
           {responsiveDesign.height > 600 && <RenderNavigationBottom />}
         </div>
@@ -603,11 +547,11 @@ const Cart = (props) => {
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div
             style={{
-              width: '40%',
+              width: '45%',
+              marginTop: '10px',
               marginLeft: 'auto',
               marginRight: 'auto',
               backgroundColor: 'white',
-              height: '99.3vh',
               borderRadius: '8px',
               boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
               overflowY: 'auto',
@@ -615,7 +559,11 @@ const Cart = (props) => {
               paddingRight: '16px',
             }}
           >
-            <Header />
+            <AppointmentHeader
+              color={color}
+              label='Appointment Booking'
+              onBack={() => props.history.goBack()}
+            />
             <Timeline />
             <RenderItemService />
             <LabelAnythingelse />

@@ -4,6 +4,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import LoaderSkeleton from './LoaderSkeleton';
 import defaultImageURL from 'assets/images/defaultPicStylist.png';
 import { CONSTANT } from 'helpers';
+import useImageAspectRatio from 'hooks/useImageAspectRatio';
 
 const ServiceStylist = ({ color }) => {
   const dispatch = useDispatch();
@@ -41,6 +42,25 @@ const ServiceStylist = ({ color }) => {
     }
   }, [date, time]);
 
+  const StylistAvatar = ({ item }) => {
+    const isOneToOne = useImageAspectRatio(item.image);
+
+    return (
+      <img
+        src={item.image & isOneToOne ? item.image : defaultImageURL}
+        style={{
+          borderRadius: '10px',
+          width: '36px',
+          height: '36px',
+          marginRight: '10px',
+          opacity: !item.isAvailable && 0.5,
+          objectFit: 'contain',
+        }}
+        alt='logo'
+      />
+    );
+  };
+
   const RenderStylistStaff = () => {
     if (date && time) {
       return (
@@ -61,6 +81,7 @@ const ServiceStylist = ({ color }) => {
               gridAutoRows: '1fr',
               gridAutoFlow: 'row',
               fontWeight: 500,
+              gridGap: '16px',
             }}
           >
             {staffServices.map((item) => (
@@ -77,27 +98,35 @@ const ServiceStylist = ({ color }) => {
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: isActiveStylist === item.id && color.primary,
+                  backgroundColor:
+                    isActiveStylist === item.id ? color.primary : '#F9F9F9',
                   color: isActiveStylist === item.id ? 'white' : 'black',
                   borderRadius: '8px',
                   padding: '10px',
                   fontSize: '14px',
-                  opacity: !item.isAvailable && 0.3,
+                  boxShadow:
+                    isActiveStylist === item.id &&
+                    '0px 4px 10px rgba(0, 0, 0, 0.1)',
                   pointerEvents: !item.isAvailable && 'none',
                   cursor: !item.isAvailable ? 'not-allowed' : 'pointer',
                 }}
               >
-                <img
-                  src={item.image ? item.image : defaultImageURL}
+                <StylistAvatar item={item} />
+                <div
                   style={{
-                    borderRadius: '10px',
-                    width: '36px',
-                    height: '36px',
-                    marginRight: '10px',
+                    color: !item.isAvailable && '#B7B7B7',
+                    lineHeight: '21px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
                   }}
-                  alt='logo'
-                />
-                <div>{item.name}</div>
+                >
+                  {item?.name?.length < 24
+                    ? item.name
+                    : item.name?.substr(0, 24) + '...'}
+                </div>
               </div>
             ))}
           </div>
