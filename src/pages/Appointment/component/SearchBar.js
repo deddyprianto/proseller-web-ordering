@@ -39,7 +39,7 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
         console.log({ error });
       }
     };
-    if (inputValue.length > 3) {
+    if (inputValue.length > 1) {
       loadData();
     } else if (inputValue.length === 0) {
       dispatch({ type: CONSTANT.SEARCHBAR, payload: [] });
