@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import loader from './style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
 import AppointmentHeader from 'components/appointmentHeader';
+import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -34,7 +35,7 @@ const BookingConfirm = (props) => {
   const staff = useSelector((state) => state.appointmentReducer.staffID);
   const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
   const cartSave = useSelector((state) => state.appointmentReducer.cartSave);
-  // some fn
+
   const handleConfirmButton = async () => {
     if (date && time && staff) {
       const payload = {
@@ -58,50 +59,6 @@ const BookingConfirm = (props) => {
     return items.settingKey === 'EnableAdditionalInfoBookingSummary';
   });
 
-  const convertFormatDate = (dateStr) => {
-    const date = new window.Date(dateStr);
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    const monthName = months[date.getMonth()];
-    const dayOfMonth = date.getDate();
-    let daySuffix;
-    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
-      daySuffix = 'st';
-    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
-      daySuffix = 'nd';
-    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
-      daySuffix = 'rd';
-    } else {
-      daySuffix = 'th';
-    }
-
-    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
-
-    return formattedDate;
-  };
-  const convertTimeToStr = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
-    } else if (minutes > 0) {
-      return `${minutes}mins`;
-    } else {
-      return '';
-    }
-  };
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -119,7 +76,7 @@ const BookingConfirm = (props) => {
   };
 
   if (performance.getEntriesByType('navigation')[0].type === 'reload') {
-    window.location.href = '/'; // replace with the URL of your home page
+    window.location.href = '/';
   }
 
   const styleSheet = {

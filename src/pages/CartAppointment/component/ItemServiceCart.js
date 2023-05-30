@@ -9,6 +9,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { useHistory } from 'react-router-dom';
 import { IconDelete, IconList } from './icons/Icons';
 import calendarIcon from 'assets/images/calendarIcon.png';
+import { convertTimeToStr } from 'helpers/appointmentHelper';
 
 const ItemServiceCart = ({
   item,
@@ -26,18 +27,7 @@ const ItemServiceCart = ({
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  // some fn
-  const convertTimeToStr = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
-    } else if (minutes > 0) {
-      return `${minutes}mins`;
-    } else {
-      return '';
-    }
-  };
+
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {

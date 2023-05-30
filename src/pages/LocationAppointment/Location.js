@@ -99,8 +99,18 @@ const Location = () => {
     return window.open(gMapAPI + lat + ',' + long);
   };
 
-  const RenderTimeList = () => {
-    return selectedLocation?.operationalHours.map((item, i) => {
+  const RenderTimeList = ({ data }) => {
+    const timeSlot = data?.length
+      ? data[0]
+      : selectedLocation?.appointmentTimeSlot[0];
+
+    const customTimeSlot = timeSlot?.applicableDays?.map((val) => ({
+      ...val,
+      start: timeSlot?.start,
+      end: timeSlot?.end,
+    }));
+
+    return customTimeSlot?.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
@@ -113,11 +123,9 @@ const Location = () => {
               gridTemplateAreas: '". ."',
             }}
           >
+            <div style={{ fontSize: '14px', fontWeight: 500 }}>{item.text}</div>
             <div style={{ fontSize: '14px', fontWeight: 500 }}>
-              {item.nameOfDay}
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 500 }}>
-              {item.open} - {item.close}
+              {item.start} - {item.end}
             </div>
           </li>
         </ul>
@@ -142,7 +150,7 @@ const Location = () => {
             overflowY: 'auto',
           }}
         >
-          <RenderTimeList />
+          <RenderTimeList data={props.data} />
         </div>
       );
     } else {
@@ -458,6 +466,7 @@ const Location = () => {
         </div>
         <DropDownTimeSelected
           isOpen={otherOutletDropdownSelected === item.id}
+          data={item?.appointmentTimeSlot}
         />
       </div>
     );
