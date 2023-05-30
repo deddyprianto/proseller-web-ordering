@@ -70,12 +70,13 @@ const ItemService = ({
     },
     gridContainerBottom: {
       display: 'grid',
-      gridTemplateColumns: '130px 1fr 90px',
+      gridTemplateColumns: item?.cutPrice ? '90px 1fr 90px' : '100px 1fr 90px',
       gridTemplateRows: '1fr',
       gap: '0px 0px',
       gridAutoFlow: 'row',
       gridTemplateAreas: '". . ."',
       marginTop: '15px',
+      alignItems: 'center',
     },
     subContainerGrid: {
       width: '100%',
@@ -89,7 +90,7 @@ const ItemService = ({
     containerCutPrice: {
       justifySelf: 'end',
       display: 'flex',
-      fontSize: '14px',
+      fontSize: item?.cutPrice ? '12px' : '14px',
       labelPrice: { fontWeight: 600, color: color.primary },
       labelCutPrice: {
         marginLeft: '5px',
@@ -100,7 +101,7 @@ const ItemService = ({
     },
     containerPrice: {
       justifySelf: 'end',
-      fontSize: '14px',
+      fontSize: item?.cutPrice ? '12px' : '16px',
       labelPrice: { fontWeight: 600, color: color.primary },
     },
     button: {
@@ -110,10 +111,11 @@ const ItemService = ({
       justifyContent: 'center',
       labelButton: {
         width: '100%',
-        borderRadius: '5px',
-        fontSize: '14px',
-        fontWeight: 500,
+        borderRadius: '8px',
+        fontSize: '12px',
+        fontWeight: 600,
         color: 'white',
+        padding: '8px 16px',
       },
     },
     containerUnavailable: {
@@ -342,7 +344,7 @@ const ItemService = ({
                   alignItems: 'center',
                   backgroundColor: item.duration && `${color.primary}10`,
                   borderRadius: '15px',
-                  width: '75%',
+                  width: '100%',
                 }}
               >
                 {item.duration && <HistoryTimeIcon color={color.primary} />}
@@ -356,10 +358,10 @@ const ItemService = ({
             {item?.cutPrice ? (
               <div style={localStyle.containerCutPrice}>
                 <div style={localStyle.containerCutPrice.labelPrice}>
-                  SGD 10.00
+                  {settingAppoinment && handleCurrency(item.retailPrice)}
                 </div>
                 <div style={localStyle.containerCutPrice.labelCutPrice}>
-                  SGD 10.00
+                  {settingAppoinment && handleCurrency(item?.cutPrice)}
                 </div>
               </div>
             ) : (

@@ -27,7 +27,6 @@ import Paper from '@mui/material/Paper';
 import screen from 'hooks/useWindowSize';
 
 const Appointment = (props) => {
-  // some state
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
     useState(false);
   const [selectedLocationPersisted, setSelectedLocationPersisted] =
@@ -40,7 +39,6 @@ const Appointment = (props) => {
   const [selectedCategory, setSelectedCategory] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // initial
   const history = useHistory();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -51,8 +49,6 @@ const Appointment = (props) => {
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
-
-  // some sl
   const setting = useSelector((state) => state.order.setting);
   const menuSidebar = useSelector((state) => state.theme.menu);
   const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
@@ -126,7 +122,6 @@ const Appointment = (props) => {
     return urlConvert;
   };
 
-  // scss
   const styleSheet = {
     container: {
       width: '45%',
@@ -135,7 +130,7 @@ const Appointment = (props) => {
       backgroundColor: 'white',
       height: showNotify ? '90vh' : '98vh',
       borderRadius: '8px',
-      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
       display: 'grid',
       gridTemplateColumns: '1fr',
       gridTemplateRows: '1fr 55px',
@@ -145,6 +140,7 @@ const Appointment = (props) => {
       marginTop: '10px',
       paddingLeft: '16px',
       paddingRight: '16px',
+      position: 'relative',
     },
     gridStyle: {
       display: 'grid',
@@ -170,6 +166,7 @@ const Appointment = (props) => {
       '&.MuiButtonBase-root': {
         fontSize: '14px',
         textTransform: 'capitalize',
+        fontWeight: 600,
         '&:hover': {
           color: 'rgba(138, 141, 142, 1)',
         },
@@ -206,7 +203,6 @@ const Appointment = (props) => {
     },
   };
 
-  // some Effect
   useEffect(() => {
     if (!isEmptyObject(defaultOutlet)) {
       setOpenWarningOutletNotSelected(true);
@@ -292,7 +288,10 @@ const Appointment = (props) => {
     return history.listen((location) => {
       if (history.action === 'PUSH') {
         setLocationKeys([location.pathname]);
-        if (location.pathname !== '/appointment') {
+        if (
+          location.pathname !== '/appointment' &&
+          !isEmptyObject(cartAppointment)
+        ) {
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
             payload: true,
@@ -301,7 +300,7 @@ const Appointment = (props) => {
         }
       }
     });
-  }, [locationKeys]);
+  }, [cartAppointment, locationKeys]);
 
   const PlaceIcon = () => {
     return (
@@ -311,7 +310,7 @@ const Appointment = (props) => {
         height='20'
         viewBox='0 0 24 24'
         fill='none'
-        stroke={color.primary}
+        stroke='black'
         strokeWidth={1.5}
         strokeLinecap='round'
         strokeLinejoin='round'
@@ -338,26 +337,26 @@ const Appointment = (props) => {
       </svg>
     );
   };
-  const HistoryTimeIcon = ({ color }) => {
+  const HistoryTimeIcon = () => {
     return (
       <svg
         width={18}
         height={19}
         viewBox='0 0 18 19'
-        fill={color}
+        fill='black'
         xmlns='http://www.w3.org/2000/svg'
       >
         <path
           fillRule='evenodd'
           clipRule='evenodd'
           d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
-          fill={color}
+          fill='black'
         />
         <path
           fillRule='evenodd'
           clipRule='evenodd'
           d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
-          fill={color}
+          fill='black'
         />
       </svg>
     );
@@ -376,7 +375,7 @@ const Appointment = (props) => {
         marginTop: '10px',
         marginBottom: '10px',
         alignItems: 'center',
-        justifyItems: 'center',
+        justifyItems: gadgetScreen ? 'center' : 'start',
       },
       label: {
         padding: 0,
@@ -391,9 +390,16 @@ const Appointment = (props) => {
     return (
       <div style={localStyle.container}>
         <ArrowBackIosIcon
-          sx={{ color: color.primary, marginLeft: '20px' }}
+          sx={{
+            color: color.primary,
+            marginLeft: gadgetScreen ? '20px' : '0px',
+          }}
           fontSize='large'
           onClick={() => {
+            if (isEmptyObject(cartAppointment)) {
+              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 0 });
+            }
+            setOpenDropDownTime(false);
             props.history.push('/');
           }}
         />
@@ -402,8 +408,9 @@ const Appointment = (props) => {
           onClick={() => setShowSearchBar(true)}
           style={{
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: responsiveDesign ? 'center' : 'flex-end',
             alignItems: 'center',
+            width: '100%',
           }}
         >
           <IconSearch />
@@ -427,7 +434,12 @@ const Appointment = (props) => {
           Chosen Location
         </div>
         <div
-          style={{ color: color.primary, cursor: 'pointer', fontWeight: 500 }}
+          style={{
+            color: color.primary,
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: '16px',
+          }}
           onClick={() => {
             window.location.href = changeFormatURl('/location');
           }}
@@ -500,7 +512,7 @@ const Appointment = (props) => {
 
     const localStyle = {
       container: {
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '10px',
         padding: '10px 0px',
         marginTop: '16px',
@@ -512,7 +524,7 @@ const Appointment = (props) => {
       },
       labelSeeDirection: {
         fontSize: '14px',
-        fontWeight: 500,
+        fontWeight: 600,
         color: 'rgba(0, 133, 255, 1)',
         cursor: 'pointer',
       },
@@ -557,7 +569,7 @@ const Appointment = (props) => {
               {selectedLocation?.name}
             </div>
 
-            <table>
+            <table style={{ margin: 0 }}>
               <tr>
                 <td
                   style={{
@@ -568,7 +580,7 @@ const Appointment = (props) => {
                     overflow: 'hidden',
                     padding: 0,
                     margin: 0,
-                    fontSize: '12px',
+                    fontSize: '14px',
                     color: 'rgba(183, 183, 183, 1)',
                     fontWeight: 500,
                   }}
@@ -613,7 +625,7 @@ const Appointment = (props) => {
           style={localStyle.containerOpenNow}
           onClick={() => setOpenDropDownTime(!openDropDownTime)}
         >
-          <HistoryTimeIcon color={color.primary} />
+          <HistoryTimeIcon />
           <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
             <span style={{ marginRight: '4px' }}>Open now</span>{' '}
             {operationalHoursActive?.open} - {operationalHoursActive?.close}
@@ -975,6 +987,7 @@ const Appointment = (props) => {
             borderRadius: '5px',
             zIndex: 9999999,
             left: 13,
+            top: !gadgetScreen && '35%',
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
             overflowY: 'auto',
           }}
@@ -1009,6 +1022,13 @@ const Appointment = (props) => {
             <Label />
             <Location />
             <DropDownTime />
+            <hr
+              style={{
+                color: 'rgba(214, 214, 214, 1)',
+                marginTop: '24px',
+                opacity: 0.6,
+              }}
+            />
             <Services />
           </div>
           <RendernNotifSuccess />

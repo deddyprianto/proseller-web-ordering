@@ -11,6 +11,7 @@ import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 import { useSelector, useDispatch } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import { CONSTANT } from 'helpers';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const FooterWebOrdering = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,9 @@ const FooterWebOrdering = () => {
     (state) => state.appointmentReducer.indexFooter
   );
   const allState = useSelector((state) => state);
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
   const navBar = useSelector((state) => state.theme.menu.navBar);
   const resetBottomNav = useSelector(
     (state) => state.guestCheckoutCart.resetBottomNav
@@ -274,15 +278,19 @@ const FooterWebOrdering = () => {
           showLabels
           value={indexFooterAppointment}
           onChange={(event, newValue) => {
-            if (
-              location.pathname === '/appointment' ||
-              location.pathname === '/location'
-            ) {
-              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
-              dispatch({
-                type: CONSTANT.INDEX_PATH_APPOINTMENT,
-                payload: newValue,
-              });
+            if (!isEmptyObject(cartAppointment)) {
+              if (
+                location.pathname === '/appointment' ||
+                location.pathname === '/location'
+              ) {
+                dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
+                dispatch({
+                  type: CONSTANT.INDEX_PATH_APPOINTMENT,
+                  payload: newValue,
+                });
+              } else {
+                dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
+              }
             } else {
               dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
             }

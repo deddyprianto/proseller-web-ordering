@@ -17,6 +17,15 @@ const ServiceStylist = ({ color }) => {
   );
 
   useEffect(() => {
+    if (!isActiveStylist) {
+      dispatch({
+        type: CONSTANT.STAFFID_APPOINTMENT,
+        payload: '',
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);

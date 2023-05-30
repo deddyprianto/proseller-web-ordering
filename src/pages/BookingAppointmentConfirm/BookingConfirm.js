@@ -148,7 +148,7 @@ const BookingConfirm = (props) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '50px 1fr 50px',
+          gridTemplateColumns: '40px 1fr 50px',
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
@@ -160,12 +160,22 @@ const BookingConfirm = (props) => {
           justifyItems: 'center',
         }}
       >
-        <ArrowBackIosIcon
-          fontSize='large'
-          onClick={() => {
-            props.history.push('/appointment');
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            width: '100%',
           }}
-        />
+        >
+          <ArrowBackIosIcon
+            sx={{ color: color.primary }}
+            fontSize='large'
+            onClick={() => {
+              props.history.goBack();
+            }}
+          />
+        </div>
         <p
           style={{
             padding: 0,
@@ -174,6 +184,7 @@ const BookingConfirm = (props) => {
             fontWeight: 700,
             fontSize: '18px',
             color: color.primary,
+            marginLeft: '10px',
           }}
         >
           Booking Summary
@@ -195,7 +206,7 @@ const BookingConfirm = (props) => {
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . . . ."',
             padding: '0px',
-            marginTop: '30px',
+            marginTop: '19px',
             alignItems: 'center',
             justifyItems: 'center',
           }}
@@ -391,7 +402,6 @@ const BookingConfirm = (props) => {
         </div>
       );
     }
-   
   };
 
   const BookingDetail = () => {
@@ -863,7 +873,7 @@ const BookingConfirm = (props) => {
       <div style={{ height: '80vh ', overflowY: 'auto' }}>
         <div
           style={{
-            paddingBottom: 150,
+            paddingBottom: 200,
           }}
         >
           <BookingDetail />
@@ -912,7 +922,7 @@ const BookingConfirm = (props) => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '110px 1fr',
+            gridTemplateRows: '100px 1fr',
             gridAutoColumns: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',
@@ -937,8 +947,10 @@ const BookingConfirm = (props) => {
             <RenderHr />
             <ServiceDetail />
             <Information />
-            <Price />
-            <ButtonPrice />
+            <div style={{ marginTop: '50px' }}>
+              <Price />
+              <ButtonPrice />
+            </div>
           </div>
         </div>
       );
