@@ -24,7 +24,6 @@ const SeeMoreDate = ({
 
   const days = ['San', 'Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat'];
 
-  // some fn
   const handleButtonDisable = () => {
     if (dateChoosen) {
       return false;
@@ -114,7 +113,6 @@ const SeeMoreDate = ({
     }
   };
 
-  // some Effect
   useEffect(() => {
     const currentDates = getDates();
     setDates(currentDates);
@@ -319,7 +317,7 @@ const SeeMoreDate = ({
           <Typography
             sx={{
               ...styleFontDate,
-              opacity: availableDateFromAPI ? 1 : 0.2,
+              opacity: availableDateFromAPI && isThisMonth ? 1 : 0.2,
               cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
               padding: 0,
               margin: 0,
