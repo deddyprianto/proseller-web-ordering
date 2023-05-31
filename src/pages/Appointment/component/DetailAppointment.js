@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import fontStyles from '../style/styles.module.css';
 import FormGroup from '@mui/material/FormGroup';
-import { PhotoProvider, PhotoSlider } from 'react-photo-view';
-import 'react-photo-view/dist/react-photo-view.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import RenderModifier from './RenderModifier';
@@ -14,8 +12,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import calendarIcon from 'assets/images/calendarIcon.png';
 import AppointmentHeader from 'components/appointmentHeader';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss';
+import '../style/swiperstyle.css';
+import { Pagination, Navigation } from 'swiper';
 
 const DetailAppointment = ({
   isOpenModalDetail,
@@ -213,6 +214,27 @@ const DetailAppointment = ({
     },
   };
 
+  const SwiperSlideImageCustom = ({ images }) => {
+    return (
+      <>
+        <Swiper
+          pagination={{
+            type: 'fraction',
+          }}
+          navigation={true}
+          modules={[Pagination, Navigation]}
+          className='mySwiper'
+        >
+          {images.map((item) => (
+            <SwiperSlide>
+              <img src={item} alt='images' />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </>
+    );
+  };
+
   const HistoryTimeIcon = ({ color }) => {
     return (
       <svg
@@ -247,48 +269,10 @@ const DetailAppointment = ({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            position: 'relative',
+            width: '100%',
           }}
         >
-          <PhotoProvider>
-            <PhotoSlider
-              maskOpacity={0.5}
-              images={itemAppointment?.imageFiles.map((item) => ({
-                src: item,
-                key: item,
-              }))}
-              visible={visible}
-              onClose={() => setVisible(false)}
-            />
-          </PhotoProvider>
-          <img
-            src={
-              itemAppointment.defaultImageURL
-                ? itemAppointment.defaultImageURL
-                : calendarIcon
-            }
-            alt='myPic'
-            style={{ width: '100%', cursor: 'pointer', borderRadius: '10px' }}
-            onClick={() => setVisible(true)}
-          />
-
-          {itemAppointment?.imageFiles.length > 0 && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '6px',
-                position: 'absolute',
-                bottom: 4,
-                right: 4,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '0px 15px',
-              }}
-            >
-              <div>1/{itemAppointment?.imageFiles.length}</div>
-            </div>
-          )}
+          <SwiperSlideImageCustom images={itemAppointment?.imageFiles} />
         </div>
         <p
           style={{
@@ -306,6 +290,7 @@ const DetailAppointment = ({
             display: 'flex',
             alignItems: 'center',
             borderRadius: '15px',
+            marginTop: '5px',
           }}
         >
           {itemAppointment.duration && (
@@ -317,7 +302,7 @@ const DetailAppointment = ({
               marginLeft: '5px',
               color: 'rgba(183, 183, 183, 1)',
               display: 'flex',
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
             {convertTimeToStr(itemAppointment?.duration)}
@@ -362,7 +347,7 @@ const DetailAppointment = ({
                 fontSize: '14px',
                 fontWeight: 500,
                 opacity: 0.8,
-                lineHeight: '20px',
+                lineHeight: '23px',
                 color: 'rgba(157, 157, 157, 1)',
                 marginTop: '16px',
               }}
@@ -371,6 +356,12 @@ const DetailAppointment = ({
             </p>
           </React.Fragment>
         )}
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            marginTop: '20px',
+          }}
+        />
       </div>
     );
   };
@@ -378,7 +369,7 @@ const DetailAppointment = ({
   const RenderAddOnLabel = () => {
     return (
       <div style={{ width: '90%', margin: 'auto' }}>
-        <p style={{ marginTop: '20px', fontWeight: 'bold', color: 'black' }}>
+        <p style={{ marginTop: '10px', fontWeight: 'bold', color: 'black' }}>
           Add Ons
         </p>
       </div>
