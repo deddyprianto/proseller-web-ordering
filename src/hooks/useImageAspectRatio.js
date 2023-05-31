@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const useImageAspectRatio = (src) => {
-  const [isOneToOne, setIsOneToOne] = useState(false);
+  const [imageAspectRatio, setImageAspectRatio] = useState(false);
 
   useEffect(() => {
     const image = new Image();
@@ -9,11 +9,11 @@ const useImageAspectRatio = (src) => {
     image.onload = () => {
       const { width, height } = image;
       const aspectRatio = width / height;
-      setIsOneToOne(aspectRatio === 1);
+      setImageAspectRatio(aspectRatio);
     };
   }, [src]);
 
-  return isOneToOne;
+  return imageAspectRatio;
 };
 
 export default useImageAspectRatio;

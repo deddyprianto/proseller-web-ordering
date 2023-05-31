@@ -29,14 +29,7 @@ const Date = ({ timeslot, color }) => {
   const dateSorted = useSelector(
     (state) => state.appointmentReducer.dateSorted
   );
-  const getDateNow = () => {
-    const now = new window.Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
-  };
+
   const showListDate = isConfirmButtonPressed ? dateSorted : timeslot;
 
   useEffect(() => {
@@ -47,45 +40,12 @@ const Date = ({ timeslot, color }) => {
     });
   }, [timeslot]);
 
-  // some fn
   const changeFormatDate = (itemDate) => {
     if (itemDate) {
       return itemDate.split(' ').join('-');
     }
   };
-  const getAllDate = () => {
-    let monthArr = [];
-    const weeks = moment().add(0, 'weeks').startOf('week');
-    for (let i = 0; i < 150; i++) {
-      monthArr.push(weeks.clone().add(i, 'day').format('YYYY MM DD'));
-    }
 
-    const dateNow = new window.Date();
-    dateNow.setHours(0, 0, 0, 0);
-    let timeStamp = new window.Date(dateNow).getTime();
-    const listDate = monthArr.filter(
-      (item) => new window.Date(item).getTime() >= timeStamp
-    );
-    const dateSorted = listDate.map((a) => a.split(' ').join('-'));
-    return dateSorted;
-  };
-
-  const convertDateName = (dateStr) => {
-    const date = new window.Date(dateStr);
-    const dayOfWeek = date.getDay();
-    const weekdays = ['sun', 'mon', 'tue', 'wed', 'thurs', 'fri', 'sat'];
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const dayOfMonth = date.getDate().toString().padStart(2, '0');
-    return weekdays[dayOfWeek];
-  };
-  const convertDate = (dateStr) => {
-    const date = new window.Date(dateStr);
-    const dayOfWeek = date.getDay();
-    const weekdays = ['sun', 'mon', 'tue', 'wed', 'thurs', 'fri', 'sat'];
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const dayOfMonth = date.getDate().toString().padStart(2, '0');
-    return dayOfMonth;
-  };
   const handleSelectedDate = (item) => {
     dispatch({
       type: CONSTANT.IS_DATE_SELECTED,
@@ -127,7 +87,53 @@ const Date = ({ timeslot, color }) => {
     return dateSorted;
   };
 
+  const getDates = () => {
+    let calendar = [];
+    const currentDate = moment().startOf('day');
+
+    const endDate = currentDate.clone().add(13, 'days');
+
+    const day = currentDate.clone();
+
+    while (day.isBefore(endDate, 'day')) {
+      calendar.push(day.format('YYYY-MM-DD'));
+      day.add(1, 'day');
+    }
+
+    return calendar;
+  };
+
+  const DateLabel = ({ dateStr }) => {
+    const date = new window.Date(dateStr);
+    const dayOfWeek = date.getDay();
+    const weekdays = ['sun', 'mon', 'tue', 'wed', 'thurs', 'fri', 'sat'];
+    const dayOfMonth = date.getDate().toString().padStart(2, '0');
+
+    return (
+      <React.Fragment>
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 500,
+            textTransform: 'capitalize',
+          }}
+        >
+          {weekdays[dayOfWeek]}
+        </div>
+        <div style={{ fontSize: '22px', fontWeight: 600 }}>{dayOfMonth}</div>
+      </React.Fragment>
+    );
+  };
+
   const renderListDate = () => {
+    const customListDates = getDates().map((date) => {
+      const matchingDate = showListDate.find((obj) => obj.date === date);
+      if (matchingDate) {
+        return { date, timeSlot: matchingDate.timeSlot };
+      }
+      return { date, timeSlot: [] };
+    });
+
     if (isEmptyArray(timeslot)) {
       return <LoaderSkeleton />;
     } else if (!messageTimeSlot) {
@@ -170,9 +176,9 @@ const Date = ({ timeslot, color }) => {
             slidesPerView='auto'
             spaceBetween={15}
           >
-            {showListDate.map((item) => {
+            {customListDates.map((item) => {
               const isDateSelected = date === changeFormatDate(item?.date);
-              const dateNow = showListDate.find(
+              const dateNow = customListDates.find(
                 (item) => item.timeSlot.length > 0
               );
               const dateAvailable = dateNow?.date === item.date;
@@ -204,18 +210,7 @@ const Date = ({ timeslot, color }) => {
                         : 'none',
                     }}
                   >
-                    <div
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {convertDateName(item?.date)}
-                    </div>
-                    <div style={{ fontSize: '22px', fontWeight: 600 }}>
-                      {convertDate(item?.date)}
-                    </div>
+                    <DateLabel dateStr={item?.date} />
                   </div>
                 </SwiperSlide>
               );

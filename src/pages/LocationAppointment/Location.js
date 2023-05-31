@@ -58,7 +58,7 @@ const Location = () => {
 
   const selectedLocation = !selectedLocationPersisted
     ? defaultOutlet
-    : selectedLocationPersisted;
+    : outlets?.find((val) => val.id === selectedLocationPersisted?.id);
 
   const handleSelectedOutlet = (item) => {
     if (cartAppointment?.details?.length > 0) {
@@ -101,14 +101,20 @@ const Location = () => {
 
   const RenderTimeList = ({ data }) => {
     const timeSlot = data?.length
-      ? data[0]
-      : selectedLocation?.appointmentTimeSlot[0];
+      ? data
+      : selectedLocation?.appointmentTimeSlot;
 
-    const customTimeSlot = timeSlot?.applicableDays?.map((val) => ({
-      ...val,
-      start: timeSlot?.start,
-      end: timeSlot?.end,
-    }));
+    const customTimeSlot = [];
+
+    timeSlot?.forEach((item) => {
+      item.applicableDays.forEach((day) => {
+        customTimeSlot.push({
+          text: day.text,
+          start: item.start,
+          end: item.end,
+        });
+      });
+    });
 
     return customTimeSlot?.map((item, i) => {
       return (
@@ -140,7 +146,7 @@ const Location = () => {
           style={{
             position: 'sticky',
             backgroundColor: 'white',
-            height: '270px',
+            height: 'auto',
             width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
@@ -208,28 +214,48 @@ const Location = () => {
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
 
-    const appointmentTimeSlot = !isEmpty(data) && data[0];
+    const customTimeSlot = [];
+
+    !isEmpty(data) &&
+      data?.forEach((item) => {
+        item.applicableDays.forEach((day) => {
+          customTimeSlot.push({
+            text: day.text,
+            value: Number(day.value),
+            start: item.start,
+            end: item.end,
+          });
+        });
+      });
+
+    const checkDayAvailable = customTimeSlot?.find(
+      (val) => val.value === now.getDay()
+    );
+
+    const appointmentTimeSlot =
+      !isEmpty(checkDayAvailable) && checkDayAvailable;
+
     const startHour = appointmentTimeSlot?.start?.slice(0, 2);
     const startMinutes = appointmentTimeSlot?.start?.slice(-2);
     const endHour = appointmentTimeSlot?.end?.slice(0, 2);
     const endMinutes = appointmentTimeSlot?.end?.slice(-2);
 
     const startTimeInMinutes = startHour * 60 + Number(startMinutes);
-    const endTimeInMinutes = endHour * 60 + endMinutes;
+    const endTimeInMinutes = endHour * 60 + Number(endMinutes);
 
     const currentTimeInMinutes = currentHour * 60 + Number(currentMinutes);
 
-    let label = '';
+    let label = 'See operational hour';
 
-    if (
-      currentTimeInMinutes >= startTimeInMinutes &&
-      currentTimeInMinutes <= endTimeInMinutes
-    ) {
-      label = `Open now at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
-    } else if (currentTimeInMinutes <= startTimeInMinutes) {
-      label = `Later at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
-    } else {
-      label = 'See operational hour';
+    if (!isEmpty(checkDayAvailable)) {
+      if (
+        currentTimeInMinutes >= startTimeInMinutes &&
+        currentTimeInMinutes <= endTimeInMinutes
+      ) {
+        label = `Open now at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+      } else if (currentTimeInMinutes <= startTimeInMinutes) {
+        label = `Later at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+      }
     }
 
     return (
@@ -350,14 +376,13 @@ const Location = () => {
     );
   };
 
-  const ListLocations = ({ item, isDisable }) => {
+  const ListLocations = ({ item }) => {
     const localStyle = {
       container: {
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
         borderRadius: '10px',
         padding: '10px 0px',
         marginBottom: '15px',
-        pointerEvents: !isDisable && 'none',
         cursor: 'pointer',
       },
       containerAccordion: {
@@ -398,7 +423,6 @@ const Location = () => {
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
-            opacity: !isDisable ? 0.4 : 1,
           }}
         >
           <div style={{ justifySelf: 'center', marginTop: '6px' }}>
@@ -508,11 +532,7 @@ const Location = () => {
           </div>
           {!isEmpty(filterOutletSelected) &&
             filterOutletSelected.map((item) => (
-              <ListLocations
-                key={item.name}
-                item={item}
-                isDisable={item.outletStatus}
-              />
+              <ListLocations key={item.name} item={item} />
             ))}
         </div>
       </React.Fragment>

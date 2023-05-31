@@ -473,7 +473,8 @@ const BookingSubmitted = () => {
                 color: 'black',
               }}
             >
-              Estimated Price
+              Estimated&nbsp;
+              {settingAppoinmentShowPrice?.settingValue ? 'Price' : 'Duration'}
             </div>
             <div
               style={{
