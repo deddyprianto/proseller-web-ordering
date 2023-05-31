@@ -11181,11 +11181,6 @@ react-phone-input-2@^2.13.7:
     lodash.startswith "^4.2.1"
     prop-types "^15.7.2"
 
-react-photo-view@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/react-photo-view/-/react-photo-view-1.2.3.tgz#436f81ad0a611dfaa43bbc72a4fef26a057b5aef"
-  integrity sha512-dtaFjU8nAB/rD8mxBaaJcvESlDOweAd1tmvXujS/d3oh1QyGew3xD4C02l46E6Dhn3Tshzl2+IM1h0MWV9nG7g==
-
 react-popper@^1.3.6:
   version "1.3.11"
   resolved "https://registry.npmjs.org/react-popper/-/react-popper-1.3.11.tgz"
