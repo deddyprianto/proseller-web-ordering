@@ -43,18 +43,16 @@ const ServiceStylist = ({ color }) => {
   }, [date, time]);
 
   const StylistAvatar = ({ item }) => {
-    const isOneToOne = useImageAspectRatio(item.image);
-
     return (
       <img
-        src={item.image & isOneToOne ? item.image : defaultImageURL}
+        src={item.image ? item.image : defaultImageURL}
         style={{
           borderRadius: '10px',
           width: '36px',
           height: '36px',
           marginRight: '10px',
           opacity: !item.isAvailable && 0.5,
-          objectFit: 'contain',
+          objectFit: 'cover',
         }}
         alt='logo'
       />
