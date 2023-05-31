@@ -26,6 +26,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import SearchBar from './component/SearchBar';
 import screen from 'hooks/useWindowSize';
 import AppointmentHeader from 'components/appointmentHeader';
+import { isEmpty } from 'helpers/utils';
 
 const Appointment = (props) => {
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
@@ -393,7 +394,22 @@ const Appointment = (props) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const dayName = dayNames[dayOfWeek];
-    return selectedLocation?.operationalHours.map((item, i) => {
+
+    const timeSlot = selectedLocation?.appointmentTimeSlot;
+
+    const customTimeSlot = [];
+
+    timeSlot?.forEach((item) => {
+      item.applicableDays.forEach((day) => {
+        customTimeSlot.push({
+          text: day.text,
+          start: item.start,
+          end: item.end,
+        });
+      });
+    });
+
+    return customTimeSlot?.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
@@ -404,21 +420,76 @@ const Appointment = (props) => {
               gap: '0px 10px',
               gridAutoFlow: 'row',
               gridTemplateAreas: '". ."',
-              color:
-                dayName === item.nameOfDay ? 'black' : 'rgba(183, 183, 183, 1)',
-              fontWeight: dayName === item.nameOfDay ? 'bold' : 500,
+              color: dayName === item.text ? 'black' : 'rgba(183, 183, 183, 1)',
+              fontWeight: dayName === item.text ? 'bold' : 500,
             }}
           >
             <div style={{ fontSize: '14px' }}>
-              {dayName === item.nameOfDay ? 'Today' : item.nameOfDay}
+              {dayName === item.text ? 'Today' : item.text}
             </div>
             <div style={{ fontSize: '14px' }}>
-              {item.open} - {item.close}
+              {item.start} - {item.end}
             </div>
           </li>
         </ul>
       );
     });
+  };
+
+  const LabelOpenTime = ({ style, data }) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    const customTimeSlot = [];
+
+    !isEmpty(data) &&
+      data?.forEach((item) => {
+        item.applicableDays.forEach((day) => {
+          customTimeSlot.push({
+            text: day.text,
+            value: Number(day.value),
+            start: item.start,
+            end: item.end,
+          });
+        });
+      });
+
+    const checkDayAvailable = customTimeSlot?.find(
+      (val) => val.value === now.getDay()
+    );
+
+    const appointmentTimeSlot =
+      !isEmpty(checkDayAvailable) && checkDayAvailable;
+
+    const startHour = appointmentTimeSlot?.start?.slice(0, 2);
+    const startMinutes = appointmentTimeSlot?.start?.slice(-2);
+    const endHour = appointmentTimeSlot?.end?.slice(0, 2);
+    const endMinutes = appointmentTimeSlot?.end?.slice(-2);
+
+    const startTimeInMinutes = startHour * 60 + Number(startMinutes);
+    const endTimeInMinutes = endHour * 60 + Number(endMinutes);
+
+    const currentTimeInMinutes = currentHour * 60 + Number(currentMinutes);
+
+    let label = 'See operational hour';
+
+    if (!isEmpty(checkDayAvailable)) {
+      if (
+        currentTimeInMinutes >= startTimeInMinutes &&
+        currentTimeInMinutes <= endTimeInMinutes
+      ) {
+        label = `Open now at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+      } else if (currentTimeInMinutes <= startTimeInMinutes) {
+        label = `Later at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+      }
+    }
+
+    return (
+      <div className={fontStyles.myFont} style={style}>
+        {label}
+      </div>
+    );
   };
 
   const Location = () => {
@@ -557,10 +628,10 @@ const Appointment = (props) => {
           onClick={() => setOpenDropDownTime(!openDropDownTime)}
         >
           <HistoryTimeIcon />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            <span style={{ marginRight: '4px' }}>Open now</span>{' '}
-            {operationalHoursActive?.open} - {operationalHoursActive?.close}
-          </div>
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={selectedLocation?.appointmentTimeSlot}
+          />
           {openDropDownTime ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
@@ -809,7 +880,7 @@ const Appointment = (props) => {
           style={{
             position: 'absolute',
             backgroundColor: 'white',
-            height: '310px',
+            height: 'auto',
             width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
