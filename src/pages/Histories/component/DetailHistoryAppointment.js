@@ -1,20 +1,17 @@
 import React from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useSelector } from 'react-redux';
-import fontStyles from '../style/styles.module.css';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import { useSelector, useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
-import { lsLoad } from 'helpers/localStorage';
-import config from 'config';
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+import { isEmptyArray } from 'helpers/CheckEmpty';
+import fontStyles from '../style/styles.module.css';
+import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
+import { OutletAction } from 'redux/actions/OutletAction';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -25,6 +22,7 @@ const DetailHistoryAppointment = ({
   isOpenModalDetail,
 }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const color = useSelector((state) => state.theme.color);
@@ -119,8 +117,17 @@ const DetailHistoryAppointment = ({
     },
   };
 
-  const handleContactUs = () => {
-    const phoneNumber = account?.accessToken?.payload?.phone_number?.slice(1);
+  const handleContactUs = async () => {
+    const currentOutlet = await dispatch(
+      OutletAction.getOutletById(item?.outlet?.id)
+    );
+
+    let phoneNumber = currentOutlet?.phoneNo;
+
+    if (!isNaN(phoneNumber.charAt(0))) {
+      phoneNumber = phoneNumber.slice(1);
+    }
+
     const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
     return window.open(url, '_blank');
   };

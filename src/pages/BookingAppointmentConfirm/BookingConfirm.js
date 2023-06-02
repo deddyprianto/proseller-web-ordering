@@ -1,18 +1,13 @@
 import React, { useLayoutEffect, useState, createRef } from 'react';
-import { useSelector } from 'react-redux';
-import fontStyles from './style/styles.module.css';
+import { useSelector, useDispatch } from 'react-redux';
 import Paper from '@mui/material/Paper';
-import { useDispatch } from 'react-redux';
+
+import fontStyles from './style/styles.module.css';
 import loader from './style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
 import AppointmentHeader from 'components/appointmentHeader';
 import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
-
-import { lsLoad } from 'helpers/localStorage';
-import config from 'config';
-
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+import { OutletAction } from 'redux/actions/OutletAction';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -82,8 +77,17 @@ const BookingConfirm = (props) => {
     return urlConvert;
   };
 
-  const handleContactUs = () => {
-    const phoneNumber = account?.accessToken?.payload?.phone_number?.slice(1);
+  const handleContactUs = async () => {
+    const currentOutlet = await dispatch(
+      OutletAction.getOutletById(cartSave?.outlet?.id)
+    );
+
+    let phoneNumber = currentOutlet?.phoneNo;
+
+    if (!isNaN(phoneNumber.charAt(0))) {
+      phoneNumber = phoneNumber.slice(1);
+    }
+
     const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
     return window.open(url, '_blank');
   };
