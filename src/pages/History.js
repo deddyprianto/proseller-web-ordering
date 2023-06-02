@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import HistoryLogin from './Histories/component/HistoryLogin';
 import HistoryAppointment from './Histories/component/HistoryAppointment';
 import fontStyles from './Histories/style/styles.module.css';
+import { CONSTANT } from 'helpers';
 
 const History = (props) => {
+  const dispatch = useDispatch();
   const [appointmentFeature, setAppointmentFeature] = useState(false);
-  const [tabStateButton, setTabStateButton] = useState('ordered');
+  const tabStateButton = useSelector(
+    (state) => state.appointmentReducer.tabStateHistoryAppointment
+  );
   const color = useSelector((state) => state.theme.color);
   const setting = useSelector((state) => state.order.setting);
 
@@ -135,7 +139,12 @@ const History = (props) => {
         >
           <button
             className={fontStyles.myFont}
-            onClick={() => setTabStateButton('ordered')}
+            onClick={() =>
+              dispatch({
+                type: CONSTANT.TAB_STATE_HISTORY_APPOINTMENT,
+                payload: 'ordered',
+              })
+            }
             style={{
               display: 'flex',
               border:
@@ -154,11 +163,16 @@ const History = (props) => {
               fontSize: '14px',
             }}
           >
-            Ordered
+            Order
           </button>
           <button
             className={fontStyles.myFont}
-            onClick={() => setTabStateButton('appointment')}
+            onClick={() =>
+              dispatch({
+                type: CONSTANT.TAB_STATE_HISTORY_APPOINTMENT,
+                payload: 'appointment',
+              })
+            }
             style={{
               display: 'flex',
               justifyContent: 'center',

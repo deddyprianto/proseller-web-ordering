@@ -561,7 +561,6 @@ const DetailHistoryAppointment = ({
             style={{
               width: '100%',
               margin: 'auto',
-              marginBottom: '20px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
