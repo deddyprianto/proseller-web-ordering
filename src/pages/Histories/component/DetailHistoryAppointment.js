@@ -10,6 +10,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
+import { lsLoad } from 'helpers/localStorage';
+import config from 'config';
+
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -112,6 +117,12 @@ const DetailHistoryAppointment = ({
         margin: 0,
       },
     },
+  };
+
+  const handleContactUs = () => {
+    const phoneNumber = account?.accessToken?.payload?.phone_number?.slice(1);
+    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+    return window.open(url, '_blank');
   };
 
   const RenderHeader = () => {
@@ -538,6 +549,7 @@ const DetailHistoryAppointment = ({
           }}
         >
           <div
+            onClick={() => handleContactUs()}
             className={fontStyles.myFont}
             style={{
               width: '100%',
@@ -579,6 +591,7 @@ const DetailHistoryAppointment = ({
     } else {
       return (
         <div
+          onClick={() => handleContactUs()}
           className={fontStyles.myFont}
           style={{
             width: '93%',

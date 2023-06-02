@@ -8,6 +8,12 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import AppointmentHeader from 'components/appointmentHeader';
 import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 
+import { lsLoad } from 'helpers/localStorage';
+import config from 'config';
+
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
+
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
@@ -69,10 +75,17 @@ const BookingConfirm = (props) => {
       return result;
     }
   };
+
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
+  };
+
+  const handleContactUs = () => {
+    const phoneNumber = account?.accessToken?.payload?.phone_number?.slice(1);
+    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+    return window.open(url, '_blank');
   };
 
   if (performance.getEntriesByType('navigation')[0].type === 'reload') {
@@ -678,6 +691,7 @@ const BookingConfirm = (props) => {
             }}
           >
             <div
+              onClick={() => handleContactUs()}
               style={{
                 display: 'flex',
                 justifyContent: 'center',
