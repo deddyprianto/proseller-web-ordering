@@ -545,14 +545,13 @@ const DetailHistoryAppointment = ({
         <div
           style={{
             width: '93%',
-            margin: 'auto',
+            margin: '10px 0',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gridTemplateRows: '1fr',
             gridAutoColumns: '1fr',
             gap: '0px 10px',
             gridAutoFlow: 'row',
-            marginTop: '20px',
           }}
         >
           <div
@@ -560,7 +559,6 @@ const DetailHistoryAppointment = ({
             className={fontStyles.myFont}
             style={{
               width: '100%',
-              margin: 'auto',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -579,7 +577,6 @@ const DetailHistoryAppointment = ({
             className={fontStyles.myFont}
             style={{
               width: '100%',
-              margin: 'auto',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
