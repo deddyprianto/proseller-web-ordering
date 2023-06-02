@@ -373,7 +373,9 @@ const Cart = (props) => {
             Anything else?
           </div>
           <div
-            onClick={() => props.history.push('/appointment')}
+            onClick={() =>
+              (window.location.href = changeFormatURl('/appointment'))
+            }
             style={{
               border: `1px solid ${color.primary}`,
               display: 'flex',

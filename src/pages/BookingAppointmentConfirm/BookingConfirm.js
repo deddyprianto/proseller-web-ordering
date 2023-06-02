@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, createRef } from 'react';
+import React, { useLayoutEffect, useState, createRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import Swal from 'sweetalert2';
@@ -8,6 +8,13 @@ import loader from './style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
 import AppointmentHeader from 'components/appointmentHeader';
 import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
+import { CONSTANT } from 'helpers';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
+import { isEmptyObject } from 'helpers/CheckEmpty';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { isEmpty } from 'helpers/utils';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
@@ -30,7 +37,14 @@ const BookingConfirm = (props) => {
   const ref = createRef();
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
+  const useStyles = makeStyles(() => ({
+    paper: { minWidth: '350px', overflow: 'hidden' },
+  }));
+  const classes = useStyles();
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingDeleteCart, setIsLoadingDeleteCart] = useState(false);
+  const [locationKeys, setLocationKeys] = useState([]);
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -39,6 +53,52 @@ const BookingConfirm = (props) => {
   const staff = useSelector((state) => state.appointmentReducer.staffID);
   const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
   const cartSave = useSelector((state) => state.appointmentReducer.cartSave);
+  const isOpenModalLeavePage = useSelector(
+    (state) => state.appointmentReducer.isOpenModalLeavePage
+  );
+  const menuSidebar = useSelector((state) => state.theme.menu);
+  const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
+  useEffect(() => {
+    return props.history.listen((location) => {
+      if (props.history.action === 'PUSH') {
+        setLocationKeys([location.pathname]);
+        if (
+          location.pathname !== '/bookingconfirm' &&
+          !isEmptyObject(cartAppointment)
+        ) {
+          dispatch({
+            type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+            payload: true,
+          });
+          props.history.push('/bookingconfirm');
+        }
+      }
+    });
+  }, [cartAppointment, locationKeys]);
+
+  const handleButtonSure = async () => {
+    if (cartAppointment?.details?.length > 0) {
+      setIsLoadingDeleteCart(true);
+      await dispatch(OrderAction.deleteCartAppointment());
+      setIsLoadingDeleteCart(false);
+    }
+    dispatch({
+      type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+      payload: false,
+    });
+    let path;
+    menuSidebar.navBar.forEach((item, i) => {
+      if (i === indexPath) {
+        path = item.path;
+      }
+    });
+    localStorage.removeItem('LOCATION_APPOINTMENT_PERSISTED');
+    dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
+    window.location.href = changeFormatURl(path);
+  };
 
   const handleConfirmButton = async () => {
     if (date && time && staff) {
@@ -601,6 +661,7 @@ const BookingConfirm = (props) => {
           </div>
           {cartSave?.details?.map((item) => (
             <div
+            key={item.id}
               style={{
                 marginTop: '10px',
                 width: '100%',
@@ -963,7 +1024,9 @@ const BookingConfirm = (props) => {
             <AppointmentHeader
               color={color}
               label='Booking Summary'
-              onBack={() => props.history.push('/appointment')}
+              onBack={() =>
+                (window.location.href = changeFormatURl('/cartappointment'))
+              }
             />
             <Timeline />
           </div>
@@ -998,9 +1061,115 @@ const BookingConfirm = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <LoadingOverlayCustom
+      active={isLoadingDeleteCart}
+      spinner
+      text='Deleted your cart...'
+    >
       <ResponsiveLayout />
-    </React.Fragment>
+      <Dialog
+        fullWidth
+        maxWidth='xs'
+        open={isOpenModalLeavePage}
+        onClose={() =>
+          dispatch({ type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT, payload: false })
+        }
+        classes={{ paper: classes.paper }}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        ></div>
+        <DialogTitle
+          className={fontStyles.myFont}
+          sx={{
+            fontWeight: 600,
+            fontSize: '16px',
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          Leaving Appointment Page
+        </DialogTitle>
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            height: '2px',
+            marginTop: '16px',
+          }}
+        />
+        <div
+          className={fontStyles.myFont}
+          style={{
+            color: 'rgba(183, 183, 183, 1)',
+            fontSize: '14px',
+            textAlign: 'center',
+            fontWeight: 500,
+            lineHeight: '21px',
+          }}
+        >
+          Some booked services you have not submitted might not be saved in our
+          system. Are you sure?
+        </div>
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            height: '2px',
+            marginTop: '16px',
+          }}
+        />
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            width: '100%',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+          }}
+        >
+          <button
+            onClick={() =>
+              dispatch({
+                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+                payload: false,
+              })
+            }
+            className={fontStyles.myFont}
+            style={{
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}`,
+              color: color.primary,
+              width: '50%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+              marginRight: '10px',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleButtonSure}
+            className={fontStyles.myFont}
+            style={{
+              color: 'white',
+              width: '50%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+            }}
+          >
+            Yes, I’m Sure
+          </button>
+        </DialogActions>
+      </Dialog>
+    </LoadingOverlayCustom>
   );
 };
 

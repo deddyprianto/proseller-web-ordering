@@ -282,7 +282,8 @@ const FooterWebOrdering = () => {
               if (
                 location.pathname === '/appointment' ||
                 location.pathname === '/location' ||
-                location.pathname === '/cartappointment'
+                location.pathname === '/cartappointment' ||
+                location.pathname === '/bookingconfirm'
               ) {
                 dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
                 dispatch({
