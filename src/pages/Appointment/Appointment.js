@@ -493,23 +493,6 @@ const Appointment = (props) => {
   };
 
   const Location = () => {
-    const dayNames = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ];
-
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const dayName = dayNames[dayOfWeek];
-    const operationalHoursActive = selectedLocation.operationalHours.find(
-      (item) => item.nameOfDay === dayName
-    );
-
     const localStyle = {
       container: {
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
@@ -669,7 +652,7 @@ const Appointment = (props) => {
           }}
         >
           <Tabs
-            value={selectedCategory?.sequence || 0}
+            value={selectedCategory?.index || 0}
             sx={styleSheet.indicatorForMobileView}
             variant='scrollable'
             scrollButtons='auto'
@@ -678,7 +661,7 @@ const Appointment = (props) => {
             {categoryTabAppointment.map((item, i) => (
               <Tab
                 onClick={() => {
-                  setSelectedCategory(item);
+                  setSelectedCategory({ ...item, index: i });
                 }}
                 key={item.id}
                 label={item.name}
