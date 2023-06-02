@@ -225,7 +225,7 @@ const DetailAppointment = ({
           modules={[Pagination, Navigation]}
           className='mySwiper'
         >
-          {images.map((item) => (
+          {images?.map((item) => (
             <SwiperSlide>
               <img src={item} alt='images' />
             </SwiperSlide>
