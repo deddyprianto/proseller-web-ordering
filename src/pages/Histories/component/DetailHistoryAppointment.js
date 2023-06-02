@@ -7,11 +7,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import Swal from 'sweetalert2';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import fontStyles from '../style/styles.module.css';
 import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 import { OutletAction } from 'redux/actions/OutletAction';
+import { isEmpty } from 'helpers/utils';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -128,8 +131,23 @@ const DetailHistoryAppointment = ({
       phoneNumber = phoneNumber.slice(1);
     }
 
-    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
-    return window.open(url, '_blank');
+    if (!isEmpty(phoneNumber)) {
+      const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+      return window.open(url, '_blank');
+    } else {
+      Swal.fire({
+        title: `<p style='padding-top: 10px'>Contact Number Not Available</p>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>Sorry, the contact number is not available right now. Please, try again later.</h5>`,
+        allowOutsideClick: false,
+        confirmButtonColor: color?.primary,
+        width: '40em',
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
+          container: fontStyles.swalContainer,
+        },
+      });
+    }
   };
 
   const RenderHeader = () => {
