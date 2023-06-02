@@ -80,7 +80,7 @@ const History = () => {
               lineHeight: '50px',
             }}
           >
-            Ordered
+            Order
           </div>
           <div
             onClick={() => setStateTabs('pendingorder')}
