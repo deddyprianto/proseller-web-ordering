@@ -231,7 +231,11 @@ const ItemServiceCart = ({
                   ? item?.product.defaultImageURL
                   : calendarIcon
               }
-              style={{ borderRadius: '10px', height: '55px' }}
+              style={{
+                borderRadius: '10px',
+                height: '55px',
+                objectFit: 'cover',
+              }}
               alt='logo'
             />
           </div>
