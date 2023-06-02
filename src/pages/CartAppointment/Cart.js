@@ -161,19 +161,14 @@ const Cart = (props) => {
             style={{
               width: '77%',
               marginBottom: '10px',
-              display: 'grid',
-              gridTemplateColumns: '1fr 145px 35px 40px 1fr',
-              gridTemplateRows: '1fr',
-              gap: '0px 0px',
-              gridAutoFlow: 'row',
-              gridTemplateAreas: '". . . . ."',
+              display: 'flex',
               justifyItems: 'center',
               alignItems: 'center',
             }}
           >
             <div
               style={{
-                width: '24px',
+                minWidth: '24px',
                 height: '24px',
                 lineHeight: '24px',
                 textAlign: 'center',
@@ -186,11 +181,10 @@ const Cart = (props) => {
             </div>
             <div
               style={{
+                minWidth: '126px',
                 fontWeight: 600,
-                margin: '0px 4px',
+                margin: '0 7px',
                 color: color.primary,
-                marginLeft: '5px',
-                marginRight: '10px',
                 fontSize: '14px',
               }}
             >
@@ -198,7 +192,7 @@ const Cart = (props) => {
             </div>
             <hr
               style={{
-                width: '30px',
+                width: '100%',
                 padding: 0,
                 margin: 0,
                 backgroundColor: 'rgba(183, 183, 183, 1)',
@@ -207,13 +201,14 @@ const Cart = (props) => {
             />
             <div
               style={{
-                width: '24px',
+                minWidth: '24px',
                 height: '24px',
                 lineHeight: '24px',
                 textAlign: 'center',
                 backgroundColor: 'rgba(183, 183, 183, 1)',
                 color: 'white',
                 borderRadius: '100%',
+                margin: '0 7px',
               }}
             >
               2
@@ -241,11 +236,7 @@ const Cart = (props) => {
             alignItems: 'center',
           }}
         >
-          <div
-            style={{
-              width: '25%',
-            }}
-          />
+          <div style={{ width: '25%' }} />
           <div
             style={{
               width: '80%',
@@ -256,7 +247,7 @@ const Cart = (props) => {
           >
             <div
               style={{
-                width: '24px',
+                minWidth: '24px',
                 height: '24px',
                 lineHeight: '24px',
                 textAlign: 'center',
@@ -269,32 +260,34 @@ const Cart = (props) => {
             </div>
             <div
               style={{
+                minWidth: '126px',
                 fontWeight: 600,
-                margin: '0px 4px',
+                margin: '0 7px',
                 color: color.primary,
+                fontSize: '14px',
               }}
             >
               Fill Booking Details
             </div>
             <hr
               style={{
-                width: '40%',
+                width: '100%',
                 padding: 0,
-                margin: '0px 10px',
+                margin: 0,
                 backgroundColor: 'rgba(183, 183, 183, 1)',
                 height: '1px',
-                opacity: 0.6,
               }}
             />
             <div
               style={{
-                width: '24px',
+                minWidth: '24px',
                 height: '24px',
                 lineHeight: '24px',
                 textAlign: 'center',
                 backgroundColor: 'rgba(183, 183, 183, 1)',
                 color: 'white',
                 borderRadius: '100%',
+                margin: '0 7px',
               }}
             >
               2

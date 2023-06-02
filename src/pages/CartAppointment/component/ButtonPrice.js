@@ -9,11 +9,13 @@ const ButtonPrice = ({ changeFormatURl, color, cartAppointment }) => {
   const staffID = useSelector((state) => state.appointmentReducer.staffID);
 
   const handleSubmit = async () => {
-    dispatch({
-      type: CONSTANT.CART_SAVE_APPOINTMENT,
-      payload: cartAppointment,
-    });
-    window.location.href = changeFormatURl('/bookingconfirm');
+    if (date && time && staffID) {
+      dispatch({
+        type: CONSTANT.CART_SAVE_APPOINTMENT,
+        payload: cartAppointment,
+      });
+      window.location.href = changeFormatURl('/bookingconfirm');
+    }
   };
 
   return (

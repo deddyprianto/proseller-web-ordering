@@ -106,14 +106,20 @@ const BookingSubmitted = () => {
             fontWeight: 500,
           }}
         >
-          <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
+          <div
+            style={{
+              minWidth: '103px',
+              color: 'rgba(183, 183, 183, 1)',
+              fontWeight: 500,
+            }}
+          >
             m Your Booking
           </div>
           <hr
             style={{
-              width: '27px',
+              width: '100%',
               padding: 0,
-              margin: 0,
+              margin: '0 7px',
               backgroundColor: 'rgba(183, 183, 183, 1)',
             }}
           />
@@ -126,7 +132,7 @@ const BookingSubmitted = () => {
           >
             <div
               style={{
-                width: '24px',
+                minWidth: '24px',
                 height: '24px',
                 lineHeight: '24px',
                 textAlign: 'center',
@@ -136,7 +142,7 @@ const BookingSubmitted = () => {
                 borderRadius: '100%',
               }}
             >
-              2
+              3
             </div>
             <div
               style={{
@@ -164,14 +170,20 @@ const BookingSubmitted = () => {
             fontWeight: 500,
           }}
         >
-          <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
+          <div
+            style={{
+              minWidth: '103px',
+              color: 'rgba(183, 183, 183, 1)',
+              fontWeight: 500,
+            }}
+          >
             m Your Booking
           </div>
           <hr
             style={{
               width: '50%',
               padding: 0,
-              margin: 0,
+              margin: '0 7px',
               backgroundColor: 'rgba(183, 183, 183, 1)',
             }}
           />
@@ -194,7 +206,7 @@ const BookingSubmitted = () => {
                 borderRadius: '100%',
               }}
             >
-              2
+              3
             </div>
             <div
               style={{
