@@ -298,7 +298,7 @@ const Location = () => {
           borderRadius: '10px',
           padding: '10px 0px',
           marginBottom: '10px',
-          border: '1px solid red',
+          border: `1px solid ${color.primary}`,
         }}
       >
         <div

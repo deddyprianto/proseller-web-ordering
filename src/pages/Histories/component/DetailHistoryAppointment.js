@@ -1,15 +1,20 @@
 import React from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useSelector } from 'react-redux';
-import fontStyles from '../style/styles.module.css';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import { useSelector, useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import Swal from 'sweetalert2';
+
+import { isEmptyArray } from 'helpers/CheckEmpty';
+import fontStyles from '../style/styles.module.css';
 import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
+import { OutletAction } from 'redux/actions/OutletAction';
+import { isEmpty } from 'helpers/utils';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -20,6 +25,7 @@ const DetailHistoryAppointment = ({
   isOpenModalDetail,
 }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const color = useSelector((state) => state.theme.color);
@@ -112,6 +118,36 @@ const DetailHistoryAppointment = ({
         margin: 0,
       },
     },
+  };
+
+  const handleContactUs = async () => {
+    const currentOutlet = await dispatch(
+      OutletAction.getOutletById(item?.outlet?.id)
+    );
+
+    let phoneNumber = currentOutlet?.phoneNo;
+
+    if (!isNaN(phoneNumber.charAt(0))) {
+      phoneNumber = phoneNumber.slice(1);
+    }
+
+    if (!isEmpty(phoneNumber)) {
+      const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+      return window.open(url, '_blank');
+    } else {
+      Swal.fire({
+        title: `<p style='padding-top: 10px'>Contact Number Not Available</p>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>Sorry, the contact number is not available right now. Please, try again later.</h5>`,
+        allowOutsideClick: false,
+        confirmButtonColor: color?.primary,
+        width: '40em',
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
+          container: fontStyles.swalContainer,
+        },
+      });
+    }
   };
 
   const RenderHeader = () => {
@@ -527,21 +563,20 @@ const DetailHistoryAppointment = ({
         <div
           style={{
             width: '93%',
-            margin: 'auto',
+            margin: '10px 0',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gridTemplateRows: '1fr',
             gridAutoColumns: '1fr',
             gap: '0px 10px',
             gridAutoFlow: 'row',
-            marginTop: '20px',
           }}
         >
           <div
+            onClick={() => handleContactUs()}
             className={fontStyles.myFont}
             style={{
               width: '100%',
-              margin: 'auto',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -560,7 +595,6 @@ const DetailHistoryAppointment = ({
             className={fontStyles.myFont}
             style={{
               width: '100%',
-              margin: 'auto',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -579,6 +613,7 @@ const DetailHistoryAppointment = ({
     } else {
       return (
         <div
+          onClick={() => handleContactUs()}
           className={fontStyles.myFont}
           style={{
             width: '93%',

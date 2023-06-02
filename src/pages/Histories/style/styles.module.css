@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap');
 
-.myFont{
+.myFont {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 ::-webkit-input-placeholder {
@@ -12,7 +12,7 @@
   filter: contrast(110%) brightness(110%) sepia(30%) grayscale(100%);
 }
 .filter::before {
-  content: "";
+  content: '';
   display: block;
   height: 100%;
   width: 100%;
@@ -21,4 +21,8 @@
   position: absolute;
   pointer-events: none;
   background: rgba(0, 0, 0, 0);
+}
+
+.swalContainer {
+  z-index: 9999 !important;
 }

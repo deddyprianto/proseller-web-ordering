@@ -205,7 +205,12 @@ const ItemService = ({
               <img
                 className={filterImage.filter}
                 src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
-                style={{ borderRadius: '10px', width: '48px', height: '48px' }}
+                style={{
+                  borderRadius: '10px',
+                  width: '48px',
+                  height: '48px',
+                  objectFit: 'cover',
+                }}
                 alt='icon'
               />
             </div>
@@ -291,7 +296,12 @@ const ItemService = ({
               <img
                 alt='icon'
                 src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
-                style={{ borderRadius: '10px', width: '48px', height: '48px' }}
+                style={{
+                  borderRadius: '10px',
+                  width: '48px',
+                  height: '48px',
+                  objectFit: 'cover',
+                }}
               />
             </div>
             <div style={localStyle.containerLabel}>
