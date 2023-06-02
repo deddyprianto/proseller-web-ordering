@@ -7,7 +7,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import ResultSearch from './ResultSearch';
-
+import productNotFound from 'assets/images/prodnotfound.png';
 const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -155,12 +155,46 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
       {isEmptyArray(searchBar) && inputValue.length > 3 && !isLoading && (
         <div
           style={{
-            color: 'rgba(255, 0, 0, 1)',
-            margin: '0px 20px',
-            marginBottom: '30px',
+            height: '80vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          Product not found
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img alt='placeholder' src={productNotFound} />
+            <div
+              style={{
+                fontWeight: 'bold',
+                fontSize: '16px',
+                marginTop: '24px',
+                color: 'rgba(0, 0, 0, 1)',
+              }}
+            >
+              "{`${inputValue}`}" not found
+            </div>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: 'black',
+                marginTop: '5px',
+                textAlign: 'center',
+                lineHeight: '21px',
+              }}
+            >
+              Can't find the product you're searching for. <br /> Please try
+              using different keywords.
+            </div>
+          </div>
         </div>
       )}
 
