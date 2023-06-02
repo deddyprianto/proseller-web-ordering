@@ -21,12 +21,12 @@ const HistoryAppointment = () => {
 
   const { historyAppointment, loading, error, hasMore, isEmptyData } =
     useHistoryAppointment({
-      take: 10,
+      take: 11,
       skip,
       pageNumber,
       tabNameAPI,
     });
-
+  console.log(historyAppointment);
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
 
@@ -248,11 +248,7 @@ const HistoryAppointment = () => {
       return historyAppointment.map((item, index) => {
         if (historyAppointment.length === index + 1) {
           return (
-            <div
-              ref={historyRef}
-              key={item.id}
-              style={{ backgroundColor: 'red' }}
-            >
+            <div ref={historyRef} key={item.id}>
               <ItemHistory
                 item={item}
                 color={color}
