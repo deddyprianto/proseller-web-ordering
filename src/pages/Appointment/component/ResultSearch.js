@@ -284,7 +284,8 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
               <img
                 className={filterImage.filter}
                 src={item.defaultImageURL}
-                style={{ borderRadius: '10px' }}
+                style={{ borderRadius: '10px', objectFit: 'cover' }}
+                alt='img'
               />
             </div>
             <div style={localStyle.containerUnavailable}>
@@ -368,7 +369,9 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
                 src={item.defaultImageURL}
                 style={{
                   borderRadius: '10px',
+                  objectFit: 'cover',
                 }}
+                alt='img'
               />
             </div>
             <div style={localStyle.containerLabel}>
