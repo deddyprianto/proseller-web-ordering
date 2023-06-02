@@ -281,7 +281,8 @@ const FooterWebOrdering = () => {
             if (!isEmptyObject(cartAppointment)) {
               if (
                 location.pathname === '/appointment' ||
-                location.pathname === '/location'
+                location.pathname === '/location' ||
+                location.pathname === '/cartappointment'
               ) {
                 dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
                 dispatch({
