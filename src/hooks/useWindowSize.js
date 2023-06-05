@@ -12,8 +12,3 @@ export default function useWindowSize() {
   }, []);
   return size;
 }
-
-// export default function useWindowSize() {
-//   const { width, height } = windowSize();
-//   return { width, height };
-// }

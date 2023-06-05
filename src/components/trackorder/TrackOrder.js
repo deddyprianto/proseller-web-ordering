@@ -13,12 +13,13 @@ import screen from 'hooks/useWindowSize';
 
 const TrackOrder = () => {
   const responsiveDesign = screen();
-  const [isLoading, setIsLoading] = useState(false);
   const inputFieldRef = useRef(null);
   const dispatch = useDispatch();
   const color = useSelector((state) => state.theme.color);
   const matches = useMediaQuery('(min-width:1200px)');
   const history = useHistory();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [trackOrderNotif, setTrackOrderNotif] = useState(false);
   const [messageNotif, setMessageNotif] = useState('');
 
@@ -90,6 +91,7 @@ const TrackOrder = () => {
               cursor: 'pointer',
               margin: '0px 10px',
             }}
+            alt='ic_wrong'
           />
 
           <p
@@ -124,6 +126,7 @@ const TrackOrder = () => {
           style={{ paddingLeft: '10px' }}
           src={ArrowLeftIcons}
           onClick={() => history.goBack()}
+          alt='ic_arrow_left'
         />
         <div className={style.title}>Track Order</div>
       </div>
@@ -134,9 +137,7 @@ const TrackOrder = () => {
       <div
         style={{
           width: matches ? '40%' : '100%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          height: matches ? '100vh' : '85vh',
+          height: `${responsiveDesign.height * (matches ? 1 : 0.8)}px`,
           boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         }}
       >
