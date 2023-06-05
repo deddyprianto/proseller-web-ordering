@@ -1017,19 +1017,26 @@ const loadStaffByTimeSlot = (date, timeslot) => {
 const addCartAppointment = (addService) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
-    const response = await axios.post(`${url}cart`, addService, {
-      headers: {
-        Authorization: `Bearer ${account.accessToken.jwtToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.status === 201) {
+    try {
+      const response = await axios.post(`${url}cart`, addService, {
+        headers: {
+          Authorization: `Bearer ${account.accessToken.jwtToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
       dispatch({
         type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
         payload: response.data.data,
       });
+    } catch (error) {
+      dispatch({
+        type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
+        payload: {
+          isError: true,
+          message: error.response.data.message,
+        },
+      });
     }
-    return response;
   };
 };
 const submitCartAppointment = (payload) => {
@@ -1058,19 +1065,26 @@ const submitCartAppointment = (payload) => {
 const updateCartAppointment = (addService, productId) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
-    const response = await axios.put(`${url}cart/${productId}`, addService, {
-      headers: {
-        Authorization: `Bearer ${account.accessToken.jwtToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.data.message) {
+    try {
+      const response = await axios.put(`${url}cart/${productId}`, addService, {
+        headers: {
+          Authorization: `Bearer ${account.accessToken.jwtToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
       dispatch({
         type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
         payload: response.data.data,
       });
+    } catch (error) {
+      dispatch({
+        type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
+        payload: {
+          isError: true,
+          message: error.response.data.message,
+        },
+      });
     }
-    return response;
   };
 };
 
