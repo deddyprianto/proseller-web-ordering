@@ -978,7 +978,7 @@ const getBooikingHistory = ({
   return async (dispatch) => {
     try {
       const response = await axios.get(
-        `${url}customer/appointment?status=${categoryBookingName}&skip=${skip}&take=${take}&page=${pageNumber}`,
+        `${url}customer/appointment?status=${categoryBookingName}&skip=${skip}&take=${take}`,
         {
           headers: {
             Authorization: `Bearer ${account.accessToken.jwtToken}`,

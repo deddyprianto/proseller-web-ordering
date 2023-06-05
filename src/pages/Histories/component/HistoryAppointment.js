@@ -9,6 +9,7 @@ import useHistoryAppointment from 'hooks/useHistoryAppointment';
 import config from 'config';
 import useMobileSize from 'hooks/useMobileSize';
 
+
 const HistoryAppointment = () => {
   const historyRef = useRef();
   const [pageNumber, setPageNumber] = useState(1);
@@ -16,7 +17,7 @@ const HistoryAppointment = () => {
 
   const [tabName, setTabName] = useState('SUBMITTED');
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
-  const [skip, setSkip] = useState(10);
+  const [skip, setSkip] = useState(0);
 
   const { historyAppointment, loading, error, hasMore, isEmptyData } =
     useHistoryAppointment({
@@ -59,7 +60,6 @@ const HistoryAppointment = () => {
       observer.observe(historyRef.current);
       tempRef = historyRef.current;
     }
-    console.log(historyRef.current);
     return () => {
       if (tempRef) observer.unobserve(tempRef);
     };
@@ -218,7 +218,7 @@ const HistoryAppointment = () => {
         : new Date(combineDateTime).getTime() <= new Date().getTime();
     return compareDate;
   });
-  const RenderItemHistory = () => {
+  const renderItemHistory = () => {
     if (tabNameAPI === 'CONFIRMED') {
       return filterBookingHistory.map((item, index) => {
         if (historyAppointment.length === index + 1) {
@@ -248,7 +248,11 @@ const HistoryAppointment = () => {
       return historyAppointment.map((item, index) => {
         if (historyAppointment.length === index + 1) {
           return (
-            <div ref={historyRef} key={item.id}>
+            <div
+              ref={historyRef}
+              key={item.id}
+              style={{ backgroundColor: 'red' }}
+            >
               <ItemHistory
                 item={item}
                 color={color}
@@ -276,7 +280,7 @@ const HistoryAppointment = () => {
     <React.Fragment>
       <RenderTabHeaderMobile />
       <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 70 }}>
-        <RenderItemHistory />
+        {renderItemHistory()}
         {loading && <RenderAnimationLoading />}
         {isEmptyData && (
           <div style={{ width: '100%' }}>

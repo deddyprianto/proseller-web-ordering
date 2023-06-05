@@ -9,6 +9,7 @@ export default function useHistoryAppointment({
   pageNumber,
   tabNameAPI,
 }) {
+  console.log(skip);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -24,7 +25,6 @@ export default function useHistoryAppointment({
             take,
             skip,
             categoryBookingName: tabNameAPI,
-            pageNumber,
           })
         );
 
