@@ -87,8 +87,8 @@ const BookingConfirm = (props) => {
 
     let phoneNumber = currentOutlet?.phoneNo;
 
-    if (!isNaN(phoneNumber.charAt(0))) {
-      phoneNumber = phoneNumber.slice(1);
+    if (isNaN(phoneNumber?.charAt(0))) {
+      phoneNumber = phoneNumber?.slice(1);
     }
 
     if (!isEmpty(phoneNumber)) {
@@ -149,7 +149,6 @@ const BookingConfirm = (props) => {
           <div
             style={{
               width: '100%',
-              marginBottom: '10px',
               display: 'flex',
               justifyItems: 'center',
               alignItems: 'center',
@@ -232,108 +231,6 @@ const BookingConfirm = (props) => {
       );
     } else {
       return (
-        // <div
-        //   style={{
-        //     width: '100%',
-        //     fontSize: '14px',
-        //     display: 'grid',
-        //     gridTemplateColumns: '1fr 155px 1fr',
-        //     gridTemplateRows: '1fr',
-        //     gridAutoColumns: '1fr',
-        //     gap: '0px 0px',
-        //     gridAutoFlow: 'row',
-        //     gridTemplateAreas: '". . ."',
-        //     alignItems: 'center',
-        //     padding: '0px',
-        //     marginTop: gadgetScreen ? '30px' : '20px',
-        //   }}
-        // >
-        //   <div
-        //     style={{
-        //       display: 'flex',
-        //       justifyContent: 'space-between',
-        //       alignItems: 'center',
-        //     }}
-        //   >
-        //     <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
-        //       g Details
-        //     </div>
-        //     <hr
-        //       style={{
-        //         width: '150px',
-        //         padding: 0,
-        //         margin: 0,
-        //         backgroundColor: 'rgba(183, 183, 183, 1)',
-        //       }}
-        //     />
-        //     <div
-        //       style={{
-        //         width: '24px',
-        //         height: '24px',
-        //         lineHeight: '24px',
-        //         textAlign: 'center',
-        //         backgroundColor: color.primary,
-        //         color: 'white',
-        //         fontWeight: 500,
-        //         borderRadius: '100%',
-        //       }}
-        //     >
-        //       2
-        //     </div>
-        //   </div>
-
-        //   <div
-        //     style={{
-        //       justifySelf: 'center',
-        //       fontWeight: 600,
-        //       margin: '0px',
-        //       color: color.primary,
-        //     }}
-        //   >
-        //     Confirm Your Booking
-        //   </div>
-
-        //   <div
-        //     style={{
-        //       display: 'flex',
-        //       justifyContent: gadgetScreen ? 'center' : 'space-between',
-        //       alignItems: 'center',
-        //     }}
-        //   >
-        //     <hr
-        //       style={{
-        //         width: '170px',
-        //         padding: 0,
-        //         margin: '0px 5px',
-        //         backgroundColor: 'rgba(183, 183, 183, 1)',
-        //       }}
-        //     />
-        //     <div
-        //       style={{
-        //         width: '24px',
-        //         height: '24px',
-        //         lineHeight: '24px',
-        //         textAlign: 'center',
-        //         backgroundColor: 'rgba(183, 183, 183, 1)',
-        //         color: 'white',
-        //         borderRadius: '100%',
-        //         fontWeight: 500,
-        //         marginLeft: '4px',
-        //       }}
-        //     >
-        //       3
-        //     </div>
-        //     <div
-        //       style={{
-        //         fontWeight: 500,
-        //         marginLeft: '4px',
-        //         color: 'rgba(183, 183, 183, 1)',
-        //       }}
-        //     >
-        //       Finis
-        //     </div>
-        //   </div>
-        // </div>
         <div
           style={{
             width: '100%',
@@ -655,7 +552,6 @@ const BookingConfirm = (props) => {
             <div
               style={{
                 fontWeight: 600,
-                fontSize: '14px',
                 color: 'black',
               }}
             >
@@ -667,7 +563,6 @@ const BookingConfirm = (props) => {
                 fontWeight: 'bold',
                 justifySelf: 'self-end',
                 color: color.primary,
-                fontSize: '14px',
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
@@ -953,7 +848,7 @@ const BookingConfirm = (props) => {
             gridTemplateColumns: '1fr',
             gridTemplateRows: '100px 1fr',
             gridAutoColumns: '1fr',
-            gap: '0px 0px',
+            gap: '10px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '"."\n    "."',
             paddingTop: '6px',

@@ -127,8 +127,8 @@ const DetailHistoryAppointment = ({
 
     let phoneNumber = currentOutlet?.phoneNo;
 
-    if (!isNaN(phoneNumber.charAt(0))) {
-      phoneNumber = phoneNumber.slice(1);
+    if (isNaN(phoneNumber?.charAt(0))) {
+      phoneNumber = phoneNumber?.slice(1);
     }
 
     if (!isEmpty(phoneNumber)) {
@@ -445,6 +445,7 @@ const DetailHistoryAppointment = ({
           </div>
           {item.details.map((item) => (
             <div
+              key={item.id}
               style={{
                 marginTop: '10px',
                 width: '100%',
@@ -499,7 +500,6 @@ const DetailHistoryAppointment = ({
             <div
               style={{
                 fontWeight: 600,
-                fontSize: '13px',
                 color: 'black',
               }}
             >
@@ -510,7 +510,6 @@ const DetailHistoryAppointment = ({
                 fontWeight: 'bold',
                 justifySelf: 'self-end',
                 color: color.primary,
-                fontSize: '14px',
               }}
             >
               {settingAppoinment

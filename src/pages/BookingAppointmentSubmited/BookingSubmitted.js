@@ -481,7 +481,6 @@ const BookingSubmitted = () => {
             <div
               style={{
                 fontWeight: 600,
-                fontSize: '14px',
                 color: 'black',
               }}
             >
@@ -493,7 +492,6 @@ const BookingSubmitted = () => {
                 fontWeight: 'bold',
                 justifySelf: 'self-end',
                 color: color.primary,
-                fontSize: '14px',
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
