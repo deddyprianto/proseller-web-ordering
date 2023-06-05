@@ -271,7 +271,7 @@ const Cart = (props) => {
                 color: 'rgba(183, 183, 183, 1)',
               }}
             >
-              conf
+              Conf
             </div>
           </div>
         </div>
@@ -351,7 +351,7 @@ const Cart = (props) => {
                 color: 'rgba(183, 183, 183, 1)',
               }}
             >
-              conf
+              Conf
             </div>
           </div>
         </div>
