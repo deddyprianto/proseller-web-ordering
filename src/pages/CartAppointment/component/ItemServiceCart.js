@@ -317,7 +317,9 @@ const ItemServiceCart = ({
               {convertTimeToStr(item?.duration)}
             </div>
           </div>
-          <div>{settingAppoinment && handleCurrency(item?.grossAmount)}</div>
+          <div style={{ fontWeight: 'bold' }}>
+            {settingAppoinment && handleCurrency(item?.grossAmount)}
+          </div>
         </div>
         <hr
           style={{

@@ -384,7 +384,7 @@ const DetailAppointment = ({
           <div
             style={{
               fontWeight: 'bold',
-              color: 'rgba(255, 85, 99, 1)',
+              color: color.primary,
               fontSize: '18px',
             }}
           >
