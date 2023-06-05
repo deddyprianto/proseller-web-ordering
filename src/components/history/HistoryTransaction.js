@@ -74,9 +74,7 @@ const HistoryTransaction = ({ countryCode }) => {
       <div
         style={{
           width: '95%',
-          margin: 'auto',
-          marginTop: '20px',
-          height: '75vh',
+          margin: '80px auto 50px',
           overflowY: 'auto',
         }}
       >
@@ -123,7 +121,7 @@ const HistoryTransaction = ({ countryCode }) => {
           })}
           {loading && <RenderAnimationLoading />}
           {isEmptyData && (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%', marginTop: '20px' }}>
               <p
                 className='default-font'
                 style={{ color: '#9D9D9D', marginLeft: '20px' }}

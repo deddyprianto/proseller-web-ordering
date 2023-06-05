@@ -328,22 +328,24 @@ const ProductList = ({ ...props }) => {
               }}
             >
               <table>
-                <tr>
-                  <td
-                    style={{
-                      textAlign: 'center',
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {category.name}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        textAlign: 'center',
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                    >
+                      {category.name}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </Tab>
           );

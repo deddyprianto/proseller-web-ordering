@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -11,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { CONSTANT } from 'helpers';
 
-const ModalAppointment = ({ name, setName, isLoggedIn }) => {
+const ModalAppointment = ({ name = false, setName, isLoggedIn }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const useStyles = makeStyles(() => ({
@@ -19,13 +18,6 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
   }));
   const classes = useStyles();
 
-  const style = {
-    dialogContent: {
-      '& .MuiDialogContent-root': {
-        paddingBottom: 0,
-      },
-    },
-  };
   return (
     <Dialog
       fullWidth
@@ -56,7 +48,7 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
           marginTop: '15px',
         }}
       >
-        <img src={imgAppointment} />
+        <img src={imgAppointment} alt='img' />
       </div>
       <DialogTitle
         className={fontStyles.myFont}
@@ -112,11 +104,6 @@ const ModalAppointment = ({ name, setName, isLoggedIn }) => {
       </DialogActions>
     </Dialog>
   );
-};
-
-ModalAppointment.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
 };
 
 export default ModalAppointment;

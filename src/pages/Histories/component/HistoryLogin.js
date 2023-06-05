@@ -53,7 +53,7 @@ const History = () => {
 
   const RenderHeaderTab = () => {
     return (
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', position: 'fixed' }}>
         <div
           style={{
             marginTop: '15px',
