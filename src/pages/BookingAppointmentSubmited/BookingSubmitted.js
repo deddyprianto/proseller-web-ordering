@@ -69,6 +69,18 @@ const BookingSubmitted = () => {
     window.location.href = '/';
   }
 
+  useEffect(() => {
+    const handlePopstate = () => {
+      window.location.href = changeFormatURl('/appointment');
+    };
+
+    window.addEventListener('popstate', handlePopstate);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopstate);
+    };
+  }, []);
+
   const styleSheet = {
     container: {
       width: '45%',

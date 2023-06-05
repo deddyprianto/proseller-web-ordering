@@ -220,6 +220,10 @@ const Appointment = (props) => {
   }, []);
 
   useEffect(() => {
+    dispatch({
+      type: CONSTANT.IS_DATE_SELECTED,
+      payload: false,
+    });
     dispatch({ type: CONSTANT.DATE_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: '' });
     dispatch({ type: CONSTANT.STAFFID_APPOINTMENT, payload: '' });

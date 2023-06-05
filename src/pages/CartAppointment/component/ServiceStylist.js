@@ -4,27 +4,18 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import LoaderSkeleton from './LoaderSkeleton';
 import defaultImageURL from 'assets/images/defaultPicStylist.png';
 import { CONSTANT } from 'helpers';
-import useImageAspectRatio from 'hooks/useImageAspectRatio';
+
 
 const ServiceStylist = ({ color }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [isActiveStylist, setIsActiveStylist] = useState('');
 
   const date = useSelector((state) => state.appointmentReducer.date);
   const time = useSelector((state) => state.appointmentReducer.time);
   const staffServices = useSelector(
     (state) => state.appointmentReducer.staffServices
   );
-
-  useEffect(() => {
-    if (!isActiveStylist) {
-      dispatch({
-        type: CONSTANT.STAFFID_APPOINTMENT,
-        payload: '',
-      });
-    }
-  }, []);
+  const staffID = useSelector((state) => state.appointmentReducer.staffID);
 
   useEffect(() => {
     const loadData = async () => {
@@ -32,7 +23,6 @@ const ServiceStylist = ({ color }) => {
         setIsLoading(true);
         await dispatch(OrderAction.loadStaffByTimeSlot(date, time));
         setIsLoading(false);
-        setIsActiveStylist('');
       } catch (error) {
         console.log(error);
       }
@@ -90,20 +80,19 @@ const ServiceStylist = ({ color }) => {
                     type: CONSTANT.STAFFID_APPOINTMENT,
                     payload: { id: item.id, name: item.name },
                   });
-                  setIsActiveStylist(item.id);
                 }}
                 style={{
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
                   backgroundColor:
-                    isActiveStylist === item.id ? color.primary : '#F9F9F9',
-                  color: isActiveStylist === item.id ? 'white' : 'black',
+                    staffID?.id === item.id ? color.primary : '#F9F9F9',
+                  color: staffID?.id === item.id ? 'white' : 'black',
                   borderRadius: '8px',
                   padding: '10px',
                   fontSize: '14px',
                   boxShadow:
-                    isActiveStylist === item.id &&
+                    staffID?.id === item.id &&
                     '0px 4px 10px rgba(0, 0, 0, 0.1)',
                   pointerEvents: !item.isAvailable && 'none',
                   cursor: !item.isAvailable ? 'not-allowed' : 'pointer',

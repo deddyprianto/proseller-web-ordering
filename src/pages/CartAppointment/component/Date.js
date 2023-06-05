@@ -15,11 +15,11 @@ const Date = ({ timeslot, color }) => {
   const [isConfirmButtonPressed, setIsConfirmButtonPressed] = useState(false);
   const [isOpenModalDate, setIsOpenModalDate] = useState(false);
   const dispatch = useDispatch();
-  const useStyless = makeStyles(() => ({
+  const useStyled = makeStyles(() => ({
     paper: { minWidth: '340px', borderRadius: '100px' },
   }));
-  const classes = useStyless();
-  const isListDateSelected = useSelector(
+  const classes = useStyled();
+  const isItemDateSelected = useSelector(
     (state) => state.appointmentReducer.isDateSelected
   );
   const date = useSelector((state) => state.appointmentReducer.date);
@@ -34,10 +34,12 @@ const Date = ({ timeslot, color }) => {
 
   useEffect(() => {
     const dateNow = showListDate.find((item) => item.timeSlot.length > 0);
-    dispatch({
-      type: CONSTANT.DATE_APPOINTMENT,
-      payload: changeFormatDate(dateNow?.date),
-    });
+    if (!isItemDateSelected) {
+      dispatch({
+        type: CONSTANT.DATE_APPOINTMENT,
+        payload: changeFormatDate(dateNow?.date),
+      });
+    }
   }, [timeslot]);
 
   const changeFormatDate = (itemDate) => {
@@ -47,6 +49,10 @@ const Date = ({ timeslot, color }) => {
   };
 
   const handleSelectedDate = (item) => {
+    dispatch({
+      type: CONSTANT.STAFFID_APPOINTMENT,
+      payload: '',
+    });
     dispatch({
       type: CONSTANT.IS_DATE_SELECTED,
       payload: true,
@@ -182,7 +188,7 @@ const Date = ({ timeslot, color }) => {
                 (item) => item.timeSlot.length > 0
               );
               const dateAvailable = dateNow?.date === item.date;
-              const checkDate = !isListDateSelected
+              const checkDate = !isItemDateSelected
                 ? dateAvailable
                 : isDateSelected;
               return (

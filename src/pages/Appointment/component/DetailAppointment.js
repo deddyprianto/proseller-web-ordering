@@ -17,6 +17,8 @@ import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss';
 import '../style/swiperstyle.css';
 import { Pagination, Navigation } from 'swiper';
+import Swal from 'sweetalert2';
+import { CONSTANT } from 'helpers';
 
 const DetailAppointment = ({
   isOpenModalDetail,
@@ -43,7 +45,9 @@ const DetailAppointment = ({
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
-
+  const responseAddCart = useSelector(
+    (state) => state.appointmentReducer.responseAddCart
+  );
   const filterCart = cartAppointment?.details?.find(
     (itemCart) => itemCart.productID === productId
   );
@@ -100,25 +104,16 @@ const DetailAppointment = ({
   };
   const handleButtonCart = async () => {
     if (!isEmptyObject(filterCart)) {
-      try {
-        setIsLoading(true);
-        await dispatch(
-          OrderAction.updateCartAppointment(addService, filterCart.id)
-        );
-        setIsLoading(false);
-        setIsOpenModalDetail(false);
-      } catch (error) {
-        console.log(error);
-      }
+      setIsLoading(true);
+      await dispatch(
+        OrderAction.updateCartAppointment(addService, filterCart.id)
+      );
+      setIsLoading(false);
+      setIsOpenModalDetail(false);
     } else {
-      try {
-        setIsLoading(true);
-        await dispatch(OrderAction.addCartAppointment(addService));
-        setIsLoading(false);
-        setIsOpenModalDetail(false);
-      } catch (error) {
-        console.log(error);
-      }
+      setIsLoading(true);
+      await dispatch(OrderAction.addCartAppointment(addService));
+      setIsLoading(false);
     }
   };
   const handlePrice = (qty, totalPrice) => {
@@ -165,6 +160,30 @@ const DetailAppointment = ({
     handlePrice(qty, totalPrice);
     return productModifiers;
   };
+
+  useEffect(() => {
+    if (responseAddCart?.isError) {
+      Swal.fire({
+        icon: 'info',
+        iconColor: '#333',
+        title: responseAddCart.message,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color.primary,
+        customClass: {
+          confirmButton: fontStyles.buttonSweetAlert,
+          icon: fontStyles.customIconColor,
+        },
+      }).then((res) => {
+        if (res.isConfirmed) {
+          dispatch({
+            type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
+            payload: {},
+          });
+        }
+      });
+    }
+  }, [responseAddCart]);
 
   useEffect(() => {
     handleProductModifierSelected();
