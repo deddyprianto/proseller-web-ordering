@@ -135,14 +135,14 @@ const Cart = (props) => {
       if (props.history.action === 'PUSH') {
         setLocationKeys([location.pathname]);
         if (
-          location.pathname !== '/cartappointment' &&
+          location.pathname !== '/appointment' &&
           !isEmptyObject(cartAppointment)
         ) {
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
             payload: true,
           });
-          props.history.push('/cartappointment');
+          props.history.replace('/cartappointment');
         }
       }
     });
