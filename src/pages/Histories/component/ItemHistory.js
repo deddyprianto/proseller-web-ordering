@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import DetailHistoryAppointment from './DetailHistoryAppointment';
 import fontStyles from '../style/styles.module.css';
@@ -10,7 +10,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
 
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
-  // some fn
+
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -49,8 +49,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='25'
-        height='25'
+        width='24'
+        height='24'
         viewBox='0 0 24 24'
         fill='none'
         stroke={color.primary}
@@ -67,8 +67,8 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const CalenderIcon = () => {
     return (
       <svg
-        width='28'
-        height='28'
+        width='24'
+        height='24'
         viewBox='0 0 240 240'
         fill='white'
         xmlns='http://www.w3.org/2000/svg'
@@ -173,7 +173,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
               style={{
                 justifySelf: 'center',
                 marginTop: '5px',
-                marginRight: '2px',
+                marginRight: '5px',
                 fontWeight: 'bold',
               }}
             >
