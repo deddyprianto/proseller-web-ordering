@@ -66,7 +66,7 @@ const Appointment = (props) => {
   );
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
-  const selectedLocation = selectedLocationPersisted
+  const selectedLocation = !isEmptyObject(selectedLocationPersisted)
     ? selectedLocationPersisted
     : defaultOutlet;
 
