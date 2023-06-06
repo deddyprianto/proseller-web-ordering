@@ -5,7 +5,6 @@ import LoaderSkeleton from './LoaderSkeleton';
 import defaultImageURL from 'assets/images/defaultPicStylist.png';
 import { CONSTANT } from 'helpers';
 
-
 const ServiceStylist = ({ color }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -38,11 +37,13 @@ const ServiceStylist = ({ color }) => {
         src={item.image ? item.image : defaultImageURL}
         style={{
           borderRadius: '10px',
-          width: '36px',
+          minWidth: '36px',
+          maxWidth: '36px',
           height: '36px',
           marginRight: '10px',
           opacity: !item.isAvailable && 0.5,
           objectFit: 'cover',
+          filter: !item.isAvailable && 'grayscale(1)',
         }}
         alt='logo'
       />

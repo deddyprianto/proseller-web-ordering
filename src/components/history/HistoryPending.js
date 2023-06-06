@@ -30,9 +30,7 @@ const HistoryPending = ({ dataPending, dataPendingLength }) => {
     <div
       style={{
         width: '95%',
-        margin: 'auto',
-        marginTop: '20px',
-        height: '55vh',
+        margin: '80px auto',
         overflowY: 'scroll',
       }}
     >
@@ -56,7 +54,9 @@ const HistoryPending = ({ dataPending, dataPendingLength }) => {
             </Grid>
           );
         })}
-        <div style={{ width: '100%' }}>
+        <div
+          style={{ width: '100%', marginTop: dataPending?.length ? 0 : '20px' }}
+        >
           <p
             className='default-font'
             style={{ color: '#9D9D9D', marginLeft: '20px' }}

@@ -30,7 +30,7 @@ const FooterWebOrdering = () => {
     (state) => state.guestCheckoutCart.resetBottomNav
   );
   const [appointmentMenu, setAppointmentMenu] = useState(false);
-  const [newNavbar, setNewNavbar] = useState([]);
+  const [newNavbar, setNewNavbar] = useState(navBar);
   const { setting } = useSelector((state) => state.order);
   const [guessCheckout, setGuessCheckout] = useState();
   const [enableOrdering, setEnableOrdering] = useState(true);
@@ -55,6 +55,13 @@ const FooterWebOrdering = () => {
   useEffect(() => {
     if (resetBottomNav === 0) {
       dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 0 });
+    } else {
+      setTimeout(() => {
+        const currentIndex = newNavbar.findIndex(
+          (val) => val.path === location.pathname
+        );
+        dispatch({ type: CONSTANT.INDEX_FOOTER, payload: currentIndex });
+      }, 700);
     }
   }, [location.pathname]);
 
@@ -343,11 +350,9 @@ const FooterWebOrdering = () => {
                 }}
                 icon={iconCheck(
                   menu.text,
-                  indexFooterAppointment === index
+                  menu.path === location.pathname
                     ? allState.theme.color.navigationIconSelectedColor
                     : allState.theme.color.navigationFontColor
-
-                  // value === index ? '#000000' : '#8A8D8E'
                 )}
               />
             );

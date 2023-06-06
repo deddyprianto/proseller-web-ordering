@@ -63,10 +63,6 @@ const Location = () => {
   const handleSelectedOutlet = (item) => {
     if (cartAppointment?.details?.length > 0) {
       dispatch({
-        type: CONSTANT.LOCATION_APPOINTMENT,
-        payload: item,
-      });
-      dispatch({
         type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
         payload: true,
       });
@@ -75,18 +71,18 @@ const Location = () => {
         type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
         payload: item,
       });
-      // setLocation(JSON.stringify(item));
       dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
-      dispatch({
-        type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-        payload: '',
-      });
-      dispatch({
-        type: CONSTANT.LOCATION_APPOINTMENT,
-        payload: item,
-      });
       history.goBack();
     }
+
+    dispatch({
+      type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
+      payload: '',
+    });
+    dispatch({
+      type: CONSTANT.LOCATION_APPOINTMENT,
+      payload: item,
+    });
   };
   const changeFormatURl = (path) => {
     const url = window.location.href;
