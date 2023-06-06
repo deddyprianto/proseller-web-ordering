@@ -1,14 +1,9 @@
 import config from 'config';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { HistoryAction } from 'redux/actions/HistoryAction';
 
 const History = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isTransaction, setIsTransaction] = useState(false);
-  const [dataPending, setDataPending] = useState([]);
-  const [dataPendingLength, setDataPendingLength] = useState(0);
-  const [countryCode, setCountryCode] = useState('ID');
 
   useEffect(() => {
     const getDataBasketPending = async () => {

@@ -9,7 +9,6 @@ export default function useHistoryAppointment({
   pageNumber,
   tabNameAPI,
 }) {
-  console.log(skip);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -19,6 +18,9 @@ export default function useHistoryAppointment({
   useEffect(() => {
     const loadData = async () => {
       try {
+        if (pageNumber === 1) {
+          setHasMore(false);
+        }
         setLoading(true);
         let response = await dispatch(
           OrderAction.getBooikingHistory({
@@ -27,24 +29,26 @@ export default function useHistoryAppointment({
             categoryBookingName: tabNameAPI,
           })
         );
-
+        console.log(hasMore);
         if (!isEmptyArray(response.data)) {
-          setHistoryAppointment((prevTransaction) => {
+          setHistoryAppointment((prevAppointment) => {
             if (hasMore) {
+              console.log('1');
               return [
                 ...new Map(
-                  [...prevTransaction, ...response.data].map((item) => [
+                  [...prevAppointment, ...response.data].map((item) => [
                     item['id'],
                     item,
                   ])
                 ).values(),
               ];
             } else {
+              console.log('2');
               return [...new Set([...response.data])];
             }
           });
         }
-        console.log(response.data);
+
         if (response.data.length === 0) {
           setIsEmptyData(true);
         }
@@ -60,7 +64,7 @@ export default function useHistoryAppointment({
       }
     };
     loadData();
-  }, [skip, pageNumber]);
+  }, [skip, pageNumber, tabNameAPI]);
 
   return { historyAppointment, loading, error, hasMore, isEmptyData };
 }

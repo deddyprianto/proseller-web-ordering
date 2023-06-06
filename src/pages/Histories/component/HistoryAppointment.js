@@ -12,21 +12,21 @@ import useMobileSize from 'hooks/useMobileSize';
 
 const HistoryAppointment = () => {
   const historyRef = useRef();
+  const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
   const [pageNumber, setPageNumber] = useState(1);
   const mobileSize = useMobileSize();
 
   const [tabName, setTabName] = useState('SUBMITTED');
-  const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
-  const [skip, setSkip] = useState(0);
+  const [skip, setSkip] = useState(10);
 
   const { historyAppointment, loading, error, hasMore, isEmptyData } =
     useHistoryAppointment({
-      take: 11,
+      take: 10,
       skip,
       pageNumber,
       tabNameAPI,
     });
-  console.log(historyAppointment);
+
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
 
@@ -159,6 +159,8 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('SUBMITTED');
                 setTabNameAPI('SUBMITTED');
+                setSkip(10);
+                setPageNumber(1);
               }}
               label='Submitted'
               className={fontStyles.myFont}
@@ -169,6 +171,8 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('UPCOMING');
                 setTabNameAPI('CONFIRMED');
+                setSkip(10);
+                setPageNumber(1);
               }}
               label='Upcoming'
               className={fontStyles.myFont}
@@ -179,6 +183,8 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('ONGOING');
                 setTabNameAPI('CONFIRMED');
+                setSkip(10);
+                setPageNumber(1);
               }}
               label='Ongoing'
               className={fontStyles.myFont}
@@ -189,6 +195,8 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('COMPLETED');
                 setTabNameAPI('COMPLETED');
+                setSkip(10);
+                setPageNumber(1);
               }}
               label='Completed'
               className={fontStyles.myFont}
@@ -199,6 +207,8 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('CANCELLED');
                 setTabNameAPI('CANCELLED');
+                setSkip(10);
+                setPageNumber(1);
               }}
               label='Canceled'
               className={fontStyles.myFont}
@@ -221,7 +231,7 @@ const HistoryAppointment = () => {
   const renderItemHistory = () => {
     if (tabNameAPI === 'CONFIRMED') {
       return filterBookingHistory.map((item, index) => {
-        if (historyAppointment.length === index + 1) {
+        if (filterBookingHistory.length === index + 1) {
           return (
             <div ref={historyRef} key={item.id}>
               <ItemHistory
