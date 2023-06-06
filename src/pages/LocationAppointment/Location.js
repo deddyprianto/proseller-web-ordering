@@ -61,6 +61,10 @@ const Location = () => {
     : outlets?.find((val) => val.id === selectedLocationPersisted?.id);
 
   const handleSelectedOutlet = (item) => {
+    dispatch({
+      type: CONSTANT.TIME_SLOT_APPOINTMENT,
+      payload: [],
+    });
     if (cartAppointment?.details?.length > 0) {
       dispatch({
         type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,

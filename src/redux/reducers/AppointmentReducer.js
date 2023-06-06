@@ -17,7 +17,6 @@ function AppointmentReducer(
     textNotes: '',
     responseSubmit: {},
     staffID: '',
-    messageTimeSlot: '',
     indexPath: 0,
     timeActiveDropDown: '',
     bookingHistory: [],
@@ -60,8 +59,6 @@ function AppointmentReducer(
       return { ...state, responseSubmit: action.payload };
     case CONSTANT.STAFFID_APPOINTMENT:
       return { ...state, staffID: action.payload };
-    case CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT:
-      return { ...state, messageTimeSlot: action.payload };
     case CONSTANT.INDEX_PATH_APPOINTMENT:
       return { ...state, indexPath: action.payload };
     case CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT:
