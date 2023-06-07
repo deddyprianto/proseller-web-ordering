@@ -61,6 +61,10 @@ const Location = () => {
     : outlets?.find((val) => val.id === selectedLocationPersisted?.id);
 
   const handleSelectedOutlet = (item) => {
+    dispatch({
+      type: CONSTANT.TIME_SLOT_APPOINTMENT,
+      payload: [],
+    });
     if (cartAppointment?.details?.length > 0) {
       dispatch({
         type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
@@ -74,11 +78,6 @@ const Location = () => {
       dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
       history.goBack();
     }
-
-    dispatch({
-      type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-      payload: '',
-    });
     dispatch({
       type: CONSTANT.LOCATION_APPOINTMENT,
       payload: item,

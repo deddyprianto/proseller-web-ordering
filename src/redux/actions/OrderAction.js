@@ -962,8 +962,8 @@ const getTimeSlotAppointment = (outletId) => {
       return response.data;
     } catch (error) {
       dispatch({
-        type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-        payload: error.response.data.message,
+        type: CONSTANT.TIME_SLOT_APPOINTMENT,
+        payload: { isError: true, message: error.response.data.message },
       });
     }
   };

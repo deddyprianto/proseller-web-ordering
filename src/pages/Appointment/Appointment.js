@@ -66,7 +66,7 @@ const Appointment = (props) => {
   );
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
 
-  const selectedLocation = selectedLocationPersisted
+  const selectedLocation = !isEmptyObject(selectedLocationPersisted)
     ? selectedLocationPersisted
     : defaultOutlet;
 
@@ -885,6 +885,7 @@ const Appointment = (props) => {
       return null;
     }
   };
+
   const RenderMainContent = () => {
     function handleScroll() {
       if (openDropDownTime) {

@@ -15,7 +15,7 @@ import Time from './component/Time';
 import screen from 'hooks/useWindowSize';
 import { getDistance } from 'geolib';
 import config from 'config';
-import { isEmptyObject } from 'helpers/CheckEmpty';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import AppointmentHeader from 'components/appointmentHeader';
 import { CONSTANT } from 'helpers';
 import Dialog from '@mui/material/Dialog';
@@ -42,9 +42,6 @@ const Cart = (props) => {
   const setting = useSelector((state) => state.order.setting);
   const responseAddCart = useSelector(
     (state) => state.appointmentReducer.responseAddCart
-  );
-  const messageTimeSlot = useSelector(
-    (state) => state.appointmentReducer.messageTimeSlot
   );
   const timeslot = useSelector((state) => state.appointmentReducer.timeSlot);
   const cartAppointment = useSelector(
@@ -80,11 +77,11 @@ const Cart = (props) => {
   }, [responseSubmit]);
 
   useEffect(() => {
-    if (messageTimeSlot) {
+    if (timeslot?.isError) {
       Swal.fire({
         icon: 'info',
         iconColor: '#333',
-        title: messageTimeSlot,
+        title: timeslot?.message,
         allowOutsideClick: false,
         confirmButtonText: 'Go to location page',
         confirmButtonColor: color.primary,
@@ -98,7 +95,7 @@ const Cart = (props) => {
         }
       });
     }
-  }, [messageTimeSlot]);
+  }, [timeslot]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -584,8 +581,15 @@ const Cart = (props) => {
               <RenderItemService />
               <LabelAnythingelse />
               <SelectedOutlet />
-              <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-              <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+              <Date
+                timeslot={!isEmptyArray(timeslot) ? timeslot : []}
+                color={color}
+                isLoading={isLoading}
+              />
+              <Time
+                messageTimeSlot={timeslot?.isError && timeslot.message}
+                timeslot={!isEmptyArray(timeslot) ? timeslot : []}
+              />
               <ServiceStylist color={color} />
               <RenderNotes />
             </div>
@@ -617,8 +621,15 @@ const Cart = (props) => {
             <RenderItemService />
             <LabelAnythingelse />
             <SelectedOutlet />
-            <Date timeslot={timeslot} color={color} isLoading={isLoading} />
-            <Time messageTimeSlot={messageTimeSlot} timeslot={timeslot} />
+            <Date
+              timeslot={!isEmptyArray(timeslot) ? timeslot : []}
+              color={color}
+              isLoading={isLoading}
+            />
+            <Time
+              messageTimeSlot={timeslot?.isError && timeslot.message}
+              timeslot={!isEmptyArray(timeslot) ? timeslot : []}
+            />
             <ServiceStylist color={color} />
             <RenderNotes />
             <Price />
