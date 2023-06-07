@@ -885,7 +885,7 @@ const Appointment = (props) => {
       return null;
     }
   };
-  console.log(selectedLocation);
+
   const RenderMainContent = () => {
     function handleScroll() {
       if (openDropDownTime) {
