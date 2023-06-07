@@ -66,14 +66,14 @@ const BookingConfirm = (props) => {
       if (props.history.action === 'PUSH') {
         setLocationKeys([location.pathname]);
         if (
-          location.pathname !== '/bookingconfirm' &&
+          location.pathname !== '/appointment' &&
           !isEmptyObject(cartAppointment)
         ) {
           dispatch({
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
             payload: true,
           });
-          props.history.push('/bookingconfirm');
+          props.history.replace('/bookingconfirm');
         }
       }
     });

@@ -56,12 +56,20 @@ const FooterWebOrdering = () => {
     if (resetBottomNav === 0) {
       dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 0 });
     } else {
-      setTimeout(() => {
-        const currentIndex = newNavbar.findIndex(
-          (val) => val.path === location.pathname
-        );
-        dispatch({ type: CONSTANT.INDEX_FOOTER, payload: currentIndex });
-      }, 700);
+      if (
+        location.pathname === '/cartappointment' ||
+        location.pathname === '/bookingsubmitted' ||
+        location.pathname === '/bookingconfirm'
+      ) {
+        dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
+      } else {
+        setTimeout(() => {
+          const currentIndex = newNavbar.findIndex(
+            (val) => val.path === location.pathname
+          );
+          dispatch({ type: CONSTANT.INDEX_FOOTER, payload: currentIndex });
+        }, 700);
+      }
     }
   }, [location.pathname]);
 
