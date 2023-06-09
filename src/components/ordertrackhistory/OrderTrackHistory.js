@@ -1010,7 +1010,7 @@ const OrderTrackHistory = () => {
           gridTemplateColumns: '1fr',
           gridTemplateRows: '80px 1fr 70px',
           gap: '0px 0px',
-          height: matches ? '100vh' : '100vh',
+          height: '100vh',
           width: matches ? '45%' : '100%',
           marginLeft: 'auto',
           marginRight: 'auto',
@@ -1027,7 +1027,7 @@ const OrderTrackHistory = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginTop: '20px',
+            marginTop: matches ? '40px' : '20px',
             overflowY: 'auto',
           }}
         >
