@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useSelector, useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +15,8 @@ import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { isEmpty } from 'helpers/utils';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import ModalDetailHistory from 'components/history/ModalDetailHistory';
+import { HistoryAction } from 'redux/actions/HistoryAction';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -30,6 +32,10 @@ const DetailHistoryAppointment = ({
 
   const color = useSelector((state) => state.theme.color);
   const setting = useSelector((state) => state.order.setting);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+
+  const [detailData, setDetailData] = useState({});
+  const [isModalDetailHistory, setIsModalDetailHistory] = useState(false);
 
   const additionInfoBookSummarySetting = setting.find((items) => {
     return items.settingKey === 'AdditionalInfoBookingSummaryText';
@@ -554,6 +560,21 @@ const DetailHistoryAppointment = ({
       </div>
     );
   };
+
+  const handleViewOrderDetail = () => {
+    const refId = item.transactionRefNo || item.referenceNo;
+    setIsModalDetailHistory(false);
+
+    if (!isEmpty(refId)) {
+      const data = dispatch(HistoryAction.getTransactionById(refId));
+
+      if (data.id) {
+        setDetailData();
+        setIsModalDetailHistory(true);
+      }
+    }
+  };
+
   const ButtonPrice = () => {
     if (tabName === 'CANCELLED') {
       return null;
@@ -592,6 +613,9 @@ const DetailHistoryAppointment = ({
           </div>
           <div
             className={fontStyles.myFont}
+            data-toggle='modal'
+            data-target='#detail-transaction-modal'
+            onClick={() => handleViewOrderDetail()}
             style={{
               width: '100%',
               display: 'flex',
@@ -774,11 +798,18 @@ const DetailHistoryAppointment = ({
       maxWidth='md'
       open={isOpenModalDetail}
       onClose={() => setIsOpenModalDetail(false)}
+      disableEnforceFocus
     >
       <DialogTitle sx={styleSheet.modalModif}>
         <RenderHeader />
       </DialogTitle>
       <DialogContent sx={styleSheet.modalModif}>
+        {isModalDetailHistory && (
+          <ModalDetailHistory
+            detail={detailData}
+            countryCode={companyInfo?.countryCode}
+          />
+        )}
         <RenderNotify />
         <RenderIDBooking />
         <BookingDetail />

@@ -80,6 +80,7 @@ class ModalDetailHistory extends Component {
           role='dialog'
           aria-labelledby='exampleModalCenterTitle'
           aria-hidden='true'
+          style={{ zIndex: 9999, backgroundColor: 'rgba(0,0,0,0.5)' }}
         >
           <div className='modal-dialog modal-dialog-centered' role='document'>
             <div
