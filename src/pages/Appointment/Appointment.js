@@ -27,6 +27,7 @@ import SearchBar from './component/SearchBar';
 import screen from 'hooks/useWindowSize';
 import AppointmentHeader from 'components/appointmentHeader';
 import { isEmpty } from 'helpers/utils';
+import Swal from 'sweetalert2';
 
 const Appointment = (props) => {
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
@@ -206,6 +207,23 @@ const Appointment = (props) => {
   };
 
   useEffect(() => {
+    if (cartAppointment?.isError) {
+      Swal.fire({
+        icon: 'info',
+        iconColor: '#333',
+        title: cartAppointment?.message,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color.primary,
+        customClass: {
+          confirmButton: fontStyles.buttonSweetAlert,
+          icon: fontStyles.customIconColor,
+        },
+      });
+    }
+  }, [cartAppointment]);
+
+  useEffect(() => {
     if (!isEmptyObject(defaultOutlet)) {
       setOpenWarningOutletNotSelected(true);
     }
@@ -237,15 +255,11 @@ const Appointment = (props) => {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        setIsLoading(true);
-        let data = await dispatch(OrderAction.getCartAppointment());
-        setIsLoading(false);
-        if (!isEmptyObject(data.data)) {
-          setShowNotify(true);
-        }
-      } catch (error) {
-        console.log(error);
+      setIsLoading(true);
+      let data = await dispatch(OrderAction.getCartAppointment());
+      setIsLoading(false);
+      if (!isEmptyObject(data)) {
+        setShowNotify(true);
       }
     };
     loadData();

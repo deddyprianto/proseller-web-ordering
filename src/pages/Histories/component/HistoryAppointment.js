@@ -1,26 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Tabs from '@mui/material/Tabs';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Tab from '@mui/material/Tab';
 
 import fontStyles from '../style/styles.module.css';
-import { OrderAction } from 'redux/actions/OrderAction';
 import ItemHistory from './ItemHistory';
-import MyLoader from 'pages/Appointment/component/LoaderSkleton';
+import useHistoryAppointment from 'hooks/useHistoryAppointment';
+import config from 'config';
 import useMobileSize from 'hooks/useMobileSize';
 
 const HistoryAppointment = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
+  const historyRef = useRef();
+  const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
   const mobileSize = useMobileSize();
 
   const [tabName, setTabName] = useState('SUBMITTED');
-  const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
-
+  const [pageNumber, setPageNumber] = useState(1);
+  const [skip, setSkip] = useState(0);
+  const { historyAppointment, loading, error, hasMore, setHasMore } =
+    useHistoryAppointment({
+      take: 10,
+      skip,
+      pageNumber,
+      tabNameAPI,
+      tabName,
+    });
   const setting = useSelector((state) => state.order.setting);
-  const bookingHistory = useSelector(
-    (state) => state.appointmentReducer.bookingHistory
-  );
   const color = useSelector((state) => state.theme.color);
 
   const settingAppoinment = setting.find((items) => {
@@ -28,15 +33,51 @@ const HistoryAppointment = () => {
   });
 
   useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true);
-      await dispatch(OrderAction.getBooikingHistory(tabNameAPI));
-      setIsLoading(false);
-    };
-    if (tabName) {
-      getData();
+    if (loading) return;
+    let tempRef = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        setSkip((prev) => prev + 10);
+        setPageNumber((prev) => prev + 1);
+      }
+    });
+    if (historyRef.current) {
+      observer.observe(historyRef.current);
+      tempRef = historyRef.current;
     }
-  }, [tabName]);
+    return () => {
+      if (tempRef) observer.unobserve(tempRef);
+    };
+  }, [loading, hasMore]);
+
+  if (historyAppointment.length === 0 && !loading) {
+    return (
+      <>
+        <img src={config.url_emptyImage} alt='is empty' />
+        <div>Data is empty</div>
+      </>
+    );
+  }
+
+  const RenderAnimationLoading = () => {
+    return (
+      <div className='lds-spinner'>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    );
+  };
 
   const styleSheet = {
     muiSelected: {
@@ -104,6 +145,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('SUBMITTED');
                 setTabNameAPI('SUBMITTED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Submitted'
               className={fontStyles.myFont}
@@ -114,6 +158,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('UPCOMING');
                 setTabNameAPI('CONFIRMED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Upcoming'
               className={fontStyles.myFont}
@@ -124,6 +171,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('ONGOING');
                 setTabNameAPI('CONFIRMED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Ongoing'
               className={fontStyles.myFont}
@@ -134,6 +184,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('COMPLETED');
                 setTabNameAPI('COMPLETED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Completed'
               className={fontStyles.myFont}
@@ -144,6 +197,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('CANCELLED');
                 setTabNameAPI('CANCELLED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Canceled'
               className={fontStyles.myFont}
@@ -154,55 +210,90 @@ const HistoryAppointment = () => {
       </div>
     );
   };
-  const RenderItemHistory = () => {
+
+  const filterBookingHistory = historyAppointment.filter((item) => {
+    const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
+    const compareDate =
+      tabName === 'UPCOMING'
+        ? new Date(combineDateTime).getTime() > new Date().getTime()
+        : new Date(combineDateTime).getTime() <= new Date().getTime();
+    return compareDate;
+  });
+  const renderItemHistory = () => {
     if (tabNameAPI === 'CONFIRMED') {
-      const filterBookingHistory = bookingHistory.filter((item) => {
-        const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
-        const compareDate =
-          tabName === 'UPCOMING'
-            ? new Date(combineDateTime).getTime() > new Date().getTime()
-            : new Date(combineDateTime).getTime() <= new Date().getTime();
-        return compareDate;
+      return filterBookingHistory.map((item, index) => {
+        if (filterBookingHistory.length === index + 1) {
+          return (
+            <div ref={historyRef} key={item.id}>
+              <ItemHistory
+                item={item}
+                color={color}
+                tabName={tabName}
+                settingAppoinment={settingAppoinment?.settingValue}
+              />
+            </div>
+          );
+        } else {
+          return (
+            <ItemHistory
+              key={item.id}
+              item={item}
+              color={color}
+              tabName={tabName}
+              settingAppoinment={settingAppoinment?.settingValue}
+            />
+          );
+        }
       });
-      return filterBookingHistory.map((item) => (
-        <ItemHistory
-          key={item.id}
-          item={item}
-          color={color}
-          tabName={tabName}
-          settingAppoinment={settingAppoinment?.settingValue}
-        />
-      ));
     } else {
-      return bookingHistory.map((item) => (
-        <ItemHistory
-          key={item.id}
-          item={item}
-          color={color}
-          tabName={tabName}
-          settingAppoinment={settingAppoinment?.settingValue}
-        />
-      ));
+      return historyAppointment.map((item, index) => {
+        if (historyAppointment.length === index + 1) {
+          return (
+            <div ref={historyRef} key={item.id}>
+              <ItemHistory
+                item={item}
+                color={color}
+                tabName={tabName}
+                settingAppoinment={settingAppoinment?.settingValue}
+              />
+            </div>
+          );
+        } else {
+          return (
+            <ItemHistory
+              key={item.id}
+              item={item}
+              color={color}
+              tabName={tabName}
+              settingAppoinment={settingAppoinment?.settingValue}
+            />
+          );
+        }
+      });
     }
   };
+
   return (
-    <React.Fragment>
+    <div style={{ marginTop: mobileSize ? '60%' : '15%' }}>
       <RenderTabHeaderMobile />
-      {isLoading ? (
-        <div style={{ width: '95%', margin: 'auto' }}>
-          <MyLoader />
-        </div>
-      ) : (
-        <div
-          style={{
-            paddingBottom: '80px',
-            marginTop: mobileSize ? '230px' : '245px',
-          }}
-        >
-          <RenderItemHistory />
-        </div>
-      )}
-    </React.Fragment>
+      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
+        {renderItemHistory()}
+        {loading && <RenderAnimationLoading />}
+        {!hasMore && !loading && (
+          <div style={{ width: '100%' }}>
+            <p
+              className='default-font'
+              style={{ color: '#9D9D9D', marginLeft: '20px' }}
+            >
+              You are all caught up
+            </p>
+          </div>
+        )}
+        {error?.message && (
+          <p style={{ marginLeft: '10px' }}>{error?.message}</p>
+        )}
+      </div>
+    </div>
   );
 };
 
