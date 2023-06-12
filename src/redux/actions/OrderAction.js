@@ -968,12 +968,17 @@ const getTimeSlotAppointment = (outletId) => {
     }
   };
 };
-const getBooikingHistory = (categoryBooking) => {
+const getBooikingHistory = ({
+  take,
+  skip,
+  categoryBookingName,
+  pageNumber,
+}) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
     try {
       const response = await axios.get(
-        `${url}customer/appointment?status=${categoryBooking}&skip=0&take=10`,
+        `${url}customer/appointment?status=${categoryBookingName}&skip=${skip}&take=${take}&page=${pageNumber}`,
         {
           headers: {
             Authorization: `Bearer ${account.accessToken.jwtToken}`,
@@ -981,10 +986,6 @@ const getBooikingHistory = (categoryBooking) => {
           },
         }
       );
-      dispatch({
-        type: CONSTANT.BOOKING_HISTORY,
-        payload: response.data.data,
-      });
       return response.data;
     } catch (error) {
       throw error;

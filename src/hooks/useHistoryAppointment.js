@@ -1,34 +1,35 @@
+import { isEmptyArray } from 'helpers/CheckEmpty';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { HistoryAction } from 'redux/actions/HistoryAction';
+import { OrderAction } from 'redux/actions/OrderAction';
 
-export default function useHistoryTransaction({
+export default function useHistoryAppointment({
   take,
   skip,
   pageNumber,
-  categoryBooking,
+  tabNameAPI,
 }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [historyTransaction, setHistoryTransaction] = useState([]);
+  const [historyAppointment, setHistoryAppointment] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [isEmptyData, setIsEmptyData] = useState(false);
-
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         let response = await dispatch(
-          HistoryAction.getTransaction({
+          OrderAction.getBooikingHistory({
             take,
             skip,
-            page: pageNumber,
+            categoryBookingName: tabNameAPI,
+            pageNumber,
           })
         );
 
-        if (response.ResultCode === 200) {
-          setHistoryTransaction((prevTransaction) => {
+        if (!isEmptyArray(response.data)) {
+          setHistoryAppointment((prevTransaction) => {
             if (hasMore) {
               return [
                 ...new Map(
@@ -43,7 +44,7 @@ export default function useHistoryTransaction({
             }
           });
         }
-
+        console.log(response.data);
         if (response.data.length === 0) {
           setIsEmptyData(true);
         }
@@ -61,5 +62,5 @@ export default function useHistoryTransaction({
     loadData();
   }, [skip, pageNumber]);
 
-  return { historyTransaction, loading, error, hasMore, isEmptyData };
+  return { historyAppointment, loading, error, hasMore, isEmptyData };
 }

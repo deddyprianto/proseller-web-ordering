@@ -19,7 +19,6 @@ function AppointmentReducer(
     staffID: '',
     indexPath: 0,
     timeActiveDropDown: '',
-    bookingHistory: [],
     isLocationSelected: false,
     isDateSelected: false,
     locationAppointmentPersisted: {},
@@ -63,8 +62,6 @@ function AppointmentReducer(
       return { ...state, indexPath: action.payload };
     case CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT:
       return { ...state, timeActiveDropDown: action.payload };
-    case CONSTANT.BOOKING_HISTORY:
-      return { ...state, bookingHistory: action.payload };
     case CONSTANT.IS_LOCATION_SELECTED:
       return { ...state, isLocationSelected: action.payload };
     case CONSTANT.IS_DATE_SELECTED:
