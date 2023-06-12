@@ -992,6 +992,29 @@ const getBooikingHistory = ({
     }
   };
 };
+const getBooikingHistoryForConfirmTab = () => {
+  let url = config.getUrlAppointment();
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(
+        `${url}customer/appointment?status=CONFIRMED&skip=0&take=100`,
+        {
+          headers: {
+            Authorization: `Bearer ${account.accessToken.jwtToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      dispatch({ type: CONSTANT.BOOKING_HISTORY, payload: response.data.data });
+      return response.data;
+    } catch (error) {
+      dispatch({
+        type: CONSTANT.BOOKING_HISTORY,
+        payload: { isError: true, data: error.response.data.message },
+      });
+    }
+  };
+};
 
 const loadStaffByTimeSlot = (date, timeslot) => {
   let url = config.getUrlDomain();
@@ -1237,4 +1260,5 @@ export const OrderAction = {
   loadStaffByTimeSlot,
   submitCartAppointment,
   getBooikingHistory,
+  getBooikingHistoryForConfirmTab,
 };

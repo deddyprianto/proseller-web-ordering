@@ -1,4 +1,3 @@
-import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -30,10 +29,6 @@ export default function useHistoryAppointment({
         );
 
         if (!isEmptyArray(response.data)) {
-          dispatch({
-            type: CONSTANT.DATA_HISTORY_APPOINTMENT_LENGTH,
-            payload: response.dataLength,
-          });
           setHistoryAppointment((prevAppointment) => {
             if (hasMore) {
               return [
@@ -64,7 +59,9 @@ export default function useHistoryAppointment({
         setLoading(false);
       }
     };
-    loadData();
+    if (tabNameAPI !== 'CONFIRMED') {
+      loadData();
+    }
   }, [skip, pageNumber, tabNameAPI]);
 
   return {
@@ -73,5 +70,6 @@ export default function useHistoryAppointment({
     error,
     hasMore,
     isEmptyData,
+    setHasMore,
   };
 }

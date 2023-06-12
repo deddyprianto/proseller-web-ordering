@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Tabs from '@mui/material/Tabs';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Tab from '@mui/material/Tab';
 
 import fontStyles from '../style/styles.module.css';
@@ -8,32 +8,44 @@ import ItemHistory from './ItemHistory';
 import useHistoryAppointment from 'hooks/useHistoryAppointment';
 import config from 'config';
 import useMobileSize from 'hooks/useMobileSize';
-
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const HistoryAppointment = () => {
-  const dataHistoryLength = useSelector(
-    (state) => state.appointmentReducer.dataHistoryLength
-  );
+  const dispatch = useDispatch();
   const historyRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
   const [pageNumber, setPageNumber] = useState(1);
   const mobileSize = useMobileSize();
 
   const [tabName, setTabName] = useState('SUBMITTED');
   const [skip, setSkip] = useState(0);
-  const { historyAppointment, loading, error, hasMore, isEmptyData } =
-    useHistoryAppointment({
-      take: 10,
-      skip,
-      pageNumber,
-      tabNameAPI,
-    });
+  const bookingHistoryConfirmed = useSelector(
+    (state) => state.appointmentReducer.bookingHistory
+  );
+  const {
+    historyAppointment,
+    loading,
+    error,
+    hasMore,
+    isEmptyData,
+    setHasMore,
+  } = useHistoryAppointment({
+    take: 10,
+    skip,
+    pageNumber,
+    tabNameAPI,
+  });
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
 
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
+
+  const getDate = () => {
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
 
     return dateStr;
   };
@@ -46,7 +58,17 @@ const HistoryAppointment = () => {
     return timeStr.split(' ')[0];
   };
 
-  // some eff
+  useEffect(() => {
+    const getData = async () => {
+      setIsLoading(true);
+      await dispatch(OrderAction.getBooikingHistoryForConfirmTab());
+      setIsLoading(false);
+    };
+    if (tabNameAPI === 'CONFIRMED') {
+      getData();
+    }
+  }, [tabNameAPI]);
+
   useEffect(() => {
     if (loading) return;
     let tempRef = null;
@@ -160,6 +182,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('SUBMITTED');
                 setTabNameAPI('SUBMITTED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Submitted'
               className={fontStyles.myFont}
@@ -170,6 +195,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('UPCOMING');
                 setTabNameAPI('CONFIRMED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Upcoming'
               className={fontStyles.myFont}
@@ -180,6 +208,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('ONGOING');
                 setTabNameAPI('CONFIRMED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Ongoing'
               className={fontStyles.myFont}
@@ -190,6 +221,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('COMPLETED');
                 setTabNameAPI('COMPLETED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Completed'
               className={fontStyles.myFont}
@@ -200,6 +234,9 @@ const HistoryAppointment = () => {
               onClick={() => {
                 setTabName('CANCELLED');
                 setTabNameAPI('CANCELLED');
+                setSkip(0);
+                setPageNumber(1);
+                setHasMore(false);
               }}
               label='Canceled'
               className={fontStyles.myFont}
@@ -211,7 +248,7 @@ const HistoryAppointment = () => {
     );
   };
 
-  const filterBookingHistory = historyAppointment.filter((item) => {
+  const filterBookingHistory = bookingHistoryConfirmed.filter((item) => {
     const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
     const compareDate =
       tabName === 'UPCOMING'
@@ -278,7 +315,7 @@ const HistoryAppointment = () => {
       <RenderTabHeaderMobile />
       <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 70 }}>
         {renderItemHistory()}
-        {loading && <RenderAnimationLoading />}
+        {(loading || isLoading) && <RenderAnimationLoading />}
         {isEmptyData && (
           <div style={{ width: '100%' }}>
             <p
