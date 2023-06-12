@@ -60,7 +60,6 @@ export default function useHistoryAppointment({
         setLoading(false);
       }
     };
-    console.log('lol');
     loadData();
   }, [skip, tabNameAPI, tabName]);
 
