@@ -274,7 +274,7 @@ const HistoryAppointment = () => {
   };
 
   return (
-    <React.Fragment>
+    <div style={{ marginTop: mobileSize ? '60%' : '15%' }}>
       <RenderTabHeaderMobile />
       <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
         {renderItemHistory()}
@@ -293,7 +293,7 @@ const HistoryAppointment = () => {
           <p style={{ marginLeft: '10px' }}>{error?.message}</p>
         )}
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 
