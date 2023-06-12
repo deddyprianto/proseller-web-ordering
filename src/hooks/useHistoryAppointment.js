@@ -8,6 +8,7 @@ export default function useHistoryAppointment({
   skip,
   pageNumber,
   tabNameAPI,
+  tabName,
 }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -59,8 +60,9 @@ export default function useHistoryAppointment({
         setLoading(false);
       }
     };
+    console.log('lol');
     loadData();
-  }, [skip, tabNameAPI]);
+  }, [skip, tabNameAPI, tabName]);
 
   return {
     historyAppointment,

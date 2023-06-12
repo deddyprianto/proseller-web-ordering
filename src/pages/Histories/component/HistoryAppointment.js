@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Tabs from '@mui/material/Tabs';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Tab from '@mui/material/Tab';
 
 import fontStyles from '../style/styles.module.css';
@@ -11,9 +11,7 @@ import useMobileSize from 'hooks/useMobileSize';
 import { OrderAction } from 'redux/actions/OrderAction';
 
 const HistoryAppointment = () => {
-  const dispatch = useDispatch();
   const historyRef = useRef();
-  // const [isLoading, setIsLoading] = useState(false);
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
   const [pageNumber, setPageNumber] = useState(1);
   const mobileSize = useMobileSize();
@@ -27,6 +25,7 @@ const HistoryAppointment = () => {
       skip,
       pageNumber,
       tabNameAPI,
+      tabName,
     });
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
@@ -35,17 +34,6 @@ const HistoryAppointment = () => {
     return items.settingKey === 'ShowServicePrice';
   });
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     setIsLoading(true);
-  //     await dispatch(OrderAction.getBooikingHistoryForConfirmTab());
-  //     setIsLoading(false);
-  //   };
-  //   if (tabNameAPI === 'CONFIRMED') {
-  //     getData();
-  //   }
-  // }, [tabNameAPI]);
-  console.log({ hasMore });
   useEffect(() => {
     if (loading) return;
     let tempRef = null;

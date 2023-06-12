@@ -7,6 +7,7 @@ import axios from 'axios';
 import { lsLoad } from '../../helpers/localStorage';
 import { CRMService } from '../../Services/CRMService';
 import { isEmpty } from 'helpers/utils';
+import { OrderingServiceAppointment } from 'Services/OrderingServiceAppointment';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 const account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
@@ -891,23 +892,30 @@ const searchProdAppointment = (payload) => {
   };
 };
 const getCartAppointment = () => {
-  let url = config.getUrlAppointment();
   return async (dispatch) => {
-    const response = await axios.get(`${url}cart`, {
-      headers: {
-        Authorization: `Bearer ${account.accessToken.jwtToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.data) {
+    try {
+      const response = await OrderingServiceAppointment.api(
+        'GET',
+        null,
+        'cart',
+        'Bearer'
+      );
+      if (response.data) {
+        dispatch({
+          type: CONSTANT.CART_APPOINTMENT,
+          payload: response.data,
+        });
+        return response.data;
+      }
+    } catch (error) {
       dispatch({
         type: CONSTANT.CART_APPOINTMENT,
-        payload: response.data.data,
+        payload: { isError: true, message: error.message },
       });
     }
-    return response.data;
   };
 };
+
 const deleteCartAppointment = () => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
