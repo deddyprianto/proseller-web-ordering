@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Grid from '@mui/material/Grid';
-
-import config from '../../config';
-
 import { Link } from 'react-router-dom';
+
+import config from 'config';
 import HistoryCard from './HistoryCardPending';
+import useMobileSize from 'hooks/useMobileSize';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
-const HistoryPending = ({ dataPending, dataPendingLength }) => {
+const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
+  const mobileSize = useMobileSize();
+
   const setLocalStorageItem = (items) => {
     localStorage.setItem(
       `${config.prefix}_dataBasket`,
@@ -19,19 +21,28 @@ const HistoryPending = ({ dataPending, dataPendingLength }) => {
 
   if (dataPendingLength === 0) {
     return (
-      <>
+      <div
+        style={{
+          marginTop: '240px',
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
         <img src={config.url_emptyImage} alt='is empty' />
         <div>Data is empty</div>
-      </>
+      </div>
     );
   }
+
+  const marginAppointment = mobileSize ? '240px' : '260px';
+  const marginCommon = mobileSize ? '125px' : '145px';
 
   return (
     <div
       style={{
         width: '95%',
-        margin: '80px auto',
-        overflowY: 'scroll',
+        margin: `${isAppointment ? marginAppointment : marginCommon} auto 80px`,
       }}
     >
       <Grid
