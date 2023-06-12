@@ -2,12 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { HistoryAction } from 'redux/actions/HistoryAction';
 
-export default function useHistoryTransaction({
-  take,
-  skip,
-  pageNumber,
-  categoryBooking,
-}) {
+export default function useHistoryTransaction({ take, skip, pageNumber }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
