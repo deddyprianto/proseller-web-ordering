@@ -71,7 +71,7 @@ const BookingSubmitted = () => {
 
   useEffect(() => {
     const handlePopstate = () => {
-      window.location.href = changeFormatURl('/appointment');
+      window.location.href = changeFormatURl('/history');
     };
 
     window.addEventListener('popstate', handlePopstate);

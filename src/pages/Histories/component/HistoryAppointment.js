@@ -13,29 +13,21 @@ import { OrderAction } from 'redux/actions/OrderAction';
 const HistoryAppointment = () => {
   const dispatch = useDispatch();
   const historyRef = useRef();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
   const [pageNumber, setPageNumber] = useState(1);
   const mobileSize = useMobileSize();
 
   const [tabName, setTabName] = useState('SUBMITTED');
+  const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(0);
-  const bookingHistoryConfirmed = useSelector(
-    (state) => state.appointmentReducer.bookingHistory
-  );
-  const {
-    historyAppointment,
-    loading,
-    error,
-    hasMore,
-    isEmptyData,
-    setHasMore,
-  } = useHistoryAppointment({
-    take: 10,
-    skip,
-    pageNumber,
-    tabNameAPI,
-  });
+  const { historyAppointment, loading, error, hasMore, setHasMore } =
+    useHistoryAppointment({
+      take: 10,
+      skip,
+      pageNumber,
+      tabNameAPI,
+    });
   const setting = useSelector((state) => state.order.setting);
   const color = useSelector((state) => state.theme.color);
 
@@ -43,32 +35,17 @@ const HistoryAppointment = () => {
     return items.settingKey === 'ShowServicePrice';
   });
 
-  const getDate = () => {
-    const now = new Date();
-    const dateStr = now.toISOString().slice(0, 10);
-
-    return dateStr;
-  };
-  const getTime = () => {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    return timeStr.split(' ')[0];
-  };
-
-  useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true);
-      await dispatch(OrderAction.getBooikingHistoryForConfirmTab());
-      setIsLoading(false);
-    };
-    if (tabNameAPI === 'CONFIRMED') {
-      getData();
-    }
-  }, [tabNameAPI]);
-
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     setIsLoading(true);
+  //     await dispatch(OrderAction.getBooikingHistoryForConfirmTab());
+  //     setIsLoading(false);
+  //   };
+  //   if (tabNameAPI === 'CONFIRMED') {
+  //     getData();
+  //   }
+  // }, [tabNameAPI]);
+  console.log({ hasMore });
   useEffect(() => {
     if (loading) return;
     let tempRef = null;
@@ -248,7 +225,7 @@ const HistoryAppointment = () => {
     );
   };
 
-  const filterBookingHistory = bookingHistoryConfirmed.filter((item) => {
+  const filterBookingHistory = historyAppointment.filter((item) => {
     const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
     const compareDate =
       tabName === 'UPCOMING'
@@ -313,10 +290,10 @@ const HistoryAppointment = () => {
   return (
     <React.Fragment>
       <RenderTabHeaderMobile />
-      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 70 }}>
+      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
         {renderItemHistory()}
-        {(loading || isLoading) && <RenderAnimationLoading />}
-        {isEmptyData && (
+        {loading && <RenderAnimationLoading />}
+        {!hasMore && !loading && (
           <div style={{ width: '100%' }}>
             <p
               className='default-font'

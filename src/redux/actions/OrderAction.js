@@ -968,12 +968,7 @@ const getTimeSlotAppointment = (outletId) => {
     }
   };
 };
-const getBooikingHistory = ({
-  take,
-  skip,
-  categoryBookingName,
-  pageNumber,
-}) => {
+const getBooikingHistory = ({ take, skip, categoryBookingName }) => {
   let url = config.getUrlAppointment();
   return async (dispatch) => {
     try {

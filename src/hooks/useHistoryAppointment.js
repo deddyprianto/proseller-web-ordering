@@ -59,10 +59,8 @@ export default function useHistoryAppointment({
         setLoading(false);
       }
     };
-    if (tabNameAPI !== 'CONFIRMED') {
-      loadData();
-    }
-  }, [skip, pageNumber, tabNameAPI]);
+    loadData();
+  }, [skip, tabNameAPI]);
 
   return {
     historyAppointment,
