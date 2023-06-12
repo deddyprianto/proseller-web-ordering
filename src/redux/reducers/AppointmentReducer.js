@@ -24,6 +24,7 @@ function AppointmentReducer(
     locationAppointmentPersisted: {},
     cartSave: {},
     tabStateHistoryAppointment: 'ordered',
+    dataHistoryLength: 0,
   },
   action
 ) {
@@ -77,6 +78,8 @@ function AppointmentReducer(
       return { ...state, cartSave: action.payload };
     case CONSTANT.TAB_STATE_HISTORY_APPOINTMENT:
       return { ...state, tabStateHistoryAppointment: action.payload };
+    case CONSTANT.DATA_HISTORY_APPOINTMENT_LENGTH:
+      return { ...state, dataHistoryLength: action.payload };
     default:
       return state;
   }

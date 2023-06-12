@@ -1,3 +1,4 @@
+import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -15,12 +16,10 @@ export default function useHistoryAppointment({
   const [historyAppointment, setHistoryAppointment] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [isEmptyData, setIsEmptyData] = useState(false);
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        if (pageNumber === 1) {
-          setHasMore(false);
-        }
         setLoading(true);
         let response = await dispatch(
           OrderAction.getBooikingHistory({
@@ -29,11 +28,14 @@ export default function useHistoryAppointment({
             categoryBookingName: tabNameAPI,
           })
         );
-        console.log(hasMore);
+
         if (!isEmptyArray(response.data)) {
+          dispatch({
+            type: CONSTANT.DATA_HISTORY_APPOINTMENT_LENGTH,
+            payload: response.dataLength,
+          });
           setHistoryAppointment((prevAppointment) => {
             if (hasMore) {
-              console.log('1');
               return [
                 ...new Map(
                   [...prevAppointment, ...response.data].map((item) => [
@@ -43,7 +45,6 @@ export default function useHistoryAppointment({
                 ).values(),
               ];
             } else {
-              console.log('2');
               return [...new Set([...response.data])];
             }
           });
@@ -66,5 +67,11 @@ export default function useHistoryAppointment({
     loadData();
   }, [skip, pageNumber, tabNameAPI]);
 
-  return { historyAppointment, loading, error, hasMore, isEmptyData };
+  return {
+    historyAppointment,
+    loading,
+    error,
+    hasMore,
+    isEmptyData,
+  };
 }
