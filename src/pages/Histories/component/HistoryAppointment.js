@@ -8,12 +8,10 @@ import ItemHistory from './ItemHistory';
 import useHistoryAppointment from 'hooks/useHistoryAppointment';
 import config from 'config';
 import useMobileSize from 'hooks/useMobileSize';
-import { OrderAction } from 'redux/actions/OrderAction';
 
 const HistoryAppointment = () => {
   const historyRef = useRef();
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
-  const [pageNumber, setPageNumber] = useState(1);
   const mobileSize = useMobileSize();
 
   const [tabName, setTabName] = useState('SUBMITTED');
