@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import { isEmptyArray } from '../../helpers/CheckEmpty';
 
 class ModalDetailHistory extends Component {
@@ -60,7 +62,7 @@ class ModalDetailHistory extends Component {
   render() {
     const { detail } = this.props;
     let discount = 0;
-    if (detail.payments) {
+    if (detail?.payments) {
       detail.payments.forEach((items) => {
         if (
           items.paymentType === 'voucher' ||
@@ -80,6 +82,7 @@ class ModalDetailHistory extends Component {
           role='dialog'
           aria-labelledby='exampleModalCenterTitle'
           aria-hidden='true'
+          style={{ zIndex: 99999, backgroundColor: 'rgba(0,0,0,0.5)' }}
         >
           <div className='modal-dialog modal-dialog-centered' role='document'>
             <div
@@ -113,7 +116,7 @@ class ModalDetailHistory extends Component {
                   </span>
                 </button>
               </div>
-              {Object.keys(detail).length > 0 && (
+              {detail && Object.keys(detail).length > 0 ? (
                 <div className='modal-body'>
                   {detail.status && (
                     <div>
@@ -413,16 +416,20 @@ class ModalDetailHistory extends Component {
                             textAlign: 'left',
                           }}
                         >
-                          {detail.dataPay.storeValueCard
-                            ? `${item.name}`
-                            : `${
-                                item.period
-                              } ${item.periodUnit.toLowerCase()} Membership ${
-                                item.name
-                              }`}
+                          {item.name
+                            ? detail.dataPay?.storeValueCard
+                              ? `${item.name}`
+                              : `${
+                                  item.period
+                                } ${item.periodUnit?.toLowerCase()} Membership ${
+                                  item.name
+                                }`
+                            : `${item.quantity}x ${item.product.name}`}
                         </div>
                         <div style={{ fontSize: 12, fontWeight: 'bold' }}>
-                          {this.getCurrency(item.price)}
+                          {item.price
+                            ? this.getCurrency(item.price)
+                            : this.getCurrency(item.unitPrice)}
                         </div>
                       </div>
                     ))}
@@ -614,6 +621,27 @@ class ModalDetailHistory extends Component {
                     }}
                   />
                 </div>
+              ) : (
+                <div className='modal-body'>
+                  <div
+                    style={{
+                      height: '10vh',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {detail !== undefined ? (
+                      <CircularProgress
+                        sx={{ color: this.props.color?.primary }}
+                      />
+                    ) : (
+                      <div>
+                        Error, please contact the customer service. Thank you
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -626,6 +654,7 @@ class ModalDetailHistory extends Component {
 const mapStateToProps = (state) => {
   return {
     companyInfo: state.masterdata.companyInfo.data,
+    color: state.theme.color,
   };
 };
 

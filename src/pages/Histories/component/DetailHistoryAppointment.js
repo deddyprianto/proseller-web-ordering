@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useSelector, useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +15,8 @@ import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { isEmpty } from 'helpers/utils';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import ModalDetailHistory from 'components/history/ModalDetailHistory';
+import { HistoryAction } from 'redux/actions/HistoryAction';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -30,6 +32,9 @@ const DetailHistoryAppointment = ({
 
   const color = useSelector((state) => state.theme.color);
   const setting = useSelector((state) => state.order.setting);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+
+  const [detailData, setDetailData] = useState({});
 
   const additionInfoBookSummarySetting = setting.find((items) => {
     return items.settingKey === 'AdditionalInfoBookingSummaryText';
@@ -59,52 +64,6 @@ const DetailHistoryAppointment = ({
       gridAutoFlow: 'row',
       gridTemplateAreas: '". . ."',
       cursor: 'pointer',
-    },
-    paper: {
-      maxHeight: 500,
-      overflow: 'auto',
-      backgroundColor: 'white',
-    },
-    categoryName: {
-      color: 'gray',
-      fontSize: '15px',
-      fontWeight: 500,
-      textTransform: 'capitalize',
-    },
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-    },
-    indicator: {
-      '& .MuiTabScrollButton-root': {
-        padding: 0,
-        margin: 0,
-        width: 15,
-      },
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    indicatorForMobileView: {
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    inputDropdown: {
-      '&.MuiSelect-select': {
-        border: 'none',
-      },
     },
     modalModif: {
       '&.MuiTypography-root': {
@@ -554,6 +513,16 @@ const DetailHistoryAppointment = ({
       </div>
     );
   };
+
+  const handleViewOrderDetail = async () => {
+    const refId = item.transactionId;
+    if (!isEmpty(refId)) {
+      const data = await dispatch(HistoryAction.getTransactionById(refId));
+
+      setDetailData(data);
+    }
+  };
+
   const ButtonPrice = () => {
     if (tabName === 'CANCELLED') {
       return null;
@@ -592,6 +561,9 @@ const DetailHistoryAppointment = ({
           </div>
           <div
             className={fontStyles.myFont}
+            data-toggle='modal'
+            data-target='#detail-transaction-modal'
+            onClick={() => handleViewOrderDetail()}
             style={{
               width: '100%',
               display: 'flex',
@@ -774,11 +746,16 @@ const DetailHistoryAppointment = ({
       maxWidth='md'
       open={isOpenModalDetail}
       onClose={() => setIsOpenModalDetail(false)}
+      disableEnforceFocus
     >
       <DialogTitle sx={styleSheet.modalModif}>
         <RenderHeader />
       </DialogTitle>
       <DialogContent sx={styleSheet.modalModif}>
+        <ModalDetailHistory
+          detail={detailData}
+          countryCode={companyInfo?.countryCode}
+        />
         <RenderNotify />
         <RenderIDBooking />
         <BookingDetail />
