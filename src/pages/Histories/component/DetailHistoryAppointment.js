@@ -35,7 +35,6 @@ const DetailHistoryAppointment = ({
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
   const [detailData, setDetailData] = useState({});
-  const [isModalDetailHistory, setIsModalDetailHistory] = useState(false);
 
   const additionInfoBookSummarySetting = setting.find((items) => {
     return items.settingKey === 'AdditionalInfoBookingSummaryText';
@@ -65,52 +64,6 @@ const DetailHistoryAppointment = ({
       gridAutoFlow: 'row',
       gridTemplateAreas: '". . ."',
       cursor: 'pointer',
-    },
-    paper: {
-      maxHeight: 500,
-      overflow: 'auto',
-      backgroundColor: 'white',
-    },
-    categoryName: {
-      color: 'gray',
-      fontSize: '15px',
-      fontWeight: 500,
-      textTransform: 'capitalize',
-    },
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-    },
-    indicator: {
-      '& .MuiTabScrollButton-root': {
-        padding: 0,
-        margin: 0,
-        width: 15,
-      },
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    indicatorForMobileView: {
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    inputDropdown: {
-      '&.MuiSelect-select': {
-        border: 'none',
-      },
     },
     modalModif: {
       '&.MuiTypography-root': {
@@ -561,17 +514,12 @@ const DetailHistoryAppointment = ({
     );
   };
 
-  const handleViewOrderDetail = () => {
-    const refId = item.transactionRefNo || item.referenceNo;
-    setIsModalDetailHistory(false);
-
+  const handleViewOrderDetail = async () => {
+    const refId = item.transactionId;
     if (!isEmpty(refId)) {
-      const data = dispatch(HistoryAction.getTransactionById(refId));
+      const data = await dispatch(HistoryAction.getTransactionById(refId));
 
-      if (data.id) {
-        setDetailData();
-        setIsModalDetailHistory(true);
-      }
+      setDetailData(data);
     }
   };
 
@@ -804,12 +752,10 @@ const DetailHistoryAppointment = ({
         <RenderHeader />
       </DialogTitle>
       <DialogContent sx={styleSheet.modalModif}>
-        {isModalDetailHistory && (
-          <ModalDetailHistory
-            detail={detailData}
-            countryCode={companyInfo?.countryCode}
-          />
-        )}
+        <ModalDetailHistory
+          detail={detailData}
+          countryCode={companyInfo?.countryCode}
+        />
         <RenderNotify />
         <RenderIDBooking />
         <BookingDetail />
