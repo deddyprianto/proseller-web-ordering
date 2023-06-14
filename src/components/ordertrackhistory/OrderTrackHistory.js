@@ -13,8 +13,12 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Drawer from '@mui/material/Drawer';
 import config from 'config';
+import Paper from '@mui/material/Paper';
+import screen from 'hooks/useWindowSize';
 
 const OrderTrackHistory = () => {
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
   const [expandAccordionTimeLine, setExpandAccordionTimeLine] = useState(true);
   const [expandAccordionProductList, setExpandAccordionProductList] =
@@ -42,7 +46,7 @@ const OrderTrackHistory = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-
+          padding:'10px 0px',
           height: '100%',
         }}
       >
@@ -50,10 +54,11 @@ const OrderTrackHistory = () => {
           <div>
             <p
               style={{
-                fontWeight: 500,
+                fontWeight: 'bold',
                 fontSize: '16px',
                 margin: 0,
                 padding: 0,
+                color:'black'
               }}
             >
               Grand Total
@@ -124,12 +129,9 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow:
-            'rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset',
-          marginTop: '10px',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
           marginBottom: '10px',
           display: 'flex',
           justifyContent: 'space-around',
@@ -443,11 +445,9 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow:
-            'rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
           marginTop: '10px',
           marginBottom: '10px',
           display: 'flex',
@@ -500,7 +500,6 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -546,11 +545,9 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow:
-            'rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
           margin: '10px 0',
           padding: '25px 10px',
         }}
@@ -947,14 +944,44 @@ const OrderTrackHistory = () => {
       </div>
     );
   };
-
+  const RenderFooter = () => {
+    return (
+      <Paper
+        variant='elevation'
+        square={gadgetScreen}
+        elevation={5}
+        sx={
+          gadgetScreen
+            ? {
+                zIndex: '999',
+                width: '100%',
+                margin: 0,
+                top: 'auto',
+                right: 'auto',
+                bottom: 0,
+                left: 'auto',
+                position: 'fixed',
+                backgroundColor: 'white',
+              }
+            : {
+                padding: 0,
+                margin: 0,
+              }
+        }
+      >
+        <div style={{ backgroundColor: 'white' }}>
+          {renderGrandTotalForGuestCheckMode()}
+        </div>
+      </Paper>
+    );
+  };
   return (
     <div style={{ width: '100vw' }}>
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr',
-          gridTemplateRows: '80px 1fr 70px',
+          gridTemplateRows: '80px 1fr',
           gap: '0px 0px',
           height: '100vh',
           width: matches ? '45%' : '100%',
@@ -969,22 +996,26 @@ const OrderTrackHistory = () => {
 
         <div
           style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
             marginTop: matches ? '40px' : '20px',
+            height: '80vh ',
             overflowY: 'auto',
           }}
         >
-          {renderNotifRef()}
-          {renderCartProduct()}
-          {renderCardAccordion()}
-          {renderCartProductAccordion()}
-        </div>
-
-        <div style={{ backgroundColor: 'white' }}>
-          {renderGrandTotalForGuestCheckMode()}
+          <div
+            style={{
+              width: '100%',
+              paddingLeft:'16px',
+              paddingRight:'16px',
+              paddingBottom: 150,
+              margin: 'auto',
+            }}
+          >
+            {renderNotifRef()}
+            {renderCartProduct()}
+            {renderCardAccordion()}
+            {renderCartProductAccordion()}
+          </div>
+          <RenderFooter />
         </div>
       </div>
       <Drawer
