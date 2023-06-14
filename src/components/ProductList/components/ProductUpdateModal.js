@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import filter from 'lodash/filter';
 import indexOf from 'lodash/indexOf';
 
@@ -22,36 +22,35 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { OrderAction } from 'redux/actions/OrderAction';
 
-const mapStateToProps = (state) => {
-  return {
-    basket: state.order.basket,
-    color: state.theme.color,
-    companyInfo: state.masterdata.companyInfo.data,
-    defaultOutlet: state.outlet.defaultOutlet,
-    mode: state.guestCheckoutCart.mode,
-    basketGuestCo: state.guestCheckoutCart.data,
-    basketGuestCoResponse: state.guestCheckoutCart.response,
-    editResponse: state.guestCheckoutCart.saveEditResponse,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
-
 const ProductUpdateModal = ({
   open,
   handleClose,
   product,
   width,
-  ...props
+  productDetail,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useDispatch();
+
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
+  const [productInBasket, setProductInBasket] = useState([]);
+  const [selectedProductBasketUpdate, setSelectedProductBasketUpdate] =
+    useState({});
+
+  const basket = useSelector((state) => state.order.basket);
+  const color = useSelector((state) => state.theme.color);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const mode = useSelector((state) => state.guestCheckoutCart.mode);
+  const basketGuestCo = useSelector((state) => state.guestCheckoutCart.data);
+  const basketGuestCoResponse = useSelector(
+    (state) => state.guestCheckoutCart.response
+  );
+  const editResponse = useSelector(
+    (state) => state.guestCheckoutCart.saveEditResponse
+  );
+
   const styles = {
-    backgroundColor: {
-      backgroundColor: props.color.background,
-    },
     productRoot: {
       marginTop: 20,
     },
@@ -69,7 +68,7 @@ const ProductUpdateModal = ({
     productModifierQuantity: {
       fontStyle: 'italic',
       fontSize: 10,
-      color: props.color.primary,
+      color: color.primary,
     },
     productModifierName: {
       fontStyle: 'italic',
@@ -86,7 +85,6 @@ const ProductUpdateModal = ({
       fontSize: 10,
       paddingTop: 4,
     },
-    divider: {},
     buttonEdit: {
       display: 'flex',
       alignItems: 'center',
@@ -94,7 +92,7 @@ const ProductUpdateModal = ({
     iconEdit: {
       height: 10,
       width: 10,
-      color: props.color.primary,
+      color: color.primary,
       marginRight: 5,
     },
     textEdit: {
@@ -111,52 +109,12 @@ const ProductUpdateModal = ({
     typography: {
       fontSize: 12,
       lineHeight: '17px',
-      // color: '#808080',
       color: '#000000',
       fontWeight: 600,
-    },
-    imageSize: {
-      height: 340,
-      width: 340,
-      borderRadius: 5,
-    },
-    productName: {
-      width: '100%',
-      fontSize: 26,
-      // color: props.color.primary,
-      color: 'black',
-      lineHeight: '30px',
-      fontWeight: 600,
-      paddingBottom: 10,
-      paddingLeft: 600 > width ? 0 : 10,
-      paddingTop: 600 > width && 10,
-    },
-    productDescription: {
-      width: '100%',
-      fontSize: 16,
-      color: props.color.primary,
-      lineHeight: '17px',
-      paddingLeft: 600 > width ? 0 : 10,
-    },
-    buttonIcon: {
-      height: 15,
-      width: 20,
-      backgroundColor: props.color.primary,
-      borderRadius: 5,
-      // padding: 10,
-      marginRight: 10,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#ffffff',
-
-      padding: '3.75px',
-      gap: '7.5px',
     },
     icon: {
       height: 20,
       width: 20,
-      // color: 'white',
       color: '#8A8D8E',
     },
     price: {
@@ -164,13 +122,13 @@ const ProductUpdateModal = ({
       lineHeight: '17px',
       fontWeight: 600,
       paddingRight: 4,
-      color: props.color.primary,
+      color: color.primary,
     },
     quantity: {
       fontSize: '7.5px',
       fontWeight: 600,
-      color: props.color.font,
-      backgroundColor: props.color.primary,
+      color: color.font,
+      backgroundColor: color.primary,
       height: '17px',
       lineHeight: '9px',
       width: '17px',
@@ -185,14 +143,6 @@ const ProductUpdateModal = ({
       display: 'flex',
       justifyContent: 'space-between',
     },
-    footer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'start',
-      alignItems: 'center',
-      alignContents: 'center',
-    },
-
     addText: {
       color: 'white',
       fontWeight: 500,
@@ -202,7 +152,7 @@ const ProductUpdateModal = ({
     addButton: {
       height: 35,
       width: '100%',
-      backgroundColor: props.color.primary,
+      backgroundColor: color.primary,
       borderRadius: 5,
       padding: 10,
       marginLeft: 10,
@@ -229,10 +179,60 @@ const ProductUpdateModal = ({
     },
   };
 
-  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
-  const [productInBasket, setProductInBasket] = useState([]);
-  const [selectedProductBasketUpdate, setSelectedProductBasketUpdate] =
-    useState({});
+  useEffect(() => {
+    const loadData = async () => {
+      await dispatch(OrderAction.getCart());
+    };
+    loadData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!isEmptyArray(product.variants)) {
+      const items = handleProductVariants();
+      setProductInBasket(items);
+    } else {
+      if (!isEmptyObject(basket)) {
+        const items = basket?.details?.filter(
+          (item) => item.product.id === product.id
+        );
+        setProductInBasket(items);
+      }
+    }
+  }, [basket, product]);
+
+  useEffect(() => {
+    if (mode === 'GuestMode') {
+      if (!isEmptyArray(product.variants)) {
+        const items = handleProductVariantsGuestCO();
+        setProductInBasket(items);
+      } else {
+        if (!isEmptyObject(basketGuestCoResponse)) {
+          const items = basketGuestCoResponse?.details?.filter(
+            (item) => item.product.id === product.id
+          );
+          setProductInBasket(items);
+        } else if (basketGuestCo.message !== 'Cart it empty.') {
+          const items = basketGuestCo?.details?.filter(
+            (item) => item.product.id === product.id
+          );
+          setProductInBasket(items);
+        }
+
+        if (!isEmptyObject(editResponse)) {
+          const items = editResponse?.details?.filter(
+            (item) => item.product.id === product.id
+          );
+          setProductInBasket(items);
+        }
+      }
+    }
+  }, [
+    mode,
+    product.variants,
+    basketGuestCo,
+    basketGuestCoResponse,
+    editResponse,
+  ]);
 
   const handleOpenAddModal = (value) => {
     setIsOpenAddModal(true);
@@ -246,9 +246,9 @@ const ProductUpdateModal = ({
 
   const handleCurrency = (value) => {
     const price = value ? value : 0;
-    const result = price.toLocaleString(props.companyInfo.currency.locale, {
+    const result = price.toLocaleString(companyInfo.currency.locale, {
       style: 'currency',
-      currency: props.companyInfo.currency.code,
+      currency: companyInfo.currency.code,
     });
 
     return result;
@@ -282,77 +282,32 @@ const ProductUpdateModal = ({
 
   const handleProductVariants = () => {
     const productItemInBasket = handleProductVariantInBasket({
-      basketDetails: props.basket.details,
+      basketDetails: basket.details,
       product,
     });
     return productItemInBasket;
   };
 
   const handleProductVariantsGuestCO = () => {
+    const handleBasketDetails = () => {
+      if (basketGuestCo?.details?.length) {
+        return basketGuestCo.details;
+      }
+      if (
+        editResponse?.details &&
+        basketGuestCoResponse?.details?.length <= editResponse?.details?.length
+      ) {
+        return editResponse.details;
+      }
+      return basketGuestCoResponse?.details;
+    };
+
     const productItemInBasket = handleProductVariantInBasket({
-      basketDetails:
-        props.basketGuestCo?.details?.length >= 1
-          ? props.basketGuestCo.details
-          : props.basketGuestCoResponse?.details,
+      basketDetails: handleBasketDetails(),
       product,
     });
     return productItemInBasket;
   };
-
-  useEffect(() => {
-    const loadData = async () => {
-      await props.dispatch(OrderAction.getCart());
-    };
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (!isEmptyArray(product.variants)) {
-      const items = handleProductVariants();
-      setProductInBasket(items);
-    } else {
-      if (!isEmptyObject(props.basket)) {
-        const items = props.basket?.details?.filter(
-          (item) => item.product.id === product.id
-        );
-        setProductInBasket(items);
-      }
-    }
-  }, [props.basket, product]);
-
-  useEffect(() => {
-    if (props.mode === 'GuestMode') {
-      if (!isEmptyArray(product.variants)) {
-        const items = handleProductVariantsGuestCO();
-        setProductInBasket(items);
-      } else {
-        if (!isEmptyObject(props.basketGuestCoResponse)) {
-          const items = props.basketGuestCoResponse?.details?.filter(
-            (item) => item.product.id === product.id
-          );
-          setProductInBasket(items);
-        } else if (props.basketGuestCo.message !== 'Cart it empty.') {
-          const items = props.basketGuestCo?.details?.filter(
-            (item) => item.product.id === product.id
-          );
-          setProductInBasket(items);
-        }
-
-        if (!isEmptyObject(props.editResponse)) {
-          const items = props.editResponse?.details?.filter(
-            (item) => item.product.id === product.id
-          );
-          setProductInBasket(items);
-        }
-      }
-    }
-  }, [
-    props.mode,
-    product.variants,
-    props.basketGuestCo,
-    props.basketGuestCoResponse,
-    props.editResponse,
-  ]);
 
   const renderProductModifierItems = (items) => {
     const productModifierItems = items.map((item, index) => {
@@ -418,13 +373,13 @@ const ProductUpdateModal = ({
                 </Button>
               </div>
             </div>
-            <Divider style={styles.divider} />
+            <Divider />
           </div>
         );
       });
 
       return result;
-    } else if (props.mode === 'GuestMode') {
+    } else if (mode === 'GuestMode') {
       const result = productInBasket?.map((product, index) => {
         return (
           <div key={index}>
@@ -454,7 +409,7 @@ const ProductUpdateModal = ({
                 </Button>
               </div>
             </div>
-            <Divider style={styles.divider} />
+            <Divider />
           </div>
         );
       });
@@ -472,6 +427,7 @@ const ProductUpdateModal = ({
           handleClose={handleCloseAddModal}
           selectedProduct={selectedProductBasketUpdate}
           product={product}
+          productDetail={productDetail}
         />
       )}
 
@@ -519,26 +475,16 @@ const ProductUpdateModal = ({
 
 ProductUpdateModal.defaultProps = {
   open: false,
-  basket: {},
-  companyInfo: {},
-  handleClose: null,
+  handleClose: () => {},
   product: {},
-  defaultOutlet: {},
-  color: {},
-  dispatch: null,
   width: 600,
 };
 
 ProductUpdateModal.propTypes = {
-  basket: PropTypes.object,
-  color: PropTypes.object,
-  companyInfo: PropTypes.object,
-  defaultOutlet: PropTypes.object,
-  dispatch: PropTypes.func,
-  handleClose: PropTypes.func,
   open: PropTypes.bool,
+  handleClose: PropTypes.func,
   product: PropTypes.object,
   width: PropTypes.number,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductUpdateModal);
+export default ProductUpdateModal;

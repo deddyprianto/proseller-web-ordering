@@ -18,50 +18,6 @@ const mapStateToProps = (state) => {
 
 const ProductCartList = ({ ...props }) => {
   const history = useHistory();
-  const styles = {
-    basketHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontSize: 14,
-      alignItems: 'center',
-    },
-    outletName: {
-      fontWeight: 'bold',
-      color: props.color.primary,
-      textAlign: 'left',
-      lineHeight: '17px',
-    },
-    button: {
-      color: props.color.primary,
-      border: `1px solid ${props.color.primary}`,
-      borderRadius: 5,
-      width: 130,
-      height: 30,
-      textTransform: 'none',
-    },
-    typography: {
-      color: props.color.primary,
-      fontSize: 14,
-      fontWeight: 'bold',
-    },
-    icon: {
-      height: 15,
-      width: 15,
-      color: props.color.primary,
-    },
-    divider: {
-      backgroundColor: 'rgb(220, 220, 220)',
-      height: 1,
-      marginTop: 10,
-      marginBottom: 10,
-    },
-    divider4: {
-      backgroundColor: 'rgb(220, 220, 220)',
-      height: 4,
-      marginTop: 10,
-      marginBottom: 10,
-    },
-  };
 
   const renderTitleNameForCart = () => {
     return (
@@ -76,7 +32,11 @@ const ProductCartList = ({ ...props }) => {
           marginBottom: '20px',
         }}
       >
-        <img src={IconsArrowLeft} onClick={() => history.push('/')} />
+        <img
+          alt='ic_arrow_left'
+          src={IconsArrowLeft}
+          onClick={() => history.push('/')}
+        />
         <div
           style={{
             fontSize: '16px',
@@ -191,21 +151,21 @@ const ProductCartList = ({ ...props }) => {
           return (
             <div key={key}>
               {renderTextBanner('Add On Unavailable')}
-              <ProductCart item={item} isDisable={isDisable} />
+              <ProductCart item={item} isDisable={isDisable} index={key} />
             </div>
           );
         } else {
           return (
             <div key={key}>
               {renderTextBanner('Item Unavailable')}
-              <ProductCart item={item} isDisable={isDisable} />
+              <ProductCart item={item} isDisable={isDisable} index={key} />
             </div>
           );
         }
       } else {
         return (
           <div key={key}>
-            <ProductCart item={item} />
+            <ProductCart item={item} index={key} />
           </div>
         );
       }

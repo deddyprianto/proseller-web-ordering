@@ -28,6 +28,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Drawer from '@mui/material/Drawer';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
@@ -51,6 +52,7 @@ import screen from 'hooks/useWindowSize';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { renderIconEdit, renderIconInformation } from 'assets/iconsSvg/Icons';
 import OrderingModeTableGuestCO from 'components/orderingModeTableGuestCO';
+import { ProductAction } from 'redux/actions/ProductAction';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -74,7 +76,9 @@ const CartGuestCheckout = () => {
   const [showErrorEmail, setShowErrorEmail] = useState(false);
   const [productSpecific, setProductSpecific] = useState();
   const [valueSearchCode, setValueSearchCode] = useState('');
-  const [productDetailSpesific, setProductDetailSpesific] = useState();
+  const [selectedProductBasketUpdate, setSelectedProductBasketUpdate] =
+    useState({});
+  const [productDetail, setProductDetail] = useState({});
   const [productEditModal, setProductEditModal] = useState(false);
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
   const matches = useMediaQuery('(max-width:1200px)');
@@ -82,6 +86,7 @@ const CartGuestCheckout = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingEdit, setIsLoadingEdit] = useState([]);
   const [idGuestCheckout, setIdGuestCheckout] = useState();
   const [openOrderingMode, setOpenOrderingMode] = useState(false);
   const [openAccordion, setOpenAccordion] = useState(false);
@@ -141,14 +146,14 @@ const CartGuestCheckout = () => {
     if (idGuestCheckout) {
       setIdGuestCheckout(idGuestCheckout);
     }
-  }, [localStorage]);
+  }, []);
 
   useEffect(() => {
     const clearStateResponse = async () => {
       await dispatch(OrderAction.clearResponse());
     };
     clearStateResponse();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchBasket = async () => {
@@ -169,6 +174,7 @@ const CartGuestCheckout = () => {
     saveEditResponse,
     orderingModeGuestCheckout,
     isCartDeleted,
+    dispatch,
   ]);
 
   useEffect(() => {
@@ -930,7 +936,7 @@ const CartGuestCheckout = () => {
     </li>;
   };
 
-  const renderButtonEditDelete = (itemDetails, isDisable) => {
+  const renderButtonEditDelete = (itemDetails, isDisable, index) => {
     return (
       <div
         style={{
@@ -963,14 +969,36 @@ const CartGuestCheckout = () => {
                   fontSize: '14px',
                   color: color?.primary,
                 }}
-                onClick={() => {
-                  setProductDetailSpesific(itemDetails);
+                onClick={async () => {
+                  const temp = [...isLoadingEdit];
+                  temp[index] = true;
+                  setIsLoadingEdit(temp);
+
+                  setSelectedProductBasketUpdate(itemDetails);
                   setProductSpecific(itemDetails.product);
+
+                  const productById = await dispatch(
+                    ProductAction.getProductById(
+                      { outlet: basket?.outlet?.id },
+                      itemDetails?.product?.id?.split('_')[0]
+                    )
+                  );
+
+                  setProductDetail(productById);
+                  temp[index] = false;
+                  setIsLoadingEdit(temp);
                   setProductEditModal(true);
                 }}
-                startIcon={renderIconEdit(color?.primary)}
+                disabled={isLoadingEdit[index]}
+                startIcon={
+                  !isLoadingEdit[index] && renderIconEdit(color?.primary)
+                }
               >
-                Edit
+                {isLoadingEdit[index] ? (
+                  <CircularProgress size={25} sx={{ color: color?.primary }} />
+                ) : (
+                  'Edit'
+                )}
               </Button>
             )}
             <div
@@ -1053,7 +1081,7 @@ const CartGuestCheckout = () => {
     );
   };
 
-  const renderItemList = (itemDetails, isDisable) => {
+  const renderItemList = (itemDetails, isDisable, index) => {
     return (
       <div
         key={itemDetails?.productID}
@@ -1150,7 +1178,7 @@ const CartGuestCheckout = () => {
             marginBottom: '10px',
           }}
         />
-        {renderButtonEditDelete(itemDetails, isDisable)}
+        {renderButtonEditDelete(itemDetails, isDisable, index)}
       </div>
     );
   };
@@ -1164,25 +1192,25 @@ const CartGuestCheckout = () => {
       (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
     );
 
-    return sortOrderingStatusItem?.map((itemDetails) => {
+    return sortOrderingStatusItem?.map((itemDetails, index) => {
       if (itemDetails.orderingStatus === 'UNAVAILABLE') {
         if (itemDetails.modifiers.length > 0) {
           return (
             <React.Fragment>
               {renderTextBanner('Add On Unavailable')}
-              {renderItemList(itemDetails, isDisable)}
+              {renderItemList(itemDetails, isDisable, index)}
             </React.Fragment>
           );
         } else {
           return (
             <React.Fragment>
               {renderTextBanner('Item Unavailable')}
-              {renderItemList(itemDetails, isDisable)}
+              {renderItemList(itemDetails, isDisable, index)}
             </React.Fragment>
           );
         }
       } else {
-        return renderItemList(itemDetails);
+        return renderItemList(itemDetails, false, index);
       }
     });
   };
@@ -2783,7 +2811,8 @@ const CartGuestCheckout = () => {
           open={productEditModal}
           handleClose={() => setProductEditModal(false)}
           product={productSpecific}
-          selectedProduct={productDetailSpesific}
+          selectedProduct={selectedProductBasketUpdate}
+          productDetail={productDetail}
         />
       )}
       {openOrderingTable && (

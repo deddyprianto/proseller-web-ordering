@@ -156,6 +156,17 @@ const Home = ({ ...props }) => {
     const isOfflineCartGuestCO = JSON.parse(
       localStorage.getItem('BASKET_GUESTCHECKOUT')
     );
+    const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+
+    const fetchBasket = async () => {
+      if (idGuestCheckout) {
+        await dispatch(
+          OrderAction.getCartGuestMode(`guest::${idGuestCheckout}`)
+        );
+      }
+    };
+
+    fetchBasket();
 
     const saveGuestCheckoutOfflineCart = async () => {
       Swal.showLoading();
