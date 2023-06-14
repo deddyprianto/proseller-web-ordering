@@ -47,6 +47,10 @@ function GuestCheckoutCart(
     case CONSTANT.SUCCESS_DELETE:
       return { ...state, notice: action.payload };
     case CONSTANT.TRACKORDER:
+      localStorage.setItem(
+        'TRACKORDER_PERSISTED',
+        JSON.stringify(action.payload)
+      );
       return { ...state, trackorder: action.payload };
     case CONSTANT.SAVE_DATE:
       return { ...state, date: action.payload };

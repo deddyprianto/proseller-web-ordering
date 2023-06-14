@@ -1,6 +1,4 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderTrackOrderHistory from './HeaderTrackOrderHistory';
 import style from './style/style.module.css';
 import Accordion from '@mui/material/Accordion';
@@ -8,29 +6,31 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconChecklis from '../../assets/images/checkIconTransparent.png';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import VectorDown from '../../assets/images/VectorDown.png';
 import { useHistory } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Drawer from '@mui/material/Drawer';
 import config from 'config';
-import { CONSTANT } from 'helpers';
 
 const OrderTrackHistory = () => {
-  const dispatch = useDispatch();
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
   const [expandAccordionTimeLine, setExpandAccordionTimeLine] = useState(true);
   const [expandAccordionProductList, setExpandAccordionProductList] =
     useState(true);
   const companyInfo = useSelector((state) => state.masterdata);
   const history = useHistory();
-  const basket = useSelector((state) => state.guestCheckoutCart);
   const color = useSelector((state) => state.theme.color);
+  const [basket, setBasket] = useState({});
   const matches = useMediaQuery('(min-width:1200px)');
-  const resetBottomNav = useSelector(
-    (state) => state.guestCheckoutCart.resetBottomNav
-  );
+
+  useEffect(() => {
+    const locationPersisted = localStorage.getItem('TRACKORDER_PERSISTED');
+    const basketTrackOrder = JSON.parse(locationPersisted);
+    setBasket(basketTrackOrder);
+  }, []);
+
   const renderGrandTotalForGuestCheckMode = () => {
     return (
       <div
@@ -74,7 +74,7 @@ const OrderTrackHistory = () => {
                   padding: 0,
                 }}
               >
-                {handleCurrency(basket?.trackorder?.data?.totalNettAmount)}
+                {handleCurrency(basket?.data?.totalNettAmount)}
               </p>
               <div style={{ marginLeft: '10px', marginTop: '7px' }}>
                 <img
@@ -118,48 +118,6 @@ const OrderTrackHistory = () => {
       }
       return config.image_placeholder;
     }
-  };
-
-  const renderPrice = (item, handleCurrency) => {
-    if (item?.totalDiscAmount !== 0) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Typography style={{ color: '#4386A1', fontSize: '16px' }}>
-            {handleCurrency(item?.totalDiscAmount)}
-          </Typography>
-          <Typography
-            style={{
-              fontSize: '16px',
-              textDecorationLine: 'line-through',
-              marginRight: '10px',
-              color: '#8A8D8E',
-            }}
-          >
-            {handleCurrency(item?.grossAmount)}
-          </Typography>
-        </div>
-      );
-    }
-
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <Typography style={{ color: '#4386A1', fontSize: '16px' }}>
-          {handleCurrency(item?.grossAmount)}
-        </Typography>
-      </div>
-    );
   };
 
   const renderCartProductAccordion = () => {
@@ -226,12 +184,12 @@ const OrderTrackHistory = () => {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {basket?.trackorder?.data?.details.length} More Item
+                {basket?.data?.details.length} More Item
               </Typography>
             </div>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0, margin: 0 }}>
-            {basket?.trackorder?.data?.details.map((item, i) => {
+            {basket?.data?.details.map((item, i) => {
               return (
                 <div
                   key={item?.productID || i}
@@ -477,7 +435,7 @@ const OrderTrackHistory = () => {
   };
 
   const renderCardAccordion = () => {
-    const sortArrTime = basket?.trackorder.data?.orderTrackingHistory
+    const sortArrTime = basket?.data?.orderTrackingHistory
       ?.slice(0)
       .reverse()
       .map((item) => item);
@@ -554,7 +512,7 @@ const OrderTrackHistory = () => {
       >
         <p style={{ margin: 0, padding: 0, fontSize: '14px' }}>Ref. No</p>
         <p style={{ margin: 0, padding: 0, fontWeight: 700, fontSize: '14px' }}>
-          {basket?.trackorder?.data?.transactionRefNo}
+          {basket?.data?.transactionRefNo}
         </p>
       </div>
     );
@@ -578,8 +536,8 @@ const OrderTrackHistory = () => {
   };
 
   const tableNoChecker = () => {
-    if (basket?.trackorder?.data?.orderingMode === 'DINEIN') {
-      return basket?.trackorder?.data?.tableNo;
+    if (basket?.data?.orderingMode === 'DINEIN') {
+      return basket?.data?.tableNo;
     }
     return;
   };
@@ -601,14 +559,13 @@ const OrderTrackHistory = () => {
 
         {cartProductItem({
           title: 'Ordering Type',
-          value: basket?.trackorder?.data?.orderingMode,
+          value: basket?.data?.orderingMode,
         })}
 
-        {(basket?.trackorder?.data?.queueNo ||
-          basket?.trackorder?.data?.tableNo) &&
+        {(basket?.data?.queueNo || basket?.data?.tableNo) &&
           cartProductItem({
             title: `${tableNoChecker() ? 'Table No.' : 'Queue No.'}`,
-            value: tableNoChecker() || basket?.trackorder?.data?.queueNo,
+            value: tableNoChecker() || basket?.data?.queueNo,
           })}
 
         <div
@@ -617,7 +574,7 @@ const OrderTrackHistory = () => {
             width: '100%',
           }}
         >
-          {basket?.trackorder?.data?.orderingMode === 'DELIVERY' && (
+          {basket?.data?.orderingMode === 'DELIVERY' && (
             <>
               <p className={style.title2}>Customer Detail</p>
 
@@ -628,13 +585,12 @@ const OrderTrackHistory = () => {
                       style={{ padding: 0, margin: 0 }}
                       className={style.title}
                     >
-                      {basket?.trackorder?.data?.deliveryAddress?.name}
+                      {basket?.data?.deliveryAddress?.name}
                       <span style={{ marginLeft: '5px', marginRight: '5px' }}>
                         |
                       </span>
-                      {basket?.trackorder?.data?.deliveryAddress?.phoneNo},{' '}
-                      <br />
-                      {basket?.trackorder?.data?.deliveryAddress?.email}
+                      {basket?.data?.deliveryAddress?.phoneNo}, <br />
+                      {basket?.data?.deliveryAddress?.email}
                     </td>
                   </tr>
                   <tr>
@@ -651,7 +607,7 @@ const OrderTrackHistory = () => {
                         margin: 0,
                       }}
                     >
-                      {basket?.trackorder?.data?.deliveryAddress?.address ||
+                      {basket?.data?.deliveryAddress?.address ||
                         basket?.data?.deliveryAddress?.addressName}
                     </td>
                   </tr>
@@ -660,8 +616,8 @@ const OrderTrackHistory = () => {
                       style={{ padding: 0, margin: 0 }}
                       className={style.title}
                     >
-                      {basket?.trackorder?.data?.deliveryAddress?.unitNo},
-                      {basket?.trackorder?.data?.deliveryAddress?.postalCode}
+                      {basket?.data?.deliveryAddress?.unitNo},
+                      {basket?.data?.deliveryAddress?.postalCode}
                     </td>
                   </tr>
                 </tbody>
@@ -670,7 +626,7 @@ const OrderTrackHistory = () => {
           )}
         </div>
 
-        {basket?.trackorder?.data?.orderingMode === 'DELIVERY' && (
+        {basket?.data?.orderingMode === 'DELIVERY' && (
           <div
             style={{
               margin: '20px 0 0 0',
@@ -681,12 +637,10 @@ const OrderTrackHistory = () => {
             }}
           >
             <p className={style.title2}>Delivery Provider</p>
-            <p className={style.title}>
-              {basket?.trackorder?.data?.provider.name}
-            </p>
+            <p className={style.title}>{basket?.data?.provider.name}</p>
           </div>
         )}
-        {basket?.trackorder?.data?.orderingMode === 'PICKUP' && (
+        {basket?.data?.orderingMode === 'PICKUP' && (
           <div
             style={{
               width: '100%',
@@ -708,15 +662,15 @@ const OrderTrackHistory = () => {
         {cartProductItem({
           title: 'Date & Time',
           value: `${
-            basket?.trackorder?.data?.orderActionDate +
+            basket?.data?.orderActionDate +
             ' at ' +
-            basket?.trackorder?.data?.orderActionTime
+            basket?.data?.orderActionTime
           }`,
         })}
 
         {cartProductItem({
           title: 'Order Status',
-          value: basket?.trackorder?.data?.status.split('_').join(' '),
+          value: basket?.data?.status.split('_').join(' '),
         })}
       </div>
     );
@@ -749,13 +703,12 @@ const OrderTrackHistory = () => {
     },
   };
   const handleSubtotalForGuestCheckout = () => {
-    if (basket?.trackorder?.data?.totalDiscountAmount !== 0) {
+    if (basket?.data?.totalDiscountAmount !== 0) {
       const subTotalAfterDiscount =
-        basket?.trackorder?.data?.totalGrossAmount -
-        basket?.trackorder.tdata?.otalDiscountAmount;
+        basket?.data?.totalGrossAmount - basket.tdata?.otalDiscountAmount;
       return subTotalAfterDiscount;
     }
-    return basket?.trackorder?.data?.totalGrossAmount;
+    return basket?.data?.totalGrossAmount;
   };
 
   const renderSubtotalForGuestCheckMode = () => {
@@ -806,14 +759,14 @@ const OrderTrackHistory = () => {
             padding: '10px',
           }}
         >
-          {basket?.trackorder?.data?.provider?.deliveryFee !== 0 && (
+          {basket?.data?.provider?.deliveryFee !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography className={style.myFont} style={styles.subTotal}>
                   Total
                 </Typography>
                 <Typography className={style.myFont} style={styles.subTotal}>
-                  {handleCurrency(basket?.trackorder?.data?.totalGrossAmount)}
+                  {handleCurrency(basket?.data?.totalGrossAmount)}
                 </Typography>
               </div>
               <div
@@ -833,22 +786,20 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.orderingMode === 'DELIVERY' && (
+          {basket?.data?.orderingMode === 'DELIVERY' && (
             <>
-              {basket?.trackorder?.data?.provider?.deliveryFee !== 0 && (
+              {basket?.data?.provider?.deliveryFee !== 0 && (
                 <div style={styles.rootSubTotalItem}>
                   <Typography className={style.myFont} style={styles.subTotal}>
                     Delivery Cost
                   </Typography>
                   <Typography className={style.myFont} style={styles.subTotal}>
-                    {handleCurrency(
-                      basket?.trackorder?.data?.provider?.deliveryFee
-                    )}
+                    {handleCurrency(basket?.data?.provider?.deliveryFee)}
                   </Typography>
                 </div>
               )}
-              {basket?.trackorder?.data?.provider?.deliveryFee === 0 &&
-              basket?.trackorder?.data?.orderingMode === 'DELIVERY' ? (
+              {basket?.data?.provider?.deliveryFee === 0 &&
+              basket?.data?.orderingMode === 'DELIVERY' ? (
                 <div style={styles.rootSubTotalItem}>
                   <Typography className={style.myFont} style={styles.subTotal}>
                     Delivery Fee
@@ -875,14 +826,14 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.exclusiveTax !== 0 && (
+          {basket?.data?.exclusiveTax !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography className={style.myFont} style={styles.subTotal}>
                   Tax
                 </Typography>
                 <Typography className={style.myFont} style={styles.subTotal}>
-                  {handleCurrency(basket?.trackorder?.data?.exclusiveTax)}
+                  {handleCurrency(basket?.data?.exclusiveTax)}
                 </Typography>
               </div>
               <div
@@ -902,7 +853,7 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.totalDiscountAmount !== 0 && (
+          {basket?.data?.totalDiscountAmount !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography
@@ -915,10 +866,7 @@ const OrderTrackHistory = () => {
                   className={style.myFont}
                   style={styles.totalDiscount}
                 >
-                  -{' '}
-                  {handleCurrency(
-                    basket?.trackorder?.data?.totalDiscountAmount
-                  )}
+                  - {handleCurrency(basket?.data?.totalDiscountAmount)}
                 </Typography>
               </div>
               <div
@@ -938,16 +886,14 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.totalSurchargeAmount !== 0 && (
+          {basket?.data?.totalSurchargeAmount !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography className={style.myFont} style={styles.subTotal}>
                   Surcharge
                 </Typography>
                 <Typography className={style.myFont} style={styles.subTotal}>
-                  {handleCurrency(
-                    basket?.trackorder?.data?.totalSurchargeAmount
-                  )}
+                  {handleCurrency(basket?.data?.totalSurchargeAmount)}
                 </Typography>
               </div>
               <div
@@ -994,7 +940,7 @@ const OrderTrackHistory = () => {
                 color: color.primary,
               }}
             >
-              {handleCurrency(basket?.trackorder?.data?.totalNettAmount)}
+              {handleCurrency(basket?.data?.totalNettAmount)}
             </p>
           </div>
         </div>

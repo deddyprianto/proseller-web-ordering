@@ -45,9 +45,7 @@ const TrackOrder = () => {
       );
       if (response?.resultCode === 404) {
         setTrackOrderNotif(!trackOrderNotif);
-        setMessageNotif(
-          'You’ve entered wrong Ref. No., please enter the correct one.'
-        );
+        setMessageNotif(response.message);
       } else if (!wordsRegex.test(inputFieldRef.current.value)) {
         setTrackOrderNotif(!trackOrderNotif);
         setMessageNotif(
