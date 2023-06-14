@@ -213,6 +213,22 @@ function fetchProductAppointment({
   };
 }
 
+function getProductById(payload, productId) {
+  return async () => {
+    try {
+      let response = await ProductService.api(
+        'GET',
+        payload,
+        `product/${productId}`,
+        'Bearer'
+      );
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  };
+}
+
 export const ProductAction = {
   setData,
   fetchCategoryProduct,
@@ -224,4 +240,5 @@ export const ProductAction = {
   fetchProductList,
   setProductList,
   isParentCategory,
+  getProductById,
 };
