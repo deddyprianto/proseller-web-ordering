@@ -688,7 +688,6 @@ function getTrackOrder(refNo) {
       `order/track/${refNo}`
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log(response);
       return response;
     } else {
       dispatch({ type: CONSTANT.TRACKORDER, payload: response });

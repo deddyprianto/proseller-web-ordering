@@ -10,6 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import ArrowLeftIcons from 'assets/images/panah.png';
 import IconsWrong from 'assets/images/IconsWrong.png';
 import screen from 'hooks/useWindowSize';
+import { CONSTANT } from 'helpers';
 
 const TrackOrder = () => {
   const responsiveDesign = screen();
@@ -38,11 +39,16 @@ const TrackOrder = () => {
         'You’ve entered wrong Ref. No., please enter the correct one.'
       );
     } else {
-      setIsLoading(true);
+      dispatch({
+        type: CONSTANT.SAVE_ID_TRACKORDER,
+        payload: inputFieldRef.current.value,
+      });
       const wordsRegex = /^\b(?:\w|-)+\b$/;
+      setIsLoading(true);
       let response = await dispatch(
         OrderAction.getTrackOrder(inputFieldRef.current.value)
       );
+      setIsLoading(false);
       if (response?.resultCode === 404) {
         setTrackOrderNotif(!trackOrderNotif);
         setMessageNotif(response.message);
@@ -54,7 +60,6 @@ const TrackOrder = () => {
       } else {
         history.push('/ordertrackhistory');
       }
-      setIsLoading(false);
     }
   };
 

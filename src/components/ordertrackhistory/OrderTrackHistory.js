@@ -6,7 +6,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconChecklis from '../../assets/images/checkIconTransparent.png';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import VectorDown from '../../assets/images/VectorDown.png';
 import { useHistory } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -15,25 +15,42 @@ import Drawer from '@mui/material/Drawer';
 import config from 'config';
 import Paper from '@mui/material/Paper';
 import screen from 'hooks/useWindowSize';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const OrderTrackHistory = () => {
+  const dispatch = useDispatch();
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
+  const [isLoading, setIsLoading] = useState(false);
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
   const [expandAccordionTimeLine, setExpandAccordionTimeLine] = useState(true);
   const [expandAccordionProductList, setExpandAccordionProductList] =
     useState(true);
+  const [idOrderTrackHistory, setIdOrderTrackHistory] = useState('');
   const companyInfo = useSelector((state) => state.masterdata);
   const history = useHistory();
   const color = useSelector((state) => state.theme.color);
-  const [basket, setBasket] = useState({});
+  const basketItem = useSelector((state) => state.guestCheckoutCart);
+  const basket = basketItem?.trackorder;
   const matches = useMediaQuery('(min-width:1200px)');
 
   useEffect(() => {
-    const locationPersisted = localStorage.getItem('TRACKORDER_PERSISTED');
-    const basketTrackOrder = JSON.parse(locationPersisted);
-    setBasket(basketTrackOrder);
+    const idPersisted = localStorage.getItem('SAVE_ID_TRACKORDER');
+    const id = JSON.parse(idPersisted);
+    setIdOrderTrackHistory(id);
   }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      await dispatch(OrderAction.getTrackOrder(idOrderTrackHistory));
+      setIsLoading(false);
+    };
+    if (idOrderTrackHistory) {
+      loadData();
+    }
+  }, [idOrderTrackHistory]);
 
   const renderGrandTotalForGuestCheckMode = () => {
     return (
@@ -976,56 +993,58 @@ const OrderTrackHistory = () => {
     );
   };
   return (
-    <div style={{ width: '100vw' }}>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: '80px 1fr',
-          gap: '0px 0px',
-          height: '100vh',
-          width: matches ? '45%' : '100%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-        }}
-      >
-        <HeaderTrackOrderHistory matches={matches} />
-
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+      <div style={{ width: '100vw' }}>
         <div
           style={{
-            marginTop: matches ? '40px' : '20px',
-            height: '80vh ',
-            overflowY: 'auto',
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '80px 1fr',
+            gap: '0px 0px',
+            height: '100vh',
+            width: matches ? '45%' : '100%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
           }}
         >
+          <HeaderTrackOrderHistory matches={matches} />
+
           <div
             style={{
-              width: '100%',
-              paddingLeft:'16px',
-              paddingRight:'16px',
-              paddingBottom: 150,
-              margin: 'auto',
+              marginTop: matches ? '40px' : '20px',
+              height: '80vh ',
+              overflowY: 'auto',
             }}
           >
-            {renderNotifRef()}
-            {renderCartProduct()}
-            {renderCardAccordion()}
-            {renderCartProductAccordion()}
+            <div
+              style={{
+                width: '100%',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                paddingBottom: 150,
+                margin: 'auto',
+              }}
+            >
+              {renderNotifRef()}
+              {renderCartProduct()}
+              {renderCardAccordion()}
+              {renderCartProductAccordion()}
+            </div>
+            <RenderFooter />
           </div>
-          <RenderFooter />
         </div>
+        <Drawer
+          anchor='bottom'
+          open={openDrawerBottom}
+          onClose={() => setOpenDrawerBottom((prev) => !prev)}
+        >
+          {renderSubtotalForGuestCheckMode()}
+        </Drawer>
       </div>
-      <Drawer
-        anchor='bottom'
-        open={openDrawerBottom}
-        onClose={() => setOpenDrawerBottom((prev) => !prev)}
-      >
-        {renderSubtotalForGuestCheckMode()}
-      </Drawer>
-    </div>
+    </LoadingOverlayCustom>
   );
 };
 
