@@ -2,16 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 import { connect } from 'react-redux';
-// import { Button } from "reactstrap";
-// import { Link } from 'react-router-dom';
-// import Lottie from "lottie-react-web";
-// import emptyGif from "../assets/gif/empty-and-lost.json";
 
-import config from '../config';
+import config from 'config';
 
-const RewardsDetail = loadable(() =>
-  import('../components/profile/RewardsDetail')
-);
+const RewardsPage = loadable(() => import('../components/rewards'));
 const DetailProfile = loadable(() =>
   import('../components/profile/DetailProfile')
 );
@@ -33,11 +27,7 @@ class Profile extends Component {
 
     let isProfile = true;
 
-    try {
-      if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
-    } catch (e) {
-      console.log(e);
-    }
+    if (window.location.hash.split('#')[1] === '/rewards') isProfile = false;
 
     this.state = {
       isProfile,
@@ -155,7 +145,7 @@ class Profile extends Component {
                   settingAppoinment={settingAppoinment?.settingValue}
                 />
               ) : (
-                <RewardsDetail />
+                <RewardsPage />
               )}
             </main>
           </div>

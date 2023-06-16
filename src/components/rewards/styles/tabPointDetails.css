@@ -1,0 +1,39 @@
+.container-my-point {
+  background-color: rgb(102, 102, 102);
+  color: #fcfcfd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 95px;
+}
+.text-my-point {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 21px;
+}
+.text-total-point {
+  text-align: center;
+  font-weight: bold;
+  font-size: 36px;
+  line-height: 54px;
+}
+.container-detail {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 10px;
+}
+.container-history-point {
+  display: flex;
+  border-radius: 5px;
+  padding: 5px;
+  padding-left: 10px;
+  margin-bottom: 5px;
+  align-items: center;
+  line-height: 25px;
+}
+.container-label {
+  display: flex;
+  font-size: 14px;
+  font-weight: 700;
+}

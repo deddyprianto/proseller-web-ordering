@@ -154,6 +154,19 @@ function getCampaignByPoints(payload = null) {
   };
 }
 
+function getPendingRewards(payload, type) {
+  return async () => {
+    let response = await CRMService.api(
+      'GET',
+      payload,
+      `customer/pending-rewards/${type}`,
+      'bearer'
+    );
+
+    return response;
+  };
+}
+
 function setData(data, constant) {
   return {
     type: constant,
@@ -165,4 +178,5 @@ export const CampaignAction = {
   getCampaignPoints,
   getCampaignStamps,
   getCampaignByPoints,
+  getPendingRewards,
 };
