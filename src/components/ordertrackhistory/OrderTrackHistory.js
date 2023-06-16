@@ -1,6 +1,4 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderTrackOrderHistory from './HeaderTrackOrderHistory';
 import style from './style/style.module.css';
 import Accordion from '@mui/material/Accordion';
@@ -15,22 +13,45 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Drawer from '@mui/material/Drawer';
 import config from 'config';
-import { CONSTANT } from 'helpers';
+import Paper from '@mui/material/Paper';
+import screen from 'hooks/useWindowSize';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const OrderTrackHistory = () => {
   const dispatch = useDispatch();
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
+  const [isLoading, setIsLoading] = useState(false);
   const [openDrawerBottom, setOpenDrawerBottom] = useState(false);
   const [expandAccordionTimeLine, setExpandAccordionTimeLine] = useState(true);
   const [expandAccordionProductList, setExpandAccordionProductList] =
     useState(true);
+  const [idOrderTrackHistory, setIdOrderTrackHistory] = useState('');
   const companyInfo = useSelector((state) => state.masterdata);
   const history = useHistory();
-  const basket = useSelector((state) => state.guestCheckoutCart);
   const color = useSelector((state) => state.theme.color);
+  const basketItem = useSelector((state) => state.guestCheckoutCart);
+  const basket = basketItem?.trackorder;
   const matches = useMediaQuery('(min-width:1200px)');
-  const resetBottomNav = useSelector(
-    (state) => state.guestCheckoutCart.resetBottomNav
-  );
+
+  useEffect(() => {
+    const idPersisted = localStorage.getItem('SAVE_ID_TRACKORDER');
+    const id = JSON.parse(idPersisted);
+    setIdOrderTrackHistory(id);
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      await dispatch(OrderAction.getTrackOrder(idOrderTrackHistory));
+      setIsLoading(false);
+    };
+    if (idOrderTrackHistory) {
+      loadData();
+    }
+  }, [idOrderTrackHistory]);
+
   const renderGrandTotalForGuestCheckMode = () => {
     return (
       <div
@@ -42,7 +63,7 @@ const OrderTrackHistory = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-
+          padding:'10px 0px',
           height: '100%',
         }}
       >
@@ -50,10 +71,11 @@ const OrderTrackHistory = () => {
           <div>
             <p
               style={{
-                fontWeight: 500,
+                fontWeight: 'bold',
                 fontSize: '16px',
                 margin: 0,
                 padding: 0,
+                color:'black'
               }}
             >
               Grand Total
@@ -74,7 +96,7 @@ const OrderTrackHistory = () => {
                   padding: 0,
                 }}
               >
-                {handleCurrency(basket?.trackorder?.data?.totalNettAmount)}
+                {handleCurrency(basket?.data?.totalNettAmount)}
               </p>
               <div style={{ marginLeft: '10px', marginTop: '7px' }}>
                 <img
@@ -120,58 +142,13 @@ const OrderTrackHistory = () => {
     }
   };
 
-  const renderPrice = (item, handleCurrency) => {
-    if (item?.totalDiscAmount !== 0) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Typography style={{ color: '#4386A1', fontSize: '16px' }}>
-            {handleCurrency(item?.totalDiscAmount)}
-          </Typography>
-          <Typography
-            style={{
-              fontSize: '16px',
-              textDecorationLine: 'line-through',
-              marginRight: '10px',
-              color: '#8A8D8E',
-            }}
-          >
-            {handleCurrency(item?.grossAmount)}
-          </Typography>
-        </div>
-      );
-    }
-
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <Typography style={{ color: '#4386A1', fontSize: '16px' }}>
-          {handleCurrency(item?.grossAmount)}
-        </Typography>
-      </div>
-    );
-  };
-
   const renderCartProductAccordion = () => {
     return (
       <div
         style={{
-          width: '95%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow:
-            'rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset',
-          marginTop: '10px',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
           marginBottom: '10px',
           display: 'flex',
           justifyContent: 'space-around',
@@ -226,12 +203,12 @@ const OrderTrackHistory = () => {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {basket?.trackorder?.data?.details.length} More Item
+                {basket?.data?.details.length} More Item
               </Typography>
             </div>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0, margin: 0 }}>
-            {basket?.trackorder?.data?.details.map((item, i) => {
+            {basket?.data?.details.map((item, i) => {
               return (
                 <div
                   key={item?.productID || i}
@@ -477,7 +454,7 @@ const OrderTrackHistory = () => {
   };
 
   const renderCardAccordion = () => {
-    const sortArrTime = basket?.trackorder.data?.orderTrackingHistory
+    const sortArrTime = basket?.data?.orderTrackingHistory
       ?.slice(0)
       .reverse()
       .map((item) => item);
@@ -485,11 +462,9 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow:
-            'rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
           marginTop: '10px',
           marginBottom: '10px',
           display: 'flex',
@@ -542,7 +517,6 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -554,7 +528,7 @@ const OrderTrackHistory = () => {
       >
         <p style={{ margin: 0, padding: 0, fontSize: '14px' }}>Ref. No</p>
         <p style={{ margin: 0, padding: 0, fontWeight: 700, fontSize: '14px' }}>
-          {basket?.trackorder?.data?.transactionRefNo}
+          {basket?.data?.transactionRefNo}
         </p>
       </div>
     );
@@ -578,8 +552,8 @@ const OrderTrackHistory = () => {
   };
 
   const tableNoChecker = () => {
-    if (basket?.trackorder?.data?.orderingMode === 'DINEIN') {
-      return basket?.trackorder?.data?.tableNo;
+    if (basket?.data?.orderingMode === 'DINEIN') {
+      return basket?.data?.tableNo;
     }
     return;
   };
@@ -588,11 +562,9 @@ const OrderTrackHistory = () => {
     return (
       <div
         style={{
-          width: '95%',
           backgroundColor: 'white',
           borderRadius: '8px',
-          boxShadow:
-            'rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
           margin: '10px 0',
           padding: '25px 10px',
         }}
@@ -601,14 +573,13 @@ const OrderTrackHistory = () => {
 
         {cartProductItem({
           title: 'Ordering Type',
-          value: basket?.trackorder?.data?.orderingMode,
+          value: basket?.data?.orderingMode,
         })}
 
-        {(basket?.trackorder?.data?.queueNo ||
-          basket?.trackorder?.data?.tableNo) &&
+        {(basket?.data?.queueNo || basket?.data?.tableNo) &&
           cartProductItem({
             title: `${tableNoChecker() ? 'Table No.' : 'Queue No.'}`,
-            value: tableNoChecker() || basket?.trackorder?.data?.queueNo,
+            value: tableNoChecker() || basket?.data?.queueNo,
           })}
 
         <div
@@ -617,7 +588,7 @@ const OrderTrackHistory = () => {
             width: '100%',
           }}
         >
-          {basket?.trackorder?.data?.orderingMode === 'DELIVERY' && (
+          {basket?.data?.orderingMode === 'DELIVERY' && (
             <>
               <p className={style.title2}>Customer Detail</p>
 
@@ -628,13 +599,12 @@ const OrderTrackHistory = () => {
                       style={{ padding: 0, margin: 0 }}
                       className={style.title}
                     >
-                      {basket?.trackorder?.data?.deliveryAddress?.name}
+                      {basket?.data?.deliveryAddress?.name}
                       <span style={{ marginLeft: '5px', marginRight: '5px' }}>
                         |
                       </span>
-                      {basket?.trackorder?.data?.deliveryAddress?.phoneNo},{' '}
-                      <br />
-                      {basket?.trackorder?.data?.deliveryAddress?.email}
+                      {basket?.data?.deliveryAddress?.phoneNo}, <br />
+                      {basket?.data?.deliveryAddress?.email}
                     </td>
                   </tr>
                   <tr>
@@ -651,7 +621,7 @@ const OrderTrackHistory = () => {
                         margin: 0,
                       }}
                     >
-                      {basket?.trackorder?.data?.deliveryAddress?.address ||
+                      {basket?.data?.deliveryAddress?.address ||
                         basket?.data?.deliveryAddress?.addressName}
                     </td>
                   </tr>
@@ -660,8 +630,8 @@ const OrderTrackHistory = () => {
                       style={{ padding: 0, margin: 0 }}
                       className={style.title}
                     >
-                      {basket?.trackorder?.data?.deliveryAddress?.unitNo},
-                      {basket?.trackorder?.data?.deliveryAddress?.postalCode}
+                      {basket?.data?.deliveryAddress?.unitNo},
+                      {basket?.data?.deliveryAddress?.postalCode}
                     </td>
                   </tr>
                 </tbody>
@@ -670,7 +640,7 @@ const OrderTrackHistory = () => {
           )}
         </div>
 
-        {basket?.trackorder?.data?.orderingMode === 'DELIVERY' && (
+        {basket?.data?.orderingMode === 'DELIVERY' && (
           <div
             style={{
               margin: '20px 0 0 0',
@@ -681,12 +651,10 @@ const OrderTrackHistory = () => {
             }}
           >
             <p className={style.title2}>Delivery Provider</p>
-            <p className={style.title}>
-              {basket?.trackorder?.data?.provider.name}
-            </p>
+            <p className={style.title}>{basket?.data?.provider.name}</p>
           </div>
         )}
-        {basket?.trackorder?.data?.orderingMode === 'PICKUP' && (
+        {basket?.data?.orderingMode === 'PICKUP' && (
           <div
             style={{
               width: '100%',
@@ -708,15 +676,15 @@ const OrderTrackHistory = () => {
         {cartProductItem({
           title: 'Date & Time',
           value: `${
-            basket?.trackorder?.data?.orderActionDate +
+            basket?.data?.orderActionDate +
             ' at ' +
-            basket?.trackorder?.data?.orderActionTime
+            basket?.data?.orderActionTime
           }`,
         })}
 
         {cartProductItem({
           title: 'Order Status',
-          value: basket?.trackorder?.data?.status.split('_').join(' '),
+          value: basket?.data?.status.split('_').join(' '),
         })}
       </div>
     );
@@ -749,13 +717,12 @@ const OrderTrackHistory = () => {
     },
   };
   const handleSubtotalForGuestCheckout = () => {
-    if (basket?.trackorder?.data?.totalDiscountAmount !== 0) {
+    if (basket?.data?.totalDiscountAmount !== 0) {
       const subTotalAfterDiscount =
-        basket?.trackorder?.data?.totalGrossAmount -
-        basket?.trackorder.tdata?.otalDiscountAmount;
+        basket?.data?.totalGrossAmount - basket.tdata?.otalDiscountAmount;
       return subTotalAfterDiscount;
     }
-    return basket?.trackorder?.data?.totalGrossAmount;
+    return basket?.data?.totalGrossAmount;
   };
 
   const renderSubtotalForGuestCheckMode = () => {
@@ -806,14 +773,14 @@ const OrderTrackHistory = () => {
             padding: '10px',
           }}
         >
-          {basket?.trackorder?.data?.provider?.deliveryFee !== 0 && (
+          {basket?.data?.provider?.deliveryFee !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography className={style.myFont} style={styles.subTotal}>
                   Total
                 </Typography>
                 <Typography className={style.myFont} style={styles.subTotal}>
-                  {handleCurrency(basket?.trackorder?.data?.totalGrossAmount)}
+                  {handleCurrency(basket?.data?.totalGrossAmount)}
                 </Typography>
               </div>
               <div
@@ -833,22 +800,20 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.orderingMode === 'DELIVERY' && (
+          {basket?.data?.orderingMode === 'DELIVERY' && (
             <>
-              {basket?.trackorder?.data?.provider?.deliveryFee !== 0 && (
+              {basket?.data?.provider?.deliveryFee !== 0 && (
                 <div style={styles.rootSubTotalItem}>
                   <Typography className={style.myFont} style={styles.subTotal}>
                     Delivery Cost
                   </Typography>
                   <Typography className={style.myFont} style={styles.subTotal}>
-                    {handleCurrency(
-                      basket?.trackorder?.data?.provider?.deliveryFee
-                    )}
+                    {handleCurrency(basket?.data?.provider?.deliveryFee)}
                   </Typography>
                 </div>
               )}
-              {basket?.trackorder?.data?.provider?.deliveryFee === 0 &&
-              basket?.trackorder?.data?.orderingMode === 'DELIVERY' ? (
+              {basket?.data?.provider?.deliveryFee === 0 &&
+              basket?.data?.orderingMode === 'DELIVERY' ? (
                 <div style={styles.rootSubTotalItem}>
                   <Typography className={style.myFont} style={styles.subTotal}>
                     Delivery Fee
@@ -875,14 +840,14 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.exclusiveTax !== 0 && (
+          {basket?.data?.exclusiveTax !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography className={style.myFont} style={styles.subTotal}>
                   Tax
                 </Typography>
                 <Typography className={style.myFont} style={styles.subTotal}>
-                  {handleCurrency(basket?.trackorder?.data?.exclusiveTax)}
+                  {handleCurrency(basket?.data?.exclusiveTax)}
                 </Typography>
               </div>
               <div
@@ -902,7 +867,7 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.totalDiscountAmount !== 0 && (
+          {basket?.data?.totalDiscountAmount !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography
@@ -915,10 +880,7 @@ const OrderTrackHistory = () => {
                   className={style.myFont}
                   style={styles.totalDiscount}
                 >
-                  -{' '}
-                  {handleCurrency(
-                    basket?.trackorder?.data?.totalDiscountAmount
-                  )}
+                  - {handleCurrency(basket?.data?.totalDiscountAmount)}
                 </Typography>
               </div>
               <div
@@ -938,16 +900,14 @@ const OrderTrackHistory = () => {
               </div>
             </>
           )}
-          {basket?.trackorder?.data?.totalSurchargeAmount !== 0 && (
+          {basket?.data?.totalSurchargeAmount !== 0 && (
             <>
               <div style={styles.rootSubTotalItem}>
                 <Typography className={style.myFont} style={styles.subTotal}>
                   Surcharge
                 </Typography>
                 <Typography className={style.myFont} style={styles.subTotal}>
-                  {handleCurrency(
-                    basket?.trackorder?.data?.totalSurchargeAmount
-                  )}
+                  {handleCurrency(basket?.data?.totalSurchargeAmount)}
                 </Typography>
               </div>
               <div
@@ -994,61 +954,97 @@ const OrderTrackHistory = () => {
                 color: color.primary,
               }}
             >
-              {handleCurrency(basket?.trackorder?.data?.totalNettAmount)}
+              {handleCurrency(basket?.data?.totalNettAmount)}
             </p>
           </div>
         </div>
       </div>
     );
   };
-
-  return (
-    <div style={{ width: '100vw' }}>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: '80px 1fr 70px',
-          gap: '0px 0px',
-          height: '100vh',
-          width: matches ? '45%' : '100%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-        }}
+  const RenderFooter = () => {
+    return (
+      <Paper
+        variant='elevation'
+        square={gadgetScreen}
+        elevation={5}
+        sx={
+          gadgetScreen
+            ? {
+                zIndex: '999',
+                width: '100%',
+                margin: 0,
+                top: 'auto',
+                right: 'auto',
+                bottom: 0,
+                left: 'auto',
+                position: 'fixed',
+                backgroundColor: 'white',
+              }
+            : {
+                padding: 0,
+                margin: 0,
+              }
+        }
       >
-        <HeaderTrackOrderHistory matches={matches} />
-
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginTop: matches ? '40px' : '20px',
-            overflowY: 'auto',
-          }}
-        >
-          {renderNotifRef()}
-          {renderCartProduct()}
-          {renderCardAccordion()}
-          {renderCartProductAccordion()}
-        </div>
-
         <div style={{ backgroundColor: 'white' }}>
           {renderGrandTotalForGuestCheckMode()}
         </div>
+      </Paper>
+    );
+  };
+  return (
+    <LoadingOverlayCustom active={isLoading} spinner text='Please wait...'>
+      <div style={{ width: '100vw' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '80px 1fr',
+            gap: '0px 0px',
+            height: '100vh',
+            width: matches ? '45%' : '100%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+          }}
+        >
+          <HeaderTrackOrderHistory matches={matches} />
+
+          <div
+            style={{
+              marginTop: matches ? '40px' : '20px',
+              height: '80vh ',
+              overflowY: 'auto',
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                paddingBottom: 150,
+                margin: 'auto',
+              }}
+            >
+              {renderNotifRef()}
+              {renderCartProduct()}
+              {renderCardAccordion()}
+              {renderCartProductAccordion()}
+            </div>
+            <RenderFooter />
+          </div>
+        </div>
+        <Drawer
+          anchor='bottom'
+          open={openDrawerBottom}
+          onClose={() => setOpenDrawerBottom((prev) => !prev)}
+        >
+          {renderSubtotalForGuestCheckMode()}
+        </Drawer>
       </div>
-      <Drawer
-        anchor='bottom'
-        open={openDrawerBottom}
-        onClose={() => setOpenDrawerBottom((prev) => !prev)}
-      >
-        {renderSubtotalForGuestCheckMode()}
-      </Drawer>
-    </div>
+    </LoadingOverlayCustom>
   );
 };
 
