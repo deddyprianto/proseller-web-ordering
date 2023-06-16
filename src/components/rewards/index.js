@@ -73,7 +73,7 @@ const RewardsDetail = () => {
         const data = response.Data;
         setDetailPoint(data.detailPoint);
         setTotalPoint(data.totalPoint);
-        setPendingPoints(data.pendingPoints);
+        setPendingPoints(data.totalPendingPoints);
         setCampaignPointActive(data.campaignPointActive);
         setCampaignPointAnnouncement(data.campaignPointAnnouncement);
       }
