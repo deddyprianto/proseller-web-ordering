@@ -1,0 +1,57 @@
+.container-stamp {
+  margin-top: 20;
+  margin-bottom: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.shimmer-content {
+  width: 100%;
+  align-self: center;
+  border-radius: 8px;
+  margin-bottom: 10;
+}
+.container-point {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.text-total-points {
+  font-size: 42px;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+.text-pending-points {
+  font-size: 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 100px;
+  padding: 5px;
+  line-height: 17px;
+  margin: 10px;
+  width: 90%;
+}
+.btn-see-detail {
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.24);
+  font-size: 12px;
+  line-height: 18px;
+}
+.btn-see-detail:hover {
+  color: #333;
+}
+.container-reward {
+  padding: 10px;
+  margin-top: 30px;
+  border-radius: 10px;
+  border: 1px solid #cdcdcd;
+  box-shadow: 0px 0px 5px rgba(128, 128, 128, 0.5);
+  cursor: pointer;
+}
