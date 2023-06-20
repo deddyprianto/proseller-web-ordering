@@ -5,7 +5,8 @@ import useMobileSize from 'hooks/useMobileSize';
 import './styles/modalContainer.css';
 
 import TabPointDetails from './TabPointDetails';
-import TabPendingPoints from './TabPendingPoints';
+import TabPending from './TabPending';
+import TabStampDetails from './TabStampDetails';
 
 const Tab = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -42,6 +43,7 @@ const Modal = ({
   isModalOpen,
   detailPoint,
   campaignDescription,
+  type,
 }) => {
   const isMobile = useMobileSize();
 
@@ -78,17 +80,20 @@ const Modal = ({
 
   const tabs = [
     {
-      label: 'Points Details',
-      content: (
-        <TabPointDetails
-          campaignDescription={campaignDescription}
-          detailPoint={detailPoint}
-        />
-      ),
+      label: `${type === 'point' ? 'Points' : 'Stamp'} Details`,
+      content:
+        type === 'point' ? (
+          <TabPointDetails
+            campaignDescription={campaignDescription}
+            detailPoint={detailPoint}
+          />
+        ) : (
+          <TabStampDetails />
+        ),
     },
     {
-      label: 'Pending Points',
-      content: <TabPendingPoints />,
+      label: `Pending ${type === 'point' ? 'Points' : 'Stamp'}`,
+      content: <TabPending type={type} />,
     },
   ];
 
@@ -100,7 +105,9 @@ const Modal = ({
           className='modal-header'
           style={{ display: 'flex', justifyContent: 'center' }}
         >
-          <h5 style={{ fontSize: '16px' }}>Points</h5>
+          <h5 style={{ fontSize: '16px', textTransform: 'capitalize' }}>
+            {type}s
+          </h5>
           <button
             onClick={closeModal}
             className='close'
