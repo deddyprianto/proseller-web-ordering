@@ -5,42 +5,10 @@ import Shimmer from 'react-shimmer-effect';
 import { Link } from 'react-router-dom';
 
 import { CampaignAction } from 'redux/actions/CampaignAction';
-import ModalStampsDetail from 'components/profile/ModalStampsDetail';
 import ModalEditProfile from 'components/profile/ModalEditProfile';
 import DefaultStampsImage from 'components/profile/DefaultStampsImage';
 import ModalContainer from './ModalContainer';
 import './styles/index.css';
-
-const Stamps = ({ items, image, showDetails }) => {
-  return (
-    <div>
-      <div style={{ color: '#FFF', fontWeight: 'bold', paddingTop: 10 }}>
-        My Stamps
-      </div>
-      <div className='container-stamp'>
-        {image ? (
-          <div>
-            <img src={image} alt='Stamps' />
-          </div>
-        ) : (
-          <DefaultStampsImage stampsItem={items} />
-        )}
-        <Button
-          size='sm'
-          color='ghost-warning'
-          style={{
-            fontWeight: 'bold',
-            width: 150,
-            marginBottom: 20,
-          }}
-          onClick={() => showDetails()}
-        >
-          More Detail
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 const RewardsDetail = () => {
   const dispatch = useDispatch();
@@ -56,9 +24,9 @@ const RewardsDetail = () => {
     useState(false);
   const [detailPoint, setDetailPoint] = useState(null);
   const [pointIcon, setPointIcon] = useState('');
-  const [showStampsDetail, setShowStampsDetail] = useState(false);
   const [pendingPoints, setPendingPoints] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState('point');
 
   const isEmenu = window.location.hostname.includes('emenu');
 
@@ -91,7 +59,33 @@ const RewardsDetail = () => {
     fetchData();
   }, [account.companyId, dispatch, setting]);
 
-  const openModal = () => {
+  const MyStamps = ({ items, image }) => {
+    return (
+      <div>
+        <div style={{ color: '#FFF', fontWeight: 'bold', paddingTop: 10 }}>
+          My Stamps
+        </div>
+        <div className='container-stamp'>
+          {image ? (
+            <div style={{ marginBottom: '20px' }}>
+              <img src={image} alt='Stamps' />
+            </div>
+          ) : (
+            <DefaultStampsImage stampsItem={items} />
+          )}
+
+          <button className='btn-see-detail' onClick={() => openModal('stamp')}>
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>
+              See Details
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const openModal = (type) => {
+    setModalType(type);
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -155,11 +149,10 @@ const RewardsDetail = () => {
                   </Button>
                 </div>
               ) : (
-                <Stamps
+                <MyStamps
                   items={stamps.stampsItem}
                   image={stamps.stampsImage}
-                  showDetails={() => setShowStampsDetail(true)}
-                ></Stamps>
+                ></MyStamps>
               )}
             </div>
           )}
@@ -252,7 +245,10 @@ const RewardsDetail = () => {
                   {totalPoint.toFixed(2)}
                 </div>
 
-                <button className='btn-see-detail' onClick={openModal}>
+                <button
+                  className='btn-see-detail'
+                  onClick={() => openModal('point')}
+                >
                   <span style={{ fontSize: '14px', fontWeight: 500 }}>
                     See Details
                   </span>
@@ -287,16 +283,9 @@ const RewardsDetail = () => {
         detailPoint={detailPoint}
         pendingPoints={pendingPoints}
         campaignDescription={campaign.campaignDescription}
+        type={modalType}
       />
 
-      {stamps && showStampsDetail && (
-        <ModalStampsDetail
-          data={stamps.stampsItem}
-          detail={stamps}
-          image={stamps.stampsImage}
-          closeModal={() => setShowStampsDetail(false)}
-        />
-      )}
       <ModalEditProfile />
       <Row>
         <Col sm={6}>{viewLeftPage(loadingShow)}</Col>
