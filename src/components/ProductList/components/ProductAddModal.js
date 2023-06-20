@@ -400,8 +400,8 @@ const ProductAddModal = ({
   const handleProductModifierSelected = () => {
     if (!isEmptyArray(selectedProduct?.modifiers)) {
       let defaultValue = [];
-      selectedProduct.modifiers.forEach((item) => {
-        item.modifier.details.forEach((detail) => {
+      selectedProduct.modifiers?.forEach((item) => {
+        item.modifier?.details?.forEach((detail) => {
           defaultValue.push({
             modifierId: item.modifierID,
             modifierProductId: detail.productID,
@@ -458,7 +458,7 @@ const ProductAddModal = ({
 
       const productModifierMerged = productModifiers.reduce((obj, a) => {
         if (obj[a.modifierID]) {
-          obj[a.modifierID].modifier.details.push(...a.modifier.details);
+          obj[a.modifierID].modifier?.details?.push(...a.modifier?.details);
         } else {
           obj[a.modifierID] = { ...a };
         }
@@ -1492,7 +1492,7 @@ const ProductAddModal = ({
                 productModifier,
               })}
             </div>
-            {productModifier.modifier.details.length - 1 !== index && (
+            {productModifierDetails?.length - 1 !== index && (
               <Divider sx={{ margin: '5px 0px' }} />
             )}
           </div>
