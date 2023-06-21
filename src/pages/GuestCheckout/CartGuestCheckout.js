@@ -1164,7 +1164,7 @@ const CartGuestCheckout = () => {
             <img
               alt='logo'
               src={renderImageProduct(itemDetails)}
-              className={isDisable && fontStyleCustom.filter}
+              className={isDisable ? fontStyleCustom.filter : undefined}
             />
           </div>
         </div>
