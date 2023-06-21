@@ -338,9 +338,12 @@ const ProductAddModal = ({
   const [stock, setStock] = useState({ manage: false, current: 0 });
 
   useEffect(() => {
-    if (product && product.productModifiers) {
+    const productModifierTemp =
+      product?.productModifiers || productDetail?.productModifiers;
+
+    if (productModifierTemp) {
       let arrFinalData = [];
-      product.productModifiers.forEach((item) => {
+      productModifierTemp?.forEach((item) => {
         const modifier = item.modifier || item;
         if (
           modifier?.max === 1 &&
@@ -360,7 +363,7 @@ const ProductAddModal = ({
       });
       setSelectedProductModifiers(arrFinalData);
     }
-  }, [product]);
+  }, [product, productDetail]);
 
   const handlePrice = ({ qty, totalPrice }) => {
     setTotalPrice(qty * totalPrice);
@@ -781,23 +784,27 @@ const ProductAddModal = ({
   };
 
   const handleDisabledAddProductButton = () => {
-    if (!isEmptyArray(product?.productModifiers) && !isLoading) {
+    const productModifierTemp =
+      product?.productModifiers || productDetail?.productModifiers;
+
+    if (!isEmptyArray(productModifierTemp) && !isLoading) {
       let qtyModifierSelected = 0;
-      const productModifiers = product.productModifiers.map(
-        (productModifier) => {
-          selectedProductModifiers.forEach((selectedProductModifier) => {
-            if (
-              productModifier.modifierID === selectedProductModifier.modifierId
-            )
-              qtyModifierSelected =
-                qtyModifierSelected + selectedProductModifier.qty;
-          });
-          const isMinZero = productModifier.modifier?.min || 0;
-          const result = qtyModifierSelected >= isMinZero;
-          qtyModifierSelected = 0;
-          return result;
-        }
-      );
+      const productModifiers = productModifierTemp?.map((productModifier) => {
+        selectedProductModifiers.forEach((selectedProductModifier) => {
+          const productModifierId =
+            productModifier.modifierID || productModifier.id;
+
+          if (productModifierId === selectedProductModifier.modifierId)
+            qtyModifierSelected =
+              qtyModifierSelected + selectedProductModifier.qty;
+        });
+
+        const isMinZero =
+          productModifier.modifier?.min || productModifier.min || 0;
+        const result = qtyModifierSelected >= isMinZero;
+        qtyModifierSelected = 0;
+        return result;
+      });
       const productModifierAllTrue = productModifiers.every((v) => v === true);
       return !productModifierAllTrue;
     }
@@ -917,12 +924,13 @@ const ProductAddModal = ({
     handleClear();
   };
   const handleDisabledCheckbox = ({ modifier, max, productModifier }) => {
+    const productModifierId = productModifier.modifierID || productModifier.id;
     let qtyTotal = 0;
     const filterSelectedProductModifiers = selectedProductModifiers.filter(
       (item) => item.orderingStatus !== 'UNAVAILABLE'
     );
     const modifierProducts = filterSelectedProductModifiers.filter(
-      (item) => item.modifierId === productModifier.modifierID
+      (item) => item.modifierId === productModifierId
     );
     const modifierProductIds = modifierProducts.map(
       (item) => item.modifierProductId
@@ -1123,12 +1131,15 @@ const ProductAddModal = ({
   };
 
   const renderImageProduct = () => {
+    const defaultImageURLTemp =
+      product?.defaultImageURL || productDetail?.defaultImageURL;
+
     if (variantImageURL) {
       return variantImageURL;
     }
 
-    if (product?.defaultImageURL) {
-      return product.defaultImageURL;
+    if (defaultImageURLTemp) {
+      return defaultImageURLTemp;
     }
 
     if (props?.color?.productPlaceholder) {
@@ -1291,16 +1302,14 @@ const ProductAddModal = ({
   };
 
   const renderAddAndRemoveButtonAndPrice = ({ modifier, productModifier }) => {
+    const productModifierTemp = productModifier?.modifier || productModifier;
     const renderButtonAndPrice = (
       <>
-        {/* <Typography style={styles.optionPriceGadgetScreen}>
-          {handleCurrency(modifier.price)}
-        </Typography> */}
         {renderAddAndRemoveButtonProductModifierOptions({
           modifierProductId: modifier.productID,
-          max: productModifier.max,
-          min: productModifier.min,
-          productModifierId: productModifier.id,
+          max: productModifierTemp.max,
+          min: productModifierTemp.min,
+          productModifierId: productModifierTemp.id,
         })}
       </>
     );
@@ -1377,12 +1386,13 @@ const ProductAddModal = ({
     modifier,
     productModifier,
   }) => {
+    const productModifierId = productModifier.modifierID || productModifier.id;
     if (gadgetScreen) {
       return (
         <div style={styles.modifierOptionsPrice}>
           {renderAddAndRemoveButtonProductModifierOptionsSpecialRes({
             modifierProductId: modifier.productID,
-            productModifierId: productModifier.modifierID,
+            productModifierId,
           })}
         </div>
       );
@@ -1391,7 +1401,7 @@ const ProductAddModal = ({
       <div style={styles.displayFlex}>
         {renderAddAndRemoveButtonProductModifierOptionsSpecialRes({
           modifierProductId: modifier.productID,
-          productModifierId: productModifier.modifierID,
+          productModifierId,
         })}
       </div>
     );
@@ -1592,10 +1602,8 @@ const ProductAddModal = ({
   };
 
   const checkIfIsModifierItemSpecialRestriction = (itemModifier) => {
-    if (
-      itemModifier.modifier?.specialRestriction ||
-      itemModifier.specialRestriction
-    ) {
+    const itemModifierTemp = itemModifier?.modifier || itemModifier;
+    if (itemModifierTemp?.specialRestriction) {
       return (
         <RadioGroup>
           {renderSpecialRestrictionProductModifier(itemModifier)}
@@ -1609,7 +1617,8 @@ const ProductAddModal = ({
   };
 
   const renderHeaderModifier = (product) => {
-    if (product.specialRestriction) {
+    const productTemp = product?.modifier || product;
+    if (productTemp.specialRestriction) {
       return (
         <div
           style={{
@@ -1626,7 +1635,7 @@ const ProductAddModal = ({
               marginRight: 5,
             }}
           >
-            {product.name}
+            {productTemp.name}
           </Typography>
           <div
             style={{
@@ -1640,10 +1649,8 @@ const ProductAddModal = ({
     } else {
       return (
         <React.Fragment>
-          <Typography style={styles.title}>
-            {product.modifierName || product.name}
-          </Typography>
-          {renderTermsAndConditionsProductModifiers(product)}
+          <Typography style={styles.title}>{productTemp.name}</Typography>
+          {renderTermsAndConditionsProductModifiers(productTemp)}
         </React.Fragment>
       );
     }

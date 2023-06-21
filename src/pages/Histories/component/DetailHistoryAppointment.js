@@ -11,7 +11,11 @@ import Swal from 'sweetalert2';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import fontStyles from '../style/styles.module.css';
-import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
+import {
+  convertTimeToStr,
+  convertFormatDate,
+  phonePrefixFormatter,
+} from 'helpers/appointmentHelper';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { isEmpty } from 'helpers/utils';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
@@ -88,6 +92,14 @@ const DetailHistoryAppointment = ({
 
     if (isNaN(phoneNumber?.charAt(0))) {
       phoneNumber = phoneNumber?.slice(1);
+    }
+
+    if (
+      phoneNumber?.charAt(0) === '0' &&
+      ![62, 65, 60].some((code) => phoneNumber.startsWith(code.toString()))
+    ) {
+      const phonePrefix = phonePrefixFormatter(currentOutlet?.countryCode);
+      phoneNumber = phonePrefix + phoneNumber.slice(1);
     }
 
     if (!isEmpty(phoneNumber)) {

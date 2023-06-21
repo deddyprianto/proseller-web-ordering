@@ -7,7 +7,11 @@ import fontStyles from './style/styles.module.css';
 import loader from './style/styles.module.css';
 import { OrderAction } from 'redux/actions/OrderAction';
 import AppointmentHeader from 'components/appointmentHeader';
-import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
+import {
+  convertTimeToStr,
+  convertFormatDate,
+  phonePrefixFormatter,
+} from 'helpers/appointmentHelper';
 import { CONSTANT } from 'helpers';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -149,6 +153,14 @@ const BookingConfirm = (props) => {
 
     if (isNaN(phoneNumber?.charAt(0))) {
       phoneNumber = phoneNumber?.slice(1);
+    }
+
+    if (
+      phoneNumber?.charAt(0) === '0' &&
+      ![62, 65, 60].some((code) => phoneNumber.startsWith(code.toString()))
+    ) {
+      const phonePrefix = phonePrefixFormatter(currentOutlet?.countryCode);
+      phoneNumber = phonePrefix + phoneNumber.slice(1);
     }
 
     if (!isEmpty(phoneNumber)) {
@@ -558,7 +570,7 @@ const BookingConfirm = (props) => {
           </div>
           {cartSave?.details?.map((item) => (
             <div
-            key={item.id}
+              key={item.id}
               style={{
                 marginTop: '10px',
                 width: '100%',

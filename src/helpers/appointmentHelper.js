@@ -54,3 +54,22 @@ export const convertFormatDate = (dateStr) => {
 
   return formattedDate;
 };
+
+export const phonePrefixFormatter = (code) => {
+  let phonePrefix;
+  switch (code) {
+    case 'SG':
+      phonePrefix = '65';
+      break;
+    case 'ID':
+      phonePrefix = '62';
+      break;
+    case 'MY':
+      phonePrefix = '60';
+      break;
+    default:
+      phonePrefix = '65';
+      break;
+  }
+  return phonePrefix;
+};
