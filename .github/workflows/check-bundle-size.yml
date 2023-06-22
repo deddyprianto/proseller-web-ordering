@@ -21,7 +21,7 @@ jobs:
       - uses: hmarr/debug-action@v2
 
       # Install dependencies
-      - run: yarn ci
+      - run: yarn
 
       # Build and output webpack stats to artifacts/webpack-stats.json
       - run: yarn build --stats
