@@ -1286,9 +1286,7 @@ const ProductAddModal = ({
 
     if (isMinZero && isMaxLessThenZero) {
       return (
-        <Typography style={styles.title2}>
-          Max {productModifier.max} bon
-        </Typography>
+        <Typography style={styles.title2}>Max {productModifier.max}</Typography>
       );
     }
 
