@@ -277,6 +277,8 @@ const FooterWebOrdering = () => {
       return 'none';
     } else if (location.pathname === '/location') {
       return 'none';
+    } else if (location.pathname === '/inboxdetail') {
+      return 'none';
     } else {
       return '';
     }
