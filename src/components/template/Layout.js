@@ -39,6 +39,7 @@ const OrderTrackHistory = loadable(() =>
   import('../../pages/OrderTrackHistory')
 );
 const Inbox = loadable(() => import('../../pages/Inbox'));
+const InboxDetail = loadable(() => import('../../pages/InboxDetail'));
 const Voucher = loadable(() => import('../../pages/Voucher'));
 const Map = loadable(() => import('../../pages/Map/Map'));
 const ScanBarcode = loadable(() => import('../../pages/ScanBarcode'));
@@ -234,6 +235,9 @@ class Layout extends Component {
               <Route exact path='/rewards' component={Profile} />
             )}
             {isLoggedIn && <Route exact path='/inbox' component={Inbox} />}
+            {isLoggedIn && (
+              <Route exact path='/inboxdetail' component={InboxDetail} />
+            )}
             {isLoggedIn && <Route exact path='/voucher' component={Voucher} />}
             {isLoggedIn && (
               <Route exact path='/svc' component={StoreValueCard} />
