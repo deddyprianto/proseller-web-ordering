@@ -144,6 +144,7 @@ const Payment = ({ ...props }) => {
       setDataPoints(dataPoints.data);
     };
     getAllPoints();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const calculateVoucher = async () => {
@@ -181,6 +182,7 @@ const Payment = ({ ...props }) => {
         if (isSerialNumber) {
           return itemData;
         }
+        return {};
       });
 
       props.dispatch(
@@ -215,6 +217,7 @@ const Payment = ({ ...props }) => {
     ) {
       calculateVoucher();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.selectedVoucher]);
 
   const styles = {
@@ -410,6 +413,7 @@ const Payment = ({ ...props }) => {
         clearInterval(interval);
       }
     }, 5000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [referenceNumberConfirmation]);
 
   const handlePriceLength = (price) => {
@@ -490,6 +494,7 @@ const Payment = ({ ...props }) => {
       setMyVouchers(vouchers.data);
     };
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -504,6 +509,7 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(props.selectedPaymentCard) && price === 0) {
       handleRemovePaymentCard();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     props.useSVC,
     selectedPoint,
@@ -673,6 +679,7 @@ const Payment = ({ ...props }) => {
     };
 
     disableAnotherPaymentForManual();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.selectedPaymentCard?.paymentID]);
 
   const renderLabelPrice = () => {
@@ -1385,7 +1392,12 @@ const Payment = ({ ...props }) => {
           },
         }}
       >
-        <iframe src={urlConfirmationDialog} width='100%' height='100%' />
+        <iframe
+          src={urlConfirmationDialog}
+          width='100%'
+          height='100%'
+          title='confirmation'
+        />
       </Dialog>
     );
   };

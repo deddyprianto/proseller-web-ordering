@@ -52,7 +52,7 @@ const UseSVCPaymentDialog = ({ onClose, open, maxAmount }) => {
       }
     };
     getSVCAction();
-  }, []);
+  }, [dispatch]);
 
   const style = {
     boxTitle: {

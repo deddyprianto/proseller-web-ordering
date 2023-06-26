@@ -8,7 +8,7 @@ import LoaderCircle from '../loading/LoaderCircle';
 import config from 'config';
 import UpdateProductModal from './UpdateProductModal';
 import { Link } from 'react-router-dom';
-import { isEmptyObject, isEmptyArray } from 'helpers/CheckEmpty';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 import { CONSTANT } from 'helpers';
 import { getInitialProductValue } from 'helpers/ProductHelper';
 import _ from 'lodash';

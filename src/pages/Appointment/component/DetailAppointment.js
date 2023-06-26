@@ -40,7 +40,6 @@ const DetailAppointment = ({
   const [isLoading, setIsLoading] = useState(false);
   const [addService, setAddService] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
-  const [visible, setVisible] = useState(false);
   const [qty, setQty] = useState(1);
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
@@ -183,10 +182,11 @@ const DetailAppointment = ({
         }
       });
     }
-  }, [responseAddCart]);
+  }, [responseAddCart, color.primary, dispatch]);
 
   useEffect(() => {
     handleProductModifierSelected();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -202,6 +202,7 @@ const DetailAppointment = ({
           modifierGroups: productModifierFormated,
         },
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProductModifiers]);
 
   const styles = {

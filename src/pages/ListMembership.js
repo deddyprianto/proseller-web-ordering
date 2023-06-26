@@ -1,14 +1,13 @@
-import React, { Component } from "react";
-import loadable from "@loadable/component";
-import { connect } from "react-redux";
-import config from "../config";
-import Shimmer from "react-shimmer-effect";
-import { MembershiplAction } from "../redux/actions/MembershipAction";
-import { Button } from "reactstrap";
+import React, { Component } from 'react';
+import loadable from '@loadable/component';
+import { connect } from 'react-redux';
+import config from '../config';
+import Shimmer from 'react-shimmer-effect';
+import { MembershiplAction } from '../redux/actions/MembershipAction';
 const CardMembership = loadable(() =>
-  import("../components/membership/CardMembership")
+  import('../components/membership/CardMembership')
 );
-const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
+const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 class ListMembership extends Component {
   constructor(props) {
@@ -24,9 +23,9 @@ class ListMembership extends Component {
     if (this.props.companyInfo) {
       if (price !== undefined) {
         const { currency } = this.props.companyInfo;
-        if (!price || price === "-") price = 0;
+        if (!price || price === '-') price = 0;
         let result = price.toLocaleString(currency.locale, {
-          style: "currency",
+          style: 'currency',
           currency: currency.code,
         });
         return result;
@@ -47,10 +46,10 @@ class ListMembership extends Component {
       <Shimmer>
         <div
           style={{
-            width: "100%",
+            width: '100%',
             height: isHeight,
-            alignSelf: "center",
-            borderRadius: "8px",
+            alignSelf: 'center',
+            borderRadius: '8px',
             marginBottom: 10,
           }}
         />
@@ -66,65 +65,62 @@ class ListMembership extends Component {
     this.props.history.push({
       pathname: '/detail-membership',
     });
-  }
+  };
 
   render() {
-    const {
-      memberships,
-      loading,
-    } = this.state;
+    const { memberships, loading } = this.state;
     return (
       <div
-        className="col-full"
+        className='col-full'
         style={{
-          marginTop: config.prefix === "emenu" ? 100 : 160,
+          marginTop: config.prefix === 'emenu' ? 100 : 160,
           marginBottom: 50,
         }}
       >
-        <div id="primary" className="content-area">
-          <div className="stretch-full-width">
+        <div id='primary' className='content-area'>
+          <div className='stretch-full-width'>
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -100,
-                display: "flex",
+                display: 'flex',
                 height: 40,
-                justifyContent: "space-between",
-                alignItems: "center",
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
-              className="background-theme"
+              className='background-theme'
             >
               <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
-                <i className="fa fa-chevron-left"></i> Back
+                <i className='fa fa-chevron-left'></i> Back
               </div>
             </div>
             <div
               style={{
-                flexDirection: "row",
-                position: "fixed",
+                flexDirection: 'row',
+                position: 'fixed',
                 zIndex: 10,
-                width: "100%",
+                width: '100%',
                 marginTop: -80,
               }}
             >
               <p
-                className="text-center customer-group-name"
-                style={{ fontWeight: "bold" }}
+                className='text-center customer-group-name'
+                style={{ fontWeight: 'bold' }}
               >
                 Membership
               </p>
             </div>
             <main
-              id="main"
-              className="site-main"
+              id='main'
+              className='site-main'
               style={{
-                textAlign: "center",
+                textAlign: 'center',
               }}
             >
               <div style={{ marginTop: 20 }}>
@@ -153,7 +149,7 @@ class ListMembership extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     account: state.auth.account.idToken.payload,
     pointData: state.campaign.data,

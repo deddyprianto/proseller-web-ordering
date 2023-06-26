@@ -27,7 +27,6 @@ const Location = () => {
   const classes = useStyles();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
   const [selectedLocationPersisted, setSelectedLocationPersisted] =
@@ -360,7 +359,7 @@ const Location = () => {
             style={localStyle.labelOpenNow}
             data={selectedLocation?.appointmentTimeSlot}
           />
-          {openDropDownTime ? (
+          {openDropDownTimeSelected ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
             <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
@@ -477,7 +476,7 @@ const Location = () => {
             style={localStyle.labelOpenNow}
             data={item?.appointmentTimeSlot}
           />
-          {openDropDownTime ? (
+          {otherOutletDropdownSelected === item.id ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
             <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />

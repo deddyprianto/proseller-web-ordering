@@ -136,6 +136,7 @@ const PointAddModal = ({ open, handleClose, price, ...props }) => {
   useEffect(() => {
     handlePointRatio();
     setCampaignPoint(props.campaignPoint.totalPoint);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.campaignPoint]);
 
   const handleSubmit = async () => {

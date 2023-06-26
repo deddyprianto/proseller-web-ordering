@@ -18,12 +18,12 @@ const DropDownCustomSelect = ({ timeList }) => {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-  // some eff
+
   useEffect(() => {
     if (timeList?.length > 0) {
       dispatch({ type: CONSTANT.TIME_APPOINTMENT, payload: timeList[0] });
     }
-  }, [timeList]);
+  }, [timeList, dispatch]);
 
   const renderTimeListDropdown = () => {
     return timeList?.map((item) => {
@@ -97,7 +97,7 @@ const DropDownCustomSelect = ({ timeList }) => {
             : !isEmptyArray(timeList)
             ? timeList[0]
             : 'Time not available'}
-          <img src={iconDown} />
+          <img src={iconDown} alt='ic_down' />
         </DropdownToggle>
         <DropdownMenu
           style={{

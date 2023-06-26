@@ -198,6 +198,7 @@ const CartGuestCheckout = () => {
       }
     };
     getDataProviderListAndFee();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deliveryAddresGuest?.deliveryAddress]);
 
   useEffect(() => {
@@ -225,6 +226,7 @@ const CartGuestCheckout = () => {
       }
     };
     getDataTimeSlot();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderingModeGuestCheckout]);
 
   useEffect(() => {
@@ -237,6 +239,7 @@ const CartGuestCheckout = () => {
     };
 
     checkOrderingMode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basket.details?.length]);
 
   const [width] = useWindowSize();

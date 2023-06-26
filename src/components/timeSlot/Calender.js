@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -262,7 +262,6 @@ const useStyles = (mobileSize, color) => ({
 });
 
 const Calendar = ({ onClose }) => {
-  const date = new Date();
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
@@ -273,7 +272,6 @@ const Calendar = ({ onClose }) => {
   const [years, setYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
   const [timeList, setTimeList] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(4);
@@ -298,15 +296,6 @@ const Calendar = ({ onClose }) => {
   const styles = useStyles(mobileSize, color);
   const dataTime = useSelector((state) => state.outlet.defaultOutlet);
   const [getAllDateForTimeSlot, setGetAllDateForTimeSlot] = useState([]);
-  const getTimeNow = () => {
-    return `${date.getHours()}:${date.getMinutes()}`;
-  };
-
-  const getTimeEarly = () => {
-    const dateMoment = moment();
-    const get = dateMoment.add(1, 'hour');
-    return `${get.hour()}:${get.minute()}`;
-  };
 
   const days = ['San', 'Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat'];
 
@@ -318,7 +307,7 @@ const Calendar = ({ onClose }) => {
     });
   };
 
-  const getDates = () => {
+  const getDates = useCallback(() => {
     let calender = [];
     const startDate = moment()
       .month(selectedMonth)
@@ -344,7 +333,7 @@ const Calendar = ({ onClose }) => {
     }
 
     return calender;
-  };
+  }, [selectedMonth, selectedYear]);
 
   const getAllDate = () => {
     let monthArr = [];
@@ -362,7 +351,7 @@ const Calendar = ({ onClose }) => {
     return listDate;
   };
 
-  const getYears = () => {
+  const getYears = useCallback(() => {
     const years = [];
     const start = moment()
       .year(moment().format('YYYY'))
@@ -383,7 +372,8 @@ const Calendar = ({ onClose }) => {
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = years.slice(indexOfFirstPost, indexOfLastPost);
     return currentPosts;
-  };
+  }, [currentPage, postsPerPage]);
+
   useEffect(() => {
     const mode = localStorage.getItem('settingGuestMode');
     setMode(mode);
@@ -391,22 +381,20 @@ const Calendar = ({ onClose }) => {
   useEffect(() => {
     const currentYear = moment().format('YYYY');
     const currentMonth = moment().format('MMM');
-    const currentDate = Number(moment().format('DD'));
     const monthList = moment.months();
     setSelectedYear(currentYear);
     setSelectedMonth(currentMonth);
-    setSelectedDate(currentDate);
     setMonths(monthList);
   }, []);
   useEffect(() => {
     const currentDates = getDates();
     setDates(currentDates);
-  }, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth, getDates]);
 
   useEffect(() => {
     const currentYear = getYears();
     setYears(currentYear);
-  }, [currentPage]);
+  }, [currentPage, getYears]);
 
   useEffect(() => {
     const allDate = getAllDate();
@@ -434,6 +422,7 @@ const Calendar = ({ onClose }) => {
       }
     };
     printTime();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const changeFormatDate = (itemDate) => {
@@ -484,38 +473,6 @@ const Calendar = ({ onClose }) => {
       console.log(error);
     }
     onClose(true);
-  };
-
-  const renderChooseDate = () => {
-    return (
-      <Stack
-        direction='row'
-        spacing={{ xs: 1, sm: 2, md: 4 }}
-        justifyContent='space-around'
-        alignItems='center'
-        mt={2}
-        sx={styles.wrapperChooseDate}
-      >
-        <Typography sx={styles.wrapperChooseDate.textChoosenDate}>
-          Choosen Date
-        </Typography>
-
-        <Stack
-          direction='row'
-          spacing={1}
-          justifyContent='center'
-          alignItems='center'
-        >
-          <button style={styles.buttonDate}>
-            {dateActive ? dateActive : selectedDate}
-          </button>
-          <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
-          <button style={styles.buttonDate}>{selectedMonth}</button>
-          <Typography sx={{ fontWeight: 'bold' }}>/</Typography>
-          <button style={styles.buttonDate}>{selectedYear}</button>
-        </Stack>
-      </Stack>
-    );
   };
 
   const handleMonthSlider = (direction) => {
@@ -992,13 +949,6 @@ const Calendar = ({ onClose }) => {
     return moment().format('YYYY-MM-DD') === item
       ? 'TODAY'
       : moment(item).format('ddd').toLocaleUpperCase();
-  };
-
-  const compareDateApiWithDateNow = () => {
-    const takeDateNearest = moment().format('YYYY MM DD');
-    return timeList?.find(
-      (item) => item.date === takeDateNearest.split(' ').join('-')
-    );
   };
 
   let filteredItem;

@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import ModalProduct from "../ordering/ModalProduct";
+import ModalProduct from '../ordering/ModalProduct';
 import {
   isEmptyObject,
   isEmptyArray,
   isEmptyData,
-} from "../../helpers/CheckEmpty";
+} from '../../helpers/CheckEmpty';
 
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from '@material-ui/styles';
 
-import CardItemBasket from "./cardItemBasket";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
+import CardItemBasket from './cardItemBasket';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
-import StickyNoteIcon from "@mui/icons-material/StickyNote2";
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddIcon from "@material-ui/icons/Add";
+import StickyNoteIcon from '@mui/icons-material/StickyNote2';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
 
-import AddNotes from "./AddNotes";
+import AddNotes from './AddNotes';
 
 const mapStateToProps = (state) => {
   return {
@@ -51,16 +51,16 @@ const ItemsBasket = ({
   const useStyles = makeStyles(() => ({
     root: { marginBottom: 20, marginTop: 5 },
     basketHeader: {
-      display: "flex",
-      justifyContent: "space-between",
+      display: 'flex',
+      justifyContent: 'space-between',
       fontSize: 14,
-      alignItems: "center",
+      alignItems: 'center',
     },
     outletName: {
-      fontWeight: "bold",
-      color: props.color.primary || "#c00a27",
-      textAlign: "left",
-      lineHeight: "17px",
+      fontWeight: 'bold',
+      color: props.color.primary || '#c00a27',
+      textAlign: 'left',
+      lineHeight: '17px',
     },
     button: {
       color: props.color.primary,
@@ -68,7 +68,7 @@ const ItemsBasket = ({
       borderRadius: 5,
       width: 130,
       height: 30,
-      textTransform: "none",
+      textTransform: 'none',
     },
     buttonNotes: {
       color: props.color.primary,
@@ -76,18 +76,18 @@ const ItemsBasket = ({
       borderRadius: 5,
       width: 100,
       height: 30,
-      textTransform: "none",
+      textTransform: 'none',
     },
     buttonDelete: {
       color: props.color.primary,
-      "&:hover": {
+      '&:hover': {
         color: props.color.primary,
       },
     },
     typography: {
       color: props.color.primary,
       fontSize: 14,
-      fontWeight: "bold",
+      fontWeight: 'bold',
     },
     icon: {
       height: 15,
@@ -107,26 +107,26 @@ const ItemsBasket = ({
       marginBottom: 10,
     },
     leftNotes: {
-      display: "flex",
-      justifyContent: "flex-start",
+      display: 'flex',
+      justifyContent: 'flex-start',
       fontSize: 14,
       marginTop: 5,
     },
     rightNotes: {
-      display: "flex",
-      justifyContent: "flex-end",
+      display: 'flex',
+      justifyContent: 'flex-end',
       fontSize: 14,
       marginTop: 5,
     },
     remark: {
       fontSize: 14,
       lineHeight: 1,
-      textAlign: "left",
-      fontStyle: "italic",
+      textAlign: 'left',
+      fontStyle: 'italic',
     },
     basket: {
-      display: "flex",
-      alignItems: "center",
+      display: 'flex',
+      alignItems: 'center',
     },
   }));
 
@@ -147,7 +147,12 @@ const ItemsBasket = ({
     ) {
       setIsEnableNotes(true);
     }
-  });
+  }, [
+    data.dataBasket,
+    props.basket,
+    props.defaultOutlet.enableOrderSpecialInstructions,
+    props.isLoggedIn,
+  ]);
 
   const selectProduct = async (productSelect, mode) => {
     const quantityItem = productSelect.quantity;
@@ -188,11 +193,11 @@ const ItemsBasket = ({
 
             if (
               group.modifier.isYesNo === true &&
-              detail.orderingStatus === "AVAILABLE"
+              detail.orderingStatus === 'AVAILABLE'
             ) {
               if (
                 group.modifier.yesNoDefaultValue === true &&
-                detail.yesNoValue === "no"
+                detail.yesNoValue === 'no'
               ) {
                 productSelected.product.productModifiers[i].modifier.details[
                   j
@@ -201,7 +206,7 @@ const ItemsBasket = ({
 
               if (
                 group.modifier.yesNoDefaultValue === false &&
-                detail.yesNoValue === "yes"
+                detail.yesNoValue === 'yes'
               ) {
                 productSelected.product.productModifiers[i].modifier.details[
                   j
@@ -214,7 +219,7 @@ const ItemsBasket = ({
 
     if (isEmptyObject(dataBasket)) {
       productSelected.quantity = 1;
-      productSelected.remark = "";
+      productSelected.remark = '';
     } else {
       if (!isEmptyArray(dataBasket.details)) {
         const find = await dataBasket.details.find(
@@ -222,7 +227,7 @@ const ItemsBasket = ({
         );
         if (find !== undefined) {
           setSelectedItem({});
-          if (mode === "Update") {
+          if (mode === 'Update') {
             productSelected.remark = find.remark;
             // fill the modifier
             if (!isEmptyArray(find.modifiers)) {
@@ -261,11 +266,11 @@ const ItemsBasket = ({
           }
         } else {
           productSelected.quantity = quantityItem;
-          productSelected.remark = "";
+          productSelected.remark = '';
         }
       } else {
         productSelected.quantity = 1;
-        productSelected.remark = "";
+        productSelected.remark = '';
       }
     }
     productSelected.mode = mode;
@@ -283,11 +288,11 @@ const ItemsBasket = ({
 
   const openModal = (item) => {
     if (data.storeDetail && data.storeDetail.product) {
-      selectProduct(item, "Update");
-      document.getElementById("detail-product-btn").click();
+      selectProduct(item, 'Update');
+      document.getElementById('detail-product-btn').click();
     } else {
-      selectProduct(item, "Update");
-      document.getElementById("detail-product-btn").click();
+      selectProduct(item, 'Update');
+      document.getElementById('detail-product-btn').click();
     }
   };
 
@@ -304,11 +309,11 @@ const ItemsBasket = ({
     return (
       <div className={classes.basketHeader}>
         <div className={classes.outletName}>{data.dataBasket.outlet.name}</div>
-        <Link to="/">
+        <Link to='/'>
           <Button
             className={classes.button}
             startIcon={<AddIcon className={classes.icon} />}
-            variant="outlined"
+            variant='outlined'
           >
             <Typography className={classes.typography}>Add Items</Typography>
           </Button>
@@ -328,10 +333,10 @@ const ItemsBasket = ({
 
               <Button
                 className={classes.button}
-                data-toggle="modal"
-                data-target="#add-notes-modal"
+                data-toggle='modal'
+                data-target='#add-notes-modal'
                 startIcon={<StickyNoteIcon className={classes.icon} />}
-                variant="outlined"
+                variant='outlined'
               >
                 <Typography className={classes.typography}>
                   Edit Notes
@@ -351,9 +356,9 @@ const ItemsBasket = ({
           <Button
             className={classes.buttonNotes}
             startIcon={<StickyNoteIcon className={classes.icon} />}
-            variant="outlined"
-            data-toggle="modal"
-            data-target="#add-notes-modal"
+            variant='outlined'
+            data-toggle='modal'
+            data-target='#add-notes-modal'
           >
             <Typography className={classes.typography}>Notes</Typography>
           </Button>
@@ -376,12 +381,12 @@ const ItemsBasket = ({
             getCurrency={(price) => getCurrency(price)}
             openModal={(item) => openModal(item)}
           />
-          {dataBasket.status === "PENDING" && (
+          {dataBasket.status === 'PENDING' && (
             <IconButton
               className={classes.buttonDelete}
               onClick={() => handleRemoveItem(key, item)}
             >
-              <DeleteIcon fontSize="large" />
+              <DeleteIcon fontSize='large' />
             </IconButton>
           )}
         </div>
@@ -407,16 +412,16 @@ const ItemsBasket = ({
           <Divider className={classes.divider4} />
 
           {!isEmptyObject(dataBasket) &&
-            dataBasket.status === "PENDING" &&
+            dataBasket.status === 'PENDING' &&
             isEnableNotes &&
             renderButtonNotes()}
 
           {renderBasketItems()}
 
           <span
-            data-toggle="modal"
-            data-target="#detail-product-modal"
-            id="detail-product-btn"
+            data-toggle='modal'
+            data-target='#detail-product-modal'
+            id='detail-product-btn'
           />
         </div>
       )}

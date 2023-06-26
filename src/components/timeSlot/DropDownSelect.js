@@ -1,6 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import React from 'react';
 import {
   Dropdown,
@@ -137,7 +134,7 @@ const DropDownCustomSelect = ({
           }}
         >
           {dateEdit?.timeslot ? dateEdit.timeslot : selectTimeDropDown}
-          <img src={iconDown} />
+          <img src={iconDown} alt='ic_down' />
         </DropdownToggle>
         <DropdownMenu
           style={{

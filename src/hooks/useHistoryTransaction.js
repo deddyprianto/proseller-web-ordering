@@ -54,6 +54,7 @@ export default function useHistoryTransaction({ take, skip, pageNumber }) {
       }
     };
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skip, pageNumber]);
 
   return { historyTransaction, loading, error, hasMore, isEmptyData };

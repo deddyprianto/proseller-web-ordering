@@ -71,6 +71,7 @@ const FooterWebOrdering = () => {
         }, 700);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {
@@ -95,6 +96,7 @@ const FooterWebOrdering = () => {
         setNewNavbar(navBar);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guessCheckout, appointmentMenu]);
 
   const menuIcon = (color) => {

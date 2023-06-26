@@ -198,6 +198,7 @@ const ProductUpdateModal = ({
         setProductInBasket(items);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basket, product]);
 
   useEffect(() => {
@@ -226,6 +227,7 @@ const ProductUpdateModal = ({
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     mode,
     product.variants,

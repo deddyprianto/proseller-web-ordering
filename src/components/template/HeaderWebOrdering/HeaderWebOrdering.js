@@ -191,7 +191,7 @@ const HeaderWebOrdering = () => {
   const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
-  const { defaultOutlet, outlets } = useSelector((state) => state.outlet);
+  const { defaultOutlet } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
   const [mode, setMode] = useState();
   const [guessCheckout, setGuessCheckout] = useState();
@@ -199,6 +199,12 @@ const HeaderWebOrdering = () => {
     (state) => state.guestCheckoutCart.response
   );
   const data = useSelector((state) => state.guestCheckoutCart.data);
+
+  const isGuestMode = localStorage.getItem('settingGuestMode');
+  const encryptedInfoCompany = localStorage.getItem(
+    `${config.prefix}_infoCompany`
+  );
+
   useEffect(() => {
     const settingAppoinment = setting.find((items) => {
       return items.settingKey === 'EnableAppointment';
@@ -221,11 +227,10 @@ const HeaderWebOrdering = () => {
   }, [allState]);
 
   useEffect(() => {
-    const isGuestMode = localStorage.getItem('settingGuestMode');
     if (isGuestMode === 'GuestMode') {
       setMode(isGuestMode);
     }
-  }, [localStorage.getItem('settingGuestMode')]);
+  }, [isGuestMode]);
 
   useEffect(() => {
     const settingGuestCheckout = setting.find((items) => {
@@ -268,9 +273,7 @@ const HeaderWebOrdering = () => {
   };
 
   useEffect(() => {
-    const infoCompany = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
-    );
+    const infoCompany = encryptor.decrypt(JSON.parse(encryptedInfoCompany));
     const logoCompany = setting.find((items) => {
       return items.settingKey === 'Logo';
     });
@@ -278,7 +281,8 @@ const HeaderWebOrdering = () => {
     setCompanyName(infoCompany?.companyName);
     handleLogo(infoCompany, logoCompany);
     handleUpdateEnableOrdering(setEnableOrdering);
-  }, [setting, localStorage.getItem(`${config.prefix}_infoCompany`)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setting, encryptedInfoCompany]);
 
   useEffect(() => {
     if (history.location.pathname === '/') {

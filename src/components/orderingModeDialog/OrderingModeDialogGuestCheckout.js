@@ -1,5 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -233,7 +231,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
     return () => {
       isCleanFnComponent = false;
     };
-  }, [orderingModeActive]);
+  }, [orderingModeActive, dispatch]);
 
   useEffect(() => {
     const getOrderingModes = async () => {
@@ -283,6 +281,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
       setIsLoading(false);
     };
     getOrderingModes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleConfirmOrderingMode = async (value) => {

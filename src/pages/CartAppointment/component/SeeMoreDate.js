@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -30,7 +30,7 @@ const SeeMoreDate = ({
     }
     return true;
   };
-  const getDates = () => {
+  const getDates = useCallback(() => {
     let calender = [];
     const startDate = moment()
       .month(selectedMonth)
@@ -56,7 +56,7 @@ const SeeMoreDate = ({
     }
 
     return calender;
-  };
+  }, [selectedMonth, selectedYear]);
   const renderConditionButtonNextPrev = () => {
     const isMonthYearGreaterFromNow =
       Number(moment().month(selectedMonth).year(selectedYear).format('YYMM')) <=
@@ -116,7 +116,7 @@ const SeeMoreDate = ({
   useEffect(() => {
     const currentDates = getDates();
     setDates(currentDates);
-  }, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth, getDates]);
 
   useEffect(() => {
     const currentYear = moment().format('YYYY');

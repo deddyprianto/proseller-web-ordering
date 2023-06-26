@@ -5,7 +5,6 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { ProductAction } from 'redux/actions/ProductAction';
 import config from 'config';
 
-import { isEmptyObject } from 'helpers/CheckEmpty';
 import { CONSTANT } from 'helpers';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from 'components/loading/Loading';
@@ -25,18 +24,15 @@ const Ordering = (props) => {
   const [tempProducts, setTempProducts] = useState([]);
   const [productsBackup, setProductsBackup] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory] = useState(0);
   const [finished, setFinished] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadingSearching, setLoadingSearching] = useState(false);
-  const [offlineMessage, setOfflineMessage] = useState('');
+  const [offlineMessage] = useState('');
   const [categoryLength, setCategoryLength] = useState(0);
   const [indexLoaded, setIndexLoaded] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
 
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
-  const basket = useSelector((state) => state.order.basket);
-  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const categories = useSelector((state) => state.product.categoryList);
   const orderingMode = useSelector((state) => state.order.orderingMode);
 
@@ -76,6 +72,7 @@ const Ordering = (props) => {
         isEmenu ? handleScrollEmenu() : handleScrollWebOrdering()
       );
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultOutlet]);
 
   const handleScrollWebOrdering = (e) => {
@@ -190,32 +187,13 @@ const Ordering = (props) => {
     setFinished(true);
   };
 
-  const getLabelButton = (item) => {
-    try {
-      if (!isEmptyObject(basket)) {
-        const find = basket.details.find(
-          (data) => data.product.id === item.product.id
-        );
-        if (find !== undefined) return 'Update';
-        else return 'Add';
-      } else {
-        return 'Add';
-      }
-    } catch (e) {
-      return 'Add';
-    }
-  };
-
   const searchProduct = async (query) => {
     try {
       setFinished(true);
       if (query === '') {
         setLoading(false);
-        setLoadingSearching(false);
         setTempProducts(productsBackup);
         return;
-      } else {
-        setLoadingSearching(true);
       }
 
       let productsSearch = undefined;
@@ -251,21 +229,7 @@ const Ordering = (props) => {
 
       setTempProducts(productsSearch);
       setLoading(false);
-      setLoadingSearching(false);
     } catch (e) {}
-  };
-
-  const getCurrency = (price) => {
-    if (companyInfo) {
-      const { currency } = companyInfo;
-
-      if (!price || price === '-') price = 0;
-      let result = price.toLocaleString(currency.locale, {
-        style: 'currency',
-        currency: currency.code,
-      });
-      return result;
-    }
   };
 
   const fetchMoreData = async () => {
@@ -403,7 +367,6 @@ const Ordering = (props) => {
         <SearchBox />
         <RetailHeaderCategory
           categoryRefs={categoryRefs}
-          loadingSearching={(status) => setLoadingSearching(status)}
           finished={finished}
           setLoading={(status) => setLoading(status)}
           searchProduct={(query) => searchProduct(query)}

@@ -11,15 +11,11 @@ import SearchBox from 'components/ordering/SearchBox';
 import UpdateProductModal from 'components/ordering/UpdateProductModal';
 import ModalProduct from 'components/ordering/ModalProduct';
 
-import {
-  getInitialProductValue,
-  getFormattedPrice,
-} from 'helpers/ProductHelper';
+import { getFormattedPrice } from 'helpers/ProductHelper';
 import useMobileSize from 'hooks/useMobileSize';
 import { isEmpty } from 'helpers/utils';
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.hostname.includes('emenu');
 
 export const Products = ({
   categories,
@@ -42,14 +38,8 @@ export const Products = ({
   const { categoryId } = useParams();
   const [categoryNotFound, setCategoryNotFound] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
-  const [productIsExistInBasket, setProductIsExistInBasket] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [isAddNewExistingProduct, setIsAddNewExistingProduct] = useState(false);
-
-  const selectProduct = (product, mode) => {
-    const initialValue = getInitialProductValue(product, mode);
-    setSelectedProduct(initialValue);
-  };
 
   useEffect(() => {
     if (selectedCategory) {
@@ -76,6 +66,7 @@ export const Products = ({
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories, selectedCategory, selectedOutlet]);
 
   return (

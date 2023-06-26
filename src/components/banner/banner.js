@@ -16,7 +16,7 @@ import style from './pagination.scss';
 import SwiperCore, { Pagination, Navigation, Autoplay } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
-const Banner = (props) => {
+const Banner = ({ outletId }) => {
   const { logo } = useSelector((state) => state.getSpaceLogo);
   const [banners, setBanners] = useState([]);
 
@@ -29,14 +29,14 @@ const Banner = (props) => {
       );
       if (result) {
         const temp = result?.data?.filter(
-          (val) => val.outlet === 'ALL' || val.outlet?.includes(props.outletId)
+          (val) => val.outlet === 'ALL' || val.outlet?.includes(outletId)
         );
         setBanners(temp);
       }
     };
 
     loadData();
-  }, []);
+  }, [outletId]);
 
   if (isEmptyArray(banners)) return null;
 
