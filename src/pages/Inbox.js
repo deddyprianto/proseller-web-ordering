@@ -24,7 +24,7 @@ const Inbox = () => {
       setLoadingShow(false);
     };
     loadData();
-  }, []);
+  }, [dispatch]);
 
   const RenderShimmer = () => {
     return (
