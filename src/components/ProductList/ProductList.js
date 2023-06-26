@@ -177,7 +177,6 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
   const [pageNumber, setPageNumber] = useState(1);
-  const [productsData, setProductsData] = useState([]);
   const { products, loading, error, hasMore } = useProductList({
     pageNumber,
     selectedCategory,
@@ -249,6 +248,7 @@ const ProductList = ({ ...props }) => {
     } catch (e) {
       console.log(e);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -260,7 +260,6 @@ const ProductList = ({ ...props }) => {
             ProductAction.fetchProduct(selectedCategory, outlet, 0, 10)
           );
 
-          setProductsData(products.data);
           props.dispatch({
             type: CONSTANT.LIST_CATEGORY,
             data: products,
@@ -272,6 +271,7 @@ const ProductList = ({ ...props }) => {
     } catch (e) {
       // console.log(e);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory]);
 
   const handleChangeCategory = ({ category, index }) => {

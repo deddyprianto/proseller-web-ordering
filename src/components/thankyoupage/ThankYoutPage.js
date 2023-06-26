@@ -1,5 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import style from './style/style.module.css';
 import IconCheck from '../../assets/images/checkThankyou.png';
@@ -96,28 +94,6 @@ const renderGrandTotalForGuestCheckMode = (
           Back To Menu
         </button>
       </div>
-    </div>
-  );
-};
-
-const renderHeaderPayment = () => {
-  return (
-    <div
-      style={{
-        width: '100%',
-        marginTop: '100px',
-      }}
-    >
-      <p
-        style={{
-          textAlign: 'center',
-          marginTop: '30%',
-          fontWeight: 700,
-          fontSize: '16px',
-        }}
-      >
-        Payment
-      </p>
     </div>
   );
 };
@@ -263,48 +239,6 @@ const renderImageProduct = (item, color) => {
     }
     return config.image_placeholder;
   }
-};
-
-const renderPrice = (item, handleCurrency) => {
-  if (item?.totalDiscAmount !== 0) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <Typography style={{ color: '#4386A1', fontSize: '16px' }}>
-          {handleCurrency(item?.totalDiscAmount)}
-        </Typography>
-        <Typography
-          style={{
-            fontSize: '16px',
-            textDecorationLine: 'line-through',
-            marginRight: '10px',
-            color: '#8A8D8E',
-          }}
-        >
-          {handleCurrency(item?.grossAmount)}
-        </Typography>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'flex-end',
-      }}
-    >
-      <Typography style={{ color: '#4386A1', fontSize: '16px' }}>
-        {handleCurrency(item?.grossAmount)}
-      </Typography>
-    </div>
-  );
 };
 
 const renderCartProductList = (
@@ -542,7 +476,6 @@ const ThankYoutPage = () => {
   const dispatch = useDispatch();
   let location = useLocation();
   const matches = useMediaQuery('(min-width:1200px)');
-  const [copyToClipboard, setCopyToClipboard] = useState('');
   const [showModalIfCopied, setShowModalIfCopied] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const basket = useSelector((state) => state.guestCheckoutCart);
@@ -550,7 +483,6 @@ const ThankYoutPage = () => {
     (state) => state.guestCheckoutCart.trackorder
   );
   const color = useSelector((state) => state.theme.color);
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const companyInfo = useSelector((state) => state.masterdata);
   const history = useHistory();
 
@@ -580,6 +512,7 @@ const ThankYoutPage = () => {
       }
     };
     fetchDataTrackOrder();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -612,15 +545,6 @@ const ThankYoutPage = () => {
       );
       return result;
     }
-  };
-  const handleSubtotalForGuestCheckout = () => {
-    if (trackorderBasket?.data?.totalDiscountAmount !== 0) {
-      const subTotalAfterDiscount =
-        trackorderBasket?.data?.totalGrossAmount -
-        trackorderBasket.tdata?.otalDiscountAmount;
-      return subTotalAfterDiscount;
-    }
-    return trackorderBasket?.data?.totalGrossAmount;
   };
 
   const renderSubtotalForGuestCheckMode = () => {
@@ -931,7 +855,6 @@ const ThankYoutPage = () => {
               <CopyToClipboard
                 text={trackorder?.data?.transactionRefNo}
                 onCopy={(text, result) => {
-                  setCopyToClipboard(text);
                   setShowModalIfCopied(result);
                 }}
               >
@@ -1108,7 +1031,6 @@ const ThankYoutPage = () => {
                     <CopyToClipboard
                       text={basket?.trackorder?.data?.transactionRefNo}
                       onCopy={(text, result) => {
-                        setCopyToClipboard(text);
                         setShowModalIfCopied(result);
                       }}
                     >

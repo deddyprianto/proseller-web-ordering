@@ -37,7 +37,6 @@ const Appointment = (props) => {
   const [locationKeys, setLocationKeys] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showNotify, setShowNotify] = useState(false);
-  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [openDropDownTime, setOpenDropDownTime] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -221,7 +220,7 @@ const Appointment = (props) => {
         },
       });
     }
-  }, [cartAppointment]);
+  }, [cartAppointment, color.primary]);
 
   useEffect(() => {
     if (!isEmptyObject(defaultOutlet)) {
@@ -251,7 +250,7 @@ const Appointment = (props) => {
       type: CONSTANT.CART_SAVE_APPOINTMENT,
       payload: {},
     });
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -263,7 +262,7 @@ const Appointment = (props) => {
       }
     };
     loadData();
-  }, [responseAddCart, selectedLocation]);
+  }, [responseAddCart, selectedLocation, dispatch]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -283,6 +282,7 @@ const Appointment = (props) => {
       setIsLoading(false);
     };
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocation]);
 
   useEffect(() => {
@@ -302,7 +302,7 @@ const Appointment = (props) => {
     if (!isEmptyObject(selectedCategory)) {
       loadData();
     }
-  }, [selectedCategory, categoryTabAppointment, selectedLocation]);
+  }, [selectedCategory, categoryTabAppointment, selectedLocation, dispatch]);
 
   useEffect(() => {
     return history.listen((location) => {
@@ -320,7 +320,7 @@ const Appointment = (props) => {
         }
       }
     });
-  }, [cartAppointment, locationKeys]);
+  }, [cartAppointment, locationKeys, dispatch, history]);
 
   const PlaceIcon = () => {
     return (
@@ -858,7 +858,6 @@ const Appointment = (props) => {
                     selectedLocation={selectedLocation}
                     settingAppoinment={settingAppoinment?.settingValue}
                     isCheckedService={isCheckedService}
-                    setIsOpenModalDetail={setIsOpenModalDetail}
                     item={item?.product}
                     gadgetScreen={gadgetScreen}
                     fullScreen={fullScreen}

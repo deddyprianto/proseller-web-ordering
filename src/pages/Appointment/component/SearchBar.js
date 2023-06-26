@@ -12,12 +12,12 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  // selectors
+
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
   const searchBar = useSelector((state) => state.appointmentReducer.searchBar);
-  // some Effect
+
   useEffect(() => {
     const payload = {
       take: 20,
@@ -44,7 +44,7 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
     } else if (inputValue.length === 0) {
       dispatch({ type: CONSTANT.SEARCHBAR, payload: [] });
     }
-  }, [inputValue, defaultOutlet]);
+  }, [inputValue, defaultOutlet, dispatch]);
 
   const RenderAnimationLoading = () => {
     return (

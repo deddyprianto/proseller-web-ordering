@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import 'react-phone-input-2/lib/style.css';
 import { connect } from 'react-redux';
@@ -134,6 +133,7 @@ const LoginRegister = (props) => {
         }, 1000);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [method, props.isUserHasBeenCompletedfillData]);
 
   useEffect(() => {
@@ -271,7 +271,7 @@ const LoginRegister = (props) => {
         break;
 
       case 'email': {
-        const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+        const regEmail = /^[\w][\w-+.]+@([\w-]+\.)+[\w-]{2,4}$/g;
 
         const email = data;
         const checkEmail = regEmail.test(email);
@@ -366,7 +366,7 @@ const LoginRegister = (props) => {
         break;
 
       case 'email': {
-        const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+        const regEmail = /^[\w][\w-+.]+@([\w-]+\.)+[\w-]{2,4}$/g;
         const email = data.toLowerCase().trim();
         const checkEmail = regEmail.test(String(email).toLowerCase());
         setInputs({ ...inputs, [jenis]: email });

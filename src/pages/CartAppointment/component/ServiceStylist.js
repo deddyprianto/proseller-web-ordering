@@ -29,7 +29,7 @@ const ServiceStylist = ({ color }) => {
     if (date && time) {
       loadData();
     }
-  }, [date, time]);
+  }, [date, time, dispatch]);
 
   const StylistAvatar = ({ item }) => {
     return (

@@ -50,7 +50,7 @@ const OrderTrackHistory = () => {
     if (idOrderTrackHistory) {
       loadData();
     }
-  }, [idOrderTrackHistory]);
+  }, [idOrderTrackHistory, dispatch]);
 
   const renderGrandTotalForGuestCheckMode = () => {
     return (
@@ -63,7 +63,7 @@ const OrderTrackHistory = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding:'10px 0px',
+          padding: '10px 0px',
           height: '100%',
         }}
       >
@@ -75,7 +75,7 @@ const OrderTrackHistory = () => {
                 fontSize: '16px',
                 margin: 0,
                 padding: 0,
-                color:'black'
+                color: 'black',
               }}
             >
               Grand Total
@@ -715,14 +715,6 @@ const OrderTrackHistory = () => {
       color: 'black',
       fontSize: 14,
     },
-  };
-  const handleSubtotalForGuestCheckout = () => {
-    if (basket?.data?.totalDiscountAmount !== 0) {
-      const subTotalAfterDiscount =
-        basket?.data?.totalGrossAmount - basket.tdata?.otalDiscountAmount;
-      return subTotalAfterDiscount;
-    }
-    return basket?.data?.totalGrossAmount;
   };
 
   const renderSubtotalForGuestCheckMode = () => {

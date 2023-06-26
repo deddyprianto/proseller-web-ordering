@@ -40,6 +40,7 @@ const Date = ({ timeslot, color }) => {
         payload: changeFormatDate(dateNow?.date),
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeslot]);
 
   const changeFormatDate = (itemDate) => {

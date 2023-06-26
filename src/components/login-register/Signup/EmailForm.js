@@ -59,6 +59,7 @@ const EmailForm = ({
     if (phone) {
       handleChange('phoneNumber', phoneCountryCode + phone);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phone, phoneCountryCode]);
 
   if (

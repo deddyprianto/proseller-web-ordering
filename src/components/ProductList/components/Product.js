@@ -187,6 +187,7 @@ const Product = ({ item }) => {
   useEffect(() => {
     const totalQtyProductInBasket = handleQuantityProduct();
     setTotalQty(totalQtyProductInBasket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     item,
     basket,

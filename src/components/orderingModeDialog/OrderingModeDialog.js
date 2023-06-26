@@ -258,7 +258,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
     return () => {
       isCleanFnComponent = false;
     };
-  }, [orderingModeActive]);
+  }, [orderingModeActive, dispatch]);
 
   useEffect(() => {
     const getOrderingModes = async () => {
@@ -308,6 +308,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
       setIsLoading(false);
     };
     getOrderingModes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleConfirmOrderingMode = async (value) => {

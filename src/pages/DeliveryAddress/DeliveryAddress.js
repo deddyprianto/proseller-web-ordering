@@ -286,75 +286,6 @@ const DeliveryAddress = () => {
     setCountryCode(infoCompany.countryCode);
   };
 
-  const handleAdd = async () => {
-    let coordinate = localStorage.getItem(`${config.prefix}_locationPinned`);
-    let addressName = localStorage.getItem(`${config.prefix}_addressName`);
-
-    try {
-      let deliveryAddress = {};
-      coordinate = JSON.parse(coordinate);
-      if (coordinate && coordinate.detailAddress !== '') {
-        deliveryAddress.coordinate = coordinate;
-        deliveryAddress.addressName = addressName;
-
-        let formattedStreet = '';
-        try {
-          let route = coordinate.detailAddress.address_components.find((item) =>
-            item.types.includes('route')
-          ).long_name;
-          let street_number = coordinate.detailAddress.address_components.find(
-            (item) => item.types.includes('street_number')
-          ).long_name;
-          let premise = coordinate.detailAddress.address_components.find(
-            (item) =>
-              item.types.includes('premise') ||
-              item.types.includes('neighborhood') ||
-              item.types.includes('political')
-          ).long_name;
-
-          formattedStreet = `${street_number} ${route}, ${premise}`;
-        } catch (e) {
-          formattedStreet = coordinate.userLocation;
-        }
-
-        let postalCode = '';
-        try {
-          postalCode = coordinate.detailAddress.address_components.find(
-            (item) => item.types[0] === 'postal_code'
-          ).long_name;
-        } catch (e) {
-          console.log(e);
-        }
-
-        deliveryAddress.street = formattedStreet;
-        deliveryAddress.streetName = formattedStreet;
-        deliveryAddress.postalCode = postalCode;
-
-        if (postalCode === '' || !postalCode) {
-          deliveryAddress.isDisabledPostalCode = false;
-        } else {
-          deliveryAddress.isDisabledPostalCode = true;
-        }
-
-        setDeliveryAddress(deliveryAddress);
-        setIsCreate(true);
-      } else {
-        setDeliveryAddress({ address: {} });
-        setIsCreate(true);
-      }
-    } catch (e) {
-      setDeliveryAddress({ address: {} });
-      setIsCreate(true);
-      //silent error
-    }
-
-    localStorage.removeItem(`${config.prefix}_backupAddress`);
-
-    if (!coordinate) {
-      history.push('/map');
-    }
-  };
-
   const handleDelete = async (data) => {
     Swal.fire({
       title: `Remove ${data.addressName}?`,
@@ -437,6 +368,7 @@ const DeliveryAddress = () => {
   useEffect(() => {
     getLocationPinned();
     getDataDeliveryAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSuccess]);
 
   return (

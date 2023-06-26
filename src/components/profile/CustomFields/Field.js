@@ -25,7 +25,7 @@ const Field = ({
 
   useEffect(() => {
     dispatch({ type: CONSTANT.IS_ALL_FIELD_HAS_BEEN_FULLFILED, data: value });
-  }, [value]);
+  }, [value, dispatch]);
 
   const monthMap = {
     1: 'Jan',

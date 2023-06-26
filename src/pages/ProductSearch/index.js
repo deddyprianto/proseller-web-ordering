@@ -9,10 +9,7 @@ import Product from 'components/ProductList/components/Product';
 import UpdateProductModal from 'components/ordering/UpdateProductModal';
 import ModalProduct from 'components/ordering/ModalProduct';
 
-import {
-  getInitialProductValue,
-  getFormattedPrice,
-} from 'helpers/ProductHelper';
+import { getFormattedPrice } from 'helpers/ProductHelper';
 import { isEmpty } from 'helpers/utils';
 
 import useQuery from 'hooks/useQuery';
@@ -46,18 +43,13 @@ export const ProductSearch = ({
   const [categories, setCategories] = useState([]);
   const [isAddNewExistingProduct, setIsAddNewExistingProduct] = useState(false);
 
-  const selectProduct = (product, mode) => {
-    const initialValue = getInitialProductValue(product, mode);
-    setSelectedProduct(initialValue);
-  };
-
   useEffect(() => {
     if (isEmpty(selectedOutlet)) {
       history.push('/outlets');
     } else {
       searchProducts(keyword, selectedOutlet, 0, 100);
     }
-  }, [selectedOutlet, keyword]);
+  }, [selectedOutlet, keyword, history, searchProducts]);
 
   useEffect(() => {
     if (products) {

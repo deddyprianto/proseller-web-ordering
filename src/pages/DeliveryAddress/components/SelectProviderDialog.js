@@ -97,6 +97,7 @@ const SelectProviderDialog = ({ open, onClose }) => {
     };
 
     getDataProviderListAndFee();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const handleSelectDeliveryProvider = async (value) => {

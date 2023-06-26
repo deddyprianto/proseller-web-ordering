@@ -1,7 +1,8 @@
-import React, { useLayoutEffect, useState, createRef, useEffect } from 'react';
+import React, { useState, createRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import Swal from 'sweetalert2';
+import { useHistory } from 'react-router-dom';
 
 import fontStyles from './style/styles.module.css';
 import loader from './style/styles.module.css';
@@ -22,24 +23,13 @@ import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { isEmpty } from 'helpers/utils';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import useWindowSize from 'hooks/useWindowSize';
 
 const BookingConfirm = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const ref = createRef();
-  const [width] = useWindowSize();
+  const { width } = useWindowSize();
   const gadgetScreen = width < 980;
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
@@ -66,8 +56,8 @@ const BookingConfirm = (props) => {
     (state) => state.appointmentReducer.cartAppointment
   );
   useEffect(() => {
-    return props.history.listen((location) => {
-      if (props.history.action === 'PUSH') {
+    return history.listen((location) => {
+      if (history.action === 'PUSH') {
         setLocationKeys([location.pathname]);
         if (
           location.pathname !== '/appointment' &&
@@ -77,11 +67,11 @@ const BookingConfirm = (props) => {
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
             payload: true,
           });
-          props.history.replace('/bookingconfirm');
+          history.replace('/bookingconfirm');
         }
       }
     });
-  }, [cartAppointment, locationKeys]);
+  }, [cartAppointment, locationKeys, dispatch, history]);
 
   const handleButtonSure = async () => {
     if (cartAppointment?.details?.length > 0) {
@@ -948,7 +938,7 @@ const BookingConfirm = (props) => {
               <AppointmentHeader
                 color={color}
                 label='Booking Summary'
-                onBack={() => props.history.push('/appointment')}
+                onBack={() => history.push('/appointment')}
               />
             </div>
             <Timeline />

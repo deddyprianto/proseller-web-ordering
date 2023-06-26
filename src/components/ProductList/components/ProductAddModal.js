@@ -432,6 +432,7 @@ const ProductAddModal = ({
     handleProductModifierSelected();
     handleProductVariantSelected();
     handleProductSelected();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleProductModifierFormated = (items) => {
@@ -609,6 +610,7 @@ const ProductAddModal = ({
         }),
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     qty,
     notes,
@@ -678,6 +680,7 @@ const ProductAddModal = ({
     } else {
       setQty(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVariantOptions]);
 
   const handleClear = () => {

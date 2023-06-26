@@ -306,7 +306,7 @@ function getOutletStatus(outlet) {
       outlet.operationalHours &&
       outlet.operationalHours.length > 0
     ) {
-      const { isOpen, openAt, closedAt } = getOperationalHours(outlet);
+      const { isOpen } = getOperationalHours(outlet);
       return isOpen;
     }
 

@@ -61,6 +61,7 @@ export default function useHistoryAppointment({
       }
     };
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skip, tabNameAPI, tabName]);
 
   return {

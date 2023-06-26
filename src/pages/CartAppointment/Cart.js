@@ -22,10 +22,12 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 
-const Cart = (props) => {
+const Cart = () => {
   const responsiveDesign = screen();
   const dispatch = useDispatch();
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [locationKeys, setLocationKeys] = useState([]);
   const useStyles = makeStyles(() => ({
@@ -55,9 +57,9 @@ const Cart = (props) => {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      props.history.push('/outlets');
+      history.push('/outlets');
     }
-  }, []);
+  }, [history, isLoggedIn]);
 
   useEffect(() => {
     if (responseSubmit.error) {
@@ -74,7 +76,7 @@ const Cart = (props) => {
         },
       });
     }
-  }, [responseSubmit]);
+  }, [responseSubmit, color.primary]);
 
   useEffect(() => {
     if (timeslot?.isError) {
@@ -91,11 +93,11 @@ const Cart = (props) => {
         },
       }).then(async (result) => {
         if (result.isConfirmed) {
-          props.history.push('/location');
+          history.push('/location');
         }
       });
     }
-  }, [timeslot]);
+  }, [timeslot, history, color.primary]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -112,7 +114,7 @@ const Cart = (props) => {
     if (!isEmptyObject(cartAppointment)) {
       loadData();
     }
-  }, [cartAppointment]);
+  }, [cartAppointment, dispatch]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -125,11 +127,11 @@ const Cart = (props) => {
       }
     };
     isLoggedIn && loadData();
-  }, [responseAddCart]);
+  }, [responseAddCart, dispatch, isLoggedIn]);
 
   useEffect(() => {
-    return props.history.listen((location) => {
-      if (props.history.action === 'PUSH') {
+    return history.listen((location) => {
+      if (history.action === 'PUSH') {
         setLocationKeys([location.pathname]);
         if (
           location.pathname !== '/appointment' &&
@@ -139,11 +141,11 @@ const Cart = (props) => {
             type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
             payload: true,
           });
-          props.history.replace('/cartappointment');
+          history.replace('/cartappointment');
         }
       }
     });
-  }, [cartAppointment, locationKeys]);
+  }, [cartAppointment, locationKeys, dispatch, history]);
 
   let distance = '';
   const locationCustomer = JSON.parse(
@@ -615,7 +617,7 @@ const Cart = (props) => {
             <AppointmentHeader
               color={color}
               label='Appointment Booking'
-              onBack={() => props.history.goBack()}
+              onBack={() => history.goBack()}
             />
             <Timeline />
             <RenderItemService />

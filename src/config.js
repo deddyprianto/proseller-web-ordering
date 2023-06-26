@@ -3,12 +3,6 @@ import emptyImage from './assets/images/empty.webp';
 import loginImage from './assets/images/login.svg';
 
 let config = {};
-let stage = '';
-let companyHost = 'tomahawkking';
-let endPoint = `https://${companyHost}${
-  stage !== '' ? '-' + stage : ''
-}.proseller.io`;
-// let endPoint = `https://${companyHost}.proseller-${stage}.com`;
 
 let storedDomainName = '';
 try {

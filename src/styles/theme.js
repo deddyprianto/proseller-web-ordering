@@ -16,8 +16,6 @@ function hexToRGB(h, o = null) {
   return 'rgb(' + +r + ',' + +g + ',' + +b + ')';
 }
 
-const menuCategoriesTop = '0px';
-
 const styles = {
   '@global': {
     button: { backgroundColor: (e) => e.theme.color.primary },

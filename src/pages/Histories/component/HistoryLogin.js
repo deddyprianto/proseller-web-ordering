@@ -31,7 +31,7 @@ const History = () => {
       }
     };
     getDataBasketPending();
-  }, [stateTabs]);
+  }, [stateTabs, dispatch]);
 
   useEffect(() => {
     const settingAppoinment = setting.find((items) => {

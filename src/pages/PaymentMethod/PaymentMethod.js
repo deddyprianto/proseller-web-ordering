@@ -175,10 +175,11 @@ const PaymentMethodPage = () => {
       setPaymentMethodList(responseCompanyInfo);
     }
     setIsLoading(false);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -202,6 +203,7 @@ const PaymentMethodPage = () => {
         clearInterval(interval);
       }
     }, 5000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openDialogConfirm]);
 
   const handleCheckRegisteredCard = async (payload) => {
@@ -422,7 +424,13 @@ const PaymentMethodPage = () => {
           },
         }}
       >
-        <iframe src={paymentURL} width='100%' height='950px' onScroll={false} />
+        <iframe
+          src={paymentURL}
+          width='100%'
+          height='950px'
+          onScroll={false}
+          title='payment'
+        />
       </Dialog>
     );
   };

@@ -119,6 +119,7 @@ const MyVoucherList = ({ ...props }) => {
     const voucherGroup = handleVoucherGroup(props.myVoucher);
 
     setVouchers(voucherGroup);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.myVoucher]);
 
   const renderVoucherList = () => {
