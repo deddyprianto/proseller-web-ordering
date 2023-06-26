@@ -1517,7 +1517,6 @@ const ProductAddModal = ({
   const renderProductModifierOptions = (productModifier) => {
     const productModifierDetails =
       productModifier?.modifier?.details || productModifier?.details;
-
     const productModifierOptions = productModifierDetails?.map(
       (modifier, index) => {
         return (
@@ -1659,13 +1658,6 @@ const ProductAddModal = ({
 
   const renderProductModifiers = (productModifiers) => {
     if (!isEmptyArray(productModifiers)) {
-      productModifiers.sort((item) => {
-        if (item.modifier?.specialRestriction || item.specialRestriction) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
       const result = productModifiers.map((productModifier, index) => {
         return (
           <Paper key={index} variant='outlined' style={styles.paper}>
