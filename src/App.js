@@ -246,8 +246,6 @@ const App = ({ version }) => {
 
     if (domainNameExist && domainName !== 'NOT_FOUND') {
       checkUser();
-    } else if (!domainNameExist) {
-      window.location.reload();
     } else {
       getDomainName();
     }
