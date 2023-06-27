@@ -47,7 +47,6 @@ const Location = () => {
     (state) => state.appointmentReducer.popupLocation
   );
   const outlets = useSelector((state) => state.outlet.outlets);
-  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ const Location = () => {
   }, [history, isLoggedIn]);
 
   const selectedLocation = !selectedLocationPersisted
-    ? defaultOutlet
+    ? {}
     : outlets?.find((val) => val.id === selectedLocationPersisted?.id);
 
   const handleSelectedOutlet = (item) => {
