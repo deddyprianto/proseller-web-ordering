@@ -28,6 +28,7 @@ import screen from 'hooks/useWindowSize';
 import AppointmentHeader from 'components/appointmentHeader';
 import { isEmpty } from 'helpers/utils';
 import Swal from 'sweetalert2';
+import { IconHistoryTime, IconPlace } from 'assets/iconsSvg/Icons';
 
 const Appointment = (props) => {
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =
@@ -51,6 +52,10 @@ const Appointment = (props) => {
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
+
+  const locationPersisted = localStorage.getItem(
+    'LOCATION_APPOINTMENT_PERSISTED'
+  );
 
   const setting = useSelector((state) => state.order.setting);
   const menuSidebar = useSelector((state) => state.theme.menu);
@@ -223,18 +228,17 @@ const Appointment = (props) => {
   }, [cartAppointment, color.primary]);
 
   useEffect(() => {
-    if (!isEmptyObject(defaultOutlet)) {
+    if (!isEmpty(locationPersisted)) {
       setOpenWarningOutletNotSelected(true);
+    } else {
+      history.push('/location');
     }
-  }, [defaultOutlet]);
+  }, [history, locationPersisted]);
 
   useEffect(() => {
-    const locationPersisted = localStorage.getItem(
-      'LOCATION_APPOINTMENT_PERSISTED'
-    );
     const selectedLocationPersisted = JSON.parse(locationPersisted);
     setSelectedLocationPersisted(selectedLocationPersisted);
-  }, []);
+  }, [locationPersisted]);
 
   useEffect(() => {
     dispatch({
@@ -321,51 +325,6 @@ const Appointment = (props) => {
       }
     });
   }, [cartAppointment, locationKeys, dispatch, history]);
-
-  const PlaceIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        width='20'
-        height='20'
-        viewBox='0 0 24 24'
-        fill='none'
-        stroke='black'
-        strokeWidth={1.5}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        className='feather feather-map-pin'
-      >
-        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
-        <circle cx={12} cy={10} r={3} />
-      </svg>
-    );
-  };
-
-  const HistoryTimeIcon = ({ color }) => {
-    return (
-      <svg
-        width={18}
-        height={19}
-        viewBox='0 0 18 19'
-        fill='black'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          fillRule='evenodd'
-          clipRule='evenodd'
-          d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
-          fill='black'
-        />
-        <path
-          fillRule='evenodd'
-          clipRule='evenodd'
-          d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
-          fill='black'
-        />
-      </svg>
-    );
-  };
 
   const Label = () => {
     const localStyle = {
@@ -563,7 +522,7 @@ const Appointment = (props) => {
               marginTop: '5px',
             }}
           >
-            <PlaceIcon />
+            <IconPlace />
           </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 600, color: 'black' }}>
@@ -628,7 +587,7 @@ const Appointment = (props) => {
           style={localStyle.containerOpenNow}
           onClick={() => setOpenDropDownTime(!openDropDownTime)}
         >
-          <HistoryTimeIcon />
+          <IconHistoryTime />
           <LabelOpenTime
             style={localStyle.labelOpenNow}
             data={selectedLocation?.appointmentTimeSlot}
@@ -1129,79 +1088,6 @@ const Appointment = (props) => {
             productServicesAppointment={productServicesAppointment}
           />
         </div>
-      </Dialog>
-      <Dialog
-        fullWidth
-        maxWidth='xs'
-        open={!openWarningOutletNotSelected}
-        onClose={() =>
-          dispatch({ type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT, payload: false })
-        }
-        classes={{ paper: classes.paper }}
-      >
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '15px',
-          }}
-        ></div>
-        <DialogTitle
-          className={fontStyles.myFont}
-          sx={{
-            fontWeight: 600,
-            fontSize: '16px',
-            textAlign: 'center',
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          Outlet Not Selected
-        </DialogTitle>
-        <div style={{ marginTop: '20px' }}>
-          <div
-            className={fontStyles.myFont}
-            style={{
-              color: 'rgba(183, 183, 183, 1)',
-              fontSize: '14px',
-              textAlign: 'center',
-              fontWeight: 500,
-            }}
-          >
-            Please select an outlet first to access the appointment feature
-          </div>
-        </div>
-        <DialogActions
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <button
-            onClick={async () => {
-              dispatch({
-                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
-                payload: false,
-              });
-              window.location.href = changeFormatURl('/outlets');
-              window.location.reload();
-            }}
-            className={fontStyles.myFont}
-            style={{
-              color: 'white',
-              width: '100%',
-              padding: '6px 0px',
-              borderRadius: '10px',
-              fontSize: '14px',
-              marginTop: '20px',
-            }}
-          >
-            OK
-          </button>
-        </DialogActions>
       </Dialog>
     </React.Fragment>
   );
