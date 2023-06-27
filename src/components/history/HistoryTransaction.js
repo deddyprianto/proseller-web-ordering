@@ -39,7 +39,10 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
     }
 
     return () => {
-      if (tempRef) observer.unobserve(tempRef);
+      if (tempRef) {
+        observer.unobserve(tempRef);
+        observer.disconnect();
+      }
     };
   }, [loading, hasMore]);
 

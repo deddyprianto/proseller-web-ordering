@@ -1,13 +1,6 @@
 import { CRMService } from '../../Services/CRMService';
 import { OrderingService } from '../../Services/OrderingService';
 
-function setData(data, constant) {
-  return {
-    type: constant,
-    payload: data.Data,
-  };
-}
-
 function getTransaction(payload = {}) {
   return async () => {
     let response = await CRMService.api(
@@ -42,7 +35,7 @@ function getBasket() {
 }
 
 function getBasketPending(payload = {}) {
-  return async (dispatch) => {
+  return async () => {
     let response = await OrderingService.api(
       'POST',
       payload,
@@ -55,7 +48,6 @@ function getBasketPending(payload = {}) {
       let dataPending = response.data;
       let dataPendingLength = (dataPending && dataPending.length) || 0;
       response.data = { dataPending, dataPendingLength };
-      dispatch(setData({ Data: dataPendingLength }, 'PENDING_ORDERS'));
     }
     return response;
   };
