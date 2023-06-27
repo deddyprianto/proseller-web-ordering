@@ -7,17 +7,17 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import ResultSearch from './ResultSearch';
-
+import productNotFound from 'assets/images/prodnotfound.png';
 const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  // selectors
+
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
   const searchBar = useSelector((state) => state.appointmentReducer.searchBar);
-  // some Effect
+
   useEffect(() => {
     const payload = {
       take: 20,
@@ -39,12 +39,12 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
         console.log({ error });
       }
     };
-    if (inputValue.length > 3) {
+    if (inputValue.length > 1) {
       loadData();
     } else if (inputValue.length === 0) {
       dispatch({ type: CONSTANT.SEARCHBAR, payload: [] });
     }
-  }, [inputValue, defaultOutlet]);
+  }, [inputValue, defaultOutlet, dispatch]);
 
   const RenderAnimationLoading = () => {
     return (
@@ -75,9 +75,9 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
           gridTemplateRows: '1fr',
           gridAutoFlow: 'row',
           gridTemplateAreas: '". ."',
-          opacity: 0.7,
           alignItems: 'center',
-          margin: '20px 0px',
+          margin: '10px 0',
+          paddingLeft: '5px',
         }}
       >
         <ArrowBackIosIcon
@@ -98,6 +98,7 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            opacity: 0.7,
           }}
         >
           <input
@@ -154,12 +155,46 @@ const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
       {isEmptyArray(searchBar) && inputValue.length > 3 && !isLoading && (
         <div
           style={{
-            color: 'rgba(255, 0, 0, 1)',
-            margin: '0px 20px',
-            marginBottom: '30px',
+            height: '80vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          Product not found
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img alt='placeholder' src={productNotFound} />
+            <div
+              style={{
+                fontWeight: 'bold',
+                fontSize: '16px',
+                marginTop: '24px',
+                color: 'rgba(0, 0, 0, 1)',
+              }}
+            >
+              "{`${inputValue}`}" not found
+            </div>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: 'black',
+                marginTop: '5px',
+                textAlign: 'center',
+                lineHeight: '21px',
+              }}
+            >
+              Can't find the product you're searching for. <br /> Please try
+              using different keywords.
+            </div>
+          </div>
         </div>
       )}
 

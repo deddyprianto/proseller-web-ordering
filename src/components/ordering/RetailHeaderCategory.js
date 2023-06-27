@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { useHistory } from "react-router-dom";
-import config from "../../config";
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import config from '../../config';
 
 const WebOrderingCategories = ({
   categories,
@@ -10,34 +9,20 @@ const WebOrderingCategories = ({
   selectedCategory,
   setSelectedCategory,
 }) => {
-  let [querySearch, setQuerySearch] = useState("");
-  let [openSearch, setOpenSearch] = useState(false);
+  let [querySearch, setQuerySearch] = useState('');
   let [prevSelectedCategory, setPrevSelectedCategory] =
     useState(selectedCategory);
-  const history = useHistory();
 
   const isItemsFinishedToLoad = (query) => {
     setQuerySearch(query);
-    // try {
-    //   setQuerySearch(query);
-    //   loadingSearching(true);
-    //   if (finished) {
-    //     searchProduct(query);
-    //     setQuerySearch("");
-    //   }
-    // } catch (e) {}
   };
 
-  const search = (keyword) => {
-    history.push(`/products?q=${encodeURIComponent(keyword)}`);
-  };
-
-  if (finished && openSearch && querySearch !== "") {
+  if (finished && querySearch !== '') {
     isItemsFinishedToLoad(querySearch);
   }
 
   useEffect(() => {
-    const scrollEventListener = document.addEventListener("scroll", () => {
+    const scrollEventListener = document.addEventListener('scroll', () => {
       categories.forEach((i) => {
         try {
           const target = document.getElementById(i);
@@ -50,64 +35,66 @@ const WebOrderingCategories = ({
         } catch (e) {}
       });
     });
-    return document.removeEventListener("scroll", scrollEventListener);
+    return document.removeEventListener('scroll', scrollEventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     try {
-      let clientHeightHead = document.getElementById("masthead").clientHeight;
+      let clientHeightHead = document.getElementById('masthead').clientHeight;
       let clientHeightCategory =
-        document.getElementById("header-categories").clientHeight;
+        document.getElementById('header-categories').clientHeight;
       let headerHeight = clientHeightHead + clientHeightCategory;
       if (prevSelectedCategory === 0)
         headerHeight = clientHeightHead + clientHeightCategory * 2;
 
       window.scrollTo({
         top: document.getElementById(selectedCategory).offsetTop - headerHeight,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     } catch (error) {
-      console.log("fetching categories");
+      console.log('fetching categories');
     }
     setPrevSelectedCategory(selectedCategory);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory]);
 
   return (
     <ul
-      className="nav nav-tabs pizzaro-nav-tabs categories-product relative-position background-theme"
+      className='nav nav-tabs pizzaro-nav-tabs categories-product relative-position background-theme'
       style={{
         marginTop: 40,
         marginBottom: 0,
-        borderBottom: "0px solid #DCDCDC",
+        borderBottom: '0px solid #DCDCDC',
       }}
     >
       <React.Fragment>
         <li
           style={{
-            cursor: "pointer",
+            cursor: 'pointer',
             marginRight: 40,
             width: 80,
             maxWidth: 80,
           }}
-          className="nav-item category-item"
+          className='nav-item category-item'
         >
-          <div className={"color-active"}>
-            <Link to="/category">
+          <div className={'color-active'}>
+            <Link to='/category'>
               <div
                 style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6 }}
               >
                 <i
-                  className="fa fa-th-large font-color-theme"
-                  style={{ fontSize: "6rem", marginTop: 5 }}
+                  className='fa fa-th-large font-color-theme'
+                  style={{ fontSize: '6rem', marginTop: 5 }}
                 />
               </div>
               <span
-                className="font-color-theme"
+                className='font-color-theme'
                 style={{
                   fontSize: 11,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   marginTop: 5,
-                  display: "block",
+                  display: 'block',
                   lineHeight: 1.8,
                 }}
               >
@@ -118,32 +105,32 @@ const WebOrderingCategories = ({
         </li>
         <li
           style={{
-            cursor: "pointer",
+            cursor: 'pointer',
             marginRight: 40,
             width: 80,
             maxWidth: 80,
           }}
-          className="nav-item category-item"
+          className='nav-item category-item'
         >
-          <div className={"color-active"}>
-            <Link to="/promotions">
+          <div className={'color-active'}>
+            <Link to='/promotions'>
               <div
                 style={{ width: 80, maxWidth: 80, height: 70, borderRadius: 6 }}
               >
                 <i
-                  className="fa fa-tag font-color-theme"
-                  style={{ fontSize: "6rem", marginTop: 5, color: '#c0392b' }}
+                  className='fa fa-tag font-color-theme'
+                  style={{ fontSize: '6rem', marginTop: 5, color: '#c0392b' }}
                 />
               </div>
               <span
-                className="font-color-theme"
+                className='font-color-theme'
                 style={{
                   fontSize: 11,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   marginTop: 5,
-                  display: "block",
+                  display: 'block',
                   lineHeight: 1.8,
-                  color: '#c0392b'
+                  color: '#c0392b',
                 }}
               >
                 PROMOTION
@@ -154,9 +141,9 @@ const WebOrderingCategories = ({
         {categories.map((item, i) => (
           <li
             id={`cat-${i}`}
-            className="nav-item category-item"
+            className='nav-item category-item'
             style={{
-              cursor: "pointer",
+              cursor: 'pointer',
               marginRight: 40,
               width: 80,
               maxWidth: 80,
@@ -166,16 +153,16 @@ const WebOrderingCategories = ({
               setSelectedCategory(item);
             }}
           >
-            <div className={"color-active"}>
+            <div className={'color-active'}>
               <div
                 style={{
                   width: 80,
                   maxWidth: 80,
                   height: 70,
                   borderRadius: 6,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <img
@@ -185,14 +172,14 @@ const WebOrderingCategories = ({
                 />
               </div>
               <span
-                className="font-color-theme"
+                className='font-color-theme'
                 style={{
                   fontSize: 11,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   marginTop: 5,
-                  display: "block",
+                  display: 'block',
                   lineHeight: 1.8,
-                  textTransform: 'uppercase'
+                  textTransform: 'uppercase',
                 }}
               >
                 {item.name}

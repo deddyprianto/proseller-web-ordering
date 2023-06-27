@@ -13,7 +13,7 @@ const MONTH_NAMES = [
   'Dec',
 ];
 
-export default (date) => {
+const dateFormatter = (date) => {
   const dateTime = new Date(date);
   if (date) {
     const formatDate =
@@ -27,3 +27,5 @@ export default (date) => {
     return '-';
   }
 };
+
+export default dateFormatter;

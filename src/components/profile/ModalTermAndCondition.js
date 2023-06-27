@@ -83,6 +83,7 @@ const ModalTermAndCondition = ({ enableTermAndCondition }) => {
                 if (i !== 0) {
                   return <li>{item}</li>;
                 }
+                return null;
               })}
             </ul>
           </div>

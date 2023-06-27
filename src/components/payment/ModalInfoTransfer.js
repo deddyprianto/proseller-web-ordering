@@ -1,138 +1,153 @@
-import React, { Component } from "react";
-import { Button } from "reactstrap";
-import { Link, withRouter } from "react-router-dom";
+import React, { Component } from 'react';
 import parse from 'html-react-parser';
-import { connect } from "react-redux";
 
 export default class ModalInfoTransfer extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   getDesc = () => {
     let { selectedCard, totalAmount, isPendingCart } = this.props;
 
     if (selectedCard && selectedCard.description && isPendingCart) {
-      let paymentDesc = selectedCard.description.replace('{amount}', `SGD ${totalAmount}`);
+      let paymentDesc = selectedCard.description.replace(
+        '{amount}',
+        `SGD ${totalAmount}`
+      );
       paymentDesc = parse(paymentDesc);
       return paymentDesc;
     }
 
     try {
-      let desc = selectedCard.configurations.find(item => item.name === "payment_description").value;
+      let desc = selectedCard.configurations.find(
+        (item) => item.name === 'payment_description'
+      ).value;
       if (desc) {
         desc = desc.replace('{amount}', `SGD ${totalAmount}`);
         desc = parse(desc);
         return desc;
       }
-      return ''
+      return '';
     } catch (e) {
       return null;
     }
-  }
+  };
 
   getImage = () => {
-    let { selectedCard, totalAmount, isPendingCart } = this.props;
+    let { selectedCard, isPendingCart } = this.props;
 
     if (selectedCard && selectedCard.manual_transfer_image && isPendingCart) {
       return selectedCard.manual_transfer_image;
     }
 
     try {
-      let image = selectedCard.configurations.find(item => item.name === "manual_transfer_image").value;
+      let image = selectedCard.configurations.find(
+        (item) => item.name === 'manual_transfer_image'
+      ).value;
       if (image) {
         return image;
       }
-      return ''
+      return '';
     } catch (e) {
       return null;
     }
-  }
+  };
 
   render() {
     let { isPendingCart } = this.props;
     return (
       <div
-        className="modal fade"
-        id="modal-info-transfer"
+        className='modal fade'
+        id='modal-info-transfer'
         tabIndex={-1}
-        role="dialog"
-        aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true"
+        role='dialog'
+        aria-labelledby='exampleModalCenterTitle'
+        aria-hidden='true'
       >
-        <div className="modal-dialog modal-dialog-centered" role="document">
+        <div className='modal-dialog modal-dialog-centered' role='document'>
           <div
-            className="modal-content"
-            style={{ width: "100%", marginTop: 100, marginBottom: 100 }}
+            className='modal-content'
+            style={{ width: '100%', marginTop: 100, marginBottom: 100 }}
           >
             <div
-              className="modal-header"
-              style={{ display: "flex", justifyContent: "center" }}
+              className='modal-header'
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <h5
-                className="modal-title"
-                id="exampleModalLabel"
+                className='modal-title'
+                id='exampleModalLabel'
                 style={{ fontSize: 20 }}
               >
                 How to Transfer ?
               </h5>
               <button
-                id="close-modal-permission-payment"
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
+                id='close-modal-permission-payment'
+                type='button'
+                className='close'
+                data-dismiss='modal'
+                aria-label='Close'
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   right: 10,
                   top: 16,
                 }}
               >
-                <span aria-hidden="true" style={{ fontSize: 30 }}>
+                <span aria-hidden='true' style={{ fontSize: 30 }}>
                   ×
                 </span>
               </button>
             </div>
 
-            <div className="modal-body" style={{ textAlign: "left" }}>
-
+            <div className='modal-body' style={{ textAlign: 'left' }}>
               <center>
-                <img className="img-thumbnail" src={this.getImage()} style={{ width: '80%' }} />
+                <img
+                  className='img-thumbnail'
+                  src={this.getImage()}
+                  style={{ width: '80%' }}
+                  alt='img_thumbnail'
+                />
                 <br />
                 <br />
-                <div style={{ width: '80%' }}><h5 style={{ textAlign: 'left', whiteSpace: 'pre', fontSize: 17, lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>{this.getDesc()}</h5></div>
+                <div style={{ width: '80%' }}>
+                  <h5
+                    style={{
+                      textAlign: 'left',
+                      fontSize: 17,
+                      lineHeight: 1.4,
+                      whiteSpace: 'pre-wrap',
+                    }}
+                  >
+                    {this.getDesc()}
+                  </h5>
+                </div>
                 <br />
               </center>
-              {
-                !isPendingCart &&
-                <a
-                  className="button"
+              {!isPendingCart && (
+                <button
+                  className='button'
                   style={{
-                    width: "100%",
+                    width: '100%',
                     marginTop: 10,
                     borderRadius: 5,
                     height: 50,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textDecoration: 'underline',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
                   }}
-                  // data-dismiss="modal"
-                  // href="/#/history"
                   onClick={() => {
                     try {
                       document
-                        .getElementById("close-modal-permission-payment")
+                        .getElementById('close-modal-permission-payment')
                         .click();
-                      this.props.history.push("/history");
-                      // // this.props.handleSettle()
-                      // console.log(this.props);
-                      // this.props.history.push("/history");
-                    } catch (e) { }
+                      this.props.history.push('/history');
+                    } catch (e) {
+                      throw e;
+                    }
                   }}
                 >
                   Continue
-                </a>
-              }
+                </button>
+              )}
             </div>
           </div>
         </div>

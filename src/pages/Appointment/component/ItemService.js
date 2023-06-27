@@ -3,6 +3,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
 import DetailAppointment from './DetailAppointment';
 import filterImage from '../style/styles.module.css';
+import calendarIcon from 'assets/images/calendarIcon.png';
+import { convertTimeToStr } from 'helpers/appointmentHelper';
 
 const ItemService = ({
   item,
@@ -11,22 +13,11 @@ const ItemService = ({
   isCheckedService,
   productId,
   handleCurrency,
+  selectedLocation,
   settingAppoinment,
 }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const color = useSelector((state) => state.theme.color);
-
-  const convertTimeToStr = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
-    } else if (minutes > 0) {
-      return `${minutes}mins`;
-    } else {
-      return '';
-    }
-  };
 
   const localStyle = {
     container: {
@@ -37,11 +28,8 @@ const ItemService = ({
       marginBottom: '15px',
     },
     containerImg: {
-      display: 'flex',
-      justifyContent: 'center',
-      paddingLeft: '5px',
       marginTop: '5px',
-      width: '100%',
+      width: '95%',
       height: '50px',
     },
     containerLabel: {
@@ -71,12 +59,13 @@ const ItemService = ({
     },
     gridContainerBottom: {
       display: 'grid',
-      gridTemplateColumns: '130px 1fr 90px',
+      gridTemplateColumns: item?.cutPrice ? '90px 1fr 90px' : '100px 1fr 90px',
       gridTemplateRows: '1fr',
       gap: '0px 0px',
       gridAutoFlow: 'row',
       gridTemplateAreas: '". . ."',
       marginTop: '15px',
+      alignItems: 'center',
     },
     subContainerGrid: {
       width: '100%',
@@ -90,7 +79,7 @@ const ItemService = ({
     containerCutPrice: {
       justifySelf: 'end',
       display: 'flex',
-      fontSize: '14px',
+      fontSize: item?.cutPrice ? '12px' : '14px',
       labelPrice: { fontWeight: 600, color: color.primary },
       labelCutPrice: {
         marginLeft: '5px',
@@ -101,7 +90,7 @@ const ItemService = ({
     },
     containerPrice: {
       justifySelf: 'end',
-      fontSize: '14px',
+      fontSize: item?.cutPrice ? '12px' : '16px',
       labelPrice: { fontWeight: 600, color: color.primary },
     },
     button: {
@@ -111,10 +100,11 @@ const ItemService = ({
       justifyContent: 'center',
       labelButton: {
         width: '100%',
-        borderRadius: '5px',
-        fontSize: '14px',
-        fontWeight: 500,
+        borderRadius: '8px',
+        fontSize: '12px',
+        fontWeight: 600,
         color: 'white',
+        padding: '8px 16px',
       },
     },
     containerUnavailable: {
@@ -203,7 +193,7 @@ const ItemService = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '70px 1fr',
+              gridTemplateColumns: '52px 1fr',
               gridTemplateRows: '1fr',
               gridAutoColumns: '1fr',
               gap: '0px 0px',
@@ -214,8 +204,14 @@ const ItemService = ({
             <div style={localStyle.containerImg}>
               <img
                 className={filterImage.filter}
-                src={item.defaultImageURL}
-                style={{ borderRadius: '10px' }}
+                src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
+                style={{
+                  borderRadius: '10px',
+                  width: '48px',
+                  height: '48px',
+                  objectFit: 'cover',
+                }}
+                alt='icon'
               />
             </div>
             <div style={localStyle.containerUnavailable}>
@@ -223,25 +219,27 @@ const ItemService = ({
                 {item.name}
               </div>
               <table>
-                <tr>
-                  <td
-                    style={{
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                      fontSize: '12px',
-                      color: 'rgba(183, 183, 183, 1)',
-                      fontWeight: 500,
-                      lineHeight: '18px',
-                    }}
-                  >
-                    {item.description}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                        fontSize: '12px',
+                        color: 'rgba(183, 183, 183, 1)',
+                        fontWeight: 500,
+                        lineHeight: '18px',
+                      }}
+                    >
+                      {item.description}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -285,7 +283,7 @@ const ItemService = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '70px 1fr',
+              gridTemplateColumns: '52px 1fr',
               gridTemplateRows: '1fr',
               gridAutoColumns: '1fr',
               gap: '0px 0px',
@@ -296,9 +294,13 @@ const ItemService = ({
           >
             <div style={localStyle.containerImg}>
               <img
-                src={item.defaultImageURL}
+                alt='icon'
+                src={item.defaultImageURL ? item.defaultImageURL : calendarIcon}
                 style={{
                   borderRadius: '10px',
+                  width: '48px',
+                  height: '48px',
+                  objectFit: 'cover',
                 }}
               />
             </div>
@@ -312,25 +314,27 @@ const ItemService = ({
                 </div>
               </div>
               <table>
-                <tr>
-                  <td
-                    style={{
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                      fontSize: '12px',
-                      color: 'rgba(183, 183, 183, 1)',
-                      fontWeight: 500,
-                      lineHeight: '18px',
-                    }}
-                  >
-                    {item.description}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                        fontSize: '12px',
+                        color: 'rgba(183, 183, 183, 1)',
+                        fontWeight: 500,
+                        lineHeight: '18px',
+                      }}
+                    >
+                      {item.description}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -343,7 +347,7 @@ const ItemService = ({
                   alignItems: 'center',
                   backgroundColor: item.duration && `${color.primary}10`,
                   borderRadius: '15px',
-                  width: '75%',
+                  width: '100%',
                 }}
               >
                 {item.duration && <HistoryTimeIcon color={color.primary} />}
@@ -357,10 +361,10 @@ const ItemService = ({
             {item?.cutPrice ? (
               <div style={localStyle.containerCutPrice}>
                 <div style={localStyle.containerCutPrice.labelPrice}>
-                  SGD 10.00
+                  {settingAppoinment && handleCurrency(item.retailPrice)}
                 </div>
                 <div style={localStyle.containerCutPrice.labelCutPrice}>
-                  SGD 10.00
+                  {settingAppoinment && handleCurrency(item?.cutPrice)}
                 </div>
               </div>
             ) : (
@@ -390,6 +394,7 @@ const ItemService = ({
     <React.Fragment>
       <RenderItemService />
       <DetailAppointment
+        selectedLocation={selectedLocation}
         productId={productId}
         handleCurrency={handleCurrency}
         color={color}

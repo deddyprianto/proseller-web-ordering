@@ -1,8 +1,9 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import filter from 'lodash/filter';
 import indexOf from 'lodash/indexOf';
+import loadable from '@loadable/component';
 
 import config from 'config';
 
@@ -10,15 +11,18 @@ import { makeStyles } from '@material-ui/styles';
 import Box from '@mui/material/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
 import { isEmptyArray } from 'helpers/CheckEmpty';
 
-import ProductAddModal from './ProductAddModal';
-import ProductUpdateModal from './ProductUpdateModal';
 import ImageContainer from 'components/imageContainer';
+import { ProductAction } from 'redux/actions/ProductAction';
+
+const ProductAddModal = loadable(() => import('./ProductAddModal'));
+const ProductUpdateModal = loadable(() => import('./ProductUpdateModal'));
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -33,46 +37,31 @@ const useWindowSize = () => {
   return size;
 };
 
-const mapStateToProps = (state) => {
-  return {
-    basket: state.order.basket,
-    color: state.theme.color,
-    companyInfo: state.masterdata.companyInfo.data,
-    guestCheckoutCartBasket: state.guestCheckoutCart,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
-
-const Product = ({ item, ...props }) => {
+const Product = ({ item }) => {
   const [width] = useWindowSize();
+  const dispatch = useDispatch();
 
   const isUnavailable = item?.product?.orderingStatus === 'UNAVAILABLE';
+
+  const mode = useSelector((state) => state.guestCheckoutCart.mode);
+  const basket = useSelector((state) => state.order.basket);
+  const outlet = useSelector((state) => state.outlet.defaultOutlet);
+  const color = useSelector((state) => state.theme.color);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const guestCheckoutCartBasket = useSelector(
+    (state) => state.guestCheckoutCart
+  );
 
   const useStyles = makeStyles({
     image: {
       height: 100,
       filter: isUnavailable ? 'grayscale(90%)' : '',
     },
-    imageSize: {
-      height: 600 > width ? 80 : 100,
-      minWidth: 600 > width ? 80 : 100,
-      borderRadius: 5,
-      width: 80,
-    },
     typographyProductGroup: {
       fontSize: 16,
-      color: props.color.primary,
+      color: color.primary,
       lineHeight: '17px',
       fontWeight: 600,
-    },
-    typography: {
-      fontSize: 14,
-      lineHeight: '17px',
-      fontWeight: 600,
-      color: isUnavailable ? '#8A8D8E' : props.color.font,
     },
     price: {
       paddingBottom: 6,
@@ -81,13 +70,13 @@ const Product = ({ item, ...props }) => {
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '18px',
-      color: isUnavailable ? 'red' : props.color.font,
+      color: isUnavailable ? 'red' : color.font,
     },
     quantity: {
       fontSize: '7.5px',
       fontWeight: 600,
-      color: props.color.textButtonColor,
-      backgroundColor: props.color.primary,
+      color: color.textButtonColor,
+      backgroundColor: color.primary,
       height: '17px',
       lineHeight: '9px',
       width: '17px',
@@ -107,7 +96,7 @@ const Product = ({ item, ...props }) => {
       marginBottom: 0,
       fontWeight: 500,
       fontSize: '12px',
-      color: isUnavailable ? '#8A8D8E' : props.color.font,
+      color: isUnavailable ? '#8A8D8E' : color.font,
       display: '-webkit-box',
       WebkitLineClamp: 3,
       WebkitBoxOrient: 'vertical',
@@ -115,15 +104,17 @@ const Product = ({ item, ...props }) => {
     },
     button: {
       borderRadius: 5,
-      backgroundColor: isUnavailable ? '#D0D0D0' : props.color.primary,
+      backgroundColor: isUnavailable ? '#D0D0D0' : color.primary,
       '&:hover': {
         color: '#000000',
-        backgroundColor: props.color.primary,
+        backgroundColor: color.primary,
+      },
+      '&.MuiButton-root:hover': {
+        backgroundColor: '#D0D0D0',
       },
       height: '25px',
       width: width > 600 ? 100 : 80,
       display: 'flex',
-      // marginTop: 600 > width ? 100 : 0,
       marginTop: width > 600 ? 10 : 0,
     },
     textButton: {
@@ -140,12 +131,6 @@ const Product = ({ item, ...props }) => {
       height: 'auto',
       maxHeight: 180,
       width: '100%',
-    },
-    bold: {
-      fontWeight: 600,
-    },
-    mt10: {
-      marginTop: 10,
     },
     icon: {
       height: 5,
@@ -196,7 +181,20 @@ const Product = ({ item, ...props }) => {
   const [totalQty, setTotalQty] = useState(0);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
-  const mode = useSelector((state) => state.guestCheckoutCart.mode);
+  const [productDetail, setProductDetail] = useState({});
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState([]);
+
+  useEffect(() => {
+    const totalQtyProductInBasket = handleQuantityProduct();
+    setTotalQty(totalQtyProductInBasket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    item,
+    basket,
+    guestCheckoutCartBasket.data?.details,
+    guestCheckoutCartBasket.response?.details,
+  ]);
+
   const handleProductItemIds = (item) => {
     let items = [];
     if (item?.product) {
@@ -240,9 +238,9 @@ const Product = ({ item, ...props }) => {
     if (mode === 'GuestMode') {
       const productItemInBasketGuestCo = handleProductItemsInBasketGuestCo({
         basketDetails:
-          props.guestCheckoutCartBasket?.response?.details?.length >= 1
-            ? props.guestCheckoutCartBasket.response?.details
-            : props.guestCheckoutCartBasket.data?.details,
+          guestCheckoutCartBasket?.response?.details?.length >= 1
+            ? guestCheckoutCartBasket.response?.details
+            : guestCheckoutCartBasket.data?.details,
         item,
       });
 
@@ -251,7 +249,7 @@ const Product = ({ item, ...props }) => {
       });
     } else {
       const productItemInBasket = handleProductItemsInBasket({
-        basketDetails: props.basket.details,
+        basketDetails: basket.details,
         item,
       });
 
@@ -263,17 +261,8 @@ const Product = ({ item, ...props }) => {
     return totalQty;
   };
 
-  useEffect(() => {
-    const totalQtyProductInBasket = handleQuantityProduct();
-    setTotalQty(totalQtyProductInBasket);
-  }, [
-    item,
-    props.basket,
-    props.guestCheckoutCartBasket.data?.details,
-    props.guestCheckoutCartBasket.response?.details,
-  ]);
-
   const handleOpenAddModal = () => {
+    setProductDetail(item.product);
     setIsOpenAddModal(true);
   };
 
@@ -281,8 +270,19 @@ const Product = ({ item, ...props }) => {
     setIsOpenAddModal(false);
   };
 
-  const handleOpenUpdateModal = () => {
+  const handleOpenUpdateModal = async () => {
+    const temp = [...isLoadingUpdate];
+    temp[item.sequence] = true;
+    setIsLoadingUpdate(temp);
+
+    const productById = await dispatch(
+      ProductAction.getProductById({ outlet: outlet?.id }, item?.product?.id)
+    );
+
+    setProductDetail(productById);
     setIsOpenUpdateModal(true);
+    temp[item.sequence] = false;
+    setIsLoadingUpdate(temp);
   };
 
   const handleCloseUpdateModal = () => {
@@ -290,10 +290,10 @@ const Product = ({ item, ...props }) => {
   };
 
   const handleCurrency = (price) => {
-    if (props.companyInfo && price) {
-      const result = price.toLocaleString(props.companyInfo.currency.locale, {
+    if (companyInfo && price) {
+      const result = price.toLocaleString(companyInfo.currency.locale, {
         style: 'currency',
-        currency: props.companyInfo.currency.code,
+        currency: companyInfo.currency.code,
       });
 
       return result;
@@ -307,8 +307,8 @@ const Product = ({ item, ...props }) => {
       if (item?.defaultImageURL) {
         return item?.defaultImageURL;
       }
-      if (props?.color?.productPlaceholder) {
-        return props.color.productPlaceholder;
+      if (color?.productPlaceholder) {
+        return color.productPlaceholder;
       }
       return config.image_placeholder;
     }
@@ -322,6 +322,8 @@ const Product = ({ item, ...props }) => {
             image={renderImageProduct(item)}
             alt={item?.product?.name || ''}
             title={item?.product?.name}
+            width={640}
+            height={360}
           />
         </div>
         <div className={classes.itemBody}>
@@ -340,14 +342,40 @@ const Product = ({ item, ...props }) => {
     return;
   };
 
+  const handleButtonStartIcon = () => {
+    if (totalQty) {
+      return (
+        <EditIcon
+          className={classes.icon}
+          style={{
+            fontSize: 12,
+          }}
+        />
+      );
+    }
+
+    return (
+      <AddIcon
+        className={classes.icon}
+        style={{
+          fontSize: 15,
+        }}
+      />
+    );
+  };
+
   return (
-    <div className={isUnavailable ? classes.disabledProduct : ''}>
+    <div
+      id='select-item-container'
+      className={isUnavailable ? classes.disabledProduct : ''}
+    >
       {isOpenAddModal && (
         <ProductAddModal
           open={isOpenAddModal}
           width={width}
           handleClose={handleCloseAddModal}
           product={item.product}
+          productDetail={productDetail}
         />
       )}
 
@@ -357,6 +385,7 @@ const Product = ({ item, ...props }) => {
           width={width}
           handleClose={handleCloseUpdateModal}
           product={item.product}
+          productDetail={productDetail}
         />
       )}
 
@@ -400,28 +429,14 @@ const Product = ({ item, ...props }) => {
                   image={renderImageProduct(item)}
                   alt={item?.product?.name || ''}
                   title={item?.product?.name}
+                  width={640}
+                  height={360}
                 />
               </div>
               <Button
                 id='add-item-button'
                 className={classes.button}
-                startIcon={
-                  totalQty ? (
-                    <EditIcon
-                      className={classes.icon}
-                      style={{
-                        fontSize: 12,
-                      }}
-                    />
-                  ) : (
-                    <AddIcon
-                      className={classes.icon}
-                      style={{
-                        fontSize: 15,
-                      }}
-                    />
-                  )
-                }
+                startIcon={handleButtonStartIcon()}
                 onClick={() => {
                   if (totalQty) {
                     handleOpenUpdateModal();
@@ -429,11 +444,15 @@ const Product = ({ item, ...props }) => {
                     handleOpenAddModal();
                   }
                 }}
-                disabled={isUnavailable}
+                disabled={isUnavailable || !!isLoadingUpdate[item.sequence]}
               >
-                <Typography className={classes.textButton}>
-                  {totalQty ? 'Update' : 'Add'}
-                </Typography>
+                {isLoadingUpdate[item.sequence] ? (
+                  <CircularProgress size={18} sx={{ color: '#ffffff' }} />
+                ) : (
+                  <Typography className={classes.textButton}>
+                    {totalQty ? 'Update' : 'Add'}
+                  </Typography>
+                )}
               </Button>
             </div>
           </>
@@ -444,23 +463,11 @@ const Product = ({ item, ...props }) => {
 };
 
 Product.defaultProps = {
-  basket: {},
-  color: {},
-  dispatch: null,
-  productConfig: {},
-  companyInfo: {},
   item: {},
-  guestCheckoutCartBasket: {},
 };
 
 Product.propTypes = {
-  basket: PropTypes.object,
-  color: PropTypes.object,
-  companyInfo: PropTypes.object,
-  dispatch: PropTypes.func,
-  guestCheckoutCartBasket: PropTypes.object,
   item: PropTypes.object,
-  productConfig: PropTypes.object,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Product);
+export default Product;

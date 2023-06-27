@@ -1,25 +1,26 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import loadable from '@loadable/component';
 
 import Banner from 'components/banner';
 import ProductList from 'components/ProductList';
 import { useHistory } from 'react-router-dom';
 import { OutletAction } from 'redux/actions/OutletAction';
-import OutletSelection from './OutletSelection';
 
 import { PromotionAction } from 'redux/actions/PromotionAction';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
-import ModalAppointment from 'components/modalAppointment/ModalAppointment';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
-import LayoutTypeA from 'components/template/LayoutTypeA';
 import config from 'config';
+
+const LayoutTypeA = loadable(() => import('components/template/LayoutTypeA'));
+const ModalAppointment = loadable(() =>
+  import('components/modalAppointment/ModalAppointment')
+);
+const OutletSelection = loadable(() => import('./OutletSelection'));
 
 const base64 = require('base-64');
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -38,35 +39,31 @@ const useWindowSize = () => {
   return size;
 };
 
-const mapStateToProps = (state) => {
-  return {
-    setting: state.order,
-    defaultOutlet: state.outlet.defaultOutlet,
-    isLoggedIn: state.auth.isLoggedIn,
-    orderingMode: state.order.orderingMode,
-    basketGuestCo: state.guestCheckoutCart.data,
-    basket: state.order.basket,
-    color: state.theme.color,
-    product: state.product.productList,
-  };
-};
+const Home = () => {
+  const history = useHistory();
+  const [width] = useWindowSize();
+  const dispatch = useDispatch();
+  const gadgetScreen = width < 980;
+  const isEmenu = window.location.hostname.includes('emenu');
+  const isLanding = window.location.href.includes('landing');
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
+  const setting = useSelector((state) => state.order.setting);
+  const outletSelection = useSelector((state) => state.order.outletSelection);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const basketGuestCo = useSelector(
+    (state) => state.guestCheckoutCart.basketGuestCo
+  );
+  const productList = useSelector((state) => state.product.productList);
 
-const Home = ({ ...props }) => {
-  const settingAppoinment = props.setting.setting.find((items) => {
+  const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'EnableAppointment';
   });
   const [name, setName] = useLocalStorage(
     'popup_appointment',
     settingAppoinment?.settingValue
   );
-  const history = useHistory();
-  const [width] = useWindowSize();
-  const dispatch = useDispatch();
-  const gadgetScreen = width < 980;
+
   const styles = {
     root: {
       paddingBottom: 100,
@@ -74,11 +71,9 @@ const Home = ({ ...props }) => {
     rootProduct: {
       paddingLeft: gadgetScreen ? '3%' : '10%',
       paddingRight: gadgetScreen ? '3%' : '10%',
+      height: '100%',
     },
   };
-  const isEmenu = window.location.hostname.includes('emenu');
-
-  const isLanding = window.location.href.includes('landing');
 
   useEffect(() => {
     const loadData = async () => {
@@ -91,16 +86,12 @@ const Home = ({ ...props }) => {
       const outletId = keyDecodedSplit[1];
 
       if (outletId) {
-        const outletById = await props.dispatch(
-          OutletAction.getOutletById(outletId)
-        );
+        const outletById = await dispatch(OutletAction.getOutletById(outletId));
 
-        await props.dispatch(OutletAction.setDefaultOutlet(outletById));
+        await dispatch(OutletAction.setDefaultOutlet(outletById));
 
         if (outletById.orderingStatus === 'UNAVAILABLE') {
-          const settings = await props.dispatch(
-            OrderAction.getSettingOrdering()
-          );
+          const settings = await dispatch(OrderAction.getSettingOrdering());
           const primaryColor = settings.settings.find((items) => {
             return items.settingKey === 'PrimaryColor';
           });
@@ -114,43 +105,56 @@ const Home = ({ ...props }) => {
     if (isLanding) {
       loadData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.location.href, isLanding]);
 
   useEffect(() => {
     if (name) {
       setName(true);
     }
-  }, [props.setting]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setting]);
 
   useEffect(() => {
     if (
-      isEmptyObject(props.defaultOutlet) ||
-      (props.defaultOutlet.orderingStatus === 'UNAVAILABLE' && !isLanding)
+      isEmptyObject(defaultOutlet) ||
+      (defaultOutlet.orderingStatus === 'UNAVAILABLE' && !isLanding)
     ) {
       history.push('/outlets');
     }
-  }, [props.defaultOutlet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultOutlet]);
 
   useEffect(() => {
     const loadData = async () => {
-      // TODO: need explain for this
-      await props.dispatch(PromotionAction.fetchPromotion());
+      await dispatch(PromotionAction.fetchPromotion());
     };
     loadData();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    props.dispatch({
+    dispatch({
       type: 'SAVE_DETAIL_TOP_UP_SVC',
       payload: {},
     });
-    props.dispatch({ type: 'INDEX_VOUCHER', payload: {} });
-  }, []);
+    dispatch({ type: 'INDEX_VOUCHER', payload: {} });
+  }, [dispatch]);
 
   useEffect(() => {
     const isOfflineCartGuestCO = JSON.parse(
       localStorage.getItem('BASKET_GUESTCHECKOUT')
     );
+    const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+
+    const fetchBasket = async () => {
+      if (idGuestCheckout) {
+        await dispatch(
+          OrderAction.getCartGuestMode(`guest::${idGuestCheckout}`)
+        );
+      }
+    };
+
+    fetchBasket();
 
     const saveGuestCheckoutOfflineCart = async () => {
       Swal.showLoading();
@@ -167,12 +171,12 @@ const Home = ({ ...props }) => {
         text: 'We are saving your previous Cart!',
       });
     };
-    const isBasketEmpty = props.basketGuestCo.message === 'Cart it empty.';
+    const isBasketEmpty = basketGuestCo?.message === 'Cart it empty.';
 
     const isOfflineCartGuestCOExist =
       isOfflineCartGuestCO &&
       isOfflineCartGuestCO?.message !== 'Cart it empty.' &&
-      props.isLoggedIn;
+      isLoggedIn;
 
     if (isBasketEmpty) {
       dispatch({
@@ -184,6 +188,7 @@ const Home = ({ ...props }) => {
     if (isOfflineCartGuestCOExist) {
       saveGuestCheckoutOfflineCart();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const renderProductListOrOutletSelection = () => {
@@ -191,29 +196,26 @@ const Home = ({ ...props }) => {
       JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
     );
 
-    if (
-      props.setting.outletSelection === 'MANUAL' &&
-      !props.defaultOutlet?.id &&
-      !isEmenu
-    ) {
-      return <OutletSelection />;
-    } else if (infoCompany?.companyName === 'PinkCity') {
+    if (outletSelection === 'MANUAL' && !defaultOutlet?.id && !isEmenu) {
       return (
-        <div style={styles.rootProduct}>
-          <Banner />
-          <LayoutTypeA />
+        <div style={{ height: '100%' }}>
+          <OutletSelection />
         </div>
       );
     } else {
       return (
         <div style={styles.rootProduct}>
-          <Banner />
-          <ProductList />
-          {!isEmptyArray(props.product) && (
+          <Banner outletId={defaultOutlet?.id || 0} />
+          {infoCompany?.companyName === 'PinkCity' ? (
+            <LayoutTypeA />
+          ) : (
+            <ProductList />
+          )}
+          {!isEmptyArray(productList) && (
             <ModalAppointment
               name={name}
               setName={setName}
-              isLoggedIn={props.isLoggedIn}
+              isLoggedIn={isLoggedIn}
             />
           )}
         </div>
@@ -241,16 +243,4 @@ const Home = ({ ...props }) => {
   return <div style={styles.root}>{renderProductListOrOutletSelection()}</div>;
 };
 
-Home.defaultProps = {
-  defaultOutlet: {},
-  setting: {},
-  dispatch: null,
-};
-
-Home.propTypes = {
-  defaultOutlet: PropTypes.object,
-  dispatch: PropTypes.func,
-  setting: PropTypes.object,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;

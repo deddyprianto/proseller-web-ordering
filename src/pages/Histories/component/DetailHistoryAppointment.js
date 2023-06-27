@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useSelector } from 'react-redux';
-import fontStyles from '../style/styles.module.css';
+import { useSelector, useDispatch } from 'react-redux';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import Swal from 'sweetalert2';
+
 import { isEmptyArray } from 'helpers/CheckEmpty';
+import fontStyles from '../style/styles.module.css';
+import {
+  convertTimeToStr,
+  convertFormatDate,
+  phonePrefixFormatter,
+} from 'helpers/appointmentHelper';
+import { OutletAction } from 'redux/actions/OutletAction';
+import { isEmpty } from 'helpers/utils';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import ModalDetailHistory from 'components/history/ModalDetailHistory';
+import { HistoryAction } from 'redux/actions/HistoryAction';
 
 const DetailHistoryAppointment = ({
   setIsOpenModalDetail,
@@ -10,65 +28,21 @@ const DetailHistoryAppointment = ({
   handleCurrency,
   tabName,
   settingAppoinment,
+  isOpenModalDetail,
 }) => {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const color = useSelector((state) => state.theme.color);
-  // some fn
+  const setting = useSelector((state) => state.order.setting);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
 
-  const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+  const [detailData, setDetailData] = useState({});
 
-    // Create the formatted string
-    if (hours > 0) {
-      return `${hours}h ${minutes}min`;
-    } else if (minutes > 0) {
-      return `${minutes}min`;
-    } else {
-      return '';
-    }
-  };
-
-  const convertFormatDate = (dateStr) => {
-    // Create a Date object from the date string
-    const date = new window.Date(dateStr);
-    // Define an array of month names
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    // Get the month name and day of the month as numbers
-    const monthName = months[date.getMonth()];
-    const dayOfMonth = date.getDate();
-
-    // Determine the suffix for the day of the month
-    let daySuffix;
-    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
-      daySuffix = 'st';
-    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
-      daySuffix = 'nd';
-    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
-      daySuffix = 'rd';
-    } else {
-      daySuffix = 'th';
-    }
-
-    // Create the formatted date string
-    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
-
-    return formattedDate;
-  };
+  const additionInfoBookSummarySetting = setting.find((items) => {
+    return items.settingKey === 'AdditionalInfoBookingSummaryText';
+  });
 
   const styleSheet = {
     container: {
@@ -95,52 +69,56 @@ const DetailHistoryAppointment = ({
       gridTemplateAreas: '". . ."',
       cursor: 'pointer',
     },
-    paper: {
-      maxHeight: 500,
-      overflow: 'auto',
-      backgroundColor: 'white',
-    },
-    categoryName: {
-      color: 'gray',
-      fontSize: '15px',
-      fontWeight: 500,
-      textTransform: 'capitalize',
-    },
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-    },
-    indicator: {
-      '& .MuiTabScrollButton-root': {
+    modalModif: {
+      '&.MuiTypography-root': {
         padding: 0,
         margin: 0,
-        width: 15,
+        marginTop: '10px',
+        marginBottom: '10px',
       },
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    indicatorForMobileView: {
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
+      '&.MuiDialogContent-root': {
+        padding: 0,
+        margin: 0,
       },
     },
-    inputDropdown: {
-      '&.MuiSelect-select': {
-        border: 'none',
-      },
-    },
+  };
+
+  const handleContactUs = async () => {
+    const currentOutlet = await dispatch(
+      OutletAction.getOutletById(item?.outlet?.id)
+    );
+
+    let phoneNumber = currentOutlet?.phoneNo;
+
+    if (isNaN(phoneNumber?.charAt(0))) {
+      phoneNumber = phoneNumber?.slice(1);
+    }
+
+    if (
+      phoneNumber?.charAt(0) === '0' &&
+      ![62, 65, 60].some((code) => phoneNumber.startsWith(code.toString()))
+    ) {
+      const phonePrefix = phonePrefixFormatter(currentOutlet?.countryCode);
+      phoneNumber = phonePrefix + phoneNumber.slice(1);
+    }
+
+    if (!isEmpty(phoneNumber)) {
+      const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+      return window.open(url, '_blank');
+    } else {
+      Swal.fire({
+        title: `<p style='padding-top: 10px'>Contact Number Not Available</p>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>Sorry, the contact number is not available right now. Please, try again later.</h5>`,
+        allowOutsideClick: false,
+        confirmButtonColor: color?.primary,
+        width: '40em',
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
+          container: fontStyles.swalContainer,
+        },
+      });
+    }
   };
 
   const RenderHeader = () => {
@@ -148,7 +126,6 @@ const DetailHistoryAppointment = ({
       <div
         style={{
           ...styleSheet.gridStyle,
-          marginTop: '25px',
           alignItems: 'center',
           justifyItems: 'center',
         }}
@@ -324,7 +301,7 @@ const DetailHistoryAppointment = ({
                   fontSize: '14px',
                 }}
               >
-                {item.serviceTime?.start} - {item.serviceTime?.end}
+                {item.serviceTime?.start}
               </div>
             </div>
             <div>
@@ -439,6 +416,7 @@ const DetailHistoryAppointment = ({
           </div>
           {item.details.map((item) => (
             <div
+              key={item.id}
               style={{
                 marginTop: '10px',
                 width: '100%',
@@ -493,18 +471,16 @@ const DetailHistoryAppointment = ({
             <div
               style={{
                 fontWeight: 600,
-                fontSize: '13px',
                 color: 'black',
               }}
             >
-              Estimated Duration
+              Estimated {settingAppoinment ? 'Price' : 'Duration'}
             </div>
             <div
               style={{
                 fontWeight: 'bold',
                 justifySelf: 'self-end',
                 color: color.primary,
-                fontSize: '14px',
               }}
             >
               {settingAppoinment
@@ -517,98 +493,48 @@ const DetailHistoryAppointment = ({
     );
   };
   const Information = () => {
-    if (tabName === 'COMPLETED') {
-      return null;
-    } else {
-      return (
-        <div
-          className={fontStyles.myFont}
-          style={{
-            width: '93%',
-            margin: 'auto',
-            marginTop: '10px',
-            backgroundColor: `${color.primary}10`,
-            borderRadius: '20px',
-            padding: '15px 0px',
-          }}
-        >
-          <div style={{ width: '90%', margin: 'auto' }}>
-            <div
-              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
-            >
-              Information
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'black' }}>
-              Price & Payment
-            </div>
-            <ul
-              style={{
-                fontSize: '14px',
-                color: 'black',
-                margin: 0,
-                marginLeft: '25px',
-                fontWeight: 500,
-              }}
-            >
-              <li>Price above is estimation cannot be used as a reference</li>
-              <li>This booking can be paid at outlet</li>
-              <li>We only accept cashless payment</li>
-            </ul>
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 600,
-                marginTop: '10px',
-                color: 'black',
-              }}
-            >
-              Appointment
-            </div>
-            <ul
-              style={{
-                fontSize: '14px',
-                color: 'black',
-                margin: 0,
-                marginLeft: '25px',
-                fontWeight: 500,
-              }}
-            >
-              <li>Please come 10 minutes before the appointment</li>
-              <li>Wearing mask is a must</li>
-            </ul>
-            {tabName === 'ONGOING' && (
-              <React.Fragment>
-                <div
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    marginTop: '10px',
-                    color: 'black',
-                  }}
-                >
-                  Cancellation Policy
-                </div>
-                <ul
-                  style={{
-                    fontSize: '14px',
-                    color: 'black',
-                    margin: 0,
-                    marginLeft: '25px',
-                    fontWeight: 500,
-                  }}
-                >
-                  <li>
-                    If you need to make any changes to your reservation, please
-                    contact us at least 24 hours in advance.
-                  </li>
-                </ul>
-              </React.Fragment>
-            )}
+    return (
+      <div
+        className={fontStyles.myFont}
+        style={{
+          width: '93%',
+          margin: 'auto',
+          marginTop: '10px',
+          backgroundColor: `${color.primary}10`,
+          borderRadius: '20px',
+          padding: '15px 0px',
+          marginBottom: tabName === 'CANCELLED' ? '10px' : 0,
+        }}
+      >
+        <div style={{ width: '90%', margin: 'auto' }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
+            Information
           </div>
+          <div
+            style={{
+              color: 'black',
+              fontWeight: 500,
+              fontSize: '14px',
+              marginTop: '10px',
+            }}
+            dangerouslySetInnerHTML={{
+              __html: additionInfoBookSummarySetting?.settingValue,
+            }}
+          />
         </div>
-      );
+      </div>
+    );
+  };
+
+  const handleViewOrderDetail = async () => {
+    const refId = item.transactionId;
+    if (!isEmpty(refId)) {
+      const data = await dispatch(HistoryAction.getTransactionById(refId));
+
+      setDetailData(data);
     }
   };
+
   const ButtonPrice = () => {
     if (tabName === 'CANCELLED') {
       return null;
@@ -617,23 +543,20 @@ const DetailHistoryAppointment = ({
         <div
           style={{
             width: '93%',
-            margin: 'auto',
+            margin: '10px 0',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gridTemplateRows: '1fr',
             gridAutoColumns: '1fr',
             gap: '0px 10px',
             gridAutoFlow: 'row',
-            marginTop: '20px',
           }}
         >
           <div
+            onClick={() => handleContactUs()}
             className={fontStyles.myFont}
             style={{
               width: '100%',
-
-              margin: 'auto',
-              marginBottom: '20px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -650,10 +573,11 @@ const DetailHistoryAppointment = ({
           </div>
           <div
             className={fontStyles.myFont}
+            data-toggle='modal'
+            data-target='#detail-transaction-modal'
+            onClick={() => handleViewOrderDetail()}
             style={{
               width: '100%',
-              margin: 'auto',
-              marginBottom: '20px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -672,11 +596,11 @@ const DetailHistoryAppointment = ({
     } else {
       return (
         <div
+          onClick={() => handleContactUs()}
           className={fontStyles.myFont}
           style={{
             width: '93%',
             margin: 'auto',
-            marginBottom: '20px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -706,7 +630,6 @@ const DetailHistoryAppointment = ({
             margin: 'auto',
             fontWeight: 500,
             color: 'black',
-            marginTop: '40px',
             marginBottom: '10px',
             lineHeight: '20px',
           }}
@@ -829,19 +752,42 @@ const DetailHistoryAppointment = ({
     }
   };
   return (
-    <React.Fragment>
-      <RenderHeader />
-      <RenderNotify />
-      <RenderIDBooking />
-      <BookingDetail />
-      <BookingNotes />
-      <RenderHr />
-      <ServiceDetail />
-      <RenderPoints />
-      <Information />
-      <RenderTextNotif />
-      <ButtonPrice />
-    </React.Fragment>
+    <Dialog
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth='md'
+      open={isOpenModalDetail}
+      onClose={() => setIsOpenModalDetail(false)}
+      disableEnforceFocus
+    >
+      <DialogTitle sx={styleSheet.modalModif}>
+        <RenderHeader />
+      </DialogTitle>
+      <DialogContent sx={styleSheet.modalModif}>
+        <ModalDetailHistory
+          detail={detailData}
+          countryCode={companyInfo?.countryCode}
+        />
+        <RenderNotify />
+        <RenderIDBooking />
+        <BookingDetail />
+        <BookingNotes />
+        <RenderHr />
+        <ServiceDetail />
+        <RenderPoints />
+        <Information />
+      </DialogContent>
+
+      <DialogActions
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <RenderTextNotif />
+        <ButtonPrice />
+      </DialogActions>
+    </Dialog>
   );
 };
 

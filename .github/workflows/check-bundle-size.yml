@@ -1,0 +1,35 @@
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+name: relative-CI
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - uses: hmarr/debug-action@v2
+
+      # Install dependencies
+      - run: yarn
+
+      # Build and output webpack stats to artifacts/webpack-stats.json
+      - run: yarn build --stats
+
+      # Send bundle stats and build information to RelativeCI
+      - name: Send bundle stats to RelativeCI
+        uses: relative-ci/agent-action@v2
+        with:
+          webpackStatsFile: ./build/bundle-stats.json
+          key: ${{ secrets.RELATIVE_CI_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}

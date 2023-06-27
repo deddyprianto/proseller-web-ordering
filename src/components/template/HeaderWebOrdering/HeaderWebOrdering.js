@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, withRouter, useHistory, useLocation } from 'react-router-dom';
@@ -9,14 +8,14 @@ import Typography from '@mui/material/Typography';
 import PlaceIcon from '@mui/icons-material/Place';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ShoppingBasket from '@mui/icons-material/ShoppingBasket';
-import { CONSTANT } from '../../../helpers';
+
 import config from '../../../config';
 import { OutletAction } from '../../../redux/actions/OutletAction';
 import LoginRegister from '../../login-register';
 import useMobileSize from 'hooks/useMobileSize';
 import Sidebar from './components/Sidebar';
 import { getLogoInfo } from '../../../redux/actions/LogoAction';
-import ImageContainer from 'components/imageContainer';
+import ImageContainer from 'components/imageContainer/ImageContainer';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = (location) => {
@@ -44,7 +43,8 @@ const useStyles = (location) => {
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
-        location.pathname === '/cart'
+        location.pathname === '/cart' ||
+        location.pathname === '/inboxdetail'
           ? 'transparent'
           : '#f2f2f2',
       paddingTop:
@@ -76,7 +76,8 @@ const useStyles = (location) => {
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
-        location.pathname === '/cart'
+        location.pathname === '/cart' ||
+        location.pathname === '/inboxdetail'
           ? '45%'
           : '80%',
       backgroundColor: '#f2f2f2',
@@ -113,7 +114,6 @@ const useStyles = (location) => {
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 0,
-      width: '50%',
     },
     childList: {
       paddingTop: '1rem',
@@ -168,7 +168,6 @@ const useStyles = (location) => {
     },
     logoAndOuletName: {
       width: mobileSize ? '97px' : '9.5em',
-      height: 50,
       marginBottom: mobileSize ? 0 : '10px',
     },
   };
@@ -188,10 +187,11 @@ const HeaderWebOrdering = () => {
   const [logo, setLogo] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [basketLength, setBasketLength] = useState(0);
+  const [appointmentMenu, setAppointmentMenu] = useState(false);
   const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.auth);
-  const { defaultOutlet, outlets } = useSelector((state) => state.outlet);
+  const { defaultOutlet } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
   const [mode, setMode] = useState();
   const [guessCheckout, setGuessCheckout] = useState();
@@ -199,6 +199,20 @@ const HeaderWebOrdering = () => {
     (state) => state.guestCheckoutCart.response
   );
   const data = useSelector((state) => state.guestCheckoutCart.data);
+
+  const isGuestMode = localStorage.getItem('settingGuestMode');
+  const encryptedInfoCompany = localStorage.getItem(
+    `${config.prefix}_infoCompany`
+  );
+
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue) {
+      setAppointmentMenu(settingAppoinment.settingValue);
+    }
+  }, [setting]);
 
   useEffect(() => {
     const enableOrderingChecker = () => {
@@ -213,11 +227,10 @@ const HeaderWebOrdering = () => {
   }, [allState]);
 
   useEffect(() => {
-    const isGuestMode = localStorage.getItem('settingGuestMode');
     if (isGuestMode === 'GuestMode') {
       setMode(isGuestMode);
     }
-  }, [localStorage.getItem('settingGuestMode')]);
+  }, [isGuestMode]);
 
   useEffect(() => {
     const settingGuestCheckout = setting.find((items) => {
@@ -260,9 +273,7 @@ const HeaderWebOrdering = () => {
   };
 
   useEffect(() => {
-    const infoCompany = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
-    );
+    const infoCompany = encryptor.decrypt(JSON.parse(encryptedInfoCompany));
     const logoCompany = setting.find((items) => {
       return items.settingKey === 'Logo';
     });
@@ -270,7 +281,8 @@ const HeaderWebOrdering = () => {
     setCompanyName(infoCompany?.companyName);
     handleLogo(infoCompany, logoCompany);
     handleUpdateEnableOrdering(setEnableOrdering);
-  }, [setting, localStorage.getItem(`${config.prefix}_infoCompany`)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setting, encryptedInfoCompany]);
 
   useEffect(() => {
     if (history.location.pathname === '/') {
@@ -372,6 +384,15 @@ const HeaderWebOrdering = () => {
       );
     }
   };
+  const linkAppoinment = () => {
+    if (isLoggedIn && appointmentMenu) {
+      return (
+        <ListItem>
+          <Link to='/appointment'>Booking</Link>
+        </ListItem>
+      );
+    }
+  };
   const linkHistory = () => {
     if (isLoggedIn) {
       return (
@@ -426,7 +447,7 @@ const HeaderWebOrdering = () => {
   };
 
   const renderBasket = () => {
-    if (enableOrdering) {
+    if (enableOrdering && location.pathname !== '/outlets') {
       return (
         <Link
           id='cart-icon'
@@ -478,21 +499,16 @@ const HeaderWebOrdering = () => {
         justifyContent: 'center',
       }}
     >
-      {logo && (
-        <Link style={styles.logoAndOuletName} to='/'>
-          <ImageContainer image={logo} />
-          {/* <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <img style={styles.logoAndOuletName} src={logo} />
-          </div> */}
-        </Link>
-      )}
+      <Link
+        style={{
+          ...styles.logoAndOuletName,
+          visibility: logo ? 'visible' : 'hidden',
+          height: logo ? 50 : 0,
+        }}
+        to='/'
+      >
+        <ImageContainer image={logo} fetchpriority='high' />
+      </Link>
       {renderOutletNamed()}
     </div>
   );
@@ -504,6 +520,7 @@ const HeaderWebOrdering = () => {
           {linkTrackOrder()}
           {linkProfile()}
           {linkHistory()}
+          {linkAppoinment()}
           {linkInbox()}
           {linkVoucher()}
           {linkLogout()}
@@ -546,7 +563,6 @@ const HeaderWebOrdering = () => {
     );
   };
 
-  const onLogoImageLoaded = ({ img }) => {};
   return (
     <>
       <span

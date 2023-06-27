@@ -1,34 +1,115 @@
-import React, { useLayoutEffect, useState, createRef } from 'react';
-import { useSelector } from 'react-redux';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import fontStyles from './style/styles.module.css';
+import React, { useState, createRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Paper from '@mui/material/Paper';
+import Swal from 'sweetalert2';
+import { useHistory } from 'react-router-dom';
 
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
+import fontStyles from './style/styles.module.css';
+import loader from './style/styles.module.css';
+import { OrderAction } from 'redux/actions/OrderAction';
+import AppointmentHeader from 'components/appointmentHeader';
+import {
+  convertTimeToStr,
+  convertFormatDate,
+  phonePrefixFormatter,
+} from 'helpers/appointmentHelper';
+import { CONSTANT } from 'helpers';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
+import { isEmptyObject } from 'helpers/CheckEmpty';
+import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { OutletAction } from 'redux/actions/OutletAction';
+import { isEmpty } from 'helpers/utils';
+import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import useWindowSize from 'hooks/useWindowSize';
 
 const BookingConfirm = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const ref = createRef();
-  const [width] = useWindowSize();
+  const { width } = useWindowSize();
   const gadgetScreen = width < 980;
+  const useStyles = makeStyles(() => ({
+    paper: { minWidth: '350px', overflow: 'hidden' },
+  }));
+  const classes = useStyles();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingDeleteCart, setIsLoadingDeleteCart] = useState(false);
+  const [locationKeys, setLocationKeys] = useState([]);
   const setting = useSelector((state) => state.order.setting);
-  const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  const responseSubmit = useSelector(
-    (state) => state.appointmentReducer.responseSubmit
+  const date = useSelector((state) => state.appointmentReducer.date);
+  const time = useSelector((state) => state.appointmentReducer.time);
+  const staff = useSelector((state) => state.appointmentReducer.staffID);
+  const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
+  const cartSave = useSelector((state) => state.appointmentReducer.cartSave);
+  const isOpenModalLeavePage = useSelector(
+    (state) => state.appointmentReducer.isOpenModalLeavePage
   );
-  // some fn
+  const menuSidebar = useSelector((state) => state.theme.menu);
+  const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
+  useEffect(() => {
+    return history.listen((location) => {
+      if (history.action === 'PUSH') {
+        setLocationKeys([location.pathname]);
+        if (
+          location.pathname !== '/appointment' &&
+          !isEmptyObject(cartAppointment)
+        ) {
+          dispatch({
+            type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+            payload: true,
+          });
+          history.replace('/bookingconfirm');
+        }
+      }
+    });
+  }, [cartAppointment, locationKeys, dispatch, history]);
+
+  const handleButtonSure = async () => {
+    if (cartAppointment?.details?.length > 0) {
+      setIsLoadingDeleteCart(true);
+      await dispatch(OrderAction.deleteCartAppointment());
+      setIsLoadingDeleteCart(false);
+    }
+    dispatch({
+      type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+      payload: false,
+    });
+    let path;
+    menuSidebar.navBar.forEach((item, i) => {
+      if (i === indexPath) {
+        path = item.path;
+      }
+    });
+    localStorage.removeItem('LOCATION_APPOINTMENT_PERSISTED');
+    dispatch({ type: CONSTANT.INDEX_FOOTER, payload: indexPath });
+    window.location.href = changeFormatURl(path);
+  };
+
+  const handleConfirmButton = async () => {
+    if (date && time && staff) {
+      const payload = {
+        staffId: staff.id,
+        bookingTime: time,
+        bookingDate: date,
+        note: textNotes,
+      };
+      setIsLoading(true);
+      const data = await dispatch(OrderAction.submitCartAppointment(payload));
+      setIsLoading(false);
+      if (data.message === 'Cart submitted successfully') {
+        window.location.href = changeFormatURl('/bookingsubmitted');
+      }
+    }
+  };
   const settingAppoinmentShowPrice = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
@@ -36,56 +117,6 @@ const BookingConfirm = (props) => {
     return items.settingKey === 'EnableAdditionalInfoBookingSummary';
   });
 
-  const convertFormatDate = (dateStr) => {
-    const date = new window.Date(dateStr);
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    const monthName = months[date.getMonth()];
-    const dayOfMonth = date.getDate();
-    let daySuffix;
-    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
-      daySuffix = 'st';
-    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
-      daySuffix = 'nd';
-    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
-      daySuffix = 'rd';
-    } else {
-      daySuffix = 'th';
-    }
-
-    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
-
-    return formattedDate;
-  };
-  const SelectedOutlet = outlet.find(
-    (item) => `outlet::${item.id}` === responseSubmit.outletId
-  );
-  const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
-    if (hours > 0) {
-      return `${hours}h ${minutes}min`;
-    } else if (minutes > 0) {
-      return `${minutes}min`;
-    } else {
-      return '';
-    }
-  };
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -96,14 +127,53 @@ const BookingConfirm = (props) => {
       return result;
     }
   };
+
   const changeFormatURl = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
   };
 
+  const handleContactUs = async () => {
+    const currentOutlet = await dispatch(
+      OutletAction.getOutletById(cartSave?.outlet?.id)
+    );
+
+    let phoneNumber = currentOutlet?.phoneNo;
+
+    if (isNaN(phoneNumber?.charAt(0))) {
+      phoneNumber = phoneNumber?.slice(1);
+    }
+
+    if (
+      phoneNumber?.charAt(0) === '0' &&
+      ![62, 65, 60].some((code) => phoneNumber.startsWith(code.toString()))
+    ) {
+      const phonePrefix = phonePrefixFormatter(currentOutlet?.countryCode);
+      phoneNumber = phonePrefix + phoneNumber.slice(1);
+    }
+
+    if (!isEmpty(phoneNumber)) {
+      const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+      return window.open(url, '_blank');
+    } else {
+      Swal.fire({
+        title: `<p style='padding-top: 10px'>Contact Number Not Available</p>`,
+        html: `<h5 style='color:#B7B7B7; font-size:14px'>Sorry, the contact number is not available right now. Please, try again later.</h5>`,
+        allowOutsideClick: false,
+        confirmButtonColor: color?.primary,
+        width: '40em',
+        customClass: {
+          confirmButton: fontStyleCustom.buttonSweetAlert,
+          title: fontStyleCustom.fontTitleSweetAlert,
+          container: fontStyles.swalContainer,
+        },
+      });
+    }
+  };
+
   if (performance.getEntriesByType('navigation')[0].type === 'reload') {
-    window.location.href = '/'; // replace with the URL of your home page
+    window.location.href = '/';
   }
 
   const styleSheet = {
@@ -115,12 +185,8 @@ const BookingConfirm = (props) => {
       height: '99.3vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
+      marginTop: '10px',
     },
     gridStyle3Col: {
       display: 'grid',
@@ -132,148 +198,196 @@ const BookingConfirm = (props) => {
       cursor: 'pointer',
     },
   };
-  const Header = () => {
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '50px 1fr 50px',
-          gridTemplateRows: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          cursor: 'pointer',
-          margin: '10px',
-          marginBottom: '10px',
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <ArrowBackIosIcon
-          fontSize='large'
-          onClick={() => {
-            props.history.push('/appointment');
-          }}
-        />
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 700,
-            fontSize: '18px',
-            color: color.primary,
-          }}
-        >
-          Booking Summary
-        </p>
-      </div>
-    );
-  };
   const Timeline = () => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          marginTop: '10px',
-          marginBottom: '10px',
-          fontSize: '14px',
-          display: 'grid',
-          gridTemplateColumns: '123px 1fr 99px',
-          gridTemplateRows: '1fr',
-          gridAutoColumns: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          alignItems: 'center',
-        }}
-      >
+    if (gadgetScreen) {
+      return (
         <div
           style={{
+            width: '100%',
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            marginTop: '33px',
           }}
         >
-          <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
-            g Details
-          </div>
-          <hr
-            style={{
-              width: '36px',
-              padding: 0,
-              margin: 0,
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-            }}
-          />
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: color.primary,
-              color: 'white',
-              fontWeight: 500,
-              borderRadius: '100%',
+              width: '100%',
+              display: 'flex',
+              justifyItems: 'center',
+              alignItems: 'center',
             }}
           >
-            2
+            <div
+              style={{
+                minWidth: '66px',
+                color: 'rgba(183, 183, 183, 1)',
+                fontWeight: 500,
+              }}
+            >
+              g Details
+            </div>
+            <hr
+              style={{
+                width: '100%',
+                padding: 0,
+                margin: '0 7px',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                height: '1px',
+              }}
+            />
+            <div
+              style={{
+                minWidth: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+            <div
+              style={{
+                minWidth: '144px',
+                fontWeight: 600,
+                margin: '0 7px',
+                color: color.primary,
+                fontSize: '14px',
+              }}
+            >
+              Confirm Your Booking
+            </div>
+            <hr
+              style={{
+                width: '100%',
+                padding: 0,
+                margin: 0,
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+              }}
+            />
+            <div
+              style={{
+                minWidth: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                color: 'white',
+                borderRadius: '100%',
+                margin: '0 7px',
+              }}
+            >
+              3
+            </div>
+            <div
+              style={{
+                fontWeight: 500,
+                color: 'rgba(183, 183, 183, 1)',
+              }}
+            >
+              Fi
+            </div>
           </div>
         </div>
-
+      );
+    } else {
+      return (
         <div
           style={{
-            justifySelf: 'center',
-            fontWeight: 600,
-            margin: '0px',
-            color: color.primary,
-          }}
-        >
-          Confirm Your Booking
-        </div>
-
-        <div
-          style={{
+            width: '100%',
+            marginTop: '25px',
+            marginBottom: '10px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
           }}
         >
-          <hr
-            style={{
-              width: '36px',
-              padding: 0,
-              margin: '0px 3px',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-            }}
-          />
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-              color: 'white',
-              borderRadius: '100%',
-              fontWeight: 500,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '14px',
             }}
           >
-            3
-          </div>
-          <div
-            style={{
-              fontWeight: 500,
-              marginLeft: '4px',
-              color: 'rgba(183, 183, 183, 1)',
-            }}
-          >
-            Finis
+            <div
+              style={{
+                minWidth: '58px',
+                color: 'rgba(183, 183, 183, 1)',
+                fontWeight: 500,
+              }}
+            >
+              g Details
+            </div>
+            <hr
+              style={{
+                width: '100%',
+                padding: 0,
+                margin: '0 7px',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                height: '1px',
+              }}
+            />
+            <div
+              style={{
+                minWidth: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                borderRadius: '100%',
+              }}
+            >
+              2
+            </div>
+            <div
+              style={{
+                minWidth: '144px',
+                fontWeight: 600,
+                margin: '0 7px',
+                color: color.primary,
+                fontSize: '14px',
+              }}
+            >
+              Confirm Your Booking
+            </div>
+            <hr
+              style={{
+                width: '100%',
+                padding: 0,
+                margin: 0,
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+              }}
+            />
+            <div
+              style={{
+                minWidth: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(183, 183, 183, 1)',
+                color: 'white',
+                borderRadius: '100%',
+                margin: '0 7px',
+              }}
+            >
+              3
+            </div>
+            <div
+              style={{
+                fontWeight: 500,
+                marginLeft: '4px',
+                color: 'rgba(183, 183, 183, 1)',
+              }}
+            >
+              Fi
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
   };
 
   const BookingDetail = () => {
@@ -319,7 +433,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {convertFormatDate(responseSubmit.bookingDate)}
+                {convertFormatDate(date)}
               </div>
             </div>
             <div>
@@ -335,8 +449,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {responseSubmit.serviceTime?.start} -{' '}
-                {responseSubmit.serviceTime?.end}
+                {time}
               </div>
             </div>
             <div>
@@ -352,7 +465,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {responseSubmit.staff.name}
+                {staff.name}
               </div>
             </div>
             <div>
@@ -368,7 +481,7 @@ const BookingConfirm = (props) => {
                   fontSize: '14px',
                 }}
               >
-                {convertTimeToStr(responseSubmit?.totalDuration)}
+                {convertTimeToStr(cartSave.totalDuration)}
               </div>
             </div>
           </div>
@@ -387,7 +500,7 @@ const BookingConfirm = (props) => {
                 color: color.primary,
               }}
             >
-              {SelectedOutlet.name}
+              {cartSave.outlet.name}
             </div>
             <div
               style={{
@@ -396,7 +509,7 @@ const BookingConfirm = (props) => {
                 fontSize: '14px',
               }}
             >
-              {SelectedOutlet?.address}
+              {cartSave.outlet?.address}
             </div>
           </div>
         </div>
@@ -423,7 +536,7 @@ const BookingConfirm = (props) => {
               color: 'black',
             }}
           >
-            {responseSubmit.note ? responseSubmit.note : '-'}
+            {textNotes ? textNotes : '-'}
           </div>
         </div>
       </div>
@@ -445,8 +558,9 @@ const BookingConfirm = (props) => {
           <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
             Service Detail
           </div>
-          {responseSubmit.details.map((item) => (
+          {cartSave?.details?.map((item) => (
             <div
+              key={item.id}
               style={{
                 marginTop: '10px',
                 width: '100%',
@@ -501,23 +615,22 @@ const BookingConfirm = (props) => {
             <div
               style={{
                 fontWeight: 600,
-                fontSize: '14px',
                 color: 'black',
               }}
             >
-              Estimated Price
+              Estimated&nbsp;
+              {settingAppoinmentShowPrice?.settingValue ? 'Price' : 'Duration'}
             </div>
             <div
               style={{
                 fontWeight: 'bold',
                 justifySelf: 'self-end',
                 color: color.primary,
-                fontSize: '14px',
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
-                ? handleCurrency(responseSubmit.totalNettAmount)
-                : convertTimeToStr(responseSubmit.totalDuration)}
+                ? handleCurrency(cartSave.totalNettAmount)
+                : convertTimeToStr(cartSave.totalDuration)}
             </div>
           </div>
         </div>
@@ -544,7 +657,17 @@ const BookingConfirm = (props) => {
         >
           <div style={{ width: '90%', margin: 'auto' }}>
             <div
-              style={{ color: 'black', fontWeight: 500, fontSize: '14px' }}
+              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
+            >
+              Information
+            </div>
+            <div
+              style={{
+                color: 'black',
+                fontWeight: 500,
+                fontSize: '14px',
+                marginTop: '16px',
+              }}
               ref={ref}
               dangerouslySetInnerHTML={{
                 __html: settingTextInformation?.settingValue,
@@ -580,7 +703,7 @@ const BookingConfirm = (props) => {
               fontSize: '18px',
             }}
           >
-            {handleCurrency(responseSubmit?.totalNettAmount)}
+            {handleCurrency(cartSave.totalNettAmount)}
           </div>
         </div>
       );
@@ -592,9 +715,7 @@ const BookingConfirm = (props) => {
     if (settingAppoinmentShowPrice?.settingValue) {
       return (
         <div
-          onClick={() => {
-            window.location.href = changeFormatURl('/bookingsubmitted');
-          }}
+          onClick={handleConfirmButton}
           style={{
             width: '93%',
             margin: 'auto',
@@ -611,7 +732,11 @@ const BookingConfirm = (props) => {
             marginBottom: '5px',
           }}
         >
-          Confirm Booking
+          {isLoading ? (
+            <span className={loader.loader}></span>
+          ) : (
+            'Confirm Booking'
+          )}
         </div>
       );
     } else {
@@ -629,6 +754,7 @@ const BookingConfirm = (props) => {
             }}
           >
             <div
+              onClick={() => handleContactUs()}
               style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -646,9 +772,7 @@ const BookingConfirm = (props) => {
               Contact Us
             </div>
             <div
-              onClick={() => {
-                window.location.href = changeFormatURl('/bookingsubmitted');
-              }}
+              onClick={handleConfirmButton}
               style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -662,7 +786,11 @@ const BookingConfirm = (props) => {
                 marginBottom: '5px',
               }}
             >
-              Confirm Booking
+              {isLoading ? (
+                <span className={loader.loader}></span>
+              ) : (
+                'Confirm Booking'
+              )}
             </div>
           </div>
           <p
@@ -732,7 +860,7 @@ const BookingConfirm = (props) => {
       <div style={{ height: '80vh ', overflowY: 'auto' }}>
         <div
           style={{
-            paddingBottom: 150,
+            paddingBottom: 200,
           }}
         >
           <BookingDetail />
@@ -781,15 +909,22 @@ const BookingConfirm = (props) => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '77px 1fr',
+            gridTemplateRows: '100px 1fr',
             gridAutoColumns: '1fr',
-            gap: '0px 0px',
+            gap: '10px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '"."\n    "."',
+            paddingTop: '6px',
           }}
         >
           <div>
-            <Header />
+            <AppointmentHeader
+              color={color}
+              label='Booking Summary'
+              onBack={() =>
+                (window.location.href = changeFormatURl('/cartappointment'))
+              }
+            />
             <Timeline />
           </div>
           <RenderMainContent />
@@ -799,15 +934,23 @@ const BookingConfirm = (props) => {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <Header />
+            <div style={{ paddingLeft: '16px' }}>
+              <AppointmentHeader
+                color={color}
+                label='Booking Summary'
+                onBack={() => history.push('/appointment')}
+              />
+            </div>
             <Timeline />
             <BookingDetail />
             <BookingNotes />
             <RenderHr />
             <ServiceDetail />
             <Information />
-            <Price />
-            <ButtonPrice />
+            <div style={{ marginTop: '50px' }}>
+              <Price />
+              <ButtonPrice />
+            </div>
           </div>
         </div>
       );
@@ -815,9 +958,115 @@ const BookingConfirm = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <LoadingOverlayCustom
+      active={isLoadingDeleteCart}
+      spinner
+      text='Deleted your cart...'
+    >
       <ResponsiveLayout />
-    </React.Fragment>
+      <Dialog
+        fullWidth
+        maxWidth='xs'
+        open={isOpenModalLeavePage}
+        onClose={() =>
+          dispatch({ type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT, payload: false })
+        }
+        classes={{ paper: classes.paper }}
+      >
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          }}
+        ></div>
+        <DialogTitle
+          className={fontStyles.myFont}
+          sx={{
+            fontWeight: 600,
+            fontSize: '16px',
+            textAlign: 'center',
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          Leaving Appointment Page
+        </DialogTitle>
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            height: '2px',
+            marginTop: '16px',
+          }}
+        />
+        <div
+          className={fontStyles.myFont}
+          style={{
+            color: 'rgba(183, 183, 183, 1)',
+            fontSize: '14px',
+            textAlign: 'center',
+            fontWeight: 500,
+            lineHeight: '21px',
+          }}
+        >
+          Some booked services you have not submitted might not be saved in our
+          system. Are you sure?
+        </div>
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            height: '2px',
+            marginTop: '16px',
+          }}
+        />
+        <DialogActions
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            width: '100%',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+          }}
+        >
+          <button
+            onClick={() =>
+              dispatch({
+                type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT,
+                payload: false,
+              })
+            }
+            className={fontStyles.myFont}
+            style={{
+              backgroundColor: 'white',
+              border: `1px solid ${color.primary}`,
+              color: color.primary,
+              width: '50%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+              marginRight: '10px',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleButtonSure}
+            className={fontStyles.myFont}
+            style={{
+              color: 'white',
+              width: '50%',
+              padding: '6px 0px',
+              borderRadius: '10px',
+              fontSize: '14px',
+            }}
+          >
+            Yes, I’m Sure
+          </button>
+        </DialogActions>
+      </Dialog>
+    </LoadingOverlayCustom>
   );
 };
 

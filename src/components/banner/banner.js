@@ -16,7 +16,7 @@ import style from './pagination.scss';
 import SwiperCore, { Pagination, Navigation, Autoplay } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
-const Banner = () => {
+const Banner = ({ outletId }) => {
   const { logo } = useSelector((state) => state.getSpaceLogo);
   const [banners, setBanners] = useState([]);
 
@@ -28,12 +28,15 @@ const Banner = () => {
         'promobanners/load'
       );
       if (result) {
-        setBanners(result.data);
+        const temp = result?.data?.filter(
+          (val) => val.outlet === 'ALL' || val.outlet?.includes(outletId)
+        );
+        setBanners(temp);
       }
     };
 
     loadData();
-  }, []);
+  }, [outletId]);
 
   if (isEmptyArray(banners)) return null;
 
@@ -49,6 +52,8 @@ const Banner = () => {
           <img
             src={item.defaultImageURL}
             alt={item.name}
+            srcSet={`${item.defaultImageURL} 300w, ${item.defaultImageURL} 768w, ${item.defaultImageURL} 1280w`}
+            sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
             width='100%'
             height={300}
             style={{
@@ -68,6 +73,8 @@ const Banner = () => {
         <img
           src={item.defaultImageURL}
           alt={item.name}
+          srcSet={`${item.defaultImageURL} 300w, ${item.defaultImageURL} 768w, ${item.defaultImageURL} 1280w`}
+          sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
           width='100%'
           height={300}
           style={{

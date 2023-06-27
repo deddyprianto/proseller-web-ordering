@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-// import { Button } from "reactstrap";
 import loadable from '@loadable/component';
 import { connect } from 'react-redux';
-// import config from "../config";
 import { CampaignAction } from '../redux/actions/CampaignAction';
 
 const MySVC = loadable(() => import('../components/svc/MySVC'));
-// const BuySVC = loadable(() => import("../components/svc/BuySVC"));
 
 class StoreValueCard extends Component {
   constructor(props) {
@@ -22,10 +19,15 @@ class StoreValueCard extends Component {
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
+      size: { width: 0, height: 0 },
+      isMobileSize: false,
     };
   }
 
   componentDidMount = async () => {
+    this.updateSize();
+    window.addEventListener('resize', this.updateSize);
+
     await this.props.dispatch(
       CampaignAction.getCampaignPoints(
         { history: 'true' },
@@ -40,16 +42,30 @@ class StoreValueCard extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateSize);
+  }
+
+  updateSize = () => {
+    const { innerWidth, innerHeight } = window;
+    this.setState({ size: { width: innerWidth, height: innerHeight } });
+    this.checkMobileSize(innerWidth);
+  };
+
+  checkMobileSize = (width) => {
+    if (width < 640) {
+      this.setState({ isMobileSize: true });
+    } else {
+      this.setState({ isMobileSize: false });
+    }
+  };
+
   render() {
-    // let {isMySVC, totalPoint} = this.state;
+    let { isMobileSize } = this.state;
     return (
       <div
         className='col-full'
-        style={{
-          // marginTop: config.prefix === "emenu" ? 100 : 160,
-          marginTop: 100,
-          // marginBottom: 20,
-        }}
+        style={{ marginTop: isMobileSize ? 65 : 75, marginBottom: 10 }}
       >
         <div id='primary' className='content-area'>
           <div className='stretch-full-width'>
@@ -59,7 +75,6 @@ class StoreValueCard extends Component {
                 position: 'fixed',
                 zIndex: 10,
                 width: '100%',
-                marginTop: -40,
                 display: 'flex',
                 height: 40,
                 justifyContent: 'space-between',
@@ -73,36 +88,12 @@ class StoreValueCard extends Component {
                 </div>
               </Link>
             </div>
-            {/* <div
-              style={{
-                flexDirection: "row",
-                position: "fixed",
-                zIndex: 10,
-                width: "100%",
-                marginTop: -60,
-              }}
-            >
-              <Button
-                className={isMySVC ? "use-select" : "un-select"}
-                style={{ height: 50, fontWeight: "bold" }}
-                onClick={() => this.setState({ isMySVC: true })}
-              >
-                My SVC
-              </Button>
-              <Button
-                className={!isMySVC ? "use-select" : "un-select"}
-                style={{ height: 50, fontWeight: "bold" }}
-                onClick={() => this.setState({ isMySVC: false })}
-              >
-                Buy SVC
-              </Button>
-            </div> */}
             <main
               id='main'
               className='site-main'
               style={{ textAlign: 'center' }}
             >
-              <div style={{ marginTop: 20 }}>
+              <div style={{ paddingTop: 30 }}>
                 <MySVC history={this.props.history} />
               </div>
             </main>

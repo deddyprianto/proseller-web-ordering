@@ -9,12 +9,14 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { useHistory } from 'react-router-dom';
 import { IconDelete, IconList } from './icons/Icons';
 import calendarIcon from 'assets/images/calendarIcon.png';
+import { convertTimeToStr } from 'helpers/appointmentHelper';
 
 const ItemServiceCart = ({
   item,
   setIsLoading,
   outletID,
   settingAppoinment,
+  selectedLocation,
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -25,18 +27,7 @@ const ItemServiceCart = ({
   );
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-  // some fn
-  const convertTimeToStr = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
-    } else if (minutes > 0) {
-      return `${minutes}mins`;
-    } else {
-      return '';
-    }
-  };
+
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -240,7 +231,11 @@ const ItemServiceCart = ({
                   ? item?.product.defaultImageURL
                   : calendarIcon
               }
-              style={{ borderRadius: '10px', height: '55px' }}
+              style={{
+                borderRadius: '10px',
+                height: '55px',
+                objectFit: 'cover',
+              }}
               alt='logo'
             />
           </div>
@@ -322,7 +317,9 @@ const ItemServiceCart = ({
               {convertTimeToStr(item?.duration)}
             </div>
           </div>
-          <div>{settingAppoinment && handleCurrency(item?.grossAmount)}</div>
+          <div style={{ fontWeight: 'bold' }}>
+            {settingAppoinment && handleCurrency(item?.grossAmount)}
+          </div>
         </div>
         <hr
           style={{
@@ -337,7 +334,7 @@ const ItemServiceCart = ({
             alignItems: 'center',
             color: color.primary,
             fontWeight: 500,
-            width: '90%',
+            width: '96%',
             margin: 'auto',
             fontSize: '14px',
           }}
@@ -381,6 +378,7 @@ const ItemServiceCart = ({
       </div>
 
       <DetailAppointment
+        selectedLocation={selectedLocation}
         itemAppointment={item.product}
         productId={item.productID}
         styleSheet={styleSheet}
@@ -389,6 +387,7 @@ const ItemServiceCart = ({
         setIsOpenModalDetail={setIsOpenModalDetail}
         convertTimeToStr={convertTimeToStr}
         isOpenModalDetail={isOpenModalDetail}
+        settingAppoinment={settingAppoinment}
       />
     </React.Fragment>
   );

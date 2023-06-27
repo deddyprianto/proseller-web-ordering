@@ -61,7 +61,7 @@ const GiftVoucherModal = ({
     dispatch({
       type: 'INIT_TRANSFER_SVC',
     });
-  }, [method]);
+  }, [method, dispatch]);
 
   return (
     <div className={styles.modalContainer}>

@@ -4,6 +4,7 @@ import DetailAppointment from './DetailAppointment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import screen from 'hooks/useWindowSize';
 import filterImage from '../style/styles.module.css';
+import { convertTimeToStr } from 'helpers/appointmentHelper';
 
 const ResultSearch = ({ item, id, isCheckedService }) => {
   const responsiveDesign = screen();
@@ -13,21 +14,10 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const color = useSelector((state) => state.theme.color);
 
-  // some fn
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
-  const convertTimeToStr = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}mins` : '60mins';
-    } else if (minutes > 0) {
-      return `${minutes}mins`;
-    } else {
-      return '';
-    }
-  };
+
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -294,7 +284,8 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
               <img
                 className={filterImage.filter}
                 src={item.defaultImageURL}
-                style={{ borderRadius: '10px' }}
+                style={{ borderRadius: '10px', objectFit: 'cover' }}
+                alt='img'
               />
             </div>
             <div style={localStyle.containerUnavailable}>
@@ -378,7 +369,9 @@ const ResultSearch = ({ item, id, isCheckedService }) => {
                 src={item.defaultImageURL}
                 style={{
                   borderRadius: '10px',
+                  objectFit: 'cover',
                 }}
+                alt='img'
               />
             </div>
             <div style={localStyle.containerLabel}>

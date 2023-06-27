@@ -1,34 +1,22 @@
 import config from 'config';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
 import { HistoryAction } from 'redux/actions/HistoryAction';
 import HistoryTransaction from 'components/history/HistoryTransaction';
 import HistoryPending from 'components/history/HistoryPending';
+import useMobileSize from 'hooks/useMobileSize';
 
 const History = () => {
   const dispatch = useDispatch();
+  const mobileSize = useMobileSize();
+
   const [stateTabs, setStateTabs] = useState('ordered');
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-
-  const style = {
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-    },
-  };
+  const [appointmentFeature, setAppointmentFeature] = useState(false);
+  const setting = useSelector((state) => state.order.setting);
 
   useEffect(() => {
     const getDataBasketPending = async () => {
@@ -43,7 +31,16 @@ const History = () => {
       }
     };
     getDataBasketPending();
-  }, [stateTabs]);
+  }, [stateTabs, dispatch]);
+
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue) {
+      setAppointmentFeature(settingAppoinment.settingValue);
+    }
+  }, [setting]);
 
   useEffect(() => {
     localStorage.removeItem(`${config.prefix}_dataBasket`);
@@ -52,8 +49,17 @@ const History = () => {
   }, []);
 
   const RenderHeaderTab = () => {
+    const topAppointment = mobileSize ? '165px' : '175px';
+    const topCommon = mobileSize ? '50px' : '60px';
+
     return (
-      <div style={{ width: '100%' }}>
+      <div
+        style={{
+          width: '100%',
+          position: 'fixed',
+          top: appointmentFeature ? topAppointment : topCommon,
+        }}
+      >
         <div
           style={{
             marginTop: '15px',
@@ -80,7 +86,7 @@ const History = () => {
               lineHeight: '50px',
             }}
           >
-            Ordered
+            Order
           </div>
           <div
             onClick={() => setStateTabs('pendingorder')}
@@ -102,13 +108,19 @@ const History = () => {
 
   const RenderMain = () => {
     if (stateTabs === 'ordered') {
-      return <HistoryTransaction countryCode={companyInfo?.countryCode} />;
+      return (
+        <HistoryTransaction
+          countryCode={companyInfo?.countryCode}
+          isAppointment={appointmentFeature}
+        />
+      );
     } else if (stateTabs === 'pendingorder') {
       return (
         <HistoryPending
           dataPending={dataPending?.dataPending}
           dataPendingLength={dataPending?.dataPendingLength}
           countryCode={companyInfo?.countryCode}
+          isAppointment={appointmentFeature}
         />
       );
     }

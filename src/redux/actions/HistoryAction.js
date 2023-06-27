@@ -61,8 +61,25 @@ function getBasketPending(payload = {}) {
   };
 }
 
+function getTransactionById(transactionId) {
+  return async () => {
+    try {
+      const res = await CRMService.api(
+        'GET',
+        null,
+        `customer/sales/${transactionId}`,
+        'bearer'
+      );
+      return res.data;
+    } catch (err) {
+      return err;
+    }
+  };
+}
+
 export const HistoryAction = {
   getTransaction,
   getBasket,
   getBasketPending,
+  getTransactionById,
 };

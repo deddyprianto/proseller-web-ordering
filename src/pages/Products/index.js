@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Shimmer from 'react-shimmer-effect';
 
-import { ProductAction } from '../../redux/actions/ProductAction';
+import { ProductAction } from 'redux/actions/ProductAction';
 
-import Product from '../../components/ordering/Product';
-import SearchBox from '../../components/ordering/SearchBox';
-import UpdateProductModal from '../../components/ordering/UpdateProductModal';
-import ModalProduct from '../../components/ordering/ModalProduct';
+import Product from 'components/ProductList/components/Product';
+import SearchBox from 'components/ordering/SearchBox';
+import UpdateProductModal from 'components/ordering/UpdateProductModal';
+import ModalProduct from 'components/ordering/ModalProduct';
 
-import {
-  getInitialProductValue,
-  getFormattedPrice,
-} from '../../helpers/ProductHelper';
+import { getFormattedPrice } from 'helpers/ProductHelper';
 import useMobileSize from 'hooks/useMobileSize';
+import { isEmpty } from 'helpers/utils';
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.hostname.includes('emenu');
 
 export const Products = ({
   categories,
@@ -42,18 +38,12 @@ export const Products = ({
   const { categoryId } = useParams();
   const [categoryNotFound, setCategoryNotFound] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
-  const [productIsExistInBasket, setProductIsExistInBasket] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [isAddNewExistingProduct, setIsAddNewExistingProduct] = useState(false);
 
-  const selectProduct = (product, mode) => {
-    const initialValue = getInitialProductValue(product, mode);
-    setSelectedProduct(initialValue);
-  };
-
   useEffect(() => {
     if (selectedCategory) {
-      if (_.isEmpty(selectedOutlet)) {
+      if (isEmpty(selectedOutlet)) {
         history.push('/outlets');
       } else {
         if (setting.ShowOrderingModeModalFirst) {
@@ -76,6 +66,7 @@ export const Products = ({
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories, selectedCategory, selectedOutlet]);
 
   return (
@@ -179,33 +170,10 @@ export const Products = ({
                         <ul className='products'>
                           <div className='grid-products'>
                             {products?.map((product) => {
-                              const productInBasket =
-                                basket &&
-                                basket.details &&
-                                basket.details.find(
-                                  (item) => item.product.id === product.id
-                                );
-                              const label = productInBasket ? 'Update' : 'Add';
-                              const quantity =
-                                productInBasket && productInBasket.quantity
-                                  ? productInBasket.quantity
-                                  : 0;
                               return (
-                                <Product
-                                  labelButton={label}
-                                  quantity={quantity}
-                                  selectProduct={selectProduct}
-                                  productConfig={theme}
-                                  showUpdateModal={(item) => {
-                                    setSelectedProduct(item);
-                                    setProductIsExistInBasket(
-                                      label === 'Update'
-                                    );
-                                    setShowUpdateModal(true);
-                                  }}
-                                  key={product.id}
-                                  item={product}
-                                />
+                                <div style={{ padding: '5px 0' }}>
+                                  <Product key={product.id} item={product} />
+                                </div>
                               );
                             })}
                           </div>

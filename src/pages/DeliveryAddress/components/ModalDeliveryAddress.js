@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -137,6 +136,7 @@ const ModalDeliveryAddress = ({
     }
     setStreetName(pinnedLocation?.userLocation);
     return pinnedLocation?.userLocation;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const validationSchema = yup.object({
@@ -300,6 +300,7 @@ const ModalDeliveryAddress = ({
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values]);
 
   return (
