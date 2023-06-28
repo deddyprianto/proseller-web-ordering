@@ -160,7 +160,7 @@ const InboxDetail = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div className={customStyleFont.myFont} style={{ marginTop: 55 }}>
+        <div className={customStyleFont.myFont} style={{ marginTop: '50px' }}>
           <RenderHeader />
           <RenderContent />
         </div>

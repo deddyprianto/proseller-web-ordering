@@ -5,6 +5,8 @@ import Shimmer from 'react-shimmer-effect';
 import { Col, Row } from 'reactstrap';
 import loadable from '@loadable/component';
 import screen from 'hooks/useWindowSize';
+import { isEmptyArray } from 'helpers/CheckEmpty';
+import config from 'config';
 
 const InboxCard = loadable(() => import('../components/inbox/InboxCard'));
 
@@ -13,7 +15,6 @@ const Inbox = () => {
   const gadgetScreen = responsiveDesign.width < 980;
 
   const broadcast = useSelector((state) => state.broadcast.broadcast);
-  console.log(broadcast);
   const [loadingShow, setLoadingShow] = useState(false);
   const dispatch = useDispatch();
 
@@ -54,6 +55,17 @@ const Inbox = () => {
           </Col>
         </Row>
       );
+    } else if (isEmptyArray(broadcast?.broadcast)) {
+      return (
+        <div>
+          <img
+            src={config.url_emptyImage}
+            alt='is empty'
+            style={{ marginTop: 30 }}
+          />
+          <div style={{ textAlign: 'center' }}>Inbox is empty</div>
+        </div>
+      );
     } else {
       return (
         <Row>
@@ -73,7 +85,13 @@ const Inbox = () => {
     }
   };
   return (
-    <div style={{ marginTop: gadgetScreen ? 65 : 100, padding: '0px 16px' }}>
+    <div
+      style={{
+        marginTop: gadgetScreen ? 65 : 100,
+        padding: '0px 16px',
+        paddingBottom: 100,
+      }}
+    >
       <RenderBroadCastItem />
     </div>
   );

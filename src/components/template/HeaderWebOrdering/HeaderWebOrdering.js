@@ -53,7 +53,8 @@ const useStyles = (location) => {
         location.pathname === '/trackorder' ||
         location.pathname === '/thankyoupage' ||
         location.pathname === '/ordertrackhistory' ||
-        location.pathname === '/cart'
+        location.pathname === '/cart' ||
+        location.pathname === '/inboxdetail'
           ? '0px'
           : '8px',
       paddingBottom:
