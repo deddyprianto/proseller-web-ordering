@@ -75,7 +75,6 @@ const Inbox = () => {
               sm={6}
               data-toggle='modal'
               data-target='#detail-inbox-modal'
-              onClick={() => this.handleDetail(items)}
             >
               <InboxCard items={items} />
             </Col>

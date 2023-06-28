@@ -2,17 +2,29 @@ import React, { useEffect, useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import moment from 'moment';
 import rewards from 'assets/images/rewards.png';
-import { useSelector } from 'react-redux';
-import { isEmptyArray } from 'helpers/CheckEmpty';
+import { useSelector, useDispatch } from 'react-redux';
+import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
 import customStyleFont from '../components/inbox/css/style.module.css';
+import { InboxAction } from 'redux/actions/InboxAction';
 
 const InboxDetail = (props) => {
+  const dispatch = useDispatch();
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
 
   const color = useSelector((state) => state.theme.color);
   const [broadcastItem, setBroadcastItem] = useState({});
+
+  useEffect(() => {
+    const loadData = async () => {
+      await dispatch(InboxAction.getBroadcastByID(broadcastItem?.id));
+    };
+    if (!isEmptyObject(broadcastItem)) {
+      loadData();
+    }
+  }, [broadcastItem, dispatch]);
+
   useEffect(() => {
     const detailBroadcast = localStorage.getItem('KEY_GET_BROADCAST_DETAIL');
     setBroadcastItem(JSON.parse(detailBroadcast));
