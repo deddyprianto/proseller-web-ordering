@@ -7,7 +7,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 import fontStyles from './style/styles.module.css';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,7 +20,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
   );
   const itemOrderingMode = useSelector((state) => state.order.itemOrderingMode);
   const colorState = useSelector((state) => state.theme.color);
-  const defaultOutlet = useSelector((state) => state.order.basket.outlet);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const selectedDeliveryProvider = useSelector(
     (state) => state.order.selectedDeliveryProvider
   );
@@ -263,36 +262,33 @@ const OrderingModeDialog = ({ open, onClose }) => {
   useEffect(() => {
     const getOrderingModes = async () => {
       setIsLoading(true);
-      const data = await dispatch(
-        OutletAction?.fetchSingleOutlet(defaultOutlet)
-      );
-      if (data) {
+      if (defaultOutlet) {
         const orderingModesField = [
           {
             isEnabledFieldName: 'enableStorePickUp',
             name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
-            displayName: data.storePickUpName || null,
+            displayName: defaultOutlet.storePickUpName || null,
           },
           {
             isEnabledFieldName: 'enableDelivery',
             name: CONSTANT.ORDERING_MODE_DELIVERY,
-            displayName: data.deliveryName || null,
+            displayName: defaultOutlet.deliveryName || null,
           },
           {
             isEnabledFieldName: 'enableTakeAway',
             name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
-            displayName: data.takeAwayName || null,
+            displayName: defaultOutlet.takeAwayName || null,
           },
           {
             isEnabledFieldName: 'enableDineIn',
             name: CONSTANT.ORDERING_MODE_DINE_IN,
-            displayName: data.dineInName || null,
+            displayName: defaultOutlet.dineInName || null,
           },
         ];
         //TODO: Please remove the function after update from backend
         const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
           handleFilter(
-            data[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
+            defaultOutlet[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
           )
         );
 

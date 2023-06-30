@@ -543,6 +543,9 @@ const Cart = () => {
       );
       return isEnabled && isAllowed;
     });
+
+    setIsLoading(false);
+
     return intersectOrderingMode;
   };
 
