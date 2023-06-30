@@ -1,6 +1,6 @@
 {
   "name": "proseller-web-ordering",
-  "version": "2.6.1",
+  "version": "2.6.4",
   "homepage": "/",
   "private": true,
   "dependencies": {
