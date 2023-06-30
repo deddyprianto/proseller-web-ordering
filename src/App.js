@@ -220,7 +220,8 @@ const App = ({ version }) => {
           MasterDataAction.getOutletByID(defaultOutletTemp.id, true)
         );
       }
-      dispatch(OrderAction.getCart());
+      window.location.hash.split('#')[1] !== '/cart' &&
+        dispatch(OrderAction.getCart());
     }
   };
 

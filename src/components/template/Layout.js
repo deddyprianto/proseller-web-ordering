@@ -68,7 +68,9 @@ const Promotions = loadable(() =>
 const PromotionsDetail = loadable(() => import('../../pages/Promotions'));
 const Search = loadable(() => import('../../pages/Search'));
 const ProductSearchResult = loadable(() => import('../../pages/ProductSearch'));
-const WaitingPaymentLoading = loadable(() => import('../../pages/WaitingPaymentLoading'));
+const WaitingPaymentLoading = loadable(() =>
+  import('../../pages/WaitingPaymentLoading')
+);
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -93,8 +95,17 @@ class Layout extends Component {
     if (isLoggedIn) {
       Promise.all([
         this.props.dispatch(InboxAction.getBroadcast({ take: 5, skip: 0 })),
-        this.props.dispatch(HistoryAction.getBasketPending()),
-      ]);
+        window.location.hash.split('#')[1] !== '/cart' &&
+          this.props.dispatch(HistoryAction.getBasketPending()),
+      ]).then((res) => {
+        const basketPendingRes = res[1];
+        if (basketPendingRes) {
+          this.props.dispatch({
+            type: 'PENDING_ORDERS',
+            payload: basketPendingRes?.dataLength,
+          });
+        }
+      });
     }
 
     localStorage.setItem(

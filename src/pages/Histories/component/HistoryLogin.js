@@ -1,24 +1,33 @@
 import config from 'config';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import loadable from '@loadable/component';
 
 import { HistoryAction } from 'redux/actions/HistoryAction';
-import HistoryTransaction from 'components/history/HistoryTransaction';
-import HistoryPending from 'components/history/HistoryPending';
 import useMobileSize from 'hooks/useMobileSize';
+
+const HistoryTransaction = loadable(() =>
+  import('components/history/HistoryTransaction')
+);
+const HistoryPending = loadable(() =>
+  import('components/history/HistoryPending')
+);
 
 const History = () => {
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
 
-  const [stateTabs, setStateTabs] = useState('ordered');
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const [appointmentFeature, setAppointmentFeature] = useState(false);
   const setting = useSelector((state) => state.order.setting);
 
+  const stateTabs = window.location.hash.split('?')[1] || 'ordered';
+
   useEffect(() => {
+    let isMounted = true;
+
     const getDataBasketPending = async () => {
       let response = await dispatch(
         HistoryAction.getBasketPending({
@@ -26,11 +35,16 @@ const History = () => {
           skip: 0,
         })
       );
-      if (response.resultCode === 200) {
+      if (response.resultCode === 200 && isMounted) {
         setDataPending(response.data);
       }
     };
+
     getDataBasketPending();
+
+    return () => {
+      isMounted = false;
+    };
   }, [stateTabs, dispatch]);
 
   useEffect(() => {
@@ -47,6 +61,16 @@ const History = () => {
     localStorage.removeItem(`${config.prefix}_selectedVoucher`);
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
   }, []);
+
+  const changeFormatURl = (path) => {
+    const url = window.location.href;
+    let urlConvert = url.replace(/\/[^/]+$/, path);
+    return urlConvert;
+  };
+
+  const handleChangeTab = (type) => {
+    window.location.href = changeFormatURl(`/history?${type}`);
+  };
 
   const RenderHeaderTab = () => {
     const topAppointment = mobileSize ? '165px' : '175px';
@@ -76,7 +100,7 @@ const History = () => {
           }}
         >
           <div
-            onClick={() => setStateTabs('ordered')}
+            onClick={() => handleChangeTab('ordered')}
             style={{
               backgroundColor:
                 stateTabs === 'ordered' ? color.primary : 'white',
@@ -89,7 +113,7 @@ const History = () => {
             Order
           </div>
           <div
-            onClick={() => setStateTabs('pendingorder')}
+            onClick={() => handleChangeTab('pendingorder')}
             style={{
               backgroundColor:
                 stateTabs === 'pendingorder' ? color.primary : 'white',

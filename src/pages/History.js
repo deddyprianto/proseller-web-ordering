@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import loadable from '@loadable/component';
 
-import HistoryLogin from './Histories/component/HistoryLogin';
-import HistoryAppointment from './Histories/component/HistoryAppointment';
 import fontStyles from './Histories/style/styles.module.css';
 import { CONSTANT } from 'helpers';
 import useMobileSize from 'hooks/useMobileSize';
+
+const HistoryLogin = loadable(() =>
+  import('./Histories/component/HistoryLogin')
+);
+const HistoryAppointment = loadable(() =>
+  import('./Histories/component/HistoryAppointment')
+);
 
 const History = (props) => {
   const dispatch = useDispatch();
