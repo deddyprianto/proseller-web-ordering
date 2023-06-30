@@ -257,7 +257,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
     return () => {
       isCleanFnComponent = false;
     };
-  }, [orderingModeActive]);
+  }, [orderingModeActive, dispatch]);
 
   useEffect(() => {
     const getOrderingModes = async () => {
@@ -304,6 +304,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
       setIsLoading(false);
     };
     getOrderingModes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleConfirmOrderingMode = async (value) => {
@@ -349,6 +350,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
     return orderingModes.map((item) => {
       return (
         <div
+          id={`${item?.name?.toLowerCase()}-option`}
           onClick={() => {
             dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
             dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
@@ -447,6 +449,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           }}
         >
           <button
+            id='cancel-button'
             onClick={onClose}
             className={fontStyles.myFont}
             style={{
@@ -461,6 +464,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
             Cancel
           </button>
           <button
+            id='confirm-button'
             disabled={!orderingModeActive && true}
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}

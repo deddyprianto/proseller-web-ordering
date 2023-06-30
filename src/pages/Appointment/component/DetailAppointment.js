@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from '../style/styles.module.css';
 import FormGroup from '@mui/material/FormGroup';
-import { PhotoProvider, PhotoSlider } from 'react-photo-view';
-import 'react-photo-view/dist/react-photo-view.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import RenderModifier from './RenderModifier';
@@ -15,7 +12,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import calendarIcon from 'assets/images/calendarIcon.png';
+import AppointmentHeader from 'components/appointmentHeader';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss';
+import '../style/swiperstyle.css';
+import { Pagination, Navigation } from 'swiper';
+import Swal from 'sweetalert2';
+import { CONSTANT } from 'helpers';
 
 const DetailAppointment = ({
   isOpenModalDetail,
@@ -27,27 +30,23 @@ const DetailAppointment = ({
   productId,
   convertTimeToStr,
   settingAppoinment,
+  selectedLocation,
 }) => {
-  // initial
   const dispatch = useDispatch();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  //some state
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addService, setAddService] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
-  const [visible, setVisible] = useState(false);
   const [qty, setQty] = useState(1);
-  // some selectors
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
-  const selectedLocation = useSelector(
-    (state) => state.appointmentReducer.locationAppointment
+  const responseAddCart = useSelector(
+    (state) => state.appointmentReducer.responseAddCart
   );
-  // some functions
   const filterCart = cartAppointment?.details?.find(
     (itemCart) => itemCart.productID === productId
   );
@@ -69,12 +68,7 @@ const DetailAppointment = ({
           });
         });
         setQty(filterCart?.quantity);
-        // setNotes(filterCart?.remark);
         setSelectedProductModifiers(defaultValue);
-        // dispatch({
-        //   type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
-        //   payload: defaultValue,
-        // });
       }
     }
   };
@@ -109,25 +103,16 @@ const DetailAppointment = ({
   };
   const handleButtonCart = async () => {
     if (!isEmptyObject(filterCart)) {
-      try {
-        setIsLoading(true);
-        await dispatch(
-          OrderAction.updateCartAppointment(addService, filterCart.id)
-        );
-        setIsLoading(false);
-        setIsOpenModalDetail(false);
-      } catch (error) {
-        console.log(error);
-      }
+      setIsLoading(true);
+      await dispatch(
+        OrderAction.updateCartAppointment(addService, filterCart.id)
+      );
+      setIsLoading(false);
+      setIsOpenModalDetail(false);
     } else {
-      try {
-        setIsLoading(true);
-        await dispatch(OrderAction.addCartAppointment(addService));
-        setIsLoading(false);
-        setIsOpenModalDetail(false);
-      } catch (error) {
-        console.log(error);
-      }
+      setIsLoading(true);
+      await dispatch(OrderAction.addCartAppointment(addService));
+      setIsLoading(false);
     }
   };
   const handlePrice = (qty, totalPrice) => {
@@ -174,26 +159,52 @@ const DetailAppointment = ({
     handlePrice(qty, totalPrice);
     return productModifiers;
   };
-  // some eff
+
+  useEffect(() => {
+    if (responseAddCart?.isError) {
+      Swal.fire({
+        icon: 'info',
+        iconColor: '#333',
+        title: responseAddCart.message,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color.primary,
+        customClass: {
+          confirmButton: fontStyles.buttonSweetAlert,
+          icon: fontStyles.customIconColor,
+        },
+      }).then((res) => {
+        if (res.isConfirmed) {
+          dispatch({
+            type: CONSTANT.RESPONSEADDCART_APPOINTMENT,
+            payload: {},
+          });
+        }
+      });
+    }
+  }, [responseAddCart, color.primary, dispatch]);
+
   useEffect(() => {
     handleProductModifierSelected();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const productModifierFormated = handleProductModifierFormated(
       selectedProductModifiers
     );
-    setAddService({
-      outletId: `outlet::${selectedLocation.id}`,
-      item: {
-        productId: `product::${itemAppointment.id}`,
-        quantity: 1,
-        modifierGroups: productModifierFormated,
-      },
-    });
+    selectedLocation?.id &&
+      setAddService({
+        outletId: `outlet::${selectedLocation.id}`,
+        item: {
+          productId: `product::${itemAppointment.id}`,
+          quantity: 1,
+          modifierGroups: productModifierFormated,
+        },
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProductModifiers]);
 
-  // some .scss
   const styles = {
     radioSizeModifier: {
       '& .MuiSvgIcon-root': {
@@ -214,8 +225,7 @@ const DetailAppointment = ({
       '&.MuiTypography-root': {
         padding: 0,
         margin: 0,
-        marginTop: '10px',
-        marginBottom: '10px',
+        marginTop: '4px',
       },
       '&.MuiDialogContent-root': {
         padding: 0,
@@ -224,7 +234,27 @@ const DetailAppointment = ({
     },
   };
 
-  // COMPONENTS
+  const SwiperSlideImageCustom = ({ images }) => {
+    return (
+      <>
+        <Swiper
+          pagination={{
+            type: 'fraction',
+          }}
+          navigation={true}
+          modules={[Pagination, Navigation]}
+          className='mySwiper'
+        >
+          {images?.map((item) => (
+            <SwiperSlide>
+              <img src={item} alt='images' />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </>
+    );
+  };
+
   const HistoryTimeIcon = ({ color }) => {
     return (
       <svg
@@ -259,48 +289,10 @@ const DetailAppointment = ({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            position: 'relative',
+            width: '100%',
           }}
         >
-          <PhotoProvider>
-            <PhotoSlider
-              maskOpacity={0.5}
-              images={itemAppointment?.imageFiles.map((item) => ({
-                src: item,
-                key: item,
-              }))}
-              visible={visible}
-              onClose={() => setVisible(false)}
-            />
-          </PhotoProvider>
-          <img
-            src={
-              itemAppointment.defaultImageURL
-                ? itemAppointment.defaultImageURL
-                : calendarIcon
-            }
-            alt='myPic'
-            style={{ width: '100%', cursor: 'pointer', borderRadius: '10px' }}
-            onClick={() => setVisible(true)}
-          />
-
-          {itemAppointment?.imageFiles.length > 0 && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '6px',
-                position: 'absolute',
-                bottom: 4,
-                right: 4,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '0px 15px',
-              }}
-            >
-              <div>1/{itemAppointment?.imageFiles.length}</div>
-            </div>
-          )}
+          <SwiperSlideImageCustom images={itemAppointment?.imageFiles} />
         </div>
         <p
           style={{
@@ -318,6 +310,7 @@ const DetailAppointment = ({
             display: 'flex',
             alignItems: 'center',
             borderRadius: '15px',
+            marginTop: '5px',
           }}
         >
           {itemAppointment.duration && (
@@ -329,7 +322,7 @@ const DetailAppointment = ({
               marginLeft: '5px',
               color: 'rgba(183, 183, 183, 1)',
               display: 'flex',
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
             {convertTimeToStr(itemAppointment?.duration)}
@@ -347,16 +340,6 @@ const DetailAppointment = ({
           >
             {settingAppoinment && handleCurrency(itemAppointment.retailPrice)}
           </div>
-          {/* <div
-            style={{
-              marginLeft: '5px',
-              textDecorationLine: 'line-through',
-              opacity: 0.5,
-              fontWeight: 700,
-            }}
-          >
-            SGD 10.00
-          </div> */}
         </div>
         <hr
           style={{
@@ -384,7 +367,7 @@ const DetailAppointment = ({
                 fontSize: '14px',
                 fontWeight: 500,
                 opacity: 0.8,
-                lineHeight: '20px',
+                lineHeight: '23px',
                 color: 'rgba(157, 157, 157, 1)',
                 marginTop: '16px',
               }}
@@ -393,37 +376,12 @@ const DetailAppointment = ({
             </p>
           </React.Fragment>
         )}
-      </div>
-    );
-  };
-  const RenderHeader = () => {
-    return (
-      <div
-        style={{
-          ...styleSheet.gridStyle,
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <ArrowBackIosIcon
-          sx={{ color: color.primary }}
-          fontSize='large'
-          onClick={() => {
-            setIsOpenModalDetail(false);
+        <hr
+          style={{
+            backgroundColor: 'rgba(249, 249, 249, 1)',
+            marginTop: '20px',
           }}
         />
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 'bold',
-            fontSize: '20px',
-            color: 'rgba(255, 85, 99, 1)',
-          }}
-        >
-          Service Detail
-        </p>
       </div>
     );
   };
@@ -431,7 +389,7 @@ const DetailAppointment = ({
   const RenderAddOnLabel = () => {
     return (
       <div style={{ width: '90%', margin: 'auto' }}>
-        <p style={{ marginTop: '20px', fontWeight: 'bold', color: 'black' }}>
+        <p style={{ marginTop: '10px', fontWeight: 'bold', color: 'black' }}>
           Add Ons
         </p>
       </div>
@@ -446,7 +404,7 @@ const DetailAppointment = ({
           <div
             style={{
               fontWeight: 'bold',
-              color: 'rgba(255, 85, 99, 1)',
+              color: color.primary,
               fontSize: '18px',
             }}
           >
@@ -499,7 +457,11 @@ const DetailAppointment = ({
         onClose={() => setIsOpenModalDetail(false)}
       >
         <DialogTitle sx={styles.modalModif}>
-          <RenderHeader />
+          <AppointmentHeader
+            color={color}
+            onBack={() => setIsOpenModalDetail(false)}
+            label='Service Detail'
+          />
         </DialogTitle>
         <DialogContent sx={styles.modalModif}>
           <RenderMainDetail />

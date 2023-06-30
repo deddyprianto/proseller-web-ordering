@@ -140,7 +140,7 @@ const InboxCard = (props) => {
             </div>
           )}
 
-          <div>{moment(items.createdOn).format('DD/MM/YY HH:mm')}</div>
+          <div>{moment(items.createdAt).format('DD/MM/YY HH:mm')}</div>
         </div>
       </div>
     </div>

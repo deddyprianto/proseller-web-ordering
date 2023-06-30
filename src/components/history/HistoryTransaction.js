@@ -7,8 +7,9 @@ import HistoryCard from './HistoryCardPending';
 import ModalDetailHistory from './ModalDetailHistory';
 import useHistoryTransaction from 'hooks/useHistoryTransaction';
 import './style/style.css';
+import useMobileSize from 'hooks/useMobileSize';
 
-const HistoryTransaction = ({ countryCode }) => {
+const HistoryTransaction = ({ countryCode, isAppointment }) => {
   const [detailData, setDetailData] = useState({});
   const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(10);
@@ -20,6 +21,7 @@ const HistoryTransaction = ({ countryCode }) => {
     });
 
   const gridRef = useRef();
+  const mobileSize = useMobileSize();
 
   useEffect(() => {
     if (loading) return;
@@ -37,16 +39,26 @@ const HistoryTransaction = ({ countryCode }) => {
     }
 
     return () => {
-      if (tempRef) observer.unobserve(tempRef);
+      if (tempRef) {
+        observer.unobserve(tempRef);
+        observer.disconnect();
+      }
     };
   }, [loading, hasMore]);
 
   if (historyTransaction.length === 0 && !loading) {
     return (
-      <>
+      <div
+        style={{
+          marginTop: '240px',
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
         <img src={config.url_emptyImage} alt='is empty' />
         <div>Data is empty</div>
-      </>
+      </div>
     );
   }
   const RenderAnimationLoading = () => {
@@ -68,16 +80,18 @@ const HistoryTransaction = ({ countryCode }) => {
     );
   };
 
+  const marginAppointment = mobileSize ? '240px' : '260px';
+  const marginCommon = mobileSize ? '125px' : '145px';
+
   return (
     <>
       <ModalDetailHistory detail={detailData} countryCode />
       <div
         style={{
           width: '95%',
-          margin: 'auto',
-          marginTop: '20px',
-          height: '75vh',
-          overflowY: 'auto',
+          margin: `${
+            isAppointment ? marginAppointment : marginCommon
+          } auto 50px`,
         }}
       >
         <Grid
@@ -87,43 +101,27 @@ const HistoryTransaction = ({ countryCode }) => {
           alignItems='center'
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, md: 12 }}
-          sx={{ paddingBottom: '50px' }}
+          sx={{ paddingBottom: '40px' }}
         >
           {historyTransaction.map((items, index) => {
-            if (historyTransaction.length === index + 1) {
-              return (
-                <Grid
-                  ref={gridRef}
-                  item
-                  xs={4}
-                  md={6}
-                  key={index}
-                  data-toggle='modal'
-                  data-target='#detail-transaction-modal'
-                  onClick={() => setDetailData(items)}
-                >
-                  <HistoryCard items={items} countryCode={countryCode} />
-                </Grid>
-              );
-            } else {
-              return (
-                <Grid
-                  item
-                  xs={4}
-                  md={6}
-                  key={index}
-                  data-toggle='modal'
-                  data-target='#detail-transaction-modal'
-                  onClick={() => setDetailData(items)}
-                >
-                  <HistoryCard items={items} countryCode={countryCode} />
-                </Grid>
-              );
-            }
+            return (
+              <Grid
+                ref={historyTransaction.length === index + 1 ? gridRef : null}
+                item
+                xs={4}
+                md={6}
+                key={index}
+                data-toggle='modal'
+                data-target='#detail-transaction-modal'
+                onClick={() => setDetailData(items)}
+              >
+                <HistoryCard items={items} countryCode={countryCode} />
+              </Grid>
+            );
           })}
           {loading && <RenderAnimationLoading />}
           {isEmptyData && (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%', marginTop: '10px' }}>
               <p
                 className='default-font'
                 style={{ color: '#9D9D9D', marginLeft: '20px' }}

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import LoadingOverlay from 'react-loading-overlay';
@@ -76,7 +75,7 @@ class ModalEditAccount extends Component {
         .querySelector('#phoneInputEdit')
         .addEventListener('keypress', (evt) => {
           if (
-            (evt.which != 8 && evt.which != 0 && evt.which < 48) ||
+            (evt.which !== 8 && evt.which !== 0 && evt.which < 48) ||
             evt.which > 57
           ) {
             evt.preventDefault();
@@ -369,7 +368,7 @@ class ModalEditAccount extends Component {
   }
 
   validationField(field, value) {
-    const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+    const regEmail = /^[\w][\w-+.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     if (field === 'email') return regEmail.test(String(value).toLowerCase());
     if (field === 'phoneNumber') return value.length >= 10;
   }

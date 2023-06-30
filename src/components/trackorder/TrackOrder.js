@@ -10,15 +10,17 @@ import LoadingOverlay from 'react-loading-overlay';
 import ArrowLeftIcons from 'assets/images/panah.png';
 import IconsWrong from 'assets/images/IconsWrong.png';
 import screen from 'hooks/useWindowSize';
+import { CONSTANT } from 'helpers';
 
 const TrackOrder = () => {
   const responsiveDesign = screen();
-  const [isLoading, setIsLoading] = useState(false);
   const inputFieldRef = useRef(null);
   const dispatch = useDispatch();
   const color = useSelector((state) => state.theme.color);
   const matches = useMediaQuery('(min-width:1200px)');
   const history = useHistory();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [trackOrderNotif, setTrackOrderNotif] = useState(false);
   const [messageNotif, setMessageNotif] = useState('');
 
@@ -37,16 +39,19 @@ const TrackOrder = () => {
         'You’ve entered wrong Ref. No., please enter the correct one.'
       );
     } else {
-      setIsLoading(true);
+      dispatch({
+        type: CONSTANT.SAVE_ID_TRACKORDER,
+        payload: inputFieldRef.current.value,
+      });
       const wordsRegex = /^\b(?:\w|-)+\b$/;
+      setIsLoading(true);
       let response = await dispatch(
         OrderAction.getTrackOrder(inputFieldRef.current.value)
       );
+      setIsLoading(false);
       if (response?.resultCode === 404) {
         setTrackOrderNotif(!trackOrderNotif);
-        setMessageNotif(
-          'You’ve entered wrong Ref. No., please enter the correct one.'
-        );
+        setMessageNotif(response.message);
       } else if (!wordsRegex.test(inputFieldRef.current.value)) {
         setTrackOrderNotif(!trackOrderNotif);
         setMessageNotif(
@@ -55,7 +60,6 @@ const TrackOrder = () => {
       } else {
         history.push('/ordertrackhistory');
       }
-      setIsLoading(false);
     }
   };
 
@@ -90,6 +94,7 @@ const TrackOrder = () => {
               cursor: 'pointer',
               margin: '0px 10px',
             }}
+            alt='ic_wrong'
           />
 
           <p
@@ -115,8 +120,7 @@ const TrackOrder = () => {
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr',
           gridTemplateRows: '1fr',
-          paddingTop: matches ? '20px' : '7.5rem',
-          marginTop: matches ? '20px' : '0px',
+          marginTop: matches ? '80px' : '55px',
         }}
       >
         {trackOrderNotif && renderNotif()}
@@ -124,6 +128,7 @@ const TrackOrder = () => {
           style={{ paddingLeft: '10px' }}
           src={ArrowLeftIcons}
           onClick={() => history.goBack()}
+          alt='ic_arrow_left'
         />
         <div className={style.title}>Track Order</div>
       </div>
@@ -133,77 +138,56 @@ const TrackOrder = () => {
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div
         style={{
-          width: matches ? '40%' : '100%',
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gridTemplateRows: '80px 1fr 70px',
+          gap: '0px 0px',
+          height: `${responsiveDesign.height * 1}px`,
+          width: matches ? '45%' : '100%',
           marginLeft: 'auto',
           marginRight: 'auto',
-          height: matches ? '100vh' : '85vh',
+          backgroundColor: 'white',
+          borderRadius: '8px',
           boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         }}
       >
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr',
-            gridTemplateRows: matches
-              ? '1fr 100px'
-              : `1fr ${responsiveDesign.height < 600 ? '45px' : '65px'}`,
-            gap: '0px 0px',
-            gridAutoFlow: 'row',
-            gridTemplateAreas: '"."\n    "."\n    "."',
-            height: matches ? '100vh' : '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginTop: '20px',
           }}
         >
-          <div
-            style={{
-              marginTop: matches && '5rem',
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column',
-              overflowY: 'auto',
-            }}
-          >
-            {headerTrackOrder()}
-            <img
-              src={TrackOrderIcon}
-              alt='icon search'
-              width={200}
-              height={100}
-            />
-            <h1 className={style.title2}>
-              You can track your order by input the Ref. no
-            </h1>
-            <div className={style.containerInput}>
-              <p className={style.title3}>Ref. No.</p>
-              <div className={style.borderInput}>
-                <input
-                  ref={inputFieldRef}
-                  placeholder='Input Text'
-                  style={{ paddingLeft: '10px', width: '100%' }}
-                />
-              </div>
+          {headerTrackOrder()}
+          <img
+            src={TrackOrderIcon}
+            alt='icon search'
+            width={200}
+            height={100}
+          />
+          <h1 className={style.title2}>
+            You can track your order by input the Ref. no
+          </h1>
+          <div className={style.containerInput}>
+            <p className={style.title3}>Ref. No.</p>
+            <div className={style.borderInput}>
+              <input
+                ref={inputFieldRef}
+                placeholder='Input Text'
+                style={{ paddingLeft: '10px', width: '100%' }}
+              />
             </div>
           </div>
-
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: matches
-                ? 'flex-end'
-                : responsiveDesign.height < 600
-                ? 'center'
-                : 'flex-start',
-              marginBottom: matches ? '5px' : '0px',
-            }}
-          >
+          <div style={{ width: '100%', padding: '0 10px' }}>
             <button
               style={{
                 backgroundColor: color.primary,
                 fontFamily: 'Plus Jakarta Sans',
                 fontSize: '14px',
                 borderRadius: '10px',
-                width: '95%',
+                width: '100%',
                 textAlign: 'center',
                 color: 'white',
                 padding: '10px',
@@ -214,7 +198,6 @@ const TrackOrder = () => {
               Track Order
             </button>
           </div>
-          <div style={{ width: '100%', height: '100%' }} />
         </div>
       </div>
     </LoadingOverlay>

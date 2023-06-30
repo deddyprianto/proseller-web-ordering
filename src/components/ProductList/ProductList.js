@@ -37,7 +37,7 @@ import { CONSTANT } from 'helpers';
 import Product from './components/Product';
 import Loading from 'components/loading/Loading';
 import useProductList from 'hooks/useProductList';
-import Swal from 'sweetalert2';
+
 import './components/style/style.css';
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -177,7 +177,6 @@ const ProductList = ({ ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitCategoryTabHeader, setLimitCategoryTabHeader] = useState(8);
   const [pageNumber, setPageNumber] = useState(1);
-  const [productsData, setProductsData] = useState([]);
   const { products, loading, error, hasMore } = useProductList({
     pageNumber,
     selectedCategory,
@@ -249,6 +248,7 @@ const ProductList = ({ ...props }) => {
     } catch (e) {
       console.log(e);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -260,7 +260,6 @@ const ProductList = ({ ...props }) => {
             ProductAction.fetchProduct(selectedCategory, outlet, 0, 10)
           );
 
-          setProductsData(products.data);
           props.dispatch({
             type: CONSTANT.LIST_CATEGORY,
             data: products,
@@ -272,6 +271,7 @@ const ProductList = ({ ...props }) => {
     } catch (e) {
       // console.log(e);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory]);
 
   const handleChangeCategory = ({ category, index }) => {
@@ -313,7 +313,10 @@ const ProductList = ({ ...props }) => {
   const renderTabHeader = () => {
     const categoryTab = categories.slice(0, limitCategoryTabHeader);
     return (
-      <TabsList sx={{ marginTop: isBannerSetToTrue && '103px' }}>
+      <TabsList
+        id='product-group-header-option'
+        sx={{ marginTop: isBannerSetToTrue && '103px' }}
+      >
         {categoryTab.map((category, index) => {
           return (
             <Tab
@@ -325,22 +328,24 @@ const ProductList = ({ ...props }) => {
               }}
             >
               <table>
-                <tr>
-                  <td
-                    style={{
-                      textAlign: 'center',
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {category.name}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        textAlign: 'center',
+                        width: '100%',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                    >
+                      {category.name}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </Tab>
           );
@@ -355,7 +360,7 @@ const ProductList = ({ ...props }) => {
     return (
       <Box sx={styles.tabList}>
         <Collapse in={isMore}>
-          <Paper style={styles.paper}>
+          <Paper id='product-preset-group-dropdown' style={styles.paper}>
             {categoryTabList.map((category, index) => {
               return (
                 <div className={classes.itemMoreHover} key={index}>
@@ -470,7 +475,7 @@ ProductList.propTypes = {
   dispatch: PropTypes.func,
   orderingMode: PropTypes.string,
   orderingSetting: PropTypes.object,
-  promotion: PropTypes.object,
+  promotion: PropTypes.array,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList);

@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import Shimmer from 'react-shimmer-effect';
+import moment from 'moment';
+
 import { OrderAction } from '../../redux/actions/OrderAction';
 import { OutletAction } from '../../redux/actions/OutletAction';
-// import { CustomerAction } from "../../redux/actions/CustomerAction";
-// import { CampaignAction } from "../../redux/actions/CampaignAction";
-import moment from 'moment';
-import _ from 'lodash';
 import Sound_Effect from '../../assets/sound/Sound_Effect.mp3';
 import {
   isEmptyArray,
@@ -820,9 +818,9 @@ class Basket extends Component {
       let discount = 0;
       let checkProduct = undefined;
       if (dataBasket.details && dataBasket.details.length > 0) {
-        checkProduct = _.filter(dataBasket.details, {
-          productID: selectedVoucher.productID,
-        })[0];
+        checkProduct = dataBasket.details.find(
+          (item) => item.productID === selectedVoucher.productID
+        );
       }
       if (checkOutlet) {
         if (selectedVoucher.applyToSpecificProduct) {
@@ -1076,9 +1074,7 @@ class Basket extends Component {
           },
         });
         if (dataBasket) {
-          let selected = _.filter(dataBasket.details, (items) => {
-            return items.selected;
-          });
+          let selected = dataBasket?.details?.filter((items) => items.selected);
           if (dataBasket.details.length === selected.length) {
             await localStorage.removeItem(`${config.prefix}_isOutletChanged`);
             await localStorage.removeItem(

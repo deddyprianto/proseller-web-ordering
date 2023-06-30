@@ -1,9 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import loadable from '@loadable/component';
-import moment from 'moment';
-import { connect } from 'react-redux';
-import _ from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { AuthActions } from './redux/actions/AuthAction';
 import { Redirect, Switch, Route, HashRouter } from 'react-router-dom';
@@ -23,6 +21,7 @@ import messages_en from './languages/en.json';
 import config from './config';
 
 import { lsLoad } from './helpers/localStorage';
+import { isEmpty } from 'helpers/utils';
 
 import jss from 'jss';
 import preset from 'jss-preset-default';
@@ -47,22 +46,27 @@ const sheet = jss.createStyleSheet(styles, { link: true }).attach();
 
 addLocaleData([...locale_id, ...locale_en]);
 
-const App = (props) => {
-  let {
-    lang,
-    isLoggedIn,
+const App = ({ version }) => {
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const lang = useSelector((state) => state.language.lang);
+  const theme = useSelector((state) => state.theme);
+  const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
+  const {
     deliveryProviders,
     deliveryAddress,
     setting,
-    defaultOutlet,
-    dispatch,
-  } = props;
+    orderingModeSelectedOn,
+    orderingSetting,
+    orderingModes,
+  } = useSelector((state) => state.order);
+  const domainName = useSelector((state) => state.masterdata.domainName);
+  const banners = useSelector((state) => state.promotion.banners);
+
   let account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
 
-
   const [enableOrdering, setEnableOrdering] = useState(false);
-  const domainNameExist = props.domainName && props.domainName.length > 0;
-  const initialDomainNameExists = domainNameExist;
+  const domainNameExist = domainName?.length;
 
   const lightenDarkenColor = (col, amt) => {
     const num = parseInt(col, 16);
@@ -90,59 +94,54 @@ const App = (props) => {
   const handleReLogin = async (account) => {
     account = encryptor.decrypt(lsLoad(`${config.prefix}_account`, true));
     let timeExp = account.accessToken.payload.exp * 1000 - 60000;
-    let timeNow = moment().format();
-    if (moment(timeNow).isSameOrAfter(timeExp)) {
-      await props.dispatch(AuthActions.refreshToken());
+    let timeNow = new Date();
+
+    if (timeNow >= new Date(timeExp)) {
+      await dispatch(AuthActions.refreshToken());
     }
   };
 
   const checkUser = async () => {
+    let defaultOutletTemp = defaultOutlet;
+
     window.onhashchange = function () {
       try {
-        // get modals
         const modals = document.getElementsByClassName('modal');
-
-        // get modal backdrops
         for (let i = 0; i < modals.length; i++) {
           modals[i].classList.remove('show');
           modals[i].setAttribute('aria-hidden', 'true');
           modals[i].setAttribute('style', 'display: none');
         }
 
-        // get modal backdrops
         const modalsBackdrops =
           document.getElementsByClassName('modal-backdrop');
-
-        // remove every modal backdrop
         for (let i = 0; i < modalsBackdrops.length; i++) {
           document.body.removeChild(modalsBackdrops[i]);
         }
       } catch (e) {
-        // console.log(e);
+        throw e;
       }
     };
 
-    const responseSettings = await props.dispatch(
-      OrderAction.getSettingOrdering()
-    );
+    const responseSettings = await dispatch(OrderAction.getSettingOrdering());
 
     try {
       let position = JSON.parse(
         localStorage.getItem(`${config.prefix}_locationCustomer`)
       );
-
       if (!position) {
-        props.dispatch(OutletAction.getCoordinates());
+        dispatch(OutletAction.getCoordinates());
       }
     } catch (error) {
       console.log('Get location false');
     }
 
-    if (!isLoggedIn || !account)
+    if (!isLoggedIn || !account) {
       localStorage.removeItem(`${config.prefix}_account`);
+    }
 
     if (account) {
-      await props.dispatch(PaymentAction.getPaymentCard());
+      await dispatch(PaymentAction.getPaymentCard());
       await handleReLogin(account);
       setInterval(async () => {
         await handleReLogin(account);
@@ -158,44 +157,48 @@ const App = (props) => {
       );
       console.log('input url', param);
 
-      if (param.orderingMode)
+      if (param.orderingMode) {
         localStorage.setItem(
           `${config.prefix}_ordering_mode`,
           param.orderingMode
         );
-      defaultOutlet = await props.dispatch(
+      }
+
+      defaultOutletTemp = await dispatch(
         MasterDataAction.getOutletByID(param['outlet'].split('::')[1], true)
       );
 
-      if (defaultOutlet && defaultOutlet.id)
-        defaultOutlet = config.getValidation(defaultOutlet);
-      await props.dispatch(OutletAction.fetchDefaultOutlet(defaultOutlet));
+      if (defaultOutletTemp && defaultOutletTemp.id) {
+        defaultOutletTemp = config.getValidation(defaultOutletTemp);
+      }
+      await dispatch(OutletAction.fetchDefaultOutlet(defaultOutletTemp));
     } else {
-      // localStorage.removeItem(`${config.prefix}_scanTable`);
       let outletSelectionMode = 'DEFAULT';
       if (responseSettings && responseSettings.settings !== undefined) {
         const find = responseSettings.settings.find(
           (item) => item.settingKey === 'OutletSelection'
         );
-        if (find !== undefined) outletSelectionMode = find.settingValue;
+        if (find !== undefined) {
+          outletSelectionMode = find.settingValue;
+        }
       }
       if (outletSelectionMode !== 'MANUAL') {
-        if (_.isEmpty(defaultOutlet) || (defaultOutlet && !defaultOutlet.id)) {
-          defaultOutlet = await props.dispatch(
-            OutletAction.fetchDefaultOutlet()
-          );
+        if (
+          isEmpty(defaultOutletTemp) ||
+          (defaultOutletTemp && !defaultOutletTemp.id)
+        ) {
+          defaultOutletTemp = await dispatch(OutletAction.fetchDefaultOutlet());
         }
       }
     }
 
     if (param && param['referral'] && !isLoggedIn && !account) {
       const referralCode = param['referral'].split('#')[0];
-
-      const isAvailable = await props.dispatch(
+      const isAvailable = await dispatch(
         ReferralAction.getReferralById(referralCode)
       );
       if (isAvailable) {
-        props.dispatch(AuthActions.setInvitationCode(referralCode));
+        dispatch(AuthActions.setInvitationCode(referralCode));
         setTimeout(() => {
           try {
             document.getElementById('login-register-btn').click();
@@ -207,19 +210,25 @@ const App = (props) => {
     }
 
     if (window.location.hash.split('#')[1] !== '/') {
-      if (!param && defaultOutlet && defaultOutlet.id && enableOrdering) {
-        defaultOutlet = await props.dispatch(
-          MasterDataAction.getOutletByID(defaultOutlet.id, true)
+      if (
+        !param &&
+        defaultOutletTemp &&
+        defaultOutletTemp.id &&
+        enableOrdering
+      ) {
+        defaultOutletTemp = await dispatch(
+          MasterDataAction.getOutletByID(defaultOutletTemp.id, true)
         );
       }
-      props.dispatch(OrderAction.getCart());
+      window.location.hash.split('#')[1] !== '/cart' &&
+        dispatch(OrderAction.getCart());
     }
   };
 
   useEffect(() => {
-    localStorage.setItem('APP_VERSION_WEBORDERING', props.version);
-  }, []);
-  
+    localStorage.setItem('APP_VERSION_WEBORDERING', version);
+  }, [version]);
+
   useEffect(() => {
     if (setting) {
       let enableOrdering = setting.find((items) => {
@@ -232,37 +241,27 @@ const App = (props) => {
   }, [deliveryAddress, deliveryProviders, setting]);
 
   useEffect(() => {
-    if (
-      domainNameExist &&
-      props.domainName &&
-      props.domainName.length > 0 &&
-      props.domainName !== 'NOT_FOUND'
-    ) {
+    const getDomainName = () => {
+      dispatch(MasterDataAction.getDomainName());
+    };
+
+    if (domainNameExist && domainName !== 'NOT_FOUND') {
       checkUser();
     } else {
-      props.getDomainName();
+      getDomainName();
     }
-  }, [domainNameExist, props.domainName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [domainNameExist, domainName, dispatch]);
 
   useEffect(() => {
     if (
-      !initialDomainNameExists &&
-      props.domainName &&
-      props.domainName.length > 0
-    ) {
-      window.location.reload();
-    }
-  }, [props.domainName]);
-
-  useEffect(() => {
-    if (
-      props.orderingModeSelectedOn &&
-      props.orderingSetting &&
-      props.orderingModes &&
-      props.orderingModes.length > 1
+      orderingModeSelectedOn &&
+      orderingSetting &&
+      orderingModes &&
+      orderingModes.length > 1
     ) {
       const orderingModeExpiredIn = parseInt(
-        props.orderingSetting.OrderingModeExpiredIn
+        orderingSetting.OrderingModeExpiredIn
       );
       if (orderingModeExpiredIn && orderingModeExpiredIn > 0) {
         const stopInterval = (intervalObj) => {
@@ -271,8 +270,7 @@ const App = (props) => {
         const interval = setInterval(() => {
           const now = new Date();
           if (
-            props.orderingModeSelectedOn.getTime() +
-              orderingModeExpiredIn * 60000 <=
+            orderingModeSelectedOn.getTime() + orderingModeExpiredIn * 60000 <=
             now.getTime()
           ) {
             stopInterval(interval);
@@ -281,31 +279,27 @@ const App = (props) => {
         }, 60000);
       }
     }
-  }, [
-    props.orderingModeSelectedOn,
-    props.orderingSetting,
-    props.orderingModes,
-  ]);
+  }, [orderingModeSelectedOn, orderingSetting, orderingModes, dispatch]);
 
   useEffect(() => {
-    if (props.theme && props.banners) {
+    if (theme && banners) {
       const hoverColor = `#${lightenDarkenColor(
-        (props.theme.color.primary || '#c00a27').substring(1),
+        (theme.color.primary || '#c00a27').substring(1),
         -10
       )}`;
 
       sheet.update({
         theme: {
-          ...props.theme,
+          ...theme,
           hoverColor,
-          withBanners: props.banners.length > 0,
+          withBanners: banners.length > 0,
         },
       });
     }
-  }, [props.banners, props.theme]);
+  }, [banners, theme]);
 
   return domainNameExist ? (
-    props.domainName !== 'NOT_FOUND' ? (
+    domainName !== 'NOT_FOUND' ? (
       <IntlProvider locale={lang} messages={messages[lang]}>
         <HashRouter>
           <Switch>
@@ -322,38 +316,4 @@ const App = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    isLoggedIn: state.auth.isLoggedIn,
-    lang: state.language.lang,
-    theme: state.theme,
-    defaultOutlet: state.outlet.defaultOutlet,
-    deliveryProviders: state.order.deliveryProviders,
-    deliveryAddress: state.order.deliveryAddress,
-    basket: state.order.basket,
-    companyInfo: state.masterdata.companyInfo,
-    setting: state.order.setting,
-    outletSelection: state.order.outletSelection,
-    defaultEmail: state.customer.defaultEmail,
-    defaultPhoneNumber: state.customer.defaultPhoneNumber,
-    domainName: state.masterdata.domainName,
-    orderingModeSelectedOn: state.order.orderingModeSelectedOn,
-    orderingSetting: state.order.orderingSetting,
-    orderingModes: state.order.orderingModes,
-    banners: state.promotion.banners,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    dispatch,
-    onLogin: (username, password) => {
-      dispatch(AuthActions.auth(username, password));
-    },
-    getDomainName: () => {
-      dispatch(MasterDataAction.getDomainName());
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

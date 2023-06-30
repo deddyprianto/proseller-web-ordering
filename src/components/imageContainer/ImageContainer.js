@@ -11,7 +11,6 @@ import useStyles from './styles';
 const ImageContainer = ({ image, ...props }) => {
   const [isLandscape, setIsLandscape] = useState(true);
 
-
   const styles = useStyles({ isLandscape });
 
   const handleOnImageLoad = (e) => {
@@ -26,8 +25,12 @@ const ImageContainer = ({ image, ...props }) => {
       <img
         className={styles.image}
         src={image}
+        srcSet={`${image} 300w, ${image} 768w, ${image} 1280w`}
+        sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
         alt=''
         onLoad={handleOnImageLoad}
+        width={640}
+        height={360}
         {...props}
       ></img>
     </div>

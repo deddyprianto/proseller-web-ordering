@@ -44,6 +44,7 @@ export default function useProductList({
           setError(true);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber, OUTLET_ID, categoryID]);
 
   return { loading, error, products, hasMore };

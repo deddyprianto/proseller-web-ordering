@@ -1,5 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -231,7 +229,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
     return () => {
       isCleanFnComponent = false;
     };
-  }, [orderingModeActive]);
+  }, [orderingModeActive, dispatch]);
 
   useEffect(() => {
     const getOrderingModes = async () => {
@@ -278,6 +276,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
       setIsLoading(false);
     };
     getOrderingModes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleConfirmOrderingMode = async (value) => {
@@ -324,6 +323,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
     return orderingModes.map((item) => {
       return (
         <div
+          id={`${item?.name?.toLowerCase()}-option`}
           key={item.name}
           onClick={() => {
             dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
@@ -429,6 +429,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
           }}
         >
           <button
+            id='cancel-button'
             onClick={onClose}
             className={fontStyles.myFont}
             style={{
@@ -443,6 +444,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
             Cancel
           </button>
           <button
+            id='confirm-button'
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}
             style={{

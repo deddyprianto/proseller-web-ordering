@@ -23,10 +23,15 @@ class Voucher extends Component {
       campaignPointActive: {},
       campaignPointAnnouncement: false,
       detailPoint: null,
+      size: { width: 0, height: 0 },
+      isMobileSize: false,
     };
   }
 
   componentDidMount = async () => {
+    this.updateSize();
+    window.addEventListener('resize', this.updateSize);
+
     await this.props.dispatch(
       CampaignAction.getCampaignPoints(
         { history: 'true' },
@@ -41,14 +46,32 @@ class Voucher extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateSize);
+  }
+
+  updateSize = () => {
+    const { innerWidth, innerHeight } = window;
+    this.setState({ size: { width: innerWidth, height: innerHeight } });
+    this.checkMobileSize(innerWidth);
+  };
+
+  checkMobileSize = (width) => {
+    if (width < 640) {
+      this.setState({ isMobileSize: true });
+    } else {
+      this.setState({ isMobileSize: false });
+    }
+  };
+
   render() {
-    let { isMyVoucher, totalPoint } = this.state;
+    let { isMyVoucher, totalPoint, isMobileSize } = this.state;
     return (
       <div
         className='col-full'
         style={{
-          marginTop: config.prefix === 'emenu' ? 100 : 160,
-          marginBottom: 50,
+          marginTop: config.prefix === 'emenu' ? 100 : isMobileSize ? 65 : 75,
+          marginBottom: 35,
         }}
       >
         <div id='primary' className='content-area'>
@@ -59,7 +82,6 @@ class Voucher extends Component {
                 position: 'fixed',
                 zIndex: 10,
                 width: '100%',
-                marginTop: -100,
                 display: 'flex',
                 height: 40,
                 justifyContent: 'space-between',
@@ -86,7 +108,7 @@ class Voucher extends Component {
                 position: 'fixed',
                 zIndex: 10,
                 width: '100%',
-                marginTop: -60,
+                marginTop: 40,
               }}
             >
               <Button
@@ -109,7 +131,7 @@ class Voucher extends Component {
               className='site-main'
               style={{ textAlign: 'center' }}
             >
-              <div style={{ marginTop: 20 }}>
+              <div style={{ paddingTop: 100 }}>
                 {this.state.isMyVoucher && <MyVoucher />}
                 {!this.state.isMyVoucher && <RedeemVoucher />}
               </div>

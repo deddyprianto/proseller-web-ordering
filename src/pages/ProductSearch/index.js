@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import _ from "lodash";
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 
-import Shimmer from "react-shimmer-effect";
+import Shimmer from 'react-shimmer-effect';
 
-import { ProductAction } from "../../redux/actions/ProductAction";
+import { ProductAction } from 'redux/actions/ProductAction';
 
-import Product from "../../components/ordering/Product";
-import UpdateProductModal from "../../components/ordering/UpdateProductModal";
-import ModalProduct from "../../components/ordering/ModalProduct";
+import Product from 'components/ProductList/components/Product';
+import UpdateProductModal from 'components/ordering/UpdateProductModal';
+import ModalProduct from 'components/ordering/ModalProduct';
 
-import {
-  getInitialProductValue,
-  getFormattedPrice,
-} from "../../helpers/ProductHelper";
+import { getFormattedPrice } from 'helpers/ProductHelper';
+import { isEmpty } from 'helpers/utils';
 
-import useQuery from "../../hooks/useQuery";
+import useQuery from 'hooks/useQuery';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 
 const SHIMMER_ARRAY = [1, 2, 3];
-const IS_EMENU = window.location.hostname.includes("emenu");
+const IS_EMENU = window.location.hostname.includes('emenu');
 
 export const ProductSearch = ({
   selectedOutlet,
@@ -36,9 +33,9 @@ export const ProductSearch = ({
   const classes = useStyles({ color: theme.color });
 
   const query = useQuery();
-  const keyword = query.get("q");
-  if (!keyword || keyword === "") {
-    history.push("/");
+  const keyword = query.get('q');
+  if (!keyword || keyword === '') {
+    history.push('/');
   }
 
   const [selectedProduct, setSelectedProduct] = useState({});
@@ -46,23 +43,18 @@ export const ProductSearch = ({
   const [categories, setCategories] = useState([]);
   const [isAddNewExistingProduct, setIsAddNewExistingProduct] = useState(false);
 
-  const selectProduct = (product, mode) => {
-    const initialValue = getInitialProductValue(product, mode);
-    setSelectedProduct(initialValue);
-  };
-
   useEffect(() => {
-    if (_.isEmpty(selectedOutlet)) {
-      history.push("/outlets");
+    if (isEmpty(selectedOutlet)) {
+      history.push('/outlets');
     } else {
       searchProducts(keyword, selectedOutlet, 0, 100);
     }
-  }, [selectedOutlet, keyword]);
+  }, [selectedOutlet, keyword, history, searchProducts]);
 
   useEffect(() => {
     if (products) {
       const categoryWithProduct = products.reduce((acc, product) => {
-        const generatedId = product.product.categoryName.replaceAll(" ", "_");
+        const generatedId = product.product.categoryName.replaceAll(' ', '_');
         const products = !acc[generatedId]
           ? [product]
           : [...acc[generatedId].products, product];
@@ -105,7 +97,7 @@ export const ProductSearch = ({
         addNew={isAddNewExistingProduct}
         selectedItem={selectedProduct}
       />
-      <h4 style={{ margin: "2rem", marginTop: "10rem" }}>
+      <h4 style={{ margin: '2rem', marginTop: '10rem' }}>
         Search result for "{keyword}"
       </h4>
       {!isLoading && categories ? (
@@ -114,54 +106,30 @@ export const ProductSearch = ({
             categories.map((category) => (
               <div key={category.name}>
                 <h3
-                  className="title font-color-theme"
+                  className='title font-color-theme'
                   style={{
                     fontSize: 14,
                     marginLeft: 15,
                     marginBottom: 10,
                     paddingTop: 10,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                   }}
                 >
                   {category.name}
                 </h3>
                 <div>
                   <div
-                    className="full-width list-view columns-2 archive woocommerce-page html-change"
+                    className='full-width list-view columns-2 archive woocommerce-page html-change'
                     style={{ marginTop: IS_EMENU ? 35 : 5 }}
                   >
-                    <div className="tab-content">
-                      <div className="tab-pane active" id="h1-tab-products-2">
-                        <ul className="products">
-                          <div className="grid-products">
+                    <div className='tab-content'>
+                      <div className='tab-pane active' id='h1-tab-products-2'>
+                        <ul className='products'>
+                          <div className='grid-products'>
                             {products &&
                               products.map((product) => {
-                                const productInBasket =
-                                  basket &&
-                                  basket.details &&
-                                  basket.details.find(
-                                    (item) => item.product.id === product.id
-                                  );
-                                const label = productInBasket
-                                  ? "Update"
-                                  : "Add";
-                                const quantity =
-                                  productInBasket && productInBasket.quantity
-                                    ? productInBasket.quantity
-                                    : 0;
                                 return (
-                                  <Product
-                                    labelButton={label}
-                                    quantity={quantity}
-                                    selectProduct={selectProduct}
-                                    productConfig={theme}
-                                    showUpdateModal={(item) => {
-                                      setSelectedProduct(item);
-                                      setShowUpdateModal(true);
-                                    }}
-                                    key={product.id}
-                                    item={product}
-                                  />
+                                  <Product key={product.id} item={product} />
                                 );
                               })}
                           </div>
@@ -173,7 +141,7 @@ export const ProductSearch = ({
               </div>
             ))
           ) : (
-            <div style={{ margin: "2rem" }}>
+            <div style={{ margin: '2rem' }}>
               <em>No result</em>
             </div>
           )
@@ -186,10 +154,10 @@ export const ProductSearch = ({
             <Shimmer key={no}>
               <div
                 style={{
-                  width: "100%",
+                  width: '100%',
                   height: 100,
-                  alignSelf: "center",
-                  borderRadius: "8px",
+                  alignSelf: 'center',
+                  borderRadius: '8px',
                   marginBottom: 10,
                 }}
               />
@@ -222,12 +190,12 @@ const mapDispatchToProps = (dispatch) => {
             outletID: `outlet::${outlet.id}`,
             filters: [
               {
-                id: "search",
+                id: 'search',
                 value: keyword,
               },
             ],
           },
-          { sortBy: "name", sortDirection: "asc" }
+          { sortBy: 'name', sortDirection: 'asc' }
         )
       ),
   };

@@ -5,6 +5,7 @@ import successsubmit from 'assets/gif/successsubmit.gif';
 import Paper from '@mui/material/Paper';
 import Confetti from 'react-confetti';
 import { CONSTANT } from 'helpers';
+import { convertTimeToStr, convertFormatDate } from 'helpers/appointmentHelper';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -25,9 +26,8 @@ const BookingSubmitted = () => {
   const [showConfetti, setShowConfetti] = useState(true);
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
-  // some sl
+
   const setting = useSelector((state) => state.order.setting);
-  const outlet = useSelector((state) => state.outlet.outlets);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const responseSubmit = useSelector(
@@ -41,7 +41,7 @@ const BookingSubmitted = () => {
       clearTimeout(cleanUp);
     };
   }, []);
-  // some fn
+
   const settingAppoinmentShowPrice = setting.find((items) => {
     return items.settingKey === 'ShowServicePrice';
   });
@@ -49,63 +49,6 @@ const BookingSubmitted = () => {
     return items.settingKey === 'EnableAdditionalInfoBookingSummary';
   });
 
-  const convertFormatDate = (dateStr) => {
-    // Create a Date object from the date string
-    const date = new window.Date(dateStr);
-    // Define an array of month names
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    // Get the month name and day of the month as numbers
-    const monthName = months[date.getMonth()];
-    const dayOfMonth = date.getDate();
-
-    // Determine the suffix for the day of the month
-    let daySuffix;
-    if (dayOfMonth % 10 === 1 && dayOfMonth !== 11) {
-      daySuffix = 'st';
-    } else if (dayOfMonth % 10 === 2 && dayOfMonth !== 12) {
-      daySuffix = 'nd';
-    } else if (dayOfMonth % 10 === 3 && dayOfMonth !== 13) {
-      daySuffix = 'rd';
-    } else {
-      daySuffix = 'th';
-    }
-
-    // Create the formatted date string
-    const formattedDate = `${monthName}, ${dayOfMonth}${daySuffix} ${date.getFullYear()}`;
-
-    return formattedDate;
-  };
-  const SelectedOutlet = outlet.find(
-    (item) => `outlet::${item.id}` === responseSubmit.outletId
-  );
-  const convertTimeToStr = (seconds) => {
-    // Calculate the number of hours and minutes
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    // Create the formatted string
-    if (hours > 0) {
-      return `${hours}h ${minutes}min`;
-    } else if (minutes > 0) {
-      return `${minutes}min`;
-    } else {
-      return '';
-    }
-  };
   const handleCurrency = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
@@ -123,8 +66,20 @@ const BookingSubmitted = () => {
   };
 
   if (performance.getEntriesByType('navigation')[0].type === 'reload') {
-    window.location.href = '/'; // replace with the URL of your home page
+    window.location.href = '/';
   }
+
+  useEffect(() => {
+    const handlePopstate = () => {
+      window.location.href = changeFormatURl('/history');
+    };
+
+    window.addEventListener('popstate', handlePopstate);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopstate);
+    };
+  }, []);
 
   const styleSheet = {
     container: {
@@ -135,11 +90,6 @@ const BookingSubmitted = () => {
       height: '99.3vh',
       borderRadius: '8px',
       boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: '1fr 85px',
-      gap: '0px 15px',
-      gridTemplateAreas: '"."\n    "."',
       overflowY: 'auto',
     },
     gridStyle3Col: {
@@ -153,93 +103,136 @@ const BookingSubmitted = () => {
     },
   };
 
-  const IconsReflexology = () => {
-    return (
-      <svg
-        width='18'
-        height='18'
-        viewBox='0 0 18 18'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M3 13.5C3.41421 13.5 3.75 13.1642 3.75 12.75C3.75 12.3358 3.41421 12 3 12C2.58579 12 2.25 12.3358 2.25 12.75C2.25 13.1642 2.58579 13.5 3 13.5Z'
-          stroke={color.primary}
-          stroke-width='1.25'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-        />
-        <path
-          d='M6.75 4.5C7.16421 4.5 7.5 4.16421 7.5 3.75C7.5 3.33579 7.16421 3 6.75 3C6.33579 3 6 3.33579 6 3.75C6 4.16421 6.33579 4.5 6.75 4.5Z'
-          stroke={color.primary}
-          stroke-width='1.25'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-        />
-        <path
-          d='M3 16.5L6 15V12.75H15M8.25 15H15M6 10.5L8.25 9L9 6C11.25 6.75 11.25 9 11.25 10.5'
-          stroke={color.primary}
-          stroke-width='1.25'
-          stroke-linecap='round'
-          stroke-linejoin='round'
-        />
-      </svg>
-    );
-  };
   const Timeline = () => {
-    return (
-      <div
-        style={{
-          width: '58%',
-          marginTop: '10px',
-          marginBottom: '10px',
-          fontSize: '14px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontWeight: 500,
-        }}
-      >
-        <div style={{ color: 'rgba(183, 183, 183, 1)', fontWeight: 500 }}>
-          m Your Booking
-        </div>
-        <hr
-          style={{
-            width: '33px',
-            padding: 0,
-            margin: 0,
-            backgroundColor: 'rgba(183, 183, 183, 1)',
-          }}
-        />
+    if (gadgetScreen) {
+      return (
         <div
           style={{
+            width: '58%',
+            marginTop: '40px',
+            marginBottom: '10px',
+            fontSize: '14px',
             display: 'flex',
-            justifyContent: 'center',
             alignItems: 'center',
+            justifyContent: 'space-between',
+            fontWeight: 500,
           }}
         >
           <div
             style={{
-              width: '24px',
-              height: '24px',
-              lineHeight: '24px',
-              textAlign: 'center',
-              backgroundColor: color.primary,
-              color: 'white',
+              minWidth: '103px',
+              color: 'rgba(183, 183, 183, 1)',
               fontWeight: 500,
-              borderRadius: '100%',
             }}
           >
-            2
+            m Your Booking
           </div>
+          <hr
+            style={{
+              width: '100%',
+              padding: 0,
+              margin: '0 7px',
+              backgroundColor: 'rgba(183, 183, 183, 1)',
+            }}
+          />
           <div
-            style={{ marginLeft: '5px', color: color.primary, fontWeight: 600 }}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
-            Finish
+            <div
+              style={{
+                minWidth: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                fontWeight: 500,
+                borderRadius: '100%',
+              }}
+            >
+              3
+            </div>
+            <div
+              style={{
+                marginLeft: '5px',
+                color: color.primary,
+                fontWeight: 600,
+              }}
+            >
+              Finish
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div
+          style={{
+            width: '58%',
+            marginTop: '20px',
+            marginBottom: '10px',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontWeight: 500,
+          }}
+        >
+          <div
+            style={{
+              minWidth: '103px',
+              color: 'rgba(183, 183, 183, 1)',
+              fontWeight: 500,
+            }}
+          >
+            m Your Booking
+          </div>
+          <hr
+            style={{
+              width: '50%',
+              padding: 0,
+              margin: '0 7px',
+              backgroundColor: 'rgba(183, 183, 183, 1)',
+            }}
+          />
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                lineHeight: '24px',
+                textAlign: 'center',
+                backgroundColor: color.primary,
+                color: 'white',
+                fontWeight: 500,
+                borderRadius: '100%',
+              }}
+            >
+              3
+            </div>
+            <div
+              style={{
+                marginLeft: '5px',
+                color: color.primary,
+                fontWeight: 600,
+              }}
+            >
+              Finish
+            </div>
+          </div>
+        </div>
+      );
+    }
   };
 
   const MessageAndLabel = () => {
@@ -385,7 +378,7 @@ const BookingSubmitted = () => {
                 color: color.primary,
               }}
             >
-              {SelectedOutlet.name}
+              {responseSubmit.outlet.name}
             </div>
             <div
               style={{
@@ -394,7 +387,7 @@ const BookingSubmitted = () => {
                 fontSize: '14px',
               }}
             >
-              {SelectedOutlet?.address}
+              {responseSubmit.outlet?.address}
             </div>
           </div>
         </div>
@@ -500,18 +493,17 @@ const BookingSubmitted = () => {
             <div
               style={{
                 fontWeight: 600,
-                fontSize: '14px',
                 color: 'black',
               }}
             >
-              Estimated Price
+              Estimated&nbsp;
+              {settingAppoinmentShowPrice?.settingValue ? 'Price' : 'Duration'}
             </div>
             <div
               style={{
                 fontWeight: 'bold',
                 justifySelf: 'self-end',
                 color: color.primary,
-                fontSize: '14px',
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
@@ -542,7 +534,17 @@ const BookingSubmitted = () => {
         >
           <div style={{ width: '90%', margin: 'auto' }}>
             <div
-              style={{ color: 'black', fontWeight: 500, fontSize: '14px' }}
+              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
+            >
+              Information
+            </div>
+            <div
+              style={{
+                color: 'black',
+                fontWeight: 500,
+                fontSize: '14px',
+                marginTop: '16px',
+              }}
               ref={ref}
               dangerouslySetInnerHTML={{
                 __html: settingTextInformation?.settingValue,
@@ -560,6 +562,10 @@ const BookingSubmitted = () => {
     return (
       <div
         onClick={() => {
+          dispatch({
+            type: CONSTANT.TAB_STATE_HISTORY_APPOINTMENT,
+            payload: 'appointment',
+          });
           dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
           window.location.href = changeFormatURl('/history');
         }}
@@ -679,7 +685,7 @@ const BookingSubmitted = () => {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '50px 1fr',
+            gridTemplateRows: '70px 1fr',
             gridAutoColumns: '1fr',
             gap: '0px 0px',
             gridAutoFlow: 'row',

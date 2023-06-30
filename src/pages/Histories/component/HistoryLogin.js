@@ -1,36 +1,33 @@
 import config from 'config';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import loadable from '@loadable/component';
+
 import { HistoryAction } from 'redux/actions/HistoryAction';
-import HistoryTransaction from 'components/history/HistoryTransaction';
-import HistoryPending from 'components/history/HistoryPending';
+import useMobileSize from 'hooks/useMobileSize';
+
+const HistoryTransaction = loadable(() =>
+  import('components/history/HistoryTransaction')
+);
+const HistoryPending = loadable(() =>
+  import('components/history/HistoryPending')
+);
 
 const History = () => {
   const dispatch = useDispatch();
-  const [stateTabs, setStateTabs] = useState('ordered');
+  const mobileSize = useMobileSize();
+
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const [appointmentFeature, setAppointmentFeature] = useState(false);
+  const setting = useSelector((state) => state.order.setting);
 
-  const style = {
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-    },
-  };
+  const stateTabs = window.location.hash.split('?')[1] || 'ordered';
 
   useEffect(() => {
+    let isMounted = true;
+
     const getDataBasketPending = async () => {
       let response = await dispatch(
         HistoryAction.getBasketPending({
@@ -38,12 +35,26 @@ const History = () => {
           skip: 0,
         })
       );
-      if (response.resultCode === 200) {
+      if (response.resultCode === 200 && isMounted) {
         setDataPending(response.data);
       }
     };
+
     getDataBasketPending();
-  }, [stateTabs]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [stateTabs, dispatch]);
+
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue) {
+      setAppointmentFeature(settingAppoinment.settingValue);
+    }
+  }, [setting]);
 
   useEffect(() => {
     localStorage.removeItem(`${config.prefix}_dataBasket`);
@@ -51,9 +62,28 @@ const History = () => {
     localStorage.removeItem(`${config.prefix}_selectedPoint`);
   }, []);
 
+  const changeFormatURl = (path) => {
+    const url = window.location.href;
+    let urlConvert = url.replace(/\/[^/]+$/, path);
+    return urlConvert;
+  };
+
+  const handleChangeTab = (type) => {
+    window.location.href = changeFormatURl(`/history?${type}`);
+  };
+
   const RenderHeaderTab = () => {
+    const topAppointment = mobileSize ? '165px' : '175px';
+    const topCommon = mobileSize ? '50px' : '60px';
+
     return (
-      <div style={{ width: '100%' }}>
+      <div
+        style={{
+          width: '100%',
+          position: 'fixed',
+          top: appointmentFeature ? topAppointment : topCommon,
+        }}
+      >
         <div
           style={{
             marginTop: '15px',
@@ -70,7 +100,7 @@ const History = () => {
           }}
         >
           <div
-            onClick={() => setStateTabs('ordered')}
+            onClick={() => handleChangeTab('ordered')}
             style={{
               backgroundColor:
                 stateTabs === 'ordered' ? color.primary : 'white',
@@ -80,10 +110,10 @@ const History = () => {
               lineHeight: '50px',
             }}
           >
-            Ordered
+            Order
           </div>
           <div
-            onClick={() => setStateTabs('pendingorder')}
+            onClick={() => handleChangeTab('pendingorder')}
             style={{
               backgroundColor:
                 stateTabs === 'pendingorder' ? color.primary : 'white',
@@ -102,13 +132,19 @@ const History = () => {
 
   const RenderMain = () => {
     if (stateTabs === 'ordered') {
-      return <HistoryTransaction countryCode={companyInfo?.countryCode} />;
+      return (
+        <HistoryTransaction
+          countryCode={companyInfo?.countryCode}
+          isAppointment={appointmentFeature}
+        />
+      );
     } else if (stateTabs === 'pendingorder') {
       return (
         <HistoryPending
           dataPending={dataPending?.dataPending}
           dataPendingLength={dataPending?.dataPendingLength}
           countryCode={companyInfo?.countryCode}
+          isAppointment={appointmentFeature}
         />
       );
     }

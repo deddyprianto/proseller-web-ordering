@@ -124,6 +124,7 @@ function getCampaignPoints(payload = null, companyId = null) {
       response.Data = {
         campaignDescription: response_.campaignDesc,
         pendingPoints: response.Data.pendingPoints,
+        totalPendingPoints: response.Data.totalPendingPoints,
         lockPoints: response.Data.lockPoints || 0,
         defaultPoints: response.Data.defaultPoints || 0,
         totalPoint,
@@ -154,10 +155,23 @@ function getCampaignByPoints(payload = null) {
   };
 }
 
+function getPendingRewards(payload, type) {
+  return async () => {
+    let response = await CRMService.api(
+      'GET',
+      payload,
+      `customer/pending-rewards/${type}`,
+      'bearer'
+    );
+
+    return response;
+  };
+}
+
 function setData(data, constant) {
   return {
     type: constant,
-    data: data.Data,
+    data: data?.Data,
   };
 }
 
@@ -165,4 +179,5 @@ export const CampaignAction = {
   getCampaignPoints,
   getCampaignStamps,
   getCampaignByPoints,
+  getPendingRewards,
 };

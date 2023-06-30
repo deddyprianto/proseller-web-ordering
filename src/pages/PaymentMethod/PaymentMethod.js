@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -26,28 +21,16 @@ import config from 'config';
 import Loading from 'components/loading/Loading';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
+import useMobileSize from 'hooks/useMobileSize';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const PaymentMethodPage = () => {
-  const useWindowSize = () => {
-    const [size, setSize] = useState([0, 0]);
-    useLayoutEffect(() => {
-      function updateSize() {
-        setSize([window.innerWidth, window.innerHeight]);
-      }
-      window.addEventListener('resize', updateSize);
-      updateSize();
-      return () => window.removeEventListener('resize', updateSize);
-    }, []);
-    return size;
-  };
-
   const colorState = useSelector((state) => state.theme.color);
   const account = useSelector((state) => state.auth.account.idToken.payload);
   const amountToPay = useSelector((state) => state.payment.totalPaymentAmount);
 
-  const [width] = useWindowSize();
-  const gadgetScreen = 900 > width;
+  const mobileSize = useMobileSize();
 
   const profileRouteMatch = useRouteMatch('/profile/payment-method');
 
@@ -55,7 +38,7 @@ const PaymentMethodPage = () => {
     root: {
       boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
       padding: 1,
-      borderRadius: gadgetScreen ? 2 : 4,
+      borderRadius: mobileSize ? 4 : 2,
       marginBottom: 2,
       color: '#FFF',
       cursor: 'pointer',
@@ -81,15 +64,16 @@ const PaymentMethodPage = () => {
       fontSize: 12,
     },
     boxContent: {
-      position: 'sticky',
-      zIndex: 10,
-      width: 'auto',
-      marginTop: 16,
       boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+      backgroundColor: '#FFF',
+      flexDirection: 'row',
+      position: 'fixed',
+      zIndex: 10,
+      width: '100%',
       display: 'flex',
       height: 40,
-      left: 0,
-      right: 0,
+      alignItems: 'center',
+      marginTop: mobileSize ? 8 : 9,
     },
     buttonSetDefault: {
       width: '100%',
@@ -191,10 +175,11 @@ const PaymentMethodPage = () => {
       setPaymentMethodList(responseCompanyInfo);
     }
     setIsLoading(false);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -218,6 +203,7 @@ const PaymentMethodPage = () => {
         clearInterval(interval);
       }
     }, 5000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openDialogConfirm]);
 
   const handleCheckRegisteredCard = async (payload) => {
@@ -241,7 +227,7 @@ const PaymentMethodPage = () => {
     };
 
     setRenderInNewTab(item.forceNewTab || false);
-    
+
     handleCheckRegisteredCard(payload);
   };
 
@@ -438,7 +424,13 @@ const PaymentMethodPage = () => {
           },
         }}
       >
-        <iframe src={paymentURL} width='100%' height='950px' onScroll={false} />
+        <iframe
+          src={paymentURL}
+          width='100%'
+          height='950px'
+          onScroll={false}
+          title='payment'
+        />
       </Dialog>
     );
   };
@@ -446,9 +438,9 @@ const PaymentMethodPage = () => {
   const openNewTab = (url) => {
     const win = window.open(url, '_blank');
     win.focus();
-    
+
     return;
-  }
+  };
 
   const dialogConfirmation = () => {
     return (
@@ -482,7 +474,7 @@ const PaymentMethodPage = () => {
             variant='contained'
             onClick={() => {
               setOpenDialogConfirm(false);
-              
+
               if (renderInNewTab) {
                 openNewTab(paymentURL);
               } else {
@@ -665,7 +657,7 @@ const PaymentMethodPage = () => {
         </div>
       </Box>
 
-      <Box className='site-main' sx={{ marginTop: 2 }}>
+      <Box className='site-main' sx={{ paddingTop: 15 }}>
         <Typography
           color={colorState.primary}
           textAlign='center'
@@ -676,8 +668,8 @@ const PaymentMethodPage = () => {
         </Typography>
         <Box
           sx={{
-            marginTop: '1em',
-            marginBottom: '5em',
+            paddingTop: '1em',
+            paddingBottom: '5em',
           }}
         >
           {isLoading ? (

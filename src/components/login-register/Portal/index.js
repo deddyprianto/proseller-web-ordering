@@ -11,7 +11,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useHistory, useLocation } from 'react-router-dom';
 import countryCodes from 'country-codes-list';
 import cx from 'classnames';
-import LoadingOverlay from 'react-loading-overlay';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import IconButton from '../../../assets/images/VectorButton.png';
@@ -48,7 +47,6 @@ const Portal = ({
   const initialCountry = (companyInfo && companyInfo.countryCode) || 'SG';
   const initialCodePhone = '+65';
   const [value, setValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [valueSearchCode, setValueSearchCode] = useState('');
   const [phoneCountryCode, setPhoneCountryCode] = useState(initialCodePhone);
@@ -56,13 +54,13 @@ const Portal = ({
     setDropdownOpen((prevState) => !prevState);
     setValueSearchCode('');
   };
+  const isGuestMode = localStorage.getItem('settingGuestMode');
 
   useEffect(() => {
-    const isGuestMode = localStorage.getItem('settingGuestMode');
     if (isGuestMode === 'GuestMode') {
       dispatch({ type: CONSTANT.SAVE_GUESTMODE_STATE, payload: isGuestMode });
     }
-  }, [localStorage.getItem('settingGuestMode')]);
+  }, [isGuestMode, dispatch]);
 
   useEffect(() => {
     if (initialCountry === 'ID') {
@@ -73,6 +71,7 @@ const Portal = ({
       method === 'phone' ? 'phoneNumber' : 'email',
       method === 'phone' ? phoneCountryCode + value : value
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, phoneCountryCode, companyInfo]);
 
   useEffect(() => {
@@ -81,7 +80,7 @@ const Portal = ({
         .querySelector('#phone-number-input')
         .addEventListener('keypress', (evt) => {
           if (
-            (evt.which != 8 && evt.which != 0 && evt.which < 48) ||
+            (evt.which !== 8 && evt.which !== 0 && evt.which < 48) ||
             evt.which > 57
           ) {
             evt.preventDefault();
@@ -154,7 +153,11 @@ const Portal = ({
                   }}
                 >
                   <div id='selected-country-code'>{phoneCountryCode}</div>
-                  <img src={iconDown} style={{ marginLeft: '10px' }} />
+                  <img
+                    src={iconDown}
+                    style={{ marginLeft: '10px' }}
+                    alt='ic_down'
+                  />
                 </DropdownToggle>
                 <DropdownMenu
                   style={{
@@ -191,7 +194,11 @@ const Portal = ({
                         onChange={(e) => setValueSearchCode(e)}
                       />
                     </div>
-                    <img src={search} style={{ marginRight: '10px' }} />
+                    <img
+                      src={search}
+                      style={{ marginRight: '10px' }}
+                      alt='search'
+                    />
                   </div>
                   {filteredPhoneCode.map((item, i) => {
                     const getPhoneCodeFromStr = item.substring(
@@ -267,7 +274,6 @@ const Portal = ({
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
           onClick={() => {
-            setIsLoading(true);
             handlePhoneCheck();
           }}
         >
@@ -304,7 +310,6 @@ const Portal = ({
                 styles.emailField
               )}
               onChange={(e) => {
-                const regEmail = /^[\w][\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
                 setValue(e.target.value);
               }}
             ></input>
@@ -316,7 +321,6 @@ const Portal = ({
           disabled={isSubmitting}
           className={cx('button', styles.submitButton)}
           onClick={() => {
-            setIsLoading(true);
             handleEmailCheck();
           }}
         >
@@ -489,7 +493,12 @@ const Portal = ({
                 className={styles.myFont}
               >
                 <span>
-                  <img src={IconButton} width={14.4} height={19.2} />
+                  <img
+                    src={IconButton}
+                    width={14.4}
+                    height={19.2}
+                    alt='ic_button'
+                  />
                 </span>
                 <div style={{ marginLeft: '5px' }}>Guest Checkout</div>
               </button>

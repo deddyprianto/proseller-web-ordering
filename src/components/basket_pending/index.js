@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import Shimmer from 'react-shimmer-effect';
+import moment from 'moment';
+
 import config from '../../config';
 import { OrderAction } from '../../redux/actions/OrderAction';
 import { MasterDataAction } from '../../redux/actions/MasterDataAction';
 import ViewCartBasket from './viewCartBasket';
 import ViewProsessBasket from './viewProssessBasket';
-import moment from 'moment';
-import _ from 'lodash';
 import Sound_Effect from '../../assets/sound/Sound_Effect.mp3';
 import { isEmptyArray, isEmptyObject } from '../../helpers/CheckEmpty';
 import ModalInfoTransfer from '../payment/ModalInfoTransfer';
+
 const Swal = require('sweetalert2');
 const base64 = require('base-64');
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -60,6 +61,8 @@ class Basket extends Component {
       viewCartStatus: true,
       widthSelected: 0,
       xstep: 1,
+      size: { width: 0, height: 0 },
+      isMobileSize: false,
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -84,6 +87,9 @@ class Basket extends Component {
     await this.checkOfflineCart();
     this.audio.addEventListener('ended', () => this.setState({ play: false }));
 
+    this.updateSize();
+    window.addEventListener('resize', this.updateSize);
+
     let param = this.getUrlParameters();
     if (param && param['input']) {
       param = this.getUrlParameters(base64.decode(decodeURI(param['input'])));
@@ -104,6 +110,24 @@ class Basket extends Component {
       } catch (error) {}
     }, 0);
     this.getDataBasket();
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateSize);
+  }
+
+  updateSize = () => {
+    const { innerWidth, innerHeight } = window;
+    this.setState({ size: { width: innerWidth, height: innerHeight } });
+    this.checkMobileSize(innerWidth);
+  };
+
+  checkMobileSize = (width) => {
+    if (width < 640) {
+      this.setState({ isMobileSize: true });
+    } else {
+      this.setState({ isMobileSize: false });
+    }
   };
 
   getUrlParameters = (pageParamString = null) => {
@@ -417,9 +441,9 @@ class Basket extends Component {
       let discount = 0;
       let checkProduct = undefined;
       if (dataBasket.details && dataBasket.details.length > 0) {
-        checkProduct = _.filter(dataBasket.details, {
-          productID: selectedVoucher.productID,
-        })[0];
+        checkProduct = dataBasket.details.find(
+          (item) => item.productID === selectedVoucher.productID
+        );
       }
       if (checkOutlet) {
         if (selectedVoucher.applyToSpecificProduct) {
@@ -624,8 +648,14 @@ class Basket extends Component {
   };
 
   render() {
-    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } =
-      this.state;
+    let {
+      loadingShow,
+      dataBasket,
+      countryCode,
+      viewCart,
+      storeDetail,
+      isMobileSize,
+    } = this.state;
     let { isLoggedIn, product, setting } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;
@@ -650,7 +680,9 @@ class Basket extends Component {
     return (
       <div
         className='col-full'
-        style={{ marginTop: config.prefix === 'emenu' ? 120 : 140 }}
+        style={{
+          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 65 : 75,
+        }}
         id='cardItem'
       >
         <div id='close-modal' />
@@ -668,10 +700,10 @@ class Basket extends Component {
                 position: 'fixed',
                 zIndex: 10,
                 width: '100%',
-                marginTop: -60,
                 boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
                 display: 'flex',
                 height: 40,
+                alignItems: 'center',
               }}
               className='background-theme'
             >
@@ -688,13 +720,13 @@ class Basket extends Component {
               style={{ textAlign: 'center' }}
             >
               {loadingShow && (
-                <Row>
+                <Row style={{ paddingTop: 50 }}>
                   <Col sm={6}>{this.viewShimmer()}</Col>
                   <Col sm={6}>{this.viewShimmer()}</Col>
                 </Row>
               )}
               {!loadingShow && !dataBasket && (
-                <div>
+                <div style={{ paddingTop: 50 }}>
                   <img
                     src={config.url_emptyImage}
                     alt='is empty'
@@ -704,7 +736,7 @@ class Basket extends Component {
                 </div>
               )}
               {!loadingShow && dataBasket && (
-                <div style={{ marginBottom: 250 }}>
+                <div style={{ marginBottom: 250, paddingTop: 50 }}>
                   {viewCart && (
                     <ViewCartBasket
                       data={this.state}
@@ -734,11 +766,10 @@ class Basket extends Component {
                   {!viewCart && (
                     <ViewProsessBasket
                       data={this.state}
-                      setting={this.props.setting || []}
                       dataBasket={dataBasket}
                       countryCode={countryCode}
                       isLoggedIn={isLoggedIn}
-                      setting={setting}
+                      setting={setting || []}
                       getCurrency={(price) => this.getCurrency(price)}
                       setViewCart={(status) => this.setViewCart(status)}
                       handleCompletedOrdering={(status) =>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import _ from "lodash";
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import _ from 'lodash';
 
 export const Variant = ({ options, variants, setVariantProduct, product }) => {
   const initialVariant = options.reduce((acc, option) => {
@@ -20,6 +20,7 @@ export const Variant = ({ options, variants, setVariantProduct, product }) => {
 
   useEffect(() => {
     setSelectedVariant(initialVariant);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
 
   useEffect(() => {
@@ -28,23 +29,24 @@ export const Variant = ({ options, variants, setVariantProduct, product }) => {
     });
     if (variantProduct) {
       const variantName = variantProduct.attributes.reduce((acc, attribute) => {
-        return acc + " " + attribute.value;
-      }, "");
+        return acc + ' ' + attribute.value;
+      }, '');
       setVariantProduct({ ...variantProduct, variantName });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVariant]);
 
   return (
     <div>
       {options.map((option) => {
         return (
-          <div className="card card-modifier" key={option.optionName}>
+          <div className='card card-modifier' key={option.optionName}>
             <div
               onClick={() => {}}
-              className="card-header header-modifier"
-              style={{ display: "flex", justifyContent: "space-between" }}
+              className='card-header header-modifier'
+              style={{ display: 'flex', justifyContent: 'space-between' }}
             >
-              <p className="color" style={{ margin: 0 }}>
+              <p className='color' style={{ margin: 0 }}>
                 <b>{option.optionName} </b>
               </p>
               {/* <i
@@ -56,17 +58,17 @@ export const Variant = ({ options, variants, setVariantProduct, product }) => {
               <div style={{ marginLeft: 5, marginRight: 10 }}>
                 {option.options.map((item) => (
                   <div
-                    className="item-modifier"
+                    className='item-modifier'
                     style={{
-                      display: "flex",
-                      alignItems: "center",
+                      display: 'flex',
+                      alignItems: 'center',
                       paddingBottom: 15,
                     }}
                     key={item}
                   >
                     <div
-                      style={{ display: "flex", alignItems: "center" }}
-                      className="title-modifier"
+                      style={{ display: 'flex', alignItems: 'center' }}
+                      className='title-modifier'
                       onClick={() => {
                         setVariant(option.optionName, item);
                       }}
@@ -75,20 +77,20 @@ export const Variant = ({ options, variants, setVariantProduct, product }) => {
                         {selectedVariant[option.optionName] === item ? (
                           <div
                             style={{
-                              border: "1px solid gray",
+                              border: '1px solid gray',
                               width: 20,
                               height: 20,
                               borderRadius: 50,
                               marginLeft: 3,
                               padding: 2,
-                              justifyContent: "center",
-                              alignItems: "center",
-                              display: "flex",
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              display: 'flex',
                             }}
                           >
                             <div
                               style={{
-                                backgroundColor: "#3498db",
+                                backgroundColor: '#3498db',
                                 width: 10,
                                 height: 10,
                                 borderRadius: 50,
@@ -98,7 +100,7 @@ export const Variant = ({ options, variants, setVariantProduct, product }) => {
                         ) : (
                           <div
                             style={{
-                              border: "1px solid gray",
+                              border: '1px solid gray',
                               width: 20,
                               height: 20,
                               borderRadius: 50,
@@ -109,8 +111,8 @@ export const Variant = ({ options, variants, setVariantProduct, product }) => {
                       </div>
 
                       <div
-                        className="subtitle-modifier"
-                        style={{ lineHeight: "20px", marginRight: 10 }}
+                        className='subtitle-modifier'
+                        style={{ lineHeight: '20px', marginRight: 10 }}
                       >
                         {item}
                       </div>

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
-import { VoucherAction } from "../../../redux/actions/VoucherAction";
+import { VoucherAction } from '../../../redux/actions/VoucherAction';
 
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
-import cx from "classnames";
+import cx from 'classnames';
 
-import styles from "./styles.module.css";
-import voucherIcon from "../../../assets/images/voucher-icon.png";
+import styles from './styles.module.css';
+import voucherIcon from '../../../assets/images/voucher-icon.png';
 
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
 const GiftVoucherModal = ({
   voucher,
@@ -24,19 +24,19 @@ const GiftVoucherModal = ({
   account,
 }) => {
   const [count, setCount] = useState(0);
-  const [method, setMethod] = useState("email");
-  const [receiver, setReceiver] = useState("");
+  const [method, setMethod] = useState('email');
+  const [receiver, setReceiver] = useState('');
 
   const handleSubmit = () => {
     const { email, phoneNumber } = account;
     if (email === receiver || phoneNumber === receiver) {
       dispatch({
-        type: "SEND_VOUCHER_FAILED",
+        type: 'SEND_VOUCHER_FAILED',
         payload: "Can't gift voucher to your own account",
       });
     } else {
       const sendMethod =
-        method === "email" ? "transferToEmail" : "transferToPhoneNumber";
+        method === 'email' ? 'transferToEmail' : 'transferToPhoneNumber';
       const payload = {
         voucherID: voucher.id,
         quantity: count,
@@ -47,9 +47,9 @@ const GiftVoucherModal = ({
   };
 
   useEffect(() => {
-    document.body.style.overflowY = "hidden";
+    document.body.style.overflowY = 'hidden';
     return () => {
-      document.body.style.overflowY = "scroll";
+      document.body.style.overflowY = 'scroll';
     };
   }, []);
 
@@ -57,29 +57,30 @@ const GiftVoucherModal = ({
     if (count > voucher.totalRedeem) {
       setCount(voucher.totalRedeem);
     }
-    if (count < 0 || count === "") {
+    if (count < 0 || count === '') {
       setCount(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
   useEffect(() => {
-    setReceiver("");
+    setReceiver('');
     dispatch({
-      type: "INIT_VOUCHER_SEND",
+      type: 'INIT_VOUCHER_SEND',
     });
-  }, [method]);
+  }, [method, dispatch]);
 
   return (
     <div className={styles.modalContainer}>
       {isSubmitting ? Swal.showLoading() : Swal.close()}
-      <div className={cx(styles.modal, "background-theme")}>
+      <div className={cx(styles.modal, 'background-theme')}>
         <div className={styles.header}>
           <div>Gift Voucher</div>
           <button
             onClick={onClose}
-            className={cx(styles.closeButton, "close close-modal")}
+            className={cx(styles.closeButton, 'close close-modal')}
           >
-            <i className="fa fa-times"></i>
+            <i className='fa fa-times'></i>
           </button>
         </div>
         <div className={styles.scrollable}>
@@ -87,15 +88,18 @@ const GiftVoucherModal = ({
             <div className={styles.image}>
               <img
                 src={voucher.image ? voucher.image : voucherIcon}
-                alt="voucher"
+                alt='voucher'
               />
             </div>
             <div className={styles.name}>{voucher.name}</div>
-            <div className={styles.description}>{`Discount ${voucher.voucherType === "discPercentage"
-              ? voucher.voucherValue + "%"
-              : "$" + voucher.voucherValue
-              }`}</div>
-            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
+            <div className={styles.description}>{`Discount ${
+              voucher.voucherType === 'discPercentage'
+                ? voucher.voucherValue + '%'
+                : '$' + voucher.voucherValue
+            }`}</div>
+            <div
+              style={{ height: 1, backgroundColor: '#CDCDCD', width: '100%' }}
+            />
             <div className={styles.receiverForm} style={{ marginBottom: 10 }}>
               {failed && (
                 <div className={styles.errorMessage}>{errorMessage}</div>
@@ -105,47 +109,56 @@ const GiftVoucherModal = ({
               )}
               <div>Gift to:</div>
               <input
-                type={method === "email" ? "email" : "number"}
-                name="receiver"
-                placeholder={`Enter ${method === "email" ? "email" : "phone number"}`}
+                type={method === 'email' ? 'email' : 'number'}
+                name='receiver'
+                placeholder={`Enter ${
+                  method === 'email' ? 'email' : 'phone number'
+                }`}
                 value={receiver}
                 onChange={(e) => setReceiver(e.target.value)}
               ></input>
               <div
                 style={{ color: color }}
                 onClick={(e) =>
-                  setMethod(method !== "email" ? "email" : "phone number")
+                  setMethod(method !== 'email' ? 'email' : 'phone number')
                 }
               >
                 <strong>
-                  Use {method !== "email" ? "email" : "phone number"}
+                  Use {method !== 'email' ? 'email' : 'phone number'}
                 </strong>
               </div>
             </div>
-            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
-            <div style={{ marginTop: 10 }}>Voucher owned : {voucher.totalRedeem} items</div>
-            <div className={styles.counter} style={{ marginTop: -30, marginBottom: -20 }}>
+            <div
+              style={{ height: 1, backgroundColor: '#CDCDCD', width: '100%' }}
+            />
+            <div style={{ marginTop: 10 }}>
+              Voucher owned : {voucher.totalRedeem} items
+            </div>
+            <div
+              className={styles.counter}
+              style={{ marginTop: -30, marginBottom: -20 }}
+            >
               <button
-                className="font-color-theme"
+                className='font-color-theme'
                 onClick={() => count > 0 && setCount(count - 1)}
                 disabled={count === 0}
               >
                 -
               </button>
               <input
-                type="number"
-                name="count"
+                type='number'
+                name='count'
                 min={0}
                 value={count}
-                style={{height: 40, fontSize: 20}}
+                style={{ height: 40, fontSize: 20 }}
                 onChange={(e) =>
-                  e.target.value !== ""
+                  e.target.value !== ''
                     ? setCount(parseInt(e.target.value))
                     : setCount(0)
                 }
               ></input>
               <button
-                className="font-color-theme"
+                className='font-color-theme'
                 onClick={() =>
                   count <= voucher.totalRedeem && setCount(count + 1)
                 }
@@ -154,16 +167,19 @@ const GiftVoucherModal = ({
                 +
               </button>
             </div>
-            <div style={{ height: 1, backgroundColor: "#CDCDCD", width: "100%" }} />
+            <div
+              style={{ height: 1, backgroundColor: '#CDCDCD', width: '100%' }}
+            />
           </div>
 
           <div className={styles.footer} style={{ marginTop: 10 }}>
-            <button 
-              onClick={handleSubmit} 
-              disabled={isSubmitting || count < 1} 
-              style={{ width: "100%", borderRadius: 5, height: 50 }}
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting || count < 1}
+              style={{ width: '100%', borderRadius: 5, height: 50 }}
             >
-              <i className="fa fa-paper-plane" aria-hidden="true"></i> Send Gifts
+              <i className='fa fa-paper-plane' aria-hidden='true'></i> Send
+              Gifts
             </button>
           </div>
         </div>

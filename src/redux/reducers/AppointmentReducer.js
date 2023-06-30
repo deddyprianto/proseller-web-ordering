@@ -17,12 +17,14 @@ function AppointmentReducer(
     textNotes: '',
     responseSubmit: {},
     staffID: '',
-    messageTimeSlot: '',
     indexPath: 0,
     timeActiveDropDown: '',
     bookingHistory: [],
     isLocationSelected: false,
     isDateSelected: false,
+    locationAppointmentPersisted: {},
+    cartSave: {},
+    tabStateHistoryAppointment: 'ordered',
   },
   action
 ) {
@@ -57,8 +59,6 @@ function AppointmentReducer(
       return { ...state, responseSubmit: action.payload };
     case CONSTANT.STAFFID_APPOINTMENT:
       return { ...state, staffID: action.payload };
-    case CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT:
-      return { ...state, messageTimeSlot: action.payload };
     case CONSTANT.INDEX_PATH_APPOINTMENT:
       return { ...state, indexPath: action.payload };
     case CONSTANT.TIME_ACTIVE_DROPDOWN_CART_APPOINTMENT:
@@ -69,6 +69,17 @@ function AppointmentReducer(
       return { ...state, isLocationSelected: action.payload };
     case CONSTANT.IS_DATE_SELECTED:
       return { ...state, isDateSelected: action.payload };
+    case CONSTANT.LOCATION_APPOINTMENT_PERSISTED: {
+      localStorage.setItem(
+        'LOCATION_APPOINTMENT_PERSISTED',
+        JSON.stringify(action.payload)
+      );
+      return { ...state, locationAppointmentPersisted: action.payload };
+    }
+    case CONSTANT.CART_SAVE_APPOINTMENT:
+      return { ...state, cartSave: action.payload };
+    case CONSTANT.TAB_STATE_HISTORY_APPOINTMENT:
+      return { ...state, tabStateHistoryAppointment: action.payload };
     default:
       return state;
   }

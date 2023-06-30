@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -17,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import fontStyles from './style/styles.module.css';
 import InputBase from '@mui/material/InputBase';
 import config from '../../config';
-import _, { split } from 'lodash';
+import _ from 'lodash';
 import MapAtom from './MapAtomGuestCo';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
@@ -165,6 +163,7 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
     }
     setStreetName(pinnedLocation?.userLocation);
     return pinnedLocation?.userLocation;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -355,7 +354,11 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
                     }}
                   >
                     {phoneCountryCode}
-                    <img src={iconDown} style={{ marginLeft: '5px' }} />
+                    <img
+                      src={iconDown}
+                      style={{ marginLeft: '5px' }}
+                      alt='icon_down'
+                    />
                   </DropdownToggle>
                   <DropdownMenu
                     style={{
@@ -391,7 +394,11 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
                           onChange={(e) => setValueSearchCode(e)}
                         />
                       </div>
-                      <img src={search} style={{ marginRight: '10px' }} />
+                      <img
+                        src={search}
+                        style={{ marginRight: '10px' }}
+                        alt='search'
+                      />
                     </div>
                     {filteredPhoneCode.map((item, i) => {
                       const getPhoneCodeFromStr = item.substring(
@@ -603,7 +610,7 @@ const ModalFormDeliveryCustomerDetail = ({ modalDeliveryAddress }) => {
           {renderErrorMessage(formik.errors.email)}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div>
-              <img src={iconSeru} />
+              <img src={iconSeru} alt='ic_alert' />
             </div>
             <div
               style={{

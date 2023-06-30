@@ -14,11 +14,15 @@ const HeaderTrackOrderHistory = ({ matches }) => {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
         gridTemplateRows: '1fr',
-        marginTop: matches ? '75px' : '70px',
+        marginTop: matches ? '95px' : '70px',
       }}
       onClick={() => history.goBack()}
     >
-      <img src={ArrowLeftIcons} style={{ marginLeft: '10px' }} />
+      <img
+        src={ArrowLeftIcons}
+        style={{ marginLeft: '10px' }}
+        alt='ic_arrow_left'
+      />
       <div className={style.title2} style={{ textAlign: 'center' }}>
         Order History
       </div>

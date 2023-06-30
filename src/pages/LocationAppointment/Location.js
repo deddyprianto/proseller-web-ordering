@@ -1,43 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import fontStyles from './style/styles.module.css';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
-import { CONSTANT } from 'helpers';
-import { useHistory } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { isEmptyObject } from 'helpers/CheckEmpty';
+
+import fontStyles from './style/styles.module.css';
+import { CONSTANT } from 'helpers';
+import { useHistory } from 'react-router-dom';
 import screen from 'hooks/useWindowSize';
 import { OrderAction } from 'redux/actions/OrderAction';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import { isEmpty } from 'helpers/utils';
+import AppointmentHeader from 'components/appointmentHeader';
+import { IconHistoryTime, IconPlace } from 'assets/iconsSvg/Icons';
+import imgOutletClosed from 'assets/images/outlet-closed.png';
 
-const Location = (props) => {
-  // some initial
-  const responsiveDesign = screen();
-  const gadgetScreen = responsiveDesign.width < 980;
+const Location = () => {
+  const { height, width } = screen();
+  const gadgetScreen = width < 980;
   const dispatch = useDispatch();
   const history = useHistory();
-  // some st
-  const [isLoading, setIsLoading] = useState(false);
-  const [openDropDownTime, setOpenDropDownTime] = useState(false);
-  const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
-    useState(false);
-  const [locationKeys, setLocationKeys] = useState([]);
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
 
-  // some sl
+  const [isLoading, setIsLoading] = useState(false);
+  const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
+    useState(false);
+  const [selectedLocationPersisted, setSelectedLocationPersisted] =
+    useState(null);
+  const [otherOutletDropdownSelected, setOtherOutletDropdownSelected] =
+    useState(0);
+
   const cartAppointment = useSelector(
     (state) => state.appointmentReducer.cartAppointment
   );
-  const outlet = useSelector((state) => state.outlet.outlets);
-  const selectedLocation = useSelector(
+  const locationAppointment = useSelector(
     (state) => state.appointmentReducer.locationAppointment
   );
   const color = useSelector((state) => state.theme.color);
@@ -45,25 +47,46 @@ const Location = (props) => {
     (state) => state.appointmentReducer.popupLocation
   );
   const outlets = useSelector((state) => state.outlet.outlets);
-  // some fn
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      history.replace('/');
+    }
+
+    const locationPersisted = localStorage.getItem(
+      'LOCATION_APPOINTMENT_PERSISTED'
+    );
+    const selectedLocationPersisted = JSON.parse(locationPersisted);
+    setSelectedLocationPersisted(selectedLocationPersisted);
+  }, [history, isLoggedIn]);
+
+  const selectedLocation = !selectedLocationPersisted
+    ? {}
+    : outlets?.find((val) => val.id === selectedLocationPersisted?.id);
+
   const handleSelectedOutlet = (item) => {
+    dispatch({
+      type: CONSTANT.TIME_SLOT_APPOINTMENT,
+      payload: [],
+    });
     if (cartAppointment?.details?.length > 0) {
       dispatch({
         type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
         payload: true,
       });
     } else {
-      dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
       dispatch({
-        type: CONSTANT.RESPONSE_TIMESLOT_ERROR_APPOINTMENT,
-        payload: '',
-      });
-      dispatch({
-        type: CONSTANT.LOCATION_APPOINTMENT,
+        type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
         payload: item,
       });
+      dispatch({ type: CONSTANT.IS_LOCATION_SELECTED, payload: true });
       history.goBack();
     }
+    dispatch({
+      type: CONSTANT.LOCATION_APPOINTMENT,
+      payload: item,
+    });
   };
   const changeFormatURl = (path) => {
     const url = window.location.href;
@@ -71,34 +94,29 @@ const Location = (props) => {
     return urlConvert;
   };
 
-  // some Effect
-  useEffect(() => {
-    if (isEmptyObject(selectedLocation)) {
-      dispatch({ type: CONSTANT.LOCATION_APPOINTMENT, payload: outlet[0] });
-    }
-  }, [outlet]);
+  const seeDirectionHandler = (lat, long) => {
+    const gMapAPI = 'https://maps.google.com?q=';
+    return window.open(gMapAPI + lat + ',' + long);
+  };
 
-  useEffect(() => {
-    return history.listen((location) => {
-      if (history.action === 'PUSH') {
-        console.log(location.pathname);
-        setLocationKeys([location.pathname]);
-        if (
-          location.pathname !== '/location' &&
-          !isEmptyObject(cartAppointment)
-        ) {
-          dispatch({
-            type: CONSTANT.IS_OPEN_MODAL_APPOINTMENT_LOCATION_PAGE,
-            payload: true,
-          });
-          history.push('/location');
-        }
-      }
+  const RenderTimeList = ({ data }) => {
+    const timeSlot = data?.length
+      ? data
+      : selectedLocation?.appointmentTimeSlot;
+
+    const customTimeSlot = [];
+
+    timeSlot?.forEach((item) => {
+      item.applicableDays.forEach((day) => {
+        customTimeSlot.push({
+          text: day.text,
+          start: item.start,
+          end: item.end,
+        });
+      });
     });
-  }, [locationKeys]);
 
-  const RenderTimeList = () => {
-    return selectedLocation?.operationalHours.map((item, i) => {
+    return customTimeSlot?.map((item, i) => {
       return (
         <ul key={i} style={{ padding: '5px 0px', margin: '5px 0px' }}>
           <li
@@ -111,11 +129,9 @@ const Location = (props) => {
               gridTemplateAreas: '". ."',
             }}
           >
+            <div style={{ fontSize: '14px', fontWeight: 500 }}>{item.text}</div>
             <div style={{ fontSize: '14px', fontWeight: 500 }}>
-              {item.nameOfDay}
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 500 }}>
-              {item.open} - {item.close}
+              {item.start} - {item.end}
             </div>
           </li>
         </ul>
@@ -123,14 +139,14 @@ const Location = (props) => {
     });
   };
 
-  const DropDownTimeSelected = () => {
-    if (openDropDownTimeSelected) {
+  const DropDownTimeSelected = (props) => {
+    if (props.isOpen) {
       return (
         <div
           style={{
             position: 'sticky',
             backgroundColor: 'white',
-            height: '270px',
+            height: 'auto',
             width: '65%',
             padding: '0px 10px',
             borderRadius: '5px',
@@ -140,55 +156,67 @@ const Location = (props) => {
             overflowY: 'auto',
           }}
         >
-          <RenderTimeList />
+          <RenderTimeList data={props.data} />
         </div>
       );
     } else {
       return null;
     }
   };
-  const PlaceIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        width='20'
-        height='20'
-        viewBox='0 0 24 24'
-        fill='none'
-        stroke='black'
-        strokeWidth={1.5}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        className='feather feather-map-pin'
-      >
-        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
-        <circle cx={12} cy={10} r={3} />
-      </svg>
-    );
-  };
 
-  const HistoryTimeIcon = ({ color }) => {
+  const LabelOpenTime = ({ style, data }) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    const customTimeSlot = [];
+
+    !isEmpty(data) &&
+      data?.forEach((item) => {
+        item.applicableDays.forEach((day) => {
+          customTimeSlot.push({
+            text: day.text,
+            value: Number(day.value),
+            start: item.start,
+            end: item.end,
+          });
+        });
+      });
+
+    const checkDayAvailable = customTimeSlot?.find(
+      (val) => val.value === now.getDay()
+    );
+
+    const appointmentTimeSlot =
+      !isEmpty(checkDayAvailable) && checkDayAvailable;
+
+    const startHour = appointmentTimeSlot?.start?.slice(0, 2);
+    const startMinutes = appointmentTimeSlot?.start?.slice(-2);
+    const endHour = appointmentTimeSlot?.end?.slice(0, 2);
+    const endMinutes = appointmentTimeSlot?.end?.slice(-2);
+
+    const startTimeInMinutes = startHour * 60 + Number(startMinutes);
+    const endTimeInMinutes = endHour * 60 + Number(endMinutes);
+
+    const currentTimeInMinutes = currentHour * 60 + Number(currentMinutes);
+
+    let label = 'See operational hour';
+
+    if (!isEmpty(checkDayAvailable)) {
+      if (
+        currentTimeInMinutes >= startTimeInMinutes &&
+        currentTimeInMinutes <= endTimeInMinutes
+      ) {
+        label = `Open now at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+      } else if (currentTimeInMinutes <= startTimeInMinutes) {
+        label = `Later at ${appointmentTimeSlot?.start} - ${appointmentTimeSlot?.end}`;
+      }
+    }
+
     return (
-      <svg
-        width={18}
-        height={19}
-        viewBox='0 0 18 19'
-        fill={color}
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          fillRule='evenodd'
-          clipRule='evenodd'
-          d='M9 2.75C5.27208 2.75 2.25 5.77208 2.25 9.5C2.25 13.2279 5.27208 16.25 9 16.25C12.7279 16.25 15.75 13.2279 15.75 9.5C15.75 5.77208 12.7279 2.75 9 2.75ZM0.75 9.5C0.75 4.94365 4.44365 1.25 9 1.25C13.5563 1.25 17.25 4.94365 17.25 9.5C17.25 14.0563 13.5563 17.75 9 17.75C4.44365 17.75 0.75 14.0563 0.75 9.5Z'
-          fill={color}
-        />
-        <path
-          fillRule='evenodd'
-          clipRule='evenodd'
-          d='M9 4.25C9.41421 4.25 9.75 4.58579 9.75 5V9.03647L12.3354 10.3292C12.7059 10.5144 12.8561 10.9649 12.6708 11.3354C12.4856 11.7059 12.0351 11.8561 11.6646 11.6708L8.66459 10.1708C8.4105 10.0438 8.25 9.78408 8.25 9.5V5C8.25 4.58579 8.58579 4.25 9 4.25Z'
-          fill={color}
-        />
-      </svg>
+      <div className={fontStyles.myFont} style={style}>
+        {label}
+      </div>
     );
   };
 
@@ -225,7 +253,7 @@ const Location = (props) => {
           borderRadius: '10px',
           padding: '10px 0px',
           marginBottom: '10px',
-          border: '1px solid red',
+          border: `1px solid ${color.primary}`,
         }}
       >
         <div
@@ -236,11 +264,10 @@ const Location = (props) => {
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
-            cursor: 'pointer',
           }}
         >
           <div style={{ justifySelf: 'center', marginTop: '6px' }}>
-            <PlaceIcon />
+            <IconPlace />
           </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ fontWeight: 500, color: 'black' }}>
@@ -256,18 +283,14 @@ const Location = (props) => {
             </div>
             {selectedLocation?.latitude > 0 &&
               selectedLocation?.longitude > 0 && (
-                <div
-                  onClick={() => {
-                    window.open(
-                      'https://maps.google.com?q=' +
-                        selectedLocation?.latitude +
-                        ',' +
-                        selectedLocation?.longitude
-                    );
-                  }}
-                  style={localStyle.containerAccordion}
-                >
+                <div style={localStyle.containerAccordion}>
                   <div
+                    onClick={() =>
+                      seeDirectionHandler(
+                        selectedLocation?.latitude,
+                        selectedLocation?.longitude
+                      )
+                    }
                     className={fontStyles.myFont}
                     style={localStyle.labelSeeDirection}
                   >
@@ -292,29 +315,30 @@ const Location = (props) => {
           onClick={() => setOpenDropDownTimeSelected(!openDropDownTimeSelected)}
           style={localStyle.containerOpenNow}
         >
-          <HistoryTimeIcon color='black' />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            Open now 13:00 - 22.00
-          </div>
-          {openDropDownTime ? (
+          <IconHistoryTime />
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={selectedLocation?.appointmentTimeSlot}
+          />
+          {openDropDownTimeSelected ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
             <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           )}
         </div>
-        <DropDownTimeSelected />
+        <DropDownTimeSelected isOpen={openDropDownTimeSelected} />
       </div>
     );
   };
 
-  const ListLocations = ({ item, isDisable }) => {
+  const ListLocations = ({ item }) => {
     const localStyle = {
       container: {
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
         borderRadius: '10px',
         padding: '10px 0px',
         marginBottom: '15px',
-        pointerEvents: !isDisable && 'none',
+        cursor: 'pointer',
       },
       containerAccordion: {
         width: '93%',
@@ -354,12 +378,10 @@ const Location = (props) => {
             gap: '0px 0px',
             gridAutoFlow: 'row',
             gridTemplateAreas: '". . ."',
-            cursor: 'pointer',
-            opacity: !isDisable ? 0.4 : 1,
           }}
         >
           <div style={{ justifySelf: 'center', marginTop: '6px' }}>
-            <PlaceIcon />
+            <IconPlace />
           </div>
           <div style={{ fontSize: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -386,6 +408,10 @@ const Location = (props) => {
             {item?.latitude > 0 && item?.longitude > 0 && (
               <div style={localStyle.containerAccordion}>
                 <div
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    seeDirectionHandler(item.latitude, item.longitude);
+                  }}
                   className={fontStyles.myFont}
                   style={localStyle.labelSeeDirection}
                 >
@@ -394,88 +420,43 @@ const Location = (props) => {
               </div>
             )}
           </div>
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              width: '90%',
-              margin: '0px auto',
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: !isDisable ? 'red' : 'green',
-                display: 'flex',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-                color: 'white',
-                fontWeight: 500,
-                borderRadius: '5px',
-              }}
-            >
-              <HistoryTimeIcon color='white' />
-              <div>{!isDisable ? 'Close' : 'Open'}</div>
-            </div>
-          </div>
         </div>
-        <div style={localStyle.containerOpenNow}>
-          <HistoryTimeIcon color='black' />
-          <div className={fontStyles.myFont} style={localStyle.labelOpenNow}>
-            {!isDisable ? 'Closed Today' : 'Open Now'}
-          </div>
-          {openDropDownTime ? (
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            if (otherOutletDropdownSelected === item.id) {
+              setOtherOutletDropdownSelected('');
+            } else {
+              setOtherOutletDropdownSelected(item.id);
+            }
+          }}
+          style={localStyle.containerOpenNow}
+        >
+          <IconHistoryTime />
+          <LabelOpenTime
+            style={localStyle.labelOpenNow}
+            data={item?.appointmentTimeSlot}
+          />
+          {otherOutletDropdownSelected === item.id ? (
             <KeyboardArrowUpIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           ) : (
             <KeyboardArrowDownIcon sx={{ fontSize: '20px', fontWeight: 500 }} />
           )}
         </div>
+        <DropDownTimeSelected
+          isOpen={otherOutletDropdownSelected === item.id}
+          data={item?.appointmentTimeSlot}
+        />
       </div>
     );
   };
 
-  const RenderHeader = () => {
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '23px 1fr 70px',
-          gridTemplateRows: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-          marginTop: '25px',
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <ArrowBackIosIcon
-          fontSize='large'
-          onClick={() => {
-            history.push('/appointment');
-          }}
-          sx={{ color: color.primary }}
-        />
-        <p
-          style={{
-            padding: 0,
-            margin: 0,
-            justifySelf: 'start',
-            fontWeight: 700,
-            fontSize: '20px',
-            color: color.primary,
-          }}
-        >
-          Location
-        </p>
-      </div>
-    );
-  };
   const RenderLabel = () => {
     return (
       <div
         style={{
           display: 'flex',
-          marginTop: '25px',
+          marginTop: '15px',
         }}
       >
         <p style={{ fontWeight: 'bold', color: 'black' }}>Chosen Location</p>
@@ -485,31 +466,67 @@ const Location = (props) => {
 
   const RenderListLocation = () => {
     let filterOutletSelected = [];
-    if (!isEmptyObject(selectedLocation)) {
+    if (!isEmpty(selectedLocation)) {
       filterOutletSelected = outlets.filter(
-        (item) => item.id !== selectedLocation.id
+        (item) =>
+          item.id !== selectedLocation.id && !isEmpty(item.appointmentTimeSlot)
+      );
+    } else {
+      filterOutletSelected = outlets.filter(
+        (item) => !isEmpty(item.appointmentTimeSlot)
       );
     }
     return (
       <React.Fragment>
-        <LocationSelected />
-        <div style={{ marginTop: '43px' }}>
-          <div
-            style={{
-              color: 'black',
-              fontWeight: 700,
-              marginBottom: '8px',
-            }}
-          >
-            Other Location
-          </div>
-          {filterOutletSelected.map((item) => (
-            <ListLocations
-              key={item.name}
-              item={item}
-              isDisable={item.outletStatus}
-            />
-          ))}
+        {!isEmpty(selectedLocation) && (
+          <>
+            <RenderLabel />
+            <LocationSelected />
+          </>
+        )}
+        <div style={{ marginTop: !isEmpty(selectedLocation) ? '43px' : 0 }}>
+          {!isEmpty(selectedLocation) && (
+            <div
+              style={{
+                color: 'black',
+                fontWeight: 700,
+                marginBottom: '8px',
+              }}
+            >
+              Other Location
+            </div>
+          )}
+          {!isEmpty(filterOutletSelected) ? (
+            filterOutletSelected.map((item) => (
+              <ListLocations key={item.name} item={item} />
+            ))
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                textAlign: 'center',
+                height: `${height * 0.8}px`,
+              }}
+            >
+              <span style={{ marginBottom: '24px' }}>
+                <img
+                  src={imgOutletClosed}
+                  width={164}
+                  height={164}
+                  alt='ic_button'
+                />
+              </span>
+              <span style={{ fontWeight: 700 }}>No Outlet Available</span>
+              <p style={{ fontSize: '14px' }}>
+                Oops! It looks like all the outlet are currently closed.
+                <br />
+                Please check back later for more booking options.
+              </p>
+            </div>
+          )}
         </div>
       </React.Fragment>
     );
@@ -520,11 +537,29 @@ const Location = (props) => {
       return (
         <div
           className={fontStyles.myFont}
-          style={{ height: '100vh', paddingLeft: '16px', paddingRight: '16px' }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '60px 1fr',
+            gridAutoColumns: '1fr',
+            gap: '0px 0px',
+            gridAutoFlow: 'row',
+            gridTemplateAreas: '"."\n    "."',
+          }}
         >
-          <RenderHeader />
-          <RenderLabel />
-          <RenderListLocation />
+          <AppointmentHeader
+            color={color}
+            label='Location'
+            onBack={() => history.goBack()}
+          />
+          <div
+            style={{
+              paddingLeft: '16px',
+              paddingRight: '16px',
+            }}
+          >
+            <RenderListLocation />
+          </div>
         </div>
       );
     } else {
@@ -536,22 +571,20 @@ const Location = (props) => {
               marginLeft: 'auto',
               marginRight: 'auto',
               backgroundColor: 'white',
-              height: '99.3vh',
               borderRadius: '8px',
               boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
               display: 'grid',
-              gridTemplateColumns: '1fr',
-              gridTemplateRows: '1fr 85px',
-              gap: '0px 15px',
-              gridTemplateAreas: '"."\n    "."',
               overflowY: 'auto',
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
-            <di>
-              <RenderHeader />
-              <RenderLabel />
-              <RenderListLocation />
-            </di>
+            <AppointmentHeader
+              color={color}
+              label='Location'
+              onBack={() => history.goBack()}
+            />
+            <RenderListLocation />
           </div>
         </div>
       );
@@ -641,6 +674,10 @@ const Location = (props) => {
           </button>
           <button
             onClick={async () => {
+              dispatch({
+                type: CONSTANT.LOCATION_APPOINTMENT_PERSISTED,
+                payload: locationAppointment,
+              });
               if (cartAppointment?.details?.length > 0) {
                 setIsLoading(true);
                 await dispatch(OrderAction.deleteCartAppointment());

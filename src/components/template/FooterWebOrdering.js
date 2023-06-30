@@ -11,6 +11,7 @@ import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 import { useSelector, useDispatch } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import { CONSTANT } from 'helpers';
+import { isEmptyObject } from 'helpers/CheckEmpty';
 
 const FooterWebOrdering = () => {
   const dispatch = useDispatch();
@@ -21,12 +22,15 @@ const FooterWebOrdering = () => {
     (state) => state.appointmentReducer.indexFooter
   );
   const allState = useSelector((state) => state);
+  const cartAppointment = useSelector(
+    (state) => state.appointmentReducer.cartAppointment
+  );
   const navBar = useSelector((state) => state.theme.menu.navBar);
   const resetBottomNav = useSelector(
     (state) => state.guestCheckoutCart.resetBottomNav
   );
   const [appointmentMenu, setAppointmentMenu] = useState(false);
-  const [newNavbar, setNewNavbar] = useState([]);
+  const [newNavbar, setNewNavbar] = useState(navBar);
   const { setting } = useSelector((state) => state.order);
   const [guessCheckout, setGuessCheckout] = useState();
   const [enableOrdering, setEnableOrdering] = useState(true);
@@ -51,7 +55,23 @@ const FooterWebOrdering = () => {
   useEffect(() => {
     if (resetBottomNav === 0) {
       dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 0 });
+    } else {
+      if (
+        location.pathname === '/cartappointment' ||
+        location.pathname === '/bookingsubmitted' ||
+        location.pathname === '/bookingconfirm'
+      ) {
+        dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
+      } else {
+        setTimeout(() => {
+          const currentIndex = newNavbar.findIndex(
+            (val) => val.path === location.pathname
+          );
+          dispatch({ type: CONSTANT.INDEX_FOOTER, payload: currentIndex });
+        }, 700);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {
@@ -76,6 +96,7 @@ const FooterWebOrdering = () => {
         setNewNavbar(navBar);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guessCheckout, appointmentMenu]);
 
   const menuIcon = (color) => {
@@ -258,6 +279,8 @@ const FooterWebOrdering = () => {
       return 'none';
     } else if (location.pathname === '/location') {
       return 'none';
+    } else if (location.pathname === '/inboxdetail') {
+      return 'none';
     } else {
       return '';
     }
@@ -274,15 +297,21 @@ const FooterWebOrdering = () => {
           showLabels
           value={indexFooterAppointment}
           onChange={(event, newValue) => {
-            if (
-              location.pathname === '/appointment' ||
-              location.pathname === '/location'
-            ) {
-              dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
-              dispatch({
-                type: CONSTANT.INDEX_PATH_APPOINTMENT,
-                payload: newValue,
-              });
+            if (!isEmptyObject(cartAppointment)) {
+              if (
+                location.pathname === '/appointment' ||
+                location.pathname === '/location' ||
+                location.pathname === '/cartappointment' ||
+                location.pathname === '/bookingconfirm'
+              ) {
+                dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 2 });
+                dispatch({
+                  type: CONSTANT.INDEX_PATH_APPOINTMENT,
+                  payload: newValue,
+                });
+              } else {
+                dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
+              }
             } else {
               dispatch({ type: CONSTANT.INDEX_FOOTER, payload: newValue });
             }
@@ -299,6 +328,7 @@ const FooterWebOrdering = () => {
             if (!isLoggedIn && menu.text === 'Login') {
               return (
                 <BottomNavigationAction
+                  id='login-navbar-button'
                   key={index}
                   tabIndex={index}
                   label='LOGIN'
@@ -320,6 +350,7 @@ const FooterWebOrdering = () => {
             }
             return (
               <BottomNavigationAction
+                id={`${menu?.text?.toLowerCase()}-navbar-button`}
                 key={index}
                 tabIndex={index}
                 label={menu.text.toUpperCase()}
@@ -331,11 +362,9 @@ const FooterWebOrdering = () => {
                 }}
                 icon={iconCheck(
                   menu.text,
-                  indexFooterAppointment === index
+                  menu.path === location.pathname
                     ? allState.theme.color.navigationIconSelectedColor
                     : allState.theme.color.navigationFontColor
-
-                  // value === index ? '#000000' : '#8A8D8E'
                 )}
               />
             );

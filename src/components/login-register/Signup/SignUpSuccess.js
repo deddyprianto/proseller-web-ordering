@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import OtpField from '../OtpField';
-import LoadingOverlay from 'react-loading-overlay';
 
 const SignUpSuccess = ({
   method,

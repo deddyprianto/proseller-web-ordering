@@ -1,30 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { OrderAction } from 'redux/actions/OrderAction';
-import loader from '../style/styles.module.css';
+import { CONSTANT } from 'helpers';
 
-const ButtonPrice = ({ changeFormatURl, color }) => {
+const ButtonPrice = ({ changeFormatURl, color, cartAppointment }) => {
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  const textNotes = useSelector((state) => state.appointmentReducer.textNotes);
   const date = useSelector((state) => state.appointmentReducer.date);
   const time = useSelector((state) => state.appointmentReducer.time);
   const staffID = useSelector((state) => state.appointmentReducer.staffID);
 
   const handleSubmit = async () => {
     if (date && time && staffID) {
-      const payload = {
-        staffId: staffID,
-        bookingTime: time,
-        bookingDate: date,
-        note: textNotes,
-      };
-      setIsLoading(true);
-      const data = await dispatch(OrderAction.submitCartAppointment(payload));
-      setIsLoading(false);
-      if (data.message === 'Cart submitted successfully') {
-        window.location.href = changeFormatURl('/bookingconfirm');
-      }
+      dispatch({
+        type: CONSTANT.CART_SAVE_APPOINTMENT,
+        payload: cartAppointment,
+      });
+      window.location.href = changeFormatURl('/bookingconfirm');
     }
   };
 
@@ -51,7 +41,7 @@ const ButtonPrice = ({ changeFormatURl, color }) => {
         marginTop: '5px',
       }}
     >
-      {isLoading ? <span className={loader.loader}></span> : 'Book this date'}
+      Book this date
     </div>
   );
 };

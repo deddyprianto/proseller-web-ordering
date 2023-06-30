@@ -67,10 +67,15 @@ class EditProfile extends Component {
       defaultError: {},
       defaultEdit: {},
       titleEditAccount: { display: 'Account', field: 'phoneNumber' },
+      size: { width: 0, height: 0 },
+      isMobileSize: false,
     };
   }
 
   async componentDidMount() {
+    this.updateSize();
+    window.addEventListener('resize', this.updateSize);
+
     let dataCustomer = await this.props.dispatch(
       CustomerAction.getCustomerProfile()
     );
@@ -124,6 +129,24 @@ class EditProfile extends Component {
       this.setState({ defaultError });
     }
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateSize);
+  }
+
+  updateSize = () => {
+    const { innerWidth, innerHeight } = window;
+    this.setState({ size: { width: innerWidth, height: innerHeight } });
+    this.checkMobileSize(innerWidth);
+  };
+
+  checkMobileSize = (width) => {
+    if (width < 640) {
+      this.setState({ isMobileSize: true });
+    } else {
+      this.setState({ isMobileSize: false });
+    }
+  };
 
   validationField(field, value) {
     if (field === 'newName') field = 'name';
@@ -587,15 +610,14 @@ class EditProfile extends Component {
     return !customFieldFilled;
   }
   render() {
-    let { loadingShow, titleEditAccount, isLoading } = this.state;
+    let { loadingShow, titleEditAccount, isLoading, isMobileSize } = this.state;
     return (
       <LoadingOverlay active={isLoading} spinner text='Loading...'>
         <div
           className='col-full'
           style={{
-            marginTop: config.prefix === 'emenu' ? 120 : 140,
-            marginBottom: 50,
-            padding: 0,
+            marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 65 : 75,
+            marginBottom: 60,
           }}
         >
           <ModalEditAccount title={titleEditAccount} />
@@ -604,15 +626,13 @@ class EditProfile extends Component {
               <div
                 style={{
                   flexDirection: 'row',
+                  alignItems: 'center',
                   position: 'fixed',
                   zIndex: 10,
                   width: '100%',
-                  marginTop: -60,
                   boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
                   display: 'flex',
                   height: 40,
-                  left: 0,
-                  right: 0,
                 }}
                 className='background-theme'
               >
@@ -626,7 +646,7 @@ class EditProfile extends Component {
               <main id='main' className='site-main' style={{ width: '100%' }}>
                 {loadingShow && <Loading loadingType='NestedList' />}
                 {!loadingShow && (
-                  <div style={{ marginTop: -20 }}>
+                  <div style={{ paddingTop: 50 }}>
                     {this.viewPage(this.props.fields)}
                     <Button
                       disabled={this.handledisableButton()}

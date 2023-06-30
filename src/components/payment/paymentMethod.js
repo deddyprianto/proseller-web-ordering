@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import CreditCard from '@material-ui/icons/CreditCard';
 import ModalPaymentMethod from './ModalPaymentMethod';
 import ModalPaymentPermission from './ModalRegisterPermission';
-import _ from 'lodash';
 import { uuid } from 'uuidv4';
 import styles from './styles.module.css';
 
@@ -103,9 +102,9 @@ class PaymentMethod extends Component {
     if (infoCompany.paymentTypes && paymentCardAccount.resultCode === 200) {
       let paymentTypes = infoCompany.paymentTypes;
       paymentTypes.forEach((elements) => {
-        elements.data = _.filter(paymentCardAccount.data, {
-          paymentID: elements.paymentID,
-        });
+        elements.data = paymentCardAccount?.data?.filter(
+          (item) => item.paymentID === elements.paymentID
+        );
         elements.data.forEach((element) => {
           element.minimumPayment = elements.minimumPayment;
           if (element.isDefault) {

@@ -1,11 +1,6 @@
 import { CONSTANT } from '../../helpers';
 import { CRMService } from '../../Services/CRMService';
 import { MasterDataService } from '../../Services/MasterDataService';
-import _ from 'lodash';
-import moment from 'moment';
-import config from '../../config';
-
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 function setData(data, constant) {
   return {

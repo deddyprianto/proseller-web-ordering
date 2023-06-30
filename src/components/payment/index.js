@@ -349,9 +349,9 @@ class Payment extends Component {
       let paymentTypes = this.props.companyInfo.paymentTypes;
       if (paymentTypes && paymentCardAccount.resultCode === 200) {
         paymentTypes.forEach((elements) => {
-          elements.data = _.filter(paymentCardAccount.data, {
-            paymentID: elements.paymentID,
-          });
+          elements.data = paymentCardAccount?.data?.filter(
+            (item) => item.paymentID === elements.paymentID
+          );
           elements.data.forEach((element) => {
             element.minimumPayment = elements.minimumPayment;
             if (element.isDefault) {

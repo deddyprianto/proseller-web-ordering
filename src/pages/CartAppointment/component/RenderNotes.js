@@ -29,6 +29,8 @@ const RenderNotes = () => {
           }
           placeholder='Example: Please confirm the availability'
           style={{ border: 'none', outline: 'none', color: 'black' }}
+          maxLength='140'
+          value={textNotes}
         ></textarea>
         <p
           style={{

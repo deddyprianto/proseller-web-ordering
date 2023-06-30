@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import config from 'config';
 import { useHistory } from 'react-router-dom';
-import _ from 'lodash';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 
@@ -28,6 +27,7 @@ import OrderingModeTable from 'components/orderingModeTable';
 
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { CONSTANT } from '../helpers/';
+import { isEmpty } from 'helpers/utils';
 
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { OrderAction } from 'redux/actions/OrderAction';
@@ -266,7 +266,7 @@ const Cart = () => {
           OrderAction.getCalculateFee(payload)
         );
 
-        if (!_.isEmpty(responseCalculateFee)) {
+        if (!isEmpty(responseCalculateFee)) {
           setDataCalculateFee(responseCalculateFee);
         }
 
@@ -545,7 +545,7 @@ const Cart = () => {
     });
 
     setIsLoading(false);
-
+    
     return intersectOrderingMode;
   };
 
@@ -856,6 +856,7 @@ const Cart = () => {
   const RenderOrderingMode = () => {
     return (
       <div
+        id='ordering-mode-option'
         onClick={() => {
           if (!isLoggedIn) {
             handleLogin();
