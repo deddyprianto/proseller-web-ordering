@@ -8,9 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { OutletAction } from 'redux/actions/OutletAction';
 import { OrderAction } from 'redux/actions/OrderAction';
-
 import { CONSTANT } from 'helpers';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 import fontStyles from './style/styles.module.css';
@@ -236,36 +234,33 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
   useEffect(() => {
     const getOrderingModes = async () => {
       setIsLoading(true);
-      const data = await dispatch(
-        OutletAction?.fetchSingleOutlet(defaultOutlet)
-      );
-      if (data) {
+      if (defaultOutlet) {
         const orderingModesField = [
           {
             isEnabledFieldName: 'enableStorePickUp',
             name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
-            displayName: data.storePickUpName || null,
+            displayName: defaultOutlet.storePickUpName || null,
           },
           {
             isEnabledFieldName: 'enableDelivery',
             name: CONSTANT.ORDERING_MODE_DELIVERY,
-            displayName: data.deliveryName || null,
+            displayName: defaultOutlet.deliveryName || null,
           },
           {
             isEnabledFieldName: 'enableTakeAway',
             name: CONSTANT.ORDERING_MODE_TAKE_AWAY,
-            displayName: data.takeAwayName || null,
+            displayName: defaultOutlet.takeAwayName || null,
           },
           {
             isEnabledFieldName: 'enableDineIn',
             name: CONSTANT.ORDERING_MODE_DINE_IN,
-            displayName: data.dineInName || null,
+            displayName: defaultOutlet.dineInName || null,
           },
         ];
         //TODO: Please remove the function after update from backend
         const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
           handleFilter(
-            data[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
+            defaultOutlet[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
           )
         );
 
