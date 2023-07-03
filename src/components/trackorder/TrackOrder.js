@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import TrackOrderIcon from '../../assets/images/searchtrackorder.png';
 import style from './style/style.module.css';
 import { useHistory } from 'react-router-dom';
@@ -24,20 +24,10 @@ const TrackOrder = () => {
   const [trackOrderNotif, setTrackOrderNotif] = useState(false);
   const [messageNotif, setMessageNotif] = useState('');
 
-  useEffect(() => {
-    if (trackOrderNotif) {
-      setTimeout(() => {
-        setTrackOrderNotif(false);
-      }, 2000);
-    }
-  }, [trackOrderNotif]);
-
   const handleTrackOrder = async () => {
     if (!inputFieldRef.current.value) {
       setTrackOrderNotif(!trackOrderNotif);
-      setMessageNotif(
-        'You’ve entered wrong Ref. No., please enter the correct one.'
-      );
+      setMessageNotif('Please input your Ref. No');
     } else {
       dispatch({
         type: CONSTANT.SAVE_ID_TRACKORDER,
@@ -78,11 +68,12 @@ const TrackOrder = () => {
           style={{
             width: '95%',
             borderRadius: '10px',
-            backgroundColor: '#CE0E0E',
+            backgroundColor: 'rgba(206, 14, 14, 1)',
             color: 'white',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            padding: '16px 4px',
           }}
         >
           <img
