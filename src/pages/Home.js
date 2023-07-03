@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import loadable from '@loadable/component';
@@ -14,34 +14,20 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
-import config from 'config';
+import useWindowSize from 'hooks/useWindowSize';
 
 const LayoutTypeA = loadable(() => import('components/template/LayoutTypeA'));
+const LayoutTypeB = loadable(() => import('components/template/LayoutTypeB'));
 const ModalAppointment = loadable(() =>
   import('components/modalAppointment/ModalAppointment')
 );
 const OutletSelection = loadable(() => import('./OutletSelection'));
 
 const base64 = require('base-64');
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-};
 
 const Home = () => {
   const history = useHistory();
-  const [width] = useWindowSize();
+  const { width } = useWindowSize();
   const dispatch = useDispatch();
   const gadgetScreen = width < 980;
   const isEmenu = window.location.hostname.includes('emenu');
@@ -59,6 +45,9 @@ const Home = () => {
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'EnableAppointment';
   });
+  const settingCategoryHeader = setting.find((items) => {
+    return items.settingKey === 'CategoryHeaderType';
+  });
   const [name, setName] = useLocalStorage(
     'popup_appointment',
     settingAppoinment?.settingValue
@@ -69,8 +58,7 @@ const Home = () => {
       paddingBottom: 100,
     },
     rootProduct: {
-      paddingLeft: gadgetScreen ? '3%' : '10%',
-      paddingRight: gadgetScreen ? '3%' : '10%',
+      paddingTop: '3%',
       height: '100%',
     },
   };
@@ -191,11 +179,23 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderProductListOrOutletSelection = () => {
-    let infoCompany = encryptor.decrypt(
-      JSON.parse(localStorage.getItem(`${config.prefix}_infoCompany`))
-    );
+  const renderLayout = () => {
+    if (settingCategoryHeader?.settingValue === 'CATEGORY_ONLY') {
+      return <LayoutTypeA />;
+    }
 
+    if (settingCategoryHeader?.settingValue === 'CATEGORY_WITH_ALL_PRODUCT') {
+      return <LayoutTypeB />;
+    }
+
+    return (
+      <div style={{ padding: gadgetScreen ? '0 3%' : '0 10%' }}>
+        <ProductList />
+      </div>
+    );
+  };
+
+  const renderProductListOrOutletSelection = () => {
     if (outletSelection === 'MANUAL' && !defaultOutlet?.id && !isEmenu) {
       return (
         <div style={{ height: '100%' }}>
@@ -205,12 +205,13 @@ const Home = () => {
     } else {
       return (
         <div style={styles.rootProduct}>
-          <Banner outletId={defaultOutlet?.id || 0} />
-          {infoCompany?.companyName === 'PinkCity' ? (
-            <LayoutTypeA />
-          ) : (
-            <ProductList />
+          {settingCategoryHeader?.settingValue !==
+            'CATEGORY_WITH_ALL_PRODUCT' && (
+            <Banner outletId={defaultOutlet?.id || 0} />
           )}
+
+          {renderLayout()}
+
           {!isEmptyArray(productList) && (
             <ModalAppointment
               name={name}

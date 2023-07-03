@@ -20,7 +20,7 @@ const SearchBox = () => {
             alignItems: 'center',
           }}
         >
-          <span>Find your product here ...</span>
+          <span>Search your product here ...</span>
           <i className='fa fa-search'></i>
         </div>
       </div>
