@@ -56,9 +56,6 @@ const Banner = ({ outletId }) => {
             sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
             width='100%'
             height={300}
-            style={{
-              borderRadius: 10,
-            }}
           />
         </Link>
       );
@@ -77,9 +74,6 @@ const Banner = ({ outletId }) => {
           sizes='(max-width: 300px) 300px, (max-width: 768px) 768px, 1280px'
           width='100%'
           height={300}
-          style={{
-            borderRadius: 10,
-          }}
         />
       );
     }

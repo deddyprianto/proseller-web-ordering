@@ -362,6 +362,7 @@ const Ordering = (props) => {
       className='section-tabs container-product'
       data-toggle='modal'
       data-target='#modal-product'
+      style={{ padding: '0 3%' }}
     >
       <Suspense fallback={<p>....</p>}>
         <SearchBox />
@@ -399,7 +400,7 @@ const Ordering = (props) => {
                       className='title font-color-theme'
                       style={{
                         fontSize: 20,
-                        marginLeft: 6,
+                        marginLeft: 15,
                         marginBottom: 20,
                         paddingTop: 10,
                         fontWeight: 'bold',
