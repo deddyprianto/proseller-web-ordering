@@ -465,7 +465,7 @@ const DetailAppointment = ({
         </DialogTitle>
         <DialogContent sx={styles.modalModif}>
           <RenderMainDetail />
-          {itemAppointment.productModifiers.length > 0 && (
+          {itemAppointment?.productModifiers?.length > 0 && (
             <FormGroup>
               <RenderAddOnLabel />
               <RenderModifier
