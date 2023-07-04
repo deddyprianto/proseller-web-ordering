@@ -26,24 +26,20 @@ const TrackOrder = () => {
 
   const handleTrackOrder = async () => {
     if (!inputFieldRef.current.value) {
-      setTrackOrderNotif(!trackOrderNotif);
+      setTrackOrderNotif(true);
       setMessageNotif('Please input your Ref. No');
     } else {
-      dispatch({
-        type: CONSTANT.SAVE_ID_TRACKORDER,
-        payload: inputFieldRef.current.value,
-      });
-      const wordsRegex = /^\b(?:\w|-)+\b$/;
       setIsLoading(true);
       let response = await dispatch(
         OrderAction.getTrackOrder(inputFieldRef.current.value)
       );
       setIsLoading(false);
+      dispatch({
+        type: CONSTANT.SAVE_ID_TRACKORDER,
+        payload: inputFieldRef.current.value,
+      });
       if (response?.resultCode === 404) {
-        setTrackOrderNotif(!trackOrderNotif);
-        setMessageNotif(response.message);
-      } else if (!wordsRegex.test(inputFieldRef.current.value)) {
-        setTrackOrderNotif(!trackOrderNotif);
+        setTrackOrderNotif(true);
         setMessageNotif(
           'You’ve entered wrong Ref. No., please enter the correct one.'
         );
@@ -68,12 +64,13 @@ const TrackOrder = () => {
           style={{
             width: '95%',
             borderRadius: '10px',
-            backgroundColor: 'rgba(206, 14, 14, 1)',
+            backgroundColor: color.primary,
             color: 'white',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '16px 4px',
+            padding: '4px',
+            height: '50px',
           }}
         >
           <img
@@ -91,9 +88,11 @@ const TrackOrder = () => {
           <p
             style={{
               margin: 0,
-              padding: '5px 0px',
+              padding: '10px 0px',
               textAlign: 'left',
               flex: 1,
+              fontSize: '14px',
+              lineHeight: '20px',
             }}
             className={style.title}
           >
@@ -129,6 +128,7 @@ const TrackOrder = () => {
     <LoadingOverlay active={isLoading} spinner text='Loading...'>
       <div
         style={{
+          position: 'relative',
           display: 'grid',
           gridTemplateColumns: '1fr',
           gridTemplateRows: '80px 1fr 70px',
