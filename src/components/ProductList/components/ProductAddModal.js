@@ -974,22 +974,6 @@ const ProductAddModal = ({
 
         return isDisabled;
       }
-    } else {
-      if (min > 0) {
-        let qtyTotal = 0;
-
-        const modifierProducts = selectedProductModifiers.filter(
-          (item) => item.modifierId === modifier.modifierId
-        );
-
-        modifierProducts.forEach((modifierProduct) => {
-          qtyTotal = qtyTotal + modifierProduct.qty;
-        });
-
-        const isDisabled = qtyTotal <= min;
-
-        return isDisabled;
-      }
     }
   };
 
