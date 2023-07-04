@@ -284,7 +284,7 @@ const DetailAppointment = ({
       <div style={{ width: '90%', margin: '0px auto' }}>
         <div
           style={{
-            marginTop: '30px',
+            marginTop: '10px',
             marginBottom: '15px',
             display: 'flex',
             justifyContent: 'center',

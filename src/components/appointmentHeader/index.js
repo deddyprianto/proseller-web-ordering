@@ -1,4 +1,5 @@
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import screen from 'hooks/useWindowSize';
 
 const AppointmentHeader = ({
   color,
@@ -7,6 +8,9 @@ const AppointmentHeader = ({
   label = 'Appointment',
   onBack,
 }) => {
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
+
   const IconSearch = () => {
     return (
       <svg
@@ -41,17 +45,21 @@ const AppointmentHeader = ({
       padding: 0,
       margin: 0,
       justifySelf: 'start',
-      fontWeight: 700,
-      fontSize: '20px',
+      fontWeight: 'bold',
+      fontSize: '22px',
       color: color.primary,
-      marginLeft: '10px',
+      marginLeft: gadgetScreen ? '16px' : '0px',
     },
   };
   return (
     <div style={localStyle.container}>
       <ArrowBackIosIcon
-        sx={{ color: color.primary, marginLeft: '20px' }}
-        fontSize='large'
+        sx={{
+          color: color.primary,
+          marginLeft: gadgetScreen ? '30px' : '0px',
+          fontSize: '25px',
+          fontWeight: 'bold',
+        }}
         onClick={() => onBack()}
       />
       <div style={localStyle.label}>{label}</div>
