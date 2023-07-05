@@ -36,12 +36,13 @@ function buildCart(payload = {}) {
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
-      console.log('Status is ' + response.ResultCode || response.resultCode);
       localStorage.removeItem(`${config.prefix}_offlineCart`);
-      return dispatch(setData({}, CONSTANT.DATA_BASKET));
-    }
-    // else if(response)
-    else {
+      dispatch(setData({}, CONSTANT.DATA_BASKET));
+      dispatch({
+        type: CONSTANT.BUILD_CART_ERROR_DATA,
+        payload: response.data,
+      });
+    } else {
       let { data } = response;
       let basketData = { ...data };
 
@@ -49,8 +50,6 @@ function buildCart(payload = {}) {
         data = null;
         basketData = {};
       }
-
-      // console.log('Status is not 400');
 
       localStorage.setItem(
         `${config.prefix}_offlineCart`,
@@ -91,7 +90,7 @@ function getSettingOrdering() {
       `orderingsetting/${appType}`
     );
     let data = await response.data;
-    const settingObj = data.settings.reduce((acc, setting) => {
+    const settingObj = data?.settings?.reduce((acc, setting) => {
       return {
         ...acc,
         [setting.settingKey]: setting.settingValue,
@@ -305,7 +304,15 @@ function updateCart(payload) {
       'Bearer'
     );
 
-    dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      dispatch({
+        type: CONSTANT.BUILD_CART_ERROR_DATA,
+        payload: response.data,
+      });
+    } else {
+      dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    }
+
     return response;
   };
 }
@@ -445,8 +452,13 @@ function addCart(payload) {
     } catch (e) {
       console.log(e);
     }
-    if (!(response.ResultCode >= 400 || response.resultCode >= 400)) {
-      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      dispatch({
+        type: CONSTANT.BUILD_CART_ERROR_DATA,
+        payload: response.data,
+      });
+    } else {
+      dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
   };
 }
@@ -868,6 +880,12 @@ const addCartToGuestMode = (guestID, defaultOutlet, selectedItem) => {
         payload: response.data.outlet,
       });
     }
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      dispatch({
+        type: CONSTANT.BUILD_CART_ERROR_DATA,
+        payload: response.data,
+      });
+    }
     return response;
   };
 };
@@ -1136,6 +1154,12 @@ const processUpdateCartGuestMode = (guestID, productUpdate) => {
     if (response.status === 'SUCCESS') {
       dispatch({
         type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+        payload: response.data,
+      });
+    }
+    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      dispatch({
+        type: CONSTANT.BUILD_CART_ERROR_DATA,
         payload: response.data,
       });
     }
