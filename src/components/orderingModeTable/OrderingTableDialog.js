@@ -9,6 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import fontStyles from './style/styles.module.css';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -25,6 +26,7 @@ const OrderingTableDialog = ({
   colorState,
   gadgetScreen,
 }) => {
+  const noTable = useSelector((state) => state.order.noTable);
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -108,7 +110,7 @@ const OrderingTableDialog = ({
                 }}
               >
                 <input
-                  value={inputLetterTable}
+                  value={inputLetterTable ? inputLetterTable : noTable}
                   type='text'
                   onChange={(e) => setInputLetterTable(e.target.value)}
                   placeholder='Your table Letter'
@@ -145,7 +147,7 @@ const OrderingTableDialog = ({
                 }}
               >
                 <input
-                  value={inputNumberTable}
+                  value={inputNumberTable ? inputNumberTable : noTable}
                   type='number'
                   onChange={(e) => setInputNumberTable(e.target.value)}
                   placeholder='Your table number'
@@ -201,7 +203,7 @@ const OrderingTableDialog = ({
                 value={inputNumberTable}
                 type='number'
                 onChange={(e) => setInputNumberTable(e.target.value)}
-                placeholder='Your table number'
+                placeholder={noTable ? noTable : 'Your table number'}
                 style={{ border: 'none', outline: 'none', width: '100%' }}
               />
             </div>
