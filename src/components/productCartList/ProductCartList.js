@@ -138,14 +138,8 @@ const ProductCartList = ({ ...props }) => {
   };
 
   const renderBasketItems = () => {
-    const sortItemForPriceHighest = props.basket.details.sort(
-      (a, b) => b.unitPrice - a.unitPrice
-    );
-    const sortOrderingStatusItem = sortItemForPriceHighest.sort(
-      (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
-    );
     const isDisable = true;
-    const result = sortOrderingStatusItem.map((item, key) => {
+    const result = props.basket.details.map((item, key) => {
       if (item.orderingStatus === 'UNAVAILABLE') {
         if (item.modifiers.length > 0) {
           return (

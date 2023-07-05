@@ -1218,14 +1218,7 @@ const CartGuestCheckout = () => {
 
   const renderCartProductList = () => {
     const isDisable = true;
-    const sortItemForPriceHighest = basket?.details.sort(
-      (a, b) => b.unitPrice - a.unitPrice
-    );
-    const sortOrderingStatusItem = sortItemForPriceHighest?.sort(
-      (a, b) => a.orderingStatus?.length - b.orderingStatus?.length
-    );
-
-    return sortOrderingStatusItem?.map((itemDetails, index) => {
+    return basket?.details?.map((itemDetails, index) => {
       if (itemDetails.orderingStatus === 'UNAVAILABLE') {
         if (itemDetails.modifiers.length > 0) {
           return (
