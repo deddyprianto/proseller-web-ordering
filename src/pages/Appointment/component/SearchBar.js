@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import loadable from '@loadable/component';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import fontStyles from '../style/styles.module.css';
 import CloseIcon from '@mui/icons-material/Close';
@@ -6,8 +7,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import { isEmptyArray } from 'helpers/CheckEmpty';
-import ResultSearch from './ResultSearch';
 import productNotFound from 'assets/images/prodnotfound.png';
+
+const ResultSearch = loadable(() => import('./ResultSearch'));
+
 const SearchBar = ({ color, setShowSearchBar, defaultOutlet }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);

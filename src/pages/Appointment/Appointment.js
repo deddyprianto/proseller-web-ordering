@@ -15,20 +15,21 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-
+import loadable from '@loadable/component';
 import { ProductAction } from 'redux/actions/ProductAction';
 import { isEmptyObject } from 'helpers/CheckEmpty';
 import fontStyles from './style/styles.module.css';
 import './style/loadingspin.css';
 import { CONSTANT } from 'helpers';
-import ItemService from './component/ItemService';
 import { OrderAction } from 'redux/actions/OrderAction';
-import SearchBar from './component/SearchBar';
 import screen from 'hooks/useWindowSize';
 import AppointmentHeader from 'components/appointmentHeader';
 import { isEmpty } from 'helpers/utils';
 import Swal from 'sweetalert2';
 import { IconHistoryTime, IconPlace } from 'assets/iconsSvg/Icons';
+
+const SearchBar = loadable(() => import('./component/SearchBar'));
+const ItemService = loadable(() => import('./component/ItemService'));
 
 const Appointment = (props) => {
   const [openWarningOutletNotSelected, setOpenWarningOutletNotSelected] =

@@ -13,12 +13,13 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
   const [detailData, setDetailData] = useState({});
   const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(10);
-  const { historyTransaction, loading, error, hasMore, isEmptyData } =
-    useHistoryTransaction({
+  const { historyTransaction, loading, error, hasMore } = useHistoryTransaction(
+    {
       take: 10,
       skip,
       pageNumber,
-    });
+    }
+  );
 
   const gridRef = useRef();
   const mobileSize = useMobileSize();
@@ -120,7 +121,7 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
             );
           })}
           {loading && <RenderAnimationLoading />}
-          {isEmptyData && (
+          {!hasMore && !loading && (
             <div style={{ width: '100%', marginTop: '10px' }}>
               <p
                 className='default-font'
