@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,9 +25,7 @@ const OrderingTableDialogGuestCO = ({
   colorState,
   gadgetScreen,
 }) => {
-  const tableNoActive = useSelector(
-    (state) => state.guestCheckoutCart.noTableActive
-  );
+  const noTable = useSelector((state) => state.guestCheckoutCart.noTable);
   const useStyles = makeStyles(() => ({
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
@@ -43,8 +41,34 @@ const OrderingTableDialogGuestCO = ({
 
   const dispatch = useDispatch();
   const [isError, setIsError] = useState(false);
+  const [randomTableValue, setRandomTableValue] = useState(false);
   const [inputNumberTable, setInputNumberTable] = useState('');
   const [inputLetterTable, setInputLetterTable] = useState('');
+
+  useEffect(() => {
+    const getNumberFromStr = noTable && parseInt(noTable.match(/\d+/)[0]);
+    if (noTable) {
+      if (
+        defaultOutlet?.tableNumber?.tableNumberingType ===
+          'LETTER_AND_NUMBER' &&
+        defaultOutlet?.tableNumber?.sequencing === 'IN_ORDER'
+      ) {
+        console.log(1);
+        setInputNumberTable(getNumberFromStr);
+        setInputLetterTable(noTable.charAt(0));
+      } else if (
+        defaultOutlet?.tableNumber?.tableNumberingType === 'NUMBER_ONLY' &&
+        defaultOutlet?.tableNumber?.sequencing === 'IN_ORDER'
+      ) {
+        console.log(2);
+        setInputNumberTable(getNumberFromStr);
+      } else {
+        console.log(3);
+        setRandomTableValue(noTable);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noTable]);
 
   const dataMerchantFinal = [];
   for (let i = 0; i < defaultOutlet.tableNumber?.list.length; i += 20) {
@@ -84,7 +108,7 @@ const OrderingTableDialogGuestCO = ({
     );
   };
 
-  const RenderOptionOrderTable = () => {
+  const renderOptionOrderTable = () => {
     if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
       return (
         <div>
@@ -230,7 +254,7 @@ const OrderingTableDialogGuestCO = ({
         <div
           key={item}
           onClick={() => {
-            dispatch({ type: CONSTANT.NO_TABLE_GUESTCO_ACTIVE, payload: item });
+            setRandomTableValue(item);
           }}
           style={{
             display: 'flex',
@@ -239,13 +263,13 @@ const OrderingTableDialogGuestCO = ({
             width: '75px',
             border: `1px solid ${colorState.primary}`,
             borderRadius: '10px',
-            color: tableNoActive === item ? 'white' : colorState.primary,
-            backgroundColor: tableNoActive === item && colorState.primary,
+            color: randomTableValue === item ? 'white' : colorState.primary,
+            backgroundColor: randomTableValue === item && colorState.primary,
             cursor: 'pointer',
           }}
         >
           <DineInIcon
-            color={tableNoActive === item ? 'white' : colorState.primary}
+            color={randomTableValue === item ? 'white' : colorState.primary}
           />
           <div style={{ fontSize: '12px', marginLeft: '4px' }}>{item}</div>
         </div>
@@ -297,7 +321,7 @@ const OrderingTableDialogGuestCO = ({
 
   const handleFormTable = () => {
     if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
-      dispatch({ type: CONSTANT.NO_TABLE_GUESTCO, payload: tableNoActive });
+      dispatch({ type: CONSTANT.NO_TABLE_GUESTCO, payload: randomTableValue });
       onClose();
     } else {
       if (
@@ -357,7 +381,7 @@ const OrderingTableDialogGuestCO = ({
 
   const handleDisabledBtn = () => {
     if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
-      return !tableNoActive;
+      return !randomTableValue;
     }
     if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
       return !inputLetterTable || !inputNumberTable;
@@ -377,7 +401,7 @@ const OrderingTableDialogGuestCO = ({
         <HandleLabelModal />
       </DialogTitle>
       {defaultOutlet.tableNumber.sequencing === 'IN_ORDER' ? (
-        <RenderOptionOrderTable />
+        renderOptionOrderTable()
       ) : (
         <Slider {...settings}>
           {dataMerchantFinal.map((item) => (
