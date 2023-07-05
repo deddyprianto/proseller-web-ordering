@@ -13,8 +13,9 @@ import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import { useLocalStorage } from 'hooks/useLocalStorage';
-import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import useWindowSize from 'hooks/useWindowSize';
+import { isEmpty } from 'helpers/utils';
+import commonAlert from 'components/template/commonAlert';
 
 const LayoutTypeA = loadable(() => import('components/template/LayoutTypeA'));
 const LayoutTypeB = loadable(() => import('components/template/LayoutTypeB'));
@@ -41,6 +42,10 @@ const Home = () => {
     (state) => state.guestCheckoutCart.basketGuestCo
   );
   const productList = useSelector((state) => state.product.productList);
+  const color = useSelector((state) => state.theme.color);
+  const buildCartErrorData = useSelector(
+    (state) => state.order.buildCartErrorData
+  );
 
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'EnableAppointment';
@@ -72,19 +77,20 @@ const Home = () => {
       const keyDecoded = base64.decode(decodeURI(key));
       const keyDecodedSplit = keyDecoded.split('::');
       const outletId = keyDecodedSplit[1];
-
       if (outletId) {
         const outletById = await dispatch(OutletAction.getOutletById(outletId));
 
         await dispatch(OutletAction.setDefaultOutlet(outletById));
 
         if (outletById.orderingStatus === 'UNAVAILABLE') {
-          const settings = await dispatch(OrderAction.getSettingOrdering());
-          const primaryColor = settings.settings.find((items) => {
-            return items.settingKey === 'PrimaryColor';
+          commonAlert({
+            color: color.primary,
+            title: 'The outlet is not available',
+            content: `${outletById.name} is currently not available, please select another outlet`,
+            onConfirm: () => {
+              history.push('/outlets');
+            },
           });
-
-          handleAlert(outletById, primaryColor.settingValue);
         } else {
           history.push('/');
         }
@@ -179,6 +185,32 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * Side effect when `buildCartErrorData` updated
+   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
+   */
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted && !isEmpty(buildCartErrorData)) {
+      commonAlert({
+        color: color.primary,
+        title: buildCartErrorData.title || 'Error!',
+        content: buildCartErrorData.message,
+        onConfirm: () => {
+          dispatch({
+            type: CONSTANT.BUILD_CART_ERROR_DATA,
+            payload: null,
+          });
+        },
+      });
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [buildCartErrorData, color.primary, dispatch]);
+
   const renderLayout = () => {
     if (settingCategoryHeader?.settingValue === 'CATEGORY_ONLY') {
       return <LayoutTypeA />;
@@ -222,23 +254,6 @@ const Home = () => {
         </div>
       );
     }
-  };
-
-  const handleAlert = (item, color) => {
-    Swal.fire({
-      title: '<p>The outlet is not available</p>',
-      html: `<h5 style='color:#B7B7B7; font-size:14px'>${item.name} is currently not available, please select another outlet</h5>`,
-      allowOutsideClick: false,
-      confirmButtonText: 'OK',
-      confirmButtonColor: color,
-      width: '40em',
-      customClass: {
-        confirmButton: fontStyleCustom.buttonSweetAlert,
-        title: fontStyleCustom.fontTitleSweetAlert,
-      },
-    }).then(() => {
-      history.push('/outlets');
-    });
   };
 
   return <div style={styles.root}>{renderProductListOrOutletSelection()}</div>;

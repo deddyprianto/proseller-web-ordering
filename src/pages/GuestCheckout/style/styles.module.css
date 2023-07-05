@@ -60,3 +60,6 @@
     width: 100%;
   }
 }
+.containerSweetAlert {
+  z-index: 1500;
+}

@@ -47,6 +47,7 @@ const defaultState = {
   saveDateEdit: '',
   saveSelectProductModifier: [],
   noTable: '',
+  buildCartErrorData: null,
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -198,6 +199,8 @@ export default function reducer(state = defaultState, action) {
       return { ...state, saveSelectProductModifier: action.payload };
     case CONSTANT.NO_TABLE:
       return { ...state, noTable: action.payload };
+    case CONSTANT.BUILD_CART_ERROR_DATA:
+      return { ...state, buildCartErrorData: action.payload };
     default:
       return state;
   }

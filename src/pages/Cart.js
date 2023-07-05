@@ -34,6 +34,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { IconDelivery, IconDineIn, IconElips } from 'assets/iconsSvg/Icons';
 import useWindowSize from 'hooks/useWindowSize';
+import commonAlert from 'components/template/commonAlert';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -61,6 +62,9 @@ const Cart = () => {
   const basketUpdate = useSelector((state) => state.order.basketUpdate);
   const noTable = useSelector((state) => state.order.noTable);
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
+  const buildCartErrorData = useSelector(
+    (state) => state.order.buildCartErrorData
+  );
 
   const styles = {
     rootPaper: {
@@ -420,6 +424,32 @@ const Cart = () => {
     }
   }, [previousTotalItem, basket, history]);
 
+  /**
+   * Side effect when `buildCartErrorData` updated
+   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
+   */
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted && !isEmpty(buildCartErrorData)) {
+      commonAlert({
+        color: color.primary,
+        title: buildCartErrorData.title || 'Error!',
+        content: buildCartErrorData.message,
+        onConfirm: () => {
+          dispatch({
+            type: CONSTANT.BUILD_CART_ERROR_DATA,
+            payload: null,
+          });
+        },
+      });
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [buildCartErrorData, color.primary, dispatch]);
+
   const handleCurrency = (price) => {
     if (companyInfo) {
       const result = price?.toLocaleString(companyInfo?.currency?.locale, {
@@ -545,7 +575,7 @@ const Cart = () => {
     });
 
     setIsLoading(false);
-    
+
     return intersectOrderingMode;
   };
 
