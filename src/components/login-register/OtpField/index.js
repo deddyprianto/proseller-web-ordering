@@ -45,14 +45,17 @@ const OtpField = ({
         <Button
           id='resend-otp-button'
           disabled={isSending}
-          className='button'
           style={{
             width: '100%',
-            fontSize: 12,
+            fontSize: 14,
             paddingLeft: 5,
             paddingRight: 5,
-            height: 40,
-            borderRadius: 5,
+            height: 42,
+            borderRadius: 10,
+            border: '1px solid #8A8D8E',
+            backgroundColor: 'transparent',
+            color: 'black',
+            fontWeight: 500,
           }}
           onClick={() =>
             method === 'phone' ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
@@ -96,11 +99,26 @@ const OtpField = ({
         )}
       {isSending && (
         <div
-          className='text-muted'
-          style={{ fontSize: 12, marginTop: 5, textAlign: 'center' }}
+          style={{
+            fontSize: 12,
+            marginTop: 5,
+            textAlign: 'center',
+            fontWeight: 600,
+            color: 'rgba(138, 141, 142, 1)',
+          }}
         >{`Resend after ${counterMinutes}:${counter}`}</div>
       )}
-      <label for='txtOtp'>
+      <hr
+        style={{
+          backgroundColor: 'rgba(141, 141, 141, 1)',
+          opacity: 0.3,
+          margin: '10px 0px',
+        }}
+      />
+      <label
+        for='txtOtp'
+        style={{ fontWeight: 500, fontSize: '16px', color: 'black' }}
+      >
         Enter 4 digit OTP <span className='required'>*</span>
       </label>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -111,14 +129,22 @@ const OtpField = ({
           inputmode='numeric'
           className='woocommerce-Input woocommerce-Input--text input-text'
           style={{
-            height: 50,
+            border: '1px solid #8A8D8E',
+            height: 42,
             width: '100%',
-            borderRadius: 5,
+            borderRadius: 10,
             textAlign: 'center',
           }}
           onChange={(e) => handleChange('txtOtp', e.target.value)}
         />
       </div>
+      <hr
+        style={{
+          backgroundColor: 'rgba(141, 141, 141, 1)',
+          opacity: 0.3,
+          margin: '16px 0px',
+        }}
+      />
     </div>
   );
 };
