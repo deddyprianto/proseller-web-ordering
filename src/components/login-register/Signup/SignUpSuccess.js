@@ -25,7 +25,10 @@ const SignUpSuccess = ({
     <div className='modal-body'>
       {showOtp ? (
         <div>
-          <p className='text-muted'>{`Sign in to ${username || '-'}`}</p>
+          <p style={{ fontWeight: 500 }}>
+            Sign in to{' '}
+            <span style={{ fontWeight: 'bold' }}>{username || '-'}</span>
+          </p>
           <OtpField
             method={method}
             sendEmailOtp={sendOtpToEmail}

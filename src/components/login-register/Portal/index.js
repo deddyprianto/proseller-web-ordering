@@ -124,6 +124,20 @@ const Portal = ({
             style={{
               display: 'flex',
               alignItems: 'center',
+              marginBottom: '5px',
+            }}
+          >
+            <div style={{ fontSize: '16px', fontWeight: 500, color: 'black' }}>
+              Enter your Phone Number
+            </div>
+            <div style={{ color: 'red', fontSize: '30px', marginLeft: '3px' }}>
+              *
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
               width: '100%',
               border: '1px solid rgba(141, 141, 141, 0.44)',
               borderRadius: '7px',
@@ -296,24 +310,30 @@ const Portal = ({
     return (
       <>
         <div>
-          <label htmlFor='email' style={{ fontSize: '14px' }}>
-            Enter your Email Address
-            <span className='required'>*</span>
-          </label>
-          <div className={styles.fieldGroup}>
-            <input
-              id='email-address-input'
-              type='email'
-              value={value}
-              className={cx(
-                'woocommerce-Input woocommerce-Input--text input-text',
-                styles.emailField
-              )}
-              onChange={(e) => {
-                setValue(e.target.value);
-              }}
-            ></input>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '5px',
+            }}
+          >
+            <div style={{ fontSize: '16px', fontWeight: 500, color: 'black' }}>
+              Enter your Email Address
+            </div>
+            <div style={{ color: 'red', fontSize: '30px', marginLeft: '3px' }}>
+              *
+            </div>
           </div>
+          <input
+            placeholder='Email'
+            id='email-address-input'
+            type='email'
+            value={value}
+            className={styles.emailField}
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+          />
         </div>
         {error && <div className={styles.errorMessage}>{error}</div>}
         <Button
@@ -424,7 +444,7 @@ const Portal = ({
         }}
       >
         <h5
-          style={{ fontSize: '24px', fontWeight: 500 }}
+          style={{ fontSize: '24px', fontWeight: 'bold', color: 'black' }}
           className={cx('modal-title', styles.modalTitle)}
         >
           Welcome!
@@ -447,8 +467,8 @@ const Portal = ({
             </span>
           </button>
         )}
-        <p style={{ fontSize: '14px', color: '#8D8D8D' }}>
-          {`To Login or Register, please enter your ${
+        <p style={{ fontSize: '14px', color: '#8D8D8D', fontWeight: 600 }}>
+          {`to Login or Register, please enter your ${
             method === 'phone' ? 'Phone number' : 'Email'
           }.`}
         </p>

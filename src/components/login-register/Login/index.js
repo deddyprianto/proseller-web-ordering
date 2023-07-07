@@ -69,7 +69,9 @@ const Login = ({
           </button>
         </div>
         <div className='modal-body'>
-          <p className='text-muted'>{`Sign in to ${username}`}</p>
+          <p style={{ padding: 0, margin: '5px 0px' }}>
+            Sign in to <span style={{ fontWeight: 'bold' }}>{username}</span>{' '}
+          </p>
           {enablePassword ? (
             <PasswordField handleChange={handleChange}></PasswordField>
           ) : (
@@ -93,8 +95,8 @@ const Login = ({
             style={{
               width: '100%',
               marginTop: 10,
-              borderRadius: 5,
-              height: 50,
+              borderRadius: 8,
+              height: 42,
             }}
             onClick={() => {
               if (guestMode && idGuestCheckout) {

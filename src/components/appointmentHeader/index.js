@@ -45,8 +45,8 @@ const AppointmentHeader = ({
       padding: 0,
       margin: 0,
       justifySelf: 'start',
-      fontWeight: 'bold',
-      fontSize: '22px',
+      fontWeight: 700,
+      fontSize: '20px',
       color: color.primary,
       marginLeft: gadgetScreen ? '16px' : '0px',
     },
@@ -54,12 +54,8 @@ const AppointmentHeader = ({
   return (
     <div style={localStyle.container}>
       <ArrowBackIosIcon
-        sx={{
-          color: color.primary,
-          marginLeft: gadgetScreen ? '30px' : '0px',
-          fontSize: '25px',
-          fontWeight: 'bold',
-        }}
+        sx={{ color: color.primary, marginLeft: gadgetScreen ? '30px' : '0px' }}
+        fontSize='large'
         onClick={() => onBack()}
       />
       <div style={localStyle.label}>{label}</div>

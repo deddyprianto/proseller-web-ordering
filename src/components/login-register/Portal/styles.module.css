@@ -21,7 +21,6 @@ p,h1,h2,h3,h4,h5{
 .fieldGroup {
   display: flex;
   align-items: center;
-  margin-top: 2rem;
  border: 1px solid rgba(141, 141, 141, 0.44);
  border-radius: 10px;
 }
@@ -32,10 +31,10 @@ p,h1,h2,h3,h4,h5{
 
 .emailField {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.5rem;  
   color: #666666;
   outline: none;
-  border: 1px solid #cccccc;
+  border: 1px solid #8A8D8E;
   box-sizing: border-box;
   font-weight: normal;
   border-radius: 7px;
