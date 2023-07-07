@@ -8,11 +8,12 @@ import ProductCart from 'components/productCartList/components/ProductCart';
 import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import Button from '@mui/material/Button';
-import { renderIconInformation } from 'assets/iconsSvg/Icons';
+import { IconPlace, renderIconInformation } from 'assets/iconsSvg/Icons';
 const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
     color: state.theme.color,
+    defaultOutlet: state.outlet.defaultOutlet,
   };
 };
 
@@ -55,11 +56,13 @@ const ProductCartList = ({ ...props }) => {
       <div
         className={fontStyleCustom.myFont}
         style={{
-          marginBottom: '30px',
-          width: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          borderBottom: '1px solid #C1C1C1',
+          borderTop: '1px solid #C1C1C1',
+          margin: '25px -15px',
+          padding: '15px',
         }}
       >
         <div>
@@ -164,7 +167,17 @@ const ProductCartList = ({ ...props }) => {
         );
       }
     });
-    return result;
+    return (
+      <div>
+        <div
+          className={fontStyleCustom.myFont}
+          style={{ fontSize: '16px', fontWeight: 700 }}
+        >
+          Items
+        </div>
+        {result}
+      </div>
+    );
   };
 
   const isUnavailableExist = props.basket.details?.some(
@@ -206,12 +219,36 @@ const ProductCartList = ({ ...props }) => {
     }
   };
 
+  const renderOutletInfo = () => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: '1px solid #C1C1C1',
+          margin: '0 -15px 20px',
+          padding: '0 15px 15px',
+        }}
+      >
+        <div style={{ color: '#9D9D9D' }}>You are ordering from</div>
+        <div
+          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
+        >
+          <IconPlace stroke={props.color.primary} />{' '}
+          <span style={{ marginLeft: '8px', color: props.color.primary }}>
+            {props.defaultOutlet?.name}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {renderTitleNameForCart()}
-      {renderLabelNeedAnythingElse()}
+      {renderOutletInfo()}
       {renderTextInformationUnAvailabeItem()}
       {renderBasketItems()}
+      {renderLabelNeedAnythingElse()}
     </div>
   );
 };
