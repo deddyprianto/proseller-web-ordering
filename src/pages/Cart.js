@@ -834,7 +834,7 @@ const Cart = () => {
             }}
           >
             {noTable ? (
-              <IconDineIn primary={color.primary} />
+              <IconDineIn color={color.primary} />
             ) : (
               <div
                 style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 600 }}
@@ -1124,7 +1124,7 @@ const Cart = () => {
                 padding: '10px',
               }}
             >
-              <IconDelivery primary={color.primary} />
+              <IconDelivery color={color.primary} />
 
               <div style={{ flex: 1, paddingLeft: '10px' }}>
                 <Typography
@@ -1159,7 +1159,7 @@ const Cart = () => {
                     padding: '2px',
                   }}
                 >
-                  {conditionName && <IconElips primary={color.primary} />}
+                  {conditionName && <IconElips color={color.primary} />}
                 </div>
               </div>
             </div>
