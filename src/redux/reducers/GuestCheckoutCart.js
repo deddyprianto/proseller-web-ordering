@@ -19,7 +19,6 @@ function GuestCheckoutCart(
     saveTimeSlotForEdit: '',
     orderingModeGuestCheckoutObj: {},
     noTable: '',
-    noTableActive: '',
     saveIDTrackOrder: '',
   },
   action
@@ -73,8 +72,6 @@ function GuestCheckoutCart(
       return { ...state, saveTimeSlotForEdit: action.payload };
     case CONSTANT.NO_TABLE_GUESTCO:
       return { ...state, noTable: action.payload };
-    case CONSTANT.NO_TABLE_GUESTCO_ACTIVE:
-      return { ...state, noTableActive: action.payload };
     case CONSTANT.SAVE_ID_TRACKORDER:
       localStorage.setItem(
         'SAVE_ID_TRACKORDER',
