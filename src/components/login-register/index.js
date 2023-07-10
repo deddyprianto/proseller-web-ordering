@@ -702,10 +702,6 @@ const LoginRegister = (props) => {
         ...customFields,
       };
 
-      if (!isEmailMandatory) {
-        payload.email = `${payloadResponse.phoneNumber}@proseller.io`;
-      }
-
       let listName = '';
 
       mandatory.forEach((field) => {
