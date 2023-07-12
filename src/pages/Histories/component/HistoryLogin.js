@@ -13,10 +13,10 @@ const HistoryPending = loadable(() =>
   import('components/history/HistoryPending')
 );
 
-const History = () => {
+const History = ({ fontStyles }) => {
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
-
+  const [tabStateButton, setTabStateButton] = useState('Pending Order');
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -150,10 +150,68 @@ const History = () => {
     }
   };
 
+  const HeaderButton = () => {
+    return (
+      <div
+        style={{
+          margin: '20px auto auto',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <button
+          className={fontStyles.myFont}
+          onClick={() => setTabStateButton('Pending Order')}
+          style={{
+            display: 'flex',
+            border:
+              tabStateButton === 'Pending Order'
+                ? 'none'
+                : `1px solid ${color.primary}`,
+            backgroundColor:
+              tabStateButton === 'Pending Order' ? color.primary : 'white',
+            color: tabStateButton === 'Pending Order' ? 'white' : color.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '7px 10px',
+            marginRight: '10px',
+            fontWeight: 600,
+            fontSize: '14px',
+            width: '128px',
+          }}
+        >
+          Pending Order
+        </button>
+        <button
+          onClick={() => setTabStateButton('Past Order')}
+          className={fontStyles.myFont}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '7px 10px',
+            fontWeight: 600,
+            border:
+              tabStateButton === 'Past Order'
+                ? 'none'
+                : `1px solid ${color.primary}`,
+            backgroundColor:
+              tabStateButton === 'Past Order' ? color.primary : 'white',
+            color: tabStateButton === 'Past Order' ? 'white' : color.primary,
+            fontSize: '14px',
+            width: '128px',
+          }}
+        >
+          Past Order
+        </button>
+      </div>
+    );
+  };
+
   return (
     <React.Fragment>
-      <RenderHeaderTab />
-      <RenderMain />
+      <HeaderButton />
+      {/* <RenderMain /> */}
     </React.Fragment>
   );
 };
