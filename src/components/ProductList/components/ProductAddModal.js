@@ -18,7 +18,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
@@ -61,6 +61,7 @@ const ProductAddModal = ({
 }) => {
   const [selectedProductModifiers, setSelectedProductModifiers] = useState([]);
   const history = useHistory();
+  const location = useLocation();
   const gadgetScreen = width < 600;
   const theme = useTheme();
   const [mode, setMode] = useState();
@@ -881,7 +882,7 @@ const ProductAddModal = ({
     setIsLoading(true);
     const response = await props.dispatch(
       OrderAction.processRemoveCartGuestCheckoutMode(
-        props.basketGuestCO.guestID,
+        idGuestCheckout,
         selectedProduct
       )
     );
@@ -894,12 +895,12 @@ const ProductAddModal = ({
       handleClear();
       setIsLoading(false);
 
-      if (props.basketGuestCO.details.length === 1) {
+      if (props.basketGuestCO?.details?.length === 1) {
         props.dispatch({
           type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
           payload: '',
         });
-        history.push('/');
+        location.pathname !== '/' && history.push('/');
       }
     } else {
       alert('Failed');

@@ -344,7 +344,8 @@ function processRemoveCart(product) {
 }
 
 function processRemoveCartGuestCheckoutMode(guestID, itemDetails) {
-  return async () => {
+  return async (dispatch) => {
+    const idGuest = guestID?.includes('guest') ? guestID : `guest::${guestID}`;
     let payload = [];
     payload.push({
       id: itemDetails.id,
@@ -355,11 +356,12 @@ function processRemoveCartGuestCheckoutMode(guestID, itemDetails) {
     const response = await OrderingService.api(
       'PUT',
       payload,
-      `guest/cart/update-item/${guestID}`
+      `guest/cart/update-item/${idGuest}`
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
       return response;
     } else {
+      dispatch({ type: CONSTANT.GUESTMODE, payload: response.data });
       return response;
     }
   };
