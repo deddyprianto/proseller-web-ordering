@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
 
 import config from 'config';
-import HistoryCard from './HistoryCardPending';
+import InboxCard from './HistoryCardPending';
 import useMobileSize from 'hooks/useMobileSize';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
@@ -35,14 +35,10 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
     );
   }
 
-  const marginAppointment = mobileSize ? '240px' : '260px';
-  const marginCommon = mobileSize ? '125px' : '145px';
-
   return (
     <div
       style={{
-        width: '95%',
-        margin: `${isAppointment ? marginAppointment : marginCommon} auto 80px`,
+        marginTop: '16px',
       }}
     >
       <Grid
@@ -52,6 +48,9 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
         alignItems='center'
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, md: 12 }}
+        sx={{
+          paddingBottom: 20,
+        }}
       >
         {dataPending.map((items, index) => {
           return (
@@ -60,7 +59,7 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
                 to={items.isPaymentComplete ? '/history/detail' : '/basket'}
                 onClick={() => setLocalStorageItem(items)}
               >
-                <HistoryCard items={items} />
+                <InboxCard items={items} />
               </Link>
             </Grid>
           );
@@ -70,7 +69,7 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
         >
           <p
             className='default-font'
-            style={{ color: '#9D9D9D', marginLeft: '20px' }}
+            style={{ color: '#9D9D9D', textAlign: 'center', marginTop: '10px' }}
           >
             You are all caught up
           </p>

@@ -72,70 +72,13 @@ const History = ({ fontStyles }) => {
     window.location.href = changeFormatURl(`/history?${type}`);
   };
 
-  const RenderHeaderTab = () => {
-    const topAppointment = mobileSize ? '165px' : '175px';
-    const topCommon = mobileSize ? '50px' : '60px';
-
-    return (
-      <div
-        style={{
-          width: '100%',
-          position: 'fixed',
-          top: appointmentFeature ? topAppointment : topCommon,
-        }}
-      >
-        <div
-          style={{
-            marginTop: '15px',
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gridTemplateRows: '1fr',
-            gridAutoColumns: '1fr',
-            gap: '0px 0px',
-            gridAutoFlow: 'row',
-            gridTemplateAreas: '". ."',
-            fontSize: '18px',
-            height: '50px',
-          }}
-        >
-          <div
-            onClick={() => handleChangeTab('ordered')}
-            style={{
-              backgroundColor:
-                stateTabs === 'ordered' ? color.primary : 'white',
-              width: '100%',
-              color: stateTabs === 'ordered' ? 'white' : color.primary,
-              textAlign: 'center',
-              lineHeight: '50px',
-            }}
-          >
-            Order
-          </div>
-          <div
-            onClick={() => handleChangeTab('pendingorder')}
-            style={{
-              backgroundColor:
-                stateTabs === 'pendingorder' ? color.primary : 'white',
-              width: '100%',
-              color: stateTabs === 'pendingorder' ? 'white' : color.primary,
-              textAlign: 'center',
-              lineHeight: '50px',
-            }}
-          >
-            Pending Order
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const RenderMain = () => {
     if (stateTabs === 'ordered') {
       return (
         <HistoryTransaction
           countryCode={companyInfo?.countryCode}
           isAppointment={appointmentFeature}
+          color={color}
         />
       );
     } else if (stateTabs === 'pendingorder') {
@@ -154,14 +97,17 @@ const History = ({ fontStyles }) => {
     return (
       <div
         style={{
-          margin: '20px auto auto',
+          marginTop: '16px',
           display: 'flex',
           alignItems: 'center',
         }}
       >
         <button
           className={fontStyles.myFont}
-          onClick={() => setTabStateButton('Pending Order')}
+          onClick={() => {
+            handleChangeTab('ordered');
+            setTabStateButton('Pending Order');
+          }}
           style={{
             display: 'flex',
             border:
@@ -173,23 +119,28 @@ const History = ({ fontStyles }) => {
             color: tabStateButton === 'Pending Order' ? 'white' : color.primary,
             justifyContent: 'center',
             alignItems: 'center',
-            padding: '7px 10px',
+            padding: '8px 14px',
             marginRight: '10px',
             fontWeight: 600,
             fontSize: '14px',
             width: '128px',
+            height: '37px',
+            borderRadius: '8px',
           }}
         >
           Pending Order
         </button>
         <button
-          onClick={() => setTabStateButton('Past Order')}
+          onClick={() => {
+            handleChangeTab('pendingorder');
+            setTabStateButton('Past Order');
+          }}
           className={fontStyles.myFont}
           style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: '7px 10px',
+            padding: '8px 16px',
             fontWeight: 600,
             border:
               tabStateButton === 'Past Order'
@@ -200,6 +151,8 @@ const History = ({ fontStyles }) => {
             color: tabStateButton === 'Past Order' ? 'white' : color.primary,
             fontSize: '14px',
             width: '128px',
+            height: '37px',
+            borderRadius: '8px',
           }}
         >
           Past Order
@@ -211,7 +164,7 @@ const History = ({ fontStyles }) => {
   return (
     <React.Fragment>
       <HeaderButton />
-      {/* <RenderMain /> */}
+      <RenderMain />
     </React.Fragment>
   );
 };

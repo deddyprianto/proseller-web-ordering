@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import loadable from '@loadable/component';
 import fontStyles from './Histories/style/styles.module.css';
 import useMobileSize from 'hooks/useMobileSize';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { RenderHeaderLabelHistory } from 'components/historyHeader';
+import screen from 'hooks/useWindowSize';
 
 const HistoryLogin = loadable(() =>
   import('./Histories/component/HistoryLogin')
@@ -15,25 +16,15 @@ const HistoryAppointment = loadable(() =>
 );
 
 const History = (props) => {
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
   const [tabName, setTabName] = useState('Orders');
-  const dispatch = useDispatch();
   const mobileSize = useMobileSize();
 
-  const [appointmentFeature, setAppointmentFeature] = useState(false);
   const tabStateButton = useSelector(
     (state) => state.appointmentReducer.tabStateHistoryAppointment
   );
   const color = useSelector((state) => state.theme.color);
-  const setting = useSelector((state) => state.order.setting);
-
-  useEffect(() => {
-    const settingAppoinment = setting.find((items) => {
-      return items.settingKey === 'EnableAppointment';
-    });
-    if (settingAppoinment?.settingValue) {
-      setAppointmentFeature(settingAppoinment.settingValue);
-    }
-  }, [setting]);
 
   const styleSheet = {
     muiSelected: {
@@ -111,18 +102,49 @@ const History = (props) => {
       return <HistoryAppointment />;
     }
   };
+  const ResponsiveLayout = () => {
+    if (gadgetScreen) {
+      return (
+        <div style={{ margin: '0px 16px' }}>
+          <RenderHeaderLabelHistory
+            color={color}
+            history={props.history}
+            mobileSize={mobileSize}
+          />
+          <RenderHeaderTab />
+          <RenderMain />
+        </div>
+      );
+    } else {
+      return (
+        <div
+          style={{
+            width: '45%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            backgroundColor: 'white',
+            height: '98vh',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+            overflowY: 'auto',
+            marginTop: '10px',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+          }}
+        >
+          <RenderHeaderLabelHistory
+            color={color}
+            history={props.history}
+            mobileSize={mobileSize}
+          />
+          <RenderHeaderTab />
+          <RenderMain />
+        </div>
+      );
+    }
+  };
 
-  return (
-    <div style={{ margin: '0px 16px' }}>
-      <RenderHeaderLabelHistory
-        color={color}
-        history={props.history}
-        mobileSize={mobileSize}
-      />
-      <RenderHeaderTab />
-      <RenderMain />
-    </div>
-  );
+  return <ResponsiveLayout />;
 };
 
 export default History;
