@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import loadable from '@loadable/component';
 import fontStyles from './Histories/style/styles.module.css';
 import useMobileSize from 'hooks/useMobileSize';
@@ -7,6 +7,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { RenderHeaderLabelHistory } from 'components/historyHeader';
 import screen from 'hooks/useWindowSize';
+import { CONSTANT } from 'helpers';
 
 const HistoryLogin = loadable(() =>
   import('./Histories/component/HistoryLogin')
@@ -16,15 +17,27 @@ const HistoryAppointment = loadable(() =>
 );
 
 const History = (props) => {
+  const dispatch = useDispatch();
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
-  const [tabName, setTabName] = useState('Orders');
+  const [appointmentSetting, setAppointmentSetting] = useState(false);
   const mobileSize = useMobileSize();
 
   const tabStateButton = useSelector(
-    (state) => state.appointmentReducer.tabStateHistoryAppointment
+    (state) => state.appointmentReducer.tabStateHistory
   );
+
   const color = useSelector((state) => state.theme.color);
+  const setting = useSelector((state) => state.order.setting);
+
+  useEffect(() => {
+    const settingAppoinment = setting.find((items) => {
+      return items.settingKey === 'EnableAppointment';
+    });
+    if (settingAppoinment?.settingValue) {
+      setAppointmentSetting(settingAppoinment.settingValue);
+    }
+  }, [setting]);
 
   const styleSheet = {
     muiSelected: {
@@ -64,40 +77,55 @@ const History = (props) => {
   };
 
   const RenderHeaderTab = () => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          borderBottom: '1px solid rgba(138, 141, 142, .4)',
-        }}
-      >
-        <Tabs value={tabName} sx={styleSheet.indicatorForMobileView}>
-          <Tab
-            value='Orders'
-            onClick={() => {
-              setTabName('Orders');
-            }}
-            label='Orders'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-          <Tab
-            value='Appointment'
-            onClick={() => {
-              setTabName('Appointment');
-            }}
-            label='Appointment'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-        </Tabs>
-      </div>
-    );
+    if (appointmentSetting) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            borderBottom: '1px solid rgba(138, 141, 142, .4)',
+          }}
+        >
+          <Tabs value={tabStateButton} sx={styleSheet.indicatorForMobileView}>
+            <Tab
+              value='Orders'
+              onClick={() => {
+                dispatch({
+                  type: CONSTANT.TAB_STATE_HISTORY,
+                  payload: 'orders',
+                });
+              }}
+              label='Orders'
+              className={fontStyles.myFont}
+              sx={styleSheet.muiSelected}
+            />
+            <Tab
+              value='Appointment'
+              onClick={() => {
+                dispatch({
+                  type: CONSTANT.TAB_STATE_HISTORY,
+                  payload: 'appointment',
+                });
+              }}
+              label='Appointment'
+              className={fontStyles.myFont}
+              sx={styleSheet.muiSelected}
+            />
+          </Tabs>
+        </div>
+      );
+    } else {
+      return null;
+    }
   };
 
   const RenderMain = () => {
-    if (tabStateButton === 'ordered') {
-      return <HistoryLogin fontStyles={fontStyles} />;
+    if (tabStateButton === 'orders') {
+      return (
+        <HistoryLogin
+          fontStyles={fontStyles}
+          appointmentSetting={appointmentSetting}
+        />
+      );
     } else if (tabStateButton === 'appointment') {
       return <HistoryAppointment />;
     }

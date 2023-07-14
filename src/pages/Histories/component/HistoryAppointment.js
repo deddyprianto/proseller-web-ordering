@@ -121,92 +121,82 @@ const HistoryAppointment = () => {
       <div
         style={{
           width: '100%',
-          position: 'fixed',
-          top: mobileSize ? '165px' : '175px',
-          backgroundColor: '#ffffff',
+          borderBottom: '1px solid rgba(138, 141, 142, .4)',
         }}
       >
-        <div
-          style={{
-            width: '95%',
-            margin: 'auto',
-            borderBottom: '1px solid rgba(138, 141, 142, .4)',
-          }}
+        <Tabs
+          value={tabName}
+          sx={styleSheet.indicatorForMobileView}
+          variant='scrollable'
+          scrollButtons='auto'
+          aria-label='scrollable auto tabs example'
         >
-          <Tabs
-            value={tabName}
-            sx={styleSheet.indicatorForMobileView}
-            variant='scrollable'
-            scrollButtons='auto'
-            aria-label='scrollable auto tabs example'
-          >
-            <Tab
-              value='SUBMITTED'
-              onClick={() => {
-                setTabName('SUBMITTED');
-                setTabNameAPI('SUBMITTED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Submitted'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='UPCOMING'
-              onClick={() => {
-                setTabName('UPCOMING');
-                setTabNameAPI('CONFIRMED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Upcoming'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='ONGOING'
-              onClick={() => {
-                setTabName('ONGOING');
-                setTabNameAPI('CONFIRMED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Ongoing'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='COMPLETED'
-              onClick={() => {
-                setTabName('COMPLETED');
-                setTabNameAPI('COMPLETED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Completed'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='CANCELLED'
-              onClick={() => {
-                setTabName('CANCELLED');
-                setTabNameAPI('CANCELLED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Canceled'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-          </Tabs>
-        </div>
+          <Tab
+            value='SUBMITTED'
+            onClick={() => {
+              setTabName('SUBMITTED');
+              setTabNameAPI('SUBMITTED');
+              setSkip(0);
+              setPageNumber(1);
+              setHasMore(false);
+            }}
+            label='Submitted'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+          <Tab
+            value='UPCOMING'
+            onClick={() => {
+              setTabName('UPCOMING');
+              setTabNameAPI('CONFIRMED');
+              setSkip(0);
+              setPageNumber(1);
+              setHasMore(false);
+            }}
+            label='Upcoming'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+          <Tab
+            value='ONGOING'
+            onClick={() => {
+              setTabName('ONGOING');
+              setTabNameAPI('CONFIRMED');
+              setSkip(0);
+              setPageNumber(1);
+              setHasMore(false);
+            }}
+            label='Ongoing'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+          <Tab
+            value='COMPLETED'
+            onClick={() => {
+              setTabName('COMPLETED');
+              setTabNameAPI('COMPLETED');
+              setSkip(0);
+              setPageNumber(1);
+              setHasMore(false);
+            }}
+            label='Completed'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+          <Tab
+            value='CANCELLED'
+            onClick={() => {
+              setTabName('CANCELLED');
+              setTabNameAPI('CANCELLED');
+              setSkip(0);
+              setPageNumber(1);
+              setHasMore(false);
+            }}
+            label='Canceled'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+        </Tabs>
       </div>
     );
   };
@@ -276,7 +266,7 @@ const HistoryAppointment = () => {
   return (
     <div style={{ marginTop: mobileSize ? '60%' : '15%' }}>
       <RenderTabHeaderMobile />
-      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
+      {/* <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
         {renderItemHistory()}
         {loading && <RenderAnimationLoading />}
         {!hasMore && !loading && (
@@ -292,7 +282,7 @@ const HistoryAppointment = () => {
         {error?.message && (
           <p style={{ marginLeft: '10px' }}>{error?.message}</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

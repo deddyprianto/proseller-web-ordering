@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import loadable from '@loadable/component';
 
 import { HistoryAction } from 'redux/actions/HistoryAction';
-import useMobileSize from 'hooks/useMobileSize';
 
 const HistoryTransaction = loadable(() =>
   import('components/history/HistoryTransaction')
@@ -13,10 +12,8 @@ const HistoryPending = loadable(() =>
   import('components/history/HistoryPending')
 );
 
-const History = ({ fontStyles }) => {
+const History = ({ fontStyles, appointmentSetting }) => {
   const dispatch = useDispatch();
-  const mobileSize = useMobileSize();
-  const [tabStateButton, setTabStateButton] = useState('Pending Order');
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -97,7 +94,7 @@ const History = ({ fontStyles }) => {
     return (
       <div
         style={{
-          marginTop: '16px',
+          marginTop: appointmentSetting ? '16px' : '10px',
           display: 'flex',
           alignItems: 'center',
         }}
@@ -106,17 +103,13 @@ const History = ({ fontStyles }) => {
           className={fontStyles.myFont}
           onClick={() => {
             handleChangeTab('ordered');
-            setTabStateButton('Pending Order');
           }}
           style={{
             display: 'flex',
             border:
-              tabStateButton === 'Pending Order'
-                ? 'none'
-                : `1px solid ${color.primary}`,
-            backgroundColor:
-              tabStateButton === 'Pending Order' ? color.primary : 'white',
-            color: tabStateButton === 'Pending Order' ? 'white' : color.primary,
+              stateTabs === 'ordered' ? 'none' : `1px solid ${color.primary}`,
+            backgroundColor: stateTabs === 'ordered' ? color.primary : 'white',
+            color: stateTabs === 'ordered' ? 'white' : color.primary,
             justifyContent: 'center',
             alignItems: 'center',
             padding: '8px 14px',
@@ -133,7 +126,6 @@ const History = ({ fontStyles }) => {
         <button
           onClick={() => {
             handleChangeTab('pendingorder');
-            setTabStateButton('Past Order');
           }}
           className={fontStyles.myFont}
           style={{
@@ -143,12 +135,12 @@ const History = ({ fontStyles }) => {
             padding: '8px 16px',
             fontWeight: 600,
             border:
-              tabStateButton === 'Past Order'
+              stateTabs === 'pendingorder'
                 ? 'none'
                 : `1px solid ${color.primary}`,
             backgroundColor:
-              tabStateButton === 'Past Order' ? color.primary : 'white',
-            color: tabStateButton === 'Past Order' ? 'white' : color.primary,
+              stateTabs === 'pendingorder' ? color.primary : 'white',
+            color: stateTabs === 'pendingorder' ? 'white' : color.primary,
             fontSize: '14px',
             width: '128px',
             height: '37px',

@@ -563,7 +563,7 @@ const BookingSubmitted = () => {
       <div
         onClick={() => {
           dispatch({
-            type: CONSTANT.TAB_STATE_HISTORY_APPOINTMENT,
+            type: CONSTANT.TAB_STATE_HISTORY,
             payload: 'appointment',
           });
           dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
