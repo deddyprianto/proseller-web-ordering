@@ -35,12 +35,20 @@ function buildCart(payload = {}) {
       'Bearer'
     );
 
-    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+    if (
+      response.ResultCode >= 400 ||
+      response.resultCode >= 400 ||
+      !response.data
+    ) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       localStorage.removeItem(`${config.prefix}_offlineCart`);
       dispatch(setData({}, CONSTANT.DATA_BASKET));
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     } else {
       let { data } = response;
@@ -264,6 +272,7 @@ function processOfflineCart(payload, mode) {
     try {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
+
       if (isEmptyObject(offlineCart) || isEmptyArray(offlineCart.details)) {
         return await dispatch(buildCart(payload));
       } else {
@@ -283,9 +292,7 @@ function processOfflineCart(payload, mode) {
               }
             }
           }
-          offlineCart.details = offlineCart.details.filter((item) => {
-            return item.quantity !== 0;
-          });
+
           return await dispatch(buildCart(offlineCart));
         }
       }
@@ -305,9 +312,13 @@ function updateCart(payload) {
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     } else {
       dispatch(setData(response.data, CONSTANT.DATA_BASKET));
@@ -455,12 +466,16 @@ function addCart(payload) {
       console.log(e);
     }
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     } else {
-      dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
   };
 }
@@ -883,9 +898,13 @@ const addCartToGuestMode = (guestID, defaultOutlet, selectedItem) => {
       });
     }
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     }
     return response;
@@ -1160,9 +1179,13 @@ const processUpdateCartGuestMode = (guestID, productUpdate) => {
       });
     }
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     }
   };
