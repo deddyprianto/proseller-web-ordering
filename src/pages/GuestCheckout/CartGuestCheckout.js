@@ -155,8 +155,10 @@ const CartGuestCheckout = () => {
     const idGuestCheckout = localStorage.getItem('idGuestCheckout');
     if (idGuestCheckout) {
       setIdGuestCheckout(idGuestCheckout);
+    } else {
+      history.push('/');
     }
-  }, []);
+  }, [history]);
 
   useEffect(() => {
     const clearStateResponse = async () => {
