@@ -21,6 +21,7 @@ import ProductAddModal from './ProductAddModal';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { OrderAction } from 'redux/actions/OrderAction';
+import { isEmpty } from 'helpers/utils';
 
 const ProductUpdateModal = ({
   open,
@@ -197,6 +198,10 @@ const ProductUpdateModal = ({
         );
         setProductInBasket(items);
       }
+    }
+
+    if ((isEmpty(basket) && !mode) || basket.message) {
+      handleClose();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basket, product]);
