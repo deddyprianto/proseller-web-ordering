@@ -1764,7 +1764,13 @@ const ProductAddModal = ({
             onChange={(event) => {
               setNotes(event.target.value);
             }}
+            maxLength={140}
           />
+          <div style={{ textAlign: 'end' }}>
+            <span style={{ color: '#CDCECF', fontSize: '14px' }}>
+              {notes?.length || 0}/140
+            </span>
+          </div>
         </div>
       );
     } else {
