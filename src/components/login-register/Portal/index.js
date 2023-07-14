@@ -130,7 +130,7 @@ const Portal = ({
             <div style={{ fontSize: '16px', fontWeight: 500, color: 'black' }}>
               Enter your Phone Number
             </div>
-            <div style={{ color: 'red', fontSize: '30px', marginLeft: '3px' }}>
+            <div style={{ color: 'red', fontSize: '16px', marginLeft: '3px' }}>
               *
             </div>
           </div>

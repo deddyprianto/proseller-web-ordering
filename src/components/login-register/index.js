@@ -372,16 +372,26 @@ const LoginRegister = (props) => {
         setInputs({ ...inputs, [jenis]: email });
         setEmail(email);
 
-        if (email === '') {
-          setErrorEmail('Email is required');
-          setBtnSubmit(false);
-          return;
-        } else if (!checkEmail) {
-          setErrorEmail('Email not valid');
-          setBtnSubmit(false);
+        if (props.orderingSetting?.RegistrationEmailMandatory === false) {
+          if (!checkEmail && email) {
+            setErrorEmail('Email not valid');
+            setBtnSubmit(false);
+          } else {
+            setErrorEmail('');
+            setBtnSubmit(true);
+          }
         } else {
-          setErrorEmail('');
-          setBtnSubmit(true);
+          if (email === '') {
+            setErrorEmail('Email is required');
+            setBtnSubmit(false);
+            return;
+          } else if (!checkEmail) {
+            setErrorEmail('Email not valid');
+            setBtnSubmit(false);
+          } else {
+            setErrorEmail('');
+            setBtnSubmit(true);
+          }
         }
         break;
       }
@@ -701,8 +711,9 @@ const LoginRegister = (props) => {
         phoneNumber: payloadResponse.phoneNumber,
         ...customFields,
       };
-
-      if (!isEmailMandatory) {
+      if (email) {
+        payload.email = email;
+      } else if (!isEmailMandatory) {
         payload.email = `${payloadResponse.phoneNumber}@proseller.io`;
       }
 
