@@ -46,10 +46,12 @@ function buildCart(payload = {}) {
 
       localStorage.removeItem(`${config.prefix}_offlineCart`);
       dispatch(setData({}, CONSTANT.DATA_BASKET));
-      dispatch({
-        type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: errorData,
-      });
+
+      response.resultCode !== 200 &&
+        dispatch({
+          type: CONSTANT.BUILD_CART_ERROR_DATA,
+          payload: errorData,
+        });
     } else {
       let { data } = response;
       let basketData = { ...data };
