@@ -21,6 +21,7 @@ import ProductAddModal from './ProductAddModal';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { OrderAction } from 'redux/actions/OrderAction';
+import { isEmpty } from 'helpers/utils';
 
 const ProductUpdateModal = ({
   open,
@@ -198,6 +199,10 @@ const ProductUpdateModal = ({
         setProductInBasket(items);
       }
     }
+
+    if ((isEmpty(basket) && !mode) || basket.message) {
+      handleClose();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basket, product]);
 
@@ -217,6 +222,10 @@ const ProductUpdateModal = ({
             (item) => item.product.id === product.id
           );
           setProductInBasket(items);
+        }
+
+        if (basketGuestCoResponse?.message) {
+          handleClose();
         }
 
         if (!isEmptyObject(editResponse)) {
@@ -347,42 +356,6 @@ const ProductUpdateModal = ({
   const renderProducts = () => {
     if (!isEmptyArray(productInBasket)) {
       const result = productInBasket.map((product, index) => {
-        return (
-          <div key={index}>
-            <div style={styles.productRoot}>
-              <div style={styles.displayFlex}>
-                <Typography style={styles.quantity}>
-                  {product?.quantity}x
-                </Typography>
-                <Typography style={styles.typography}>
-                  {product?.product?.name}
-                </Typography>
-              </div>
-
-              {renderProductModifiers(product?.modifiers)}
-              <div style={styles.productBody}>
-                <Typography style={styles.price}>
-                  {handleCurrency(product?.grossAmount)}
-                </Typography>
-                <Button
-                  style={styles.buttonEdit}
-                  onClick={() => {
-                    handleOpenAddModal(product);
-                  }}
-                >
-                  <EditIcon style={styles.iconEdit} />
-                  <Typography style={styles.textEdit}>Edit</Typography>
-                </Button>
-              </div>
-            </div>
-            <Divider />
-          </div>
-        );
-      });
-
-      return result;
-    } else if (mode === 'GuestMode') {
-      const result = productInBasket?.map((product, index) => {
         return (
           <div key={index}>
             <div style={styles.productRoot}>

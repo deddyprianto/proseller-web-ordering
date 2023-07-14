@@ -35,13 +35,23 @@ function buildCart(payload = {}) {
       'Bearer'
     );
 
-    if (response.ResultCode >= 400 || response.resultCode >= 400) {
+    if (
+      response.ResultCode >= 400 ||
+      response.resultCode >= 400 ||
+      !response.data
+    ) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       localStorage.removeItem(`${config.prefix}_offlineCart`);
       dispatch(setData({}, CONSTANT.DATA_BASKET));
-      dispatch({
-        type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
-      });
+
+      response.resultCode !== 200 &&
+        dispatch({
+          type: CONSTANT.BUILD_CART_ERROR_DATA,
+          payload: errorData,
+        });
     } else {
       let { data } = response;
       let basketData = { ...data };
@@ -264,6 +274,7 @@ function processOfflineCart(payload, mode) {
     try {
       let offlineCart = localStorage.getItem(`${config.prefix}_offlineCart`);
       offlineCart = JSON.parse(offlineCart);
+
       if (isEmptyObject(offlineCart) || isEmptyArray(offlineCart.details)) {
         return await dispatch(buildCart(payload));
       } else {
@@ -283,9 +294,7 @@ function processOfflineCart(payload, mode) {
               }
             }
           }
-          offlineCart.details = offlineCart.details.filter((item) => {
-            return item.quantity !== 0;
-          });
+
           return await dispatch(buildCart(offlineCart));
         }
       }
@@ -305,9 +314,13 @@ function updateCart(payload) {
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     } else {
       dispatch(setData(response.data, CONSTANT.DATA_BASKET));
@@ -344,7 +357,8 @@ function processRemoveCart(product) {
 }
 
 function processRemoveCartGuestCheckoutMode(guestID, itemDetails) {
-  return async () => {
+  return async (dispatch) => {
+    const idGuest = guestID?.includes('guest') ? guestID : `guest::${guestID}`;
     let payload = [];
     payload.push({
       id: itemDetails.id,
@@ -355,11 +369,12 @@ function processRemoveCartGuestCheckoutMode(guestID, itemDetails) {
     const response = await OrderingService.api(
       'PUT',
       payload,
-      `guest/cart/update-item/${guestID}`
+      `guest/cart/update-item/${idGuest}`
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
       return response;
     } else {
+      dispatch({ type: CONSTANT.GUESTMODE, payload: response.data });
       return response;
     }
   };
@@ -453,12 +468,16 @@ function addCart(payload) {
       console.log(e);
     }
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     } else {
-      dispatch(setData(response.data, CONSTANT.DATA_BASKET));
+      return dispatch(setData(response.data, CONSTANT.DATA_BASKET));
     }
   };
 }
@@ -881,9 +900,13 @@ const addCartToGuestMode = (guestID, defaultOutlet, selectedItem) => {
       });
     }
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     }
     return response;
@@ -1158,9 +1181,13 @@ const processUpdateCartGuestMode = (guestID, productUpdate) => {
       });
     }
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
+      const errorData = !isEmpty(response.data)
+        ? response.data
+        : { title: 'Error!', message: 'Oops! Something went wrong.' };
+
       dispatch({
         type: CONSTANT.BUILD_CART_ERROR_DATA,
-        payload: response.data,
+        payload: errorData,
       });
     }
   };

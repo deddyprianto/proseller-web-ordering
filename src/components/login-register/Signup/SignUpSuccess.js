@@ -21,6 +21,9 @@ const SignUpSuccess = ({
 }) => {
   const [showOtp, setShowOtp] = useState(false);
 
+  const guestMode = localStorage.getItem('settingGuestMode');
+  const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+
   return (
     <div className='modal-body'>
       {showOtp ? (
@@ -75,13 +78,18 @@ const SignUpSuccess = ({
           borderRadius: 5,
           height: 50,
         }}
-        onClick={() => {
+        onClick={async () => {
           if (usePassword) {
             handleLogin(!usePassword);
           } else if (!showOtp) {
             setShowOtp(true);
           } else {
-            handleLogin(true);
+            await handleLogin(true);
+
+            if (guestMode && idGuestCheckout) {
+              localStorage.removeItem('settingGuestMode');
+              localStorage.removeItem('idGuestCheckout');
+            }
           }
         }}
       >

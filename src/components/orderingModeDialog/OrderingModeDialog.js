@@ -355,41 +355,26 @@ const OrderingModeDialog = ({ open, onClose }) => {
             dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
             dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
           }}
-          style={
-            item.name === orderingModeActive?.name || item.name === orderingMode
-              ? {
-                  height: '80px',
-                  borderRadius: 10,
-                  padding: '10px 0px',
-                  color: colorState.primary,
-                  fontWeight: 500,
-                  fontSize: 14,
-                  border: `1px solid ${colorState.primary}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '76px',
-                  margin: '0px 5px',
-                  backgroundColor: colorState.primary,
-                }
-              : {
-                  height: '80px',
-                  borderRadius: 10,
-                  padding: '10px 0px',
-                  color: colorState.primary,
-                  fontWeight: 500,
-                  fontSize: 14,
-                  border: `1px solid ${colorState.primary}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '76px',
-                  margin: '0px 10px',
-                  backgroundColor: 'white',
-                }
-          }
+          style={{
+            height: '80px',
+            borderRadius: 10,
+            padding: '10px 0px',
+            color: colorState.primary,
+            fontWeight: 500,
+            fontSize: 14,
+            border: `1px solid ${colorState.primary}`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '76px',
+            margin: '0px 10px',
+            backgroundColor:
+              item.name === orderingModeActive?.name ||
+              item.name === orderingMode
+                ? colorState.primary
+                : '#ffffff',
+          }}
           className={fontStyles.myFont}
           key={item.name}
         >
