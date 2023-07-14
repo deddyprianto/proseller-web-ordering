@@ -24,7 +24,7 @@ function AppointmentReducer(
     isDateSelected: false,
     locationAppointmentPersisted: {},
     cartSave: {},
-    tabStateHistory: 'orders',
+    tabStateHistory: 'Orders',
   },
   action
 ) {

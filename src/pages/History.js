@@ -91,7 +91,7 @@ const History = (props) => {
               onClick={() => {
                 dispatch({
                   type: CONSTANT.TAB_STATE_HISTORY,
-                  payload: 'orders',
+                  payload: 'Orders',
                 });
               }}
               label='Orders'
@@ -103,7 +103,7 @@ const History = (props) => {
               onClick={() => {
                 dispatch({
                   type: CONSTANT.TAB_STATE_HISTORY,
-                  payload: 'appointment',
+                  payload: 'Appointment',
                 });
               }}
               label='Appointment'
@@ -119,14 +119,14 @@ const History = (props) => {
   };
 
   const RenderMain = () => {
-    if (tabStateButton === 'orders') {
+    if (tabStateButton === 'Orders') {
       return (
         <HistoryLogin
           fontStyles={fontStyles}
           appointmentSetting={appointmentSetting}
         />
       );
-    } else if (tabStateButton === 'appointment') {
+    } else if (tabStateButton === 'Appointment') {
       return <HistoryAppointment />;
     }
   };

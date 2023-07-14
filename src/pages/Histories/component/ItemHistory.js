@@ -90,8 +90,6 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           className={fontStyles.myFont}
           onClick={() => setIsOpenModalDetail(true)}
           style={{
-            width: '91%',
-            margin: 'auto',
             borderRadius: '10px',
             boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             marginTop: '10px',

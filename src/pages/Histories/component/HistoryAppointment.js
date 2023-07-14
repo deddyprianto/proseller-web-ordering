@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import Tabs from '@mui/material/Tabs';
 import { useSelector } from 'react-redux';
 import Tab from '@mui/material/Tab';
-
+import Stack from '@mui/material/Stack';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss';
 import fontStyles from '../style/styles.module.css';
 import ItemHistory from './ItemHistory';
 import useHistoryAppointment from 'hooks/useHistoryAppointment';
@@ -14,7 +16,7 @@ const HistoryAppointment = () => {
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
   const mobileSize = useMobileSize();
 
-  const [tabName, setTabName] = useState('SUBMITTED');
+  const [tabName, setTabName] = useState('Submitted');
   const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(0);
   const { historyAppointment, loading, error, hasMore, setHasMore } =
@@ -116,88 +118,65 @@ const HistoryAppointment = () => {
     },
   };
 
-  const RenderTabHeaderMobile = () => {
+  const renderTabHeaderMobile = () => {
+    const labelAppointment = [
+      {
+        label: 'Submitted',
+        query: 'SUBMITTED',
+      },
+      {
+        label: 'Upcoming',
+        query: 'UPCOMING',
+      },
+      {
+        label: 'Ongoing',
+        query: 'ONGOING',
+      },
+      {
+        label: 'Completed',
+        query: 'COMPLETED',
+      },
+      {
+        label: 'Canceled',
+        query: 'CANCELLED',
+      },
+    ];
     return (
-      <div
-        style={{
-          width: '100%',
-          borderBottom: '1px solid rgba(138, 141, 142, .4)',
-        }}
+      <Swiper
+        style={{ width: '100%', margin: '16px 0px' }}
+        slidesPerView='auto'
+        spaceBetween={10}
       >
-        <Tabs
-          value={tabName}
-          sx={styleSheet.indicatorForMobileView}
-          variant='scrollable'
-          scrollButtons='auto'
-          aria-label='scrollable auto tabs example'
-        >
-          <Tab
-            value='SUBMITTED'
+        {labelAppointment.map((item) => (
+          <SwiperSlide
+            style={{ flexShrink: 'unset' }}
             onClick={() => {
-              setTabName('SUBMITTED');
-              setTabNameAPI('SUBMITTED');
+              setTabName(item.label);
+              setTabNameAPI(item.query);
               setSkip(0);
               setPageNumber(1);
               setHasMore(false);
             }}
-            label='Submitted'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-          <Tab
-            value='UPCOMING'
-            onClick={() => {
-              setTabName('UPCOMING');
-              setTabNameAPI('CONFIRMED');
-              setSkip(0);
-              setPageNumber(1);
-              setHasMore(false);
-            }}
-            label='Upcoming'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-          <Tab
-            value='ONGOING'
-            onClick={() => {
-              setTabName('ONGOING');
-              setTabNameAPI('CONFIRMED');
-              setSkip(0);
-              setPageNumber(1);
-              setHasMore(false);
-            }}
-            label='Ongoing'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-          <Tab
-            value='COMPLETED'
-            onClick={() => {
-              setTabName('COMPLETED');
-              setTabNameAPI('COMPLETED');
-              setSkip(0);
-              setPageNumber(1);
-              setHasMore(false);
-            }}
-            label='Completed'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-          <Tab
-            value='CANCELLED'
-            onClick={() => {
-              setTabName('CANCELLED');
-              setTabNameAPI('CANCELLED');
-              setSkip(0);
-              setPageNumber(1);
-              setHasMore(false);
-            }}
-            label='Canceled'
-            className={fontStyles.myFont}
-            sx={styleSheet.muiSelected}
-          />
-        </Tabs>
-      </div>
+          >
+            <div
+              style={{
+                width: '128px',
+                textAlign: 'center',
+                padding: '5px 16px',
+                borderRadius: '8px',
+                color: item.label === tabName ? 'white' : color.primary,
+                backgroundColor:
+                  item.label === tabName ? color.primary : 'white',
+                border: `1px solid ${color.primary}`,
+                fontSize: '14px',
+                fontWeight: 600,
+              }}
+            >
+              {item.label}
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     );
   };
 
@@ -264,16 +243,16 @@ const HistoryAppointment = () => {
   };
 
   return (
-    <div style={{ marginTop: mobileSize ? '60%' : '15%' }}>
-      <RenderTabHeaderMobile />
-      {/* <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
+    <div>
+      {renderTabHeaderMobile()}
+      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
         {renderItemHistory()}
         {loading && <RenderAnimationLoading />}
         {!hasMore && !loading && (
           <div style={{ width: '100%' }}>
             <p
               className='default-font'
-              style={{ color: '#9D9D9D', marginLeft: '20px' }}
+              style={{ color: '#9D9D9D', textAlign: 'center' }}
             >
               You are all caught up
             </p>
@@ -282,7 +261,7 @@ const HistoryAppointment = () => {
         {error?.message && (
           <p style={{ marginLeft: '10px' }}>{error?.message}</p>
         )}
-      </div> */}
+      </div>
     </div>
   );
 };

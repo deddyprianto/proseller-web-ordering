@@ -51,7 +51,6 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
     return (
       <div
         style={{
-          marginTop: '240px',
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
@@ -84,7 +83,14 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
   return (
     <>
       <ModalDetailHistory detail={detailData} countryCode />
-      <div style={{ marginTop: '16px' }}>
+      <div
+        style={{
+          marginTop: '16px',
+          height: '60vh',
+          overflowY: 'auto',
+          paddingBottom: 20,
+        }}
+      >
         <Grid
           container
           direction='row'
@@ -92,9 +98,6 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
           alignItems='center'
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, md: 12 }}
-          sx={{
-            paddingBottom: 20,
-          }}
         >
           {historyTransaction.map((items, index) => {
             return (
@@ -121,7 +124,11 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
             <div style={{ width: '100%', marginTop: '10px' }}>
               <p
                 className='default-font'
-                style={{ color: '#9D9D9D', textAlign: 'center',marginTop:'10px' }}
+                style={{
+                  color: '#9D9D9D',
+                  textAlign: 'center',
+                  marginTop: '10px',
+                }}
               >
                 You are all caught up
               </p>

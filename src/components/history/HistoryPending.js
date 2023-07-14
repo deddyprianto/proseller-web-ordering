@@ -23,7 +23,6 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
     return (
       <div
         style={{
-          marginTop: '240px',
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
@@ -39,6 +38,9 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
     <div
       style={{
         marginTop: '16px',
+        height: '60vh',
+        overflowY: 'auto',
+        paddingBottom: 20,
       }}
     >
       <Grid
@@ -48,9 +50,6 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
         alignItems='center'
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, md: 12 }}
-        sx={{
-          paddingBottom: 20,
-        }}
       >
         {dataPending.map((items, index) => {
           return (
