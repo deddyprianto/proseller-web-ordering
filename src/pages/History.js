@@ -133,7 +133,12 @@ const History = (props) => {
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
-        <div style={{ margin: '0px 16px' }}>
+        <div
+          style={{
+            margin: '0px 16px',
+            backgroundColor: 'white',
+          }}
+        >
           <RenderHeaderLabelHistory
             color={color}
             history={props.history}

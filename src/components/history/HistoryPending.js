@@ -5,13 +5,11 @@ import { Link } from 'react-router-dom';
 
 import config from 'config';
 import InboxCard from './HistoryCardPending';
-import useMobileSize from 'hooks/useMobileSize';
+
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
-  const mobileSize = useMobileSize();
-
   const setLocalStorageItem = (items) => {
     localStorage.setItem(
       `${config.prefix}_dataBasket`,

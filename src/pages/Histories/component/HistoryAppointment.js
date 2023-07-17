@@ -1,20 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Tabs from '@mui/material/Tabs';
 import { useSelector } from 'react-redux';
-import Tab from '@mui/material/Tab';
-import Stack from '@mui/material/Stack';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss';
-import fontStyles from '../style/styles.module.css';
 import ItemHistory from './ItemHistory';
 import useHistoryAppointment from 'hooks/useHistoryAppointment';
 import config from 'config';
-import useMobileSize from 'hooks/useMobileSize';
 
 const HistoryAppointment = () => {
   const historyRef = useRef();
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
-  const mobileSize = useMobileSize();
 
   const [tabName, setTabName] = useState('Submitted');
   const [pageNumber, setPageNumber] = useState(1);
@@ -81,43 +75,6 @@ const HistoryAppointment = () => {
     );
   };
 
-  const styleSheet = {
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        fontWeight: 700,
-        textTransform: 'capitalize',
-        '&:hover': {
-          color: 'rgba(138, 141, 142, 1)',
-        },
-      },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
-      },
-    },
-    indicator: {
-      '& .MuiTabScrollButton-root': {
-        padding: 0,
-        margin: 0,
-        width: 15,
-      },
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    indicatorForMobileView: {
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-  };
-
   const renderTabHeaderMobile = () => {
     const labelAppointment = [
       {
@@ -126,11 +83,11 @@ const HistoryAppointment = () => {
       },
       {
         label: 'Upcoming',
-        query: 'UPCOMING',
+        query: 'CONFIRMED',
       },
       {
         label: 'Ongoing',
-        query: 'ONGOING',
+        query: 'CONFIRMED',
       },
       {
         label: 'Completed',
@@ -183,7 +140,7 @@ const HistoryAppointment = () => {
   const filterBookingHistory = historyAppointment.filter((item) => {
     const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
     const compareDate =
-      tabName === 'UPCOMING'
+      tabName === 'Upcoming'
         ? new Date(combineDateTime).getTime() > new Date().getTime()
         : new Date(combineDateTime).getTime() <= new Date().getTime();
     return compareDate;
@@ -245,7 +202,15 @@ const HistoryAppointment = () => {
   return (
     <div>
       {renderTabHeaderMobile()}
-      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
+      <div
+        style={{
+          height: '60vh',
+          overflowY: 'auto',
+          paddingBottom: 85,
+          paddingLeft: '2px',
+          paddingRight: '2px',
+        }}
+      >
         {renderItemHistory()}
         {loading && <RenderAnimationLoading />}
         {!hasMore && !loading && (

@@ -116,12 +116,12 @@ const History = ({ fontStyles, appointmentSetting }) => {
             marginRight: '10px',
             fontWeight: 600,
             fontSize: '14px',
-            width: '128px',
+            width: '132px',
             height: '37px',
             borderRadius: '8px',
           }}
         >
-          Pending Order
+          Ongoing Order
         </button>
         <button
           onClick={() => {
@@ -142,7 +142,7 @@ const History = ({ fontStyles, appointmentSetting }) => {
               stateTabs === 'pendingorder' ? color.primary : 'white',
             color: stateTabs === 'pendingorder' ? 'white' : color.primary,
             fontSize: '14px',
-            width: '128px',
+            width: '132px',
             height: '37px',
             borderRadius: '8px',
           }}

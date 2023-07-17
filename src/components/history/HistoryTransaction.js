@@ -86,9 +86,11 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
       <div
         style={{
           marginTop: '16px',
-          height: '60vh',
+          height: mobileSize ? '60vh' : '90vh',
           overflowY: 'auto',
-          paddingBottom: 20,
+          paddingBottom: 50,
+          paddingLeft: '2px',
+          paddingRight: '2px',
         }}
       >
         <Grid
@@ -97,7 +99,7 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
           justifyContent='space-between'
           alignItems='center'
           spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, md: 12 }}
+          columns={{ xs: 4, md: 4 }}
         >
           {historyTransaction.map((items, index) => {
             return (

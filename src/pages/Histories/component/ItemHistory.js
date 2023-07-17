@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
 import DetailHistoryAppointment from './DetailHistoryAppointment';
 import fontStyles from '../style/styles.module.css';
 import screen from 'hooks/useWindowSize';
@@ -45,44 +46,6 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
     return formattedDate;
   };
 
-  const PlaceIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        width='24'
-        height='24'
-        viewBox='0 0 24 24'
-        fill='none'
-        stroke={color.primary}
-        strokeWidth={1.5}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        className='feather feather-map-pin'
-      >
-        <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
-        <circle cx={12} cy={10} r={3} />
-      </svg>
-    );
-  };
-  const CalenderIcon = () => {
-    return (
-      <svg
-        width='24'
-        height='24'
-        viewBox='0 0 240 240'
-        fill='white'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M210 130V60C210 54.6957 207.893 49.6086 204.142 45.8579C200.391 42.1071 195.304 40 190 40H50C44.6957 40 39.6086 42.1071 35.8579 45.8579C32.1071 49.6086 30 54.6957 30 60V200C30 205.304 32.1071 210.391 35.8579 214.142C39.6086 217.893 44.6957 220 50 220H130M160 20V60M80 20V60M30 100H210M190 160V220M160 190H220'
-          stroke={color.primary}
-          strokeWidth='20'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-      </svg>
-    );
-  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
@@ -90,136 +53,132 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           className={fontStyles.myFont}
           onClick={() => setIsOpenModalDetail(true)}
           style={{
-            borderRadius: '10px',
-            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-            marginTop: '10px',
-            marginBottom: '10px',
-            padding: '5px 0px',
+            borderRadius: '8px',
+            boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.10)',
+            padding: '12px 0px',
+            margin: '15px 0px',
           }}
         >
-          {/* row CALENDER ICON */}
           <div
             style={{
-              width: '95%',
-              margin: 'auto',
-              display: 'grid',
-              gridTemplateColumns: '30px 1fr 77px',
-              gridTemplateRows: '1fr',
-              gap: '0px 0px',
-              gridAutoFlow: 'row',
-              gridTemplateAreas: '". ."',
-              marginTop: '15px',
+              width: '100%',
+              padding: '0px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            <CalenderIcon />
             <div
               style={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                marginLeft: '10px',
-                color: 'black',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: color.primary,
               }}
             >
-              <div style={{ fontWeight: 600, fontSize: '15px' }}>
-                {changeFormatDate(item.bookingDate)}
-              </div>
-              <div
-                style={{
-                  margin: '0px 10px',
-                  fontWeight: 600,
-                  fontSize: '15px',
-                }}
-              >
-                -
-              </div>
-              <div style={{ fontWeight: 600, fontSize: '15px' }}>
-                {item.bookingTime.start}
-              </div>
+              Appointment
             </div>
-            {tabName === 'COMPLETED' && (
+            {tabName === 'Completed' && (
               <div
                 style={{
-                  backgroundColor: 'rgba(56, 164, 5, 1)',
-                  borderRadius: '20px',
+                  backgroundColor: '#38A405',
+                  padding: '1px 10px',
                   color: 'white',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  width: '100%',
-                  textAlign: 'center',
+                  borderRadius: '100px',
+                  fontSize: '12px',
+                  fontWeight: 600,
                 }}
               >
                 {item?.rewards?.points} points
               </div>
             )}
           </div>
-          {/* ROW PLACE ICON */}
           <div
             style={{
-              width: '95%',
-              margin: 'auto',
-              marginTop: '15px',
-              display: 'grid',
-              gridTemplateColumns: '30px 1fr',
-              gridTemplateRows: '1fr',
-              gap: '0px 0px',
-              gridAutoFlow: 'row',
-              gridTemplateAreas: '". ."',
+              backgroundColor: 'rgb(242, 242, 242)',
+              padding: '8px 16px',
+              marginTop: '12px',
             }}
           >
             <div
+              style={{ marginTop: '8px', fontWeight: 600, fontSize: '16px' }}
+            >
+              {item.outlet?.name}
+            </div>
+            <div
               style={{
-                justifySelf: 'center',
-                marginTop: '5px',
-                marginRight: '5px',
-                fontWeight: 'bold',
+                marginTop: '8px',
+                fontWeight: 600,
+                fontSize: '14px',
+                color: '#9D9D9D',
               }}
             >
-              <PlaceIcon />
-            </div>
-            <div>
               <div
                 style={{
+                  display: 'flex',
+                  width: '100%',
+                  alignItems: 'center',
                   color: 'black',
-                  fontSize: '15px',
-                  fontWeight: 600,
-                  marginLeft: '10px',
                 }}
               >
-                {item.outlet?.name}
+                <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                  {changeFormatDate(item.bookingDate)}
+                </div>
+                <div
+                  style={{
+                    margin: '0px 10px',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                  }}
+                >
+                  -
+                </div>
+                <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                  {item.bookingTime.start}
+                </div>
               </div>
+            </div>
+            <div style={{ marginTop: '8px' }}>
               <div
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '14px',
                   color: 'rgba(157, 157, 157, 1)',
-                  fontSize: '13px',
                   fontWeight: 600,
-                  marginLeft: '10px',
                 }}
               >
-                {item.outlet?.address}
+                <div>
+                  <span>{item?.details?.length}</span> Service
+                </div>
+                <div style={{ margin: '0px 10px' }}> - </div>
+                <div>{handleCurrency(item.totalNettAmount)}</div>
               </div>
             </div>
           </div>
           <div
             style={{
-              width: '95%',
-              margin: 'auto',
+              marginTop: '14px',
+              height: '21px',
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              marginTop: '10px',
-              fontSize: '12px',
-              color: 'rgba(157, 157, 157, 1)',
-              fontWeight: 600,
+              padding: '0px 16px',
             }}
           >
-            <div>
-              <span style={{ marginRight: '3px' }}>
-                {item?.details?.length}
-              </span>{' '}
-              Service
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: color.primary,
+              }}
+            >
+              {tabName}
             </div>
-            <div style={{ margin: '0px 10px' }}> - </div>
-            <div>{handleCurrency(item.totalNettAmount)}</div>
+            <div
+              style={{ fontSize: '12px', color: '#B7B7B7', fontWeight: 600 }}
+            >
+              <div>{moment(item.createdAt).format('DD/MM/YY HH:mm')}</div>
+            </div>
           </div>
         </div>
       );
@@ -229,52 +188,38 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           className={fontStyles.myFont}
           onClick={() => setIsOpenModalDetail(true)}
           style={{
-            width: '91%',
-            margin: 'auto',
-            borderRadius: '10px',
-            boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-            marginTop: '10px',
-            marginBottom: '10px',
-            padding: '5px 0px',
+            borderRadius: '8px',
+            boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.10)',
+            padding: '12px 0px',
+            margin: '15px 0px',
           }}
         >
           <div
             style={{
-              width: '95%',
-              margin: 'auto',
+              width: '100%',
+              padding: '0px 16px',
               display: 'flex',
               alignItems: 'center',
-              fontSize: '15px',
-              fontWeight: 500,
-              color: 'black',
-              marginTop: '15px',
+              justifyContent: 'space-between',
             }}
           >
-            <CalenderIcon />
             <div
               style={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                marginLeft: '10px',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: color.primary,
               }}
             >
-              <div style={{ fontSize: '15px' }}>
-                {changeFormatDate(item.bookingDate)}
-              </div>
-              <div style={{ margin: '0px 10px', fontSize: '15px' }}>-</div>
-              <div style={{ fontSize: '15px' }}>{item.bookingTime.start}</div>
+              Appointment
             </div>
-            {tabName === 'COMPLETED' && (
+            {tabName === 'Completed' && (
               <div
                 style={{
-                  backgroundColor: 'rgba(56, 164, 5, 1)',
-                  borderRadius: '20px',
-                  padding: '0px 10px',
+                  backgroundColor: '#38A405',
+                  padding: '1px 10px',
                   color: 'white',
-                  fontSize: '13px',
-                  width: '100%',
-                  height: '30px',
+                  borderRadius: '100px',
+                  fontSize: '12px',
                   fontWeight: 600,
                 }}
               >
@@ -284,55 +229,91 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           </div>
           <div
             style={{
-              width: '95%',
-              margin: 'auto',
-              display: 'flex',
-              marginTop: '10px',
+              backgroundColor: 'rgb(242, 242, 242)',
+              padding: '8px 16px',
+              marginTop: '12px',
             }}
           >
-            <div style={{ marginTop: '5px' }}>
-              <PlaceIcon />
+            <div
+              style={{ marginTop: '8px', fontWeight: 600, fontSize: '16px' }}
+            >
+              {item.outlet?.name}
             </div>
-            <div>
+            <div
+              style={{
+                marginTop: '8px',
+                fontWeight: 600,
+                fontSize: '14px',
+                color: '#9D9D9D',
+              }}
+            >
               <div
                 style={{
+                  display: 'flex',
+                  width: '100%',
+                  alignItems: 'center',
                   color: 'black',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  marginLeft: '10px',
                 }}
               >
-                {item.outlet?.name}
+                <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                  {changeFormatDate(item.bookingDate)}
+                </div>
+                <div
+                  style={{
+                    margin: '0px 10px',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                  }}
+                >
+                  -
+                </div>
+                <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                  {item.bookingTime.start}
+                </div>
               </div>
+            </div>
+            <div style={{ marginTop: '8px' }}>
               <div
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '14px',
                   color: 'rgba(157, 157, 157, 1)',
-                  fontSize: '13px',
                   fontWeight: 600,
-                  marginLeft: '10px',
                 }}
               >
-                {item.outlet?.address}
+                <div>
+                  <span>{item?.details?.length}</span> Service
+                </div>
+                <div style={{ margin: '0px 10px' }}> - </div>
+                <div>{handleCurrency(item.totalNettAmount)}</div>
               </div>
             </div>
           </div>
           <div
             style={{
-              width: '95%',
-              margin: 'auto',
+              marginTop: '14px',
+              height: '21px',
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              marginTop: '10px',
-              fontSize: '14px',
-              color: 'rgba(157, 157, 157, 1)',
-              fontWeight: 500,
+              padding: '0px 16px',
             }}
           >
-            <div>D1005</div>
-            <div style={{ margin: '0px 10px' }}> - </div>
-            <div>{item?.details?.length} Service</div>
-            <div style={{ margin: '0px 10px' }}> - </div>
-            <div>{handleCurrency(item.totalNettAmount)}</div>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: color.primary,
+              }}
+            >
+              {tabName}
+            </div>
+            <div
+              style={{ fontSize: '12px', color: '#B7B7B7', fontWeight: 600 }}
+            >
+              <div>{moment(item.createdAt).format('DD/MM/YY HH:mm')}</div>
+            </div>
           </div>
         </div>
       );

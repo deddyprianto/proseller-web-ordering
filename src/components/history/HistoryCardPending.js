@@ -55,6 +55,7 @@ const InboxCard = (props) => {
         borderRadius: '8px',
         cursor: 'pointer',
         width: '100%',
+        marginTop: '5px',
       }}
     >
       <div
@@ -78,6 +79,7 @@ const InboxCard = (props) => {
               padding: '1px 10px',
               color: 'white',
               borderRadius: '100px',
+              fontSize: '12px',
             }}
           >
             {items.point + ' points'}
@@ -110,40 +112,33 @@ const InboxCard = (props) => {
 
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
           width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           marginTop: '16px',
           padding: '0px 16px',
         }}
       >
-        <div style={{ textAlign: 'left', width: '100%' }}>
-          <div
-            style={{
-              color: props.color.primary,
-              fontWeight: 600,
-              fontSize: '14px',
-            }}
-          >
-            {items.status.replace(/_/g, ' ')}
-          </div>
+        <div
+          style={{
+            color: props.color.primary,
+            fontWeight: 600,
+            fontSize: '14px',
+          }}
+        >
+          {items.status.replace(/_/g, ' ')}
         </div>
+
         <div
           className='font-color-theme'
           style={{
-            fontSize: 12,
-            textAlign: 'right',
-            width: '100%',
-            lineHeight: '17px',
-            alignSelf: 'end',
+            fontSize: '12px',
             color: '#9D9D9D',
-            display: 'flex',
-            flexDirection: 'column',
             fontWeight: 600,
           }}
         >
-          <div>{moment(items.createdAt).format('DD/MM/YY HH:mm')}</div>
+          {moment(items.createdAt).format('DD/MM/YY HH:mm')}
         </div>
       </div>
     </div>
