@@ -106,6 +106,7 @@ const HistoryAppointment = () => {
       >
         {labelAppointment.map((item) => (
           <SwiperSlide
+            key={item.label}
             style={{ flexShrink: 'unset' }}
             onClick={() => {
               setTabName(item.label);
