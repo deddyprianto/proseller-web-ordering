@@ -3,14 +3,31 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import DetailHistoryAppointment from './DetailHistoryAppointment';
 import fontStyles from '../style/styles.module.css';
-import screen from 'hooks/useWindowSize';
+
+const RenderPointsLabel = ({ tabName, item }) => {
+  if (tabName === 'Completed') {
+    return (
+      <div
+        style={{
+          backgroundColor: '#38A405',
+          padding: '1px 10px',
+          color: 'white',
+          borderRadius: '100px',
+          fontSize: '12px',
+          fontWeight: 600,
+        }}
+      >
+        {item?.rewards?.points} points
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 
 const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
-
-  const responsiveDesign = screen();
-  const gadgetScreen = responsiveDesign.width < 980;
 
   const handleCurrency = (price) => {
     if (price) {
@@ -45,277 +62,124 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
 
     return formattedDate;
   };
-  const RenderPointsLabel = () => {
-    if (tabName === 'Completed') {
-      return (
-        <div
-          style={{
-            backgroundColor: '#38A405',
-            padding: '1px 10px',
-            color: 'white',
-            borderRadius: '100px',
-            fontSize: '12px',
-            fontWeight: 600,
-          }}
-        >
-          {item?.rewards?.points} points
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
 
-  const ResponsiveLayout = () => {
-    if (gadgetScreen === true) {
-      return (
-        <div
-          className={fontStyles.myFont}
-          onClick={() => setIsOpenModalDetail(true)}
-          style={{
-            borderRadius: '8px',
-            boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.10)',
-            padding: '12px 0px',
-            margin: '15px 0px',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              padding: '0px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 600,
-                color: color.primary,
-              }}
-            >
-              Appointment
-            </div>
-            <RenderPointsLabel />
-          </div>
-          <div
-            style={{
-              backgroundColor: 'rgb(242, 242, 242)',
-              padding: '8px 16px',
-              marginTop: '12px',
-            }}
-          >
-            <div
-              style={{ marginTop: '8px', fontWeight: 600, fontSize: '16px' }}
-            >
-              {item.outlet?.name}
-            </div>
-            <div
-              style={{
-                marginTop: '8px',
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#9D9D9D',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  alignItems: 'center',
-                  color: 'black',
-                }}
-              >
-                <div style={{ fontWeight: 600, fontSize: '14px' }}>
-                  {changeFormatDate(item.bookingDate)}
-                </div>
-                <div
-                  style={{
-                    margin: '0px 10px',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                  }}
-                >
-                  -
-                </div>
-                <div style={{ fontWeight: 600, fontSize: '14px' }}>
-                  {item.bookingTime.start}
-                </div>
-              </div>
-            </div>
-            <div style={{ marginTop: '8px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                  color: 'rgba(157, 157, 157, 1)',
-                  fontWeight: 600,
-                }}
-              >
-                <div>
-                  <span>{item?.details?.length}</span> Service
-                </div>
-                <div style={{ margin: '0px 10px' }}> - </div>
-                <div>{handleCurrency(item.totalNettAmount)}</div>
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              marginTop: '14px',
-              height: '21px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0px 16px',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: color.primary,
-              }}
-            >
-              {tabName}
-            </div>
-            <div
-              style={{ fontSize: '12px', color: '#B7B7B7', fontWeight: 600 }}
-            >
-              <div>{moment(item.createdAt).format('DD/MM/YY HH:mm')}</div>
-            </div>
-          </div>
-        </div>
-      );
-    } else if (gadgetScreen === false) {
-      return (
-        <div
-          className={fontStyles.myFont}
-          onClick={() => setIsOpenModalDetail(true)}
-          style={{
-            borderRadius: '8px',
-            boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.10)',
-            padding: '12px 0px',
-            margin: '15px 0px',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              padding: '0px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 600,
-                color: color.primary,
-              }}
-            >
-              Appointment
-            </div>
-            <RenderPointsLabel />
-          </div>
-          <div
-            style={{
-              backgroundColor: 'rgb(242, 242, 242)',
-              padding: '8px 16px',
-              marginTop: '12px',
-            }}
-          >
-            <div
-              style={{ marginTop: '8px', fontWeight: 600, fontSize: '16px' }}
-            >
-              {item.outlet?.name}
-            </div>
-            <div
-              style={{
-                marginTop: '8px',
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#9D9D9D',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  alignItems: 'center',
-                  color: 'black',
-                }}
-              >
-                <div style={{ fontWeight: 600, fontSize: '14px' }}>
-                  {changeFormatDate(item.bookingDate)}
-                </div>
-                <div
-                  style={{
-                    margin: '0px 10px',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                  }}
-                >
-                  -
-                </div>
-                <div style={{ fontWeight: 600, fontSize: '14px' }}>
-                  {item.bookingTime.start}
-                </div>
-              </div>
-            </div>
-            <div style={{ marginTop: '8px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                  color: 'rgba(157, 157, 157, 1)',
-                  fontWeight: 600,
-                }}
-              >
-                <div>
-                  <span>{item?.details?.length}</span> Service
-                </div>
-                <div style={{ margin: '0px 10px' }}> - </div>
-                <div>{handleCurrency(item.totalNettAmount)}</div>
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              marginTop: '14px',
-              height: '21px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0px 16px',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: color.primary,
-              }}
-            >
-              {tabName}
-            </div>
-            <div
-              style={{ fontSize: '12px', color: '#B7B7B7', fontWeight: 600 }}
-            >
-              <div>{moment(item.createdAt).format('DD/MM/YY HH:mm')}</div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-  };
   return (
     <React.Fragment>
-      <ResponsiveLayout />
+      <div
+        className={fontStyles.myFont}
+        onClick={() => setIsOpenModalDetail(true)}
+        style={{
+          borderRadius: '8px',
+          boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.10)',
+          padding: '12px 0px',
+          margin: '15px 0px',
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            padding: '0px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: color.primary,
+            }}
+          >
+            Appointment
+          </div>
+          <RenderPointsLabel item={item} tabName={tabName} />
+        </div>
+        <div
+          style={{
+            backgroundColor: 'rgb(242, 242, 242)',
+            padding: '8px 16px',
+            marginTop: '12px',
+          }}
+        >
+          <div style={{ marginTop: '8px', fontWeight: 600, fontSize: '16px' }}>
+            {item.outlet?.name}
+          </div>
+          <div
+            style={{
+              marginTop: '8px',
+              fontWeight: 600,
+              fontSize: '14px',
+              color: '#9D9D9D',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                color: 'black',
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                {changeFormatDate(item.bookingDate)}
+              </div>
+              <div
+                style={{
+                  margin: '0px 10px',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                }}
+              >
+                -
+              </div>
+              <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                {item.bookingTime.start}
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: '8px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: '14px',
+                color: 'rgba(157, 157, 157, 1)',
+                fontWeight: 600,
+              }}
+            >
+              <div>
+                <span>{item?.details?.length}</span> Service
+              </div>
+              <div style={{ margin: '0px 10px' }}> - </div>
+              <div>{handleCurrency(item.totalNettAmount)}</div>
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            marginTop: '14px',
+            height: '21px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '0px 16px',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 'bold',
+              color: color.primary,
+            }}
+          >
+            {tabName}
+          </div>
+          <div style={{ fontSize: '12px', color: '#B7B7B7', fontWeight: 600 }}>
+            <div>{moment(item.createdAt).format('DD/MM/YY HH:mm')}</div>
+          </div>
+        </div>
+      </div>
       <DetailHistoryAppointment
         tabName={tabName}
         handleCurrency={handleCurrency}
