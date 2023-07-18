@@ -28,6 +28,52 @@ const RenderMain = ({ tabStateButton, appointmentSetting }) => {
   }
 };
 
+const RenderHeaderTab = ({
+  appointmentSetting,
+  tabStateButton,
+  styleSheet,
+  dispatch,
+}) => {
+  if (appointmentSetting) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          borderBottom: '1px solid rgba(138, 141, 142, .4)',
+        }}
+      >
+        <Tabs value={tabStateButton} sx={styleSheet.indicatorForMobileView}>
+          <Tab
+            value='Orders'
+            onClick={() => {
+              dispatch({
+                type: CONSTANT.TAB_STATE_HISTORY,
+                payload: 'Orders',
+              });
+            }}
+            label='Orders'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+          <Tab
+            value='Appointment'
+            onClick={() => {
+              dispatch({
+                type: CONSTANT.TAB_STATE_HISTORY,
+                payload: 'Appointment',
+              });
+            }}
+            label='Appointment'
+            className={fontStyles.myFont}
+            sx={styleSheet.muiSelected}
+          />
+        </Tabs>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 const ResponsiveLayout = ({
   color,
   props,
@@ -50,41 +96,12 @@ const ResponsiveLayout = ({
           history={props.history}
           mobileSize={mobileSize}
         />
-        {appointmentSetting && (
-          <div
-            style={{
-              width: '100%',
-              borderBottom: '1px solid rgba(138, 141, 142, .4)',
-            }}
-          >
-            <Tabs value={tabStateButton} sx={styleSheet.indicatorForMobileView}>
-              <Tab
-                value='Orders'
-                onClick={() => {
-                  dispatch({
-                    type: CONSTANT.TAB_STATE_HISTORY,
-                    payload: 'Orders',
-                  });
-                }}
-                label='Orders'
-                className={fontStyles.myFont}
-                sx={styleSheet.muiSelected}
-              />
-              <Tab
-                value='Appointment'
-                onClick={() => {
-                  dispatch({
-                    type: CONSTANT.TAB_STATE_HISTORY,
-                    payload: 'Appointment',
-                  });
-                }}
-                label='Appointment'
-                className={fontStyles.myFont}
-                sx={styleSheet.muiSelected}
-              />
-            </Tabs>
-          </div>
-        )}
+        <RenderHeaderTab
+          appointmentSetting={appointmentSetting}
+          tabStateButton={tabStateButton}
+          styleSheet={styleSheet}
+          dispatch={dispatch}
+        />
         <RenderMain
           tabStateButton={tabStateButton}
           appointmentSetting={appointmentSetting}
@@ -113,41 +130,12 @@ const ResponsiveLayout = ({
           history={props.history}
           mobileSize={mobileSize}
         />
-        {appointmentSetting && (
-          <div
-            style={{
-              width: '100%',
-              borderBottom: '1px solid rgba(138, 141, 142, .4)',
-            }}
-          >
-            <Tabs value={tabStateButton} sx={styleSheet.indicatorForMobileView}>
-              <Tab
-                value='Orders'
-                onClick={() => {
-                  dispatch({
-                    type: CONSTANT.TAB_STATE_HISTORY,
-                    payload: 'Orders',
-                  });
-                }}
-                label='Orders'
-                className={fontStyles.myFont}
-                sx={styleSheet.muiSelected}
-              />
-              <Tab
-                value='Appointment'
-                onClick={() => {
-                  dispatch({
-                    type: CONSTANT.TAB_STATE_HISTORY,
-                    payload: 'Appointment',
-                  });
-                }}
-                label='Appointment'
-                className={fontStyles.myFont}
-                sx={styleSheet.muiSelected}
-              />
-            </Tabs>
-          </div>
-        )}
+        <RenderHeaderTab
+          appointmentSetting={appointmentSetting}
+          tabStateButton={tabStateButton}
+          styleSheet={styleSheet}
+          dispatch={dispatch}
+        />
         <RenderMain
           tabStateButton={tabStateButton}
           appointmentSetting={appointmentSetting}
@@ -160,7 +148,6 @@ const History = (props) => {
   const dispatch = useDispatch();
   const [appointmentSetting, setAppointmentSetting] = useState(false);
   const mobileSize = useMobileSize();
-
   const tabStateButton = useSelector(
     (state) => state.appointmentReducer.tabStateHistory
   );
