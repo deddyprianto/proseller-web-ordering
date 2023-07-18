@@ -12,6 +12,102 @@ const HistoryPending = loadable(() =>
   import('components/history/HistoryPending')
 );
 
+const HeaderButton = ({
+  appointmentSetting,
+  fontStyles,
+  handleChangeTab,
+  stateTabs,
+  color,
+}) => {
+  return (
+    <div
+      style={{
+        marginTop: appointmentSetting ? '16px' : '10px',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <button
+        className={fontStyles.myFont}
+        onClick={() => {
+          handleChangeTab('ordered');
+        }}
+        style={{
+          display: 'flex',
+          border:
+            stateTabs === 'ordered' ? 'none' : `1px solid ${color.primary}`,
+          backgroundColor: stateTabs === 'ordered' ? color.primary : 'white',
+          color: stateTabs === 'ordered' ? 'white' : color.primary,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '8px 14px',
+          marginRight: '10px',
+          fontWeight: 600,
+          fontSize: '14px',
+          width: '132px',
+          height: '37px',
+          borderRadius: '8px',
+        }}
+      >
+        Ongoing Order
+      </button>
+      <button
+        onClick={() => {
+          handleChangeTab('pendingorder');
+        }}
+        className={fontStyles.myFont}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '8px 16px',
+          fontWeight: 600,
+          border:
+            stateTabs === 'pendingorder'
+              ? 'none'
+              : `1px solid ${color.primary}`,
+          backgroundColor:
+            stateTabs === 'pendingorder' ? color.primary : 'white',
+          color: stateTabs === 'pendingorder' ? 'white' : color.primary,
+          fontSize: '14px',
+          width: '132px',
+          height: '37px',
+          borderRadius: '8px',
+        }}
+      >
+        Past Order
+      </button>
+    </div>
+  );
+};
+
+const RenderMain = ({
+  stateTabs,
+  companyInfo,
+  appointmentFeature,
+  color,
+  dataPending,
+}) => {
+  if (stateTabs === 'ordered') {
+    return (
+      <HistoryTransaction
+        countryCode={companyInfo?.countryCode}
+        isAppointment={appointmentFeature}
+        color={color}
+      />
+    );
+  } else if (stateTabs === 'pendingorder') {
+    return (
+      <HistoryPending
+        dataPending={dataPending?.dataPending}
+        dataPendingLength={dataPending?.dataPendingLength}
+        countryCode={companyInfo?.countryCode}
+        isAppointment={appointmentFeature}
+      />
+    );
+  }
+};
+
 const History = ({ fontStyles, appointmentSetting }) => {
   const dispatch = useDispatch();
   const [dataPending, setDataPending] = useState({});
@@ -32,6 +128,7 @@ const History = ({ fontStyles, appointmentSetting }) => {
           skip: 0,
         })
       );
+      console.log('dedd', response);
       if (response.resultCode === 200 && isMounted) {
         setDataPending(response.data);
       }
@@ -69,94 +166,22 @@ const History = ({ fontStyles, appointmentSetting }) => {
     window.location.href = changeFormatURl(`/history?${type}`);
   };
 
-  const RenderMain = () => {
-    if (stateTabs === 'ordered') {
-      return (
-        <HistoryTransaction
-          countryCode={companyInfo?.countryCode}
-          isAppointment={appointmentFeature}
-          color={color}
-        />
-      );
-    } else if (stateTabs === 'pendingorder') {
-      return (
-        <HistoryPending
-          dataPending={dataPending?.dataPending}
-          dataPendingLength={dataPending?.dataPendingLength}
-          countryCode={companyInfo?.countryCode}
-          isAppointment={appointmentFeature}
-        />
-      );
-    }
-  };
-
-  const HeaderButton = () => {
-    return (
-      <div
-        style={{
-          marginTop: appointmentSetting ? '16px' : '10px',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <button
-          className={fontStyles.myFont}
-          onClick={() => {
-            handleChangeTab('ordered');
-          }}
-          style={{
-            display: 'flex',
-            border:
-              stateTabs === 'ordered' ? 'none' : `1px solid ${color.primary}`,
-            backgroundColor: stateTabs === 'ordered' ? color.primary : 'white',
-            color: stateTabs === 'ordered' ? 'white' : color.primary,
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '8px 14px',
-            marginRight: '10px',
-            fontWeight: 600,
-            fontSize: '14px',
-            width: '132px',
-            height: '37px',
-            borderRadius: '8px',
-          }}
-        >
-          Ongoing Order
-        </button>
-        <button
-          onClick={() => {
-            handleChangeTab('pendingorder');
-          }}
-          className={fontStyles.myFont}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '8px 16px',
-            fontWeight: 600,
-            border:
-              stateTabs === 'pendingorder'
-                ? 'none'
-                : `1px solid ${color.primary}`,
-            backgroundColor:
-              stateTabs === 'pendingorder' ? color.primary : 'white',
-            color: stateTabs === 'pendingorder' ? 'white' : color.primary,
-            fontSize: '14px',
-            width: '132px',
-            height: '37px',
-            borderRadius: '8px',
-          }}
-        >
-          Past Order
-        </button>
-      </div>
-    );
-  };
-
   return (
     <React.Fragment>
-      <HeaderButton />
-      <RenderMain />
+      <HeaderButton
+        appointmentSetting={appointmentSetting}
+        fontStyles={fontStyles}
+        handleChangeTab={handleChangeTab}
+        stateTabs={stateTabs}
+        color={color}
+      />
+      <RenderMain
+        stateTabs={stateTabs}
+        companyInfo={companyInfo}
+        appointmentFeature={appointmentFeature}
+        color={color}
+        dataPending={dataPending}
+      />
     </React.Fragment>
   );
 };
