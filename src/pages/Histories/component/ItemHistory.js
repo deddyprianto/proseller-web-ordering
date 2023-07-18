@@ -45,7 +45,26 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
 
     return formattedDate;
   };
-
+  const RenderPointsLabel = () => {
+    if (tabName === 'Completed') {
+      return (
+        <div
+          style={{
+            backgroundColor: '#38A405',
+            padding: '1px 10px',
+            color: 'white',
+            borderRadius: '100px',
+            fontSize: '12px',
+            fontWeight: 600,
+          }}
+        >
+          {item?.rewards?.points} points
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
   const ResponsiveLayout = () => {
     if (gadgetScreen) {
       return (
@@ -77,20 +96,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
             >
               Appointment
             </div>
-            {tabName === 'Completed' && (
-              <div
-                style={{
-                  backgroundColor: '#38A405',
-                  padding: '1px 10px',
-                  color: 'white',
-                  borderRadius: '100px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                }}
-              >
-                {item?.rewards?.points} points
-              </div>
-            )}
+            <RenderPointsLabel />
           </div>
           <div
             style={{
@@ -212,20 +218,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
             >
               Appointment
             </div>
-            {tabName === 'Completed' && (
-              <div
-                style={{
-                  backgroundColor: '#38A405',
-                  padding: '1px 10px',
-                  color: 'white',
-                  borderRadius: '100px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                }}
-              >
-                {item?.rewards?.points} points
-              </div>
-            )}
+            <RenderPointsLabel />
           </div>
           <div
             style={{
