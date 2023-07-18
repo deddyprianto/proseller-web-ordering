@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Tabs from '@mui/material/Tabs';
 import { useSelector } from 'react-redux';
-import Tab from '@mui/material/Tab';
-
-import fontStyles from '../style/styles.module.css';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss';
 import ItemHistory from './ItemHistory';
 import useHistoryAppointment from 'hooks/useHistoryAppointment';
 import config from 'config';
-import useMobileSize from 'hooks/useMobileSize';
 
 const HistoryAppointment = () => {
   const historyRef = useRef();
   const [tabNameAPI, setTabNameAPI] = useState('SUBMITTED');
-  const mobileSize = useMobileSize();
 
-  const [tabName, setTabName] = useState('SUBMITTED');
+  const [tabName, setTabName] = useState('Submitted');
   const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(0);
   const { historyAppointment, loading, error, hasMore, setHasMore } =
@@ -79,142 +75,73 @@ const HistoryAppointment = () => {
     );
   };
 
-  const styleSheet = {
-    muiSelected: {
-      '&.MuiButtonBase-root': {
-        fontSize: '14px',
-        fontWeight: 700,
-        textTransform: 'capitalize',
-        '&:hover': {
-          color: 'rgba(138, 141, 142, 1)',
-        },
+  const renderTabHeaderMobile = () => {
+    const labelAppointment = [
+      {
+        label: 'Submitted',
+        query: 'SUBMITTED',
       },
-      '&.Mui-selected': {
-        color: color.primary,
-        fontSize: '14px',
-        textTransform: 'capitalize',
+      {
+        label: 'Upcoming',
+        query: 'CONFIRMED',
       },
-      '&.MuiTab-labelIcon': {
-        fontSize: '14px',
-        textTransform: 'capitalize',
+      {
+        label: 'Ongoing',
+        query: 'CONFIRMED',
       },
-    },
-    indicator: {
-      '& .MuiTabScrollButton-root': {
-        padding: 0,
-        margin: 0,
-        width: 15,
+      {
+        label: 'Completed',
+        query: 'COMPLETED',
       },
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
+      {
+        label: 'Canceled',
+        query: 'CANCELLED',
       },
-    },
-    indicatorForMobileView: {
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-  };
-
-  const RenderTabHeaderMobile = () => {
+    ];
     return (
-      <div
-        style={{
-          width: '100%',
-          position: 'fixed',
-          top: mobileSize ? '165px' : '175px',
-          backgroundColor: '#ffffff',
-        }}
+      <Swiper
+        style={{ width: '100%', margin: '16px 0px' }}
+        slidesPerView='auto'
+        spaceBetween={10}
       >
-        <div
-          style={{
-            width: '95%',
-            margin: 'auto',
-            borderBottom: '1px solid rgba(138, 141, 142, .4)',
-          }}
-        >
-          <Tabs
-            value={tabName}
-            sx={styleSheet.indicatorForMobileView}
-            variant='scrollable'
-            scrollButtons='auto'
-            aria-label='scrollable auto tabs example'
+        {labelAppointment.map((item) => (
+          <SwiperSlide
+            key={item.label}
+            style={{ flexShrink: 'unset' }}
+            onClick={() => {
+              setTabName(item.label);
+              setTabNameAPI(item.query);
+              setSkip(0);
+              setPageNumber(1);
+              setHasMore(false);
+            }}
           >
-            <Tab
-              value='SUBMITTED'
-              onClick={() => {
-                setTabName('SUBMITTED');
-                setTabNameAPI('SUBMITTED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
+            <div
+              style={{
+                width: '128px',
+                textAlign: 'center',
+                padding: '5px 16px',
+                borderRadius: '8px',
+                color: item.label === tabName ? 'white' : color.primary,
+                backgroundColor:
+                  item.label === tabName ? color.primary : 'white',
+                border: `1px solid ${color.primary}`,
+                fontSize: '14px',
+                fontWeight: 600,
               }}
-              label='Submitted'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='UPCOMING'
-              onClick={() => {
-                setTabName('UPCOMING');
-                setTabNameAPI('CONFIRMED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Upcoming'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='ONGOING'
-              onClick={() => {
-                setTabName('ONGOING');
-                setTabNameAPI('CONFIRMED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Ongoing'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='COMPLETED'
-              onClick={() => {
-                setTabName('COMPLETED');
-                setTabNameAPI('COMPLETED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Completed'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-            <Tab
-              value='CANCELLED'
-              onClick={() => {
-                setTabName('CANCELLED');
-                setTabNameAPI('CANCELLED');
-                setSkip(0);
-                setPageNumber(1);
-                setHasMore(false);
-              }}
-              label='Canceled'
-              className={fontStyles.myFont}
-              sx={styleSheet.muiSelected}
-            />
-          </Tabs>
-        </div>
-      </div>
+            >
+              {item.label}
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     );
   };
 
   const filterBookingHistory = historyAppointment.filter((item) => {
     const combineDateTime = `${item.bookingDate} ${item.bookingTime.start}`;
     const compareDate =
-      tabName === 'UPCOMING'
+      tabName === 'Upcoming'
         ? new Date(combineDateTime).getTime() > new Date().getTime()
         : new Date(combineDateTime).getTime() <= new Date().getTime();
     return compareDate;
@@ -274,16 +201,24 @@ const HistoryAppointment = () => {
   };
 
   return (
-    <div style={{ marginTop: mobileSize ? '60%' : '15%' }}>
-      <RenderTabHeaderMobile />
-      <div style={{ height: '60vh', overflowY: 'auto', paddingBottom: 85 }}>
+    <div>
+      {renderTabHeaderMobile()}
+      <div
+        style={{
+          height: '60vh',
+          overflowY: 'auto',
+          paddingBottom: 85,
+          paddingLeft: '2px',
+          paddingRight: '2px',
+        }}
+      >
         {renderItemHistory()}
         {loading && <RenderAnimationLoading />}
         {!hasMore && !loading && (
           <div style={{ width: '100%' }}>
             <p
               className='default-font'
-              style={{ color: '#9D9D9D', marginLeft: '20px' }}
+              style={{ color: '#9D9D9D', textAlign: 'center' }}
             >
               You are all caught up
             </p>

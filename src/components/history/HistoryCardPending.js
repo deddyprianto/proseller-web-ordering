@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import moment from 'moment';
-
-import { ReactComponent as IcGift } from 'assets/icons/ic_gift.svg';
+import './style/style.css';
 
 const InboxCard = (props) => {
   const getCurrency = (price) => {
@@ -50,97 +48,97 @@ const InboxCard = (props) => {
 
   return (
     <div
+      className='default-font'
       style={{
-        display: 'flex',
-        flexDirection: 'row',
-        boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
-        border: '1px solid #CDCDCD',
-        padding: 10,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderRadius: 5,
-        marginBottom: 5,
+        boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.10)',
+        padding: '12px 0px',
+        borderRadius: '8px',
         cursor: 'pointer',
-        height: 80,
         width: '100%',
+        marginTop: '5px',
       }}
     >
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
+          height: '21px',
+          fontSize: '14px',
+          padding: '0px 16px',
+          fontWeight: 600,
+          color: props.color.primary,
           width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
-        <ShoppingBasketIcon
-          className='border-theme'
-          style={{
-            fontSize: 50,
-            borderRadius: 5,
-            padding: 5,
-          }}
-        />
-        <div style={{ marginLeft: 10, textAlign: 'left', width: '100%' }}>
+        <div>Ordering</div>
+        {items.status === 'COMPLETED' && items.point > 0 && (
           <div
-            className='modal-title'
-            style={{ fontWeight: 'bold', fontSize: 14, lineHeight: '17px' }}
-          >
-            {checkNameOutlet(items.outlet?.name)}
-          </div>
-          <div
-            className='modal-title'
             style={{
-              fontWeight: 'bold',
-              fontSize: 12,
-              maxWidth: 170,
-              marginTop: 5,
+              backgroundColor: '#38A405',
+              padding: '1px 10px',
+              color: 'white',
+              borderRadius: '100px',
+              fontSize: '12px',
             }}
           >
-            {items.status.replace(/_/g, ' ')}
+            {items.point + ' points'}
           </div>
-          <div
-            className='modal-title'
-            style={{ fontWeight: 'bold', fontSize: 10, lineHeight: '17px' }}
-          >
-            {`${checkQueueNo()} ${items.details.length} items - ${getCurrency(
-              items.totalNettAmount - discount
-            )}`}
-          </div>
+        )}
+      </div>
+      <div
+        style={{
+          backgroundColor: 'rgb(242, 242, 242)',
+          marginTop: '16px',
+          padding: '8px 16px',
+        }}
+      >
+        <div style={{ color: 'black', fontWeight: 600, fontSize: '16px' }}>
+          {checkNameOutlet(items.outlet?.name)}
         </div>
+        <div
+          style={{
+            color: '#9D9D9D',
+            fontWeight: 600,
+            fontSize: '14px',
+            marginTop: '5px',
+          }}
+        >
+          {`${checkQueueNo()} ${items.details.length} items - ${getCurrency(
+            items.totalNettAmount - discount
+          )}`}
+        </div>
+      </div>
+
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: '16px',
+          padding: '0px 16px',
+        }}
+      >
+        <div
+          style={{
+            color: props.color.primary,
+            fontWeight: 600,
+            fontSize: '14px',
+          }}
+        >
+          {items.status.replace(/_/g, ' ')}
+        </div>
+
         <div
           className='font-color-theme'
           style={{
-            fontSize: 10,
-            textAlign: 'right',
-            width: '100%',
-            lineHeight: '17px',
-            alignSelf: 'end',
+            fontSize: '12px',
             color: '#9D9D9D',
-            display: 'flex',
-            flexDirection: 'column',
+            fontWeight: 600,
           }}
         >
-          {items.status === 'COMPLETED' && items.point > 0 && (
-            <div
-              className='modal-title'
-              style={{
-                fontSize: 14,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'end',
-                marginBottom: '18px',
-              }}
-            >
-              <IcGift
-                color={props.color.primary}
-                style={{ marginRight: '3px' }}
-              />
-              <span>{items.point + ' points'}</span>
-            </div>
-          )}
-
-          <div>{moment(items.createdAt).format('DD/MM/YY HH:mm')}</div>
+          {moment(items.createdAt).format('DD/MM/YY HH:mm')}
         </div>
       </div>
     </div>

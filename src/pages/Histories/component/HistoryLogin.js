@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import loadable from '@loadable/component';
 
 import { HistoryAction } from 'redux/actions/HistoryAction';
-import useMobileSize from 'hooks/useMobileSize';
 
 const HistoryTransaction = loadable(() =>
   import('components/history/HistoryTransaction')
@@ -13,10 +12,104 @@ const HistoryPending = loadable(() =>
   import('components/history/HistoryPending')
 );
 
-const History = () => {
-  const dispatch = useDispatch();
-  const mobileSize = useMobileSize();
+const HeaderButton = ({
+  appointmentSetting,
+  fontStyles,
+  handleChangeTab,
+  stateTabs,
+  color,
+}) => {
+  return (
+    <div
+      style={{
+        marginTop: appointmentSetting ? '16px' : '10px',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <button
+        className={fontStyles.myFont}
+        onClick={() => {
+          handleChangeTab('ordered');
+        }}
+        style={{
+          display: 'flex',
+          border:
+            stateTabs === 'ordered' ? 'none' : `1px solid ${color.primary}`,
+          backgroundColor: stateTabs === 'ordered' ? color.primary : 'white',
+          color: stateTabs === 'ordered' ? 'white' : color.primary,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '8px 14px',
+          marginRight: '10px',
+          fontWeight: 600,
+          fontSize: '14px',
+          width: '132px',
+          height: '37px',
+          borderRadius: '8px',
+        }}
+      >
+        Ongoing Order
+      </button>
+      <button
+        onClick={() => {
+          handleChangeTab('pendingorder');
+        }}
+        className={fontStyles.myFont}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '8px 16px',
+          fontWeight: 600,
+          border:
+            stateTabs === 'pendingorder'
+              ? 'none'
+              : `1px solid ${color.primary}`,
+          backgroundColor:
+            stateTabs === 'pendingorder' ? color.primary : 'white',
+          color: stateTabs === 'pendingorder' ? 'white' : color.primary,
+          fontSize: '14px',
+          width: '132px',
+          height: '37px',
+          borderRadius: '8px',
+        }}
+      >
+        Past Order
+      </button>
+    </div>
+  );
+};
 
+const RenderMain = ({
+  stateTabs,
+  companyInfo,
+  appointmentFeature,
+  color,
+  dataPending,
+}) => {
+  if (stateTabs === 'ordered') {
+    return (
+      <HistoryTransaction
+        countryCode={companyInfo?.countryCode}
+        isAppointment={appointmentFeature}
+        color={color}
+      />
+    );
+  } else if (stateTabs === 'pendingorder') {
+    return (
+      <HistoryPending
+        dataPending={dataPending?.dataPending}
+        dataPendingLength={dataPending?.dataPendingLength}
+        countryCode={companyInfo?.countryCode}
+        isAppointment={appointmentFeature}
+      />
+    );
+  }
+};
+
+const History = ({ fontStyles, appointmentSetting }) => {
+  const dispatch = useDispatch();
   const [dataPending, setDataPending] = useState({});
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -35,6 +128,7 @@ const History = () => {
           skip: 0,
         })
       );
+      console.log('dedd', response);
       if (response.resultCode === 200 && isMounted) {
         setDataPending(response.data);
       }
@@ -72,88 +166,22 @@ const History = () => {
     window.location.href = changeFormatURl(`/history?${type}`);
   };
 
-  const RenderHeaderTab = () => {
-    const topAppointment = mobileSize ? '165px' : '175px';
-    const topCommon = mobileSize ? '50px' : '60px';
-
-    return (
-      <div
-        style={{
-          width: '100%',
-          position: 'fixed',
-          top: appointmentFeature ? topAppointment : topCommon,
-        }}
-      >
-        <div
-          style={{
-            marginTop: '15px',
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gridTemplateRows: '1fr',
-            gridAutoColumns: '1fr',
-            gap: '0px 0px',
-            gridAutoFlow: 'row',
-            gridTemplateAreas: '". ."',
-            fontSize: '18px',
-            height: '50px',
-          }}
-        >
-          <div
-            onClick={() => handleChangeTab('ordered')}
-            style={{
-              backgroundColor:
-                stateTabs === 'ordered' ? color.primary : 'white',
-              width: '100%',
-              color: stateTabs === 'ordered' ? 'white' : color.primary,
-              textAlign: 'center',
-              lineHeight: '50px',
-            }}
-          >
-            Order
-          </div>
-          <div
-            onClick={() => handleChangeTab('pendingorder')}
-            style={{
-              backgroundColor:
-                stateTabs === 'pendingorder' ? color.primary : 'white',
-              width: '100%',
-              color: stateTabs === 'pendingorder' ? 'white' : color.primary,
-              textAlign: 'center',
-              lineHeight: '50px',
-            }}
-          >
-            Pending Order
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const RenderMain = () => {
-    if (stateTabs === 'ordered') {
-      return (
-        <HistoryTransaction
-          countryCode={companyInfo?.countryCode}
-          isAppointment={appointmentFeature}
-        />
-      );
-    } else if (stateTabs === 'pendingorder') {
-      return (
-        <HistoryPending
-          dataPending={dataPending?.dataPending}
-          dataPendingLength={dataPending?.dataPendingLength}
-          countryCode={companyInfo?.countryCode}
-          isAppointment={appointmentFeature}
-        />
-      );
-    }
-  };
-
   return (
     <React.Fragment>
-      <RenderHeaderTab />
-      <RenderMain />
+      <HeaderButton
+        appointmentSetting={appointmentSetting}
+        fontStyles={fontStyles}
+        handleChangeTab={handleChangeTab}
+        stateTabs={stateTabs}
+        color={color}
+      />
+      <RenderMain
+        stateTabs={stateTabs}
+        companyInfo={companyInfo}
+        appointmentFeature={appointmentFeature}
+        color={color}
+        dataPending={dataPending}
+      />
     </React.Fragment>
   );
 };

@@ -153,43 +153,43 @@ const DetailHistoryAppointment = ({
   };
   const RenderNotify = () => {
     const backgroundColorCustom =
-      tabName === 'SUBMITTED'
+      tabName === 'Submitted'
         ? 'rgba(255, 253, 217, 1)'
-        : tabName === 'UPCOMING'
+        : tabName === 'Upcoming'
         ? 'rgba(205, 241, 255, 1)'
-        : tabName === 'ONGOING'
+        : tabName === 'Ongoing'
         ? 'rgba(255, 245, 245, 1)'
-        : tabName === 'COMPLETED'
+        : tabName === 'Completed'
         ? 'rgba(236, 255, 227, 1)'
         : 'rgba(255, 189, 189, 1)';
     const fontColor =
-      tabName === 'SUBMITTED'
+      tabName === 'Submitted'
         ? 'rgba(255, 153, 0, 1)'
-        : tabName === 'UPCOMING'
+        : tabName === 'Upcoming'
         ? 'rgba(31, 148, 255, 1)'
-        : tabName === 'ONGOING'
+        : tabName === 'Ongoing'
         ? 'rgba(255, 85, 99, 1)'
-        : tabName === 'COMPLETED'
+        : tabName === 'Completed'
         ? 'rgba(56, 164, 5, 1)'
         : 'rgba(206, 17, 17, 1)';
     const title =
-      tabName === 'SUBMITTED'
+      tabName === 'Submitted'
         ? 'Booking Submitted'
-        : tabName === 'UPCOMING'
+        : tabName === 'Upcoming'
         ? 'Booking Confirmed'
-        : tabName === 'ONGOING'
+        : tabName === 'Ongoing'
         ? 'Appointment Ongoing'
-        : tabName === 'COMPLETED'
+        : tabName === 'Completed'
         ? 'Booking Completed'
         : 'Booking Cancelled';
     const description =
-      tabName === 'SUBMITTED'
+      tabName === 'Submitted'
         ? ' Hang on! Your booking needs to be confirmed. Our staff will directly contact you within 24H.'
-        : tabName === 'UPCOMING'
+        : tabName === 'Upcoming'
         ? 'Yeay your booking is already confirmed, Hope you can make it in time. See you there.'
-        : tabName === 'ONGOING'
+        : tabName === 'Ongoing'
         ? 'Have a pleasant experience!'
-        : tabName === 'COMPLETED'
+        : tabName === 'Completed'
         ? 'Thank you for choosing us. See you next time!'
         : `Your booking has been cancelled because [reason]`;
     return (
@@ -503,7 +503,7 @@ const DetailHistoryAppointment = ({
           backgroundColor: `${color.primary}10`,
           borderRadius: '20px',
           padding: '15px 0px',
-          marginBottom: tabName === 'CANCELLED' ? '10px' : 0,
+          marginBottom: tabName === 'Cancelled' ? '10px' : 0,
         }}
       >
         <div style={{ width: '90%', margin: 'auto' }}>
@@ -536,9 +536,9 @@ const DetailHistoryAppointment = ({
   };
 
   const ButtonPrice = () => {
-    if (tabName === 'CANCELLED') {
+    if (tabName === 'Cancelled') {
       return null;
-    } else if (tabName === 'COMPLETED') {
+    } else if (tabName === 'Completed') {
       return (
         <div
           style={{
@@ -618,7 +618,7 @@ const DetailHistoryAppointment = ({
     }
   };
   const RenderTextNotif = () => {
-    if (tabName === 'COMPLETED' || tabName === 'CANCELLED') {
+    if (tabName === 'Completed' || tabName === 'Cancelled') {
       return null;
     } else {
       return (
@@ -689,7 +689,7 @@ const DetailHistoryAppointment = ({
     );
   };
   const RenderPoints = () => {
-    if (tabName === 'COMPLETED') {
+    if (tabName === 'Completed') {
       return (
         <div
           className={fontStyles.myFont}

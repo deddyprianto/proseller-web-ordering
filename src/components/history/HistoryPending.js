@@ -4,14 +4,12 @@ import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
 
 import config from 'config';
-import HistoryCard from './HistoryCardPending';
-import useMobileSize from 'hooks/useMobileSize';
+import InboxCard from './HistoryCardPending';
+
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
-  const mobileSize = useMobileSize();
-
   const setLocalStorageItem = (items) => {
     localStorage.setItem(
       `${config.prefix}_dataBasket`,
@@ -23,7 +21,6 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
     return (
       <div
         style={{
-          marginTop: '240px',
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
@@ -35,14 +32,13 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
     );
   }
 
-  const marginAppointment = mobileSize ? '240px' : '260px';
-  const marginCommon = mobileSize ? '125px' : '145px';
-
   return (
     <div
       style={{
-        width: '95%',
-        margin: `${isAppointment ? marginAppointment : marginCommon} auto 80px`,
+        marginTop: '16px',
+        height: '60vh',
+        overflowY: 'auto',
+        paddingBottom: 20,
       }}
     >
       <Grid
@@ -60,7 +56,7 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
                 to={items.isPaymentComplete ? '/history/detail' : '/basket'}
                 onClick={() => setLocalStorageItem(items)}
               >
-                <HistoryCard items={items} />
+                <InboxCard items={items} />
               </Link>
             </Grid>
           );
@@ -70,7 +66,7 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
         >
           <p
             className='default-font'
-            style={{ color: '#9D9D9D', marginLeft: '20px' }}
+            style={{ color: '#9D9D9D', textAlign: 'center', marginTop: '10px' }}
           >
             You are all caught up
           </p>

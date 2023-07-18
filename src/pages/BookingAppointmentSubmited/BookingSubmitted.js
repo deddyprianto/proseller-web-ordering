@@ -563,8 +563,8 @@ const BookingSubmitted = () => {
       <div
         onClick={() => {
           dispatch({
-            type: CONSTANT.TAB_STATE_HISTORY_APPOINTMENT,
-            payload: 'appointment',
+            type: CONSTANT.TAB_STATE_HISTORY,
+            payload: 'Appointment',
           });
           dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
           window.location.href = changeFormatURl('/history');

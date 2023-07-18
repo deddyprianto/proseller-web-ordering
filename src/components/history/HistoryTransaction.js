@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
 import config from '../../config';
-import HistoryCard from './HistoryCardPending';
+import InboxCard from './HistoryCardPending';
 import ModalDetailHistory from './ModalDetailHistory';
 import useHistoryTransaction from 'hooks/useHistoryTransaction';
 import './style/style.css';
 import useMobileSize from 'hooks/useMobileSize';
 
-const HistoryTransaction = ({ countryCode, isAppointment }) => {
+const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
   const [detailData, setDetailData] = useState({});
   const [pageNumber, setPageNumber] = useState(1);
   const [skip, setSkip] = useState(10);
@@ -51,7 +51,6 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
     return (
       <div
         style={{
-          marginTop: '240px',
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
@@ -81,18 +80,17 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
     );
   };
 
-  const marginAppointment = mobileSize ? '240px' : '260px';
-  const marginCommon = mobileSize ? '125px' : '145px';
-
   return (
     <>
       <ModalDetailHistory detail={detailData} countryCode />
       <div
         style={{
-          width: '95%',
-          margin: `${
-            isAppointment ? marginAppointment : marginCommon
-          } auto 50px`,
+          marginTop: '16px',
+          height: mobileSize ? '60vh' : '90vh',
+          overflowY: 'auto',
+          paddingBottom: 50,
+          paddingLeft: '2px',
+          paddingRight: '2px',
         }}
       >
         <Grid
@@ -101,8 +99,7 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
           justifyContent='space-between'
           alignItems='center'
           spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, md: 12 }}
-          sx={{ paddingBottom: '40px' }}
+          columns={{ xs: 4, md: 4 }}
         >
           {historyTransaction.map((items, index) => {
             return (
@@ -116,7 +113,11 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
                 data-target='#detail-transaction-modal'
                 onClick={() => setDetailData(items)}
               >
-                <HistoryCard items={items} countryCode={countryCode} />
+                <InboxCard
+                  items={items}
+                  countryCode={countryCode}
+                  color={color}
+                />
               </Grid>
             );
           })}
@@ -125,7 +126,11 @@ const HistoryTransaction = ({ countryCode, isAppointment }) => {
             <div style={{ width: '100%', marginTop: '10px' }}>
               <p
                 className='default-font'
-                style={{ color: '#9D9D9D', marginLeft: '20px' }}
+                style={{
+                  color: '#9D9D9D',
+                  textAlign: 'center',
+                  marginTop: '10px',
+                }}
               >
                 You are all caught up
               </p>
