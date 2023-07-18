@@ -65,6 +65,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
       return null;
     }
   };
+
   const ResponsiveLayout = () => {
     if (gadgetScreen === true) {
       return (
@@ -188,7 +189,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           </div>
         </div>
       );
-    } else {
+    } else if (gadgetScreen === false) {
       return (
         <div
           className={fontStyles.myFont}
