@@ -9,6 +9,25 @@ import useHistoryTransaction from 'hooks/useHistoryTransaction';
 import './style/style.css';
 import useMobileSize from 'hooks/useMobileSize';
 
+const RenderAnimationLoading = () => {
+  return (
+    <div className='lds-spinner'>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+};
+
 const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
   const [detailData, setDetailData] = useState({});
   const [pageNumber, setPageNumber] = useState(1);
@@ -61,24 +80,6 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
       </div>
     );
   }
-  const RenderAnimationLoading = () => {
-    return (
-      <div className='lds-spinner'>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    );
-  };
 
   return (
     <>
@@ -108,7 +109,7 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
                 item
                 xs={4}
                 md={6}
-                key={index}
+                key={items}
                 data-toggle='modal'
                 data-target='#detail-transaction-modal'
                 onClick={() => setDetailData(items)}
