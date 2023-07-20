@@ -30,14 +30,14 @@ const HeaderButton = ({
       <button
         className={fontStyles.myFont}
         onClick={() => {
-          handleChangeTab('ordered');
+          handleChangeTab('ongoing');
         }}
         style={{
           display: 'flex',
           border:
-            stateTabs === 'ordered' ? 'none' : `1px solid ${color.primary}`,
-          backgroundColor: stateTabs === 'ordered' ? color.primary : 'white',
-          color: stateTabs === 'ordered' ? 'white' : color.primary,
+            stateTabs === 'ongoing' ? 'none' : `1px solid ${color.primary}`,
+          backgroundColor: stateTabs === 'ongoing' ? color.primary : 'white',
+          color: stateTabs === 'ongoing' ? 'white' : color.primary,
           justifyContent: 'center',
           alignItems: 'center',
           padding: '8px 14px',
@@ -53,7 +53,7 @@ const HeaderButton = ({
       </button>
       <button
         onClick={() => {
-          handleChangeTab('pendingorder');
+          handleChangeTab('pastorder');
         }}
         className={fontStyles.myFont}
         style={{
@@ -63,12 +63,9 @@ const HeaderButton = ({
           padding: '8px 16px',
           fontWeight: 600,
           border:
-            stateTabs === 'pendingorder'
-              ? 'none'
-              : `1px solid ${color.primary}`,
-          backgroundColor:
-            stateTabs === 'pendingorder' ? color.primary : 'white',
-          color: stateTabs === 'pendingorder' ? 'white' : color.primary,
+            stateTabs === 'pastorder' ? 'none' : `1px solid ${color.primary}`,
+          backgroundColor: stateTabs === 'pastorder' ? color.primary : 'white',
+          color: stateTabs === 'pastorder' ? 'white' : color.primary,
           fontSize: '14px',
           width: '132px',
           height: '37px',
@@ -88,21 +85,21 @@ const RenderMain = ({
   color,
   dataPending,
 }) => {
-  if (stateTabs === 'ordered') {
-    return (
-      <HistoryTransaction
-        countryCode={companyInfo?.countryCode}
-        isAppointment={appointmentFeature}
-        color={color}
-      />
-    );
-  } else if (stateTabs === 'pendingorder') {
+  if (stateTabs === 'ongoing') {
     return (
       <HistoryPending
         dataPending={dataPending?.dataPending}
         dataPendingLength={dataPending?.dataPendingLength}
         countryCode={companyInfo?.countryCode}
         isAppointment={appointmentFeature}
+      />
+    );
+  } else if (stateTabs === 'pastorder') {
+    return (
+      <HistoryTransaction
+        countryCode={companyInfo?.countryCode}
+        isAppointment={appointmentFeature}
+        color={color}
       />
     );
   }
@@ -116,7 +113,7 @@ const History = ({ fontStyles, appointmentSetting }) => {
   const [appointmentFeature, setAppointmentFeature] = useState(false);
   const setting = useSelector((state) => state.order.setting);
 
-  const stateTabs = window.location.hash.split('?')[1] || 'ordered';
+  const stateTabs = window.location.hash.split('?')[1] || 'ongoing';
 
   useEffect(() => {
     let isMounted = true;
@@ -128,7 +125,6 @@ const History = ({ fontStyles, appointmentSetting }) => {
           skip: 0,
         })
       );
-      console.log('dedd', response);
       if (response.resultCode === 200 && isMounted) {
         setDataPending(response.data);
       }
