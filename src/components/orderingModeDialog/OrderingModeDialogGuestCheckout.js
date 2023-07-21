@@ -352,7 +352,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   width: '76px',
-                  margin: '0px 5px',
+                  margin: '0px 10px',
                   backgroundColor: color.primary,
                 }
               : {
@@ -430,7 +430,11 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
         >
           <button
             id='cancel-button'
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              dispatch({ type: 'ITEM_ORDERING_MODE', data: {} });
+              dispatch({ type: 'ORDERING_MODE_ACTIVE', data: null });
+            }}
             className={fontStyles.myFont}
             style={{
               backgroundColor: 'white',

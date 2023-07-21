@@ -1758,6 +1758,7 @@ const ProductAddModal = ({
             <Typography style={styles.optionalTypography}>Optional</Typography>
           </div>
           <textarea
+            placeholder='please use less plastic'
             id='special-instruction-input'
             style={styles.specialInstructionInput}
             value={notes}

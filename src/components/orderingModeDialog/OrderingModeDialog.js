@@ -401,7 +401,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
       fullWidth
       maxWidth='xs'
       open={open}
-      onClose={onClose}
+      onClose={() => onClose()}
       classes={{ paper: classes.paper }}
     >
       <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
@@ -435,7 +435,11 @@ const OrderingModeDialog = ({ open, onClose }) => {
         >
           <button
             id='cancel-button'
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              dispatch({ type: 'ITEM_ORDERING_MODE', data: {} });
+              dispatch({ type: 'ORDERING_MODE_ACTIVE', data: null });
+            }}
             className={fontStyles.myFont}
             style={{
               backgroundColor: 'white',

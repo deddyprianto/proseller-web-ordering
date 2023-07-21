@@ -38,6 +38,441 @@ import commonAlert from 'components/template/commonAlert';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
+const RenderDeliveryAddress = ({ orderingMode, history, deliveryAddress }) => {
+  if (orderingMode !== 'DELIVERY') {
+    return null;
+  }
+  return (
+    <div
+      onClick={() => {
+        history.push('/delivery-address');
+      }}
+      style={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        padding: '20px 0px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          style={{
+            fontSize: '14px',
+            marginLeft: '5px',
+            color: 'black',
+            fontWeight: 700,
+          }}
+          className={fontStyleCustom.myFont}
+        >
+          Delivery Address
+        </Typography>
+        <img src={iconRight} alt='myIcon' style={{ marginRight: '10px' }} />
+      </div>
+      <div
+        style={{
+          width: '100%',
+          padding: '0px 3px',
+        }}
+      >
+        {deliveryAddress && (
+          <Typography
+            className={fontStyleCustom.myFont}
+            style={{
+              fontSize: '15px',
+              color: '#8A8D8E',
+              marginLeft: '5px',
+              lineHeight: 2,
+            }}
+          >
+            <hr
+              style={{
+                marginTop: '20px',
+                backgroundColor: '#8A8D8E',
+                opacity: 0.2,
+              }}
+            />
+            <table>
+              <tr>
+                <td style={{ padding: 0, margin: 0 }}>
+                  {deliveryAddress.street}
+                </td>
+              </tr>
+              <tr>
+                <td
+                  style={{
+                    textAlign: 'left',
+                    width: '100%',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '3',
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  {deliveryAddress.addressName},
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: 0, margin: 0 }}>
+                  {deliveryAddress.unitNo}, {deliveryAddress.city},
+                  {deliveryAddress.postalCode}
+                </td>
+              </tr>
+            </table>
+          </Typography>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const RenderDeliveryProvider = ({
+  name,
+  deliveryAddress,
+  openAccordion,
+  setOpenAccordion,
+  gadgetScreen,
+  renderButtonProvider,
+}) => {
+  if (deliveryAddress) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+          marginTop: '10px',
+          marginBottom: '10px',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <Accordion
+          sx={{
+            boxShadow: 'none',
+            padding: 0,
+            margin: 0,
+            width: '100%',
+          }}
+          expanded={openAccordion}
+          onChange={() => setOpenAccordion(!openAccordion)}
+        >
+          <AccordionSummary
+            sx={{ padding: '0', margin: '0' }}
+            expandIcon={
+              <ExpandMoreIcon
+                sx={{ width: '20px', height: '20px', marginRight: '10px' }}
+              />
+            }
+            aria-controls='panel1a-content'
+            id='panel1a-header'
+          >
+            <div
+              style={{
+                width: gadgetScreen ? '80vw' : '35vw',
+              }}
+            >
+              <Typography
+                style={{
+                  fontSize: '14px',
+                  color: 'black',
+                  fontWeight: 700,
+                  paddingLeft: '5px',
+                }}
+                className={fontStyleCustom.myFont}
+              >
+                {name}
+              </Typography>
+            </div>
+          </AccordionSummary>
+          <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
+            {renderButtonProvider()}
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
+
+const RenderOrderingMode = ({
+  isLoggedIn,
+  handleLogin,
+  handleOpenOrderingMode,
+  handleRenderOrderingModeLabel,
+  orderingMode,
+  defaultOutlet,
+}) => {
+  return (
+    <div
+      id='ordering-mode-option'
+      onClick={() => {
+        if (!isLoggedIn) {
+          handleLogin();
+        } else {
+          handleOpenOrderingMode();
+        }
+      }}
+      style={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        padding: '20px 5px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <Typography
+          style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
+          className={fontStyleCustom.myFont}
+        >
+          Ordering Mode
+        </Typography>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: '10px',
+          }}
+        >
+          <Typography
+            style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
+            className={fontStyleCustom.myFont}
+          >
+            {handleRenderOrderingModeLabel()}
+          </Typography>
+          <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+        </div>
+      </div>
+
+      {orderingMode === 'STOREPICKUP' && (
+        <div style={{ marginTop: '20px' }}>
+          <hr
+            style={{
+              backgroundColor: '#8A8D8E',
+              opacity: 0.5,
+            }}
+          />
+          <div style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}>
+            Outlet Address
+          </div>
+          <div style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}>
+            {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
+            {defaultOutlet?.postalCode}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const RenderTableMode = ({
+  setOpenOrderingTable,
+  noTable,
+  color,
+  orderingMode,
+  defaultOutlet,
+}) => {
+  return (
+    <div
+      onClick={() => {
+        setOpenOrderingTable(true);
+      }}
+      style={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        padding: '20px 5px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <Typography
+          style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
+          className={fontStyleCustom.myFont}
+        >
+          Table Number
+        </Typography>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: '10px',
+          }}
+        >
+          {noTable ? (
+            <IconDineIn color={color.primary} />
+          ) : (
+            <div
+              style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 600 }}
+            >
+              Choose Table
+            </div>
+          )}
+          <Typography
+            style={{
+              fontSize: '13px',
+              color: '#8A8D8E',
+              fontWeight: 500,
+              marginLeft: '5px',
+              textTransform: 'uppercase',
+            }}
+            className={fontStyleCustom.myFont}
+          >
+            {noTable}
+          </Typography>
+          <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+        </div>
+      </div>
+
+      {orderingMode === 'STOREPICKUP' && (
+        <div style={{ marginTop: '20px' }}>
+          <hr
+            style={{
+              backgroundColor: '#8A8D8E',
+              opacity: 0.5,
+            }}
+          />
+          <div style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}>
+            Outlet Address
+          </div>
+          <div style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}>
+            {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
+            {defaultOutlet?.postalCode}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const RenderDateTime = ({
+  orderingMode,
+  deliveryAddress,
+  selectedDeliveryProvider,
+  selectTimeSlotAvailable,
+  setOpenTimeSlot,
+  orderActionDate,
+  orderActionTimeSlot,
+}) => {
+  const isStorePickUp =
+    orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
+  const isTakeAway = orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY && true;
+  const isDelivery =
+    orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
+    deliveryAddress &&
+    selectedDeliveryProvider &&
+    selectTimeSlotAvailable;
+
+  if (selectTimeSlotAvailable) {
+    if (isDelivery || isStorePickUp || isTakeAway) {
+      return (
+        <div
+          onClick={() => {
+            setOpenTimeSlot(true);
+          }}
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '15px 5px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Box flexDirection='column'>
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                }}
+              >
+                Choose Date & Time
+              </Typography>
+            </Box>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '10px',
+              }}
+            >
+              <div>
+                <Typography
+                  style={{
+                    fontSize: '13px',
+                    color: '#8A8D8E',
+                    fontWeight: 500,
+                    textAlign: 'center',
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {orderActionTimeSlot && orderActionDate}
+                </Typography>
+                <Typography
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '13px',
+                    color: '#8A8D8E',
+                    fontWeight: 500,
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {orderActionTimeSlot}
+                </Typography>
+              </div>
+              <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
+
 const Cart = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -643,17 +1078,17 @@ const Cart = () => {
 
       return !isAllCompleted;
     } else if (orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY) {
-      let isAllCompleted = false;
+      let isAllCompletedValidation = false;
       if (selectTimeSlotAvailable) {
-        isAllCompleted =
+        isAllCompletedValidation =
           orderingMode &&
           orderActionDate &&
           orderActionTime &&
           orderActionTimeSlot;
       } else {
-        isAllCompleted = !!orderingMode;
+        isAllCompletedValidation = !!orderingMode;
       }
-      return !isAllCompleted;
+      return !isAllCompletedValidation;
     } else if (orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
       let isAllCompleted = false;
       if (defaultOutlet.enableTableNumber) {
@@ -700,362 +1135,6 @@ const Cart = () => {
     }
 
     history.push('/payment');
-  };
-
-  const RenderDateTime = () => {
-    const isStorePickUp =
-      orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
-    const isTakeAway =
-      orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY && true;
-    const isDelivery =
-      orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
-      deliveryAddress &&
-      selectedDeliveryProvider &&
-      selectTimeSlotAvailable;
-
-    if (selectTimeSlotAvailable) {
-      if (isDelivery || isStorePickUp || isTakeAway) {
-        return (
-          <div
-            onClick={() => {
-              setOpenTimeSlot(true);
-            }}
-            style={{
-              width: '100%',
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-              marginTop: '10px',
-              marginBottom: '10px',
-              padding: '15px 5px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Box flexDirection='column'>
-                <Typography
-                  className={fontStyleCustom.myFont}
-                  style={{
-                    fontWeight: 700,
-                    fontSize: '14px',
-                  }}
-                >
-                  Choose Date & Time
-                </Typography>
-              </Box>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginRight: '10px',
-                }}
-              >
-                <div>
-                  <Typography
-                    style={{
-                      fontSize: '13px',
-                      color: '#8A8D8E',
-                      fontWeight: 500,
-                      textAlign: 'center',
-                    }}
-                    className={fontStyleCustom.myFont}
-                  >
-                    {orderActionTimeSlot && orderActionDate}
-                  </Typography>
-                  <Typography
-                    style={{
-                      textAlign: 'center',
-                      fontSize: '13px',
-                      color: '#8A8D8E',
-                      fontWeight: 500,
-                    }}
-                    className={fontStyleCustom.myFont}
-                  >
-                    {orderActionTimeSlot}
-                  </Typography>
-                </div>
-                <img
-                  src={iconRight}
-                  alt='myIcon'
-                  style={{ marginLeft: '5px' }}
-                />
-              </div>
-            </div>
-          </div>
-        );
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  };
-
-  const RenderTableMode = () => {
-    return (
-      <div
-        onClick={() => {
-          setOpenOrderingTable(true);
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 5px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography
-            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-            className={fontStyleCustom.myFont}
-          >
-            Table Number
-          </Typography>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginRight: '10px',
-            }}
-          >
-            {noTable ? (
-              <IconDineIn color={color.primary} />
-            ) : (
-              <div
-                style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 600 }}
-              >
-                Choose Table
-              </div>
-            )}
-            <Typography
-              style={{
-                fontSize: '13px',
-                color: '#8A8D8E',
-                fontWeight: 500,
-                marginLeft: '5px',
-                textTransform: 'uppercase',
-              }}
-              className={fontStyleCustom.myFont}
-            >
-              {noTable}
-            </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-          </div>
-        </div>
-
-        {orderingMode === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const RenderOrderingMode = () => {
-    return (
-      <div
-        id='ordering-mode-option'
-        onClick={() => {
-          if (!isLoggedIn) {
-            handleLogin();
-          } else {
-            handleOpenOrderingMode();
-          }
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 5px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography
-            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-            className={fontStyleCustom.myFont}
-          >
-            Ordering Mode
-          </Typography>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginRight: '10px',
-            }}
-          >
-            <Typography
-              style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
-              className={fontStyleCustom.myFont}
-            >
-              {handleRenderOrderingModeLabel()}
-            </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-          </div>
-        </div>
-
-        {orderingMode === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const RenderDeliveryAddress = () => {
-    if (orderingMode !== 'DELIVERY') {
-      return null;
-    }
-    return (
-      <div
-        onClick={() => {
-          history.push('/delivery-address');
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 0px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            style={{
-              fontSize: '14px',
-              marginLeft: '5px',
-              color: 'black',
-              fontWeight: 700,
-            }}
-            className={fontStyleCustom.myFont}
-          >
-            Delivery Address
-          </Typography>
-          <img src={iconRight} alt='myIcon' style={{ marginRight: '10px' }} />
-        </div>
-        <div
-          style={{
-            width: '100%',
-            padding: '0px 3px',
-          }}
-        >
-          {deliveryAddress && (
-            <Typography
-              className={fontStyleCustom.myFont}
-              style={{
-                fontSize: '15px',
-                color: '#8A8D8E',
-                marginLeft: '5px',
-                lineHeight: 2,
-              }}
-            >
-              <hr
-                style={{
-                  marginTop: '20px',
-                  backgroundColor: '#8A8D8E',
-                  opacity: 0.2,
-                }}
-              />
-              <table>
-                <tr>
-                  <td style={{ padding: 0, margin: 0 }}>
-                    {deliveryAddress.street}
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      textAlign: 'left',
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '3',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {deliveryAddress.addressName},
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, margin: 0 }}>
-                    {deliveryAddress.unitNo}, {deliveryAddress.city},
-                    {deliveryAddress.postalCode}
-                  </td>
-                </tr>
-              </table>
-            </Typography>
-          )}
-        </div>
-      </div>
-    );
   };
 
   const handleSelectDeliveryProvider = async (value) => {
@@ -1166,70 +1245,6 @@ const Cart = () => {
           </div>
         );
       });
-    }
-  };
-
-  const RenderDeliveryProvider = ({ name, deliveryAddress }) => {
-    if (deliveryAddress) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-            marginTop: '10px',
-            marginBottom: '10px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Accordion
-            sx={{
-              boxShadow: 'none',
-              padding: 0,
-              margin: 0,
-              width: '100%',
-            }}
-            expanded={openAccordion}
-            onChange={() => setOpenAccordion(!openAccordion)}
-          >
-            <AccordionSummary
-              sx={{ padding: '0', margin: '0' }}
-              expandIcon={
-                <ExpandMoreIcon
-                  sx={{ width: '20px', height: '20px', marginRight: '10px' }}
-                />
-              }
-              aria-controls='panel1a-content'
-              id='panel1a-header'
-            >
-              <div
-                style={{
-                  width: gadgetScreen ? '80vw' : '35vw',
-                }}
-              >
-                <Typography
-                  style={{
-                    fontSize: '14px',
-                    color: 'black',
-                    fontWeight: 700,
-                    paddingLeft: '5px',
-                  }}
-                  className={fontStyleCustom.myFont}
-                >
-                  {name}
-                </Typography>
-              </div>
-            </AccordionSummary>
-            <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
-              {renderButtonProvider()}
-            </AccordionDetails>
-          </Accordion>
-        </div>
-      );
-    } else {
-      return null;
     }
   };
 
@@ -1546,7 +1561,7 @@ const Cart = () => {
       <Paper
         variant='elevation'
         square={gadgetScreen}
-        elevation={gadgetScreen ? 3 : 3}
+        elevation={3}
         sx={
           gadgetScreen
             ? styles.grandTotalGadgetScreen
@@ -1613,16 +1628,45 @@ const Cart = () => {
         <>
           <div style={styles.rootCartGadgetSize}>
             <ProductCartList />
-            <RenderOrderingMode />
+            <RenderOrderingMode
+              isLoggedIn={isLoggedIn}
+              handleLogin={handleLogin}
+              handleOpenOrderingMode={handleOpenOrderingMode}
+              orderingMode={orderingMode}
+              defaultOutlet={defaultOutlet}
+              handleRenderOrderingModeLabel={handleRenderOrderingModeLabel}
+            />
             {orderingMode === 'DINEIN' && defaultOutlet.enableTableNumber && (
-              <RenderTableMode />
+              <RenderTableMode
+                setOpenOrderingTable={setOpenOrderingTable}
+                noTable={noTable}
+                color={color}
+                orderingMode={orderingMode}
+                defaultOutlet={defaultOutlet}
+              />
             )}
-            <RenderDeliveryAddress />
+            <RenderDeliveryAddress
+              orderingMode={orderingMode}
+              history={history}
+              deliveryAddress={deliveryAddress}
+            />
             <RenderDeliveryProvider
               name='Choose Delivery Provider'
               deliveryAddress={deliveryAddress}
+              openAccordion={openAccordion}
+              setOpenAccordion={setOpenAccordion}
+              gadgetScreen={gadgetScreen}
+              renderButtonProvider={renderButtonProvider}
             />
-            <RenderDateTime />
+            <RenderDateTime
+              orderingMode={orderingMode}
+              deliveryAddress={deliveryAddress}
+              selectedDeliveryProvider={selectedDeliveryProvider}
+              selectTimeSlotAvailable={selectTimeSlotAvailable}
+              setOpenTimeSlot={setOpenTimeSlot}
+              orderActionDate={orderActionDate}
+              orderActionTimeSlot={orderActionTimeSlot}
+            />
           </div>
           {renderTotal()}
         </>
@@ -1655,14 +1699,45 @@ const Cart = () => {
           >
             <ProductCartList />
             <div style={styles.cartGridRight}>
-              <RenderOrderingMode />
-              {orderingMode === 'DINEIN' && <RenderTableMode />}
-              <RenderDeliveryAddress />
+              <RenderOrderingMode
+                isLoggedIn={isLoggedIn}
+                handleLogin={handleLogin}
+                handleOpenOrderingMode={handleOpenOrderingMode}
+                orderingMode={orderingMode}
+                defaultOutlet={defaultOutlet}
+                handleRenderOrderingModeLabel={handleRenderOrderingModeLabel}
+              />
+              {orderingMode === 'DINEIN' && (
+                <RenderTableMode
+                  setOpenOrderingTable={setOpenOrderingTable}
+                  noTable={noTable}
+                  color={color}
+                  orderingMode={orderingMode}
+                  defaultOutlet={defaultOutlet}
+                />
+              )}
+              <RenderDeliveryAddress
+                orderingMode={orderingMode}
+                history={history}
+                deliveryAddress={deliveryAddress}
+              />
               <RenderDeliveryProvider
                 name='Choose Delivery Provider'
                 deliveryAddress={deliveryAddress}
+                openAccordion={openAccordion}
+                setOpenAccordion={setOpenAccordion}
+                gadgetScreen={gadgetScreen}
+                renderButtonProvider={renderButtonProvider}
               />
-              <RenderDateTime />
+              <RenderDateTime
+                orderingMode={orderingMode}
+                deliveryAddress={deliveryAddress}
+                selectedDeliveryProvider={selectedDeliveryProvider}
+                selectTimeSlotAvailable={selectTimeSlotAvailable}
+                setOpenTimeSlot={setOpenTimeSlot}
+                orderActionDate={orderActionDate}
+                orderActionTimeSlot={orderActionTimeSlot}
+              />
             </div>
           </div>
           {renderTotal()}
@@ -1710,7 +1785,7 @@ const Cart = () => {
         {openOrderingMode && (
           <OrderingModeDialog
             open={openOrderingMode}
-            onClose={() => handleCloseOrderingMode()}
+            onClose={handleCloseOrderingMode}
           />
         )}
         {openTimeSlot && (

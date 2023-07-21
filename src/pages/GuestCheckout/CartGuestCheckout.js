@@ -593,13 +593,73 @@ const CartGuestCheckout = () => {
     localStorage.removeItem(`${config.prefix}_locationPinned`);
   };
 
+  const handleEditItemCart = async (index, itemDetails) => {
+    const temp = [...isLoadingEdit];
+    temp[index] = true;
+    setIsLoadingEdit(temp);
+
+    setSelectedProductBasketUpdate(itemDetails);
+    setProductSpecific(itemDetails.product);
+
+    const productById = await dispatch(
+      ProductAction.getProductById(
+        { outlet: basket?.outlet?.id },
+        itemDetails?.product?.id?.split('_')[0]
+      )
+    );
+
+    setProductDetail(productById);
+    temp[index] = false;
+    setIsLoadingEdit(temp);
+    setProductEditModal(true);
+  };
+  const handleDeleteItemCart = (itemDetails) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You sure to delete this?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setIsLoading(true);
+        const response = await dispatch(
+          OrderAction.processRemoveCartGuestCheckoutMode(
+            basket.guestID,
+            itemDetails
+          )
+        );
+        if (response?.resultCode === 200) {
+          Swal.fire('Deleted!', response.message, 'success');
+
+          dispatch({
+            type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+            payload: {},
+          });
+          if (basket.details.length === 1) {
+            dispatch({
+              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+              payload: '',
+            });
+            history.push('/');
+          }
+        } else {
+          Swal.fire('Cancelled!', response, 'error');
+        }
+        setIsLoading(false);
+      }
+    });
+  };
   const handleFilter = (value) => {
     return value === 'TRUE';
   };
 
   const handleOpenOrderingMode = async (isSelected = true) => {
+    setIsLoading(true);
     const intersectOrderingMode = await getIntersectOrderingMode();
-
+    setIsLoading(false)
     if (intersectOrderingMode.length === 1) {
       (!isSelectedOrderingMode || !isSelected) &&
         intersectOrderingMode.forEach(async (item) => {
@@ -954,28 +1014,30 @@ const CartGuestCheckout = () => {
   };
 
   const renderRemark = (itemDetails) => {
-    <li>
-      <table>
-        <tr>
-          <td
-            className={fontStyleCustom.title}
-            style={{
-              textAlign: 'left',
-              width: '100%',
-              display: '-webkit-box',
-              WebkitLineClamp: '3',
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              padding: 0,
-              margin: 0,
-            }}
-          >
-            <span style={{ fontWeight: 700 }}>Notes: </span>
-            {itemDetails?.remark}
-          </td>
-        </tr>
-      </table>
-    </li>;
+    return (
+      <li>
+        <table>
+          <tr>
+            <td
+              className={fontStyleCustom.title}
+              style={{
+                textAlign: 'left',
+                width: '100%',
+                display: '-webkit-box',
+                WebkitLineClamp: '3',
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>Notes: </span>
+              {itemDetails?.remark}
+            </td>
+          </tr>
+        </table>
+      </li>
+    );
   };
 
   const renderButtonEditDelete = (itemDetails, isDisable, index) => {
@@ -1011,26 +1073,7 @@ const CartGuestCheckout = () => {
                   fontSize: '14px',
                   color: color?.primary,
                 }}
-                onClick={async () => {
-                  const temp = [...isLoadingEdit];
-                  temp[index] = true;
-                  setIsLoadingEdit(temp);
-
-                  setSelectedProductBasketUpdate(itemDetails);
-                  setProductSpecific(itemDetails.product);
-
-                  const productById = await dispatch(
-                    ProductAction.getProductById(
-                      { outlet: basket?.outlet?.id },
-                      itemDetails?.product?.id?.split('_')[0]
-                    )
-                  );
-
-                  setProductDetail(productById);
-                  temp[index] = false;
-                  setIsLoadingEdit(temp);
-                  setProductEditModal(true);
-                }}
+                onClick={() => handleEditItemCart(index, itemDetails)}
                 disabled={isLoadingEdit[index]}
                 startIcon={
                   !isLoadingEdit[index] && renderIconEdit(color?.primary)
@@ -1045,45 +1088,7 @@ const CartGuestCheckout = () => {
             )}
             <div
               id='delete-item-button'
-              onClick={() => {
-                Swal.fire({
-                  title: 'Are you sure?',
-                  text: 'You sure to delete this?',
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonColor: '#3085d6',
-                  cancelButtonColor: '#d33',
-                  confirmButtonText: 'Yes, delete it!',
-                }).then(async (result) => {
-                  if (result.isConfirmed) {
-                    setIsLoading(true);
-                    const response = await dispatch(
-                      OrderAction.processRemoveCartGuestCheckoutMode(
-                        basket.guestID,
-                        itemDetails
-                      )
-                    );
-                    if (response?.resultCode === 200) {
-                      Swal.fire('Deleted!', response.message, 'success');
-
-                      dispatch({
-                        type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-                        payload: {},
-                      });
-                      if (basket.details.length === 1) {
-                        dispatch({
-                          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-                          payload: '',
-                        });
-                        history.push('/');
-                      }
-                    } else {
-                      Swal.fire('Cancelled!', response, 'error');
-                    }
-                    setIsLoading(false);
-                  }
-                });
-              }}
+              onClick={() => handleDeleteItemCart(itemDetails)}
               style={{
                 marginLeft: '10px',
                 display: 'flex',
@@ -1126,7 +1131,7 @@ const CartGuestCheckout = () => {
   const renderItemList = (itemDetails, isDisable, index) => {
     return (
       <div
-        key={itemDetails?.productID}
+        key={itemDetails?.id}
         className={fontStyleCustom.myFont}
         style={{
           width: '100%',
@@ -1229,22 +1234,27 @@ const CartGuestCheckout = () => {
     const isDisable = true;
     return (
       <div>
-        <div className={fontStyleCustom.myFont} style={{ fontSize: '16px', fontWeight: 700 }}>Items</div>
+        <div
+          className={fontStyleCustom.myFont}
+          style={{ fontSize: '16px', fontWeight: 700 }}
+        >
+          Items
+        </div>
         {basket?.details?.map((itemDetails, index) => {
           if (itemDetails.orderingStatus === 'UNAVAILABLE') {
             if (itemDetails.modifiers.length > 0) {
               return (
-                <React.Fragment>
+                <div key={itemDetails?.id}>
                   {renderTextBanner('Add On Unavailable')}
                   {renderItemList(itemDetails, isDisable, index)}
-                </React.Fragment>
+                </div>
               );
             } else {
               return (
-                <React.Fragment>
+                <div key={itemDetails?.id}>
                   {renderTextBanner('Item Unavailable')}
                   {renderItemList(itemDetails, isDisable, index)}
-                </React.Fragment>
+                </div>
               );
             }
           } else {
@@ -1340,6 +1350,18 @@ const CartGuestCheckout = () => {
       </div>
     );
   };
+  const handleDisableBtnDelivery = (isDeliveryActive) => {
+    return !isDeliveryActive;
+  };
+  const handleDisableBtnTakeAway = (isTakeAwayActive) => {
+    return !isTakeAwayActive;
+  };
+  const handleDisableBtnStorePickUp = (isPickUpActive) => {
+    return !isPickUpActive;
+  };
+  const handleDisableBtnDineIn = (isDineInActive) => {
+    return !isDineInActive;
+  };
 
   const handleButtonDisable = (key) => {
     const isAllItemUnavailable = basket?.details.every(
@@ -1373,29 +1395,13 @@ const CartGuestCheckout = () => {
 
     switch (key) {
       case 'DELIVERY':
-        if (isDeliveryActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnDelivery(isDeliveryActive);
       case 'TAKEAWAY':
-        if (isTakeAwayActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnTakeAway(isTakeAwayActive);
       case 'STOREPICKUP':
-        if (isPickUpActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnStorePickUp(isPickUpActive);
       case 'DINEIN':
-        if (isDineInActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnDineIn(isDineInActive);
       default:
         return true;
     }
