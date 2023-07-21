@@ -211,10 +211,17 @@ const RenderOrderingMode = ({
   isLoggedIn,
   handleLogin,
   handleOpenOrderingMode,
-  handleRenderOrderingModeLabel,
   orderingMode,
   defaultOutlet,
 }) => {
+  const handleRenderOrderingModeLabel = () => {
+    if (orderingMode) {
+      return orderingMode;
+    } else {
+      return 'Ordering Mode';
+    }
+  };
+
   return (
     <div
       id='ordering-mode-option'
@@ -1017,15 +1024,6 @@ const Cart = () => {
   const handleLogin = () => {
     document.getElementById('login-register-btn').click();
   };
-
-  const handleRenderOrderingModeLabel = () => {
-    if (orderingMode) {
-      return orderingMode;
-    } else {
-      return 'Ordering Mode';
-    }
-  };
-
   const handleDisabled = () => {
     const isAllItemUnavailable = basket?.details.every(
       (item) => item.orderingStatus === 'UNAVAILABLE'
@@ -1634,7 +1632,6 @@ const Cart = () => {
               handleOpenOrderingMode={handleOpenOrderingMode}
               orderingMode={orderingMode}
               defaultOutlet={defaultOutlet}
-              handleRenderOrderingModeLabel={handleRenderOrderingModeLabel}
             />
             {orderingMode === 'DINEIN' && defaultOutlet.enableTableNumber && (
               <RenderTableMode
@@ -1705,7 +1702,6 @@ const Cart = () => {
                 handleOpenOrderingMode={handleOpenOrderingMode}
                 orderingMode={orderingMode}
                 defaultOutlet={defaultOutlet}
-                handleRenderOrderingModeLabel={handleRenderOrderingModeLabel}
               />
               {orderingMode === 'DINEIN' && (
                 <RenderTableMode
