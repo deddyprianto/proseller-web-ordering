@@ -1484,6 +1484,8 @@ const CartGuestCheckout = () => {
     );
   };
   const renderTotal = () => {
+    const stringWithSpace = handleCurrency(basket?.totalNettAmount);
+    const stringWithoutSpace = stringWithSpace?.replace(/\u00A0/g, ' ');
     return (
       <Paper
         variant='elevation'
@@ -1531,7 +1533,7 @@ const CartGuestCheckout = () => {
                 className={fontStyleCustom.myFont}
                 sx={{ fontWeight: 700, fontSize: '14px' }}
               >
-                {handleCurrency(basket?.totalNettAmount)}
+                {stringWithoutSpace}
               </Typography>
               <img
                 src={IconDown}
