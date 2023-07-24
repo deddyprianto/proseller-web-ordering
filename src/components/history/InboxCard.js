@@ -71,7 +71,9 @@ const InboxCard = (props) => {
           alignItems: 'center',
         }}
       >
-        <div>Ordering</div>
+        <div style={{ fontSize: '14px', fontWeight: 600 }}>
+          {!items.bookingId ? 'Ordering' : 'Appoinment'}
+        </div>
         {items.status === 'COMPLETED' && items.point > 0 && (
           <div
             style={{
@@ -123,7 +125,7 @@ const InboxCard = (props) => {
         <div
           style={{
             color: props.color.primary,
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '14px',
           }}
         >

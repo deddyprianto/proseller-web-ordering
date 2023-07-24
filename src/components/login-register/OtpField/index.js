@@ -14,6 +14,37 @@ const OtpField = ({
   enableSMSOTP,
   enableWhatsappOTP
 }) => {
+  
+  const handleLabelOtpViaWhatsApp = () => {
+    let message;
+    if (sendCounter <= 2) {
+      if (sendCounter >= 1) {
+        message = `Resend OTP ${
+          method === 'phone' ? 'via WhatsApp' : 'via Email'
+        }`;
+      } else {
+        message = `Send OTP ${
+          method === 'phone' ? 'via WhatsApp' : 'via Email'
+        }`;
+      }
+    } else {
+      message = 'Get OTP via Email';
+    }
+    return message;
+  };
+  const handleLabelOtpViaSMS = () => {
+    let message;
+    if (sendCounter <= 2) {
+      if (sendCounter >= 1) {
+        message = `Resend OTP ${method === 'phone' ? 'via SMS' : 'via Email'}`;
+      } else {
+        message = `Send OTP ${method === 'phone' ? 'via SMS' : 'via Email'}`;
+      }
+    } else {
+      message = 'Get OTP via Email';
+    }
+    return message;
+  };
   return (
     <div>
       {!enableSMSOTP && method === 'email' && (
@@ -33,11 +64,7 @@ const OtpField = ({
             method === 'phone' ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
           }
         >
-          {sendCounter <= 2
-            ? `${sendCounter >= 1 ? 'Resend' : 'Send'} OTP ${
-                method === 'phone' ? 'via SMS' : 'via Email'
-              }`
-            : 'Get OTP via Email'}
+          {handleLabelOtpViaSMS()}
         </Button>
       )}
 
@@ -61,11 +88,7 @@ const OtpField = ({
             method === 'phone' ? sendPhoneOtp('SMSOTP') : sendEmailOtp()
           }
         >
-          {sendCounter <= 2
-            ? `${sendCounter >= 1 ? 'Resend' : 'Send'} OTP ${
-                method === 'phone' ? 'via SMS' : 'via Email'
-              }`
-            : 'Get OTP via Email'}
+          {handleLabelOtpViaSMS()}
         </Button>
       )}
 
@@ -90,11 +113,7 @@ const OtpField = ({
               method === 'phone' ? sendPhoneOtp('WhatsappOTP') : sendEmailOtp()
             }
           >
-            {sendCounter <= 2
-              ? `${sendCounter >= 1 ? 'Resend' : 'Send'} OTP ${
-                  method === 'phone' ? 'via WhatsApp' : 'via Email'
-                }`
-              : 'Get OTP via Email'}
+            {handleLabelOtpViaWhatsApp()}
           </Button>
         )}
       {isSending && (
@@ -124,7 +143,7 @@ const OtpField = ({
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <input
           id='otp-input'
-          type='text'
+          type='password'
           pattern='[0-9]*'
           inputmode='numeric'
           className='woocommerce-Input woocommerce-Input--text input-text'

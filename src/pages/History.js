@@ -42,7 +42,7 @@ const RenderHeaderTab = ({
           borderBottom: '1px solid rgba(138, 141, 142, .4)',
         }}
       >
-        <Tabs value={tabStateButton} sx={styleSheet.indicatorForMobileView}>
+        <Tabs value={tabStateButton} sx={styleSheet.muiSelected}>
           <Tab
             value='Orders'
             onClick={() => {
@@ -176,7 +176,7 @@ const History = (props) => {
         width: '50%',
       },
       '&.Mui-selected': {
-        color: color.primary,
+        color: `${color.primary}!important`,
         fontSize: '14px',
         textTransform: 'capitalize',
       },
@@ -184,19 +184,12 @@ const History = (props) => {
         fontSize: '14px',
         textTransform: 'capitalize',
       },
-    },
-    indicator: {
+      '& .MuiTabs-indicator': {
+        backgroundColor: color.primary,
+      },
       '& .MuiTabScrollButton-root': {
         padding: 0,
         margin: 0,
-      },
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
-      },
-    },
-    indicatorForMobileView: {
-      '& .MuiTabs-indicator': {
-        backgroundColor: color.primary,
       },
     },
   };

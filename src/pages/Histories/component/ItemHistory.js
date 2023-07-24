@@ -169,7 +169,7 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           <div
             style={{
               fontSize: '14px',
-              fontWeight: 'bold',
+              fontWeight: 700,
               color: color.primary,
             }}
           >
