@@ -143,7 +143,7 @@ const OtpField = ({
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <input
           id='otp-input'
-          type='password'
+          type='text'
           pattern='[0-9]*'
           inputmode='numeric'
           className='woocommerce-Input woocommerce-Input--text input-text'
