@@ -2743,7 +2743,7 @@ const CartGuestCheckout = () => {
         >
           <IconPlace stroke={color.primary} />{' '}
           <span style={{ marginLeft: '8px', color: color.primary }}>
-            {defaultOutlet?.name}
+            <strong>{defaultOutlet?.name}</strong>
           </span>
         </div>
       </div>
