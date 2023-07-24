@@ -235,7 +235,7 @@ const ProductCartList = ({ ...props }) => {
         >
           <IconPlace stroke={props.color.primary} />{' '}
           <span style={{ marginLeft: '8px', color: props.color.primary }}>
-            {props.defaultOutlet?.name}
+            <strong>{props.defaultOutlet?.name}</strong>
           </span>
         </div>
       </div>
