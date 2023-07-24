@@ -572,8 +572,7 @@ const Portal = ({
                 data-dismiss='modal'
                 onClick={handleGuestCheckoutMode}
                 style={{
-                  marginTop: '20px',
-                  marginBottom: '20px',
+                  marginBottom: '10px',
                   padding: '8px',
                   borderRadius: '50px',
                   fontWeight: 500,
