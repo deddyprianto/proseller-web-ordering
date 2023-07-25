@@ -613,7 +613,7 @@ const Cart = () => {
       left: 'auto',
       position: 'fixed',
       backgroundColor: color.background,
-      paddingBottom: 1,
+      padding: '10px 16px',
     },
     grandTotalFullScreen: {
       padding: 0,
@@ -1474,8 +1474,8 @@ const Cart = () => {
     return (
       <div
         style={{
-          padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
-          width: '70%',
+          padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '0px',
+          width: '60%',
         }}
       >
         <Button
@@ -1555,8 +1555,6 @@ const Cart = () => {
   };
 
   const renderTotal = () => {
-    const stringWithSpace = handleCurrency(basket?.totalNettAmount);
-    const stringWithoutSpace = stringWithSpace?.replace(/\u00A0/g, ' ');
     return (
       <Paper
         variant='elevation'
@@ -1575,7 +1573,6 @@ const Cart = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            padding: gadgetScreen ? '0px 10px' : '0px',
           }}
         >
           <div
@@ -1604,7 +1601,7 @@ const Cart = () => {
                 className={fontStyleCustom.myFont}
                 sx={{ fontWeight: 700, fontSize: '14px' }}
               >
-                {stringWithoutSpace}
+                {handleCurrency(basket?.totalNettAmount)}
               </Typography>
               <img
                 src={IconDown}

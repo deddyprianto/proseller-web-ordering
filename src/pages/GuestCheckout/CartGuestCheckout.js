@@ -319,7 +319,7 @@ const CartGuestCheckout = () => {
       bottom: responsiveDesign.height < 500 ? 0 : 70,
       left: 'auto',
       position: 'fixed',
-      padding: '0px 10px',
+      padding: '10px 16px',
       backgroundColor: color.background,
     },
     grandTotalFullScreen: {
@@ -333,11 +333,11 @@ const CartGuestCheckout = () => {
     },
 
     rootSubmitButton: {
-      width: '70%',
+      width: '60%',
       display: 'flex',
-      justifyContent: 'center',
+      justifyContent: 'end',
       alignItems: 'center',
-      padding: basket?.inclusiveTax !== 0 ? '10px 0px' : '7px 10px',
+      padding: basket?.inclusiveTax !== 0 ? '10px 0px' : '0px',
     },
     rootInclusiveTax: {
       display: 'flex',
@@ -659,7 +659,7 @@ const CartGuestCheckout = () => {
   const handleOpenOrderingMode = async (isSelected = true) => {
     setIsLoading(true);
     const intersectOrderingMode = await getIntersectOrderingMode();
-    setIsLoading(false)
+    setIsLoading(false);
     if (intersectOrderingMode.length === 1) {
       (!isSelectedOrderingMode || !isSelected) &&
         intersectOrderingMode.forEach(async (item) => {
@@ -1484,13 +1484,11 @@ const CartGuestCheckout = () => {
     );
   };
   const renderTotal = () => {
-    const stringWithSpace = handleCurrency(basket?.totalNettAmount);
-    const stringWithoutSpace = stringWithSpace?.replace(/\u00A0/g, ' ');
     return (
       <Paper
         variant='elevation'
         square={gadgetScreen}
-        elevation={gadgetScreen ? 3 : 3}
+        elevation={3}
         sx={
           gadgetScreen
             ? styles.grandTotalGadgetScreen
@@ -1504,7 +1502,6 @@ const CartGuestCheckout = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            padding: gadgetScreen ? '0px 10px' : '0px',
           }}
         >
           <div
@@ -1533,7 +1530,7 @@ const CartGuestCheckout = () => {
                 className={fontStyleCustom.myFont}
                 sx={{ fontWeight: 700, fontSize: '14px' }}
               >
-                {stringWithoutSpace}
+                {handleCurrency(basket?.totalNettAmount)}
               </Typography>
               <img
                 src={IconDown}
