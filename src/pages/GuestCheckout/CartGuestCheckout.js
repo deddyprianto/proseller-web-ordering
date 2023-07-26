@@ -58,8 +58,6 @@ import {
 } from 'assets/iconsSvg/Icons';
 import OrderingModeTableGuestCO from 'components/orderingModeTableGuestCO';
 import { ProductAction } from 'redux/actions/ProductAction';
-import { isEmpty } from 'helpers/utils';
-import commonAlert from 'components/template/commonAlert';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -139,9 +137,6 @@ const CartGuestCheckout = () => {
   const time = useSelector((state) => state.guestCheckoutCart.time);
   const noTable = useSelector((state) => state.guestCheckoutCart.noTable);
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
-  const buildCartErrorData = useSelector(
-    (state) => state.order.buildCartErrorData
-  );
 
   const loadingData = (role) => {
     return new Promise((resolve) => {
@@ -254,31 +249,6 @@ const CartGuestCheckout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basket.details?.length]);
 
-  /**
-   * Side effect when `buildCartErrorData` updated
-   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
-   */
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted && !isEmpty(buildCartErrorData)) {
-      commonAlert({
-        color: color.primary,
-        title: buildCartErrorData.title || 'Error!',
-        content: buildCartErrorData.message,
-        onConfirm: () => {
-          dispatch({
-            type: CONSTANT.BUILD_CART_ERROR_DATA,
-            payload: null,
-          });
-        },
-      });
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [buildCartErrorData, color.primary, dispatch]);
-
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
 
@@ -319,7 +289,10 @@ const CartGuestCheckout = () => {
       bottom: responsiveDesign.height < 500 ? 0 : 70,
       left: 'auto',
       position: 'fixed',
-      padding: '10px 16px',
+      paddingTop: '5px',
+      paddingBottom: '10px',
+      paddingLeft: '16px',
+      paddingRight: '16px',
       backgroundColor: color.background,
     },
     grandTotalFullScreen: {
