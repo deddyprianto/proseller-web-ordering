@@ -924,6 +924,10 @@ const ProductAddModal = ({
       );
     }
     setIsLoading(false);
+    props.dispatch({
+      type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
+      payload: [],
+    });
     handleClose();
     handleClear();
   };
