@@ -926,7 +926,7 @@ const ThankYoutPage = () => {
         marginLeft: 'auto',
         marginRight: 'auto',
         backgroundColor: 'white',
-        height: '92vh',
+        height: '100vh',
       }}
     >
       <div
