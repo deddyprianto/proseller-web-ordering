@@ -613,8 +613,7 @@ const Cart = () => {
       left: 'auto',
       position: 'fixed',
       backgroundColor: color.background,
-      padding: '0px 16px',
-      paddingBottom: '10px',
+      padding: '10px 16px',
     },
     grandTotalFullScreen: {
       padding: 0,

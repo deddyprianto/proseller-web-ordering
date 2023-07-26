@@ -319,7 +319,7 @@ const CartGuestCheckout = () => {
       bottom: responsiveDesign.height < 500 ? 0 : 70,
       left: 'auto',
       position: 'fixed',
-      padding: '0px 16px',
+      padding: '10px 16px',
       backgroundColor: color.background,
     },
     grandTotalFullScreen: {
@@ -337,7 +337,6 @@ const CartGuestCheckout = () => {
       display: 'flex',
       justifyContent: 'end',
       alignItems: 'center',
-      padding: basket?.inclusiveTax !== 0 ? '10px 0px' : '0px',
     },
     rootInclusiveTax: {
       display: 'flex',
