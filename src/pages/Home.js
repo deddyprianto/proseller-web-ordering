@@ -14,7 +14,6 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { CONSTANT } from 'helpers';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import useWindowSize from 'hooks/useWindowSize';
-import { isEmpty } from 'helpers/utils';
 import commonAlert from 'components/template/commonAlert';
 
 const LayoutTypeA = loadable(() => import('components/template/LayoutTypeA'));
@@ -43,9 +42,6 @@ const Home = () => {
   );
   const productList = useSelector((state) => state.product.productList);
   const color = useSelector((state) => state.theme.color);
-  const buildCartErrorData = useSelector(
-    (state) => state.order.buildCartErrorData
-  );
 
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'EnableAppointment';
@@ -155,8 +151,12 @@ const Home = () => {
       const response = await dispatch(
         OrderAction.addCartFromGuestCOtoCartLogin(isOfflineCartGuestCO)
       );
+      dispatch({
+        type: CONSTANT.BUILD_CART_ERROR_DATA,
+        payload: null,
+      });
       Swal.hideLoading();
-      if (response?.type === 'DATA_BASKET') {
+      if (response?.type === 'DATA_BASKET' || !response) {
         localStorage.removeItem('BASKET_GUESTCHECKOUT');
       }
       Swal.fire({
@@ -184,32 +184,6 @@ const Home = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /**
-   * Side effect when `buildCartErrorData` updated
-   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
-   */
-  useEffect(() => {
-    let isMounted = true;
-
-    if (isMounted && !isEmpty(buildCartErrorData)) {
-      commonAlert({
-        color: color.primary,
-        title: buildCartErrorData.title || 'Error!',
-        content: buildCartErrorData.message,
-        onConfirm: () => {
-          dispatch({
-            type: CONSTANT.BUILD_CART_ERROR_DATA,
-            payload: null,
-          });
-        },
-      });
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [buildCartErrorData, color.primary, dispatch]);
 
   const renderLayout = () => {
     if (settingCategoryHeader?.settingValue === 'CATEGORY_ONLY') {

@@ -613,7 +613,8 @@ const Cart = () => {
       left: 'auto',
       position: 'fixed',
       backgroundColor: color.background,
-      padding: '10px 16px',
+      padding: '0px 16px',
+      paddingBottom: '10px',
     },
     grandTotalFullScreen: {
       padding: 0,
@@ -1577,7 +1578,7 @@ const Cart = () => {
         >
           <div
             style={{
-              width: '30%',
+              width: '40%',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
@@ -1586,7 +1587,7 @@ const Cart = () => {
           >
             <Typography
               className={fontStyleCustom.myFont}
-              sx={{ fontWeight: 500, fontSize: '14px' }}
+              sx={{ fontWeight: 600, fontSize: '16px' }}
             >
               GRAND TOTAL
             </Typography>
@@ -1681,7 +1682,7 @@ const Cart = () => {
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '1fr 85px',
+            gridTemplateRows: '1fr 70px',
             gap: '0px 15px',
             gridTemplateAreas: '"."\n    "."',
           }}

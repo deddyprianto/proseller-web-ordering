@@ -319,7 +319,7 @@ const CartGuestCheckout = () => {
       bottom: responsiveDesign.height < 500 ? 0 : 70,
       left: 'auto',
       position: 'fixed',
-      padding: '10px 16px',
+      padding: '0px 16px',
       backgroundColor: color.background,
     },
     grandTotalFullScreen: {
@@ -1493,7 +1493,7 @@ const CartGuestCheckout = () => {
           gadgetScreen
             ? styles.grandTotalGadgetScreen
             : {
-                padding: 0,
+                padding: '0px 16px',
                 margin: 0,
               }
         }
@@ -1506,7 +1506,7 @@ const CartGuestCheckout = () => {
         >
           <div
             style={{
-              width: '30%',
+              width: '40%',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
@@ -1515,7 +1515,7 @@ const CartGuestCheckout = () => {
           >
             <Typography
               className={fontStyleCustom.myFont}
-              sx={{ fontWeight: 500, fontSize: '14px' }}
+              sx={{ fontWeight: 600, fontSize: '16px' }}
             >
               GRAND TOTAL
             </Typography>
