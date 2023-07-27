@@ -54,7 +54,10 @@ import {
 } from 'assets/iconsSvg/Icons';
 import OrderingModeTableGuestCO from 'components/orderingModeTableGuestCO';
 import { ProductAction } from 'redux/actions/ProductAction';
-import AccordionCart from 'components/accordionCart';
+import {
+  AccordionCart,
+  ContainerStorePickUP,
+} from 'components/componentHelperCart';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -1385,6 +1388,7 @@ const CartGuestCheckout = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
+              marginLeft: '0px',
               marginRight: '10px',
             }}
           >
@@ -1396,30 +1400,16 @@ const CartGuestCheckout = () => {
                 ? 'Ordering Mode'
                 : orderingModeGuestCheckout}
             </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+            <img
+              src={iconRight}
+              alt='myIcon'
+              style={{ marginLeft: '5px', marginRight: '0px' }}
+            />
           </div>
         </div>
 
         {orderingModeGuestCheckout === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
+          <ContainerStorePickUP defaultOutlet={defaultOutlet} />
         )}
       </div>
     );
@@ -1800,7 +1790,7 @@ const CartGuestCheckout = () => {
         <Typography
           className={fontStyleCustom.myFont}
           style={{
-            color: color.color,
+            color: color.primary,
             textAlign: 'center',
             fontWeight: 700,
             fontSize: '14px',
@@ -1829,8 +1819,8 @@ const CartGuestCheckout = () => {
                 setOpenAccordion(true);
               }}
               style={{
-                backgroundColor: conditionName ? '#4386A133' : 'white',
-                border: '1px solid #4386A1',
+                backgroundColor: conditionName ? `${color.primary}33` : 'white',
+                border: `1px solid ${color.primary}`,
                 borderRadius: '10px',
                 width: '100%',
                 display: 'flex',

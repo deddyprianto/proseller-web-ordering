@@ -30,7 +30,8 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { IconDelivery, IconDineIn, IconElips } from 'assets/iconsSvg/Icons';
 import useWindowSize from 'hooks/useWindowSize';
-import AccordionCart from 'components/accordionCart';
+import { AccordionCart, ContainerStorePickUP } from 'components/componentHelperCart';
+
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -236,21 +237,7 @@ const RenderOrderingMode = ({
       </div>
 
       {orderingMode === 'STOREPICKUP' && (
-        <div style={{ marginTop: '20px' }}>
-          <hr
-            style={{
-              backgroundColor: '#8A8D8E',
-              opacity: 0.5,
-            }}
-          />
-          <div style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}>
-            Outlet Address
-          </div>
-          <div style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}>
-            {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-            {defaultOutlet?.postalCode}
-          </div>
-        </div>
+        <ContainerStorePickUP defaultOutlet={defaultOutlet}/>
       )}
     </div>
   );
