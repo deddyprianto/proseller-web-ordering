@@ -57,6 +57,7 @@ import { ProductAction } from 'redux/actions/ProductAction';
 import {
   AccordionCart,
   ContainerStorePickUP,
+  RenderTableMode,
 } from 'components/componentHelperCart';
 
 const useWindowSize = () => {
@@ -70,111 +71,6 @@ const useWindowSize = () => {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
   return size;
-};
-
-const RenderTableMode = ({
-  setOpenOrderingTable,
-  noTable,
-  color,
-  orderingModeGuestCheckout,
-  defaultOutlet,
-}) => {
-  return (
-    <div
-      onClick={() => {
-        setOpenOrderingTable(true);
-      }}
-      style={{
-        width: '100%',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        padding: '20px 5px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%',
-        }}
-      >
-        <Typography
-          style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-          className={fontStyleCustom.myFont}
-        >
-          Table Number
-        </Typography>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginRight: '10px',
-          }}
-        >
-          {noTable ? (
-            <IconDineIn color={color.primary} />
-          ) : (
-            <div
-              style={{
-                fontSize: '13px',
-                color: '#8A8D8E',
-                fontWeight: 600,
-              }}
-            >
-              Choose Table
-            </div>
-          )}
-          <Typography
-            style={{
-              fontSize: '13px',
-              color: '#8A8D8E',
-              fontWeight: 500,
-              marginLeft: '5px',
-              textTransform: 'uppercase',
-            }}
-            className={fontStyleCustom.myFont}
-          >
-            {noTable}
-          </Typography>
-          <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-        </div>
-      </div>
-
-      {orderingModeGuestCheckout === 'STOREPICKUP' && (
-        <div style={{ marginTop: '20px' }}>
-          <hr
-            style={{
-              backgroundColor: '#8A8D8E',
-              opacity: 0.5,
-            }}
-          />
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: 700,
-              color: '#B7B7B7',
-            }}
-          >
-            Outlet Address
-          </div>
-          <div
-            style={{
-              color: '#B7B7B7',
-              fontSize: '14px',
-              fontWeight: 500,
-            }}
-          >
-            {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-            {defaultOutlet?.postalCode}
-          </div>
-        </div>
-      )}
-    </div>
-  );
 };
 
 const CartGuestCheckout = () => {
@@ -2703,7 +2599,16 @@ const CartGuestCheckout = () => {
             {renderLabelOrderingDetail()}
             {renderOrderingMode()}
             {orderingModeGuestCheckout === 'DINEIN' &&
-              defaultOutlet.enableTableNumber && <RenderTableMode />}
+              defaultOutlet.enableTableNumber && (
+                <RenderTableMode
+                  setOpenOrderingTable={setOpenOrderingTable}
+                  noTable={noTable}
+                  color={color}
+                  orderingMode={orderingModeGuestCheckout}
+                  defaultOutlet={defaultOutlet}
+                  fontStyleCustom={fontStyleCustom}
+                />
+              )}
             {renderFormTakeAwayAndDineIn()}
             {renderFormPickUpStore()}
             {renderFormCustomerDetail()}
@@ -2747,7 +2652,16 @@ const CartGuestCheckout = () => {
               {renderLabelOrderingDetail()}
               {renderOrderingMode()}
               {orderingModeGuestCheckout === 'DINEIN' &&
-                defaultOutlet.enableTableNumber && <RenderTableMode />}
+                defaultOutlet.enableTableNumber && (
+                  <RenderTableMode
+                    setOpenOrderingTable={setOpenOrderingTable}
+                    noTable={noTable}
+                    color={color}
+                    orderingMode={orderingModeGuestCheckout}
+                    defaultOutlet={defaultOutlet}
+                    fontStyleCustom={fontStyleCustom}
+                  />
+                )}
               {renderFormTakeAwayAndDineIn()}
               {renderFormPickUpStore()}
               {renderFormCustomerDetail()}
