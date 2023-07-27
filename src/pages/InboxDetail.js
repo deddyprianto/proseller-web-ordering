@@ -11,7 +11,7 @@ import { InboxAction } from 'redux/actions/InboxAction';
 const InboxDetail = (props) => {
   const dispatch = useDispatch();
   const responsiveDesign = screen();
-  const gadgetScreen = responsiveDesign.width < 980;
+  const gadgetScreen = responsiveDesign.width < 980;  
 
   const color = useSelector((state) => state.theme.color);
   const [broadcastItem, setBroadcastItem] = useState({});
