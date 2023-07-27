@@ -1,15 +1,55 @@
 import React from 'react';
-import EmailIcon from '@material-ui/icons/Email';
-import DraftsIcon from '@material-ui/icons/Drafts';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { CONSTANT } from 'helpers';
 import customStyleFont from './css/style.module.css';
+import inboxMail from 'assets/images/inboxMail.png';
+import inboxMailOpened from 'assets/images/inboxMailOpened.png';
 
-const InboxCard = ({ items }) => {  
+const InboxCard = ({ items }) => {
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const changeFormatDateLikeDesign = (inputDateString) => {
+    const currentDate = new Date();
+    const inputDate = new Date(inputDateString);
+
+    const diffInMilliseconds = currentDate - inputDate;
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+    if (diffInMilliseconds < oneDayInMilliseconds) {
+      return 'Today';
+    } else if (diffInMilliseconds < 2 * oneDayInMilliseconds) {
+      return 'Yesterday';
+    } else if (inputDate.getFullYear() === currentDate.getFullYear()) {
+      return inputDate.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+      });
+    } else {
+      return inputDate.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: '2-digit',
+      });
+    }
+  };
+
+  const renderIcon = () => {
+    if (!items.isRead) {
+      return (
+        <div style={{ position: 'relative' }}>
+          <img width={21} height={21} src={inboxMail} alt='icon mail' />
+        </div>
+      );
+    } else {
+      return (
+        <img src={inboxMailOpened} height={21} width={21} alt='icon mail' />
+      );
+    }
+  };
+
   return (
     <div
       onClick={() => {
@@ -22,84 +62,59 @@ const InboxCard = ({ items }) => {
       className={customStyleFont.myFont}
       style={{
         boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.10)',
-        padding: 10,
+        padding: '16px',
         cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'row',
-        margin: 5,
         borderRadius: 5,
-        marginTop: '16px',
+        marginTop: '20px',
       }}
     >
-      {!items.isRead ? (
-        <div style={{ position: 'relative' }}>
-          <div
-            style={{
-              position: 'absolute',
-              top: 3,
-              right: 8,
-              width: '16px',
-              height: '16px',
-              borderRadius: '100%',
-              backgroundColor: 'rgba(207, 48, 48, 1)',
-            }}
-          />
-          <EmailIcon
-            className='customer-group-name'
-            style={{
-              height: 50,
-              width: 50,
-              marginRight: 10,
-            }}
-          />
-        </div>
-      ) : (
-        <DraftsIcon
-          style={{
-            height: 50,
-            width: 50,
-            marginRight: 10,
-          }}
-        />
-      )}
-
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           width: '100%',
-          textAlign: 'left',
+          height: '20px',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {renderIcon()}
           <div
             className={!items.isRead ? 'customer-group-name' : ''}
-            style={{ fontWeight: 'bold', fontSize: '14px' }}
+            style={{
+              fontWeight: 700,
+              fontSize: '16px',
+              marginLeft: '8px',
+              textTransform: 'capitalize',
+            }}
           >
             {items.name.length > 20
               ? items.name.substring(0, 20).concat('...')
               : items.name}
           </div>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: 500,
-              color: 'rgba(183, 183, 183, 1)',
-            }}
-          >
-            {moment(items.createdOn).format('DD/MM/YY HH:mm')}
-          </div>
         </div>
-        <div style={{ fontSize: '12px' }}>
-          {items.message.substring(0, 35).concat('...')}
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 500,
+            color: '#B7B7B7',
+          }}
+        >
+          {changeFormatDateLikeDesign(
+            moment(items.createdOn).format('DD/MM/YY HH:mm')
+          )}
         </div>
+      </div>
+      <div
+        style={{
+          fontSize: '14px',
+          fontWeight: 500,
+          paddingLeft: '29px',
+          marginTop: '8px',
+          color: '#B7B7B7',
+        }}
+      >
+        {items.message.substring(0, 100).concat('...')}
       </div>
     </div>
   );
