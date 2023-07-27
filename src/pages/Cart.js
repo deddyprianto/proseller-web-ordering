@@ -294,6 +294,7 @@ const RenderDateTime = ({
                 style={{
                   fontWeight: 700,
                   fontSize: '14px',
+                  color: 'black',
                 }}
               >
                 Choose Date & Time
@@ -304,9 +305,10 @@ const RenderDateTime = ({
                 display: 'flex',
                 alignItems: 'center',
                 marginRight: '10px',
+                marginLeft: '0px',
               }}
             >
-              <div>
+              <div style={{ backgroundColor: 'white' }}>
                 <Typography
                   style={{
                     fontSize: '13px',

@@ -2474,6 +2474,7 @@ const CartGuestCheckout = () => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              backgroundColor: 'white',
             }}
           >
             <Box flexDirection='column'>
