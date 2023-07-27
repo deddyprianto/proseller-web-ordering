@@ -28,7 +28,7 @@ import { isEmpty } from 'helpers/utils';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { OutletAction } from 'redux/actions/OutletAction';
-import { IconDelivery, IconDineIn, IconElips } from 'assets/iconsSvg/Icons';
+import { IconDelivery, IconElips } from 'assets/iconsSvg/Icons';
 import useWindowSize from 'hooks/useWindowSize';
 import {
   AccordionCart,

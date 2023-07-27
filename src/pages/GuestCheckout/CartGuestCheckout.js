@@ -47,7 +47,6 @@ import search from 'assets/images/search.png';
 import screen from 'hooks/useWindowSize';
 import { OutletAction } from 'redux/actions/OutletAction';
 import {
-  IconDineIn,
   IconPlace,
   renderIconEdit,
   renderIconInformation,
@@ -2464,7 +2463,10 @@ const CartGuestCheckout = () => {
             boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
-            padding: '15px 5px',
+            paddingTop: '15px',
+            paddingBottom: '15px',
+            paddingLeft: '5px',
+            paddingRight: '5px',
           }}
         >
           <div

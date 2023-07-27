@@ -34,6 +34,7 @@ function buildCart(payload = {}) {
       'cart/build',
       'Bearer'
     );
+
     if (
       response.ResultCode >= 400 ||
       response.resultCode >= 400 ||
