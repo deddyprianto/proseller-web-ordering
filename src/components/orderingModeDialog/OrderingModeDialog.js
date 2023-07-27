@@ -232,11 +232,12 @@ const OrderingModeDialog = ({ open, onClose }) => {
           payload: '',
         });
       }
-      console.log('show error');
     }
     return () => {
+      console.log('component UNMOUNTED');
       isCleanFnComponent = false;
     };
+
   }, [orderingModeActive, dispatch]);
 
   useEffect(() => {
