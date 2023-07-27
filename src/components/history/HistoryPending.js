@@ -4,8 +4,7 @@ import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
 
 import config from 'config';
-import InboxCard from './HistoryCardPending';
-
+import InboxCard from './InboxCard';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -47,11 +46,11 @@ const HistoryPending = ({ dataPending, dataPendingLength, isAppointment }) => {
         justifyContent='space-between'
         alignItems='center'
         spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, md: 12 }}
+        columns={{ xs: 4, md: 4 }}
       >
-        {dataPending.map((items, index) => {
+        {dataPending.map((items) => {
           return (
-            <Grid item xs={4} md={6} key={index}>
+            <Grid item xs={4} md={6} key={items.id}>
               <Link
                 to={items.isPaymentComplete ? '/history/detail' : '/basket'}
                 onClick={() => setLocalStorageItem(items)}
