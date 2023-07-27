@@ -468,17 +468,15 @@ const Portal = ({
           confirmButton: styles.buttonSweetAlert,
           icon: styles.customIconColor,
         },
-      }).then((res) => {
-        if (res.isConfirmed) {
-          if (location.pathname === '/outlets') {
-            history.push('/outlets');
-          } else if (location.pathname === '/') {
-            history.push('/');
-          } else {
-            history.push('/cartguestcheckout');
-          }
-        }
       });
+
+      if (location.pathname === '/outlets') {
+        history.push('/outlets');
+      } else if (location.pathname === '/') {
+        history.push('/');
+      } else {
+        history.push('/cartguestcheckout');
+      }
     } else {
       Swal.fire({
         icon: 'info',

@@ -123,9 +123,6 @@ const CartGuestCheckout = () => {
   const modalDeliveryAddress = useSelector(
     (state) => state.guestCheckoutCart.modalDeliveryAddress
   );
-  const isCartDeleted = useSelector(
-    (state) => state.guestCheckoutCart.isCartDeleted
-  );
   const itemOrderingMode = useSelector(
     (state) => state.guestCheckoutCart.orderingModeGuestCheckoutObj
   );
@@ -181,13 +178,7 @@ const CartGuestCheckout = () => {
     setShowErrorName(false);
     setShowErrorPhone(false);
     setShowErrorEmail(false);
-  }, [
-    idGuestCheckout,
-    saveEditResponse,
-    orderingModeGuestCheckout,
-    isCartDeleted,
-    dispatch,
-  ]);
+  }, [idGuestCheckout, saveEditResponse, dispatch]);
 
   useEffect(() => {
     const getDataProviderListAndFee = async () => {
@@ -601,31 +592,38 @@ const CartGuestCheckout = () => {
     const intersectOrderingMode = await getIntersectOrderingMode();
 
     if (intersectOrderingMode.length === 1) {
-      (!isSelectedOrderingMode || !isSelected) &&
-        intersectOrderingMode.forEach(async (item) => {
-          await dispatch(
-            OrderAction.changeOrderingModeForGuestCheckout({
-              guestID: idGuestCheckout,
-              orderingMode: item.name,
-              provider: {},
-            })
-          );
-          dispatch({
-            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-            payload: item.name,
-          });
-          dispatch({
-            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
-            payload: item,
-          });
-          dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
-          dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
-          dispatch({
-            type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
-            payload: { deliveryAddress: null },
-          });
+      if ((!isSelectedOrderingMode || !isSelected) && idGuestCheckout) {
+        const processOrderingMode = async () => {
+          for (const item of intersectOrderingMode) {
+            await Promise.all([
+              dispatch(
+                OrderAction.changeOrderingModeForGuestCheckout({
+                  guestID: idGuestCheckout,
+                  orderingMode: item.name,
+                  provider: {},
+                })
+              ),
+            ]);
+            dispatch({
+              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+              payload: item.name,
+            });
+            dispatch({
+              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
+              payload: item,
+            });
+            dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
+            dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
+            dispatch({
+              type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
+              payload: { deliveryAddress: null },
+            });
+          }
           setIsSelectedOrderingMode(true);
-        });
+        };
+
+        processOrderingMode();
+      }
     } else if (intersectOrderingMode.length < 1) {
       modalNoAvailableOrderingMode();
     } else {
