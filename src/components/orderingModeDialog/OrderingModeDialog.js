@@ -232,6 +232,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           payload: '',
         });
       }
+      console.log('show error');
     }
     return () => {
       isCleanFnComponent = false;
@@ -264,7 +265,6 @@ const OrderingModeDialog = ({ open, onClose }) => {
             displayName: defaultOutlet.dineInName || null,
           },
         ];
-        //TODO: Please remove the function after update from backend
         const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
           handleFilter(
             defaultOutlet[mode?.isEnabledFieldName]?.toString()?.toUpperCase()
@@ -383,7 +383,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
       onClose={() => onClose()}
       classes={{ paper: classes.paper }}
     >
-      <LoadingOverlayCustom active={isLoading} spinner text='Loading...'>
+      <LoadingOverlayCustom active={isLoading} spinner text='Loading....'>
         <DialogTitle sx={style.dialogTitle}>
           <Typography
             className={fontStyles.myFont}
