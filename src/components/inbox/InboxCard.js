@@ -1,17 +1,16 @@
 import React from 'react';
-import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { CONSTANT } from 'helpers';
 import customStyleFont from './css/style.module.css';
 import inboxMail from 'assets/images/inboxMail.png';
-import inboxMailOpened from 'assets/images/inboxMailOpened.png';
+import inboxMailOpened from 'assets/images/inboxMailOpen.png';
 
 const InboxCard = ({ items }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const changeFormatDateLikeDesign = (inputDateString) => {
+  const customFormatDate = (inputDateString) => {
     const currentDate = new Date();
     const inputDate = new Date(inputDateString);
 
@@ -40,6 +39,17 @@ const InboxCard = ({ items }) => {
     if (!items.isRead) {
       return (
         <div style={{ position: 'relative' }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: -2,
+              right: -2,
+              width: '8px',
+              height: '8px',
+              borderRadius: '100%',
+              backgroundColor: 'rgba(207, 48, 48, 1)',
+            }}
+          />
           <img width={21} height={21} src={inboxMail} alt='icon mail' />
         </div>
       );
@@ -64,7 +74,7 @@ const InboxCard = ({ items }) => {
         boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.10)',
         padding: '16px',
         cursor: 'pointer',
-        borderRadius: 5,
+        borderRadius: '12px',
         marginTop: '20px',
       }}
     >
@@ -86,6 +96,7 @@ const InboxCard = ({ items }) => {
               fontSize: '16px',
               marginLeft: '8px',
               textTransform: 'capitalize',
+              color: !items.isRead ? '#343A4A' : '#B7B7B7',
             }}
           >
             {items.name.length > 20
@@ -100,9 +111,7 @@ const InboxCard = ({ items }) => {
             color: '#B7B7B7',
           }}
         >
-          {changeFormatDateLikeDesign(
-            moment(items.createdOn).format('DD/MM/YY HH:mm')
-          )}
+          {customFormatDate(items.createdOn)}
         </div>
       </div>
       <div
@@ -111,7 +120,8 @@ const InboxCard = ({ items }) => {
           fontWeight: 500,
           paddingLeft: '29px',
           marginTop: '8px',
-          color: '#B7B7B7',
+          color: !items.isRead ? '#B7B7B7' : '#B7B7B790',
+          lineHeight: '17.64px',
         }}
       >
         {items.message.substring(0, 100).concat('...')}
