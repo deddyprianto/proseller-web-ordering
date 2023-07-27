@@ -433,7 +433,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           </button>
           <button
             id='confirm-button'
-            disabled={!orderingModeActive && true}
+            disabled={!orderingModeActive}
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}
             style={{

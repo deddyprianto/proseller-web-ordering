@@ -10,10 +10,6 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
@@ -34,6 +30,7 @@ import { OrderAction } from 'redux/actions/OrderAction';
 import { OutletAction } from 'redux/actions/OutletAction';
 import { IconDelivery, IconDineIn, IconElips } from 'assets/iconsSvg/Icons';
 import useWindowSize from 'hooks/useWindowSize';
+import AccordionCart from 'components/accordionCart';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -157,48 +154,14 @@ const RenderDeliveryProvider = ({
           alignItems: 'center',
         }}
       >
-        <Accordion
-          sx={{
-            boxShadow: 'none',
-            padding: 0,
-            margin: 0,
-            width: '100%',
-          }}
-          expanded={openAccordion}
-          onChange={() => setOpenAccordion(!openAccordion)}
-        >
-          <AccordionSummary
-            sx={{ padding: '0', margin: '0' }}
-            expandIcon={
-              <ExpandMoreIcon
-                sx={{ width: '20px', height: '20px', marginRight: '10px' }}
-              />
-            }
-            aria-controls='panel1a-content'
-            id='panel1a-header'
-          >
-            <div
-              style={{
-                width: gadgetScreen ? '80vw' : '35vw',
-              }}
-            >
-              <Typography
-                style={{
-                  fontSize: '14px',
-                  color: 'black',
-                  fontWeight: 700,
-                  paddingLeft: '5px',
-                }}
-                className={fontStyleCustom.myFont}
-              >
-                {name}
-              </Typography>
-            </div>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
-            {renderButtonProvider()}
-          </AccordionDetails>
-        </Accordion>
+        <AccordionCart
+          openAccordion={openAccordion}
+          setOpenAccordion={setOpenAccordion}
+          gadgetScreen={gadgetScreen}
+          fontStyleCustom={fontStyleCustom}
+          name={name}
+          renderButtonProvider={renderButtonProvider}
+        />
       </div>
     );
   } else {
@@ -391,9 +354,8 @@ const RenderDateTime = ({
   orderActionDate,
   orderActionTimeSlot,
 }) => {
-  const isStorePickUp =
-    orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
-  const isTakeAway = orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY && true;
+  const isStorePickUp = orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP;
+  const isTakeAway = orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY;
   const isDelivery =
     orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
     deliveryAddress &&
