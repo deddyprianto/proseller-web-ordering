@@ -70,12 +70,7 @@ const Inbox = () => {
       return (
         <Row>
           {broadcast?.broadcast?.map((items) => (
-            <Col
-              key={items.broadcastID}
-              sm={6}
-              data-toggle='modal'
-              data-target='#detail-inbox-modal'
-            >
+            <Col key={items.broadcastID} sm={6}>
               <InboxCard items={items} />
             </Col>
           ))}
