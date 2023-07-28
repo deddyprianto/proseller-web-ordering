@@ -542,8 +542,6 @@ const Cart = () => {
   const [openSelectDeliveryProvider, setOpenSelectDeliveryProvider] =
     useState(false);
 
-  const [previousTotalItem, setPreviousTotalItem] = useState(0);
-
   const [selectTimeSlotAvailable, setSelectTimeSlotAvailable] = useState(false);
 
   const [dataCalculateFee, setDataCalculateFee] = useState();
@@ -717,19 +715,6 @@ const Cart = () => {
     dispatch(PaymentAction.clearAll());
   }, [dispatch]);
 
-  /**
-   * Side effect when basket updated
-   * @description When all product in cart were removed, redirect to '/' page.
-   */
-  useEffect(() => {
-    if (basket?.details && basket.details.length) {
-      setPreviousTotalItem(basket.details.length);
-    } else {
-      if (previousTotalItem > 0) {
-        history.push('/');
-      }
-    }
-  }, [previousTotalItem, basket, history]);
 
   const handleCurrency = (price) => {
     if (companyInfo) {

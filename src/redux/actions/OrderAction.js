@@ -425,6 +425,10 @@ function changeOrderingMode(payload) {
 function changeOrderingModeForGuestCheckout(payload) {
   return async (dispatch) => {
     if (payload.orderingMode) {
+      const idGuest = payload.guestID?.includes('guest')
+        ? payload.guestID
+        : `guest::${payload.guestID}`;
+
       let response = await OrderingService.api(
         'POST',
         payload,
@@ -434,7 +438,7 @@ function changeOrderingModeForGuestCheckout(payload) {
       if (response.ResultCode >= 400 || response.resultCode >= 400) {
         return response;
       }
-      const result = await dispatch(getCartGuestMode(payload.guestID));
+      const result = await dispatch(getCartGuestMode(idGuest));
       return result;
     } else {
       return { resultCode: 400 };

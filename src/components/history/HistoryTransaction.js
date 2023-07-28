@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
 import config from '../../config';
-import InboxCard from './HistoryCardPending';
+import InboxCard from './InboxCard';
 import ModalDetailHistory from './ModalDetailHistory';
 import useHistoryTransaction from 'hooks/useHistoryTransaction';
 import './style/style.css';

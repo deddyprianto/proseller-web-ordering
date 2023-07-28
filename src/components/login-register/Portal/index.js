@@ -44,7 +44,7 @@ const Portal = ({
   const location = useLocation();
   const mode = useSelector((state) => state.guestCheckoutCart.mode);
   const matches = useMediaQuery('(max-width:1200px)');
-  const initialCountry = (companyInfo && companyInfo.countryCode) || 'SG';
+  const initialCountry = companyInfo?.countryCode || 'SG';
   const initialCodePhone = '+65';
   const [value, setValue] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -118,6 +118,8 @@ const Portal = ({
         <div
           style={{
             width: '100%',
+            padding: '16px',
+            paddingBottom: error ? '0px' : '16px',
           }}
         >
           <div
@@ -218,6 +220,24 @@ const Portal = ({
                     const getPhoneCodeFromStr = item.substring(
                       item.indexOf(':') + 1
                     );
+                    let countryCodeOption = '';
+
+                    const phoneCode = getPhoneCodeFromStr.split(' ')[1];
+                    if (phoneCode === '+65') {
+                      countryCodeOption = 'country-code-singapore-option';
+                    } else if (phoneCode === '+62') {
+                      countryCodeOption = 'country-code-indonesia-option';
+                    }
+                    // refactor code for input search result in code phone numeber
+                    let colorPhoneSelected;
+
+                    if (valueSearchCode) {
+                      colorPhoneSelected = 'black';
+                    } else if (i === 0) {
+                      colorPhoneSelected = backgroundTheme.primary;
+                    } else {
+                      colorPhoneSelected = 'black';
+                    }
                     return (
                       <DropdownItem
                         style={{
@@ -237,22 +257,12 @@ const Portal = ({
                         key={item}
                       >
                         <p
-                          id={
-                            getPhoneCodeFromStr.split(' ')[1] === '+65'
-                              ? 'country-code-singapore-option'
-                              : getPhoneCodeFromStr.split(' ')[1] === '+62'
-                              ? 'country-code-indonesia-option'
-                              : ''
-                          }
+                          id={countryCodeOption}
                           style={{
                             padding: '0px 0px 7px 0px',
                             margin: 0,
                             cursor: 'pointer',
-                            color: valueSearchCode
-                              ? 'black'
-                              : i === 0
-                              ? backgroundTheme.primary
-                              : 'black',
+                            color: colorPhoneSelected,
                           }}
                           onClick={() => {
                             setPhoneCountryCode(
@@ -282,17 +292,44 @@ const Portal = ({
             ></input>
           </div>
         </div>
-        {error && <div className={styles.errorMessage}>{error}</div>}
-        <Button
-          id='next-signup-login-button'
-          disabled={isSubmitting}
-          className={cx('button', styles.submitButton)}
-          onClick={() => {
-            handlePhoneCheck();
+        {error && (
+          <div
+            style={{
+              padding: '5px 16px',
+              color: 'red',
+            }}
+          >
+            <div>{error}</div>
+          </div>
+        )}
+
+        <hr
+          style={{
+            backgroundColor: '#B8B8B8',
+            opacity: 0.5,
+            padding: '0px',
+            margin: '0px',
+          }}
+        />
+        <div
+          style={{
+            padding: '16px',
+            paddingBottom: '0px',
+            paddingTop: '0px',
           }}
         >
-          Next
-        </Button>
+          <Button
+            id='next-signup-login-button'
+            disabled={isSubmitting}
+            className={cx('button', styles.submitButton)}
+            onClick={() => {
+              handlePhoneCheck();
+            }}
+          >
+            Next
+          </Button>
+        </div>
+
         {loginByEmail && (
           <div
             id='change-login-method-button'
@@ -309,7 +346,14 @@ const Portal = ({
   const renderEmail = () => {
     return (
       <>
-        <div>
+        <div
+          style={{
+            width: '100%',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+            paddingTop: '22px',
+          }}
+        >
           <div
             style={{
               display: 'flex',
@@ -320,7 +364,7 @@ const Portal = ({
             <div style={{ fontSize: '16px', fontWeight: 500, color: 'black' }}>
               Enter your Email Address
             </div>
-            <div style={{ color: 'red', fontSize: '30px', marginLeft: '3px' }}>
+            <div style={{ color: 'red', fontSize: '16px', marginLeft: '3px' }}>
               *
             </div>
           </div>
@@ -335,17 +379,46 @@ const Portal = ({
             }}
           />
         </div>
-        {error && <div className={styles.errorMessage}>{error}</div>}
-        <Button
-          id='next-signup-login-email-button'
-          disabled={isSubmitting}
-          className={cx('button', styles.submitButton)}
-          onClick={() => {
-            handleEmailCheck();
+
+        {error && (
+          <div
+            style={{
+              padding: '5px 16px',
+              color: 'red',
+            }}
+          >
+            <div>{error}</div>
+          </div>
+        )}
+
+        <hr
+          style={{
+            backgroundColor: '#B8B8B8',
+            opacity: 0.5,
+            padding: '0px',
+            margin: '0px',
+            marginTop: error ? '0px' : '20px',
+          }}
+        />
+        <div
+          style={{
+            padding: '16px',
+            paddingBottom: '0px',
+            paddingTop: '0px',
           }}
         >
-          Next
-        </Button>
+          <Button
+            id='next-signup-login-email-button'
+            disabled={isSubmitting}
+            className={cx('button', styles.submitButton)}
+            onClick={() => {
+              handleEmailCheck();
+            }}
+          >
+            Next
+          </Button>
+        </div>
+
         {loginByMobile && (
           <div
             id='change-login-method-button'
@@ -369,11 +442,7 @@ const Portal = ({
     const isOfflineCart = JSON.parse(
       localStorage.getItem(`${config.prefix}_offlineCart`)
     );
-    if (isOfflineCart) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!isOfflineCart;
   };
 
   const handleGuestCheckoutMode = async () => {
@@ -399,17 +468,15 @@ const Portal = ({
           confirmButton: styles.buttonSweetAlert,
           icon: styles.customIconColor,
         },
-      }).then((res) => {
-        if (res.isConfirmed) {
-          if (location.pathname === '/outlets') {
-            history.push('/outlets');
-          } else if (location.pathname === '/') {
-            history.push('/');
-          } else {
-            history.push('/cartguestcheckout');
-          }
-        }
       });
+
+      if (location.pathname === '/outlets') {
+        history.push('/outlets');
+      } else if (location.pathname === '/') {
+        history.push('/');
+      } else {
+        history.push('/cartguestcheckout');
+      }
     } else {
       Swal.fire({
         icon: 'info',
@@ -437,14 +504,12 @@ const Portal = ({
       <div
         style={{
           width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          paddingTop: '20px',
-          paddingLeft: '15px',
+          padding: '16px',
+          paddingBottom: '0px',
         }}
       >
         <h5
-          style={{ fontSize: '24px', fontWeight: 'bold', color: 'black' }}
+          style={{ fontSize: '24px', fontWeight: 700, color: 'black' }}
           className={cx('modal-title', styles.modalTitle)}
         >
           Welcome!
@@ -467,17 +532,25 @@ const Portal = ({
             </span>
           </button>
         )}
-        <p style={{ fontSize: '14px', color: '#8D8D8D', fontWeight: 600 }}>
+        <p
+          style={{
+            fontSize: '14px',
+            color: '#8D8D8D',
+            fontWeight: 500,
+            padding: 0,
+            margin: 0,
+            lineHeight: 'normal',
+          }}
+        >
           {`to Login or Register, please enter your ${
             method === 'phone' ? 'Phone number' : 'Email'
           }.`}
         </p>
       </div>
+
       <div
         style={{
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          maxWidth: 'min(1280px, 100% - 30px)',
+          width: '100%',
         }}
       >
         {handleRenderByMethod(method)}
@@ -497,8 +570,7 @@ const Portal = ({
                 data-dismiss='modal'
                 onClick={handleGuestCheckoutMode}
                 style={{
-                  marginTop: '20px',
-                  marginBottom: '20px',
+                  marginBottom: '10px',
                   padding: '8px',
                   borderRadius: '50px',
                   fontWeight: 500,

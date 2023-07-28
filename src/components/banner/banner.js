@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { isEmptyArray } from '../../helpers/CheckEmpty';
 
 import { MasterDataService } from '../../Services/MasterDataService';
 import { useSelector } from 'react-redux';
@@ -37,8 +36,6 @@ const Banner = ({ outletId }) => {
 
     loadData();
   }, [outletId]);
-
-  if (isEmptyArray(banners)) return null;
 
   const renderBannerItem = (item) => {
     if (item?.promotionId) {

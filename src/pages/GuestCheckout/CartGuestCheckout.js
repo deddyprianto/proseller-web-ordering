@@ -121,9 +121,6 @@ const CartGuestCheckout = () => {
   const modalDeliveryAddress = useSelector(
     (state) => state.guestCheckoutCart.modalDeliveryAddress
   );
-  const isCartDeleted = useSelector(
-    (state) => state.guestCheckoutCart.isCartDeleted
-  );
   const itemOrderingMode = useSelector(
     (state) => state.guestCheckoutCart.orderingModeGuestCheckoutObj
   );
@@ -176,13 +173,7 @@ const CartGuestCheckout = () => {
     setShowErrorName(false);
     setShowErrorPhone(false);
     setShowErrorEmail(false);
-  }, [
-    idGuestCheckout,
-    saveEditResponse,
-    orderingModeGuestCheckout,
-    isCartDeleted,
-    dispatch,
-  ]);
+  }, [idGuestCheckout, saveEditResponse, dispatch]);
 
   useEffect(() => {
     const getDataProviderListAndFee = async () => {
@@ -632,7 +623,7 @@ const CartGuestCheckout = () => {
     setIsLoading(true);
     const intersectOrderingMode = await getIntersectOrderingMode();
     setIsLoading(false);
-   if (intersectOrderingMode.length === 1) {
+    if (intersectOrderingMode.length === 1) {
       if ((!isSelectedOrderingMode || !isSelected) && idGuestCheckout) {
         const processOrderingMode = async () => {
           for (const item of intersectOrderingMode) {
@@ -664,7 +655,8 @@ const CartGuestCheckout = () => {
         };
 
         processOrderingMode();
-      }else if (intersectOrderingMode.length < 1) {
+      }
+    } else if (intersectOrderingMode.length < 1) {
       modalNoAvailableOrderingMode();
     } else {
       setOpenOrderingMode(true);
