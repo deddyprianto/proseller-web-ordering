@@ -1088,10 +1088,13 @@ const Cart = () => {
         <div
           style={{
             width: '100%',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '0px',
+            paddingRight: '0px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '10px 0px',
           }}
         >
           <div style={{ width: '100%', textAlign: 'center', fontWeight: 700 }}>
@@ -1104,7 +1107,7 @@ const Cart = () => {
             X
           </div>
         </div>
-        <div style={{ width: '100%' }}>
+        <div style={{margin: '0px,width: '100%' }}>
           <hr
             style={{
               backgroundColor: '#D6D6D6',
@@ -1116,10 +1119,10 @@ const Cart = () => {
         </div>
         <div
           style={{
+            padding: '10px',
             width: '100%',
             backgroundColor: 'white',
             marginBottom: '10px',
-            padding: '10px',
           }}
         >
           <>
