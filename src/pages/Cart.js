@@ -773,8 +773,10 @@ const Cart = () => {
           setIsSelectedOrderingMode(true);
         });
     } else if (intersectOrderingMode.length < 1) {
+      console.log(intersectOrderingMode);
       modalNoAvailableOrderingMode();
     } else {
+      console.log(openOrderingMode);
       setOpenOrderingMode(true);
     }
   };
@@ -782,13 +784,14 @@ const Cart = () => {
   const handleNoAvailableOrderingMode = async () => {
     const intersectOrderingMode = await getIntersectOrderingMode();
     if (intersectOrderingMode.length < 1) {
+      console.log(intersectOrderingMode);
       modalNoAvailableOrderingMode();
     }
   };
 
   const modalNoAvailableOrderingMode = () => {
     Swal.fire({
-      title: `<p style='padding-top: 10px'>No Ordering Mode Available</p>`,
+      title: `<p style='padding-top: 10px; padding-bottom:0px; padding-right:0px; padding-left:0px; '>No Ordering Mode Available</p>`,
       html: `<h5 style='color:#B7B7B7; font-size:14px'>There are no available ordering modes, please select another outlet</h5>`,
       allowOutsideClick: false,
       confirmButtonText: 'Select Outlet',
