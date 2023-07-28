@@ -47,6 +47,7 @@ export const AccordionCart = ({
               color: 'black',
               fontWeight: 700,
               paddingLeft: '5px',
+              paddingRight: '0px'
             }}
             className={fontStyleCustom.myFont}
           >
