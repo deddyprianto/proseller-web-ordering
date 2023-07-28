@@ -632,33 +632,39 @@ const CartGuestCheckout = () => {
     setIsLoading(true);
     const intersectOrderingMode = await getIntersectOrderingMode();
     setIsLoading(false);
-    if (intersectOrderingMode.length === 1) {
-      (!isSelectedOrderingMode || !isSelected) &&
-        intersectOrderingMode.forEach(async (item) => {
-          await dispatch(
-            OrderAction.changeOrderingModeForGuestCheckout({
-              guestID: idGuestCheckout,
-              orderingMode: item.name,
-              provider: {},
-            })
-          );
-          dispatch({
-            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-            payload: item.name,
-          });
-          dispatch({
-            type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
-            payload: item,
-          });
-          dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
-          dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
-          dispatch({
-            type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
-            payload: { deliveryAddress: null },
-          });
+   if (intersectOrderingMode.length === 1) {
+      if ((!isSelectedOrderingMode || !isSelected) && idGuestCheckout) {
+        const processOrderingMode = async () => {
+          for (const item of intersectOrderingMode) {
+            await Promise.all([
+              dispatch(
+                OrderAction.changeOrderingModeForGuestCheckout({
+                  guestID: idGuestCheckout,
+                  orderingMode: item.name,
+                  provider: {},
+                })
+              ),
+            ]);
+            dispatch({
+              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+              payload: item.name,
+            });
+            dispatch({
+              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT_OBJ,
+              payload: item,
+            });
+            dispatch({ type: CONSTANT.SAVE_ADDRESS_PICKUP, payload: null });
+            dispatch({ type: CONSTANT.SAVE_ADDRESS_TAKEAWAY, payload: null });
+            dispatch({
+              type: CONSTANT.SAVE_ADDRESS_GUESTMODE,
+              payload: { deliveryAddress: null },
+            });
+          }
           setIsSelectedOrderingMode(true);
-        });
-    } else if (intersectOrderingMode.length < 1) {
+        };
+
+        processOrderingMode();
+      }else if (intersectOrderingMode.length < 1) {
       modalNoAvailableOrderingMode();
     } else {
       setOpenOrderingMode(true);
