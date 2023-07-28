@@ -237,8 +237,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
       console.log('component UNMOUNTED');
       isCleanFnComponent = false;
     };
-
-  }, [orderingModeActive, dispatch]);
+  }, [dispatch, orderingModeActive]);
 
   useEffect(() => {
     const getOrderingModes = async () => {
@@ -280,6 +279,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
         );
 
         await setOrderingModes(intersectOrderingMode);
+        console.log('log =>', orderingMode);
       }
       setIsLoading(false);
     };
@@ -389,7 +389,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
           <Typography
             className={fontStyles.myFont}
             fontSize={16}
-            fontWeight={700}
+            fontWeight={600}
             textAlign='center'
           >
             Ordering Mode
@@ -400,6 +400,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
             width: '100%',
             display: 'flex',
             justifyContent: 'center',
+            fontWeight: '500',
           }}
         >
           {renderButton()}
@@ -411,6 +412,7 @@ const OrderingModeDialog = ({ open, onClose }) => {
             alignItems: 'center',
             width: '100%',
             marginTop: '20px',
+            marginBottom: '0px',
           }}
         >
           <button
