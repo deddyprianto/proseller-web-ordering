@@ -1473,27 +1473,27 @@ const CartGuestCheckout = () => {
             }}
           >
             <Typography
-              className={fontStyleCustom.myFont}
               sx={{ fontWeight: 600, fontSize: '16px' }}
+              className={fontStyleCustom.myFont}
             >
               GRAND TOTAL
             </Typography>
             <div
-              onClick={() => setOpenDrawerBottom(true)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
               }}
+              onClick={() => setOpenDrawerBottom(true)}
             >
               <Typography
-                className={fontStyleCustom.myFont}
                 sx={{ fontWeight: 700, fontSize: '14px' }}
+                className={fontStyleCustom.myFont}
               >
                 {handleCurrency(basket?.totalNettAmount)}
               </Typography>
               <img
-                src={IconDown}
                 style={{ marginLeft: '10px' }}
+                src={IconDown}
                 alt='myIcon'
                 width={12}
                 height={10}
@@ -1817,7 +1817,10 @@ const CartGuestCheckout = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '10px 0px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '0px',
+            paddingRight: '0px',
           }}
         >
           <div style={{ width: '100%', textAlign: 'center', fontWeight: 700 }}>
@@ -1830,7 +1833,7 @@ const CartGuestCheckout = () => {
             X
           </div>
         </div>
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%',margin: '0px' }}>
           <hr
             style={{
               backgroundColor: '#D6D6D6',
@@ -1845,7 +1848,10 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             marginBottom: '10px',
-            padding: '10px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '10px',
+            paddingRight: '10px',
           }}
         >
           <>
