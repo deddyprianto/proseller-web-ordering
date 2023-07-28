@@ -692,7 +692,7 @@ const CartGuestCheckout = () => {
       OutletAction?.fetchSingleOutlet(basket?.outlet)
     );
 
-    const orderingModesField = [
+    const orderingModeFields = [
       {
         isEnabledFieldName: 'enableStorePickUp',
         name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
@@ -715,7 +715,7 @@ const CartGuestCheckout = () => {
       },
     ];
 
-    const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
+    const orderingModesFieldFiltered = orderingModeFields.filter((mode) =>
       handleFilter(data[mode?.isEnabledFieldName]?.toString()?.toUpperCase())
     );
 
@@ -1424,6 +1424,7 @@ const CartGuestCheckout = () => {
             borderRadius: '15px',
             padding: '20px',
             width: '100%',
+            margin:'0px'
           }}
         >
           <Typography
@@ -1451,7 +1452,7 @@ const CartGuestCheckout = () => {
             ? styles.grandTotalGadgetScreen
             : {
                 padding: '0px 16px',
-                margin: 0,
+                margin: '0px 0px',
               }
         }
       >
@@ -1459,6 +1460,7 @@ const CartGuestCheckout = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
+            margin:'0px'
           }}
         >
           <div
@@ -1724,7 +1726,7 @@ const CartGuestCheckout = () => {
             >
               {deliveryIcon(color.primary)}
 
-              <div style={{ flex: 1, paddingLeft: '10px' }}>
+              <div style={{ flex: 1, paddingLeft: '10px',paddingRight: '0px' }}>
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={{
@@ -1745,7 +1747,7 @@ const CartGuestCheckout = () => {
                   }}
                 >{`(SGD ${item?.deliveryFee})`}</Typography>
               </div>
-              <div style={{ flex: 0 }}>
+              <div style={{ flex: 0 ,margin: '0px'}}>
                 <div
                   style={{
                     borderRadius: '100%',
@@ -1806,6 +1808,7 @@ const CartGuestCheckout = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          margin: '0px'
         }}
       >
         <div
@@ -2602,12 +2605,12 @@ const CartGuestCheckout = () => {
             {orderingModeGuestCheckout === 'DINEIN' &&
               defaultOutlet.enableTableNumber && (
                 <RenderTableMode
+                  fontStyleCustom={fontStyleCustom}
                   setOpenOrderingTable={setOpenOrderingTable}
                   noTable={noTable}
                   color={color}
                   orderingMode={orderingModeGuestCheckout}
                   defaultOutlet={defaultOutlet}
-                  fontStyleCustom={fontStyleCustom}
                 />
               )}
             {renderFormTakeAwayAndDineIn()}
@@ -2635,7 +2638,6 @@ const CartGuestCheckout = () => {
             gridTemplateColumns: '1fr',
             gridTemplateRows: '1fr 85px',
             gap: '0px 15px',
-            gridTemplateAreas: '"."\n    "."',
           }}
         >
           <div
@@ -2655,12 +2657,12 @@ const CartGuestCheckout = () => {
               {orderingModeGuestCheckout === 'DINEIN' &&
                 defaultOutlet.enableTableNumber && (
                   <RenderTableMode
+                    fontStyleCustom={fontStyleCustom}
                     setOpenOrderingTable={setOpenOrderingTable}
                     noTable={noTable}
                     color={color}
                     orderingMode={orderingModeGuestCheckout}
                     defaultOutlet={defaultOutlet}
-                    fontStyleCustom={fontStyleCustom}
                   />
                 )}
               {renderFormTakeAwayAndDineIn()}
