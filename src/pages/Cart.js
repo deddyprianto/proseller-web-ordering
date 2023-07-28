@@ -1082,6 +1082,7 @@ const Cart = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          margin: '0px',
         }}
       >
         <div
@@ -1409,6 +1410,7 @@ const Cart = () => {
               flexDirection: 'column',
               justifyContent: 'center',
               paddingLeft: gadgetScreen ? '0px' : '10px',
+              margin: '0px',
             }}
           >
             <Typography
