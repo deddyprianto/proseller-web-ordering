@@ -44,25 +44,6 @@ const RenderHeader = ({ props }) => {
   );
 };
 const RenderContent = ({ broadcastItem, color }) => {
-  // const str = `<h1 style="margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:107%;">
-  // <strong>Rerum vero quis. Libero labore et dolorem consequuntur impedit excepturi incidunt.</strong>
-  // </h1>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  // <br>
-  // </p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  // <img src="https://berita.99.co/wp-content/uploads/2022/07/contoh-gambar-pemandangan-pantai.jpg">
-  // </p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem. Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  // <br>
-  // </p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem:</p>
-  // <ul>
-  // <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
-  // <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
-  // </ul>`;
-
   return (
     <div
       style={{
@@ -70,7 +51,14 @@ const RenderContent = ({ broadcastItem, color }) => {
         padding: '16px',
       }}
     >
-      <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'black' }}>
+      <div
+        style={{
+          fontWeight: 'bold',
+          fontSize: '12px',
+          color: 'black',
+          marginBottom: '16px',
+        }}
+      >
         {moment(broadcastItem?.createdOn).format('DD/MM/YY HH:mm')}
       </div>
       <div
@@ -78,35 +66,7 @@ const RenderContent = ({ broadcastItem, color }) => {
           __html: broadcastItem?.message,
         }}
       />
-      {/* {broadcastItem?.title && (
-        <>
-          <div
-            style={{
-              fontWeight: 'bold',
-              fontSize: '16px',
-              marginTop: '16px',
-            }}
-          >
-            {broadcastItem?.title}
-          </div>
-          <hr
-            style={{
-              backgroundColor: 'rgba(214, 214, 214, 1)',
-              opacity: 0.5,
-              margin: '8px 0px',
-            }}
-          />
-        </>
-      )} */}
-      <div
-        style={{
-          fontWeight: 500,
-          fontSize: '14px',
-          marginTop: !broadcastItem?.title && '8px',
-        }}
-      >
-        {broadcastItem?.message}
-      </div>
+
       {!isEmptyArray(broadcastItem?.rewards) && (
         <hr
           style={{

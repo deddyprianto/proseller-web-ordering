@@ -7,30 +7,10 @@ import inboxMail from 'assets/images/inboxMail.png';
 import inboxMailOpened from 'assets/images/inboxMailOpen.png';
 
 const InboxCard = ({ items }) => {
-  // const str = `<h1 style="margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:107%;">
-  // <strong>Rerum vero quis. Libero labore et dolorem consequuntur impedit excepturi incidunt.</strong>
-  // </h1>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  // <br>
-  // </p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  // <img src="https://berita.99.co/wp-content/uploads/2022/07/contoh-gambar-pemandangan-pantai.jpg">
-  // </p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem. Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  // <br>
-  // </p>
-  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem:</p>
-  // <ul>
-  // <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
-  // <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
-  // </ul>`;
   const parser = new DOMParser();
-  const doc = parser.parseFromString(items.message, 'text/html');
-  const strongElement = doc.querySelector('strong');
-
-  // Get the separate string from the <strong> element
-  const separateString = strongElement ? strongElement.textContent : '';
+  const doc = parser.parseFromString(items?.message, 'text/html');
+  const firstElement = doc.querySelector('*');
+  const separateString = firstElement ? firstElement.textContent : '';
 
   const dispatch = useDispatch();
   const history = useHistory();
