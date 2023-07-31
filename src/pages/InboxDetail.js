@@ -44,24 +44,24 @@ const RenderHeader = ({ props }) => {
   );
 };
 const RenderContent = ({ broadcastItem, color }) => {
-  const str = `<h1 style="margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:107%;">
-  <strong>Rerum vero quis. Libero labore et dolorem consequuntur impedit excepturi incidunt.</strong>
-  </h1>
-  <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  <br>
-  </p>
-  <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  <img src="">
-  </p>
-  <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem. Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</p>
-  <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
-  <br>
-  </p>
-  <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem:</p>
-  <ul>
-  <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
-  <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
-  </ul>`;
+  // const str = `<h1 style="margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:107%;">
+  // <strong>Rerum vero quis. Libero labore et dolorem consequuntur impedit excepturi incidunt.</strong>
+  // </h1>
+  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
+  // <br>
+  // </p>
+  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
+  // <img src="https://berita.99.co/wp-content/uploads/2022/07/contoh-gambar-pemandangan-pantai.jpg">
+  // </p>
+  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem. Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</p>
+  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">
+  // <br>
+  // </p>
+  // <p style="margin-top:0in;margin-right:0in;margin-bottom:5.0pt;margin-left:0in;line-height:107%;">Illo mollitia voluptate ea saepe ratione. Nihil quibusdam vel quia rerum doloremque. Libero eum doloribus qui nihil mollitia eum rem. Aut rerum quis et consequatur consequatur odio. Iure sunt est quaerat autem:</p>
+  // <ul>
+  // <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
+  // <li>Dolorem modi reiciendis sint et quaerat molestiae suscipit doloremque labore.</li>
+  // </ul>`;
 
   return (
     <div
@@ -75,7 +75,7 @@ const RenderContent = ({ broadcastItem, color }) => {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: str,
+          __html: broadcastItem?.message,
         }}
       />
       {/* {broadcastItem?.title && (
