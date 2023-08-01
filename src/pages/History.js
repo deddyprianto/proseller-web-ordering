@@ -34,6 +34,15 @@ const RenderHeaderTab = ({
   styleSheet,
   dispatch,
 }) => {
+  const changeURLFormatForAppointment = (path) => {
+    const url = window.location.href;
+    let urlConvert = url.replace(/\/[^/]+$/, path);
+    return urlConvert;
+  };
+
+  const handleChangeTabAppointment = () => {
+    window.location.href = changeURLFormatForAppointment(`/history`);
+  };
   if (appointmentSetting) {
     return (
       <div
@@ -62,6 +71,7 @@ const RenderHeaderTab = ({
                 type: CONSTANT.TAB_STATE_HISTORY,
                 payload: 'Appointment',
               });
+              handleChangeTabAppointment();
             }}
             label='Appointment'
             className={fontStyles.myFont}

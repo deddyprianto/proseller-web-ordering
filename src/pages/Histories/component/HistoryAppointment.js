@@ -4,7 +4,26 @@ import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss';
 import ItemHistory from './ItemHistory';
 import useHistoryAppointment from 'hooks/useHistoryAppointment';
-import config from 'config';
+
+
+const RenderAnimationLoading = () => {
+  return (
+    <div className='lds-spinner'>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+};
 
 const HistoryAppointment = () => {
   const historyRef = useRef();
@@ -46,34 +65,6 @@ const HistoryAppointment = () => {
       if (tempRef) observer.unobserve(tempRef);
     };
   }, [loading, hasMore]);
-
-  if (historyAppointment.length === 0 && !loading) {
-    return (
-      <>
-        <img src={config.url_emptyImage} alt='is empty' />
-        <div>Data is empty</div>
-      </>
-    );
-  }
-
-  const RenderAnimationLoading = () => {
-    return (
-      <div className='lds-spinner'>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    );
-  };
 
   const renderTabHeaderMobile = () => {
     const labelAppointment = [
