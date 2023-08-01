@@ -737,41 +737,37 @@ const Cart = () => {
   const handleOpenOrderingMode = async (isSelected = true) => {
     const intersectOrderingMode = await getIntersectOrderingMode();
     if (intersectOrderingMode.length === 1) {
-      (!isSelectedOrderingMode || !isSelected) &&
-        intersectOrderingMode.forEach(async (item) => {
+      if (!isSelectedOrderingMode || !isSelected) {
+        const promises = intersectOrderingMode.map(async (item) => {
           dispatch({ type: 'ITEM_ORDERING_MODE', data: item });
           dispatch({ type: 'ORDERING_MODE_ACTIVE', data: item });
-
           dispatch({
             type: 'SET_ORDERING_MODE',
             payload: item.name,
           });
-
           const responseChangeOrderingMode = await dispatch(
             OrderAction.changeOrderingMode({
               orderingMode: item.name,
-              provider: selectedDeliveryProvider
-                ? selectedDeliveryProvider
-                : {},
+              provider: selectedDeliveryProvider || {},
             })
           );
-
           await dispatch(
             OrderAction.setData(
               item.displayName,
               'SET_ORDERING_MODE_DISPlAY_NAME'
             )
           );
-
           await dispatch(
             OrderAction.setData(
               responseChangeOrderingMode.data,
               CONSTANT.DATA_BASKET
             )
           );
-
           setIsSelectedOrderingMode(true);
         });
+
+        await Promise.all(promises);
+      }
     } else if (intersectOrderingMode.length < 1) {
       console.log(intersectOrderingMode);
       modalNoAvailableOrderingMode();
@@ -851,6 +847,61 @@ const Cart = () => {
   const handleLogin = () => {
     document.getElementById('login-register-btn').click();
   };
+
+  const isOrderingModeDeliveryDisabled = () => {
+    if (selectTimeSlotAvailable) {
+      return !(
+        orderingMode &&
+        orderActionDate &&
+        orderActionTime &&
+        orderActionTimeSlot &&
+        deliveryAddress &&
+        !isEmptyObject(selectedDeliveryProvider) &&
+        !selectedDeliveryProvider?.deliveryProviderError?.status
+      );
+    } else {
+      return !(
+        orderingMode &&
+        deliveryAddress &&
+        !isEmptyObject(selectedDeliveryProvider) &&
+        !selectedDeliveryProvider?.deliveryProviderError?.status
+      );
+    }
+  };
+
+  const isOrderingModeStorePickupDisabled = () => {
+    if (selectTimeSlotAvailable) {
+      return !(
+        orderingMode &&
+        orderActionDate &&
+        orderActionTime &&
+        orderActionTimeSlot
+      );
+    } else {
+      return !orderingMode;
+    }
+  };
+
+  const isOrderingModeTakeAwayDisabled = () => {
+    if (selectTimeSlotAvailable) {
+      return !(
+        orderingMode &&
+        orderActionTimeSlot &&
+        orderActionDate &&
+        orderActionTime
+      );
+    } else {
+      return !orderingMode;
+    }
+  };
+
+  const isOrderingModeDineInDisabled = () => {
+    if (defaultOutlet.enableTableNumber) {
+      return !(orderingMode && noTable);
+    } else {
+      return !orderingMode;
+    }
+  };
   const handleDisabled = () => {
     const isAllItemUnavailable = basket?.details.every(
       (item) => item.orderingStatus === 'UNAVAILABLE'
@@ -863,68 +914,22 @@ const Cart = () => {
       return itemIsUnavailable || !itemHasStock;
     });
 
-    if (someItemIsUnavailable) {
-      return someItemIsUnavailable;
-    }
-    if (isAllItemUnavailable) {
-      return isAllItemUnavailable;
-    }
-    if (orderingMode === CONSTANT.ORDERING_MODE_DELIVERY) {
-      let isAllCompleted = false;
-      if (selectTimeSlotAvailable) {
-        isAllCompleted =
-          orderingMode &&
-          orderActionDate &&
-          orderActionTime &&
-          orderActionTimeSlot &&
-          deliveryAddress &&
-          !isEmptyObject(selectedDeliveryProvider) &&
-          !selectedDeliveryProvider?.deliveryProviderError?.status;
-      } else {
-        isAllCompleted =
-          orderingMode &&
-          deliveryAddress &&
-          !isEmptyObject(selectedDeliveryProvider) &&
-          !selectedDeliveryProvider?.deliveryProviderError?.status;
-      }
-
-      return !isAllCompleted;
-    } else if (orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP) {
-      let isAllCompleted = false;
-      if (selectTimeSlotAvailable) {
-        isAllCompleted =
-          orderingMode &&
-          orderActionDate &&
-          orderActionTime &&
-          orderActionTimeSlot;
-      } else {
-        isAllCompleted = !!orderingMode;
-      }
-
-      return !isAllCompleted;
-    } else if (orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY) {
-      let isAllCompletedValidation = false;
-      if (selectTimeSlotAvailable) {
-        isAllCompletedValidation =
-          orderingMode &&
-          orderActionDate &&
-          orderActionTime &&
-          orderActionTimeSlot;
-      } else {
-        isAllCompletedValidation = !!orderingMode;
-      }
-      return !isAllCompletedValidation;
-    } else if (orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
-      let isAllCompleted = false;
-      if (defaultOutlet.enableTableNumber) {
-        isAllCompleted = orderingMode && noTable;
-      } else {
-        isAllCompleted = !!orderingMode;
-      }
-      return !isAllCompleted;
+    if (someItemIsUnavailable || isAllItemUnavailable) {
+      return true;
     }
 
-    return !orderingMode;
+    switch (orderingMode) {
+      case CONSTANT.ORDERING_MODE_DELIVERY:
+        return isOrderingModeDeliveryDisabled();
+      case CONSTANT.ORDERING_MODE_STORE_PICKUP:
+        return isOrderingModeStorePickupDisabled();
+      case CONSTANT.ORDERING_MODE_TAKE_AWAY:
+        return isOrderingModeTakeAwayDisabled();
+      case CONSTANT.ORDERING_MODE_DINE_IN:
+        return isOrderingModeDineInDisabled();
+      default:
+        return true;
+    }
   };
 
   const handleConfirmAndPay = () => {
@@ -1002,8 +1007,7 @@ const Cart = () => {
       );
     } else {
       return dataCalculateFee?.dataProvider?.map((item) => {
-        const conditionName =
-          basket?.provider?.name === item.name ? true : false;
+        const conditionName = basket?.provider?.name === item.name;
         return (
           <div
             key={item.name}
