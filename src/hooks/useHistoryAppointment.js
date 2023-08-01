@@ -44,6 +44,8 @@ export default function useHistoryAppointment({
               return [...new Set([...response.data])];
             }
           });
+        } else if (response.dataLength === 0) {
+          setHistoryAppointment([...new Set([...response.data])]);
         }
 
         if (response.data.length === 0) {
