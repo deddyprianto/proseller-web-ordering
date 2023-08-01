@@ -23,10 +23,6 @@ import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Drawer from '@mui/material/Drawer';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -51,15 +47,17 @@ import search from 'assets/images/search.png';
 import screen from 'hooks/useWindowSize';
 import { OutletAction } from 'redux/actions/OutletAction';
 import {
-  IconDineIn,
   IconPlace,
   renderIconEdit,
   renderIconInformation,
 } from 'assets/iconsSvg/Icons';
 import OrderingModeTableGuestCO from 'components/orderingModeTableGuestCO';
 import { ProductAction } from 'redux/actions/ProductAction';
-import { isEmpty } from 'helpers/utils';
-import commonAlert from 'components/template/commonAlert';
+import {
+  AccordionCart,
+  ContainerStorePickUP,
+  RenderTableMode,
+} from 'components/componentHelperCart';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -136,9 +134,6 @@ const CartGuestCheckout = () => {
   const time = useSelector((state) => state.guestCheckoutCart.time);
   const noTable = useSelector((state) => state.guestCheckoutCart.noTable);
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
-  const buildCartErrorData = useSelector(
-    (state) => state.order.buildCartErrorData
-  );
 
   const loadingData = (role) => {
     return new Promise((resolve) => {
@@ -245,31 +240,6 @@ const CartGuestCheckout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basket.details?.length]);
 
-  /**
-   * Side effect when `buildCartErrorData` updated
-   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
-   */
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted && !isEmpty(buildCartErrorData)) {
-      commonAlert({
-        color: color.primary,
-        title: buildCartErrorData.title || 'Error!',
-        content: buildCartErrorData.message,
-        onConfirm: () => {
-          dispatch({
-            type: CONSTANT.BUILD_CART_ERROR_DATA,
-            payload: null,
-          });
-        },
-      });
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [buildCartErrorData, color.primary, dispatch]);
-
   const [width] = useWindowSize();
   const gadgetScreen = width < 980;
 
@@ -310,7 +280,10 @@ const CartGuestCheckout = () => {
       bottom: responsiveDesign.height < 500 ? 0 : 70,
       left: 'auto',
       position: 'fixed',
-      padding: '0px 10px',
+      paddingTop: '5px',
+      paddingBottom: '10px',
+      paddingLeft: '16px',
+      paddingRight: '16px',
       backgroundColor: color.background,
     },
     grandTotalFullScreen: {
@@ -324,11 +297,10 @@ const CartGuestCheckout = () => {
     },
 
     rootSubmitButton: {
-      width: '70%',
+      width: '60%',
       display: 'flex',
-      justifyContent: 'center',
+      justifyContent: 'end',
       alignItems: 'center',
-      padding: basket?.inclusiveTax !== 0 ? '10px 0px' : '7px 10px',
     },
     rootInclusiveTax: {
       display: 'flex',
@@ -584,13 +556,73 @@ const CartGuestCheckout = () => {
     localStorage.removeItem(`${config.prefix}_locationPinned`);
   };
 
+  const handleEditItemCart = async (index, itemDetails) => {
+    const temp = [...isLoadingEdit];
+    temp[index] = true;
+    setIsLoadingEdit(temp);
+
+    setSelectedProductBasketUpdate(itemDetails);
+    setProductSpecific(itemDetails.product);
+
+    const productById = await dispatch(
+      ProductAction.getProductById(
+        { outlet: basket?.outlet?.id },
+        itemDetails?.product?.id?.split('_')[0]
+      )
+    );
+
+    setProductDetail(productById);
+    temp[index] = false;
+    setIsLoadingEdit(temp);
+    setProductEditModal(true);
+  };
+  const handleDeleteItemCart = (itemDetails) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You sure to delete this?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setIsLoading(true);
+        const response = await dispatch(
+          OrderAction.processRemoveCartGuestCheckoutMode(
+            basket.guestID,
+            itemDetails
+          )
+        );
+        if (response?.resultCode === 200) {
+          Swal.fire('Deleted!', response.message, 'success');
+
+          dispatch({
+            type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
+            payload: {},
+          });
+          if (basket.details.length === 1) {
+            dispatch({
+              type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+              payload: '',
+            });
+            history.push('/');
+          }
+        } else {
+          Swal.fire('Cancelled!', response, 'error');
+        }
+        setIsLoading(false);
+      }
+    });
+  };
   const handleFilter = (value) => {
     return value === 'TRUE';
   };
 
   const handleOpenOrderingMode = async (isSelected = true) => {
+    setIsLoading(true);
     const intersectOrderingMode = await getIntersectOrderingMode();
-
+    setIsLoading(false);
     if (intersectOrderingMode.length === 1) {
       if ((!isSelectedOrderingMode || !isSelected) && idGuestCheckout) {
         const processOrderingMode = async () => {
@@ -660,7 +692,7 @@ const CartGuestCheckout = () => {
       OutletAction?.fetchSingleOutlet(basket?.outlet)
     );
 
-    const orderingModesField = [
+    const orderingModeFields = [
       {
         isEnabledFieldName: 'enableStorePickUp',
         name: CONSTANT.ORDERING_MODE_STORE_PICKUP,
@@ -683,7 +715,7 @@ const CartGuestCheckout = () => {
       },
     ];
 
-    const orderingModesFieldFiltered = orderingModesField.filter((mode) =>
+    const orderingModesFieldFiltered = orderingModeFields.filter((mode) =>
       handleFilter(data[mode?.isEnabledFieldName]?.toString()?.toUpperCase())
     );
 
@@ -952,28 +984,30 @@ const CartGuestCheckout = () => {
   };
 
   const renderRemark = (itemDetails) => {
-    <li>
-      <table>
-        <tr>
-          <td
-            className={fontStyleCustom.title}
-            style={{
-              textAlign: 'left',
-              width: '100%',
-              display: '-webkit-box',
-              WebkitLineClamp: '3',
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              padding: 0,
-              margin: 0,
-            }}
-          >
-            <span style={{ fontWeight: 700 }}>Notes: </span>
-            {itemDetails?.remark}
-          </td>
-        </tr>
-      </table>
-    </li>;
+    return (
+      <li>
+        <table>
+          <tr>
+            <td
+              className={fontStyleCustom.title}
+              style={{
+                textAlign: 'left',
+                width: '100%',
+                display: '-webkit-box',
+                WebkitLineClamp: '3',
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>Notes: </span>
+              {itemDetails?.remark}
+            </td>
+          </tr>
+        </table>
+      </li>
+    );
   };
 
   const renderButtonEditDelete = (itemDetails, isDisable, index) => {
@@ -1009,26 +1043,7 @@ const CartGuestCheckout = () => {
                   fontSize: '14px',
                   color: color?.primary,
                 }}
-                onClick={async () => {
-                  const temp = [...isLoadingEdit];
-                  temp[index] = true;
-                  setIsLoadingEdit(temp);
-
-                  setSelectedProductBasketUpdate(itemDetails);
-                  setProductSpecific(itemDetails.product);
-
-                  const productById = await dispatch(
-                    ProductAction.getProductById(
-                      { outlet: basket?.outlet?.id },
-                      itemDetails?.product?.id?.split('_')[0]
-                    )
-                  );
-
-                  setProductDetail(productById);
-                  temp[index] = false;
-                  setIsLoadingEdit(temp);
-                  setProductEditModal(true);
-                }}
+                onClick={() => handleEditItemCart(index, itemDetails)}
                 disabled={isLoadingEdit[index]}
                 startIcon={
                   !isLoadingEdit[index] && renderIconEdit(color?.primary)
@@ -1043,45 +1058,7 @@ const CartGuestCheckout = () => {
             )}
             <div
               id='delete-item-button'
-              onClick={() => {
-                Swal.fire({
-                  title: 'Are you sure?',
-                  text: 'You sure to delete this?',
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonColor: '#3085d6',
-                  cancelButtonColor: '#d33',
-                  confirmButtonText: 'Yes, delete it!',
-                }).then(async (result) => {
-                  if (result.isConfirmed) {
-                    setIsLoading(true);
-                    const response = await dispatch(
-                      OrderAction.processRemoveCartGuestCheckoutMode(
-                        basket.guestID,
-                        itemDetails
-                      )
-                    );
-                    if (response?.resultCode === 200) {
-                      Swal.fire('Deleted!', response.message, 'success');
-
-                      dispatch({
-                        type: CONSTANT.SAVE_EDIT_RESPONSE_GUESTCHECKOUT,
-                        payload: {},
-                      });
-                      if (basket.details.length === 1) {
-                        dispatch({
-                          type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
-                          payload: '',
-                        });
-                        history.push('/');
-                      }
-                    } else {
-                      Swal.fire('Cancelled!', response, 'error');
-                    }
-                    setIsLoading(false);
-                  }
-                });
-              }}
+              onClick={() => handleDeleteItemCart(itemDetails)}
               style={{
                 marginLeft: '10px',
                 display: 'flex',
@@ -1124,7 +1101,7 @@ const CartGuestCheckout = () => {
   const renderItemList = (itemDetails, isDisable, index) => {
     return (
       <div
-        key={itemDetails?.productID}
+        key={itemDetails?.id}
         className={fontStyleCustom.myFont}
         style={{
           width: '100%',
@@ -1227,22 +1204,27 @@ const CartGuestCheckout = () => {
     const isDisable = true;
     return (
       <div>
-        <div className={fontStyleCustom.myFont} style={{ fontSize: '16px', fontWeight: 700 }}>Items</div>
+        <div
+          className={fontStyleCustom.myFont}
+          style={{ fontSize: '16px', fontWeight: 700 }}
+        >
+          Items
+        </div>
         {basket?.details?.map((itemDetails, index) => {
           if (itemDetails.orderingStatus === 'UNAVAILABLE') {
             if (itemDetails.modifiers.length > 0) {
               return (
-                <React.Fragment>
+                <div key={itemDetails?.id}>
                   {renderTextBanner('Add On Unavailable')}
                   {renderItemList(itemDetails, isDisable, index)}
-                </React.Fragment>
+                </div>
               );
             } else {
               return (
-                <React.Fragment>
+                <div key={itemDetails?.id}>
                   {renderTextBanner('Item Unavailable')}
                   {renderItemList(itemDetails, isDisable, index)}
-                </React.Fragment>
+                </div>
               );
             }
           } else {
@@ -1299,6 +1281,7 @@ const CartGuestCheckout = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
+              marginLeft: '0px',
               marginRight: '10px',
             }}
           >
@@ -1310,33 +1293,31 @@ const CartGuestCheckout = () => {
                 ? 'Ordering Mode'
                 : orderingModeGuestCheckout}
             </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+            <img
+              src={iconRight}
+              alt='myIcon'
+              style={{ marginLeft: '5px', marginRight: '0px' }}
+            />
           </div>
         </div>
 
         {orderingModeGuestCheckout === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
+          <ContainerStorePickUP defaultOutlet={defaultOutlet} />
         )}
       </div>
     );
+  };
+  const handleDisableBtnDelivery = (isDeliveryActive) => {
+    return !isDeliveryActive;
+  };
+  const handleDisableBtnTakeAway = (isTakeAwayActive) => {
+    return !isTakeAwayActive;
+  };
+  const handleDisableBtnStorePickUp = (isPickUpActive) => {
+    return !isPickUpActive;
+  };
+  const handleDisableBtnDineIn = (isDineInActive) => {
+    return !isDineInActive;
   };
 
   const handleButtonDisable = (key) => {
@@ -1371,29 +1352,13 @@ const CartGuestCheckout = () => {
 
     switch (key) {
       case 'DELIVERY':
-        if (isDeliveryActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnDelivery(isDeliveryActive);
       case 'TAKEAWAY':
-        if (isTakeAwayActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnTakeAway(isTakeAwayActive);
       case 'STOREPICKUP':
-        if (isPickUpActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnStorePickUp(isPickUpActive);
       case 'DINEIN':
-        if (isDineInActive) {
-          return false;
-        } else {
-          return true;
-        }
+        return handleDisableBtnDineIn(isDineInActive);
       default:
         return true;
     }
@@ -1459,6 +1424,7 @@ const CartGuestCheckout = () => {
             borderRadius: '15px',
             padding: '20px',
             width: '100%',
+            margin:'0px'
           }}
         >
           <Typography
@@ -1480,13 +1446,13 @@ const CartGuestCheckout = () => {
       <Paper
         variant='elevation'
         square={gadgetScreen}
-        elevation={gadgetScreen ? 3 : 3}
+        elevation={3}
         sx={
           gadgetScreen
             ? styles.grandTotalGadgetScreen
             : {
-                padding: 0,
-                margin: 0,
+                padding: '0px 16px',
+                margin: '0px 0px',
               }
         }
       >
@@ -1494,12 +1460,12 @@ const CartGuestCheckout = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            padding: gadgetScreen ? '0px 10px' : '0px',
+            margin:'0px'
           }}
         >
           <div
             style={{
-              width: '30%',
+              width: '40%',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
@@ -1507,27 +1473,27 @@ const CartGuestCheckout = () => {
             }}
           >
             <Typography
+              sx={{ fontWeight: 600, fontSize: '16px' }}
               className={fontStyleCustom.myFont}
-              sx={{ fontWeight: 500, fontSize: '14px' }}
             >
               GRAND TOTAL
             </Typography>
             <div
-              onClick={() => setOpenDrawerBottom(true)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
               }}
+              onClick={() => setOpenDrawerBottom(true)}
             >
               <Typography
-                className={fontStyleCustom.myFont}
                 sx={{ fontWeight: 700, fontSize: '14px' }}
+                className={fontStyleCustom.myFont}
               >
                 {handleCurrency(basket?.totalNettAmount)}
               </Typography>
               <img
-                src={IconDown}
                 style={{ marginLeft: '10px' }}
+                src={IconDown}
                 alt='myIcon'
                 width={12}
                 height={10}
@@ -1719,7 +1685,7 @@ const CartGuestCheckout = () => {
         <Typography
           className={fontStyleCustom.myFont}
           style={{
-            color: color.color,
+            color: color.primary,
             textAlign: 'center',
             fontWeight: 700,
             fontSize: '14px',
@@ -1748,8 +1714,8 @@ const CartGuestCheckout = () => {
                 setOpenAccordion(true);
               }}
               style={{
-                backgroundColor: conditionName ? '#4386A133' : 'white',
-                border: '1px solid #4386A1',
+                backgroundColor: conditionName ? `${color.primary}33` : 'white',
+                border: `1px solid ${color.primary}`,
                 borderRadius: '10px',
                 width: '100%',
                 display: 'flex',
@@ -1760,7 +1726,7 @@ const CartGuestCheckout = () => {
             >
               {deliveryIcon(color.primary)}
 
-              <div style={{ flex: 1, paddingLeft: '10px' }}>
+              <div style={{ flex: 1, paddingLeft: '10px',paddingRight: '0px' }}>
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={{
@@ -1781,7 +1747,7 @@ const CartGuestCheckout = () => {
                   }}
                 >{`(SGD ${item?.deliveryFee})`}</Typography>
               </div>
-              <div style={{ flex: 0 }}>
+              <div style={{ flex: 0 ,margin: '0px'}}>
                 <div
                   style={{
                     borderRadius: '100%',
@@ -1821,43 +1787,14 @@ const CartGuestCheckout = () => {
             alignItems: 'center',
           }}
         >
-          <Accordion
-            sx={{ boxShadow: 'none' }}
-            expanded={openAccordion}
-            onChange={() => setOpenAccordion(!openAccordion)}
-          >
-            <AccordionSummary
-              sx={{ padding: '0', margin: '0' }}
-              expandIcon={
-                <ExpandMoreIcon
-                  sx={{ width: '20px', height: '20px', marginRight: '10px' }}
-                />
-              }
-              aria-controls='panel1a-content'
-              id='panel1a-header'
-            >
-              <div
-                style={{
-                  width: gadgetScreen ? '80vw' : '35vw',
-                }}
-              >
-                <Typography
-                  style={{
-                    fontSize: '14px',
-                    color: 'black',
-                    fontWeight: 700,
-                    paddingLeft: '5px',
-                  }}
-                  className={fontStyleCustom.myFont}
-                >
-                  {name}
-                </Typography>
-              </div>
-            </AccordionSummary>
-            <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
-              {renderButtonProvider()}
-            </AccordionDetails>
-          </Accordion>
+          <AccordionCart
+            openAccordion={openAccordion}
+            setOpenAccordion={setOpenAccordion}
+            gadgetScreen={gadgetScreen}
+            fontStyleCustom={fontStyleCustom}
+            name={name}
+            renderButtonProvider={renderButtonProvider}
+          />
         </div>
       );
     }
@@ -1871,6 +1808,7 @@ const CartGuestCheckout = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          margin: '0px'
         }}
       >
         <div
@@ -1879,7 +1817,10 @@ const CartGuestCheckout = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '10px 0px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '0px',
+            paddingRight: '0px',
           }}
         >
           <div style={{ width: '100%', textAlign: 'center', fontWeight: 700 }}>
@@ -1892,7 +1833,7 @@ const CartGuestCheckout = () => {
             X
           </div>
         </div>
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%',margin: '0px' }}>
           <hr
             style={{
               backgroundColor: '#D6D6D6',
@@ -1907,7 +1848,10 @@ const CartGuestCheckout = () => {
             width: '100%',
             backgroundColor: 'white',
             marginBottom: '10px',
-            padding: '10px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '10px',
+            paddingRight: '10px',
           }}
         >
           <>
@@ -2526,7 +2470,10 @@ const CartGuestCheckout = () => {
             boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
             marginTop: '10px',
             marginBottom: '10px',
-            padding: '15px 5px',
+            paddingTop: '15px',
+            paddingBottom: '15px',
+            paddingLeft: '5px',
+            paddingRight: '5px',
           }}
         >
           <div
@@ -2534,6 +2481,7 @@ const CartGuestCheckout = () => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              backgroundColor: 'white',
             }}
           >
             <Box flexDirection='column'>
@@ -2584,7 +2532,6 @@ const CartGuestCheckout = () => {
         </div>
       );
     }
-    return;
   };
 
   const isUnavailableExist = basket?.details?.some(
@@ -2626,105 +2573,6 @@ const CartGuestCheckout = () => {
     }
   };
 
-  const RenderTableMode = () => {
-    return (
-      <div
-        onClick={() => {
-          setOpenOrderingTable(true);
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 5px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography
-            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-            className={fontStyleCustom.myFont}
-          >
-            Table Number
-          </Typography>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginRight: '10px',
-            }}
-          >
-            {noTable ? (
-              <IconDineIn color={color.primary} />
-            ) : (
-              <div
-                style={{
-                  fontSize: '13px',
-                  color: '#8A8D8E',
-                  fontWeight: 600,
-                }}
-              >
-                Choose Table
-              </div>
-            )}
-            <Typography
-              style={{
-                fontSize: '13px',
-                color: '#8A8D8E',
-                fontWeight: 500,
-                marginLeft: '5px',
-                textTransform: 'uppercase',
-              }}
-              className={fontStyleCustom.myFont}
-            >
-              {noTable}
-            </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-          </div>
-        </div>
-
-        {orderingModeGuestCheckout === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 700,
-                color: '#B7B7B7',
-              }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{
-                color: '#B7B7B7',
-                fontSize: '14px',
-                fontWeight: 500,
-              }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const renderOutletInfo = () => {
     return (
       <div
@@ -2761,7 +2609,16 @@ const CartGuestCheckout = () => {
             {renderLabelOrderingDetail()}
             {renderOrderingMode()}
             {orderingModeGuestCheckout === 'DINEIN' &&
-              defaultOutlet.enableTableNumber && <RenderTableMode />}
+              defaultOutlet.enableTableNumber && (
+                <RenderTableMode
+                  fontStyleCustom={fontStyleCustom}
+                  setOpenOrderingTable={setOpenOrderingTable}
+                  noTable={noTable}
+                  color={color}
+                  orderingMode={orderingModeGuestCheckout}
+                  defaultOutlet={defaultOutlet}
+                />
+              )}
             {renderFormTakeAwayAndDineIn()}
             {renderFormPickUpStore()}
             {renderFormCustomerDetail()}
@@ -2787,7 +2644,6 @@ const CartGuestCheckout = () => {
             gridTemplateColumns: '1fr',
             gridTemplateRows: '1fr 85px',
             gap: '0px 15px',
-            gridTemplateAreas: '"."\n    "."',
           }}
         >
           <div
@@ -2805,7 +2661,16 @@ const CartGuestCheckout = () => {
               {renderLabelOrderingDetail()}
               {renderOrderingMode()}
               {orderingModeGuestCheckout === 'DINEIN' &&
-                defaultOutlet.enableTableNumber && <RenderTableMode />}
+                defaultOutlet.enableTableNumber && (
+                  <RenderTableMode
+                    fontStyleCustom={fontStyleCustom}
+                    setOpenOrderingTable={setOpenOrderingTable}
+                    noTable={noTable}
+                    color={color}
+                    orderingMode={orderingModeGuestCheckout}
+                    defaultOutlet={defaultOutlet}
+                  />
+                )}
               {renderFormTakeAwayAndDineIn()}
               {renderFormPickUpStore()}
               {renderFormCustomerDetail()}

@@ -10,10 +10,6 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import ProductCartList from 'components/productCartList';
 import OrderingModeDialog from 'components/orderingModeDialog';
@@ -32,11 +28,322 @@ import { isEmpty } from 'helpers/utils';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import { OrderAction } from 'redux/actions/OrderAction';
 import { OutletAction } from 'redux/actions/OutletAction';
-import { IconDelivery, IconDineIn, IconElips } from 'assets/iconsSvg/Icons';
+import { IconDelivery, IconElips } from 'assets/iconsSvg/Icons';
 import useWindowSize from 'hooks/useWindowSize';
-import commonAlert from 'components/template/commonAlert';
+import {
+  AccordionCart,
+  ContainerStorePickUP,
+  RenderTableMode,
+} from 'components/componentHelperCart';
+
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+
+const RenderDeliveryAddress = ({ orderingMode, history, deliveryAddress }) => {
+  if (orderingMode !== 'DELIVERY') {
+    return null;
+  }
+  return (
+    <div
+      onClick={() => {
+        history.push('/delivery-address');
+      }}
+      style={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        padding: '20px 0px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          style={{
+            fontSize: '14px',
+            marginLeft: '5px',
+            color: 'black',
+            fontWeight: 700,
+          }}
+          className={fontStyleCustom.myFont}
+        >
+          Delivery Address
+        </Typography>
+        <img src={iconRight} alt='myIcon' style={{ marginRight: '10px' }} />
+      </div>
+      <div
+        style={{
+          width: '100%',
+          padding: '0px 3px',
+        }}
+      >
+        {deliveryAddress && (
+          <Typography
+            className={fontStyleCustom.myFont}
+            style={{
+              fontSize: '15px',
+              color: '#8A8D8E',
+              marginLeft: '5px',
+              lineHeight: 2,
+            }}
+          >
+            <hr
+              style={{
+                marginTop: '20px',
+                backgroundColor: '#8A8D8E',
+                opacity: 0.2,
+              }}
+            />
+            <table>
+              <tr>
+                <td style={{ padding: 0, margin: 0 }}>
+                  {deliveryAddress.street}
+                </td>
+              </tr>
+              <tr>
+                <td
+                  style={{
+                    textAlign: 'left',
+                    width: '100%',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '3',
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  {deliveryAddress.addressName},
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: 0, margin: 0 }}>
+                  {deliveryAddress.unitNo}, {deliveryAddress.city},
+                  {deliveryAddress.postalCode}
+                </td>
+              </tr>
+            </table>
+          </Typography>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const RenderDeliveryProvider = ({
+  name,
+  deliveryAddress,
+  openAccordion,
+  setOpenAccordion,
+  gadgetScreen,
+  renderButtonProvider,
+}) => {
+  if (deliveryAddress) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+          marginTop: '10px',
+          marginBottom: '10px',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <AccordionCart
+          openAccordion={openAccordion}
+          setOpenAccordion={setOpenAccordion}
+          gadgetScreen={gadgetScreen}
+          fontStyleCustom={fontStyleCustom}
+          name={name}
+          renderButtonProvider={renderButtonProvider}
+        />
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
+
+const RenderOrderingMode = ({
+  isLoggedIn,
+  handleLogin,
+  handleOpenOrderingMode,
+  orderingMode,
+  defaultOutlet,
+}) => {
+  const handleRenderOrderingModeLabel = () => {
+    if (orderingMode) {
+      return orderingMode;
+    } else {
+      return 'Ordering Mode';
+    }
+  };
+
+  return (
+    <div
+      id='ordering-mode-option'
+      onClick={() => {
+        if (!isLoggedIn) {
+          handleLogin();
+        } else {
+          handleOpenOrderingMode();
+        }
+      }}
+      style={{
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        padding: '20px 5px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <Typography
+          style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
+          className={fontStyleCustom.myFont}
+        >
+          Ordering Mode
+        </Typography>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: '10px',
+          }}
+        >
+          <Typography
+            style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
+            className={fontStyleCustom.myFont}
+          >
+            {handleRenderOrderingModeLabel()}
+          </Typography>
+          <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+        </div>
+      </div>
+
+      {orderingMode === 'STOREPICKUP' && (
+        <ContainerStorePickUP defaultOutlet={defaultOutlet}/>
+      )}
+    </div>
+  );
+};
+
+const RenderDateTime = ({
+  orderingMode,
+  deliveryAddress,
+  selectedDeliveryProvider,
+  selectTimeSlotAvailable,
+  setOpenTimeSlot,
+  orderActionDate,
+  orderActionTimeSlot,
+}) => {
+  const isStorePickUp = orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP;
+  const isTakeAway = orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY;
+  const isDelivery =
+    orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
+    deliveryAddress &&
+    selectedDeliveryProvider &&
+    selectTimeSlotAvailable;
+
+  if (selectTimeSlotAvailable) {
+    if (isDelivery || isStorePickUp || isTakeAway) {
+      return (
+        <div
+          onClick={() => {
+            setOpenTimeSlot(true);
+          }}
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            padding: '15px 5px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Box flexDirection='column'>
+              <Typography
+                className={fontStyleCustom.myFont}
+                style={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  color: 'black',
+                }}
+              >
+                Choose Date & Time
+              </Typography>
+            </Box>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '10px',
+                marginLeft: '0px',
+              }}
+            >
+              <div style={{ backgroundColor: 'white' }}>
+                <Typography
+                  style={{
+                    fontSize: '13px',
+                    color: '#8A8D8E',
+                    fontWeight: 500,
+                    textAlign: 'center',
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {orderActionTimeSlot && orderActionDate}
+                </Typography>
+                <Typography
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '13px',
+                    color: '#8A8D8E',
+                    fontWeight: 500,
+                  }}
+                  className={fontStyleCustom.myFont}
+                >
+                  {orderActionTimeSlot}
+                </Typography>
+              </div>
+              <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
 
 const Cart = () => {
   const history = useHistory();
@@ -62,9 +369,6 @@ const Cart = () => {
   const basketUpdate = useSelector((state) => state.order.basketUpdate);
   const noTable = useSelector((state) => state.order.noTable);
   const orderingSetting = useSelector((state) => state.order.orderingSetting);
-  const buildCartErrorData = useSelector(
-    (state) => state.order.buildCartErrorData
-  );
 
   const styles = {
     rootPaper: {
@@ -171,7 +475,10 @@ const Cart = () => {
       left: 'auto',
       position: 'fixed',
       backgroundColor: color.background,
-      paddingBottom: 1,
+      paddingTop: '2px',
+      paddingBottom: '10px',
+      paddingLeft: '16px',
+      paddingRight: '16px',
     },
     grandTotalFullScreen: {
       padding: 0,
@@ -409,32 +716,6 @@ const Cart = () => {
   }, [dispatch]);
 
 
-  /**
-   * Side effect when `buildCartErrorData` updated
-   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
-   */
-  useEffect(() => {
-    let isMounted = true;
-
-    if (isMounted && !isEmpty(buildCartErrorData)) {
-      commonAlert({
-        color: color.primary,
-        title: buildCartErrorData.title || 'Error!',
-        content: buildCartErrorData.message,
-        onConfirm: () => {
-          dispatch({
-            type: CONSTANT.BUILD_CART_ERROR_DATA,
-            payload: null,
-          });
-        },
-      });
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [buildCartErrorData, color.primary, dispatch]);
-
   const handleCurrency = (price) => {
     if (companyInfo) {
       const result = price?.toLocaleString(companyInfo?.currency?.locale, {
@@ -492,8 +773,10 @@ const Cart = () => {
           setIsSelectedOrderingMode(true);
         });
     } else if (intersectOrderingMode.length < 1) {
+      console.log(intersectOrderingMode);
       modalNoAvailableOrderingMode();
     } else {
+      console.log(openOrderingMode);
       setOpenOrderingMode(true);
     }
   };
@@ -501,13 +784,14 @@ const Cart = () => {
   const handleNoAvailableOrderingMode = async () => {
     const intersectOrderingMode = await getIntersectOrderingMode();
     if (intersectOrderingMode.length < 1) {
+      console.log(intersectOrderingMode);
       modalNoAvailableOrderingMode();
     }
   };
 
   const modalNoAvailableOrderingMode = () => {
     Swal.fire({
-      title: `<p style='padding-top: 10px'>No Ordering Mode Available</p>`,
+      title: `<p style='padding-top: 10px; padding-bottom:0px; padding-right:0px; padding-left:0px; '>No Ordering Mode Available</p>`,
       html: `<h5 style='color:#B7B7B7; font-size:14px'>There are no available ordering modes, please select another outlet</h5>`,
       allowOutsideClick: false,
       confirmButtonText: 'Select Outlet',
@@ -567,15 +851,6 @@ const Cart = () => {
   const handleLogin = () => {
     document.getElementById('login-register-btn').click();
   };
-
-  const handleRenderOrderingModeLabel = () => {
-    if (orderingMode) {
-      return orderingMode;
-    } else {
-      return 'Ordering Mode';
-    }
-  };
-
   const handleDisabled = () => {
     const isAllItemUnavailable = basket?.details.every(
       (item) => item.orderingStatus === 'UNAVAILABLE'
@@ -628,17 +903,17 @@ const Cart = () => {
 
       return !isAllCompleted;
     } else if (orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY) {
-      let isAllCompleted = false;
+      let isAllCompletedValidation = false;
       if (selectTimeSlotAvailable) {
-        isAllCompleted =
+        isAllCompletedValidation =
           orderingMode &&
           orderActionDate &&
           orderActionTime &&
           orderActionTimeSlot;
       } else {
-        isAllCompleted = !!orderingMode;
+        isAllCompletedValidation = !!orderingMode;
       }
-      return !isAllCompleted;
+      return !isAllCompletedValidation;
     } else if (orderingMode === CONSTANT.ORDERING_MODE_DINE_IN) {
       let isAllCompleted = false;
       if (defaultOutlet.enableTableNumber) {
@@ -685,362 +960,6 @@ const Cart = () => {
     }
 
     history.push('/payment');
-  };
-
-  const RenderDateTime = () => {
-    const isStorePickUp =
-      orderingMode === CONSTANT.ORDERING_MODE_STORE_PICKUP && true;
-    const isTakeAway =
-      orderingMode === CONSTANT.ORDERING_MODE_TAKE_AWAY && true;
-    const isDelivery =
-      orderingMode === CONSTANT.ORDERING_MODE_DELIVERY &&
-      deliveryAddress &&
-      selectedDeliveryProvider &&
-      selectTimeSlotAvailable;
-
-    if (selectTimeSlotAvailable) {
-      if (isDelivery || isStorePickUp || isTakeAway) {
-        return (
-          <div
-            onClick={() => {
-              setOpenTimeSlot(true);
-            }}
-            style={{
-              width: '100%',
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-              marginTop: '10px',
-              marginBottom: '10px',
-              padding: '15px 5px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Box flexDirection='column'>
-                <Typography
-                  className={fontStyleCustom.myFont}
-                  style={{
-                    fontWeight: 700,
-                    fontSize: '14px',
-                  }}
-                >
-                  Choose Date & Time
-                </Typography>
-              </Box>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginRight: '10px',
-                }}
-              >
-                <div>
-                  <Typography
-                    style={{
-                      fontSize: '13px',
-                      color: '#8A8D8E',
-                      fontWeight: 500,
-                      textAlign: 'center',
-                    }}
-                    className={fontStyleCustom.myFont}
-                  >
-                    {orderActionTimeSlot && orderActionDate}
-                  </Typography>
-                  <Typography
-                    style={{
-                      textAlign: 'center',
-                      fontSize: '13px',
-                      color: '#8A8D8E',
-                      fontWeight: 500,
-                    }}
-                    className={fontStyleCustom.myFont}
-                  >
-                    {orderActionTimeSlot}
-                  </Typography>
-                </div>
-                <img
-                  src={iconRight}
-                  alt='myIcon'
-                  style={{ marginLeft: '5px' }}
-                />
-              </div>
-            </div>
-          </div>
-        );
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  };
-
-  const RenderTableMode = () => {
-    return (
-      <div
-        onClick={() => {
-          setOpenOrderingTable(true);
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 5px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography
-            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-            className={fontStyleCustom.myFont}
-          >
-            Table Number
-          </Typography>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginRight: '10px',
-            }}
-          >
-            {noTable ? (
-              <IconDineIn color={color.primary} />
-            ) : (
-              <div
-                style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 600 }}
-              >
-                Choose Table
-              </div>
-            )}
-            <Typography
-              style={{
-                fontSize: '13px',
-                color: '#8A8D8E',
-                fontWeight: 500,
-                marginLeft: '5px',
-                textTransform: 'uppercase',
-              }}
-              className={fontStyleCustom.myFont}
-            >
-              {noTable}
-            </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-          </div>
-        </div>
-
-        {orderingMode === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const RenderOrderingMode = () => {
-    return (
-      <div
-        id='ordering-mode-option'
-        onClick={() => {
-          if (!isLoggedIn) {
-            handleLogin();
-          } else {
-            handleOpenOrderingMode();
-          }
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 5px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography
-            style={{ fontSize: '14px', color: 'black', fontWeight: 700 }}
-            className={fontStyleCustom.myFont}
-          >
-            Ordering Mode
-          </Typography>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginRight: '10px',
-            }}
-          >
-            <Typography
-              style={{ fontSize: '13px', color: '#8A8D8E', fontWeight: 500 }}
-              className={fontStyleCustom.myFont}
-            >
-              {handleRenderOrderingModeLabel()}
-            </Typography>
-            <img src={iconRight} alt='myIcon' style={{ marginLeft: '5px' }} />
-          </div>
-        </div>
-
-        {orderingMode === 'STOREPICKUP' && (
-          <div style={{ marginTop: '20px' }}>
-            <hr
-              style={{
-                backgroundColor: '#8A8D8E',
-                opacity: 0.5,
-              }}
-            />
-            <div
-              style={{ fontSize: '14px', fontWeight: 700, color: '#B7B7B7' }}
-            >
-              Outlet Address
-            </div>
-            <div
-              style={{ color: '#B7B7B7', fontSize: '14px', fontWeight: 500 }}
-            >
-              {defaultOutlet?.address}, {defaultOutlet?.city} -{' '}
-              {defaultOutlet?.postalCode}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const RenderDeliveryAddress = () => {
-    if (orderingMode !== 'DELIVERY') {
-      return null;
-    }
-    return (
-      <div
-        onClick={() => {
-          history.push('/delivery-address');
-        }}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-          marginTop: '10px',
-          marginBottom: '10px',
-          padding: '20px 0px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            style={{
-              fontSize: '14px',
-              marginLeft: '5px',
-              color: 'black',
-              fontWeight: 700,
-            }}
-            className={fontStyleCustom.myFont}
-          >
-            Delivery Address
-          </Typography>
-          <img src={iconRight} alt='myIcon' style={{ marginRight: '10px' }} />
-        </div>
-        <div
-          style={{
-            width: '100%',
-            padding: '0px 3px',
-          }}
-        >
-          {deliveryAddress && (
-            <Typography
-              className={fontStyleCustom.myFont}
-              style={{
-                fontSize: '15px',
-                color: '#8A8D8E',
-                marginLeft: '5px',
-                lineHeight: 2,
-              }}
-            >
-              <hr
-                style={{
-                  marginTop: '20px',
-                  backgroundColor: '#8A8D8E',
-                  opacity: 0.2,
-                }}
-              />
-              <table>
-                <tr>
-                  <td style={{ padding: 0, margin: 0 }}>
-                    {deliveryAddress.street}
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      textAlign: 'left',
-                      width: '100%',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '3',
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {deliveryAddress.addressName},
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, margin: 0 }}>
-                    {deliveryAddress.unitNo}, {deliveryAddress.city},
-                    {deliveryAddress.postalCode}
-                  </td>
-                </tr>
-              </table>
-            </Typography>
-          )}
-        </div>
-      </div>
-    );
   };
 
   const handleSelectDeliveryProvider = async (value) => {
@@ -1154,70 +1073,6 @@ const Cart = () => {
     }
   };
 
-  const RenderDeliveryProvider = ({ name, deliveryAddress }) => {
-    if (deliveryAddress) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-            marginTop: '10px',
-            marginBottom: '10px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Accordion
-            sx={{
-              boxShadow: 'none',
-              padding: 0,
-              margin: 0,
-              width: '100%',
-            }}
-            expanded={openAccordion}
-            onChange={() => setOpenAccordion(!openAccordion)}
-          >
-            <AccordionSummary
-              sx={{ padding: '0', margin: '0' }}
-              expandIcon={
-                <ExpandMoreIcon
-                  sx={{ width: '20px', height: '20px', marginRight: '10px' }}
-                />
-              }
-              aria-controls='panel1a-content'
-              id='panel1a-header'
-            >
-              <div
-                style={{
-                  width: gadgetScreen ? '80vw' : '35vw',
-                }}
-              >
-                <Typography
-                  style={{
-                    fontSize: '14px',
-                    color: 'black',
-                    fontWeight: 700,
-                    paddingLeft: '5px',
-                  }}
-                  className={fontStyleCustom.myFont}
-                >
-                  {name}
-                </Typography>
-              </div>
-            </AccordionSummary>
-            <AccordionDetails style={{ padding: '0 5px', margin: 0 }}>
-              {renderButtonProvider()}
-            </AccordionDetails>
-          </Accordion>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
-
   const renderSubTotal = () => {
     return (
       <div
@@ -1227,15 +1082,19 @@ const Cart = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          margin: '0px',
         }}
       >
         <div
           style={{
             width: '100%',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '0px',
+            paddingRight: '0px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '10px 0px',
           }}
         >
           <div style={{ width: '100%', textAlign: 'center', fontWeight: 700 }}>
@@ -1248,7 +1107,7 @@ const Cart = () => {
             X
           </div>
         </div>
-        <div style={{ width: '100%' }}>
+        <div style={{margin: '0px,width: '100%' }}>
           <hr
             style={{
               backgroundColor: '#D6D6D6',
@@ -1260,10 +1119,10 @@ const Cart = () => {
         </div>
         <div
           style={{
+            padding: '10px',
             width: '100%',
             backgroundColor: 'white',
             marginBottom: '10px',
-            padding: '10px',
           }}
         >
           <>
@@ -1446,8 +1305,8 @@ const Cart = () => {
     return (
       <div
         style={{
-          padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '7px 10px',
-          width: '70%',
+          padding: basket?.inclusiveTax !== 0 ? '5px 0px 0px 0px' : '0px',
+          width: '60%',
         }}
       >
         <Button
@@ -1531,7 +1390,7 @@ const Cart = () => {
       <Paper
         variant='elevation'
         square={gadgetScreen}
-        elevation={gadgetScreen ? 3 : 3}
+        elevation={3}
         sx={
           gadgetScreen
             ? styles.grandTotalGadgetScreen
@@ -1545,21 +1404,21 @@ const Cart = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            padding: gadgetScreen ? '0px 10px' : '0px',
           }}
         >
           <div
             style={{
-              width: '30%',
+              width: '40%',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               paddingLeft: gadgetScreen ? '0px' : '10px',
+              margin: '0px',
             }}
           >
             <Typography
               className={fontStyleCustom.myFont}
-              sx={{ fontWeight: 500, fontSize: '14px' }}
+              sx={{ fontWeight: 600, fontSize: '16px' }}
             >
               GRAND TOTAL
             </Typography>
@@ -1598,16 +1457,45 @@ const Cart = () => {
         <>
           <div style={styles.rootCartGadgetSize}>
             <ProductCartList />
-            <RenderOrderingMode />
+            <RenderOrderingMode
+              isLoggedIn={isLoggedIn}
+              handleLogin={handleLogin}
+              handleOpenOrderingMode={handleOpenOrderingMode}
+              orderingMode={orderingMode}
+              defaultOutlet={defaultOutlet}
+            />
             {orderingMode === 'DINEIN' && defaultOutlet.enableTableNumber && (
-              <RenderTableMode />
+              <RenderTableMode
+                setOpenOrderingTable={setOpenOrderingTable}
+                noTable={noTable}
+                color={color}
+                orderingMode={orderingMode}
+                defaultOutlet={defaultOutlet}
+                fontStyleCustom={fontStyleCustom}
+              />
             )}
-            <RenderDeliveryAddress />
+            <RenderDeliveryAddress
+              orderingMode={orderingMode}
+              history={history}
+              deliveryAddress={deliveryAddress}
+            />
             <RenderDeliveryProvider
               name='Choose Delivery Provider'
               deliveryAddress={deliveryAddress}
+              openAccordion={openAccordion}
+              setOpenAccordion={setOpenAccordion}
+              gadgetScreen={gadgetScreen}
+              renderButtonProvider={renderButtonProvider}
             />
-            <RenderDateTime />
+            <RenderDateTime
+              orderingMode={orderingMode}
+              deliveryAddress={deliveryAddress}
+              selectedDeliveryProvider={selectedDeliveryProvider}
+              selectTimeSlotAvailable={selectTimeSlotAvailable}
+              setOpenTimeSlot={setOpenTimeSlot}
+              orderActionDate={orderActionDate}
+              orderActionTimeSlot={orderActionTimeSlot}
+            />
           </div>
           {renderTotal()}
         </>
@@ -1626,7 +1514,7 @@ const Cart = () => {
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gridTemplateRows: '1fr 85px',
+            gridTemplateRows: '1fr 70px',
             gap: '0px 15px',
             gridTemplateAreas: '"."\n    "."',
           }}
@@ -1640,14 +1528,45 @@ const Cart = () => {
           >
             <ProductCartList />
             <div style={styles.cartGridRight}>
-              <RenderOrderingMode />
-              {orderingMode === 'DINEIN' && <RenderTableMode />}
-              <RenderDeliveryAddress />
+              <RenderOrderingMode
+                isLoggedIn={isLoggedIn}
+                handleLogin={handleLogin}
+                handleOpenOrderingMode={handleOpenOrderingMode}
+                orderingMode={orderingMode}
+                defaultOutlet={defaultOutlet}
+              />
+              {orderingMode === 'DINEIN' && (
+                <RenderTableMode
+                  setOpenOrderingTable={setOpenOrderingTable}
+                  noTable={noTable}
+                  color={color}
+                  orderingMode={orderingMode}
+                  defaultOutlet={defaultOutlet}
+                  fontStyleCustom={fontStyleCustom}
+                />
+              )}
+              <RenderDeliveryAddress
+                orderingMode={orderingMode}
+                history={history}
+                deliveryAddress={deliveryAddress}
+              />
               <RenderDeliveryProvider
                 name='Choose Delivery Provider'
                 deliveryAddress={deliveryAddress}
+                openAccordion={openAccordion}
+                setOpenAccordion={setOpenAccordion}
+                gadgetScreen={gadgetScreen}
+                renderButtonProvider={renderButtonProvider}
               />
-              <RenderDateTime />
+              <RenderDateTime
+                orderingMode={orderingMode}
+                deliveryAddress={deliveryAddress}
+                selectedDeliveryProvider={selectedDeliveryProvider}
+                selectTimeSlotAvailable={selectTimeSlotAvailable}
+                setOpenTimeSlot={setOpenTimeSlot}
+                orderActionDate={orderActionDate}
+                orderActionTimeSlot={orderActionTimeSlot}
+              />
             </div>
           </div>
           {renderTotal()}
@@ -1695,7 +1614,7 @@ const Cart = () => {
         {openOrderingMode && (
           <OrderingModeDialog
             open={openOrderingMode}
-            onClose={() => handleCloseOrderingMode()}
+            onClose={handleCloseOrderingMode}
           />
         )}
         {openTimeSlot && (

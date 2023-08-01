@@ -23,6 +23,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
+import { isEmpty } from 'helpers/utils';
+import commonAlert from 'components/template/commonAlert';
 
 import { OrderAction } from 'redux/actions/OrderAction';
 
@@ -42,6 +44,7 @@ const mapStateToProps = (state) => {
     basketUpdate: state.order.basketUpdate,
     isCartDeleted: state.guestCheckoutCart.isCartDeleted,
     saveSelectProductModifier: state.order.saveSelectProductModifier,
+    buildCartErrorData: state.order.buildCartErrorData,
   };
 };
 
@@ -67,6 +70,31 @@ const ProductAddModal = ({
   const [mode, setMode] = useState();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [idGuestCheckout, setIdGuestCheckout] = useState();
+  /**
+   * Side effect when `buildCartErrorData` updated
+   * @description Displays a cart error alert when `buildCartErrorData` is not empty.
+   */
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted && !isEmpty(props.buildCartErrorData)) {
+      commonAlert({
+        color: props.color.primary,
+        title: props.buildCartErrorData.title || 'Error!',
+        content: props.buildCartErrorData.message,
+        onConfirm: () => {
+          props.dispatch({
+            type: CONSTANT.BUILD_CART_ERROR_DATA,
+            payload: null,
+          });
+        },
+      });
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [props, props.buildCartErrorData, props.color.primary, props.dispatch]);
 
   useEffect(() => {
     const isGuestCheckout = localStorage.getItem('settingGuestMode');
@@ -1762,6 +1790,7 @@ const ProductAddModal = ({
             <Typography style={styles.optionalTypography}>Optional</Typography>
           </div>
           <textarea
+            placeholder='please use less plastic'
             id='special-instruction-input'
             style={styles.specialInstructionInput}
             value={notes}

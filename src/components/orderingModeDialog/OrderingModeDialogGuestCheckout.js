@@ -336,42 +336,26 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
             dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
             dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
           }}
-          style={
-            item.name === orderingModeActive?.name ||
-            item.name === orderingModeGuestCheckout
-              ? {
-                  height: '80px',
-                  borderRadius: 10,
-                  padding: '10px 0px',
-                  color: color.primary,
-                  fontWeight: 500,
-                  fontSize: 14,
-                  border: `1px solid ${color.primary}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '76px',
-                  margin: '0px 5px',
-                  backgroundColor: color.primary,
-                }
-              : {
-                  height: '80px',
-                  borderRadius: 10,
-                  padding: '10px 0px',
-                  color: color.primary,
-                  fontWeight: 500,
-                  fontSize: 14,
-                  border: `1px solid ${color.primary}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '76px',
-                  margin: '0px 10px',
-                  backgroundColor: 'white',
-                }
-          }
+          style={{
+            height: '80px',
+            borderRadius: 10,
+            padding: '10px 0px',
+            color: color.primary,
+            fontWeight: 500,
+            fontSize: 14,
+            border: `1px solid ${color.primary}`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '76px',
+            margin: '0px 10px',
+            backgroundColor:
+              item.name === orderingModeActive?.name ||
+              item.name === orderingModeGuestCheckout
+                ? color.primary
+                : 'white',
+          }}
           className={fontStyles.myFont}
         >
           <h1
@@ -430,7 +414,15 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
         >
           <button
             id='cancel-button'
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              dispatch({ type: 'ITEM_ORDERING_MODE', data: {} });
+              dispatch({ type: 'ORDERING_MODE_ACTIVE', data: null });
+              dispatch({
+                type: CONSTANT.SET_ORDERING_MODE_GUEST_CHECKOUT,
+                payload: '',
+              });
+            }}
             className={fontStyles.myFont}
             style={{
               backgroundColor: 'white',
@@ -444,6 +436,7 @@ const OrderingModeDialog = ({ open, onClose, idGuestCheckout }) => {
             Cancel
           </button>
           <button
+            disabled={!orderingModeActive}
             id='confirm-button'
             onClick={() => handleConfirmOrderingMode(itemOrderingMode)}
             className={fontStyles.myFont}
