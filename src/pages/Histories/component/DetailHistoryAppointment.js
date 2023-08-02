@@ -9,7 +9,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Swal from 'sweetalert2';
 
-import { isEmptyArray } from 'helpers/CheckEmpty';
 import fontStyles from '../style/styles.module.css';
 import {
   convertTimeToStr,
@@ -688,69 +687,7 @@ const DetailHistoryAppointment = ({
       </div>
     );
   };
-  const RenderPoints = () => {
-    if (tabName === 'Completed') {
-      return (
-        <div
-          className={fontStyles.myFont}
-          style={{
-            width: '93%',
-            margin: 'auto',
-            marginTop: '10px',
-            backgroundColor: `${color.primary}10`,
-            borderRadius: '20px',
-            padding: '15px 0px',
-          }}
-        >
-          <div style={{ width: '90%', margin: 'auto' }}>
-            <div
-              style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}
-            >
-              Rewards Earned
-            </div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: 'black' }}>
-              Points
-            </div>
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: color.primary,
-              }}
-            >
-              {item?.rewards?.points} Points
-            </div>
-            <div
-              style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                color: 'black',
-                marginTop: '10px',
-              }}
-            >
-              Voucher
-            </div>
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: color.primary,
-              }}
-            >
-              <ul style={{ padding: 0, margin: 0, marginLeft: '20px' }}>
-                {!isEmptyArray(item?.rewards?.vouchers) &&
-                  item?.rewards?.vouchers.map((item) => {
-                    return <li>{item.voucherName}</li>;
-                  })}
-              </ul>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
+
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -774,7 +711,6 @@ const DetailHistoryAppointment = ({
         <BookingNotes />
         <RenderHr />
         <ServiceDetail />
-        <RenderPoints />
         <Information />
       </DialogContent>
 

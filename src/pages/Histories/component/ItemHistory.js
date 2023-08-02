@@ -4,27 +4,6 @@ import moment from 'moment';
 import DetailHistoryAppointment from './DetailHistoryAppointment';
 import fontStyles from '../style/styles.module.css';
 
-const RenderPointsLabel = ({ tabName, item }) => {
-  if (tabName === 'Completed') {
-    return (
-      <div
-        style={{
-          backgroundColor: '#38A405',
-          padding: '1px 10px',
-          color: 'white',
-          borderRadius: '100px',
-          fontSize: '12px',
-          fontWeight: 600,
-        }}
-      >
-        {item?.rewards?.points} points
-      </div>
-    );
-  } else {
-    return null;
-  }
-};
-
 const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
@@ -81,7 +60,6 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
             padding: '0px 16px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
           }}
         >
           <div
@@ -93,7 +71,6 @@ const ItemHistory = ({ item, color, tabName, settingAppoinment }) => {
           >
             Appointment
           </div>
-          <RenderPointsLabel item={item} tabName={tabName} />
         </div>
         <div
           style={{
