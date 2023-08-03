@@ -81,6 +81,7 @@ const InboxCard = ({ items }) => {
         cursor: 'pointer',
         borderRadius: '12px',
         marginTop: '20px',
+        background: 'var(--brand-color-tertiary, #F2F2F2)',
       }}
     >
       <div
@@ -101,7 +102,9 @@ const InboxCard = ({ items }) => {
               fontSize: '16px',
               marginLeft: '8px',
               textTransform: 'capitalize',
-              color: !items.isRead ? '#343A4A' : '#B7B7B7',
+              color: !items.isRead
+                ? 'var(--text-color-primary, #343A4A)'
+                : 'var(--text-color-tertiary, #B7B7B7)',
             }}
           >
             {items.name.length > 20
@@ -113,7 +116,7 @@ const InboxCard = ({ items }) => {
           style={{
             fontSize: '12px',
             fontWeight: 500,
-            color: '#B7B7B7',
+            color: 'var(--text-color-tertiary, #B7B7B7)',
           }}
         >
           {customFormatDate(items.createdOn)}
@@ -125,7 +128,7 @@ const InboxCard = ({ items }) => {
           fontWeight: 500,
           paddingLeft: '29px',
           marginTop: '8px',
-          color: !items.isRead ? '#B7B7B7' : '#B7B7B790',
+          color: 'var(--text-color-tertiary, #B7B7B7)',
         }}
       >
         {separateString.substring(0, 100).concat('...')}

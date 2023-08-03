@@ -10,6 +10,56 @@ import config from 'config';
 
 const InboxCard = loadable(() => import('../components/inbox/InboxCard'));
 
+const RenderShimmer = () => {
+  return (
+    <Shimmer>
+      <div
+        style={{
+          width: '100%',
+          height: 100,
+          alignSelf: 'center',
+          borderRadius: '8px',
+          marginBottom: 10,
+        }}
+      />
+    </Shimmer>
+  );
+};
+const RenderBroadCastItem = ({ loadingShow, broadcast }) => {
+  if (loadingShow) {
+    return (
+      <Row>
+        <Col sm={6}>
+          <RenderShimmer />
+        </Col>
+        <Col sm={6}>
+          <RenderShimmer />
+        </Col>
+      </Row>
+    );
+  } else if (isEmptyArray(broadcast?.broadcast)) {
+    return (
+      <div>
+        <img
+          src={config.url_emptyImage}
+          alt='is empty'
+          style={{ marginTop: 30 }}
+        />
+        <div style={{ textAlign: 'center' }}>Inbox is empty</div>
+      </div>
+    );
+  } else {
+    return (
+      <Row>
+        {broadcast?.broadcast?.map((items) => (
+          <Col key={items.broadcastID} sm={6}>
+            <InboxCard items={items} />
+          </Col>
+        ))}
+      </Row>
+    );
+  }
+};
 const Inbox = () => {
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
@@ -27,66 +77,16 @@ const Inbox = () => {
     loadData();
   }, [dispatch]);
 
-  const RenderShimmer = () => {
-    return (
-      <Shimmer>
-        <div
-          style={{
-            width: '100%',
-            height: 100,
-            alignSelf: 'center',
-            borderRadius: '8px',
-            marginBottom: 10,
-          }}
-        />
-      </Shimmer>
-    );
-  };
-
-  const RenderBroadCastItem = () => {
-    if (loadingShow) {
-      return (
-        <Row>
-          <Col sm={6}>
-            <RenderShimmer />
-          </Col>
-          <Col sm={6}>
-            <RenderShimmer />
-          </Col>
-        </Row>
-      );
-    } else if (isEmptyArray(broadcast?.broadcast)) {
-      return (
-        <div>
-          <img
-            src={config.url_emptyImage}
-            alt='is empty'
-            style={{ marginTop: 30 }}
-          />
-          <div style={{ textAlign: 'center' }}>Inbox is empty</div>
-        </div>
-      );
-    } else {
-      return (
-        <Row>
-          {broadcast?.broadcast?.map((items) => (
-            <Col key={items.broadcastID} sm={6}>
-              <InboxCard items={items} />
-            </Col>
-          ))}
-        </Row>
-      );
-    }
-  };
   return (
     <div
       style={{
         marginTop: gadgetScreen ? 65 : 100,
         padding: '0px 16px',
         paddingBottom: 100,
+        background: 'var(--brand-color-tertiary, #F2F2F2)',
       }}
     >
-      <RenderBroadCastItem />
+      <RenderBroadCastItem loadingShow={loadingShow} broadcast={broadcast} />
     </div>
   );
 };
