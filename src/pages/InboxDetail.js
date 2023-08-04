@@ -8,13 +8,13 @@ import screen from 'hooks/useWindowSize';
 import customStyleFont from '../components/inbox/css/style.module.css';
 import { InboxAction } from 'redux/actions/InboxAction';
 import customStyleCSS from 'components/inbox/css/style.module.css';
-const RenderHeader = ({ props }) => {
+const RenderHeader = ({ props, color }) => {
   return (
     <div
       onClick={() => props.history.goBack()}
       style={{
         width: '100%',
-        background: 'var(--brand-color-tertiary, #F2F2F2)',
+        background: color?.background,
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         display: 'grid',
         gridTemplateColumns: '50px 1fr',
@@ -199,7 +199,7 @@ const InboxDetail = (props) => {
   return (
     <div
       style={{
-        background: 'var(--brand-color-tertiary, #F2F2F2)',
+        background: color?.background,
         height: '100vh',
         overflowY: 'auto',
       }}
@@ -211,7 +211,7 @@ const InboxDetail = (props) => {
             marginTop: '50px',
           }}
         >
-          <RenderHeader props={props} />
+          <RenderHeader props={props} color={color} />
           <RenderContent broadcastItem={broadcastItem} color={color} />
         </div>
       ) : (
