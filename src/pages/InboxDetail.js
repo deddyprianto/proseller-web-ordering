@@ -7,15 +7,14 @@ import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import screen from 'hooks/useWindowSize';
 import customStyleFont from '../components/inbox/css/style.module.css';
 import { InboxAction } from 'redux/actions/InboxAction';
-
-
-const RenderHeader = ({ props }) => {
+import customStyleCSS from 'components/inbox/css/style.module.css';
+const RenderHeader = ({ props, color }) => {
   return (
     <div
       onClick={() => props.history.goBack()}
       style={{
         width: '100%',
-        backgroundColor: '#F2F2F2',
+        background: color?.background,
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         display: 'grid',
         gridTemplateColumns: '50px 1fr',
@@ -43,6 +42,48 @@ const RenderHeader = ({ props }) => {
     </div>
   );
 };
+
+const handleHTMLStringCustomization = (broadcastItem) => {
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(broadcastItem, 'text/html');
+  const elementsWithClassNameTab1 = dom.getElementsByClassName('ql-indent-1');
+  const elementsWithClassNameTab2 = dom.getElementsByClassName('ql-indent-2');
+  const elementsWithClassNameTab3 = dom.getElementsByClassName('ql-indent-3');
+  const elementsWithClassNameTab4 = dom.getElementsByClassName('ql-indent-4');
+  const elementsWithClassNameTab5 = dom.getElementsByClassName('ql-indent-5');
+  const elementsWithClassNameTab6 = dom.getElementsByClassName('ql-indent-6');
+  const elementsWithClassNameTab7 = dom.getElementsByClassName('ql-indent-7');
+  const elementsWithClassNameTab8 = dom.getElementsByClassName('ql-indent-8');
+
+  for (const element of elementsWithClassNameTab1) {
+    element.style.paddingLeft = '1em';
+  }
+  for (const element of elementsWithClassNameTab2) {
+    element.style.paddingLeft = '2em';
+  }
+  for (const element of elementsWithClassNameTab3) {
+    element.style.paddingLeft = '3em';
+  }
+  for (const element of elementsWithClassNameTab4) {
+    element.style.paddingLeft = '4em';
+  }
+  for (const element of elementsWithClassNameTab5) {
+    element.style.paddingLeft = '5em';
+  }
+  for (const element of elementsWithClassNameTab6) {
+    element.style.paddingLeft = '6em';
+  }
+  for (const element of elementsWithClassNameTab7) {
+    element.style.paddingLeft = '7em';
+  }
+  for (const element of elementsWithClassNameTab8) {
+    element.style.paddingLeft = '10em';
+  }
+
+  const updatedHtmlString = dom.documentElement.innerHTML;
+  return updatedHtmlString;
+};
+
 const RenderContent = ({ broadcastItem, color }) => {
   return (
     <div
@@ -63,8 +104,9 @@ const RenderContent = ({ broadcastItem, color }) => {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: broadcastItem?.message,
+          __html: handleHTMLStringCustomization(broadcastItem?.message),
         }}
+        className={customStyleCSS.htmlAPI}
       />
 
       {!isEmptyArray(broadcastItem?.rewards) && (
@@ -155,21 +197,31 @@ const InboxDetail = (props) => {
   }, []);
 
   return (
-    <React.Fragment>
+    <div
+      style={{
+        background: color?.background,
+        height: '100vh',
+        overflowY: 'auto',
+      }}
+    >
       {gadgetScreen ? (
-        <div className={customStyleFont.myFont} style={{ marginTop: '50px' }}>
-          <RenderHeader props={props} />
+        <div
+          className={customStyleFont.myFont}
+          style={{
+            marginTop: '50px',
+          }}
+        >
+          <RenderHeader props={props} color={color} />
           <RenderContent broadcastItem={broadcastItem} color={color} />
         </div>
       ) : (
         <div
           className={customStyleFont.myFont}
           style={{
-            marginTop: 72,
+            marginTop: 60,
             width: '45%',
             marginLeft: 'auto',
             marginRight: 'auto',
-            backgroundColor: 'white',
             borderRadius: '8px',
             boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             display: 'grid',
@@ -180,13 +232,14 @@ const InboxDetail = (props) => {
             paddingLeft: '16px',
             paddingRight: '16px',
             height: '90vh',
+            overflowY: 'auto',
           }}
         >
           <RenderHeader props={props} />
           <RenderContent broadcastItem={broadcastItem} color={color} />
         </div>
       )}
-    </React.Fragment>
+    </div>
   );
 };
 

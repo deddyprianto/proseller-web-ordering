@@ -3,3 +3,6 @@
 .myFont{
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
+.htmlAPI p a{
+  color: #3366CC !important;
+}

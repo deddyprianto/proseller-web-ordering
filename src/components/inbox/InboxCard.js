@@ -1,12 +1,13 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CONSTANT } from 'helpers';
 import customStyleFont from './css/style.module.css';
 import inboxMail from 'assets/images/inboxMail.png';
 import inboxMailOpened from 'assets/images/inboxMailOpen.png';
 
 const InboxCard = ({ items }) => {
+  const theme = useSelector((state) => state.theme.color);
   const parser = new DOMParser();
   const doc = parser.parseFromString(items?.message, 'text/html');
   const firstElement = doc.querySelector('*');
@@ -81,6 +82,7 @@ const InboxCard = ({ items }) => {
         cursor: 'pointer',
         borderRadius: '12px',
         marginTop: '20px',
+        background: theme.background,
       }}
     >
       <div
@@ -101,7 +103,9 @@ const InboxCard = ({ items }) => {
               fontSize: '16px',
               marginLeft: '8px',
               textTransform: 'capitalize',
-              color: !items.isRead ? '#343A4A' : '#B7B7B7',
+              color: !items.isRead
+                ? theme.font
+                : 'var(--text-color-tertiary, #B7B7B7)',
             }}
           >
             {items.name.length > 20
@@ -113,7 +117,7 @@ const InboxCard = ({ items }) => {
           style={{
             fontSize: '12px',
             fontWeight: 500,
-            color: '#B7B7B7',
+            color: 'var(--text-color-tertiary, #B7B7B7)',
           }}
         >
           {customFormatDate(items.createdOn)}
@@ -125,7 +129,7 @@ const InboxCard = ({ items }) => {
           fontWeight: 500,
           paddingLeft: '29px',
           marginTop: '8px',
-          color: !items.isRead ? '#B7B7B7' : '#B7B7B790',
+          color: 'var(--text-color-tertiary, #B7B7B7)',
         }}
       >
         {separateString.substring(0, 100).concat('...')}
