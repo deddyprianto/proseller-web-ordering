@@ -65,6 +65,8 @@ const Inbox = () => {
   const gadgetScreen = responsiveDesign.width < 980;
 
   const broadcast = useSelector((state) => state.broadcast.broadcast);
+  const theme = useSelector((state) => state.theme.color);
+
   const [loadingShow, setLoadingShow] = useState(false);
   const dispatch = useDispatch();
 
@@ -83,7 +85,7 @@ const Inbox = () => {
         marginTop: gadgetScreen ? 65 : 100,
         padding: '0px 16px',
         paddingBottom: 100,
-        background: 'var(--brand-color-tertiary, #F2F2F2)',
+        background: theme.background,
       }}
     >
       <RenderBroadCastItem loadingShow={loadingShow} broadcast={broadcast} />
