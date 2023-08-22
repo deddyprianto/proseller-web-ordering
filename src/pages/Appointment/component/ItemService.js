@@ -59,7 +59,7 @@ const ItemService = ({
     },
     gridContainerBottom: {
       display: 'grid',
-      gridTemplateColumns: item?.cutPrice ? '90px 1fr 90px' : '100px 1fr 90px',
+      gridTemplateColumns: item?.cutPrice ? '90px 1fr 90px' : '1fr 75px 90px',
       gridTemplateRows: '1fr',
       gap: '0px 0px',
       gridAutoFlow: 'row',
