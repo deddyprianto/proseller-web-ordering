@@ -25,7 +25,6 @@ const Timeline = ({ gadgetScreen, color }) => {
     return (
       <div
         style={{
-          width: '58%',
           marginTop: '40px',
           marginBottom: '10px',
           fontSize: '14px',
@@ -33,6 +32,7 @@ const Timeline = ({ gadgetScreen, color }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           fontWeight: 500,
+          width: '58%',
         }}
       >
         <div
@@ -89,8 +89,8 @@ const Timeline = ({ gadgetScreen, color }) => {
     return (
       <div
         style={{
-          width: '58%',
           marginTop: '20px',
+          width: '58%',
           marginBottom: '10px',
           fontSize: '14px',
           display: 'flex',
@@ -198,7 +198,7 @@ const RenderHr = ({ color }) => {
   );
 };
 
-const ButtonPrice = ({ color, dispatch, changeFormatURl }) => {
+const ButtonPrice = ({ color, dispatch, changeFormatURlBookingSubmitted }) => {
   return (
     <div
       onClick={() => {
@@ -207,7 +207,7 @@ const ButtonPrice = ({ color, dispatch, changeFormatURl }) => {
           payload: 'Appointment',
         });
         dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
-        window.location.href = changeFormatURl('/history');
+        window.location.href = changeFormatURlBookingSubmitted('/history');
       }}
       style={{
         width: '93%',
@@ -250,14 +250,14 @@ const BookingSubmitted = () => {
     };
   }, []);
 
-  const settingAppoinmentShowPrice = setting.find((items) => {
-    return items.settingKey === 'ShowServicePrice';
-  });
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'EnableAdditionalInfoBookingSummary';
   });
+  const settingAppoinmentShowPrice = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
 
-  const handleCurrency = (price) => {
+  const handleCurrencyBookingSubmitted = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
         style: 'currency',
@@ -267,7 +267,7 @@ const BookingSubmitted = () => {
       return result;
     }
   };
-  const changeFormatURl = (path) => {
+  const changeFormatURlBookingSubmitted = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
@@ -279,7 +279,7 @@ const BookingSubmitted = () => {
 
   useEffect(() => {
     const handlePopstate = () => {
-      window.location.href = changeFormatURl('/history');
+      window.location.href = changeFormatURlBookingSubmitted('/history');
     };
 
     window.addEventListener('popstate', handlePopstate);
@@ -343,7 +343,7 @@ const BookingSubmitted = () => {
       </div>
     );
   };
-  const BookingDetail = () => {
+  const BookingDetailsubmitted = () => {
     return (
       <div
         style={{
@@ -470,7 +470,7 @@ const BookingSubmitted = () => {
     );
   };
 
-  const BookingNotes = () => {
+  const BookingNotesSubmitted = () => {
     return (
       <div
         style={{
@@ -496,7 +496,7 @@ const BookingSubmitted = () => {
       </div>
     );
   };
-  const ServiceDetail = () => {
+  const ServiceDetailSubmitted = () => {
     return (
       <div
         style={{
@@ -547,7 +547,7 @@ const BookingSubmitted = () => {
                 }}
               >
                 {settingAppoinmentShowPrice?.settingValue
-                  ? handleCurrency(item.product.retailPrice)
+                  ? handleCurrencyBookingSubmitted(item.product.retailPrice)
                   : convertTimeToStr(item.product.duration)}
               </div>
             </div>
@@ -582,7 +582,7 @@ const BookingSubmitted = () => {
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
-                ? handleCurrency(responseSubmit.totalNettAmount)
+                ? handleCurrencyBookingSubmitted(responseSubmit.totalNettAmount)
                 : convertTimeToStr(responseSubmit.totalDuration)}
             </div>
           </div>
@@ -642,10 +642,10 @@ const BookingSubmitted = () => {
           }}
         >
           <MessageAndLabel />
-          <BookingDetail />
-          <BookingNotes />
+          <BookingDetailsubmitted />
+          <BookingNotesSubmitted />
           <RenderHr color={color} />
-          <ServiceDetail />
+          <ServiceDetailSubmitted />
           <Information />
         </div>
         <Paper
@@ -673,7 +673,7 @@ const BookingSubmitted = () => {
           }
         >
           <ButtonPrice
-            changeFormatURl={changeFormatURl}
+            changeFormatURlBookingSubmitted={changeFormatURlBookingSubmitted}
             color={color}
             dispatch={dispatch}
           />
@@ -707,13 +707,13 @@ const BookingSubmitted = () => {
           <div style={styleSheet.container}>
             <Timeline color={color} gadgetScreen={gadgetScreen} />
             <MessageAndLabel />
-            <BookingDetail />
-            <BookingNotes />
+            <BookingDetailsubmitted />
+            <BookingNotesSubmitted />
             <RenderHr color={color} />
-            <ServiceDetail />
+            <ServiceDetailSubmitted />
             <Information />
             <ButtonPrice
-              changeFormatURl={changeFormatURl}
+              changeFormatURlBookingSubmitted={changeFormatURlBookingSubmitted}
               color={color}
               dispatch={dispatch}
             />

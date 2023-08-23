@@ -108,6 +108,7 @@ const RenderItemService = ({
         <div style={localStyle.containerUnavailable.gridContainer}>
           <div
             style={{
+              width: '60%',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -115,7 +116,6 @@ const RenderItemService = ({
                 ? 'rgba(183, 183, 183, 1)'
                 : 'transparent',
               borderRadius: '15px',
-              width: '60%',
             }}
           >
             {item?.duration && (
@@ -287,36 +287,36 @@ const ItemService = ({
     containerLabel: {
       padding: '0px 10px',
       container: {
+        width: '100%',
         fontSize: '13px',
         fontWeight: '600',
         display: 'flex',
-        width: '100%',
       },
       icon: {
+        marginRight: '5px',
         fontSize: '20px',
         marginTop: '5px',
         color: color.primary,
-        marginRight: '5px',
       },
       label: {
+        color: 'black',
         width: '230px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         fontSize: '14px',
         fontWeight: 700,
-        color: 'black',
       },
-      label2: { fontSize: '13px', color: 'rgba(183, 183, 183, 1)' },
+      label2: { color: 'rgba(183, 183, 183, 1)', fontSize: '13px' },
     },
     gridContainerBottom: {
+      marginTop: '15px',
       display: 'grid',
       gridTemplateColumns: item?.cutPrice ? '90px 1fr 90px' : '1fr 75px 90px',
       gridTemplateRows: '1fr',
-      gap: '0px 0px',
       gridAutoFlow: 'row',
       gridTemplateAreas: '". . ."',
-      marginTop: '15px',
+      gap: '0px 0px',
       alignItems: 'center',
     },
     label30mins: {
