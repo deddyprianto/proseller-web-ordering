@@ -20,6 +20,214 @@ const useWindowSize = () => {
   return size;
 };
 
+const Timeline = ({ gadgetScreen, color }) => {
+  if (gadgetScreen) {
+    return (
+      <div
+        style={{
+          marginTop: '40px',
+          marginBottom: '10px',
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontWeight: 500,
+          width: '58%',
+        }}
+      >
+        <div
+          style={{
+            minWidth: '103px',
+            color: 'rgba(183, 183, 183, 1)',
+            fontWeight: 500,
+          }}
+        >
+          m Your Booking
+        </div>
+        <hr
+          style={{
+            width: '100%',
+            padding: 0,
+            margin: '0 7px',
+            backgroundColor: 'rgba(183, 183, 183, 1)',
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              minWidth: '24px',
+              height: '24px',
+              lineHeight: '24px',
+              textAlign: 'center',
+              backgroundColor: color.primary,
+              color: 'white',
+              fontWeight: 500,
+              borderRadius: '100%',
+            }}
+          >
+            3
+          </div>
+          <div
+            style={{
+              marginLeft: '5px',
+              color: color.primary,
+              fontWeight: 600,
+            }}
+          >
+            Finish
+          </div>
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div
+        style={{
+          marginTop: '20px',
+          width: '58%',
+          marginBottom: '10px',
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontWeight: 500,
+        }}
+      >
+        <div
+          style={{
+            minWidth: '103px',
+            color: 'rgba(183, 183, 183, 1)',
+            fontWeight: 500,
+          }}
+        >
+          m Your Booking
+        </div>
+        <hr
+          style={{
+            width: '50%',
+            padding: 0,
+            margin: '0 7px',
+            backgroundColor: 'rgba(183, 183, 183, 1)',
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: '24px',
+              height: '24px',
+              lineHeight: '24px',
+              textAlign: 'center',
+              backgroundColor: color.primary,
+              color: 'white',
+              fontWeight: 500,
+              borderRadius: '100%',
+            }}
+          >
+            3
+          </div>
+          <div
+            style={{
+              marginLeft: '5px',
+              color: color.primary,
+              fontWeight: 600,
+            }}
+          >
+            Finish
+          </div>
+        </div>
+      </div>
+    );
+  }
+};
+const RenderHr = ({ color }) => {
+  return (
+    <div
+      style={{
+        width: '93%',
+        backgroundColor: `${color.primary}10`,
+        padding: '10px 0px',
+        margin: 'auto',
+        display: 'grid',
+        gridTemplateColumns: '50px 1fr 50px',
+        gridTemplateRows: '1fr',
+        gridAutoColumns: '1fr',
+        gap: '0px 0px',
+        gridAutoFlow: 'row',
+        gridTemplateAreas: '". . ."',
+      }}
+    >
+      <div
+        style={{
+          width: '30px',
+          backgroundColor: 'white',
+          height: '37px',
+          borderRadius: '100%',
+          marginLeft: '-10px',
+          color: 'transparent',
+        }}
+      >
+        p
+      </div>
+      <div style={{ width: '100%', color: 'transparent' }}>p</div>
+      <div
+        style={{
+          justifySelf: 'end',
+          width: '30px',
+          backgroundColor: 'white',
+          height: '37px',
+          borderRadius: '100%',
+          marginRight: '-10px',
+          color: 'transparent',
+        }}
+      >
+        p
+      </div>
+    </div>
+  );
+};
+
+const ButtonPrice = ({ color, dispatch, changeFormatURlBookingSubmitted }) => {
+  return (
+    <div
+      onClick={() => {
+        dispatch({
+          type: CONSTANT.TAB_STATE_HISTORY,
+          payload: 'Appointment',
+        });
+        dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
+        window.location.href = changeFormatURlBookingSubmitted('/history');
+      }}
+      style={{
+        width: '93%',
+        margin: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: color.primary,
+        color: 'white',
+        borderRadius: '10px',
+        padding: '5px',
+        fontSize: '14px',
+        fontWeight: 600,
+      }}
+    >
+      View Booking History
+    </div>
+  );
+};
+
 const BookingSubmitted = () => {
   const dispatch = useDispatch();
   const ref = createRef();
@@ -42,14 +250,14 @@ const BookingSubmitted = () => {
     };
   }, []);
 
-  const settingAppoinmentShowPrice = setting.find((items) => {
-    return items.settingKey === 'ShowServicePrice';
-  });
   const settingAppoinment = setting.find((items) => {
     return items.settingKey === 'EnableAdditionalInfoBookingSummary';
   });
+  const settingAppoinmentShowPrice = setting.find((items) => {
+    return items.settingKey === 'ShowServicePrice';
+  });
 
-  const handleCurrency = (price) => {
+  const handleCurrencyBookingSubmitted = (price) => {
     if (price) {
       const result = price.toLocaleString(companyInfo?.currency?.locale, {
         style: 'currency',
@@ -59,7 +267,7 @@ const BookingSubmitted = () => {
       return result;
     }
   };
-  const changeFormatURl = (path) => {
+  const changeFormatURlBookingSubmitted = (path) => {
     const url = window.location.href;
     let urlConvert = url.replace(/\/[^/]+$/, path);
     return urlConvert;
@@ -71,7 +279,7 @@ const BookingSubmitted = () => {
 
   useEffect(() => {
     const handlePopstate = () => {
-      window.location.href = changeFormatURl('/history');
+      window.location.href = changeFormatURlBookingSubmitted('/history');
     };
 
     window.addEventListener('popstate', handlePopstate);
@@ -101,138 +309,6 @@ const BookingSubmitted = () => {
       gridTemplateAreas: '". . ."',
       cursor: 'pointer',
     },
-  };
-
-  const Timeline = () => {
-    if (gadgetScreen) {
-      return (
-        <div
-          style={{
-            width: '58%',
-            marginTop: '40px',
-            marginBottom: '10px',
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontWeight: 500,
-          }}
-        >
-          <div
-            style={{
-              minWidth: '103px',
-              color: 'rgba(183, 183, 183, 1)',
-              fontWeight: 500,
-            }}
-          >
-            m Your Booking
-          </div>
-          <hr
-            style={{
-              width: '100%',
-              padding: 0,
-              margin: '0 7px',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-            }}
-          />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                minWidth: '24px',
-                height: '24px',
-                lineHeight: '24px',
-                textAlign: 'center',
-                backgroundColor: color.primary,
-                color: 'white',
-                fontWeight: 500,
-                borderRadius: '100%',
-              }}
-            >
-              3
-            </div>
-            <div
-              style={{
-                marginLeft: '5px',
-                color: color.primary,
-                fontWeight: 600,
-              }}
-            >
-              Finish
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div
-          style={{
-            width: '58%',
-            marginTop: '20px',
-            marginBottom: '10px',
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontWeight: 500,
-          }}
-        >
-          <div
-            style={{
-              minWidth: '103px',
-              color: 'rgba(183, 183, 183, 1)',
-              fontWeight: 500,
-            }}
-          >
-            m Your Booking
-          </div>
-          <hr
-            style={{
-              width: '50%',
-              padding: 0,
-              margin: '0 7px',
-              backgroundColor: 'rgba(183, 183, 183, 1)',
-            }}
-          />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                lineHeight: '24px',
-                textAlign: 'center',
-                backgroundColor: color.primary,
-                color: 'white',
-                fontWeight: 500,
-                borderRadius: '100%',
-              }}
-            >
-              3
-            </div>
-            <div
-              style={{
-                marginLeft: '5px',
-                color: color.primary,
-                fontWeight: 600,
-              }}
-            >
-              Finish
-            </div>
-          </div>
-        </div>
-      );
-    }
   };
 
   const MessageAndLabel = () => {
@@ -267,7 +343,7 @@ const BookingSubmitted = () => {
       </div>
     );
   };
-  const BookingDetail = () => {
+  const BookingDetailsubmitted = () => {
     return (
       <div
         style={{
@@ -326,8 +402,7 @@ const BookingSubmitted = () => {
                   fontSize: '14px',
                 }}
               >
-                {responseSubmit.serviceTime?.start} -{' '}
-                {responseSubmit.serviceTime?.end}
+                {responseSubmit.serviceTime?.start}
               </div>
             </div>
             <div>
@@ -395,7 +470,7 @@ const BookingSubmitted = () => {
     );
   };
 
-  const BookingNotes = () => {
+  const BookingNotesSubmitted = () => {
     return (
       <div
         style={{
@@ -421,7 +496,7 @@ const BookingSubmitted = () => {
       </div>
     );
   };
-  const ServiceDetail = () => {
+  const ServiceDetailSubmitted = () => {
     return (
       <div
         style={{
@@ -472,7 +547,7 @@ const BookingSubmitted = () => {
                 }}
               >
                 {settingAppoinmentShowPrice?.settingValue
-                  ? handleCurrency(item.product.retailPrice)
+                  ? handleCurrencyBookingSubmitted(item.product.retailPrice)
                   : convertTimeToStr(item.product.duration)}
               </div>
             </div>
@@ -507,7 +582,7 @@ const BookingSubmitted = () => {
               }}
             >
               {settingAppoinmentShowPrice?.settingValue
-                ? handleCurrency(responseSubmit.totalNettAmount)
+                ? handleCurrencyBookingSubmitted(responseSubmit.totalNettAmount)
                 : convertTimeToStr(responseSubmit.totalDuration)}
             </div>
           </div>
@@ -558,81 +633,6 @@ const BookingSubmitted = () => {
     }
   };
 
-  const ButtonPrice = () => {
-    return (
-      <div
-        onClick={() => {
-          dispatch({
-            type: CONSTANT.TAB_STATE_HISTORY,
-            payload: 'Appointment',
-          });
-          dispatch({ type: CONSTANT.INDEX_FOOTER, payload: 1 });
-          window.location.href = changeFormatURl('/history');
-        }}
-        style={{
-          width: '93%',
-          margin: 'auto',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: color.primary,
-          color: 'white',
-          borderRadius: '10px',
-          padding: '5px',
-          fontSize: '14px',
-          fontWeight: 600,
-        }}
-      >
-        View Booking History
-      </div>
-    );
-  };
-  const RenderHr = () => {
-    return (
-      <div
-        style={{
-          width: '93%',
-          backgroundColor: `${color.primary}10`,
-          padding: '10px 0px',
-          margin: 'auto',
-          display: 'grid',
-          gridTemplateColumns: '50px 1fr 50px',
-          gridTemplateRows: '1fr',
-          gridAutoColumns: '1fr',
-          gap: '0px 0px',
-          gridAutoFlow: 'row',
-          gridTemplateAreas: '". . ."',
-        }}
-      >
-        <div
-          style={{
-            width: '30px',
-            backgroundColor: 'white',
-            height: '37px',
-            borderRadius: '100%',
-            marginLeft: '-10px',
-            color: 'transparent',
-          }}
-        >
-          p
-        </div>
-        <div style={{ width: '100%', color: 'transparent' }}>p</div>
-        <div
-          style={{
-            justifySelf: 'end',
-            width: '30px',
-            backgroundColor: 'white',
-            height: '37px',
-            borderRadius: '100%',
-            marginRight: '-10px',
-            color: 'transparent',
-          }}
-        >
-          p
-        </div>
-      </div>
-    );
-  };
   const RenderMainContent = () => {
     return (
       <div style={{ height: '80vh ', overflowY: 'auto' }}>
@@ -642,10 +642,10 @@ const BookingSubmitted = () => {
           }}
         >
           <MessageAndLabel />
-          <BookingDetail />
-          <BookingNotes />
-          <RenderHr />
-          <ServiceDetail />
+          <BookingDetailsubmitted />
+          <BookingNotesSubmitted />
+          <RenderHr color={color} />
+          <ServiceDetailSubmitted />
           <Information />
         </div>
         <Paper
@@ -672,12 +672,17 @@ const BookingSubmitted = () => {
                 }
           }
         >
-          <ButtonPrice />
+          <ButtonPrice
+            changeFormatURlBookingSubmitted={changeFormatURlBookingSubmitted}
+            color={color}
+            dispatch={dispatch}
+          />
         </Paper>
       </div>
     );
   };
-  const ResponsiveLayout = () => {
+
+  const responsiveLayout = () => {
     if (gadgetScreen) {
       return (
         <div
@@ -692,7 +697,7 @@ const BookingSubmitted = () => {
             gridTemplateAreas: '"."\n    "."',
           }}
         >
-          <Timeline />
+          <Timeline color={color} gadgetScreen={gadgetScreen} />
           <RenderMainContent />
         </div>
       );
@@ -700,14 +705,18 @@ const BookingSubmitted = () => {
       return (
         <div className={fontStyles.myFont} style={{ width: '100vw' }}>
           <div style={styleSheet.container}>
-            <Timeline />
+            <Timeline color={color} gadgetScreen={gadgetScreen} />
             <MessageAndLabel />
-            <BookingDetail />
-            <BookingNotes />
-            <RenderHr />
-            <ServiceDetail />
+            <BookingDetailsubmitted />
+            <BookingNotesSubmitted />
+            <RenderHr color={color} />
+            <ServiceDetailSubmitted />
             <Information />
-            <ButtonPrice />
+            <ButtonPrice
+              changeFormatURlBookingSubmitted={changeFormatURlBookingSubmitted}
+              color={color}
+              dispatch={dispatch}
+            />
           </div>
         </div>
       );
@@ -716,7 +725,7 @@ const BookingSubmitted = () => {
 
   return (
     <React.Fragment>
-      <ResponsiveLayout />
+      {responsiveLayout()}
       {showConfetti && <Confetti />}
     </React.Fragment>
   );
