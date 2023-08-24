@@ -123,11 +123,15 @@ const RenderItemService = ({
             )}
             <div
               style={{
-                fontSize: '13px',
+                fontSize:
+                  convertTimeToStr(item.duration).length <= 10
+                    ? '13px'
+                    : '10px',
+                fontWeight:
+                  convertTimeToStr(item.duration).length <= 10 ? 500 : 'bold',
                 marginLeft: '5px',
-                color: 'rgba(255, 255, 255, 1)',
+                color: color.primary,
                 display: 'flex',
-                fontWeight: 500,
               }}
             >
               {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
@@ -206,48 +210,105 @@ const RenderItemService = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
+            marginTop: '15px',
           }}
         >
-          <div style={{ width: '100%' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: item.duration && `${color.primary}10`,
+              borderRadius: '15px',
+              width: 'fit-content',
+              padding: '0px 10px',
+            }}
+          >
+            {item.duration && <HistoryTimeIcon color={color.primary} />}
             <div
               style={{
+                fontSize:
+                  convertTimeToStr(item.duration).length <= 10
+                    ? '13px'
+                    : '10px',
+                fontWeight:
+                  convertTimeToStr(item.duration).length <= 10 ? 500 : 'bold',
+                marginLeft: '5px',
+                color: color.primary,
                 display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: item.duration && `${color.primary}10`,
-                borderRadius: '15px',
-                width: 'fit-content',
-                padding: '0px 10px',
               }}
             >
-              {item.duration && <HistoryTimeIcon color={color.primary} />}
-              <div style={localStyle.label30mins}>
-                {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
-              </div>
+              {item?.duration && <div>{convertTimeToStr(item.duration)}</div>}
             </div>
           </div>
-          {item?.cutPrice ? (
-            <div style={localStyle.containerCutPrice}>
-              <div style={localStyle.containerCutPrice.labelPrice}>
-                {settingAppoinment && handleCurrency(item.retailPrice)}
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {item?.cutPrice ? (
+              <div
+                style={{
+                  display: 'flex',
+                  fontSize: item?.cutPrice ? '12px' : '14px',
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: 600,
+                    color: color.primary,
+                  }}
+                >
+                  {settingAppoinment && handleCurrency(item.retailPrice)}
+                </div>
+                <div
+                  style={{
+                    marginLeft: '5px',
+                    textDecorationLine: 'line-through',
+                    opacity: 0.5,
+                    fontWeight: 600,
+                  }}
+                >
+                  {settingAppoinment && handleCurrency(item?.cutPrice)}
+                </div>
               </div>
-              <div style={localStyle.containerCutPrice.labelCutPrice}>
-                {settingAppoinment && handleCurrency(item?.cutPrice)}
+            ) : (
+              <div
+                style={{
+                  justifySelf: 'end',
+                  display: 'flex',
+                  fontSize: item?.cutPrice ? '12px' : '14px',
+                }}
+              >
+                <div
+                  style={{
+                    marginLeft: '5px',
+                    textDecorationLine: 'line-through',
+                    opacity: 0.5,
+                    fontWeight: 600,
+                  }}
+                >
+                  {settingAppoinment && handleCurrency(item.retailPrice)}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div style={localStyle.containerPrice}>
-              <div style={localStyle.containerPrice.labelPrice}>
-                {settingAppoinment && handleCurrency(item.retailPrice)}
-              </div>
-            </div>
-          )}
-          <div style={localStyle.button}>
+            )}
+
             <button
               onClick={() => {
                 setIsOpenModalDetail(true);
               }}
-              style={localStyle.button.labelButton}
+              style={{
+                width: '100%',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'white',
+                padding: '8px 16px',
+                marginLeft: '5px',
+              }}
             >
               {isCheckedService ? 'UPDATE' : 'BOOK'}
             </button>
@@ -319,42 +380,10 @@ const ItemService = ({
       gap: '0px 0px',
       alignItems: 'center',
     },
-    label30mins: {
-      fontSize: '13px',
-      marginLeft: '5px',
-      color: color.primary,
-      display: 'flex',
-    },
-    containerCutPrice: {
-      justifySelf: 'end',
-      display: 'flex',
-      fontSize: item?.cutPrice ? '12px' : '14px',
-      labelPrice: { fontWeight: 600, color: color.primary },
-      labelCutPrice: {
-        marginLeft: '5px',
-        textDecorationLine: 'line-through',
-        opacity: 0.5,
-        fontWeight: 600,
-      },
-    },
     containerPrice: {
       justifySelf: 'end',
       fontSize: item?.cutPrice ? '12px' : '16px',
       labelPrice: { fontWeight: 600, color: color.primary },
-    },
-    button: {
-      justifySelf: 'center',
-      width: '75px',
-      display: 'flex',
-      justifyContent: 'center',
-      labelButton: {
-        width: '100%',
-        borderRadius: '8px',
-        fontSize: '12px',
-        fontWeight: 600,
-        color: 'white',
-        padding: '8px 16px',
-      },
     },
     containerUnavailable: {
       padding: '0px 10px',
