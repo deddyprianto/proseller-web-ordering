@@ -130,7 +130,7 @@ const RenderItemService = ({
                 fontWeight:
                   convertTimeToStr(item.duration).length <= 10 ? 500 : 'bold',
                 marginLeft: '5px',
-                color: color.primary,
+                color: 'rgba(255, 255, 255, 1)',
                 display: 'flex',
               }}
             >
