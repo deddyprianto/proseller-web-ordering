@@ -546,6 +546,28 @@ const Cart = () => {
 
   const [dataCalculateFee, setDataCalculateFee] = useState();
   const [isSelectedOrderingMode, setIsSelectedOrderingMode] = useState(false);
+  const [validationOrdering, setValidationOrdering] = useState({});
+
+  function convertToCamelCase(inputString) {
+    return (
+      inputString.charAt(0).toLowerCase() + inputString.slice(1).toLowerCase()
+    );
+  }
+
+  useEffect(() => {
+    if (orderingMode) {
+      for (const key in defaultOutlet.orderValidation) {
+        if (defaultOutlet.orderValidation.hasOwnProperty(key)) {
+          const camelCase = convertToCamelCase(key);
+          const orderingModeCamelCase = convertToCamelCase(orderingMode);
+          if (camelCase === orderingModeCamelCase) {
+            setValidationOrdering(defaultOutlet.orderValidation[key]);
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderingMode]);
 
   useEffect(() => {
     if (orderingMode !== 'DELIVERY') {
@@ -715,7 +737,6 @@ const Cart = () => {
     dispatch(PaymentAction.clearAll());
   }, [dispatch]);
 
-
   const handleCurrency = (price) => {
     if (companyInfo) {
       const result = price?.toLocaleString(companyInfo?.currency?.locale, {
@@ -745,6 +766,7 @@ const Cart = () => {
             type: 'SET_ORDERING_MODE',
             payload: item.name,
           });
+
           const responseChangeOrderingMode = await dispatch(
             OrderAction.changeOrderingMode({
               orderingMode: item.name,
@@ -933,9 +955,59 @@ const Cart = () => {
   };
 
   const handleConfirmAndPay = () => {
+    const totalQty = basket.details.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+
+    if (
+      validationOrdering?.minQty !== 0 &&
+      totalQty < validationOrdering?.minQty
+    ) {
+      return Swal.fire({
+        title: `Min total quantity allowed per transaction for the order mode is ${validationOrdering.minQty}`,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color?.primary,
+      });
+    }
+    if (
+      validationOrdering?.maxQty !== 0 &&
+      totalQty > validationOrdering?.maxQty
+    ) {
+      return Swal.fire({
+        title: `Max total quantity allowed per transaction for the order mode is ${validationOrdering.maxQty}`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color?.primary,
+      });
+    }
+
+    if (
+      validationOrdering?.minAmount !== 0 &&
+      basket?.totalNettAmount < validationOrdering?.minAmount
+    ) {
+      return Swal.fire({
+        title: `Min total amount allowed per transaction for the order mode $ ${validationOrdering.minAmount}`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color?.primary,
+      });
+    }
+
+    if (
+      validationOrdering?.maxAmount !== 0 &&
+      basket?.totalNettAmount > validationOrdering?.maxAmount
+    ) {
+      return Swal.fire({
+        title: `Max total amount allowed per transaction for the order mode $ ${validationOrdering.maxAmount}`,
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+        confirmButtonColor: color?.primary,
+      });
+    }
+
     !defaultOutlet.enableTableNumber &&
       dispatch({ type: CONSTANT.NO_TABLE, payload: '' });
-
     if (
       basket &&
       deliveryAddress &&
@@ -963,7 +1035,6 @@ const Cart = () => {
       );
       history.push('/payment');
     }
-
     history.push('/payment');
   };
 
@@ -1623,6 +1694,7 @@ const Cart = () => {
         )}
         {openTimeSlot && (
           <TimeSlotDialog
+            validationOrdering={validationOrdering}
             open={openTimeSlot}
             onClose={() => handleCloseTimeSlot()}
           />

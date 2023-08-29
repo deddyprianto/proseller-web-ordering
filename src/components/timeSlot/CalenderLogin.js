@@ -261,7 +261,7 @@ const useStyles = (mobileSize, color) => ({
   },
 });
 
-const CalendarLogin = ({ onClose }) => {
+const CalendarLogin = ({ onClose, isMaxDays }) => {
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
@@ -279,9 +279,6 @@ const CalendarLogin = ({ onClose }) => {
   const [dateActive, setDateActive] = useState('');
   const [monthActive, setMonthActive] = useState('');
   const [yearActive, setYearActive] = useState('');
-  const { orderingModeGuestCheckout } = useSelector(
-    (state) => state.guestCheckoutCart
-  );
   const saveTimeSlotCalendarLogin = useSelector(
     (state) => state.order.saveTimeSlotCalendarLogin
   );
@@ -403,9 +400,7 @@ const CalendarLogin = ({ onClose }) => {
         clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
         date: moment(dateTime).format('YYYY-MM-DD'),
         maxDays: 90,
-        orderingMode: orderingModeGuestCheckout
-          ? orderingModeGuestCheckout
-          : orderingMode,
+        orderingMode: orderingMode,
         outletID: dataTime?.sortKey,
       };
 
@@ -843,9 +838,9 @@ const CalendarLogin = ({ onClose }) => {
   };
 
   const renderConfirmButton = () => {
-    const buttonDisabled = !selectTimeDropDown ? true : false;
+    const buttonDisabled = !selectTimeDropDown;
 
-    const disableApplyButton = dateActive ? false : true;
+    const disableApplyButton = !dateActive;
 
     if (selector === 'date' || selector === 'month' || selector === 'year') {
       return (
@@ -963,6 +958,12 @@ const CalendarLogin = ({ onClose }) => {
   }
 
   const renderChildTimeSlotScrool = (arrayDate) => {
+    if (isMaxDays !== 0) {
+      const data = arrayDate;
+      const modifyLengthArray = isMaxDays;
+
+      data.length = modifyLengthArray;
+    }
     return arrayDate?.map((itemDate) => {
       const baseStyleStack = {
         width: '80px',
@@ -978,50 +979,56 @@ const CalendarLogin = ({ onClose }) => {
         borderRadius: 100,
       };
 
-      const stackStyle =
-        changeFormatDate(itemDate) === saveValueEdit ||
-        changeFormatDate(itemDate) === getDateBaseOnClick
-          ? {
-              ...baseStyleStack,
-              backgroundColor: color.primary,
-              border: `1px solid ${color.primary}80`,
-              color: 'white',
-            }
-          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-          ? {
-              ...baseStyleStack,
-              backgroundColor: 'white',
-              border: `1px solid ${color.primary}80`,
-              color: 'gray',
-              opacity: '.4',
-              pointerEvents: 'none',
-              cursor: 'not-allowed',
-            }
-          : {
-              ...baseStyleStack,
-              backgroundColor: 'white',
-              border: `1px solid ${color.primary}80`,
-              color: color.primary,
-            };
+      const stackStyles = { ...baseStyleStack };
+      const isItemDateOutOfRange = !compareDateLocalWithDateApi(
+        changeFormatDate(itemDate)
+      );
+      const isItemDateSameAsSaveValueEdit =
+        changeFormatDate(itemDate) === saveValueEdit;
 
-      const cycleStyle =
-        changeFormatDate(itemDate) === saveValueEdit ||
-        changeFormatDate(itemDate) === getDateBaseOnClick
-          ? {
-              ...baseCycleStyle,
-              color: color.primary,
-              backgroundColor: 'white',
-            }
-          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
-          ? {
-              ...baseCycleStyle,
-              backgroundColor: color.primary,
-            }
-          : {
-              ...baseCycleStyle,
-              backgroundColor: color.primary,
-              color: 'white',
-            };
+      const isItemDateSameAsDateBaseOnClick =
+        changeFormatDate(itemDate) === getDateBaseOnClick;
+
+      if (isItemDateOutOfRange) {
+        stackStyles.backgroundColor = 'white';
+        stackStyles.border = `1px solid ${color.primary}80`;
+        stackStyles.color = 'gray';
+        stackStyles.opacity = '.4';
+        stackStyles.pointerEvents = 'none';
+        stackStyles.cursor = 'not-allowed';
+      } else if (
+        isItemDateSameAsSaveValueEdit ||
+        isItemDateSameAsDateBaseOnClick
+      ) {
+        stackStyles.backgroundColor = color.primary;
+        stackStyles.border = `1px solid ${color.primary}80`;
+        stackStyles.color = 'white';
+      } else {
+        stackStyles.backgroundColor = 'white';
+        stackStyles.border = `1px solid ${color.primary}80`;
+        stackStyles.color = color.primary;
+      }
+
+      const cycleStyle = { ...baseCycleStyle };
+
+      const isItemDateOutOfRangeCycle = !compareDateLocalWithDateApi(
+        changeFormatDate(itemDate)
+      );
+
+      const handleValueEdit = changeFormatDate(itemDate) === saveValueEdit;
+
+      const handleValueOnclickDate =
+        changeFormatDate(itemDate) === getDateBaseOnClick;
+
+      if (isItemDateOutOfRangeCycle) {
+        cycleStyle.backgroundColor = color.primary;
+      } else if (handleValueEdit || handleValueOnclickDate) {
+        cycleStyle.color = color.primary;
+        cycleStyle.backgroundColor = 'white';
+      } else {
+        cycleStyle.backgroundColor = color.primary;
+        cycleStyle.color = 'white';
+      }
 
       return (
         <SwiperSlide
@@ -1032,7 +1039,7 @@ const CalendarLogin = ({ onClose }) => {
             direction='column'
             alignItems='center'
             justifyContent='space-around'
-            sx={stackStyle}
+            sx={stackStyles}
             onClick={() => {
               setSelectTimeDropDown('');
               setselectTime(changeFormatDate(itemDate));
@@ -1084,6 +1091,69 @@ const CalendarLogin = ({ onClose }) => {
         return renderChildTimeSlotScrool(getAllDateForTimeSlot);
       }
     }
+  };
+
+  const renderSelectedDate = () => {
+    let dateToDisplay = '';
+
+    if (saveDateLogin) {
+      dateToDisplay = moment(saveValueEdit).format('DD');
+    } else if (selectTime) {
+      dateToDisplay = moment(selectTime).format('DD');
+    }
+
+    let monthToDisplay = '';
+    if (saveDateLogin) {
+      monthToDisplay = `${moment(saveValueEdit)
+        .format('MM')
+        .toLocaleUpperCase()} / `;
+    } else if (selectTime) {
+      monthToDisplay = `${moment(selectTime)
+        .format('MM')
+        .toLocaleUpperCase()} / `;
+    }
+
+    let yearToDisplay = '';
+    if (saveDateLogin) {
+      yearToDisplay = moment(saveValueEdit).format('YYYY').toLocaleUpperCase();
+    } else if (selectTime) {
+      yearToDisplay = moment(selectTime).format('YYYY').toLocaleUpperCase();
+    }
+
+    let timeSlotToDisplay = '';
+    if (timeslot?.timeslot) {
+      timeSlotToDisplay = `At ${timeslot.timeslot}`;
+    } else if (selectTimeDropDown) {
+      timeSlotToDisplay = `At ${selectTimeDropDown}`;
+    }
+
+    return (
+      <Stack
+        direction='column'
+        justifyContent='center'
+        alignItems='flex-end'
+        spacing={{ xs: '4px', sm: 1, lg: 1 }}
+        style={{ width: '50%' }}
+      >
+        <div style={{ display: 'flex' }}>
+          <Typography sx={styles.textChooseDateTime}>
+            {dateToDisplay}
+          </Typography>
+
+          <Typography sx={styles.textChooseDateTime}>
+            {monthToDisplay}
+          </Typography>
+          <Typography sx={styles.textChooseDateTime}>
+            {yearToDisplay}
+          </Typography>
+        </div>
+        <div style={{ display: 'flex' }}>
+          <Typography sx={styles.textChooseDateTime}>
+            {timeSlotToDisplay}
+          </Typography>
+        </div>
+      </Stack>
+    );
   };
 
   const renderAvailableText = () => {
@@ -1170,48 +1240,7 @@ const CalendarLogin = ({ onClose }) => {
           >
             Chosen Date & Time
           </Typography>
-          <Stack
-            direction='column'
-            justifyContent='center'
-            alignItems='flex-end'
-            spacing={{ xs: '4px', sm: 1, lg: 1 }}
-            style={{ width: '50%' }}
-          >
-            <div style={{ display: 'flex' }}>
-              <Typography sx={styles.textChooseDateTime}>
-                {saveDateLogin
-                  ? `${moment(saveValueEdit).format('DD')} /`
-                  : selectTime
-                  ? `${moment(selectTime).format('DD')} /`
-                  : ''}
-              </Typography>
-              <Typography sx={styles.textChooseDateTime}>
-                {saveDateLogin
-                  ? `${moment(saveValueEdit)
-                      .format('MM')
-                      .toLocaleUpperCase()} / `
-                  : selectTime
-                  ? `${moment(selectTime).format('MM').toLocaleUpperCase()} / `
-                  : ''}
-              </Typography>
-              <Typography sx={styles.textChooseDateTime}>
-                {saveDateLogin
-                  ? moment(saveValueEdit).format('YYYY').toLocaleUpperCase()
-                  : selectTime
-                  ? moment(selectTime).format('YYYY').toLocaleUpperCase()
-                  : ''}
-              </Typography>
-            </div>
-            <div style={{ display: 'flex' }}>
-              <Typography sx={styles.textChooseDateTime}>
-                {timeslot?.timeslot
-                  ? `At ${timeslot.timeslot}`
-                  : selectTimeDropDown
-                  ? `At ${selectTimeDropDown}`
-                  : ''}
-              </Typography>
-            </div>
-          </Stack>
+          {renderSelectedDate()}
         </Stack>
       </Stack>
     );
@@ -1228,14 +1257,23 @@ const CalendarLogin = ({ onClose }) => {
         <Swiper style={styles.swiper} slidesPerView='auto' spaceBetween={12}>
           {renderTimeScroll()}
         </Swiper>
-        <div style={styles.wrapSeeMoreDate} onClick={() => setSelector('date')}>
-          <Typography
-            sx={{ color: color.primary, fontWeight: 'bold', fontSize: '12px' }}
+        {isMaxDays === 0 && (
+          <div
+            style={styles.wrapSeeMoreDate}
+            onClick={() => setSelector('date')}
           >
-            See More Date
-          </Typography>
-          <KeyboardArrowRight style={{ color: '#4D86A0' }} />
-        </div>
+            <Typography
+              sx={{
+                color: color.primary,
+                fontWeight: 'bold',
+                fontSize: '12px',
+              }}
+            >
+              See More Date
+            </Typography>
+            <KeyboardArrowRight style={{ color: '#4D86A0' }} />
+          </div>
+        )}
         {renderAvailableText()}
       </Stack>
     );
