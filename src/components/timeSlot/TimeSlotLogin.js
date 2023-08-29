@@ -30,7 +30,8 @@ const useStyles = () => ({
     marginBottom: 2,
   },
 });
-const TimeSlotLogin = ({ open, onClose }) => {
+const TimeSlotLogin = ({ open, onClose, validationOrdering }) => {
+  const isMaxDays = validationOrdering?.maxDays;
   const useStyless = makeStyles(() => ({
     paper: { minWidth: '340px', borderRadius: '100px' },
   }));
@@ -65,7 +66,11 @@ const TimeSlotLogin = ({ open, onClose }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Calendar setIsLoading={setIsLoading} onClose={onClose} />
+        <Calendar
+          isMaxDays={isMaxDays}
+          setIsLoading={setIsLoading}
+          onClose={onClose}
+        />
       </DialogContent>
     </Dialog>
   );

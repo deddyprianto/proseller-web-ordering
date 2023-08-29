@@ -566,6 +566,7 @@ const Cart = () => {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderingMode]);
 
   useEffect(() => {
@@ -1693,6 +1694,7 @@ const Cart = () => {
         )}
         {openTimeSlot && (
           <TimeSlotDialog
+            validationOrdering={validationOrdering}
             open={openTimeSlot}
             onClose={() => handleCloseTimeSlot()}
           />
