@@ -1243,8 +1243,8 @@ const Cart = () => {
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  {(companyInfo?.companyName === 'newmujicafe' ||
-                    companyInfo?.companyName === 'Muji') &&
+                  {(companyInfo?.companyName === 'Muji' ||
+                    companyInfo?.companyName === 'newmujicafe') &&
                   orderingMode === 'TAKEAWAY'
                     ? 'Takeaway Surcharge'
                     : 'Service Charge'}
