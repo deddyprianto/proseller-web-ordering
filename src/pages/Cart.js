@@ -1243,7 +1243,11 @@ const Cart = () => {
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  Service Charge
+                  {(companyInfo?.companyName === 'Muji' ||
+                    companyInfo?.companyName === 'newmujicafe') &&
+                  orderingMode === 'TAKEAWAY'
+                    ? 'Takeaway Surcharge'
+                    : 'Service Charge'}
                 </Typography>
                 <Typography
                   className={fontStyleCustom.myFont}

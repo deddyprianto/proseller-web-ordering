@@ -1808,7 +1808,7 @@ const CartGuestCheckout = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
-          margin: '0px'
+          margin: '0px',
         }}
       >
         <div
@@ -1833,7 +1833,7 @@ const CartGuestCheckout = () => {
             X
           </div>
         </div>
-        <div style={{ width: '100%',margin: '0px' }}>
+        <div style={{ width: '100%', margin: '0px' }}>
           <hr
             style={{
               backgroundColor: '#D6D6D6',
@@ -1854,7 +1854,7 @@ const CartGuestCheckout = () => {
             paddingRight: '10px',
           }}
         >
-          <>
+          <React.Fragment>
             <div style={styles.rootSubTotalItem}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -1870,9 +1870,10 @@ const CartGuestCheckout = () => {
               </Typography>
             </div>
             <div style={styles.gapContainer} />
-          </>
+          </React.Fragment>
+
           {basket?.totalDiscountAmount !== 0 && (
-            <>
+            <React.Fragment>
               <div style={styles.rootSubTotalItem}>
                 <Typography
                   className={fontStyleCustom.myFont}
@@ -1888,16 +1889,21 @@ const CartGuestCheckout = () => {
                 </Typography>
               </div>
               <div style={styles.gapContainer} />
-            </>
+            </React.Fragment>
           )}
+
           {basket?.totalSurchargeAmount !== 0 && (
-            <>
+            <React.Fragment>
               <div style={styles.rootSubTotalItem}>
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  Service Charge
+                  {(companyInfo?.companyName === 'Muji' ||
+                    companyInfo?.companyName === 'newmujicafe') &&
+                  orderingModeGuestCheckout === 'TAKEAWAY'
+                    ? 'Takeaway Surcharge'
+                    : 'Service Charge'}
                 </Typography>
                 <Typography
                   className={fontStyleCustom.myFont}
@@ -1909,10 +1915,10 @@ const CartGuestCheckout = () => {
               <div style={styles.gapContainer}>
                 <hr style={styles.gap} />
               </div>
-            </>
+            </React.Fragment>
           )}
 
-          <>
+          <React.Fragment>
             <div style={styles.rootSubTotalItem}>
               <Typography
                 className={fontStyleCustom.myFont}
@@ -1932,10 +1938,10 @@ const CartGuestCheckout = () => {
               </Typography>
             </div>
             <div style={styles.gapContainer} />
-          </>
+          </React.Fragment>
 
           {basket?.orderingMode === 'DELIVERY' && (
-            <>
+            <React.Fragment>
               {basket?.provider?.deliveryFee !== 0 && (
                 <div style={styles.rootSubTotalItem}>
                   <Typography
@@ -1970,11 +1976,11 @@ const CartGuestCheckout = () => {
                 </div>
               ) : null}
               <div style={styles.gapContainer} />
-            </>
+            </React.Fragment>
           )}
 
           {basket?.totalTaxAmount > 0 && (
-            <>
+            <React.Fragment>
               <div style={styles.rootSubTotalItem}>
                 <Typography
                   className={fontStyleCustom.myFont}
@@ -1990,10 +1996,14 @@ const CartGuestCheckout = () => {
                 </Typography>
               </div>
               <div style={styles.gapContainer} />
-            </>
+            </React.Fragment>
           )}
 
-          <div style={styles.bottomLineContainer}>
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
             <hr style={styles.gap} />
           </div>
 
@@ -2001,6 +2011,7 @@ const CartGuestCheckout = () => {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              margin:'0px'
             }}
           >
             <p
