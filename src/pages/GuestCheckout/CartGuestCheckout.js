@@ -1897,7 +1897,8 @@ const CartGuestCheckout = () => {
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  {companyInfo?.companyName === 'newmujicafe' &&
+                  {(companyInfo?.companyName === 'newmujicafe' ||
+                    companyInfo?.companyName === 'Muji') &&
                   orderingModeGuestCheckout === 'TAKEAWAY'
                     ? 'Takeaway Surcharge'
                     : 'Service Charge'}
