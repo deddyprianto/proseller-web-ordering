@@ -1808,7 +1808,7 @@ const CartGuestCheckout = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
-          margin: '0px'
+          margin: '0px',
         }}
       >
         <div
@@ -1833,7 +1833,7 @@ const CartGuestCheckout = () => {
             X
           </div>
         </div>
-        <div style={{ width: '100%',margin: '0px' }}>
+        <div style={{ width: '100%', margin: '0px' }}>
           <hr
             style={{
               backgroundColor: '#D6D6D6',
@@ -1897,7 +1897,10 @@ const CartGuestCheckout = () => {
                   className={fontStyleCustom.myFont}
                   style={styles.subTotal}
                 >
-                  Service Charge
+                  {companyInfo?.companyName === 'newmujicafe' &&
+                  orderingModeGuestCheckout === 'TAKEAWAY'
+                    ? 'Takeaway Surcharge'
+                    : 'Service Charge'}
                 </Typography>
                 <Typography
                   className={fontStyleCustom.myFont}
