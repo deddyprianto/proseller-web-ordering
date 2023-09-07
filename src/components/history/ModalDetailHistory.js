@@ -60,8 +60,15 @@ class ModalDetailHistory extends Component {
   };
 
   render() {
-    const { detail } = this.props;
+    const { detail, companyInfo } = this.props;
     let discount = 0;
+    const handleNaming =
+      (companyInfo?.companyName === 'Muji' ||
+        companyInfo?.companyName === 'newmujicafe') &&
+      detail?.orderingMode === 'TAKEAWAY'
+        ? 'TAKEAWAY SURCHARGE'
+        : 'SERVICE CHARGE';
+
     if (detail?.payments) {
       detail.payments.forEach((items) => {
         if (
@@ -457,6 +464,32 @@ class ModalDetailHistory extends Component {
                       )}
                     </div>
                   </div>
+
+                  {detail?.totalSurchargeAmount !== 0 && (
+                    <>
+                      <div
+                        style={{
+                          backgroundColor: '#CDCDCD',
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ fontSize: 14 }}>{handleNaming}</div>
+                        <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                          {`+ ${this.getCurrency(detail.totalSurchargeAmount)}`}
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   {detail.deliveryFee ? (
                     <div>
