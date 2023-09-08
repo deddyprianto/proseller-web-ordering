@@ -35,7 +35,7 @@ import {
   ContainerStorePickUP,
   RenderTableMode,
 } from 'components/componentHelperCart';
-
+import alertWarning from 'components/template/alertWarning';
 
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
@@ -241,7 +241,7 @@ const RenderOrderingMode = ({
       </div>
 
       {orderingMode === 'STOREPICKUP' && (
-        <ContainerStorePickUP defaultOutlet={defaultOutlet}/>
+        <ContainerStorePickUP defaultOutlet={defaultOutlet} />
       )}
     </div>
   );
@@ -964,21 +964,20 @@ const Cart = () => {
       validationOrdering?.minQty !== 0 &&
       totalQty < validationOrdering?.minQty
     ) {
-      return Swal.fire({
-        title: `Min total quantity allowed per transaction for the order mode is ${validationOrdering.minQty}`,
-        confirmButtonText: 'OK',
-        confirmButtonColor: color?.primary,
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Min total quantity allowed per transaction for the order mode is ${validationOrdering.minQty}</h5>`,
+        title: 'Add more items',
       });
     }
     if (
       validationOrdering?.maxQty !== 0 &&
       totalQty > validationOrdering?.maxQty
     ) {
-      return Swal.fire({
-        title: `Max total quantity allowed per transaction for the order mode is ${validationOrdering.maxQty}`,
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: color?.primary,
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Max total quantity allowed per transaction for the order mode is ${validationOrdering.maxQty}</h5>`,
+        title: 'Add more items',
       });
     }
 
@@ -986,11 +985,10 @@ const Cart = () => {
       validationOrdering?.minAmount !== 0 &&
       basket?.totalNettAmount < validationOrdering?.minAmount
     ) {
-      return Swal.fire({
-        title: `Min total amount allowed per transaction for the order mode $ ${validationOrdering.minAmount}`,
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: color?.primary,
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Min total amount allowed per transaction for the order mode $ ${validationOrdering.minAmount}</h5>`,
+        title: 'Add more items',
       });
     }
 
@@ -998,11 +996,10 @@ const Cart = () => {
       validationOrdering?.maxAmount !== 0 &&
       basket?.totalNettAmount > validationOrdering?.maxAmount
     ) {
-      return Swal.fire({
-        title: `Max total amount allowed per transaction for the order mode $ ${validationOrdering.maxAmount}`,
-        allowOutsideClick: false,
-        confirmButtonText: 'OK',
-        confirmButtonColor: color?.primary,
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Max total amount allowed per transaction for the order mode $ ${validationOrdering.maxAmount}</h5>`,
+        title: 'Add more items',
       });
     }
 
