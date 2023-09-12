@@ -55,6 +55,16 @@ const handleHTMLStringCustomization = (broadcastItem) => {
   const elementsWithClassNameTab7 = dom.getElementsByClassName('ql-indent-7');
   const elementsWithClassNameTab8 = dom.getElementsByClassName('ql-indent-8');
 
+  const fontSizeSmall = dom.getElementsByClassName('ql-size-small');
+  const fontSizeLarge = dom.getElementsByClassName('ql-size-large');
+
+  for (const small of fontSizeSmall) {
+    small.style.fontSize = '0.75em';
+  }
+  for (const large of fontSizeLarge) {
+    large.style.fontSize = '1.5em';
+  }
+
   for (const element of elementsWithClassNameTab1) {
     element.style.paddingLeft = '1em';
   }
