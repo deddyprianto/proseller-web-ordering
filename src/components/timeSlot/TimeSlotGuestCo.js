@@ -30,7 +30,7 @@ const useStyles = () => ({
     marginBottom: 2,
   },
 });
-const TimeSlotDialog = ({ open, onClose }) => {
+const TimeSlotDialog = ({ open, onClose, validationOrderingGuestMode }) => {
   const useStyless = makeStyles(() => ({
     paper: { minWidth: '340px', borderRadius: '100px' },
   }));
@@ -65,7 +65,11 @@ const TimeSlotDialog = ({ open, onClose }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Calendar setIsLoading={setIsLoading} onClose={onClose} />
+        <Calendar
+          setIsLoading={setIsLoading}
+          onClose={onClose}
+          validationOrderingGuestMode={validationOrderingGuestMode}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -2836,6 +2836,7 @@ const CartGuestCheckout = () => {
       )}
       {openTimeSlot && (
         <TimeSlotDialog
+          validationOrderingGuestMode={validationOrderingGuestMode}
           open={openTimeSlot}
           onClose={() => setOpenTimeSlot(false)}
         />

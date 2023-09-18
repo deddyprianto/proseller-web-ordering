@@ -261,7 +261,7 @@ const useStyles = (mobileSize, color) => ({
   },
 });
 
-const Calendar = ({ onClose }) => {
+const Calendar = ({ onClose, validationOrderingGuestMode }) => {
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
@@ -994,7 +994,7 @@ const Calendar = ({ onClose }) => {
     dateListEdit = dateSorted;
   }
 
-  const renderChildTimeSlotScrool = (arrayDate) => {
+  const renderChildTimeSlotScroolGuestCO = (arrayDate) => {
     return arrayDate?.map((itemDate) => {
       const baseStyleStack = {
         width: '80px',
@@ -1103,11 +1103,11 @@ const Calendar = ({ onClose }) => {
       );
     } else {
       if (filteredItem) {
-        return renderChildTimeSlotScrool(filteredItem);
+        return renderChildTimeSlotScroolGuestCO(filteredItem);
       } else if (dateListEdit) {
-        return renderChildTimeSlotScrool(dateListEdit);
+        return renderChildTimeSlotScroolGuestCO(dateListEdit);
       } else {
-        return renderChildTimeSlotScrool(getAllDateForTimeSlot);
+        return renderChildTimeSlotScroolGuestCO(getAllDateForTimeSlot);
       }
     }
   };
@@ -1244,6 +1244,9 @@ const Calendar = ({ onClose }) => {
   };
 
   const renderTime = () => {
+    const isMaxDays = validationOrderingGuestMode?.maxDays;
+    const isShowSeeMoreDateGuesCO =
+      isMaxDays !== undefined && isMaxDays !== null && isMaxDays <= 5;
     return (
       <Stack
         direction='column'
@@ -1251,17 +1254,32 @@ const Calendar = ({ onClose }) => {
         justifyContent='center'
         alignItems='center'
       >
-        <Swiper style={styles.swiper} slidesPerView='auto' spaceBetween={12}>
+        <Swiper
+          style={{
+            width: '100%',
+          }}
+          slidesPerView='auto'
+          spaceBetween={12}
+        >
           {renderTimeScroll()}
         </Swiper>
-        <div style={styles.wrapSeeMoreDate} onClick={() => setSelector('date')}>
-          <Typography
-            sx={{ color: color.primary, fontWeight: 'bold', fontSize: '12px' }}
+        {!isShowSeeMoreDateGuesCO && (
+          <div
+            style={styles.wrapSeeMoreDate}
+            onClick={() => setSelector('date')}
           >
-            See More Date
-          </Typography>
-          <KeyboardArrowRight style={{ color: '#4D86A0' }} />
-        </div>
+            <Typography
+              sx={{
+                color: color.primary,
+                fontWeight: 'bold',
+                fontSize: '12px',
+              }}
+            >
+              See More Date
+            </Typography>
+            <KeyboardArrowRight style={{ color: '#4D86A0' }} />
+          </div>
+        )}
         {renderAvailableText()}
       </Stack>
     );

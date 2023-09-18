@@ -955,12 +955,6 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
   }
 
   const renderChildTimeSlotScrool = (arrayDate) => {
-    if (isMaxDays && isMaxDays !== 0) {
-      const data = arrayDate;
-      const modifyLengthArray = isMaxDays;
-
-      data.length = modifyLengthArray;
-    }
     return arrayDate?.map((itemDate) => {
       const baseStyleStack = {
         width: '80px',
@@ -1245,15 +1239,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
 
   const renderTime = () => {
     const isShowSeeMoreDate =
-      isMaxDays !== undefined && isMaxDays !== null && isMaxDays !== 0;
-    let width;
-    if (isMaxDays === 1) {
-      width = '33%';
-    } else if (isMaxDays === 2) {
-      width = '60%';
-    } else {
-      width = '100%';
-    }
+      isMaxDays !== undefined && isMaxDays !== null && isMaxDays <= 5;
 
     return (
       <Stack
@@ -1264,7 +1250,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
       >
         <Swiper
           style={{
-            width: width,
+            width: '100%',
           }}
           slidesPerView='auto'
           spaceBetween={12}
