@@ -58,6 +58,7 @@ import {
   ContainerStorePickUP,
   RenderTableMode,
 } from 'components/componentHelperCart';
+import alertWarning from 'components/template/alertWarning';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -73,6 +74,9 @@ const useWindowSize = () => {
 };
 
 const CartGuestCheckout = () => {
+  const [validationOrderingGuestMode, setValidationOrderingGuestMode] =
+    useState({});
+  console.log('validationOrdering =>', validationOrderingGuestMode);
   const [availableTime, setAvailableTime] = useState(false);
   const [openOrderingTable, setOpenOrderingTable] = useState(false);
   const responsiveDesign = screen();
@@ -142,6 +146,28 @@ const CartGuestCheckout = () => {
       }, 100);
     });
   };
+
+  function convertToCamelCaseGuestMode(inputString) {
+    return (
+      inputString.charAt(0).toLowerCase() + inputString.slice(1).toLowerCase()
+    );
+  }
+  useEffect(() => {
+    if (orderingModeGuestCheckout) {
+      for (const key in defaultOutlet.orderValidation) {
+        if (defaultOutlet.orderValidation.hasOwnProperty(key)) {
+          const camelCase = convertToCamelCaseGuestMode(key);
+          const orderingModeCamelCase = convertToCamelCaseGuestMode(
+            orderingModeGuestCheckout
+          );
+          if (camelCase === orderingModeCamelCase) {
+            setValidationOrderingGuestMode(defaultOutlet.orderValidation[key]);
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderingModeGuestCheckout]);
 
   useEffect(() => {
     const idGuestCheckout = localStorage.getItem('idGuestCheckout');
@@ -402,6 +428,57 @@ const CartGuestCheckout = () => {
   const formRegexMail = validateEmailRegex.test(email);
 
   const handlePaymentGuestMode = async () => {
+    const totalQty = basket?.details?.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+    if (
+      validationOrderingGuestMode?.minQty !== 0 &&
+      validationOrderingGuestMode?.minQty !== null &&
+      totalQty < validationOrderingGuestMode?.minQty
+    ) {
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Min total quantity allowed per transaction for the order mode is ${validationOrderingGuestMode.minQty}</h5>`,
+        title: 'Add more items',
+      });
+    }
+    if (
+      validationOrderingGuestMode?.maxQty !== 0 &&
+      validationOrderingGuestMode?.maxQty !== null &&
+      totalQty > validationOrderingGuestMode?.maxQty
+    ) {
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Max total quantity allowed per transaction for the order mode is ${validationOrderingGuestMode.maxQty}</h5>`,
+        title: 'Add more items',
+      });
+    }
+
+    if (
+      validationOrderingGuestMode?.minAmount !== 0 &&
+      validationOrderingGuestMode?.minAmount !== null &&
+      basket?.totalNettAmount < validationOrderingGuestMode?.minAmount
+    ) {
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Min total amount allowed per transaction for the order mode $ ${validationOrderingGuestMode.minAmount}</h5>`,
+        title: 'Add more items',
+      });
+    }
+
+    if (
+      validationOrderingGuestMode?.maxAmount !== 0 &&
+      validationOrderingGuestMode?.maxAmount !== null &&
+      basket?.totalNettAmount > validationOrderingGuestMode?.maxAmount
+    ) {
+      return alertWarning({
+        color: color?.primary,
+        content: `<h5 style='color:var(--text-color-tertiary, #B7B7B7); font-size:14px; line-height: 20px;'>Max total amount allowed per transaction for the order mode $ ${validationOrderingGuestMode.maxAmount}</h5>`,
+        title: 'Add more items',
+      });
+    }
+
     if (orderingModeGuestCheckout === 'DELIVERY') {
       const objectSubmitCart = {
         cartID: basket.cartID,
@@ -1424,7 +1501,7 @@ const CartGuestCheckout = () => {
             borderRadius: '15px',
             padding: '20px',
             width: '100%',
-            margin:'0px'
+            margin: '0px',
           }}
         >
           <Typography
@@ -1460,7 +1537,7 @@ const CartGuestCheckout = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            margin:'0px'
+            margin: '0px',
           }}
         >
           <div
@@ -1726,7 +1803,9 @@ const CartGuestCheckout = () => {
             >
               {deliveryIcon(color.primary)}
 
-              <div style={{ flex: 1, paddingLeft: '10px',paddingRight: '0px' }}>
+              <div
+                style={{ flex: 1, paddingLeft: '10px', paddingRight: '0px' }}
+              >
                 <Typography
                   className={fontStyleCustom.myFont}
                   style={{
@@ -1747,7 +1826,7 @@ const CartGuestCheckout = () => {
                   }}
                 >{`(SGD ${item?.deliveryFee})`}</Typography>
               </div>
-              <div style={{ flex: 0 ,margin: '0px'}}>
+              <div style={{ flex: 0, margin: '0px' }}>
                 <div
                   style={{
                     borderRadius: '100%',
@@ -1999,11 +2078,13 @@ const CartGuestCheckout = () => {
             </React.Fragment>
           )}
 
-          <div style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-          }}>
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <hr style={styles.gap} />
           </div>
 
@@ -2011,7 +2092,7 @@ const CartGuestCheckout = () => {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              margin:'0px'
+              margin: '0px',
             }}
           >
             <p

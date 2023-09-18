@@ -14,9 +14,6 @@ import useMobileSize from '../../hooks/useMobileSize';
 import { CONSTANT } from 'helpers';
 
 const useStyles = (mobileSize, color) => ({
-  swiper: {
-    width: '100%',
-  },
   body: {
     display: 'flex',
     flexDirection: 'row',
@@ -958,7 +955,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
   }
 
   const renderChildTimeSlotScrool = (arrayDate) => {
-    if (isMaxDays !== 0) {
+    if (isMaxDays && isMaxDays !== 0) {
       const data = arrayDate;
       const modifyLengthArray = isMaxDays;
 
@@ -1075,7 +1072,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
           <Typography
             style={{ fontSize: '13px', color: 'gray', padding: '20px' }}
           >
-            Wait we get your Time...
+            Loading...
           </Typography>
         </Stack>
       );
@@ -1247,6 +1244,17 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
   };
 
   const renderTime = () => {
+    const isShowSeeMoreDate =
+      isMaxDays !== undefined && isMaxDays !== null && isMaxDays !== 0;
+    let width;
+    if (isMaxDays === 1) {
+      width = '33%';
+    } else if (isMaxDays === 2) {
+      width = '60%';
+    } else {
+      width = '100%';
+    }
+
     return (
       <Stack
         direction='column'
@@ -1254,10 +1262,16 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
         justifyContent='center'
         alignItems='center'
       >
-        <Swiper style={styles.swiper} slidesPerView='auto' spaceBetween={12}>
+        <Swiper
+          style={{
+            width: width,
+          }}
+          slidesPerView='auto'
+          spaceBetween={12}
+        >
           {renderTimeScroll()}
         </Swiper>
-        {isMaxDays === 0 && (
+        {!isShowSeeMoreDate && (
           <div
             style={styles.wrapSeeMoreDate}
             onClick={() => setSelector('date')}
