@@ -568,7 +568,7 @@ const Cart = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderingMode]);
-
+  console.log('orderValidation =>', validationOrdering);
   useEffect(() => {
     if (orderingMode !== 'DELIVERY') {
       dispatch({ type: 'SET_DELIVERY_ADDRESS', data: null });
@@ -955,13 +955,13 @@ const Cart = () => {
   };
 
   const handleConfirmAndPay = () => {
-    const totalQty = basket.details.reduce(
+    const totalQty = basket?.details?.reduce(
       (total, item) => total + item.quantity,
       0
     );
-
     if (
       validationOrdering?.minQty !== 0 &&
+      validationOrdering?.minQty !== null &&
       totalQty < validationOrdering?.minQty
     ) {
       return alertWarning({
@@ -972,6 +972,7 @@ const Cart = () => {
     }
     if (
       validationOrdering?.maxQty !== 0 &&
+      validationOrdering?.maxQty !== null &&
       totalQty > validationOrdering?.maxQty
     ) {
       return alertWarning({
@@ -983,6 +984,7 @@ const Cart = () => {
 
     if (
       validationOrdering?.minAmount !== 0 &&
+      validationOrdering?.minAmount !== null &&
       basket?.totalNettAmount < validationOrdering?.minAmount
     ) {
       return alertWarning({
@@ -994,6 +996,7 @@ const Cart = () => {
 
     if (
       validationOrdering?.maxAmount !== 0 &&
+      validationOrdering?.maxAmount !== null &&
       basket?.totalNettAmount > validationOrdering?.maxAmount
     ) {
       return alertWarning({

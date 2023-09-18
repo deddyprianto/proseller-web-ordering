@@ -73,11 +73,6 @@ config.getValidation = function getValidation(defaultOutlet) {
   };
   if (defaultOutlet && !defaultOutlet.orderValidation) {
     defaultOutlet.orderValidation = orderValidation;
-  } else if (defaultOutlet && defaultOutlet.orderValidation) {
-    for (const key in orderValidation) {
-      if (!defaultOutlet.orderValidation[key])
-        defaultOutlet.orderValidation[key] = orderValidation[key];
-    }
   }
   return defaultOutlet;
 };
