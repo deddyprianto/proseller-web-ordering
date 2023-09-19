@@ -36,9 +36,11 @@ const useStyles = (mobileSize, color) => ({
     fontSize: 12,
   },
   circle: {
-    textAlign: 'center',
-    width: 26,
-    height: 26,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30,
+    height: 30,
   },
   circleActive: {
     display: 'flex',
@@ -598,70 +600,150 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
     );
   };
 
+  const dateArrayIsMaxDays = [];
+  if (isMaxDays && isMaxDays !== 0) {
+    const days = isMaxDays;
+    const startDate = moment();
+    const endDate = moment().add(days - 1, 'days');
+
+    const currentDate = startDate.clone();
+
+    while (currentDate.isSameOrBefore(endDate)) {
+      const formattedDate = {
+        date: currentDate.format('YYYY-MM-DD'),
+      };
+      dateArrayIsMaxDays.push(formattedDate);
+      currentDate.add(1, 'day');
+    }
+  }
+
   const renderDeliveryDateItem = (item) => {
-    const itemDate = item.split(' ');
-    const date = Number(itemDate[2]);
-    const month = itemDate[1];
-    const year = itemDate[0];
-    const isActive = dateActive === date;
-    const isThisMonth = selectedMonth === month;
+    if (isMaxDays && isMaxDays !== 0) {
+      const itemDate = item.split(' ');
+      const date = Number(itemDate[2]);
+      const month = itemDate[1];
+      const year = itemDate[0];
+      const isActive = dateActive === date;
+      const isThisMonth = selectedMonth === month;
+      const combineDateNMonth = moment()
+        .year(year)
+        .month(month)
+        .date(date)
+        .format('YYYYMMDD');
 
-    const combineDateNMonth = moment()
-      .year(year)
-      .month(month)
-      .date(date)
-      .format('YYYYMMDD');
+      const availableDateFromAPI = dateArrayIsMaxDays.some((item) => {
+        const arr = item.date.split('-');
+        const stringToInt = arr.join('');
 
-    const availableDateFromAPI = timeList.some((item) => {
-      const arr = item.date.split('-');
-      const stringToInt = arr.join('');
+        return combineDateNMonth === stringToInt;
+      });
 
-      return combineDateNMonth === stringToInt;
-    });
-
-    const styleFontDate = !isThisMonth
-      ? {
-          fontSize: 11,
-          color: '#667080',
-        }
-      : isActive
-      ? styles.textDateSelected
-      : styles.textDate;
-
-    const styleCircle =
-      isActive && isThisMonth ? styles.circleActive : styles.circle;
-
-    return (
-      <div
-        key={item}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '5px',
-          pointerEvents: !availableDateFromAPI && 'none',
-        }}
-        onClick={() => {
-          setSelectTimeDropDown('');
-          setDateActive(date);
-          if (date === 1) {
-            handleMonthSlider('next');
+      const styleFontDate = !isThisMonth
+        ? {
+            fontSize: 11,
+            color: '#667080',
           }
-        }}
-      >
-        <div style={styleCircle}>
-          <Typography
-            style={{
-              ...styleFontDate,
-              opacity: availableDateFromAPI ? 1 : 0.2,
-              cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {date}
-          </Typography>
+        : isActive
+        ? styles.textDateSelected
+        : styles.textDate;
+
+      const styleCircle =
+        isActive && isThisMonth ? styles.circleActive : styles.circle;
+
+      return (
+        <div
+          key={item}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '5px',
+            pointerEvents: !availableDateFromAPI && 'none',
+          }}
+          onClick={() => {
+            setSelectTimeDropDown('');
+            setDateActive(date);
+            if (date === 1) {
+              handleMonthSlider('next');
+            }
+          }}
+        >
+          <div style={styleCircle}>
+            <Typography
+              style={{
+                ...styleFontDate,
+                opacity: availableDateFromAPI ? 1 : 0.2,
+                cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {date}
+            </Typography>
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      const itemDate = item.split(' ');
+      const date = Number(itemDate[2]);
+      const month = itemDate[1];
+      const year = itemDate[0];
+      const isActive = dateActive === date;
+      const isThisMonth = selectedMonth === month;
+      const combineDateNMonth = moment()
+        .year(year)
+        .month(month)
+        .date(date)
+        .format('YYYYMMDD');
+
+      const availableDateFromAPI = timeList.some((item) => {
+        const arr = item.date.split('-');
+        const stringToInt = arr.join('');
+
+        return combineDateNMonth === stringToInt;
+      });
+
+      const styleFontDate = !isThisMonth
+        ? {
+            fontSize: 11,
+            color: '#667080',
+          }
+        : isActive
+        ? styles.textDateSelected
+        : styles.textDate;
+
+      const styleCircle =
+        isActive && isThisMonth ? styles.circleActive : styles.circle;
+
+      return (
+        <div
+          key={item}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '5px',
+            pointerEvents: !availableDateFromAPI && 'none',
+          }}
+          onClick={() => {
+            setSelectTimeDropDown('');
+            setDateActive(date);
+            if (date === 1) {
+              handleMonthSlider('next');
+            }
+          }}
+        >
+          <div style={styleCircle}>
+            <Typography
+              style={{
+                ...styleFontDate,
+                opacity: availableDateFromAPI ? 1 : 0.2,
+                cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {date}
+            </Typography>
+          </div>
+        </div>
+      );
+    }
   };
 
   const renderDeliveryDate = () => {
@@ -866,10 +948,13 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
                 .date(dateActive)
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
-              dispatch({
-                type: CONSTANT.SAVE_TIMESLOT_CALENDER_LOGIN,
-                payload: changeFormatDate(formatForSendApi),
-              });
+              if (!isMaxDays) {
+                dispatch({
+                  type: CONSTANT.SAVE_TIMESLOT_CALENDER_LOGIN,
+                  payload: changeFormatDate(formatForSendApi),
+                });
+              }
+              dispatch({ type: CONSTANT.SAVE_VALUE_EDIT, payload: '' });
               dispatch({ type: CONSTANT.SAVE_DATE_LOGIN, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIMESLOT_LOGIN, payload: '' });
             }}
@@ -935,26 +1020,34 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
   }
 
   if (saveDateNTime.saveDateEdit) {
-    getAllDateForTimeSlot.sort((item) => {
-      if (saveDateNTime.saveDateEdit === item.split(' ').join('-')) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-    const splitFormatDate = saveDateNTime.saveDateEdit.split('-').join('');
+    if (!isMaxDays) {
+      getAllDateForTimeSlot.sort((item) => {
+        if (saveDateNTime.saveDateEdit === item.split(' ').join('-')) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      const splitFormatDate = saveDateNTime.saveDateEdit.split('-').join('');
 
-    const dateFiltered = getAllDateForTimeSlot.filter(
-      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
-    );
+      const dateFiltered = getAllDateForTimeSlot.filter(
+        (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+      );
 
-    const dateSorted = dateFiltered.sort(
-      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
-    );
-    dateListEdit = dateSorted;
+      const dateSorted = dateFiltered.sort(
+        (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+      );
+      dateListEdit = dateSorted;
+    }
   }
 
   const renderChildTimeSlotScrool = (arrayDate) => {
+    if (isMaxDays && isMaxDays !== 0) {
+      const data = arrayDate;
+      const modifyLengthArray = 5;
+
+      data.length = modifyLengthArray;
+    }
     return arrayDate?.map((itemDate) => {
       const baseStyleStack = {
         width: '80px',
@@ -963,8 +1056,8 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
       };
       const baseCycleStyle = {
         display: 'flex',
-        width: 26,
-        height: 26,
+        width: 30,
+        height: 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100,
@@ -1059,6 +1152,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
       );
     });
   };
+
   const renderTimeScroll = () => {
     if (!timeList) {
       return (
@@ -1066,7 +1160,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
           <Typography
             style={{ fontSize: '13px', color: 'gray', padding: '20px' }}
           >
-            Loading...
+            Wait we get your Time...
           </Typography>
         </Stack>
       );

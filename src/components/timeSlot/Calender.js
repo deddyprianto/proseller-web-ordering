@@ -13,7 +13,7 @@ import DropDownCustomSelect from './DropDownSelect';
 import useMobileSize from '../../hooks/useMobileSize';
 import { CONSTANT } from 'helpers';
 
-const useStyles = (mobileSize, color) => ({
+const useStylesGuest = (mobileSize, color) => ({
   swiper: {
     width: '100%',
   },
@@ -39,9 +39,11 @@ const useStyles = (mobileSize, color) => ({
     fontSize: 12,
   },
   circle: {
-    textAlign: 'center',
-    width: 26,
-    height: 26,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30,
+    height: 30,
   },
   circleActive: {
     display: 'flex',
@@ -262,8 +264,6 @@ const useStyles = (mobileSize, color) => ({
 });
 
 const Calendar = ({ onClose, validationOrderingGuestMode }) => {
-  const dispatch = useDispatch();
-  const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
   const [selectTimeDropDown, setSelectTimeDropDown] = useState('');
   const [dates, setDates] = useState([]);
@@ -280,6 +280,11 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
   const [dateActive, setDateActive] = useState('');
   const [monthActive, setMonthActive] = useState('');
   const [yearActive, setYearActive] = useState('');
+  const [getAllDateForTimeSlot, setGetAllDateForTimeSlot] = useState([]);
+
+  const dispatch = useDispatch();
+  const mobileSize = useMobileSize();
+
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
   );
@@ -289,13 +294,13 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
   const saveTimeSlotForEdit = useSelector(
     (state) => state.guestCheckoutCart.saveTimeSlotForEdit
   );
+
+  const color = useSelector((state) => state.theme.color);
+  const styles = useStylesGuest(mobileSize, color);
+  const dataTime = useSelector((state) => state.outlet.defaultOutlet);
   const dateEdit = useSelector((state) => state.guestCheckoutCart);
   const orderingMode = useSelector((state) => state.order.orderingMode);
   const timeslot = useSelector((state) => state.guestCheckoutCart);
-  const color = useSelector((state) => state.theme.color);
-  const styles = useStyles(mobileSize, color);
-  const dataTime = useSelector((state) => state.outlet.defaultOutlet);
-  const [getAllDateForTimeSlot, setGetAllDateForTimeSlot] = useState([]);
 
   const days = ['San', 'Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat'];
 
@@ -307,7 +312,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     });
   };
 
-  const getDates = useCallback(() => {
+  const getDatesGuestMode = useCallback(() => {
     let calender = [];
     const startDate = moment()
       .month(selectedMonth)
@@ -335,7 +340,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     return calender;
   }, [selectedMonth, selectedYear]);
 
-  const getAllDate = () => {
+  const getAllDateGuest = () => {
     let monthArr = [];
     const weeks = moment().add(0, 'weeks').startOf('week');
     for (let i = 0; i < 150; i++) {
@@ -351,7 +356,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     return listDate;
   };
 
-  const getYears = useCallback(() => {
+  const getYearsGuest = useCallback(() => {
     const years = [];
     const start = moment()
       .year(moment().format('YYYY'))
@@ -387,17 +392,17 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     setMonths(monthList);
   }, []);
   useEffect(() => {
-    const currentDates = getDates();
+    const currentDates = getDatesGuestMode();
     setDates(currentDates);
-  }, [selectedYear, selectedMonth, getDates]);
+  }, [selectedYear, selectedMonth, getDatesGuestMode]);
 
   useEffect(() => {
-    const currentYear = getYears();
+    const currentYear = getYearsGuest();
     setYears(currentYear);
-  }, [currentPage, getYears]);
+  }, [currentPage, getYearsGuest]);
 
   useEffect(() => {
-    const allDate = getAllDate();
+    const allDate = getAllDateGuest();
     setGetAllDateForTimeSlot(allDate);
   }, []);
 
@@ -475,7 +480,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     onClose(true);
   };
 
-  const handleMonthSlider = (direction) => {
+  const handleMonthSliderGuest = (direction) => {
     if (direction === 'last') {
       const subtractResult = moment()
         .month(selectedMonth)
@@ -511,7 +516,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
           <Button
             style={{ display: 'none' }}
             onClick={() => {
-              handleMonthSlider('last');
+              handleMonthSliderGuest('last');
             }}
           >
             <KeyboardArrowLeft style={{ color: 'black' }} />
@@ -523,7 +528,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
       return (
         <Button
           onClick={() => {
-            handleMonthSlider('last');
+            handleMonthSliderGuest('last');
           }}
         >
           <KeyboardArrowLeft style={{ color: 'black' }} />
@@ -568,7 +573,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
 
         <Button
           onClick={() => {
-            handleMonthSlider('next');
+            handleMonthSliderGuest('next');
           }}
         >
           <KeyboardArrowRight style={{ color: 'black' }} />
@@ -630,70 +635,159 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     );
   };
 
-  const renderDeliveryDateItem = (item) => {
-    const itemDate = item.split(' ');
-    const date = Number(itemDate[2]);
-    const month = itemDate[1];
-    const year = itemDate[0];
-    const isActive = dateActive === date;
-    const isThisMonth = selectedMonth === month;
+  const dateArrayMaxDaysGuest = [];
+  if (
+    validationOrderingGuestMode?.maxDays &&
+    validationOrderingGuestMode?.maxDays !== 0
+  ) {
+    const days = validationOrderingGuestMode?.maxDays;
+    const startDate = moment();
+    const endDate = moment().add(days - 1, 'days');
 
-    const combineDateNMonth = moment()
-      .year(year)
-      .month(month)
-      .date(date)
-      .format('YYYYMMDD');
+    const currentDate = startDate.clone();
 
-    const availableDateFromAPI = timeList.some((item) => {
-      const arr = item.date.split('-');
-      const stringToInt = arr.join('');
+    while (currentDate.isSameOrBefore(endDate)) {
+      const formattedDate = {
+        date: currentDate.format('YYYY-MM-DD'),
+      };
+      dateArrayMaxDaysGuest.push(formattedDate);
+      currentDate.add(1, 'day');
+    }
+  }
 
-      return combineDateNMonth === stringToInt;
-    });
+  const renderDeliveryDateItemGuestCO = (item) => {
+    if (
+      validationOrderingGuestMode?.maxDays &&
+      validationOrderingGuestMode?.maxDays !== 0
+    ) {
+      const itemDate = item.split(' ');
+      const date = Number(itemDate[2]);
+      const month = itemDate[1];
+      const year = itemDate[0];
+      const isActive = dateActive === date;
+      const isThisMonth = selectedMonth === month;
 
-    const styleFontDate = !isThisMonth
-      ? {
-          fontSize: 11,
-          color: '#667080',
-        }
-      : isActive
-      ? styles.textDateSelected
-      : styles.textDate;
+      const combineDateNMonth = moment()
+        .year(year)
+        .month(month)
+        .date(date)
+        .format('YYYYMMDD');
 
-    const styleCircle =
-      isActive && isThisMonth ? styles.circleActive : styles.circle;
+      const availableDateFromAPI = dateArrayMaxDaysGuest.some((item) => {
+        const arr = item.date.split('-');
+        const stringToInt = arr.join('');
 
-    return (
-      <div
-        key={item}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '5px',
-          pointerEvents: !availableDateFromAPI && 'none',
-        }}
-        onClick={() => {
-          setSelectTimeDropDown('');
-          setDateActive(date);
-          if (date === 1) {
-            handleMonthSlider('next');
+        return combineDateNMonth === stringToInt;
+      });
+
+      const styleFontDate = !isThisMonth
+        ? {
+            fontSize: 11,
+            color: '#667080',
           }
-        }}
-      >
-        <div style={styleCircle}>
-          <Typography
-            style={{
-              ...styleFontDate,
-              opacity: availableDateFromAPI ? 1 : 0.2,
-              cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {date}
-          </Typography>
+        : isActive
+        ? styles.textDateSelected
+        : styles.textDate;
+
+      const styleCircle =
+        isActive && isThisMonth ? styles.circleActive : styles.circle;
+
+      return (
+        <div
+          key={item}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '5px',
+            pointerEvents: !availableDateFromAPI && 'none',
+          }}
+          onClick={() => {
+            setSelectTimeDropDown('');
+            setDateActive(date);
+            if (date === 1) {
+              handleMonthSliderGuest('next');
+            }
+          }}
+        >
+          <div style={styleCircle}>
+            <Typography
+              style={{
+                ...styleFontDate,
+                opacity: availableDateFromAPI ? 1 : 0.2,
+                cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {date}
+            </Typography>
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      const itemDate = item.split(' ');
+      const date = Number(itemDate[2]);
+      const month = itemDate[1];
+      const year = itemDate[0];
+      const isActive = dateActive === date;
+      const isThisMonth = selectedMonth === month;
+
+      const combineDateNMonth = moment()
+        .year(year)
+        .month(month)
+        .date(date)
+        .format('YYYYMMDD');
+
+      const availableDateFromAPI = timeList.some((item) => {
+        const arr = item.date.split('-');
+        const stringToInt = arr.join('');
+
+        return combineDateNMonth === stringToInt;
+      });
+
+      const styleFontDate = !isThisMonth
+        ? {
+            fontSize: 11,
+            color: '#667080',
+          }
+        : isActive
+        ? styles.textDateSelected
+        : styles.textDate;
+
+      const styleCircle =
+        isActive && isThisMonth ? styles.circleActive : styles.circle;
+
+      return (
+        <div
+          key={item}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '5px',
+            pointerEvents: !availableDateFromAPI && 'none',
+          }}
+          onClick={() => {
+            setSelectTimeDropDown('');
+            setDateActive(date);
+            if (date === 1) {
+              handleMonthSliderGuest('next');
+            }
+          }}
+        >
+          <div style={styleCircle}>
+            <Typography
+              style={{
+                ...styleFontDate,
+                opacity: availableDateFromAPI ? 1 : 0.2,
+                cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {date}
+            </Typography>
+          </div>
+        </div>
+      );
+    }
   };
 
   const renderDeliveryDate = () => {
@@ -701,7 +795,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
       return (
         <div key={i} style={styles.wrapperDeliveryDate}>
           {date.map((item) => {
-            return renderDeliveryDateItem(item);
+            return renderDeliveryDateItemGuestCO(item);
           })}
         </div>
       );
@@ -899,10 +993,13 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
                 .date(dateActive)
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
-              dispatch({
-                type: CONSTANT.SAVE_TIMESLOT_CALENDER,
-                payload: changeFormatDate(formatForSendApi),
-              });
+              if(!validationOrderingGuestMode?.isMaxDays){
+                dispatch({
+                  type: CONSTANT.SAVE_TIMESLOT_CALENDER,
+                  payload: changeFormatDate(formatForSendApi),
+                });
+              }
+              
               dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
@@ -1003,8 +1100,8 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
       };
       const baseCycleStyle = {
         display: 'flex',
-        width: 26,
-        height: 26,
+        width: 30,
+        height: 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100,
