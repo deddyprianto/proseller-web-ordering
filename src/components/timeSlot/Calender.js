@@ -404,144 +404,117 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     }
   }
 
+  // start Refactoring code
+  const createStyleFontDate = (isThisMonth, isActive) => {
+    if (!isThisMonth) {
+      return {
+        fontSize: 11,
+        color: '#667080',
+      };
+    } else if (isActive) {
+      return styles.textDateSelected;
+    } else {
+      return styles.textDate;
+    }
+  };
+
+  const createStyleCircle = (isThisMonth, isActive) => {
+    return isActive && isThisMonth ? styles.circleActive : styles.circle;
+  };
+
+  const renderDateItem = (
+    item,
+    dateActive,
+    selectedMonth,
+    setSelectTimeDropDown,
+    setDateActive,
+    handleMonthSliderGuest,
+    timeList
+  ) => {
+    const itemDate = item.split(' ');
+    const date = Number(itemDate[2]);
+    const month = itemDate[1];
+    const year = itemDate[0];
+    const isActive = dateActive === date;
+    const isThisMonth = selectedMonth === month;
+
+    const combineDateNMonth = moment()
+      .year(year)
+      .month(month)
+      .date(date)
+      .format('YYYYMMDD');
+
+    const availableDateFromAPI = timeList.some((item) => {
+      const arr = item.date.split('-');
+      const stringToInt = arr.join('');
+
+      return combineDateNMonth === stringToInt;
+    });
+
+    const styleFontDate = createStyleFontDate(isThisMonth, isActive);
+    const styleCircle = createStyleCircle(isThisMonth, isActive);
+
+    return (
+      <div
+        key={item}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '5px',
+          pointerEvents: !availableDateFromAPI ? 'none' : 'auto',
+        }}
+        onClick={() => {
+          setSelectTimeDropDown('');
+          setDateActive(date);
+          if (date === 1) {
+            handleMonthSliderGuest('next');
+          }
+        }}
+      >
+        <div style={styleCircle}>
+          <Typography
+            style={{
+              ...styleFontDate,
+              opacity: availableDateFromAPI ? 1 : 0.2,
+              cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {date}
+          </Typography>
+        </div>
+      </div>
+    );
+  };
+
   const renderDeliveryDateItemGuestCO = (item) => {
     if (
       validationOrderingGuestMode?.maxDays &&
       validationOrderingGuestMode?.maxDays !== 0
     ) {
-      const itemDate = item.split(' ');
-      const date = Number(itemDate[2]);
-      const month = itemDate[1];
-      const year = itemDate[0];
-      const isActive = dateActive === date;
-      const isThisMonth = selectedMonth === month;
-
-      const combineDateNMonth = moment()
-        .year(year)
-        .month(month)
-        .date(date)
-        .format('YYYYMMDD');
-
-      const availableDateFromAPI = dateArrayMaxDaysGuest.some((item) => {
-        const arr = item.date.split('-');
-        const stringToInt = arr.join('');
-
-        return combineDateNMonth === stringToInt;
-      });
-
-      let styleFontDate = {};
-
-      if (!isThisMonth) {
-        styleFontDate = {
-          fontSize: 11,
-          color: '#667080',
-        };
-      } else if (isActive) {
-        styleFontDate = styles.textDateSelected;
-      } else {
-        styleFontDate = styles.textDate;
-      }
-
-      const styleCircle =
-        isActive && isThisMonth ? styles.circleActive : styles.circle;
-
-      return (
-        <div
-          key={item}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '5px',
-            pointerEvents: !availableDateFromAPI && 'none',
-          }}
-          onClick={() => {
-            setSelectTimeDropDown('');
-            setDateActive(date);
-            if (date === 1) {
-              handleMonthSliderGuest('next');
-            }
-          }}
-        >
-          <div style={styleCircle}>
-            <Typography
-              style={{
-                ...styleFontDate,
-                opacity: availableDateFromAPI ? 1 : 0.2,
-                cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
-              }}
-            >
-              {date}
-            </Typography>
-          </div>
-        </div>
+      return renderDateItem(
+        item,
+        dateActive,
+        selectedMonth,
+        setSelectTimeDropDown,
+        setDateActive,
+        handleMonthSliderGuest,
+        dateArrayMaxDaysGuest
       );
     } else {
-      const itemDate = item.split(' ');
-      const date = Number(itemDate[2]);
-      const month = itemDate[1];
-      const year = itemDate[0];
-      const isActive = dateActive === date;
-      const isThisMonth = selectedMonth === month;
-
-      const combineDateNMonth = moment()
-        .year(year)
-        .month(month)
-        .date(date)
-        .format('YYYYMMDD');
-
-      const availableDateFromAPI = timeList.some((item) => {
-        const arr = item.date.split('-');
-        const stringToInt = arr.join('');
-
-        return combineDateNMonth === stringToInt;
-      });
-
-      const styleFontDate = !isThisMonth
-        ? {
-            fontSize: 11,
-            color: '#667080',
-          }
-        : isActive
-        ? styles.textDateSelected
-        : styles.textDate;
-
-      const styleCircle =
-        isActive && isThisMonth ? styles.circleActive : styles.circle;
-
-      return (
-        <div
-          key={item}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '5px',
-            pointerEvents: !availableDateFromAPI && 'none',
-          }}
-          onClick={() => {
-            setSelectTimeDropDown('');
-            setDateActive(date);
-            if (date === 1) {
-              handleMonthSliderGuest('next');
-            }
-          }}
-        >
-          <div style={styleCircle}>
-            <Typography
-              style={{
-                ...styleFontDate,
-                opacity: availableDateFromAPI ? 1 : 0.2,
-                cursor: availableDateFromAPI ? 'pointer' : 'not-allowed',
-              }}
-            >
-              {date}
-            </Typography>
-          </div>
-        </div>
+      return renderDateItem(
+        item,
+        dateActive,
+        selectedMonth,
+        setSelectTimeDropDown,
+        setDateActive,
+        handleMonthSliderGuest,
+        timeList
       );
     }
   };
+
+  // end Refactoring code
 
   const renderDeliveryDate = () => {
     const result = dates.map((date, i) => {
