@@ -993,13 +993,13 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
                 .date(dateActive)
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
-              if(!validationOrderingGuestMode?.isMaxDays){
+              if (!validationOrderingGuestMode?.maxDays) {
                 dispatch({
                   type: CONSTANT.SAVE_TIMESLOT_CALENDER,
                   payload: changeFormatDate(formatForSendApi),
                 });
               }
-              
+
               dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
@@ -1052,46 +1052,59 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
   let dateListEdit;
 
   if (saveTimeSlotCalendar) {
-    getAllDateForTimeSlot.sort((item) => {
-      if (saveTimeSlotCalendar === item.split(' ').join('-')) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-    const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
+    if (!validationOrderingGuestMode?.maxDays) {
+      getAllDateForTimeSlot.sort((item) => {
+        if (saveTimeSlotCalendar === item.split(' ').join('-')) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
 
-    const dateFiltered = getAllDateForTimeSlot.filter(
-      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
-    );
+      const dateFiltered = getAllDateForTimeSlot.filter(
+        (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+      );
 
-    const dateSorted = dateFiltered.sort(
-      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
-    );
-    filteredItem = dateSorted;
+      const dateSorted = dateFiltered.sort(
+        (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+      );
+      filteredItem = dateSorted;
+    }
   }
 
   if (dateEdit.date || saveTimeSlotForEdit) {
-    getAllDateForTimeSlot.sort((item) => {
-      if (dateEdit.date === item.split(' ').join('-')) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-    const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
+    if (!validationOrderingGuestMode?.maxDays) {
+      getAllDateForTimeSlot.sort((item) => {
+        if (dateEdit.date === item.split(' ').join('-')) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
 
-    const dateFiltered = getAllDateForTimeSlot.filter(
-      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
-    );
+      const dateFiltered = getAllDateForTimeSlot.filter(
+        (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+      );
 
-    const dateSorted = dateFiltered.sort(
-      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
-    );
-    dateListEdit = dateSorted;
+      const dateSorted = dateFiltered.sort(
+        (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+      );
+      dateListEdit = dateSorted;
+    }
   }
 
   const renderChildTimeSlotScroolGuestCO = (arrayDate) => {
+    if (
+      validationOrderingGuestMode?.maxDays &&
+      validationOrderingGuestMode?.maxDays !== 0
+    ) {
+      const data = arrayDate;
+      const modifyLengthArray = 5;
+
+      data.length = modifyLengthArray;
+    }
     return arrayDate?.map((itemDate) => {
       const baseStyleStack = {
         width: '80px',
