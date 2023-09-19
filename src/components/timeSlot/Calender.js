@@ -164,9 +164,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
         clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
         date: moment(dateTime).format('YYYY-MM-DD'),
         maxDays: 90,
-        orderingMode: orderingModeGuestCheckout
-          ? orderingModeGuestCheckout
-          : orderingMode,
+        orderingMode: orderingModeGuestCheckout || orderingMode,
         outletID: dataTime?.sortKey,
       };
 
@@ -431,14 +429,18 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
         return combineDateNMonth === stringToInt;
       });
 
-      const styleFontDate = !isThisMonth
-        ? {
-            fontSize: 11,
-            color: '#667080',
-          }
-        : isActive
-        ? styles.textDateSelected
-        : styles.textDate;
+      let styleFontDate = {};
+
+      if (!isThisMonth) {
+        styleFontDate = {
+          fontSize: 11,
+          color: '#667080',
+        };
+      } else if (isActive) {
+        styleFontDate = styles.textDateSelected;
+      } else {
+        styleFontDate = styles.textDate;
+      }
 
       const styleCircle =
         isActive && isThisMonth ? styles.circleActive : styles.circle;
@@ -712,10 +714,10 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
   };
 
   const renderConfirmButton = () => {
-    const buttonDisabled = !selectTimeDropDown ? true : false;
+    const buttonDisabled = !selectTimeDropDown;
 
     const isTimeSlotEditExist = timeslot.timeslot ? false : buttonDisabled;
-    const disableApplyButton = dateActive ? false : true;
+    const disableApplyButton = !dateActive;
 
     if (selector === 'date' || selector === 'month' || selector === 'year') {
       return (
