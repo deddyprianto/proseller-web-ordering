@@ -43,57 +43,6 @@ const RenderHeader = ({ props, color }) => {
   );
 };
 
-const handleHTMLStringCustomization = (broadcastItem) => {
-  const parser = new DOMParser();
-  const dom = parser.parseFromString(broadcastItem, 'text/html');
-  const elementsWithClassNameTab1 = dom.getElementsByClassName('ql-indent-1');
-  const elementsWithClassNameTab2 = dom.getElementsByClassName('ql-indent-2');
-  const elementsWithClassNameTab3 = dom.getElementsByClassName('ql-indent-3');
-  const elementsWithClassNameTab4 = dom.getElementsByClassName('ql-indent-4');
-  const elementsWithClassNameTab5 = dom.getElementsByClassName('ql-indent-5');
-  const elementsWithClassNameTab6 = dom.getElementsByClassName('ql-indent-6');
-  const elementsWithClassNameTab7 = dom.getElementsByClassName('ql-indent-7');
-  const elementsWithClassNameTab8 = dom.getElementsByClassName('ql-indent-8');
-
-  const fontSizeSmall = dom.getElementsByClassName('ql-size-small');
-  const fontSizeLarge = dom.getElementsByClassName('ql-size-large');
-
-  for (const small of fontSizeSmall) {
-    small.style.fontSize = '0.75em';
-  }
-  for (const large of fontSizeLarge) {
-    large.style.fontSize = '1.5em';
-  }
-
-  for (const element of elementsWithClassNameTab1) {
-    element.style.paddingLeft = '1em';
-  }
-  for (const element of elementsWithClassNameTab2) {
-    element.style.paddingLeft = '2em';
-  }
-  for (const element of elementsWithClassNameTab3) {
-    element.style.paddingLeft = '3em';
-  }
-  for (const element of elementsWithClassNameTab4) {
-    element.style.paddingLeft = '4em';
-  }
-  for (const element of elementsWithClassNameTab5) {
-    element.style.paddingLeft = '5em';
-  }
-  for (const element of elementsWithClassNameTab6) {
-    element.style.paddingLeft = '6em';
-  }
-  for (const element of elementsWithClassNameTab7) {
-    element.style.paddingLeft = '7em';
-  }
-  for (const element of elementsWithClassNameTab8) {
-    element.style.paddingLeft = '10em';
-  }
-
-  const updatedHtmlString = dom.documentElement.innerHTML;
-  return updatedHtmlString;
-};
-
 const RenderContent = ({ broadcastItem, color }) => {
   return (
     <div
@@ -114,7 +63,7 @@ const RenderContent = ({ broadcastItem, color }) => {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: handleHTMLStringCustomization(broadcastItem?.message),
+          __html: broadcastItem?.message,
         }}
         className={customStyleCSS.htmlAPI}
       />
