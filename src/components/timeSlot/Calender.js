@@ -12,258 +12,9 @@ import 'swiper/swiper.scss';
 import DropDownCustomSelect from './DropDownSelect';
 import useMobileSize from '../../hooks/useMobileSize';
 import { CONSTANT } from 'helpers';
+import { useStyles } from 'helpers/additionallStyle';
 
-const useStyles = (mobileSize, color) => ({
-  swiper: {
-    width: '100%',
-  },
-  body: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  textDate: {
-    fontSize: 11,
-    color: 'black',
-  },
-  textDateSelected: {
-    fontSize: 11,
-    color: 'white',
-  },
-  textApply: {
-    color: 'white',
-    fontSize: 12,
-  },
-  textClose: {
-    fontSize: 12,
-  },
-  circle: {
-    textAlign: 'center',
-    width: 26,
-    height: 26,
-  },
-  circleActive: {
-    display: 'flex',
-    width: 30,
-    height: 30,
-    backgroundColor: color.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100,
-    color: 'white',
-  },
-  itemDDMMYY: {
-    color: 'black',
-    fontSize: mobileSize ? '11px' : '13px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
-  },
-  circleActiveForDDMMYY: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '40px',
-    height: '40px',
-    backgroundColor: color.primary,
-    borderRadius: '100%',
-    color: 'white',
-    fontSize: mobileSize ? '11px' : '13px',
-    marginLeft: '4px',
-    marginRight: '4px',
-  },
-  styleDate: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '5px',
-  },
-  buttonCancel: {
-    backgroundColor: 'white',
-    border: `1px solid ${color.primary}`,
-    color: color.primary,
-    width: '48%',
-    padding: '6px 0px',
-    borderRadius: '10px',
-    fontSize: '12px',
-  },
-  buttonConfirm: {
-    color: 'white',
-    width: '48%',
-    padding: '6px 0px',
-    borderRadius: '10px',
-    fontSize: '12px',
-  },
-  buttonDate: {
-    color: color.primary,
-    border: `1px solid ${color.primary}`,
-    backgroundColor: 'white',
-    '&:hover': { color: 'gray' },
-    fontSize: mobileSize ? '11px' : '13px',
-    height: '30px',
-    width: '30px',
-  },
-  buttonDateActive: {
-    backgroundColor: color.primary,
-    color: 'white',
-    border: `1px solid ${color.primary}`,
-    '&:hover': { color: 'gray' },
-    fontSize: mobileSize ? '11px' : '13px',
-    width: '30px',
-    height: '30px',
-  },
-  gridMonth: {
-    display: 'grid',
-    gridAutoColumns: '1fr',
-    gridAutoRows: '1fr',
-    gridTemplateColumns: '1fr 1fr 1fr',
-    gridTemplateRows: '1fr 1fr 1fr',
-    alignItems: 'center',
-    justifyItems: 'center',
-  },
-  wrapListDate: {
-    display: 'flex',
-    overflowX: 'auto',
-    width: '100%',
-    '&::-webkit-scrollbar': { width: '0.4em' },
-    '&::-webkit-scrollbar-track': {
-      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: 'rgba(0,0,0,.1)',
-      outline: '1px solid slategrey',
-    },
-  },
-  listDate: {
-    width: '80px',
-    height: '100px',
-    border: '1px solid rgb(212 212 216)',
-    borderRadius: '10px',
-    color: '#4D86A0',
-    cursor: 'pointer',
-  },
-  listDateActive: {
-    width: '80px',
-    height: '100px',
-    border: '1px solid rgba(77, 134, 160, 0.5)',
-    borderRadius: '10px',
-    color: 'white',
-    cursor: 'pointer',
-    backgroundColor: '#4D86A0',
-  },
-  circleDate: {
-    display: 'flex',
-    width: 26,
-    height: 26,
-    backgroundColor: 'gray',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100,
-    color: 'white',
-    opacity: 0.5,
-  },
-  circleDateActive: {
-    display: 'flex',
-    width: 26,
-    height: 26,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100,
-    color: '#4D86A0',
-  },
-
-  wrapSeeMoreDate: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  wrapListTextAvailabel: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  wrapTextNotAvailable: {
-    width: 26,
-    height: 26,
-    backgroundColor: `${color.primary}90`,
-    borderRadius: 5,
-    opacity: 0.3,
-  },
-  wrapTextAvailable: {
-    width: 26,
-    height: 26,
-    borderRadius: 5,
-    opacity: 0.3,
-    border: `2px solid ${color.primary}`,
-  },
-  wrapTextChoosenDate: {
-    width: 26,
-    height: 26,
-    backgroundColor: color.primary,
-    borderRadius: 5,
-  },
-  wrapTimeDropDown: {
-    border: '1px solid rgb(212 212 216)',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'flex-column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '5px',
-  },
-  wrapperMonthSlider: {
-    width: '100%',
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr',
-    gridTemplateRows: '1fr',
-    gap: '0px 0px',
-    gridAutoFlow: 'row',
-    gridTemplateAreas: '". . ."',
-    justifyItems: 'center',
-    alignItems: 'center',
-  },
-  wrapperYearSlider: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  wrapperChooseDate: {
-    backgroundColor: `${color.primary}20`,
-    borderRadius: '5px',
-    padding: '10px',
-    textChoosenDate: {
-      marginLeft: '5px',
-      fontWeight: 'bold',
-      fontSize: mobileSize ? '10px' : '13px',
-    },
-  },
-  wrapperDeliveryDate: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'space-between',
-  },
-  wrapperChooseDateTime: {
-    backgroundColor: `${color.primary}20`,
-    borderRadius: '5px',
-    padding: '5px',
-  },
-  textChooseDateTime: {
-    fontWeight: 'bold',
-    color: color.primary,
-    fontSize: '13px',
-    marginLeft: '2px',
-    marginRight: '2px',
-  },
-});
-
-const Calendar = ({ onClose }) => {
-  const dispatch = useDispatch();
-  const mobileSize = useMobileSize();
+const Calendar = ({ onClose, validationOrderingGuestMode }) => {
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
   const [selectTimeDropDown, setSelectTimeDropDown] = useState('');
   const [dates, setDates] = useState([]);
@@ -280,6 +31,11 @@ const Calendar = ({ onClose }) => {
   const [dateActive, setDateActive] = useState('');
   const [monthActive, setMonthActive] = useState('');
   const [yearActive, setYearActive] = useState('');
+  const [getAllDateForTimeSlot, setGetAllDateForTimeSlot] = useState([]);
+
+  const dispatch = useDispatch();
+  const mobileSize = useMobileSize();
+
   const { orderingModeGuestCheckout } = useSelector(
     (state) => state.guestCheckoutCart
   );
@@ -289,13 +45,13 @@ const Calendar = ({ onClose }) => {
   const saveTimeSlotForEdit = useSelector(
     (state) => state.guestCheckoutCart.saveTimeSlotForEdit
   );
-  const dateEdit = useSelector((state) => state.guestCheckoutCart);
-  const orderingMode = useSelector((state) => state.order.orderingMode);
-  const timeslot = useSelector((state) => state.guestCheckoutCart);
+
   const color = useSelector((state) => state.theme.color);
   const styles = useStyles(mobileSize, color);
   const dataTime = useSelector((state) => state.outlet.defaultOutlet);
-  const [getAllDateForTimeSlot, setGetAllDateForTimeSlot] = useState([]);
+  const dateEdit = useSelector((state) => state.guestCheckoutCart);
+  const orderingMode = useSelector((state) => state.order.orderingMode);
+  const timeslot = useSelector((state) => state.guestCheckoutCart);
 
   const days = ['San', 'Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat'];
 
@@ -307,7 +63,7 @@ const Calendar = ({ onClose }) => {
     });
   };
 
-  const getDates = useCallback(() => {
+  const getDatesGuestMode = useCallback(() => {
     let calender = [];
     const startDate = moment()
       .month(selectedMonth)
@@ -335,7 +91,7 @@ const Calendar = ({ onClose }) => {
     return calender;
   }, [selectedMonth, selectedYear]);
 
-  const getAllDate = () => {
+  const getAllDateGuest = () => {
     let monthArr = [];
     const weeks = moment().add(0, 'weeks').startOf('week');
     for (let i = 0; i < 150; i++) {
@@ -351,7 +107,7 @@ const Calendar = ({ onClose }) => {
     return listDate;
   };
 
-  const getYears = useCallback(() => {
+  const getYearsGuest = useCallback(() => {
     const years = [];
     const start = moment()
       .year(moment().format('YYYY'))
@@ -387,17 +143,17 @@ const Calendar = ({ onClose }) => {
     setMonths(monthList);
   }, []);
   useEffect(() => {
-    const currentDates = getDates();
+    const currentDates = getDatesGuestMode();
     setDates(currentDates);
-  }, [selectedYear, selectedMonth, getDates]);
+  }, [selectedYear, selectedMonth, getDatesGuestMode]);
 
   useEffect(() => {
-    const currentYear = getYears();
+    const currentYear = getYearsGuest();
     setYears(currentYear);
-  }, [currentPage, getYears]);
+  }, [currentPage, getYearsGuest]);
 
   useEffect(() => {
-    const allDate = getAllDate();
+    const allDate = getAllDateGuest();
     setGetAllDateForTimeSlot(allDate);
   }, []);
 
@@ -408,9 +164,7 @@ const Calendar = ({ onClose }) => {
         clientTimezone: Math.abs(dateTime.getTimezoneOffset()),
         date: moment(dateTime).format('YYYY-MM-DD'),
         maxDays: 90,
-        orderingMode: orderingModeGuestCheckout
-          ? orderingModeGuestCheckout
-          : orderingMode,
+        orderingMode: orderingModeGuestCheckout || orderingMode,
         outletID: dataTime?.sortKey,
       };
 
@@ -475,7 +229,7 @@ const Calendar = ({ onClose }) => {
     onClose(true);
   };
 
-  const handleMonthSlider = (direction) => {
+  const handleMonthSliderGuest = (direction) => {
     if (direction === 'last') {
       const subtractResult = moment()
         .month(selectedMonth)
@@ -511,7 +265,7 @@ const Calendar = ({ onClose }) => {
           <Button
             style={{ display: 'none' }}
             onClick={() => {
-              handleMonthSlider('last');
+              handleMonthSliderGuest('last');
             }}
           >
             <KeyboardArrowLeft style={{ color: 'black' }} />
@@ -523,7 +277,7 @@ const Calendar = ({ onClose }) => {
       return (
         <Button
           onClick={() => {
-            handleMonthSlider('last');
+            handleMonthSliderGuest('last');
           }}
         >
           <KeyboardArrowLeft style={{ color: 'black' }} />
@@ -568,7 +322,7 @@ const Calendar = ({ onClose }) => {
 
         <Button
           onClick={() => {
-            handleMonthSlider('next');
+            handleMonthSliderGuest('next');
           }}
         >
           <KeyboardArrowRight style={{ color: 'black' }} />
@@ -630,7 +384,53 @@ const Calendar = ({ onClose }) => {
     );
   };
 
-  const renderDeliveryDateItem = (item) => {
+  const dateArrayMaxDaysGuest = [];
+  if (
+    validationOrderingGuestMode?.maxDays &&
+    validationOrderingGuestMode?.maxDays !== 0
+  ) {
+    const days = validationOrderingGuestMode?.maxDays;
+    const startDate = moment();
+    const endDate = moment().add(days - 1, 'days');
+
+    const currentDate = startDate.clone();
+
+    while (currentDate.isSameOrBefore(endDate)) {
+      const formattedDate = {
+        date: currentDate.format('YYYY-MM-DD'),
+      };
+      dateArrayMaxDaysGuest.push(formattedDate);
+      currentDate.add(1, 'day');
+    }
+  }
+
+  // start Refactoring code
+  const createStyleFontDate = (isThisMonth, isActive) => {
+    if (!isThisMonth) {
+      return {
+        fontSize: 11,
+        color: '#667080',
+      };
+    } else if (isActive) {
+      return styles.textDateSelected;
+    } else {
+      return styles.textDate;
+    }
+  };
+
+  const createStyleCircle = (isThisMonth, isActive) => {
+    return isActive && isThisMonth ? styles.circleActive : styles.circle;
+  };
+
+  const renderDateItem = (
+    item,
+    dateActive,
+    selectedMonth,
+    setSelectTimeDropDown,
+    setDateActive,
+    handleMonthSliderGuest,
+    timeList
+  ) => {
     const itemDate = item.split(' ');
     const date = Number(itemDate[2]);
     const month = itemDate[1];
@@ -651,17 +451,8 @@ const Calendar = ({ onClose }) => {
       return combineDateNMonth === stringToInt;
     });
 
-    const styleFontDate = !isThisMonth
-      ? {
-          fontSize: 11,
-          color: '#667080',
-        }
-      : isActive
-      ? styles.textDateSelected
-      : styles.textDate;
-
-    const styleCircle =
-      isActive && isThisMonth ? styles.circleActive : styles.circle;
+    const styleFontDate = createStyleFontDate(isThisMonth, isActive);
+    const styleCircle = createStyleCircle(isThisMonth, isActive);
 
     return (
       <div
@@ -671,13 +462,13 @@ const Calendar = ({ onClose }) => {
           justifyContent: 'center',
           alignItems: 'center',
           padding: '5px',
-          pointerEvents: !availableDateFromAPI && 'none',
+          pointerEvents: !availableDateFromAPI ? 'none' : 'auto',
         }}
         onClick={() => {
           setSelectTimeDropDown('');
           setDateActive(date);
           if (date === 1) {
-            handleMonthSlider('next');
+            handleMonthSliderGuest('next');
           }
         }}
       >
@@ -696,12 +487,41 @@ const Calendar = ({ onClose }) => {
     );
   };
 
+  const renderDeliveryDateItemGuestCO = (item) => {
+    if (
+      validationOrderingGuestMode?.maxDays &&
+      validationOrderingGuestMode?.maxDays !== 0
+    ) {
+      return renderDateItem(
+        item,
+        dateActive,
+        selectedMonth,
+        setSelectTimeDropDown,
+        setDateActive,
+        handleMonthSliderGuest,
+        dateArrayMaxDaysGuest
+      );
+    } else {
+      return renderDateItem(
+        item,
+        dateActive,
+        selectedMonth,
+        setSelectTimeDropDown,
+        setDateActive,
+        handleMonthSliderGuest,
+        timeList
+      );
+    }
+  };
+
+  // end Refactoring code
+
   const renderDeliveryDate = () => {
     const result = dates.map((date, i) => {
       return (
         <div key={i} style={styles.wrapperDeliveryDate}>
           {date.map((item) => {
-            return renderDeliveryDateItem(item);
+            return renderDeliveryDateItemGuestCO(item);
           })}
         </div>
       );
@@ -867,10 +687,10 @@ const Calendar = ({ onClose }) => {
   };
 
   const renderConfirmButton = () => {
-    const buttonDisabled = !selectTimeDropDown ? true : false;
+    const buttonDisabled = !selectTimeDropDown;
 
     const isTimeSlotEditExist = timeslot.timeslot ? false : buttonDisabled;
-    const disableApplyButton = dateActive ? false : true;
+    const disableApplyButton = !dateActive;
 
     if (selector === 'date' || selector === 'month' || selector === 'year') {
       return (
@@ -899,10 +719,13 @@ const Calendar = ({ onClose }) => {
                 .date(dateActive)
                 .format('YYYY MM DD');
               setGetDateBaseOnClick(changeFormatDate(formatForSendApi));
-              dispatch({
-                type: CONSTANT.SAVE_TIMESLOT_CALENDER,
-                payload: changeFormatDate(formatForSendApi),
-              });
+              if (!validationOrderingGuestMode?.maxDays) {
+                dispatch({
+                  type: CONSTANT.SAVE_TIMESLOT_CALENDER,
+                  payload: changeFormatDate(formatForSendApi),
+                });
+              }
+
               dispatch({ type: CONSTANT.SAVE_DATE, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIMESLOT, payload: '' });
               dispatch({ type: CONSTANT.SAVE_TIME, payload: '' });
@@ -955,46 +778,59 @@ const Calendar = ({ onClose }) => {
   let dateListEdit;
 
   if (saveTimeSlotCalendar) {
-    getAllDateForTimeSlot.sort((item) => {
-      if (saveTimeSlotCalendar === item.split(' ').join('-')) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-    const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
+    if (!validationOrderingGuestMode?.maxDays) {
+      getAllDateForTimeSlot.sort((item) => {
+        if (saveTimeSlotCalendar === item.split(' ').join('-')) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      const splitFormatDate = saveTimeSlotCalendar.split('-').join('');
 
-    const dateFiltered = getAllDateForTimeSlot.filter(
-      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
-    );
+      const dateFiltered = getAllDateForTimeSlot.filter(
+        (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+      );
 
-    const dateSorted = dateFiltered.sort(
-      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
-    );
-    filteredItem = dateSorted;
+      const dateSorted = dateFiltered.sort(
+        (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+      );
+      filteredItem = dateSorted;
+    }
   }
 
   if (dateEdit.date || saveTimeSlotForEdit) {
-    getAllDateForTimeSlot.sort((item) => {
-      if (dateEdit.date === item.split(' ').join('-')) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-    const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
+    if (!validationOrderingGuestMode?.maxDays) {
+      getAllDateForTimeSlot.sort((item) => {
+        if (dateEdit.date === item.split(' ').join('-')) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      const splitFormatDate = saveTimeSlotForEdit.split('-').join('');
 
-    const dateFiltered = getAllDateForTimeSlot.filter(
-      (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
-    );
+      const dateFiltered = getAllDateForTimeSlot.filter(
+        (item) => Number(item.split(' ').join('')) >= Number(splitFormatDate)
+      );
 
-    const dateSorted = dateFiltered.sort(
-      (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
-    );
-    dateListEdit = dateSorted;
+      const dateSorted = dateFiltered.sort(
+        (a, b) => Number(a.split(' ').join('')) - Number(b.split(' ').join(''))
+      );
+      dateListEdit = dateSorted;
+    }
   }
 
-  const renderChildTimeSlotScrool = (arrayDate) => {
+  const renderChildTimeSlotScroolGuestCO = (arrayDate) => {
+    if (
+      validationOrderingGuestMode?.maxDays &&
+      validationOrderingGuestMode?.maxDays !== 0
+    ) {
+      const data = arrayDate;
+      const modifyLengthArray = 5;
+
+      data.length = modifyLengthArray;
+    }
     return arrayDate?.map((itemDate) => {
       const baseStyleStack = {
         width: '80px',
@@ -1003,8 +839,8 @@ const Calendar = ({ onClose }) => {
       };
       const baseCycleStyle = {
         display: 'flex',
-        width: 26,
-        height: 26,
+        width: 30,
+        height: 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100,
@@ -1103,11 +939,11 @@ const Calendar = ({ onClose }) => {
       );
     } else {
       if (filteredItem) {
-        return renderChildTimeSlotScrool(filteredItem);
+        return renderChildTimeSlotScroolGuestCO(filteredItem);
       } else if (dateListEdit) {
-        return renderChildTimeSlotScrool(dateListEdit);
+        return renderChildTimeSlotScroolGuestCO(dateListEdit);
       } else {
-        return renderChildTimeSlotScrool(getAllDateForTimeSlot);
+        return renderChildTimeSlotScroolGuestCO(getAllDateForTimeSlot);
       }
     }
   };
@@ -1244,6 +1080,9 @@ const Calendar = ({ onClose }) => {
   };
 
   const renderTime = () => {
+    const isMaxDays = validationOrderingGuestMode?.maxDays;
+    const isShowSeeMoreDateGuesCO =
+      isMaxDays !== undefined && isMaxDays !== null && isMaxDays <= 5;
     return (
       <Stack
         direction='column'
@@ -1251,17 +1090,32 @@ const Calendar = ({ onClose }) => {
         justifyContent='center'
         alignItems='center'
       >
-        <Swiper style={styles.swiper} slidesPerView='auto' spaceBetween={12}>
+        <Swiper
+          style={{
+            width: '100%',
+          }}
+          slidesPerView='auto'
+          spaceBetween={12}
+        >
           {renderTimeScroll()}
         </Swiper>
-        <div style={styles.wrapSeeMoreDate} onClick={() => setSelector('date')}>
-          <Typography
-            sx={{ color: color.primary, fontWeight: 'bold', fontSize: '12px' }}
+        {!isShowSeeMoreDateGuesCO && (
+          <div
+            style={styles.wrapSeeMoreDate}
+            onClick={() => setSelector('date')}
           >
-            See More Date
-          </Typography>
-          <KeyboardArrowRight style={{ color: '#4D86A0' }} />
-        </div>
+            <Typography
+              sx={{
+                color: color.primary,
+                fontWeight: 'bold',
+                fontSize: '12px',
+              }}
+            >
+              See More Date
+            </Typography>
+            <KeyboardArrowRight style={{ color: '#4D86A0' }} />
+          </div>
+        )}
         {renderAvailableText()}
       </Stack>
     );

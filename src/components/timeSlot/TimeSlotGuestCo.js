@@ -30,42 +30,46 @@ const useStyles = () => ({
     marginBottom: 2,
   },
 });
-const TimeSlotDialog = ({ open, onClose }) => {
-  const useStyless = makeStyles(() => ({
+const TimeSlotDialog = ({ open, onClose, validationOrderingGuestMode }) => {
+  const useStylessGuestCO = makeStyles(() => ({
     paper: { minWidth: '340px', borderRadius: '100px' },
   }));
-  const classes = useStyless();
-  const styles = useStyles();
+  const classesGuest = useStylessGuestCO();
+  const stylesGuest = useStyles();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingGuest, setIsLoadingGuest] = useState(true);
 
   useEffect(() => {
     const cleanUp = setTimeout(() => {
-      setIsLoading(false);
+      setIsLoadingGuest(false);
     }, 3000);
     return () => {
       clearTimeout(cleanUp);
     };
-  }, [isLoading]);
+  }, [isLoadingGuest]);
 
-  if (isLoading) {
-    return <LoadingOverlayCustom active={isLoading} spinner />;
+  if (isLoadingGuest) {
+    return <LoadingOverlayCustom active={isLoadingGuest} spinner />;
   }
   return (
     <Dialog
-      classes={{ paper: classes.paper }}
+      classes={{ paper: classesGuest.paper }}
       fullWidth={false}
       maxWidth='sm'
       open={open}
       onClose={onClose}
     >
-      <DialogTitle style={styles.dialogTitle}>
-        <Typography style={styles.typoGraphy}>
+      <DialogTitle style={stylesGuest.dialogTitle}>
+        <Typography style={stylesGuest.typoGraphy}>
           Choose Delivery Schedule
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Calendar setIsLoading={setIsLoading} onClose={onClose} />
+        <Calendar
+          setIsLoading={setIsLoadingGuest}
+          onClose={onClose}
+          validationOrderingGuestMode={validationOrderingGuestMode}
+        />
       </DialogContent>
     </Dialog>
   );
