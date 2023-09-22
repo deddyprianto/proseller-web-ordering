@@ -195,10 +195,10 @@ const Product = ({ item }) => {
     guestCheckoutCartBasket.response?.details,
   ]);
 
-  const checkDescription = /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(
+  const checkDescription = /^<([a-z]+)([^<]+)*(?:>([^<]*)<\/\1>|\s+\/>)$/i.test(
     item?.product?.description
   );
-
+  
   const handleProductItemIds = (item) => {
     let items = [];
     if (item?.product) {

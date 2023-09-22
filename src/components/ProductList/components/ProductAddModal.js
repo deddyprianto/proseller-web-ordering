@@ -435,7 +435,7 @@ const ProductAddModal = ({
     setTotalPrice(qty * totalPrice);
   };
 
-  const checkDescription = /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(
+  const checkDescription = /^<([a-z]+)([^<]+)*(?:>([^<]*)<\/\1>|\s+\/>)$/i.test(
     productDetail?.description
   );
 
