@@ -195,6 +195,10 @@ const Product = ({ item }) => {
     guestCheckoutCartBasket.response?.details,
   ]);
 
+  const checkDescription = /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(
+    item?.product?.description
+  );
+
   const handleProductItemIds = (item) => {
     let items = [];
     if (item?.product) {
@@ -409,14 +413,17 @@ const Product = ({ item }) => {
                   {item?.product?.name}
                 </Typography>
               </div>
-              <Typography
-                paragraph
-                noWrap
-                gutterBottom={false}
-                className={classes.description}
-              >
-                {item?.product?.description}
-              </Typography>
+              {!checkDescription && (
+                <Typography
+                  paragraph
+                  noWrap
+                  gutterBottom={false}
+                  className={classes.description}
+                >
+                  {item?.product?.description}
+                </Typography>
+              )}
+
               <Typography className={classes.price}>
                 {isUnavailable
                   ? 'Sold Out'
