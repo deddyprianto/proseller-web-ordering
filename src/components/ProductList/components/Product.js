@@ -195,10 +195,13 @@ const Product = ({ item }) => {
     guestCheckoutCartBasket.response?.details,
   ]);
 
-  const checkDescription = /^<([a-z]+)([^<]+)*(?:>([^<]*)<\/\1>|\s+\/>)$/i.test(
-    item?.product?.description
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(item?.product?.description, 'text/html');
+  const hasHTMLContent = Array.from(doc.body.childNodes).some(
+    (node) => node.nodeType === Node.ELEMENT_NODE
   );
-  
+
   const handleProductItemIds = (item) => {
     let items = [];
     if (item?.product) {
@@ -413,7 +416,7 @@ const Product = ({ item }) => {
                   {item?.product?.name}
                 </Typography>
               </div>
-              {!checkDescription && (
+              {!hasHTMLContent && (
                 <Typography
                   paragraph
                   noWrap

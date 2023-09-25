@@ -435,8 +435,13 @@ const ProductAddModal = ({
     setTotalPrice(qty * totalPrice);
   };
 
-  const checkDescription = /^<([a-z]+)([^<]+)*(?:>([^<]*)<\/\1>|\s+\/>)$/i.test(
-    productDetail?.description
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    product?.description || productDetail?.description,
+    'text/html'
+  );
+  const hasHTMLContent = Array.from(doc.body.childNodes).some(
+    (node) => node.nodeType === Node.ELEMENT_NODE
   );
 
   const handleProductSelected = () => {
@@ -1959,7 +1964,7 @@ const ProductAddModal = ({
                 {handleCurrency(totalPrice)}
               </Typography>
             </div>
-            {checkDescription ? (
+            {hasHTMLContent ? (
               <div
                 ref={productDescriptionRef}
                 dangerouslySetInnerHTML={{
