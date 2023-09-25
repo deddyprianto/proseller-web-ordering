@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import config from 'config';
@@ -27,7 +27,7 @@ import { isEmpty } from 'helpers/utils';
 import commonAlert from 'components/template/commonAlert';
 
 import { OrderAction } from 'redux/actions/OrderAction';
-
+import Swal from 'sweetalert2';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
 import { CONSTANT } from 'helpers';
 
@@ -70,6 +70,44 @@ const ProductAddModal = ({
   const [mode, setMode] = useState();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [idGuestCheckout, setIdGuestCheckout] = useState();
+  const productDescriptionRef = useRef(null);
+
+  useEffect(() => {
+    const handleImgClick = (event) => {
+      let targetElement = event.target;
+      while (targetElement && targetElement.tagName !== 'IMG') {
+        targetElement = targetElement.parentElement;
+      }
+      if (targetElement && targetElement.tagName === 'IMG') {
+        const imgElement = document.createElement('img');
+        imgElement.src = targetElement.src;
+
+        Swal.fire({
+          title: 'Image Preview',
+          html: imgElement,
+          allowOutsideClick: false,
+          confirmButtonText: 'OK',
+          confirmButtonColor: props.color.primary,
+          width: '40em',
+          customClass: {
+            confirmButton: fontStyleCustom.buttonSweetAlert,
+            title: fontStyleCustom.fontTitleSweetAlert,
+            container: fontStyleCustom.containerSweetAlert,
+          },
+        });
+      }
+    };
+
+    if (productDescriptionRef.current) {
+      const imgElements =
+        productDescriptionRef.current.getElementsByTagName('img');
+      for (let i = 0; i < imgElements.length; i++) {
+        imgElements[i].addEventListener('click', handleImgClick);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productDescriptionRef.current]);
+
   /**
    * Side effect when `buildCartErrorData` updated
    * @description Displays a cart error alert when `buildCartErrorData` is not empty.
@@ -160,7 +198,7 @@ const ProductAddModal = ({
       width: 18,
       color: 'white',
     },
-    fullWidth: { width: '100%' },
+    fullWidth: { width: '100%', padding: gadgetScreen ? '0px' : '0px 20px' },
     addText: {
       fontWeight: 500,
       fontSize: '12px',
@@ -393,10 +431,18 @@ const ProductAddModal = ({
       setSelectedProductModifiers(arrFinalData);
     }
   }, [product, productDetail]);
-
   const handlePrice = ({ qty, totalPrice }) => {
     setTotalPrice(qty * totalPrice);
   };
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    product?.description || productDetail?.description,
+    'text/html'
+  );
+  const hasHTMLContent = Array.from(doc.body.childNodes).some(
+    (node) => node.nodeType === Node.ELEMENT_NODE
+  );
 
   const handleProductSelected = () => {
     if (!isEmptyObject(selectedProduct)) {
@@ -1822,6 +1868,61 @@ const ProductAddModal = ({
     }
   };
 
+  const handleHTMLStringCustomization = (descriptionHTML) => {
+    const parser = new DOMParser();
+    const dom = parser.parseFromString(descriptionHTML, 'text/html');
+    const customStyleForLink = dom.getElementsByTagName('a');
+    const elementsWithClassNameTab1 = dom.getElementsByClassName('ql-indent-1');
+    const elementsWithClassNameTab2 = dom.getElementsByClassName('ql-indent-2');
+    const elementsWithClassNameTab3 = dom.getElementsByClassName('ql-indent-3');
+    const elementsWithClassNameTab4 = dom.getElementsByClassName('ql-indent-4');
+    const elementsWithClassNameTab5 = dom.getElementsByClassName('ql-indent-5');
+    const elementsWithClassNameTab6 = dom.getElementsByClassName('ql-indent-6');
+    const elementsWithClassNameTab7 = dom.getElementsByClassName('ql-indent-7');
+    const elementsWithClassNameTab8 = dom.getElementsByClassName('ql-indent-8');
+
+    const fontSizeSmall = dom.getElementsByClassName('ql-size-small');
+    const fontSizeLarge = dom.getElementsByClassName('ql-size-large');
+
+    for (const link of customStyleForLink) {
+      link.style.color = 'blue';
+    }
+    for (const small of fontSizeSmall) {
+      small.style.fontSize = '0.75em';
+    }
+    for (const large of fontSizeLarge) {
+      large.style.fontSize = '1.5em';
+    }
+
+    for (const element of elementsWithClassNameTab1) {
+      element.style.paddingLeft = '2em';
+    }
+    for (const element of elementsWithClassNameTab2) {
+      element.style.paddingLeft = '3em';
+    }
+    for (const element of elementsWithClassNameTab3) {
+      element.style.paddingLeft = '4em';
+    }
+    for (const element of elementsWithClassNameTab4) {
+      element.style.paddingLeft = '5em';
+    }
+    for (const element of elementsWithClassNameTab5) {
+      element.style.paddingLeft = '6em';
+    }
+    for (const element of elementsWithClassNameTab6) {
+      element.style.paddingLeft = '7em';
+    }
+    for (const element of elementsWithClassNameTab7) {
+      element.style.paddingLeft = '8em';
+    }
+    for (const element of elementsWithClassNameTab8) {
+      element.style.paddingLeft = '9em';
+    }
+
+    const updatedHtmlString = dom.documentElement.innerHTML;
+    return updatedHtmlString;
+  };
+
   return (
     <Dialog
       open={open}
@@ -1863,10 +1964,20 @@ const ProductAddModal = ({
                 {handleCurrency(totalPrice)}
               </Typography>
             </div>
-
-            <Typography style={styles.productDescription}>
-              {product.description || productDetail?.description}
-            </Typography>
+            {hasHTMLContent ? (
+              <div
+                ref={productDescriptionRef}
+                dangerouslySetInnerHTML={{
+                  __html:
+                    handleHTMLStringCustomization(product.description) ||
+                    handleHTMLStringCustomization(productDetail?.description),
+                }}
+              />
+            ) : (
+              <Typography style={styles.productDescription}>
+                {product.description || productDetail?.description}
+              </Typography>
+            )}
           </div>
 
           {renderCloseButton()}

@@ -7,6 +7,12 @@ justify-content: center;
 align-items: center;
 padding-right: 80px;
 }
+.containerSweetAlert {
+  z-index: 9999 !important;
+}
+.swal2-content{
+padding: 0px !important;
+}
 .lds-spinner div {
   transform-origin: 35px 35px;
   animation: lds-spinner 1.2s linear infinite;

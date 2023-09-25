@@ -195,6 +195,13 @@ const Product = ({ item }) => {
     guestCheckoutCartBasket.response?.details,
   ]);
 
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(item?.product?.description, 'text/html');
+  const hasHTMLContent = Array.from(doc.body.childNodes).some(
+    (node) => node.nodeType === Node.ELEMENT_NODE
+  );
+
   const handleProductItemIds = (item) => {
     let items = [];
     if (item?.product) {
@@ -409,14 +416,17 @@ const Product = ({ item }) => {
                   {item?.product?.name}
                 </Typography>
               </div>
-              <Typography
-                paragraph
-                noWrap
-                gutterBottom={false}
-                className={classes.description}
-              >
-                {item?.product?.description}
-              </Typography>
+              {!hasHTMLContent && (
+                <Typography
+                  paragraph
+                  noWrap
+                  gutterBottom={false}
+                  className={classes.description}
+                >
+                  {item?.product?.description}
+                </Typography>
+              )}
+
               <Typography className={classes.price}>
                 {isUnavailable
                   ? 'Sold Out'
