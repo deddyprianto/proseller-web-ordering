@@ -15,6 +15,12 @@ import { CONSTANT } from 'helpers';
 import { useStyles } from 'helpers/additionallStyle';
 
 const CalendarLogin = ({ onClose, isMaxDays }) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
   const dispatch = useDispatch();
   const mobileSize = useMobileSize();
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
@@ -122,6 +128,13 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
     const currentPosts = years.slice(indexOfFirstPost, indexOfLastPost);
     return currentPosts;
   }, [currentPage, postsPerPage]);
+
+  useEffect(() => {
+    if (!saveDateNTime.saveDateEdit && !saveDateLogin) {
+      setGetDateBaseOnClick(formattedDate);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saveDateNTime.saveDateEdit, saveDateLogin]);
 
   useEffect(() => {
     const currentYear = moment().format('YYYY');
@@ -773,6 +786,12 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
       dateListEdit = dateSorted;
     }
   }
+  // NEW FUNCTION
+  function dateExistsInComparisons(dateToCheck, dateComparisons) {
+    const formattedDateToCheck = dateToCheck.split(' ').join('-');
+    return dateComparisons.some((item) => item.date === formattedDateToCheck);
+  }
+  // END NEW FUNCTION
 
   const renderChildTimeSlotScrool = (arrayDate) => {
     if (isMaxDays && isMaxDays !== 0) {
@@ -805,8 +824,10 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
 
       const isItemDateSameAsDateBaseOnClick =
         changeFormatDate(itemDate) === getDateBaseOnClick;
-
-      if (isItemDateOutOfRange) {
+      if (
+        isItemDateOutOfRange ||
+        !dateExistsInComparisons(itemDate, dateArrayIsMaxDays)
+      ) {
         stackStyles.backgroundColor = 'white';
         stackStyles.border = `1px solid ${color.primary}80`;
         stackStyles.color = 'gray';
