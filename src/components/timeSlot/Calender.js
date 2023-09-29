@@ -13,8 +13,15 @@ import DropDownCustomSelect from './DropDownSelect';
 import useMobileSize from '../../hooks/useMobileSize';
 import { CONSTANT } from 'helpers';
 import { useStyles } from 'helpers/additionallStyle';
+import { dateExistsInComparisons } from 'helpers/helperFunctionLoginGuest';
 
 const Calendar = ({ onClose, validationOrderingGuestMode }) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
   const [getDateBaseOnClick, setGetDateBaseOnClick] = useState();
   const [selectTimeDropDown, setSelectTimeDropDown] = useState('');
   const [dates, setDates] = useState([]);
@@ -129,6 +136,13 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
     const currentPosts = years.slice(indexOfFirstPost, indexOfLastPost);
     return currentPosts;
   }, [currentPage, postsPerPage]);
+
+  useEffect(() => {
+    if (!saveTimeSlotForEdit) {
+      setGetDateBaseOnClick(formattedDate);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saveTimeSlotForEdit]);
 
   useEffect(() => {
     const mode = localStorage.getItem('settingGuestMode');
@@ -855,7 +869,8 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
               border: `1px solid ${color.primary}80`,
               color: 'white',
             }
-          : !compareDateLocalWithDateApi(changeFormatDate(itemDate))
+          : !compareDateLocalWithDateApi(changeFormatDate(itemDate)) ||
+            !dateExistsInComparisons(itemDate, dateArrayMaxDaysGuest)
           ? {
               ...baseStyleStack,
               backgroundColor: 'white',
@@ -992,7 +1007,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
             </Typography>
           </div>
           <div style={styles.wrapListTextAvailabel}>
-            <div style={styles.wrapTextChoosenDate} />
+            <div style={styles.wrapTextnDate} />
             <Typography
               sx={{
                 fontSize: mobileSize ? '10px' : '13px',
