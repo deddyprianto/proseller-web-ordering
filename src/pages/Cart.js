@@ -1033,9 +1033,9 @@ const Cart = () => {
           })
         )
       );
-      history.push('/payment');
+      history.push('/awaitingpayment');
     }
-    history.push('/payment');
+    history.push('/awaitingpayment');
   };
 
   const handleSelectDeliveryProvider = async (value) => {
