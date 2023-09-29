@@ -1007,7 +1007,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
             </Typography>
           </div>
           <div style={styles.wrapListTextAvailabel}>
-            <div style={styles.wrapTextnDate} />
+            <div style={styles.wrapTextChoosenDate} />
             <Typography
               sx={{
                 fontSize: mobileSize ? '10px' : '13px',
