@@ -819,7 +819,6 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
 
       const isItemDateSameAsDateBaseOnClick =
         changeFormatDate(itemDate) === getDateBaseOnClick;
-        console.log(dateExistsInComparisons(itemDate, dateArrayIsMaxDays));
       if (
         isItemDateOutOfRange ||
         dateExistsInComparisons(itemDate, dateArrayIsMaxDays)
