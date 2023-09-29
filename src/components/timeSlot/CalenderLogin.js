@@ -13,6 +13,7 @@ import DropDownCustomSelect from './DropDownSelect';
 import useMobileSize from '../../hooks/useMobileSize';
 import { CONSTANT } from 'helpers';
 import { useStyles } from 'helpers/additionallStyle';
+import { dateExistsInComparisons } from 'helpers/helperFunctionLoginGuest';
 
 const CalendarLogin = ({ onClose, isMaxDays }) => {
   const today = new Date();
@@ -786,12 +787,6 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
       dateListEdit = dateSorted;
     }
   }
-  // NEW FUNCTION
-  function dateExistsInComparisons(dateToCheck, dateComparisons) {
-    const formattedDateToCheck = dateToCheck.split(' ').join('-');
-    return dateComparisons.some((item) => item.date === formattedDateToCheck);
-  }
-  // END NEW FUNCTION
 
   const renderChildTimeSlotScrool = (arrayDate) => {
     if (isMaxDays && isMaxDays !== 0) {
@@ -826,7 +821,7 @@ const CalendarLogin = ({ onClose, isMaxDays }) => {
         changeFormatDate(itemDate) === getDateBaseOnClick;
       if (
         isItemDateOutOfRange ||
-        !dateExistsInComparisons(itemDate, dateArrayIsMaxDays)
+        dateExistsInComparisons(itemDate, dateArrayIsMaxDays)
       ) {
         stackStyles.backgroundColor = 'white';
         stackStyles.border = `1px solid ${color.primary}80`;
