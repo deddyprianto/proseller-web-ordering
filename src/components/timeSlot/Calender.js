@@ -870,7 +870,7 @@ const Calendar = ({ onClose, validationOrderingGuestMode }) => {
               color: 'white',
             }
           : !compareDateLocalWithDateApi(changeFormatDate(itemDate)) ||
-            !dateExistsInComparisons(itemDate, dateArrayMaxDaysGuest)
+            dateExistsInComparisons(itemDate, dateArrayMaxDaysGuest)
           ? {
               ...baseStyleStack,
               backgroundColor: 'white',
