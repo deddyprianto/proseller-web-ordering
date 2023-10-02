@@ -50,6 +50,7 @@ const UseSVC = loadable(() => import('../../components/svc/useSVC'));
 const DeliveryAddress = loadable(() => import('../../pages/DeliveryAddress'));
 const PaymentMethod = loadable(() => import('../../pages/PaymentMethod'));
 const AwaitingPayment = loadable(() => import('../../pages/AwaitingPayment'));
+const SeeOrderDetail = loadable(() => import('../../pages/SeeOrderDetail'));
 const Setting = loadable(() => import('../../components/setting'));
 const Referral = loadable(() => import('../../components/referral'));
 const Basket = loadable(() => import('../../components/basket'));
@@ -251,7 +252,9 @@ class Layout extends Component {
                 component={AwaitingPayment}
               />
             )}
-
+            {(isLoggedIn || !enableOrdering) && (
+              <Route exact path='/seeorderdetail' component={SeeOrderDetail} />
+            )}
             {(isLoggedIn || !enableOrdering) && (
               <Route exact path='/rewards' component={Profile} />
             )}
