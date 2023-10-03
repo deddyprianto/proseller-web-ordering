@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useHistory } from 'react-router-dom';
-import qrcodeImage from 'assets/images/qrcode.png';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const SeeOrderDetail = () => {
@@ -179,7 +178,6 @@ const SeeOrderDetail = () => {
           alignItems: 'center',
         }}
       >
-        <img width={256} height={256} src={qrcodeImage} alt='qrcode fomopay' />
         <div
           style={{
             border: `1px solid ${color.primary}`,

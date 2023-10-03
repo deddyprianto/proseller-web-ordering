@@ -1195,10 +1195,7 @@ const Payment = ({ ...props }) => {
         win.location = response.data.action.url;
 
         setReferenceNumberConfirmation(response?.data?.referenceNo);
-        // setUrlConfirmationDialog(response.data.action.url);
         handleAfterPaymentSuccess(payload, response);
-        // setIsLoading(false);
-        // setOpenConfirmationDialogActionPayment(true);
       } else {
         win?.close();
         setWarningMessage(response?.data?.message);
@@ -1318,6 +1315,39 @@ const Payment = ({ ...props }) => {
       }
     }
   };
+
+  const handlePaymentFomoPay = async () => {
+    const paymentCardFomoPayDetail = props.selectedPaymentCard;
+    let isNeedConfirmation = false;
+    const enableAutoConfirmation = props.settings.find((item) => {
+      return item.settingKey === 'EnableAutoConfirmation';
+    });
+
+    if (enableAutoConfirmation) {
+      isNeedConfirmation = enableAutoConfirmation?.settingValue || false;
+    }
+
+    let payload = {
+      cartID: props.basket.cartID,
+      totalNettAmount: props.basket.totalNettAmount,
+      payments: [{ ...paymentCardFomoPayDetail, paymentAmount: totalPrice }],
+      isNeedConfirmation,
+      payAtPOS: false,
+      tableNo: props.noTable ? props.noTable : null,
+      orderingMode: props.orderingMode,
+      orderActionDate: props.orderActionDate,
+      orderActionTime: props.orderActionTime,
+      orderActionTimeSlot: props.orderActionTimeSlot,
+    };
+    setIsLoading(true);
+    const response = await props.dispatch(OrderAction.submitAndPay(payload));
+    setIsLoading(false);
+    props.dispatch({
+      type: 'RESPONSE_FOMOPAY',
+      data: response.data,
+    });
+    history.push('/awaitingpayment');
+  };
   const renderLabelButtonPay = () => {
     if (!isEmptyObject(props.saveDetailTopupSvc)) {
       return (
@@ -1347,6 +1377,7 @@ const Payment = ({ ...props }) => {
       );
     }
   };
+
   const renderButtonPay = () => {
     return (
       <LoadingButton
@@ -1360,6 +1391,8 @@ const Payment = ({ ...props }) => {
             setOpenTransferDialog(true);
           } else if (!isEmptyObject(props.saveDetailTopupSvc)) {
             handlePaymentTopUpSVC();
+          } else if (props.selectedPaymentCard?.paymentID === 'FOMO_PAY') {
+            handlePaymentFomoPay();
           } else {
             handlePay();
           }
