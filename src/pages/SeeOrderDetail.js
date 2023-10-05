@@ -427,7 +427,6 @@ const SeeOrderDetail = () => {
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
               color: color.primary,
-              fontWeight: 700,
             })}
             {renderBoxItem({
               labelRow1: 'Ref No.',
@@ -435,7 +434,6 @@ const SeeOrderDetail = () => {
               labelRow2: 'Queue No.',
               row2: paymentFomoPay?.queueNo,
               color: 'black',
-              fontWeight: 700,
             })}
             {renderBoxItem({
               labelRow1: 'Outlet Name',
@@ -443,14 +441,12 @@ const SeeOrderDetail = () => {
               labelRow2: 'Ordering Date',
               row2: formatDateWithTime(paymentFomoPay?.createdAt),
               color: 'black',
-              fontWeight: 700,
             })}
             {paymentFomoPay?.orderingMode === 'DELIVERY' &&
               renderBoxItem({
                 labelRow1: 'Ordering Mode',
                 row1: paymentFomoPay?.orderingMode,
                 color: 'black',
-                fontWeight: 700,
                 labelRow2: 'Delivery Address',
                 row2: paymentFomoPay?.deliveryAddress?.addressName,
                 labelRow3: 'Delivery Provider',
@@ -466,7 +462,6 @@ const SeeOrderDetail = () => {
                 labelRow1: 'Ordering Mode',
                 row1: paymentFomoPay?.orderingMode,
                 color: 'black',
-                fontWeight: 700,
                 labelRow4: 'Pickup Date & Time',
                 row4: {
                   date: changeFormatDateDefault,
@@ -478,7 +473,6 @@ const SeeOrderDetail = () => {
                 labelRow1: 'Ordering Mode',
                 row1: paymentFomoPay?.orderingMode,
                 color: 'black',
-                fontWeight: 700,
               })}
             {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
               paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
@@ -487,7 +481,6 @@ const SeeOrderDetail = () => {
                 labelRow1: 'Ordering Mode',
                 row1: paymentFomoPay?.orderingMode,
                 color: 'black',
-                fontWeight: 700,
               })}
             <RenderPaymentMethod
               label='Payment Details'

@@ -88,7 +88,7 @@ export const renderBoxItem = ({
         >
           {labelRow1}
         </div>
-        <div style={{ color, fontWeight, fontSize: '14px' }}>{row1}</div>
+        <div style={{ color, fontWeight: 700, fontSize: '14px' }}>{row1}</div>
       </div>
       <div
         style={{
@@ -106,7 +106,7 @@ export const renderBoxItem = ({
         >
           {labelRow2}
         </div>
-        <div style={{ color, fontWeight, fontSize: '14px' }}>{row2}</div>
+        <div style={{ color, fontWeight: 700, fontSize: '14px' }}>{row2}</div>
       </div>
       <div
         style={{
