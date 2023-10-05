@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -22,7 +21,8 @@ import Loading from 'components/loading/Loading';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
 
 import useMobileSize from 'hooks/useMobileSize';
-
+import iconCheck from 'assets/images/iconCheckHighQuality.png';
+import cardpaymentDefault from 'assets/images/cardpaymentDefault.png';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const PaymentMethodPage = () => {
@@ -135,6 +135,7 @@ const PaymentMethodPage = () => {
   const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [namePayment, setNamePayment] = useState('');
   const [paymentMethodList, setPaymentMethodList] = useState({});
   const [paymentURL, setPaymentURL] = useState('');
   const [creditCardSelected, setCreditCardSelected] = useState();
@@ -348,11 +349,22 @@ const PaymentMethodPage = () => {
       });
   };
 
+  function imageWithFallback({ imageUrl, defaultImageUrl }) {
+    const handleImageError = (e) => {
+      e.target.src = defaultImageUrl;
+    };
+
+    return (
+      <img width={70} src={imageUrl} alt='logo' onError={handleImageError} />
+    );
+  }
+
   const renderPaymentList = () => {
-    return paymentMethodList?.paymentTypes?.map((item, index) => {
+    return paymentMethodList?.paymentTypes?.map((item) => {
       if (item.paymentID === 'MANUAL_TRANSFER') {
         return (
           <Button
+            key={item.paymentID}
             sx={style.buttonManualTransfer}
             fullWidth
             startIcon={<CreditCardIcon />}
@@ -368,41 +380,69 @@ const PaymentMethodPage = () => {
             display: 'flex',
             alignItems: 'flex-start',
             flexDirection: 'column',
+            marginTop: '10px',
           }}
-          key={index}
+          key={item.paymentID}
         >
-          <Grid
-            container
-            direction='row'
-            justifyContent='space-between'
-            alignItems='center'
-            marginY={2}
+          <div
+            onClick={() => {
+              if (item.paymentID === 'FOMO_PAY') {
+                const fomoPayData = paymentMethodList.paymentTypes.find(
+                  (itemFind) => itemFind.paymentID === item.paymentID
+                );
+                dispatch({
+                  type: 'SET_SELECTED_PAYMENT_CARD',
+                  data: {
+                    paymentID: fomoPayData?.paymentID,
+                    paymentName: fomoPayData?.paymentName,
+                    paymentType: 'PayNow',
+                  },
+                });
+                history.goBack();
+              } else {
+                setNamePayment(item.paymentID);
+                handleAddPaymentMethod(item);
+              }
+            }}
+            style={{
+              boxShadow: '0px 4.55467px 11.38667px 0px rgba(0, 0, 0, 0.05)',
+              borderRadius: '8px',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '12px',
+            }}
           >
-            <Grid item xs={6}>
-              <Typography
-                className='customer-group-name'
-                sx={{
-                  fontSize: 18,
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {imageWithFallback({
+                defaultImageUrl: cardpaymentDefault,
+                imageUrl: item.image,
+              })}
+              <div
+                style={{
+                  fontSize: '15px',
+                  color: '#343A4A',
                   fontWeight: 600,
+                  marginLeft: '10px',
                 }}
               >
-                <CreditCardIcon fontSize='large' viewBox='0 -4 24 24' />
                 {item.paymentID}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} textAlign='right'>
-              <LoadingButton
-                loading={isLoading}
-                variant='contained'
-                sx={style.buttonAddCard}
-                startIcon={<AddRoundedIcon />}
-                onClick={() => handleAddPaymentMethod(item)}
-              >
-                Add Card
-              </LoadingButton>
-            </Grid>
+              </div>
+            </div>
+            {namePayment === item.paymentID && (
+              <img src={iconCheck} alt='check icon' />
+            )}
+          </div>
+          <Grid container sx={{ marginTop: '20px' }}>
+            {renderCardList(item)}
           </Grid>
-          <Grid container>{renderCardList(item)}</Grid>
         </Box>
       );
     });
@@ -657,21 +697,11 @@ const PaymentMethodPage = () => {
         </div>
       </Box>
 
-      <Box className='site-main' sx={{ paddingTop: 15 }}>
-        <Typography
-          color={colorState.primary}
-          textAlign='center'
-          fontWeight={700}
-          fontSize={24}
-        >
-          Payment Method
+      <Box className='site-main' sx={{ paddingTop: 17 }}>
+        <Typography color='#343A4A' fontWeight={500} fontSize={16}>
+          Available payment methods
         </Typography>
-        <Box
-          sx={{
-            paddingTop: '1em',
-            paddingBottom: '5em',
-          }}
-        >
+        <Box>
           {isLoading ? (
             <Loading loadingType='ButtonList' />
           ) : (

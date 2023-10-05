@@ -5,6 +5,7 @@ const defaultState = {
   useSVC: 0,
   selectedPaymentCard: {},
   totalPaymentAmount: 0,
+  responseFomoPayPayment: {},
 };
 
 export default function reducer(state = defaultState, action) {
@@ -38,6 +39,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         selectedPaymentCard: action.data,
+      };
+    case 'RESPONSE_FOMOPAY':
+      return {
+        ...state,
+        responseFomoPayPayment: action.data,
       };
     case 'ALL':
       return {
