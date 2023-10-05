@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { useSelector } from 'react-redux';
 
-function CountdownTimer({ targetDate, onCountdownComplete, color }) {
+function CountdownTimer({
+  targetDate,
+  onCountdownComplete,
+  color,
+  backgroundColor,
+}) {
+  const isBackgroundColor = backgroundColor;
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(targetDate));
 
   useEffect(() => {
@@ -50,9 +55,10 @@ function CountdownTimer({ targetDate, onCountdownComplete, color }) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        color: color.primary,
+        color: isBackgroundColor ? 'white' : color.primary,
         padding: '10px',
         margin: '10px 0px',
+        backgroundColor: isBackgroundColor && backgroundColor,
       }}
     >
       <div>Waiting for payment</div>
@@ -63,7 +69,7 @@ function CountdownTimer({ targetDate, onCountdownComplete, color }) {
       </div>
       <AccessTimeIcon
         sx={{
-          color: color.primary,
+          color: isBackgroundColor ? 'white' : color.primary,
           fontSize: '20px',
           padding: '0px',
           margin: '0px',
@@ -73,10 +79,9 @@ function CountdownTimer({ targetDate, onCountdownComplete, color }) {
   );
 }
 
-function CountDownTime({ targetDate, color }) {
+function CountDownTime({ targetDate, color, backgroundColor }) {
   const history = useHistory();
 
-  // const targetDate = '2023-10-03T10:57:09.307Z'; // Replace with your target date
   const [countdownComplete, setCountdownComplete] = useState(false);
 
   const handleCountdownComplete = (complete) => {
@@ -96,6 +101,7 @@ function CountDownTime({ targetDate, color }) {
         targetDate={targetDate}
         onCountdownComplete={handleCountdownComplete}
         color={color}
+        backgroundColor={backgroundColor}
       />
     </div>
   );

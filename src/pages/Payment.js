@@ -1339,6 +1339,21 @@ const Payment = ({ ...props }) => {
       orderActionTime: props.orderActionTime,
       orderActionTimeSlot: props.orderActionTimeSlot,
     };
+    if (props.orderingMode === 'DELIVERY') {
+      payload.deliveryAddress = props.deliveryAddress;
+      payload.deliveryProvider = props.selectedDeliveryProvider.name;
+      payload.deliveryProviderName = props.selectedDeliveryProvider.name;
+      payload.deliveryService = '-';
+      payload.deliveryProviderId = props.selectedDeliveryProvider.id;
+      payload.deliveryFee = props.selectedDeliveryProvider.deliveryFee;
+    }
+    if (!isEmptyArray(props.dataVoucher?.payments)) {
+      payload.payments = payload.payments.concat(props.dataVoucher?.payments);
+    }
+
+    if (!isEmptyObject(selectedPoint)) {
+      payload.payments.push(selectedPoint);
+    }
     setIsLoading(true);
     const response = await props.dispatch(OrderAction.submitAndPay(payload));
     setIsLoading(false);

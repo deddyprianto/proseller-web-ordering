@@ -1,28 +1,193 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useHistory } from 'react-router-dom';
-import { downloadImage } from 'helpers/awaitingPayment';
+import {
+  changeFormatDate,
+  downloadImage,
+  formatDateWithTime,
+  getCurrencyHelper,
+} from 'helpers/awaitingPayment';
 import CountDownTime from 'components/awaitingpayment/CountDownTime';
+import commonAlert from 'components/template/commonAlert';
+import { isEmptyArray } from 'helpers/CheckEmpty';
+
+export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
+  return (
+    <div
+      style={{
+        marginTop: '16px',
+        padding: '16px',
+        border: '2px solid var(--grey-scale-color-grey-scale-3, #D6D6D6)',
+        borderRadius: '8px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <div
+          style={{
+            color: 'var(--text-color-primary, #343A4A)',
+            fontWeight: 700,
+            fontSize: '14px',
+          }}
+        >
+          Sub Total
+        </div>
+        <div
+          style={{
+            color: 'var(--text-color-primary, #343A4A)',
+            fontWeight: 700,
+            fontSize: '14px',
+          }}
+        >
+          {getCurrencyHelper(paymentFomoPay?.totalGrossAmount, companyInfo)}
+        </div>
+      </div>
+      {paymentFomoPay?.totalDiscountAmount > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div>Discount</div>
+          <div
+            style={{
+              color: 'var(--semantic-color-success, #1A883C)',
+              fontWeight: 700,
+              fontSize: '14px',
+            }}
+          >
+            {getCurrencyHelper(
+              paymentFomoPay?.totalDiscountAmount,
+              companyInfo
+            )}
+          </div>
+        </div>
+      )}
+      {paymentFomoPay?.totalMembershipDiscount > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div>Membership Discount</div>
+          <div
+            style={{
+              color: 'var(--semantic-color-success, #1A883C)',
+              fontWeight: 700,
+              fontSize: '14px',
+            }}
+          >
+            {getCurrencyHelper(
+              paymentFomoPay?.totalMembershipDiscount,
+              companyInfo
+            )}
+          </div>
+        </div>
+      )}
+
+      {paymentFomoPay?.totalSurchargeAmount > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div>Surcharge</div>
+          <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
+            {getCurrencyHelper(
+              paymentFomoPay?.totalSurchargeAmount,
+              companyInfo
+            )}
+          </div>
+        </div>
+      )}
+
+      <hr style={{ backgroundColor: '#D6D6D6' }} />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <div style={{ fontSize: '16px', color: 'black', fontWeight: 700 }}>
+          TOTAL
+        </div>
+        <div
+          style={{ color: color.primary, fontWeight: 700, fontSize: '14px' }}
+        >
+          {getCurrencyHelper(paymentFomoPay?.totalNettAmount, companyInfo)}
+        </div>
+      </div>
+      {paymentFomoPay?.totalTaxAmount > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              color: 'var(--text-color-tertiary, #B7B7B7)',
+              fontSize: '14px',
+              fontWeight: 500,
+            }}
+          >
+            Tax Amount
+          </div>
+          <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
+            {getCurrencyHelper(paymentFomoPay?.totalTaxAmount, companyInfo)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const AwaitingPayment = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const responsiveDesign = screen();
 
   const color = useSelector((state) => state.theme.color);
+  const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
+  const showMessageConfirm = useSelector((state) => state.customer.showMessageConfirm);
   const paymentFomoPay = useSelector(
     (state) => state.payment.responseFomoPayPayment
   );
 
   const gadgetScreen = responsiveDesign.width < 980;
-
   const fontStyles = {
-    fontFamily: "'Poppins', sans-serif",
-    src: `url('https://fonts.googleapis.com/css2?family=Poppins&display=swap')`,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    src: `url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap')`,
     marginTop: '50px',
     padding: '16px',
   };
+
+  useEffect(() => {
+    if (showMessageConfirm) {
+      commonAlert({
+        color: color.primary,
+        content: paymentFomoPay?.message,
+        title: 'Congratulations',
+        onConfirm: dispatch({ type: 'SHOW_MESSAGE_CONFIRM', data: false }),
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showMessageConfirm]);
 
   const renderHeader = () => {
     return (
@@ -61,13 +226,6 @@ const AwaitingPayment = () => {
     );
   };
 
-  const handleDownloadClick = () => {
-    const imageUrl =
-      'https://www.panda.id/wp-content/uploads/QRCODE_CONTOH_Panda-Mobile.jpg';
-    const fileName = 'qrcode.jpg'; // Replace with your desired file name
-    downloadImage(imageUrl, fileName);
-  };
-
   const renderQrCode = () => {
     return (
       <div
@@ -88,29 +246,94 @@ const AwaitingPayment = () => {
           color={color}
         />
         <div
-          onClick={handleDownloadClick}
+          onClick={() => {
+            downloadImage(paymentFomoPay?.action?.url, 'qrcode.jpg');
+          }}
           style={{
             border: `1px solid ${color.primary}`,
-            padding: '8px 16px',
+            padding: '5px 16px',
             borderRadius: '8px',
             color: color.primary,
             fontWeight: 500,
+            cursor: 'pointer',
             fontSize: '14px',
           }}
         >
-          SAVE QR CODE TO
+          SAVE QR CODE TO GALLERY
         </div>
       </div>
     );
   };
-  const renderListData = ({
-    labelOne,
-    nameOne,
+  const renderPaymentMethod = ({ label, data }) => {
+    if (!isEmptyArray(data)) {
+      return (
+        <div
+          style={{
+            marginTop: '16px',
+            padding: '16px',
+            border: '2px solid var(--grey-scale-color-grey-scale-3, #D6D6D6)',
+            borderRadius: '8px',
+          }}
+        >
+          <div style={{ width: '100%' }}>
+            <div
+              style={{
+                color: 'var(--text-color-primary, #343A4A)',
+                fontWeight: 700,
+                fontSize: '14px',
+              }}
+            >
+              {label}
+            </div>
+            {data.map((paymentMethodItem) => (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+                key={paymentMethodItem}
+              >
+                <div
+                  style={{
+                    fontSize: '14px',
+
+                    fontWeight: 700,
+                    color: 'var(--text-color-primary, #343A4A)',
+                  }}
+                >
+                  {paymentMethodItem?.paymentType}
+                </div>
+                <div
+                  style={{
+                    color: color.primary,
+                    fontWeight: 700,
+                    fontSize: '14px',
+                  }}
+                >
+                  {getCurrencyHelper(
+                    paymentMethodItem?.paymentAmount,
+                    companyInfo
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  };
+  const renderBoxItem = ({
+    labelRow1,
+    row1,
     color,
     fontWeight,
-    fontSize,
-    labelTwo,
-    nameTwo,
+    labelRow2,
+    row2,
+    labelRow3,
+    row3,
+    labelRow4,
+    row4,
   }) => {
     return (
       <div
@@ -131,12 +354,31 @@ const AwaitingPayment = () => {
           <div
             style={{
               color: 'var(--text-color-primary, #343A4A)',
-              fontWeight: 500,
+              fontWeight: 700,
+              fontSize: '14px',
             }}
           >
-            {labelOne}
+            {labelRow1}
           </div>
-          <div style={{ color, fontWeight, fontSize }}>{nameOne}</div>
+          <div style={{ color, fontWeight, fontSize: '14px' }}>{row1}</div>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              color: 'var(--text-color-primary, #343A4A)',
+              fontWeight: 700,
+              fontSize: '14px',
+            }}
+          >
+            {labelRow2}
+          </div>
+          <div style={{ color, fontWeight, fontSize: '14px' }}>{row2}</div>
         </div>
         <div
           style={{
@@ -149,101 +391,12 @@ const AwaitingPayment = () => {
             style={{
               color: 'var(--text-color-primary, #343A4A)',
               fontWeight: 500,
-            }}
-          >
-            {labelTwo}
-          </div>
-          <div style={{ color, fontWeight, fontSize }}>{nameTwo}</div>
-        </div>
-      </div>
-    );
-  };
-  const renderTotalMain = () => {
-    return (
-      <div
-        style={{
-          marginTop: '16px',
-          padding: '16px',
-          border: '2px solid var(--grey-scale-color-grey-scale-3, #D6D6D6)',
-          borderRadius: '8px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>Sub Total</div>
-          <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
-            SGD 44.80
-          </div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>Discount</div>
-          <div
-            style={{
-              color: 'var(--semantic-color-success, #1A883C)',
-              fontWeight: 700,
               fontSize: '14px',
             }}
           >
-            -SGD 3.95
+            {labelRow3}
           </div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>Membership Discount</div>
-          <div
-            style={{
-              color: 'var(--semantic-color-success, #1A883C)',
-              fontWeight: 700,
-              fontSize: '14px',
-            }}
-          >
-            -SGD 3.95
-          </div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>Surcharge</div>
-          <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
-            SGD 44.80
-          </div>
-        </div>
-        <hr style={{ backgroundColor: '#D6D6D6' }} />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ fontSize: '16px', color: 'black', fontWeight: 700 }}>
-            TOTAL
-          </div>
-          <div
-            style={{ color: color.primary, fontWeight: 700, fontSize: '14px' }}
-          >
-            SGD 44.80
-          </div>
+          <div style={{ color, fontWeight, fontSize: '14px' }}>{row3}</div>
         </div>
         <div
           style={{
@@ -254,20 +407,23 @@ const AwaitingPayment = () => {
         >
           <div
             style={{
-              color: 'var(--text-color-tertiary, #B7B7B7)',
-              fontSize: '14px',
+              color: 'var(--text-color-primary, #343A4A)',
               fontWeight: 500,
+              fontSize: '14px',
             }}
           >
-            Tax Amount
+            {labelRow4}
           </div>
-          <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
-            SGD 44.80
+
+          <div style={{ color, fontWeight, fontSize: '14px' }}>
+            <div>{row4?.date}</div>
+            <div>{row4?.time}</div>
           </div>
         </div>
       </div>
     );
   };
+
   const buttonSeeDetail = () => {
     return (
       <div
@@ -290,44 +446,90 @@ const AwaitingPayment = () => {
       </div>
     );
   };
-  console.log(paymentFomoPay);
   const renderResponsiveDesign = () => {
+    const changeFormatDateDefault = changeFormatDate(
+      paymentFomoPay?.orderActionDate
+    );
     if (gadgetScreen) {
       return (
         <div style={{ paddingBottom: 70 }}>
           {renderHeader()}
           {renderQrCode()}
-          {renderListData({
-            labelOne: 'Status Order',
-            nameOne: paymentFomoPay?.status,
+          {renderBoxItem({
+            labelRow1: 'Status Order',
+            row1: paymentFomoPay?.status,
             color: color.primary,
             fontWeight: 700,
-            fontSize: '14px',
           })}
-          {renderListData({
-            labelOne: 'Ref No.',
-            nameOne: paymentFomoPay?.transactionRefNo,
-            labelTwo: 'Queue No.',
-            nameTwo: paymentFomoPay?.queueNo,
+          {renderBoxItem({
+            labelRow1: 'Ref No.',
+            row1: paymentFomoPay?.transactionRefNo,
+            labelRow2: 'Queue No.',
+            row2: paymentFomoPay?.queueNo,
             color: 'black',
             fontWeight: 700,
-            fontSize: '14px',
           })}
-          {renderListData({
-            labelOne: 'Ordering Mode',
-            nameOne: paymentFomoPay?.orderingMode,
+          {renderBoxItem({
+            labelRow1: 'Outlet Name',
+            row1: paymentFomoPay?.outlet?.name,
+            labelRow2: 'Ordering Date',
+            row2: formatDateWithTime(paymentFomoPay?.createdAt),
             color: 'black',
             fontWeight: 700,
-            fontSize: '14px',
           })}
-          {renderListData({
-            labelOne: 'Payment Method',
-            nameOne: 'PAYNOW',
-            color: 'black',
-            fontWeight: 700,
-            fontSize: '14px',
+          {paymentFomoPay?.orderingMode === 'DELIVERY' &&
+            renderBoxItem({
+              labelRow1: 'Ordering Mode',
+              row1: paymentFomoPay?.orderingMode,
+              color: 'black',
+              fontWeight: 700,
+              labelRow2: 'Delivery Address',
+              row2: paymentFomoPay?.deliveryAddress?.addressName,
+              labelRow3: 'Delivery Provider',
+              row3: paymentFomoPay?.deliveryProvider,
+              labelRow4: 'Delivery  Date & Time',
+              row4: {
+                date: changeFormatDateDefault,
+                time: paymentFomoPay?.orderActionTimeSlot,
+              },
+            })}
+          {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
+            renderBoxItem({
+              labelRow1: 'Ordering Mode',
+              row1: paymentFomoPay?.orderingMode,
+              color: 'black',
+              fontWeight: 700,
+              labelRow4: 'Pickup Date & Time',
+              row4: {
+                date: changeFormatDateDefault,
+                time: paymentFomoPay?.orderActionTimeSlot,
+              },
+            })}
+          {paymentFomoPay?.orderingMode === 'DINEIN' &&
+            renderBoxItem({
+              labelRow1: 'Ordering Mode',
+              row1: paymentFomoPay?.orderingMode,
+              color: 'black',
+              fontWeight: 700,
+            })}
+          {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
+            paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
+            paymentFomoPay?.orderingMode !== 'DINEIN' &&
+            renderBoxItem({
+              labelRow1: 'Ordering Mode',
+              row1: paymentFomoPay?.orderingMode,
+              color: 'black',
+              fontWeight: 700,
+            })}
+          {renderPaymentMethod({
+            label: 'Payment Details',
+            data: paymentFomoPay?.payments,
           })}
-          {renderTotalMain()}
+          <RenderTotalMain
+            color={color}
+            paymentFomoPay={paymentFomoPay}
+            companyInfo={companyInfo}
+          />
           {buttonSeeDetail()}
         </div>
       );

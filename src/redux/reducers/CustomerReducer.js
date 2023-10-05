@@ -10,6 +10,7 @@ const defaultState = {
   isUserHasBeenCompletedfillData: false,
   isAllFieldHasBeenFullFiled: {},
   isCustomFieldHaveValue: [],
+  showMessageConfirm: true,
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -42,6 +43,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         defaultPhoneNumber: action.data,
+      };
+    case 'SHOW_MESSAGE_CONFIRM':
+      return {
+        ...state,
+        showMessageConfirm: action.data,
       };
     case 'SET_DEFAULT_EMAIL':
       return {
