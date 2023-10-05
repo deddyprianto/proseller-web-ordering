@@ -458,40 +458,38 @@ const AwaitingPayment = () => {
       return (
         <div style={{ paddingBottom: 70 }}>
           <RenderHeader
-            color={color}
             history={history}
+            color={color}
             label='PAYNOW'
             route='/'
           />
-          <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+          <RenderQrCode paymentFomoPay={paymentFomoPay} color={color} />
           {renderBoxItem({
             labelRow1: 'Status Order',
             row1: paymentFomoPay?.status,
-            color: color.primary,
             fontWeight: 700,
+            color: color.primary,
           })}
           {renderBoxItem({
             labelRow1: 'Ref No.',
             row1: paymentFomoPay?.transactionRefNo,
             labelRow2: 'Queue No.',
             row2: paymentFomoPay?.queueNo,
-            color: 'black',
             fontWeight: 700,
+            color: 'black',
           })}
           {renderBoxItem({
             labelRow1: 'Outlet Name',
             row1: paymentFomoPay?.outlet?.name,
             labelRow2: 'Ordering Date',
             row2: formatDateWithTime(paymentFomoPay?.createdAt),
-            color: 'black',
             fontWeight: 700,
+            color: 'black',
           })}
           {paymentFomoPay?.orderingMode === 'DELIVERY' &&
             renderBoxItem({
               labelRow1: 'Ordering Mode',
               row1: paymentFomoPay?.orderingMode,
-              color: 'black',
-              fontWeight: 700,
               labelRow2: 'Delivery Address',
               row2: paymentFomoPay?.deliveryAddress?.addressName,
               labelRow3: 'Delivery Provider',
@@ -501,25 +499,27 @@ const AwaitingPayment = () => {
                 date: changeFormatDateDefault,
                 time: paymentFomoPay?.orderActionTimeSlot,
               },
+              color: 'black',
+              fontWeight: 700,
             })}
           {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
             renderBoxItem({
               labelRow1: 'Ordering Mode',
               row1: paymentFomoPay?.orderingMode,
-              color: 'black',
-              fontWeight: 700,
               labelRow4: 'Pickup Date & Time',
               row4: {
                 date: changeFormatDateDefault,
                 time: paymentFomoPay?.orderActionTimeSlot,
               },
+              color: 'black',
+              fontWeight: 700,
             })}
           {paymentFomoPay?.orderingMode === 'DINEIN' &&
             renderBoxItem({
               labelRow1: 'Ordering Mode',
               row1: paymentFomoPay?.orderingMode,
-              color: 'black',
               fontWeight: 700,
+              color: 'black',
             })}
           {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
             paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
@@ -527,8 +527,8 @@ const AwaitingPayment = () => {
             renderBoxItem({
               labelRow1: 'Ordering Mode',
               row1: paymentFomoPay?.orderingMode,
-              color: 'black',
               fontWeight: 700,
+              color: 'black',
             })}
           <RenderPaymentMethod
             label='Payment Details'
@@ -563,9 +563,9 @@ const AwaitingPayment = () => {
           >
             <RenderHeader
               color={color}
-              history={history}
               label='PAYNOW'
               route='/'
+              history={history}
             />
             <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
             {renderBoxItem({
@@ -590,22 +590,6 @@ const AwaitingPayment = () => {
               color: 'black',
               fontWeight: 700,
             })}
-            {paymentFomoPay?.orderingMode === 'DELIVERY' &&
-              renderBoxItem({
-                labelRow1: 'Ordering Mode',
-                row1: paymentFomoPay?.orderingMode,
-                color: 'black',
-                fontWeight: 700,
-                labelRow2: 'Delivery Address',
-                row2: paymentFomoPay?.deliveryAddress?.addressName,
-                labelRow3: 'Delivery Provider',
-                row3: paymentFomoPay?.deliveryProvider,
-                labelRow4: 'Delivery  Date & Time',
-                row4: {
-                  date: changeFormatDateDefault,
-                  time: paymentFomoPay?.orderActionTimeSlot,
-                },
-              })}
             {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
               renderBoxItem({
                 labelRow1: 'Ordering Mode',
@@ -625,9 +609,25 @@ const AwaitingPayment = () => {
                 color: 'black',
                 fontWeight: 700,
               })}
-            {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
-              paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
+            {paymentFomoPay?.orderingMode === 'DELIVERY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                color: 'black',
+                fontWeight: 700,
+                labelRow2: 'Delivery Address',
+                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                labelRow3: 'Delivery Provider',
+                row3: paymentFomoPay?.deliveryProvider,
+                labelRow4: 'Delivery  Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+              })}
+            {paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
               paymentFomoPay?.orderingMode !== 'DINEIN' &&
+              paymentFomoPay?.orderingMode !== 'DELIVERY' &&
               renderBoxItem({
                 labelRow1: 'Ordering Mode',
                 row1: paymentFomoPay?.orderingMode,
