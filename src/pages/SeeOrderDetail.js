@@ -4,10 +4,14 @@ import screen from 'hooks/useWindowSize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useHistory } from 'react-router-dom';
 import CountDownTime from 'components/awaitingpayment/CountDownTime';
-import { RenderTotalMain } from './AwaitingPayment';
+import {
+  RenderPaymentMethod,
+  RenderQrCode,
+  RenderTotalMain,
+  renderBoxItem,
+} from './AwaitingPayment';
 import {
   changeFormatDate,
-  downloadImage,
   formatDateWithTime,
   getCurrencyHelper,
 } from 'helpers/awaitingPayment';
@@ -25,6 +29,9 @@ const SeeOrderDetail = () => {
 
   const color = useSelector((state) => state.theme.color);
   const gadgetScreen = responsiveDesign.width < 980;
+  const changeFormatDateDefault = changeFormatDate(
+    paymentFomoPay?.orderActionDate
+  );
 
   const fontStyles = {
     fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -293,220 +300,21 @@ const SeeOrderDetail = () => {
       </div>
     );
   };
-  const renderQrCode = () => {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <img
-          width={256}
-          height={256}
-          alt='qrcode fomopay'
-          src={paymentFomoPay?.action?.url}
-        />
-        <div
-          onClick={() => {
-            downloadImage(paymentFomoPay?.action?.url, 'qrcode.jpg');
-          }}
-          style={{
-            border: `1px solid ${color.primary}`,
-            padding: '5px 16px',
-            borderRadius: '8px',
-            color: color.primary,
-            fontWeight: 500,
-            fontSize: '14px',
-            marginTop: '16px',
-            cursor: 'pointer',
-          }}
-        >
-          SAVE QR CODE TO GALLERY
-        </div>
-      </div>
-    );
-  };
-  const renderPaymentMethod = ({ label, data }) => {
-    if (!isEmptyArray(data)) {
-      return (
-        <div
-          style={{
-            marginTop: '16px',
-            padding: '16px',
-            border: '2px solid var(--grey-scale-color-grey-scale-3, #D6D6D6)',
-            borderRadius: '8px',
-          }}
-        >
-          <div style={{ width: '100%' }}>
-            <div
-              style={{
-                color: 'var(--text-color-primary, #343A4A)',
-                fontWeight: 700,
-                fontSize: '14px',
-              }}
-            >
-              {label}
-            </div>
-            {data.map((paymentMethodItem) => (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-                key={paymentMethodItem}
-              >
-                <div
-                  style={{
-                    fontSize: '14px',
 
-                    fontWeight: 700,
-                    color: 'var(--text-color-primary, #343A4A)',
-                  }}
-                >
-                  {paymentMethodItem?.paymentType}
-                </div>
-                <div
-                  style={{
-                    color: color.primary,
-                    fontWeight: 700,
-                    fontSize: '14px',
-                  }}
-                >
-                  {getCurrencyHelper(
-                    paymentMethodItem?.paymentAmount,
-                    companyInfo
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-  };
-
-  const renderBoxItem = ({
-    labelRow1,
-    row1,
-    color,
-    fontWeight,
-    labelRow2,
-    row2,
-    labelRow3,
-    row3,
-    labelRow4,
-    row4,
-  }) => {
-    return (
-      <div
-        style={{
-          marginTop: '16px',
-          padding: '16px',
-          border: '2px solid var(--grey-scale-color-grey-scale-3, #D6D6D6)',
-          borderRadius: '8px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              color: 'var(--text-color-primary, #343A4A)',
-              fontWeight: 700,
-              fontSize: '14px',
-            }}
-          >
-            {labelRow1}
-          </div>
-          <div style={{ color, fontWeight, fontSize: '14px' }}>{row1}</div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              color: 'var(--text-color-primary, #343A4A)',
-              fontWeight: 700,
-              fontSize: '14px',
-            }}
-          >
-            {labelRow2}
-          </div>
-          <div style={{ color, fontWeight, fontSize: '14px' }}>{row2}</div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              color: 'var(--text-color-primary, #343A4A)',
-              fontWeight: 500,
-              fontSize: '14px',
-            }}
-          >
-            {labelRow3}
-          </div>
-          <div style={{ color, fontWeight, fontSize: '14px' }}>{row3}</div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              color: 'var(--text-color-primary, #343A4A)',
-              fontWeight: 500,
-              fontSize: '14px',
-            }}
-          >
-            {labelRow4}
-          </div>
-
-          <div style={{ color, fontWeight, fontSize: '14px' }}>
-            <div>{row4?.date}</div>
-            <div>{row4?.time}</div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderResponsiveDesign = () => {
-    const changeFormatDateDefault = changeFormatDate(
-      paymentFomoPay?.orderActionDate
-    );
-
-    if (gadgetScreen) {
-      return (
+  return (
+    <div style={fontStyles}>
+      {gadgetScreen ? (
         <div style={{ paddingBottom: 70 }}>
           <div style={{ padding: '1px 16px' }}>{renderHeader()}</div>
           {renderTimeCounter()}
-
           <div
             style={{
               padding: '16px',
             }}
           >
             {renderNameOutlet()}
-            {renderQrCode()}
+            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+
             {paymentFomoPay?.details.map((item) => {
               return renderProduct(item);
             })}
@@ -577,10 +385,12 @@ const SeeOrderDetail = () => {
                 color: 'black',
                 fontWeight: 700,
               })}
-            {renderPaymentMethod({
-              label: 'Payment Details',
-              data: paymentFomoPay?.payments,
-            })}
+            <RenderPaymentMethod
+              label='Payment Details'
+              data={paymentFomoPay?.payments}
+              color={color}
+              companyInfo={companyInfo}
+            />
             <RenderTotalMain
               color={color}
               paymentFomoPay={paymentFomoPay}
@@ -588,9 +398,7 @@ const SeeOrderDetail = () => {
             />
           </div>
         </div>
-      );
-    } else {
-      return (
+      ) : (
         <div style={{ width: '100vw' }}>
           <div
             style={{
@@ -606,14 +414,100 @@ const SeeOrderDetail = () => {
               paddingRight: '16px',
             }}
           >
-            {renderHeader()}
-            {renderQrCode()}
+            <div
+              style={{
+                padding: '1px 16px',
+              }}
+            >
+              {renderHeader()}
+            </div>
+            {renderTimeCounter()}
+            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            {renderBoxItem({
+              labelRow1: 'Status Order',
+              row1: paymentFomoPay?.status,
+              color: color.primary,
+              fontWeight: 700,
+            })}
+            {renderBoxItem({
+              labelRow1: 'Ref No.',
+              row1: paymentFomoPay?.transactionRefNo,
+              labelRow2: 'Queue No.',
+              row2: paymentFomoPay?.queueNo,
+              color: 'black',
+              fontWeight: 700,
+            })}
+            {renderBoxItem({
+              labelRow1: 'Outlet Name',
+              row1: paymentFomoPay?.outlet?.name,
+              labelRow2: 'Ordering Date',
+              row2: formatDateWithTime(paymentFomoPay?.createdAt),
+              color: 'black',
+              fontWeight: 700,
+            })}
+            {paymentFomoPay?.orderingMode === 'DELIVERY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                color: 'black',
+                fontWeight: 700,
+                labelRow2: 'Delivery Address',
+                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                labelRow3: 'Delivery Provider',
+                row3: paymentFomoPay?.deliveryProvider,
+                labelRow4: 'Delivery  Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+              })}
+            {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                color: 'black',
+                fontWeight: 700,
+                labelRow4: 'Pickup Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+              })}
+            {paymentFomoPay?.orderingMode === 'DINEIN' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                color: 'black',
+                fontWeight: 700,
+              })}
+            {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
+              paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
+              paymentFomoPay?.orderingMode !== 'DINEIN' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                color: 'black',
+                fontWeight: 700,
+              })}
+            <RenderPaymentMethod
+              label='Payment Details'
+              data={paymentFomoPay?.payments}
+              color={color}
+              companyInfo={companyInfo}
+            />
+            <RenderTotalMain
+              color={color}
+              paymentFomoPay={paymentFomoPay}
+              companyInfo={companyInfo}
+            />
           </div>
         </div>
-      );
-    }
-  };
-  return <div style={fontStyles}>{renderResponsiveDesign()}</div>;
+      )}
+    </div>
+  );
 };
 
 export default SeeOrderDetail;
+
+
+
