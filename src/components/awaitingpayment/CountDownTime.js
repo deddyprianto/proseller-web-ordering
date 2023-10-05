@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PropTypes from 'prop-types';
 
 function CountdownTimer({
   targetDate,
@@ -108,3 +109,9 @@ function CountDownTime({ targetDate, color, backgroundColor }) {
 }
 
 export default CountDownTime;
+CountdownTimer.propTypes = {
+  targetDate: PropTypes.instanceOf(Date).isRequired,
+  onCountdownComplete: PropTypes.func.isRequired,
+  color: PropTypes.object.isRequired,
+  backgroundColor: PropTypes.string,
+};
