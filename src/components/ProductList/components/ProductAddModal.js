@@ -105,7 +105,7 @@ const ProductAddModal = ({
         imgElements[i].addEventListener('click', handleImgClick);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productDescriptionRef.current]);
 
   /**
@@ -1880,10 +1880,19 @@ const ProductAddModal = ({
     const elementsWithClassNameTab6 = dom.getElementsByClassName('ql-indent-6');
     const elementsWithClassNameTab7 = dom.getElementsByClassName('ql-indent-7');
     const elementsWithClassNameTab8 = dom.getElementsByClassName('ql-indent-8');
-
+    const elementUL = dom.getElementsByTagName('ul');
+    const elementOL = dom.getElementsByTagName('ol');
     const fontSizeSmall = dom.getElementsByClassName('ql-size-small');
     const fontSizeLarge = dom.getElementsByClassName('ql-size-large');
 
+    for (const ol of elementOL) {
+      ol.style.margin = '0px';
+      ol.style.paddingLeft = '1.5em';
+    }
+    for (const ul of elementUL) {
+      ul.style.margin = '0px';
+      ul.style.paddingLeft = '1.5em';
+    }
     for (const link of customStyleForLink) {
       link.style.color = 'blue';
     }
