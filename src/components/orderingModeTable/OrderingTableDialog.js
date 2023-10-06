@@ -118,7 +118,7 @@ const OrderingTableDialog = ({
         setInputLetterTable(noTable.charAt(0));
       } else if (
         defaultOutlet?.tableNumber?.tableNumberingType === 'NUMBER_ONLY' &&
-        defaultOutlet?.tableNumber?.sequencing === ' IN_ORDER'
+        defaultOutlet?.tableNumber?.sequencing === 'IN_ORDER'
       ) {
         setInputNumberTable(getNumberFromStr);
       } else {
@@ -253,7 +253,7 @@ const OrderingTableDialog = ({
                 value={inputNumberTable}
                 type='number'
                 onChange={(e) => setInputNumberTable(e.target.value)}
-                placeholder={noTable ? noTable : 'Your table number'}
+                placeholder={'Your table number'}
                 style={{ border: 'none', outline: 'none', width: '100%' }}
               />
             </div>
@@ -377,9 +377,9 @@ const OrderingTableDialog = ({
   };
 
   const handleDisabledConfirmBtn = () => {
-    if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
-      return !randomTableValue;
-    }
+        if (defaultOutlet.tableNumber.sequencing === 'RANDOM') {
+          return !randomTableValue;
+        }
     if (defaultOutlet.tableNumber.tableNumberingType === 'LETTER_AND_NUMBER') {
       return !inputLetterTable || !inputNumberTable;
     }
