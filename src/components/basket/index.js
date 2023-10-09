@@ -1571,6 +1571,7 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
+
     return (
       <div
         className='col-full'
@@ -1606,39 +1607,43 @@ class Basket extends Component {
               {!loadingShow &&
                 (!isEmptyObject(dataBasket) || this.props.basket.details) && (
                   <div style={{ marginBottom: 250 }}>
-                    {viewCart && (
-                      <ViewCartBasket
-                        data={this.state}
-                        dataBasket={dataBasket}
-                        countryCode={countryCode}
-                        isLoggedIn={isLoggedIn}
-                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                        cancelSelectPoint={() => this.cancelSelectPoint()}
-                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                        handleRedeemPoint={() => this.handleRedeemPoint()}
-                        getCurrency={(price) => this.getCurrency(price)}
-                        handleClear={(dataBasket) =>
-                          this.handleClear(dataBasket)
-                        }
-                        handleRemoveItem={(dataBasket, key) =>
-                          this.handleRemoveItem(dataBasket, key)
-                        }
-                        scrollPoint={(data) => this.scrollPoint(data)}
-                        setPoint={(point) => this.setPoint(point)}
-                        handleSettle={() => this.handleSettle()}
-                        handleSubmit={() => this.handleSubmit()}
-                        setOrderingMode={(mode) => this.setOrderingMode(mode)}
-                        handleSetProvaider={(item) =>
-                          this.handleSetProvaider(item)
-                        }
-                        setViewCart={(status) => this.setViewCart(status)}
-                        handleSetState={(field, value) => {
-                          this.handleSetState(field, value);
-                        }}
-                        handleOpenLogin={() => this.handleOpenLogin()}
-                        updateCartInfo={this.updateCartInfo}
-                        timeslotData={this.state.timeslotData}
-                      />
+                    {dataBasket?.action?.name === 'PAYNOW' ? (
+                      <p>hLOO</p>
+                    ) : (
+                      viewCart && (
+                        <ViewCartBasket
+                          data={this.state}
+                          dataBasket={dataBasket}
+                          countryCode={countryCode}
+                          isLoggedIn={isLoggedIn}
+                          cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                          cancelSelectPoint={() => this.cancelSelectPoint()}
+                          handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                          handleRedeemPoint={() => this.handleRedeemPoint()}
+                          getCurrency={(price) => this.getCurrency(price)}
+                          handleClear={(dataBasket) =>
+                            this.handleClear(dataBasket)
+                          }
+                          handleRemoveItem={(dataBasket, key) =>
+                            this.handleRemoveItem(dataBasket, key)
+                          }
+                          scrollPoint={(data) => this.scrollPoint(data)}
+                          setPoint={(point) => this.setPoint(point)}
+                          handleSettle={() => this.handleSettle()}
+                          handleSubmit={() => this.handleSubmit()}
+                          setOrderingMode={(mode) => this.setOrderingMode(mode)}
+                          handleSetProvaider={(item) =>
+                            this.handleSetProvaider(item)
+                          }
+                          setViewCart={(status) => this.setViewCart(status)}
+                          handleSetState={(field, value) => {
+                            this.handleSetState(field, value);
+                          }}
+                          handleOpenLogin={() => this.handleOpenLogin()}
+                          updateCartInfo={this.updateCartInfo}
+                          timeslotData={this.state.timeslotData}
+                        />
+                      )
                     )}
                     {!viewCart && (
                       <ViewProsessBasket

@@ -18,7 +18,7 @@ import {
 import { isEmptyArray, isEmptyData } from 'helpers/CheckEmpty';
 import { renderIconPromotion } from 'assets/iconsSvg/Icons';
 
-const SeeOrderDetail = () => {
+const SeeOrderDetail = (props) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const paymentFomoPay = useSelector(
