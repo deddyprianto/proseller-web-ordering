@@ -12,7 +12,7 @@ import {
 import CountDownTime from 'components/awaitingpayment/CountDownTime';
 import commonAlert from 'components/template/commonAlert';
 import { isEmptyArray } from 'helpers/CheckEmpty';
-
+import Paper from '@mui/material/Paper';
 
 const RenderHeader = ({ color, history, label, route }) => {
   return (
@@ -151,6 +151,7 @@ export const renderBoxItem = ({
     </div>
   );
 };
+
 export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
   if (!isEmptyArray(data)) {
     return (
@@ -184,12 +185,17 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
               <div
                 style={{
                   fontSize: '14px',
-
+                  textTransform:
+                    paymentMethodItem?.paymentType === 'PayNow'
+                      ? 'uppercase'
+                      : 'capitalize',
                   fontWeight: 700,
                   color: 'var(--text-color-primary, #343A4A)',
                 }}
               >
-                {paymentMethodItem?.paymentType}
+                {paymentMethodItem?.paymentType === 'PayNow'
+                  ? paymentMethodItem?.paymentType
+                  : `${paymentMethodItem?.paymentType}s`}
               </div>
               <div
                 style={{
@@ -443,105 +449,137 @@ const AwaitingPayment = () => {
           fontSize: '14px',
           borderRadius: '8px',
           textAlign: 'center',
-          marginTop: '16px',
+          marginTop: gadgetScreen < 500 ? 0 : '20px',
         }}
       >
         See Order Detail
       </div>
     );
   };
+
   const renderResponsiveDesign = () => {
     const changeFormatDateDefault = changeFormatDate(
       paymentFomoPay?.orderActionDate
     );
     if (gadgetScreen) {
       return (
-        <div style={{ paddingBottom: 70 }}>
-          <RenderHeader
-            history={history}
-            color={color}
-            label='PAYNOW'
-            route='/'
-          />
-          <RenderQrCode paymentFomoPay={paymentFomoPay} color={color} />
-          {renderBoxItem({
-            labelRow1: 'Status Order',
-            row1: paymentFomoPay?.status,
-            fontWeight: 700,
-            color: color.primary,
-          })}
-          {renderBoxItem({
-            labelRow1: 'Ref No.',
-            row1: paymentFomoPay?.transactionRefNo,
-            labelRow2: 'Queue No.',
-            row2: paymentFomoPay?.queueNo,
-            fontWeight: 700,
-            color: 'black',
-          })}
-          {renderBoxItem({
-            labelRow1: 'Outlet Name',
-            row1: paymentFomoPay?.outlet?.name,
-            labelRow2: 'Ordering Date',
-            row2: formatDateWithTime(paymentFomoPay?.createdAt),
-            fontWeight: 700,
-            color: 'black',
-          })}
-          {paymentFomoPay?.orderingMode === 'DELIVERY' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
-              labelRow2: 'Delivery Address',
-              row2: paymentFomoPay?.deliveryAddress?.addressName,
-              labelRow3: 'Delivery Provider',
-              row3: paymentFomoPay?.deliveryProvider,
-              labelRow4: 'Delivery  Date & Time',
-              row4: {
-                date: changeFormatDateDefault,
-                time: paymentFomoPay?.orderActionTimeSlot,
-              },
-              color: 'black',
+        <div style={{ height: '80vh ', overflowY: 'auto' }}>
+          <div
+            style={{
+              paddingBottom: 200,
+            }}
+          >
+            <RenderHeader
+              history={history}
+              color={color}
+              label='PAYNOW'
+              route='/'
+            />
+            <RenderQrCode paymentFomoPay={paymentFomoPay} color={color} />
+            {renderBoxItem({
+              labelRow1: 'Status Order',
+              row1: paymentFomoPay?.status,
               fontWeight: 700,
+              color: color.primary,
             })}
-          {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
-              labelRow4: 'Pickup Date & Time',
-              row4: {
-                date: changeFormatDateDefault,
-                time: paymentFomoPay?.orderActionTimeSlot,
-              },
-              color: 'black',
-              fontWeight: 700,
-            })}
-          {paymentFomoPay?.orderingMode === 'DINEIN' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
+            {renderBoxItem({
+              labelRow1: 'Ref No.',
+              row1: paymentFomoPay?.transactionRefNo,
+              labelRow2: 'Queue No.',
+              row2: paymentFomoPay?.queueNo,
               fontWeight: 700,
               color: 'black',
             })}
-          {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
-            paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
-            paymentFomoPay?.orderingMode !== 'DINEIN' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
+            {renderBoxItem({
+              labelRow1: 'Outlet Name',
+              row1: paymentFomoPay?.outlet?.name,
+              labelRow2: 'Ordering Date',
+              row2: formatDateWithTime(paymentFomoPay?.createdAt),
               fontWeight: 700,
               color: 'black',
             })}
-          <RenderPaymentMethod
-            label='Payment Details'
-            data={paymentFomoPay?.payments}
-            color={color}
-            companyInfo={companyInfo}
-          />
-          <RenderTotalMain
-            color={color}
-            paymentFomoPay={paymentFomoPay}
-            companyInfo={companyInfo}
-          />
-          {buttonSeeDetail()}
+            {paymentFomoPay?.orderingMode === 'DELIVERY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                labelRow2: 'Delivery Address',
+                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                labelRow3: 'Delivery Provider',
+                row3: paymentFomoPay?.deliveryProvider,
+                labelRow4: 'Delivery  Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+                color: 'black',
+                fontWeight: 700,
+              })}
+            {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                labelRow4: 'Pickup Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+                color: 'black',
+                fontWeight: 700,
+              })}
+            {paymentFomoPay?.orderingMode === 'DINEIN' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                fontWeight: 700,
+                color: 'black',
+              })}
+            {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
+              paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
+              paymentFomoPay?.orderingMode !== 'DINEIN' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                fontWeight: 700,
+                color: 'black',
+              })}
+            <RenderPaymentMethod
+              label='Payment Details'
+              data={paymentFomoPay?.payments}
+              color={color}
+              companyInfo={companyInfo}
+            />
+            <RenderTotalMain
+              color={color}
+              paymentFomoPay={paymentFomoPay}
+              companyInfo={companyInfo}
+            />
+          </div>
+          <Paper
+            variant='outlined'
+            square={gadgetScreen}
+            sx={
+              gadgetScreen
+                ? {
+                    zIndex: '999',
+                    width: '100%',
+                    margin: 0,
+                    bottom: responsiveDesign.height < 500 ? 0 : 70,
+                    position: 'fixed',
+                    left: 0,
+                    borderTopRightRadius: '8px',
+                    borderTopLeftRadius: '8px',
+                    border: 'none',
+                    outline: 'none',
+                    padding: '5px',
+                  }
+                : {
+                    padding: 0,
+                    margin: 0,
+                  }
+            }
+          >
+            {buttonSeeDetail()}
+          </Paper>
         </div>
       );
     } else {

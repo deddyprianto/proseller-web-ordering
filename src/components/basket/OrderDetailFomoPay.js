@@ -8,7 +8,7 @@ import {
   RenderPaymentMethod,
   RenderTotalMain,
   renderBoxItem,
-} from './AwaitingPayment';
+} from 'pages/AwaitingPayment';
 import {
   changeFormatDate,
   downloadImage,
@@ -18,7 +18,7 @@ import {
 import { isEmptyArray, isEmptyData } from 'helpers/CheckEmpty';
 import { renderIconPromotion } from 'assets/iconsSvg/Icons';
 
-export const RenderQrCode = ({ paymentFomoPay, color }) => {
+const RenderQrCodeDetailFomoPay = ({ paymentFomoPay, color }) => {
   return (
     <div
       style={{
@@ -39,7 +39,7 @@ export const RenderQrCode = ({ paymentFomoPay, color }) => {
         }}
         style={{
           border: `1px solid ${color.primary}`,
-          padding: '5px 16px',
+          padding: '5px 18px',
           borderRadius: '8px',
           color: color.primary,
           fontWeight: 500,
@@ -54,12 +54,9 @@ export const RenderQrCode = ({ paymentFomoPay, color }) => {
   );
 };
 
-const SeeOrderDetail = () => {
+const OrderDetailFomoPay = ({ paymentFomoPay }) => {
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
-  const paymentFomoPay = useSelector(
-    (state) => state.payment.responseFomoPayPayment
-  );
   const history = useHistory();
   const responsiveDesign = screen();
 
@@ -287,6 +284,7 @@ const SeeOrderDetail = () => {
           style={{
             height: '4px',
             backgroundColor: '#D6D6D6',
+            margin: '5px 0px',
           }}
         />
       </div>
@@ -342,14 +340,29 @@ const SeeOrderDetail = () => {
       {gadgetScreen ? (
         <div style={{ paddingBottom: 70 }}>
           <div style={{ padding: '1px 16px' }}>{renderHeader()}</div>
-          {renderTimeCounter()}
+          {paymentFomoPay?.status === 'PENDING_PAYMENT' && renderTimeCounter()}
+
           <div
             style={{
               padding: '16px',
             }}
           >
             {renderNameOutlet()}
-            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            {paymentFomoPay?.status === 'PENDING_PAYMENT' && (
+              <RenderQrCodeDetailFomoPay
+                color={color}
+                paymentFomoPay={paymentFomoPay}
+              />
+            )}
+            {paymentFomoPay?.status === 'PENDING_PAYMENT' && (
+              <hr
+                style={{
+                  height: '2px',
+                  margin: '16px 0px',
+                  backgroundColor: '#D6D6D6',
+                }}
+              />
+            )}
 
             {paymentFomoPay?.details.map((item) => {
               return renderProduct(item);
@@ -457,8 +470,27 @@ const SeeOrderDetail = () => {
             >
               {renderHeader()}
             </div>
-            {renderTimeCounter()}
-            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            {paymentFomoPay?.status === 'PENDING_PAYMENT' &&
+              renderTimeCounter()}
+            {paymentFomoPay?.status === 'PENDING_PAYMENT' && (
+              <RenderQrCodeDetailFomoPay
+                color={color}
+                paymentFomoPay={paymentFomoPay}
+              />
+            )}
+            {paymentFomoPay?.status === 'PENDING_PAYMENT' && (
+              <hr
+                style={{
+                  height: '2px',
+                  margin: '16px 0px',
+                  backgroundColor: '#D6D6D6',
+                }}
+              />
+            )}
+
+            {paymentFomoPay?.details.map((item) => {
+              return renderProduct(item);
+            })}
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
@@ -536,7 +568,4 @@ const SeeOrderDetail = () => {
   );
 };
 
-export default SeeOrderDetail;
-
-
-
+export default OrderDetailFomoPay;

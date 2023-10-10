@@ -344,29 +344,31 @@ class ModalDetailHistory extends Component {
                       </div>
                     </div>
                   )}
-
-                  <div
-                    style={{
-                      backgroundColor: '#CDCDCD',
-                      height: 1,
-                      marginTop: 10,
-                      marginBottom: 10,
-                    }}
-                  />
-                  <div
-                    style={{
-                      marginLeft: 5,
-                      marginRight: 5,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <div style={{ fontSize: 14 }}>EARNED POINTS</div>
-                    <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                      {detail.point}
-                    </div>
-                  </div>
-
+                  {detail?.point > 0 && (
+                    <>
+                      <div
+                        style={{
+                          backgroundColor: '#CDCDCD',
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ fontSize: 14 }}>EARNED POINTS</div>
+                        <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                          {detail.point}
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <div
                     style={{
                       backgroundColor: '#CDCDCD',
@@ -517,29 +519,30 @@ class ModalDetailHistory extends Component {
                     </div>
                   ) : null}
 
-                  <div
-                    style={{
-                      backgroundColor: '#CDCDCD',
-                      height: 1,
-                      marginTop: 10,
-                      marginBottom: 10,
-                    }}
-                  />
-
-                  {detail.totalTaxAmount && (
-                    <div
-                      style={{
-                        marginLeft: 5,
-                        marginRight: 5,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <div style={{ fontSize: 14 }}>TAX AMOUNT</div>
-                      <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                        {`+ ${this.getCurrency(detail.totalTaxAmount)}`}
+                  {detail.totalTaxAmount !== 0 && (
+                    <>
+                      <div
+                        style={{
+                          backgroundColor: '#CDCDCD',
+                          height: 1,
+                          marginTop: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                      <div
+                        style={{
+                          marginLeft: 5,
+                          marginRight: 5,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ fontSize: 14 }}>TAX AMOUNT</div>
+                        <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                          {`+ ${this.getCurrency(detail.totalTaxAmount)}`}
+                        </div>
                       </div>
-                    </div>
+                    </>
                   )}
 
                   {detail.payments && (
@@ -578,14 +581,6 @@ class ModalDetailHistory extends Component {
                     </div>
                   )}
 
-                  <div
-                    style={{
-                      backgroundColor: '#CDCDCD',
-                      height: 1,
-                      marginTop: 10,
-                      marginBottom: 10,
-                    }}
-                  />
                   <div
                     style={{
                       marginLeft: 5,
