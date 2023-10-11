@@ -6,6 +6,7 @@ const defaultState = {
   selectedPaymentCard: {},
   totalPaymentAmount: 0,
   responseFomoPayPayment: {},
+  iconCheck: '',
 };
 
 export default function reducer(state = defaultState, action) {
@@ -44,6 +45,11 @@ export default function reducer(state = defaultState, action) {
       return {
         ...state,
         responseFomoPayPayment: action.data,
+      };
+    case 'ICON_CHECK':
+      return {
+        ...state,
+        iconCheck: action.data,
       };
     case 'ALL':
       return {

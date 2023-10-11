@@ -566,7 +566,7 @@ class ModalDetailHistory extends Component {
                                 marginRight: 5,
                                 display: 'flex',
                                 justifyContent: 'flex-end',
-                                color: '#03AC0E',
+                                color: 'var(--semantic-color-success, #1A883C)',
                               }}
                             >
                               <div style={{ fontSize: 14, marginRight: 10 }}>

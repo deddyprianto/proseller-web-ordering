@@ -98,35 +98,33 @@ export default class MenuBasket extends Component {
             )}
         </div>
 
-        <div
-          style={{
-            border: '1px solid #DCDCDC',
-            borderRadius: 5,
-            marginTop: 10,
-            padding: 5,
-            paddingLeft: 10,
-            paddingRight: 10,
-          }}
-        >
-          {props.dataBasket.orderingMode &&
-            (props.dataBasket.orderingMode === 'TAKEAWAY' ||
-              props.dataBasket.orderingMode === 'STOREPICKUP' ||
-              props.dataBasket.orderingMode === 'DELIVERY') && (
-              <div>
-                {
-                  <PickupDateTime
-                    data={props}
-                    roleBtnClear={this.props.roleBtnClear}
-                    handleOpenLogin={() => this.props.handleOpenLogin()}
-                    isLoggedIn={this.props.isLoggedIn}
-                    handleSetState={(field, value) =>
-                      this.props.handleSetState(field, value)
-                    }
-                  />
-                }
-              </div>
-            )}
-        </div>
+        {props.dataBasket.orderingMode &&
+          (props.dataBasket.orderingMode === 'TAKEAWAY' ||
+            props.dataBasket.orderingMode === 'STOREPICKUP' ||
+            props.dataBasket.orderingMode === 'DELIVERY') && (
+            <div
+              style={{
+                border: '1px solid #DCDCDC',
+                borderRadius: 5,
+                marginTop: 10,
+                padding: 5,
+                paddingLeft: 10,
+                paddingRight: 10,
+              }}
+            >
+              {
+                <PickupDateTime
+                  data={props}
+                  roleBtnClear={this.props.roleBtnClear}
+                  handleOpenLogin={() => this.props.handleOpenLogin()}
+                  isLoggedIn={this.props.isLoggedIn}
+                  handleSetState={(field, value) =>
+                    this.props.handleSetState(field, value)
+                  }
+                />
+              }
+            </div>
+          )}
 
         <div
           style={{
@@ -187,22 +185,31 @@ export default class MenuBasket extends Component {
             />
           )}
 
-          {/* {
-            props.dataBasket.payments && 
-            props.dataBasket.payments.map((items, key) => (
-              (items.paymentType === "voucher" || items.paymentType === "point") &&
-              <div key={key} style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", color: "#03AC0E" }}>
-                  <div style={{marginRight: 10}}>
-                    {items.paymentName}
-                  </div>
+          {props.dataBasket.payments
+            ?.filter(
+              (items) =>
+                items.paymentType === 'voucher' || items.paymentType === 'point'
+            )
+            .map((items, key) => (
+              <div
+                key={key}
+                style={{ marginLeft: 10, marginRight: 10, fontSize: 14 }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    color: '#03AC0E',
+                  }}
+                >
+                  <div style={{ marginRight: 10 }}>{items.paymentName}</div>
                   <div style={{}}>
                     {`- ${this.props.getCurrency(items.paymentAmount)}`}
                   </div>
                 </div>
               </div>
-            ))
-          } */}
+            ))}
         </div>
 
         <div
