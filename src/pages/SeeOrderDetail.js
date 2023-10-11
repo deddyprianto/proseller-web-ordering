@@ -18,7 +18,7 @@ import {
 import { isEmptyArray, isEmptyData } from 'helpers/CheckEmpty';
 import { renderIconPromotion } from 'assets/iconsSvg/Icons';
 
-export const RenderQrCode = ({
+const RenderQrCode = ({
   paymentFomoPay,
   color,
   setIsLoadingDownloadImage,

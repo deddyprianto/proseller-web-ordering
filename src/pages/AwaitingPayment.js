@@ -217,59 +217,6 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
   }
 };
 
-export const RenderQrCode = ({
-  paymentFomoPay,
-  color,
-  setIsLoadingDownloadImage,
-  isLoadingDownloadImage,
-}) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <img
-        width={256}
-        height={256}
-        alt='qrcode fomopay'
-        src={paymentFomoPay?.action?.url}
-      />
-      <CountDownTime
-        targetDate={paymentFomoPay?.action?.expiry}
-        color={color}
-      />
-      <div
-        onClick={() => {
-          downloadImage(
-            paymentFomoPay?.action?.url,
-            'qrcode.jpg',
-            setIsLoadingDownloadImage
-          );
-        }}
-        style={{
-          border: `1px solid ${color.primary}`,
-          padding: '5px 16px',
-          borderRadius: '8px',
-          color: color.primary,
-          fontWeight: 500,
-          cursor: 'pointer',
-          fontSize: '14px',
-          width: '256px',
-        }}
-      >
-        <div style={{ width: '100%', textAlign: 'center' }}>
-          {isLoadingDownloadImage
-            ? 'Please wait...'
-            : 'SAVE QR CODE TO GALLERY'}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
   return (
     <div
@@ -471,6 +418,59 @@ const AwaitingPayment = () => {
     );
   };
 
+  const renderQrCode = ({
+    paymentFomoPay,
+    color,
+    setIsLoadingDownloadImage,
+    isLoadingDownloadImage,
+  }) => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <img
+          width={256}
+          height={256}
+          alt='qrcode fomopay'
+          src={paymentFomoPay?.action?.url}
+        />
+        <CountDownTime
+          targetDate={paymentFomoPay?.action?.expiry}
+          color={color}
+        />
+        <div
+          onClick={() => {
+            downloadImage(
+              paymentFomoPay?.action?.url,
+              'qrcode.jpg',
+              setIsLoadingDownloadImage
+            );
+          }}
+          style={{
+            border: `1px solid ${color.primary}`,
+            padding: '5px 16px',
+            borderRadius: '8px',
+            color: color.primary,
+            fontWeight: 500,
+            cursor: 'pointer',
+            fontSize: '14px',
+            width: '256px',
+          }}
+        >
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            {isLoadingDownloadImage
+              ? 'Please wait...'
+              : 'SAVE QR CODE TO GALLERY'}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderResponsiveDesign = () => {
     const changeFormatDateDefault = changeFormatDate(
       paymentFomoPay?.orderActionDate
@@ -489,12 +489,13 @@ const AwaitingPayment = () => {
               label='PAYNOW'
               route='/'
             />
-            <RenderQrCode
-              paymentFomoPay={paymentFomoPay}
-              color={color}
-              isLoadingDownloadImage={isLoadingDownloadImage}
-              setIsLoadingDownloadImage={setIsLoadingDownloadImage}
-            />
+            {renderQrCode({
+              paymentFomoPay: paymentFomoPay,
+              color: color,
+              isLoadingDownloadImage: isLoadingDownloadImage,
+              setIsLoadingDownloadImage: setIsLoadingDownloadImage,
+            })}
+
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
@@ -624,11 +625,12 @@ const AwaitingPayment = () => {
               route='/'
               history={history}
             />
-            <RenderQrCode
-              color={color}
-              paymentFomoPay={paymentFomoPay}
-              setIsLoadingDownloadImage={setIsLoadingDownloadImage}
-            />
+            {renderQrCode({
+              paymentFomoPay: paymentFomoPay,
+              color: color,
+              isLoadingDownloadImage: isLoadingDownloadImage,
+              setIsLoadingDownloadImage: setIsLoadingDownloadImage,
+            })}
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
