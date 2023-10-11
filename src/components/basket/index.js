@@ -15,7 +15,7 @@ import {
 import { StraightDistance } from '../../helpers/CalculateDistance';
 import loadable from '@loadable/component';
 import config from '../../config';
-import OrderDetailFomoPay from './OrderDetailFomoPay';
+import SeeOrderDetail from 'pages/SeeOrderDetail';
 
 const ViewCartBasket = loadable(() => import('./viewCartBasket'));
 const ViewProsessBasket = loadable(() => import('./viewProssessBasket'));
@@ -1573,7 +1573,7 @@ class Basket extends Component {
       this.setState({ storeDetail });
     }
     if (dataBasket?.action?.name === 'PAYNOW') {
-      return <OrderDetailFomoPay paymentFomoPay={dataBasket} />;
+      return <SeeOrderDetail paymentFomoPay={dataBasket} />;
     } else {
       return (
         <div

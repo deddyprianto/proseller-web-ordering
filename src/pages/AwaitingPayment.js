@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -217,7 +217,12 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
   }
 };
 
-export const RenderQrCode = ({ paymentFomoPay, color }) => {
+export const RenderQrCode = ({
+  paymentFomoPay,
+  color,
+  setIsLoadingDownloadImage,
+  isLoadingDownloadImage,
+}) => {
   return (
     <div
       style={{
@@ -238,7 +243,11 @@ export const RenderQrCode = ({ paymentFomoPay, color }) => {
       />
       <div
         onClick={() => {
-          downloadImage(paymentFomoPay?.action?.url, 'qrcode.jpg');
+          downloadImage(
+            paymentFomoPay?.action?.url,
+            'qrcode.jpg',
+            setIsLoadingDownloadImage
+          );
         }}
         style={{
           border: `1px solid ${color.primary}`,
@@ -248,9 +257,14 @@ export const RenderQrCode = ({ paymentFomoPay, color }) => {
           fontWeight: 500,
           cursor: 'pointer',
           fontSize: '14px',
+          width: '256px',
         }}
       >
-        SAVE QR CODE TO GALLERY
+        <div style={{ width: '100%', textAlign: 'center' }}>
+          {isLoadingDownloadImage
+            ? 'Please wait...'
+            : 'SAVE QR CODE TO GALLERY'}
+        </div>
       </div>
     </div>
   );
@@ -404,7 +418,7 @@ const AwaitingPayment = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const responsiveDesign = screen();
-
+  const [isLoadingDownloadImage, setIsLoadingDownloadImage] = useState(false);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const showMessageConfirm = useSelector(
@@ -475,7 +489,12 @@ const AwaitingPayment = () => {
               label='PAYNOW'
               route='/'
             />
-            <RenderQrCode paymentFomoPay={paymentFomoPay} color={color} />
+            <RenderQrCode
+              paymentFomoPay={paymentFomoPay}
+              color={color}
+              isLoadingDownloadImage={isLoadingDownloadImage}
+              setIsLoadingDownloadImage={setIsLoadingDownloadImage}
+            />
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
@@ -605,7 +624,11 @@ const AwaitingPayment = () => {
               route='/'
               history={history}
             />
-            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            <RenderQrCode
+              color={color}
+              paymentFomoPay={paymentFomoPay}
+              setIsLoadingDownloadImage={setIsLoadingDownloadImage}
+            />
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
