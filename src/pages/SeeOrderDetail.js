@@ -28,13 +28,13 @@ const RenderQrCode = ({
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
+        flexDirection: 'column',
       }}
     >
       <img
-        width={256}
         height={256}
+        width={256}
         alt='qrcode fomopay'
         src={paymentFomoPay?.action?.url}
       />
@@ -45,19 +45,26 @@ const RenderQrCode = ({
             'qrcode.jpg',
             setIsLoadingDownloadImage
           );
+          console.log('donwload success');
         }}
         style={{
-          border: `1px solid ${color.primary}`,
+          width: '256px',
           padding: '5px 16px',
           borderRadius: '8px',
           color: color.primary,
           fontWeight: 500,
           cursor: 'pointer',
           fontSize: '14px',
-          width: '256px',
+          border: `1px solid ${color.primary}`,
         }}
       >
-        <div style={{ width: '100%', textAlign: 'center' }}>
+        <div
+          style={{
+            width: '100%',
+            textAlign: 'center',
+            backgroundColor: 'white',
+          }}
+        >
           {isLoadingDownloadImage
             ? 'Please wait...'
             : 'SAVE QR CODE TO GALLERY'}
