@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -6,24 +6,83 @@ import { useHistory } from 'react-router-dom';
 import CountDownTime from 'components/awaitingpayment/CountDownTime';
 import {
   RenderPaymentMethod,
-  RenderQrCode,
   RenderTotalMain,
   renderBoxItem,
 } from './AwaitingPayment';
 import {
   changeFormatDate,
+  downloadImage,
   formatDateWithTime,
   getCurrencyHelper,
 } from 'helpers/awaitingPayment';
 import { isEmptyArray, isEmptyData } from 'helpers/CheckEmpty';
 import { renderIconPromotion } from 'assets/iconsSvg/Icons';
 
-const SeeOrderDetail = () => {
+const RenderQrCode = ({
+  paymentFomoPay,
+  color,
+  setIsLoadingDownloadImage,
+  isLoadingDownloadImage,
+}) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+      }}
+    >
+      <img
+        height={256}
+        width={256}
+        alt='qrcode fomopay'
+        src={paymentFomoPay?.action?.url}
+      />
+      <div
+        onClick={() => {
+          downloadImage(
+            paymentFomoPay?.action?.url,
+            'qrcode.jpg',
+            setIsLoadingDownloadImage
+          );
+          console.log('donwload success');
+        }}
+        style={{
+          width: '256px',
+          padding: '5px 16px',
+          borderRadius: '8px',
+          color: color.primary,
+          fontWeight: 500,
+          cursor: 'pointer',
+          fontSize: '14px',
+          border: `1px solid ${color.primary}`,
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            textAlign: 'center',
+            backgroundColor: 'white',
+          }}
+        >
+          {isLoadingDownloadImage
+            ? 'Please wait...'
+            : 'SAVE QR CODE TO GALLERY'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SeeOrderDetail = ({ paymentFomoPay }) => {
+  const data = useSelector((state) => state.payment.responseFomoPayPayment);
+  if (!paymentFomoPay) {
+    paymentFomoPay = data;
+  }
+  const [isLoadingDownloadImage, setIsLoadingDownloadImage] = useState(false);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
-  const paymentFomoPay = useSelector(
-    (state) => state.payment.responseFomoPayPayment
-  );
+
   const history = useHistory();
   const responsiveDesign = screen();
 
@@ -313,7 +372,12 @@ const SeeOrderDetail = () => {
             }}
           >
             {renderNameOutlet()}
-            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            <RenderQrCode
+              color={color}
+              paymentFomoPay={paymentFomoPay}
+              setIsLoadingDownloadImage={setIsLoadingDownloadImage}
+              isLoadingDownloadImage={isLoadingDownloadImage}
+            />
 
             {paymentFomoPay?.details.map((item) => {
               return renderProduct(item);
@@ -422,7 +486,12 @@ const SeeOrderDetail = () => {
               {renderHeader()}
             </div>
             {renderTimeCounter()}
-            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            <RenderQrCode
+              color={color}
+              paymentFomoPay={paymentFomoPay}
+              setIsLoadingDownloadImage={setIsLoadingDownloadImage}
+              isLoadingDownloadImage={isLoadingDownloadImage}
+            />
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,
@@ -501,6 +570,3 @@ const SeeOrderDetail = () => {
 };
 
 export default SeeOrderDetail;
-
-
-

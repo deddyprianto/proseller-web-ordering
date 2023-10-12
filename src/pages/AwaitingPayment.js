@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import screen from 'hooks/useWindowSize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -12,7 +12,7 @@ import {
 import CountDownTime from 'components/awaitingpayment/CountDownTime';
 import commonAlert from 'components/template/commonAlert';
 import { isEmptyArray } from 'helpers/CheckEmpty';
-
+import Paper from '@mui/material/Paper';
 
 const RenderHeader = ({ color, history, label, route }) => {
   return (
@@ -151,6 +151,7 @@ export const renderBoxItem = ({
     </div>
   );
 };
+
 export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
   if (!isEmptyArray(data)) {
     return (
@@ -184,12 +185,17 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
               <div
                 style={{
                   fontSize: '14px',
-
+                  textTransform:
+                    paymentMethodItem?.paymentType === 'PayNow'
+                      ? 'uppercase'
+                      : 'capitalize',
                   fontWeight: 700,
                   color: 'var(--text-color-primary, #343A4A)',
                 }}
               >
-                {paymentMethodItem?.paymentType}
+                {paymentMethodItem?.paymentType === 'PayNow'
+                  ? paymentMethodItem?.paymentType
+                  : `${paymentMethodItem?.paymentType}s`}
               </div>
               <div
                 style={{
@@ -209,45 +215,6 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
       </div>
     );
   }
-};
-
-export const RenderQrCode = ({ paymentFomoPay, color }) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <img
-        width={256}
-        height={256}
-        alt='qrcode fomopay'
-        src={paymentFomoPay?.action?.url}
-      />
-      <CountDownTime
-        targetDate={paymentFomoPay?.action?.expiry}
-        color={color}
-      />
-      <div
-        onClick={() => {
-          downloadImage(paymentFomoPay?.action?.url, 'qrcode.jpg');
-        }}
-        style={{
-          border: `1px solid ${color.primary}`,
-          padding: '5px 16px',
-          borderRadius: '8px',
-          color: color.primary,
-          fontWeight: 500,
-          cursor: 'pointer',
-          fontSize: '14px',
-        }}
-      >
-        SAVE QR CODE TO GALLERY
-      </div>
-    </div>
-  );
 };
 
 export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
@@ -398,7 +365,7 @@ const AwaitingPayment = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const responsiveDesign = screen();
-
+  const [isLoadingDownloadImage, setIsLoadingDownloadImage] = useState(false);
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const showMessageConfirm = useSelector(
@@ -443,105 +410,196 @@ const AwaitingPayment = () => {
           fontSize: '14px',
           borderRadius: '8px',
           textAlign: 'center',
-          marginTop: '16px',
+          marginTop: gadgetScreen < 500 ? 0 : '20px',
         }}
       >
         See Order Detail
       </div>
     );
   };
+
+  const renderQrCode = ({
+    paymentFomoPay,
+    color,
+    setIsLoadingDownloadImage,
+    isLoadingDownloadImage,
+  }) => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <img
+          width={256}
+          height={256}
+          alt='qrcode fomopay'
+          src={paymentFomoPay?.action?.url}
+        />
+        <CountDownTime
+          targetDate={paymentFomoPay?.action?.expiry}
+          color={color}
+        />
+        <div
+          onClick={() => {
+            downloadImage(
+              paymentFomoPay?.action?.url,
+              'qrcode.jpg',
+              setIsLoadingDownloadImage
+            );
+          }}
+          style={{
+            border: `1px solid ${color.primary}`,
+            padding: '5px 16px',
+            borderRadius: '8px',
+            color: color.primary,
+            fontWeight: 500,
+            cursor: 'pointer',
+            fontSize: '14px',
+            width: '256px',
+          }}
+        >
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            {isLoadingDownloadImage
+              ? 'Please wait...'
+              : 'SAVE QR CODE TO GALLERY'}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderResponsiveDesign = () => {
     const changeFormatDateDefault = changeFormatDate(
       paymentFomoPay?.orderActionDate
     );
     if (gadgetScreen) {
       return (
-        <div style={{ paddingBottom: 70 }}>
-          <RenderHeader
-            history={history}
-            color={color}
-            label='PAYNOW'
-            route='/'
-          />
-          <RenderQrCode paymentFomoPay={paymentFomoPay} color={color} />
-          {renderBoxItem({
-            labelRow1: 'Status Order',
-            row1: paymentFomoPay?.status,
-            fontWeight: 700,
-            color: color.primary,
-          })}
-          {renderBoxItem({
-            labelRow1: 'Ref No.',
-            row1: paymentFomoPay?.transactionRefNo,
-            labelRow2: 'Queue No.',
-            row2: paymentFomoPay?.queueNo,
-            fontWeight: 700,
-            color: 'black',
-          })}
-          {renderBoxItem({
-            labelRow1: 'Outlet Name',
-            row1: paymentFomoPay?.outlet?.name,
-            labelRow2: 'Ordering Date',
-            row2: formatDateWithTime(paymentFomoPay?.createdAt),
-            fontWeight: 700,
-            color: 'black',
-          })}
-          {paymentFomoPay?.orderingMode === 'DELIVERY' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
-              labelRow2: 'Delivery Address',
-              row2: paymentFomoPay?.deliveryAddress?.addressName,
-              labelRow3: 'Delivery Provider',
-              row3: paymentFomoPay?.deliveryProvider,
-              labelRow4: 'Delivery  Date & Time',
-              row4: {
-                date: changeFormatDateDefault,
-                time: paymentFomoPay?.orderActionTimeSlot,
-              },
-              color: 'black',
-              fontWeight: 700,
+        <div style={{ height: '80vh ', overflowY: 'auto' }}>
+          <div
+            style={{
+              paddingBottom: 200,
+            }}
+          >
+            <RenderHeader
+              history={history}
+              color={color}
+              label='PAYNOW'
+              route='/'
+            />
+            {renderQrCode({
+              paymentFomoPay: paymentFomoPay,
+              color: color,
+              isLoadingDownloadImage: isLoadingDownloadImage,
+              setIsLoadingDownloadImage: setIsLoadingDownloadImage,
             })}
-          {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
-              labelRow4: 'Pickup Date & Time',
-              row4: {
-                date: changeFormatDateDefault,
-                time: paymentFomoPay?.orderActionTimeSlot,
-              },
-              color: 'black',
+
+            {renderBoxItem({
+              labelRow1: 'Status Order',
+              row1: paymentFomoPay?.status,
               fontWeight: 700,
+              color: color.primary,
             })}
-          {paymentFomoPay?.orderingMode === 'DINEIN' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
+            {renderBoxItem({
+              labelRow1: 'Ref No.',
+              row1: paymentFomoPay?.transactionRefNo,
+              labelRow2: 'Queue No.',
+              row2: paymentFomoPay?.queueNo,
               fontWeight: 700,
               color: 'black',
             })}
-          {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
-            paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
-            paymentFomoPay?.orderingMode !== 'DINEIN' &&
-            renderBoxItem({
-              labelRow1: 'Ordering Mode',
-              row1: paymentFomoPay?.orderingMode,
+            {renderBoxItem({
+              labelRow1: 'Outlet Name',
+              row1: paymentFomoPay?.outlet?.name,
+              labelRow2: 'Ordering Date',
+              row2: formatDateWithTime(paymentFomoPay?.createdAt),
               fontWeight: 700,
               color: 'black',
             })}
-          <RenderPaymentMethod
-            label='Payment Details'
-            data={paymentFomoPay?.payments}
-            color={color}
-            companyInfo={companyInfo}
-          />
-          <RenderTotalMain
-            color={color}
-            paymentFomoPay={paymentFomoPay}
-            companyInfo={companyInfo}
-          />
-          {buttonSeeDetail()}
+            {paymentFomoPay?.orderingMode === 'DELIVERY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                labelRow2: 'Delivery Address',
+                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                labelRow3: 'Delivery Provider',
+                row3: paymentFomoPay?.deliveryProvider,
+                labelRow4: 'Delivery  Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+                color: 'black',
+                fontWeight: 700,
+              })}
+            {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                labelRow4: 'Pickup Date & Time',
+                row4: {
+                  date: changeFormatDateDefault,
+                  time: paymentFomoPay?.orderActionTimeSlot,
+                },
+                color: 'black',
+                fontWeight: 700,
+              })}
+            {paymentFomoPay?.orderingMode === 'DINEIN' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                fontWeight: 700,
+                color: 'black',
+              })}
+            {paymentFomoPay?.orderingMode !== 'DELIVERY' &&
+              paymentFomoPay?.orderingMode !== 'TAKEAWAY' &&
+              paymentFomoPay?.orderingMode !== 'DINEIN' &&
+              renderBoxItem({
+                labelRow1: 'Ordering Mode',
+                row1: paymentFomoPay?.orderingMode,
+                fontWeight: 700,
+                color: 'black',
+              })}
+            <RenderPaymentMethod
+              label='Payment Details'
+              data={paymentFomoPay?.payments}
+              color={color}
+              companyInfo={companyInfo}
+            />
+            <RenderTotalMain
+              color={color}
+              paymentFomoPay={paymentFomoPay}
+              companyInfo={companyInfo}
+            />
+          </div>
+          <Paper
+            variant='outlined'
+            square={gadgetScreen}
+            sx={
+              gadgetScreen
+                ? {
+                    zIndex: '999',
+                    width: '100%',
+                    margin: 0,
+                    bottom: responsiveDesign.height < 500 ? 0 : 70,
+                    position: 'fixed',
+                    left: 0,
+                    borderTopRightRadius: '8px',
+                    borderTopLeftRadius: '8px',
+                    border: 'none',
+                    outline: 'none',
+                    padding: '5px',
+                  }
+                : {
+                    padding: 0,
+                    margin: 0,
+                  }
+            }
+          >
+            {buttonSeeDetail()}
+          </Paper>
         </div>
       );
     } else {
@@ -567,7 +625,12 @@ const AwaitingPayment = () => {
               route='/'
               history={history}
             />
-            <RenderQrCode color={color} paymentFomoPay={paymentFomoPay} />
+            {renderQrCode({
+              paymentFomoPay: paymentFomoPay,
+              color: color,
+              isLoadingDownloadImage: isLoadingDownloadImage,
+              setIsLoadingDownloadImage: setIsLoadingDownloadImage,
+            })}
             {renderBoxItem({
               labelRow1: 'Status Order',
               row1: paymentFomoPay?.status,

@@ -27,6 +27,7 @@ const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const PaymentMethodPage = () => {
   const colorState = useSelector((state) => state.theme.color);
+  const iconCheckState = useSelector((state) => state.payment.iconCheck);
   const account = useSelector((state) => state.auth.account.idToken.payload);
   const amountToPay = useSelector((state) => state.payment.totalPaymentAmount);
 
@@ -135,7 +136,6 @@ const PaymentMethodPage = () => {
   const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [namePayment, setNamePayment] = useState('');
   const [paymentMethodList, setPaymentMethodList] = useState({});
   const [paymentURL, setPaymentURL] = useState('');
   const [creditCardSelected, setCreditCardSelected] = useState();
@@ -182,6 +182,30 @@ const PaymentMethodPage = () => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const filterPayment = paymentMethodList?.paymentTypes?.find((item) => {
+      return item?.paymentID === 'FOMO_PAY';
+    });
+    if (
+      paymentMethodList?.paymentTypes?.length === 1 &&
+      filterPayment?.paymentID === 'FOMO_PAY'
+    ) {
+      dispatch({
+        type: 'SET_SELECTED_PAYMENT_CARD',
+        data: {
+          paymentID: filterPayment?.paymentID,
+          paymentName: filterPayment?.paymentName,
+          paymentType: 'PayNow',
+        },
+      });
+      dispatch({
+        type: 'ICON_CHECK',
+        data: filterPayment.paymentID,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentMethodList]);
 
   useEffect(() => {
     if (!openDialogConfirm) {
@@ -310,6 +334,10 @@ const PaymentMethodPage = () => {
             sx={style.root}
             key={index}
             onClick={() => {
+              dispatch({
+                type: 'ICON_CHECK',
+                data: card.paymentID,
+              });
               setCreditCardSelected(card);
               if (profileRouteMatch) {
                 setOpenSetDefaultPaymentMethod(true);
@@ -391,6 +419,10 @@ const PaymentMethodPage = () => {
                   (itemFind) => itemFind.paymentID === item.paymentID
                 );
                 dispatch({
+                  type: 'ICON_CHECK',
+                  data: item.paymentID,
+                });
+                dispatch({
                   type: 'SET_SELECTED_PAYMENT_CARD',
                   data: {
                     paymentID: fomoPayData?.paymentID,
@@ -400,7 +432,10 @@ const PaymentMethodPage = () => {
                 });
                 history.goBack();
               } else {
-                setNamePayment(item.paymentID);
+                dispatch({
+                  type: 'ICON_CHECK',
+                  data: item.paymentID,
+                });
                 handleAddPaymentMethod(item);
               }
             }}
@@ -436,7 +471,7 @@ const PaymentMethodPage = () => {
                 {item.paymentID}
               </div>
             </div>
-            {namePayment === item.paymentID && (
+            {iconCheckState === item.paymentID && (
               <img src={iconCheck} alt='check icon' />
             )}
           </div>

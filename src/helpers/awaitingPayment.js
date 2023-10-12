@@ -1,26 +1,23 @@
-export function downloadImage(imageUrl, fileName) {
-  // Fetch the image as a Blob
+export function downloadImage(imageUrl, fileName, setIsLoadingDownloadImage) {
+  setIsLoadingDownloadImage(true);
   fetch(imageUrl)
     .then((response) => response.blob())
     .then((blob) => {
-      // Create an object URL from the Blob
       const url = window.URL.createObjectURL(blob);
-
-      // Create a temporary anchor element
       const anchor = document.createElement('a');
       anchor.style.display = 'none';
       anchor.href = url;
       anchor.download = fileName;
-
-      // Add the anchor to the document body
       document.body.appendChild(anchor);
-
-      // Trigger a click event on the anchor to initiate the download
       anchor.click();
-
-      // Remove the anchor and revoke the object URL
       document.body.removeChild(anchor);
       window.URL.revokeObjectURL(url);
+
+      setIsLoadingDownloadImage(false);
+    })
+    .catch((error) => {
+      console.log({ error });
+      setIsLoadingDownloadImage(false);
     });
 }
 

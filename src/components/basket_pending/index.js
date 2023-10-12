@@ -59,7 +59,6 @@ class Basket extends Component {
       totalPrice: 0,
       viewCart: true,
       viewCartStatus: true,
-      widthSelected: 0,
       xstep: 1,
       size: { width: 0, height: 0 },
       isMobileSize: false,
@@ -100,15 +99,6 @@ class Basket extends Component {
     } else {
       // localStorage.removeItem(`${config.prefix}_scanTable`);
     }
-
-    setInterval(() => {
-      try {
-        let widthSelected = document.getElementById('cardItem').clientWidth;
-        if (widthSelected !== this.state.widthSelected) {
-          this.setState({ widthSelected });
-        }
-      } catch (error) {}
-    }, 0);
     this.getDataBasket();
   };
 
@@ -676,14 +666,12 @@ class Basket extends Component {
         selectedCard = desc;
       }
     } catch (e) {}
-
     return (
       <div
         className='col-full'
         style={{
-          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 65 : 75,
+          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 55 : 75,
         }}
-        id='cardItem'
       >
         <div id='close-modal' />
         <ModalInfoTransfer

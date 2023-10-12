@@ -15,6 +15,7 @@ import {
 import { StraightDistance } from '../../helpers/CalculateDistance';
 import loadable from '@loadable/component';
 import config from '../../config';
+import SeeOrderDetail from 'pages/SeeOrderDetail';
 
 const ViewCartBasket = loadable(() => import('./viewCartBasket'));
 const ViewProsessBasket = loadable(() => import('./viewProssessBasket'));
@@ -1571,102 +1572,108 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-    return (
-      <div
-        className='col-full'
-        style={{ marginTop: config.prefix === 'emenu' ? 60 : 100 }}
-        id='cardItem'
-      >
-        <div id='close-modal' />
-        <div id='primary' className='content-area'>
-          <div className='stretch-full-width'>
-            <main
-              id='main'
-              className='site-main'
-              style={{ textAlign: 'center' }}
-            >
-              {loadingShow && (
-                <Row>
-                  <Col sm={6}>{this.viewShimmer()}</Col>
-                  <Col sm={6}>{this.viewShimmer()}</Col>
-                </Row>
-              )}
+    if (dataBasket?.action?.name === 'PAYNOW') {
+      return <SeeOrderDetail paymentFomoPay={dataBasket} />;
+    } else {
+      return (
+        <div
+          className='col-full'
+          style={{
+            marginTop: config.prefix === 'emenu' ? 60 : 100,
+          }}
+          id='cardItem'
+        >
+          <div id='close-modal' />
+          <div id='primary' className='content-area'>
+            <div className='stretch-full-width'>
+              <main
+                id='main'
+                className='site-main'
+                style={{ textAlign: 'center' }}
+              >
+                {loadingShow && (
+                  <Row>
+                    <Col sm={6}>{this.viewShimmer()}</Col>
+                    <Col sm={6}>{this.viewShimmer()}</Col>
+                  </Row>
+                )}
 
-              {!loadingShow && !dataBasket && !this.props.basket.details && (
-                <div>
-                  <img
-                    src={config.url_emptyImage}
-                    alt='is empty'
-                    style={{ marginTop: 30 }}
-                  />
-                  <div>Data is empty</div>
-                </div>
-              )}
-
-              {!loadingShow &&
-                (!isEmptyObject(dataBasket) || this.props.basket.details) && (
-                  <div style={{ marginBottom: 250 }}>
-                    {viewCart && (
-                      <ViewCartBasket
-                        data={this.state}
-                        dataBasket={dataBasket}
-                        countryCode={countryCode}
-                        isLoggedIn={isLoggedIn}
-                        cancelSelectVoucher={() => this.cancelSelectVoucher()}
-                        cancelSelectPoint={() => this.cancelSelectPoint()}
-                        handleRedeemVoucher={() => this.handleRedeemVoucher()}
-                        handleRedeemPoint={() => this.handleRedeemPoint()}
-                        getCurrency={(price) => this.getCurrency(price)}
-                        handleClear={(dataBasket) =>
-                          this.handleClear(dataBasket)
-                        }
-                        handleRemoveItem={(dataBasket, key) =>
-                          this.handleRemoveItem(dataBasket, key)
-                        }
-                        scrollPoint={(data) => this.scrollPoint(data)}
-                        setPoint={(point) => this.setPoint(point)}
-                        handleSettle={() => this.handleSettle()}
-                        handleSubmit={() => this.handleSubmit()}
-                        setOrderingMode={(mode) => this.setOrderingMode(mode)}
-                        handleSetProvaider={(item) =>
-                          this.handleSetProvaider(item)
-                        }
-                        setViewCart={(status) => this.setViewCart(status)}
-                        handleSetState={(field, value) => {
-                          this.handleSetState(field, value);
-                        }}
-                        handleOpenLogin={() => this.handleOpenLogin()}
-                        updateCartInfo={this.updateCartInfo}
-                        timeslotData={this.state.timeslotData}
-                      />
-                    )}
-                    {!viewCart && (
-                      <ViewProsessBasket
-                        data={this.state}
-                        dataBasket={dataBasket}
-                        countryCode={countryCode}
-                        isLoggedIn={isLoggedIn}
-                        getCurrency={(price) => this.getCurrency(price)}
-                        setViewCart={(status) => this.setViewCart(status)}
-                        handleCompletedOrdering={(status) =>
-                          this.handleCompletedOrdering(status)
-                        }
-                      />
-                    )}
+                {!loadingShow && !dataBasket && !this.props.basket.details && (
+                  <div>
+                    <img
+                      src={config.url_emptyImage}
+                      alt='is empty'
+                      style={{ marginTop: 30 }}
+                    />
+                    <div>Data is empty</div>
                   </div>
                 )}
-            </main>
+
+                {!loadingShow &&
+                  (!isEmptyObject(dataBasket) || this.props.basket.details) && (
+                    <div style={{ marginBottom: 250 }}>
+                      {viewCart && (
+                        <ViewCartBasket
+                          data={this.state}
+                          dataBasket={dataBasket}
+                          countryCode={countryCode}
+                          isLoggedIn={isLoggedIn}
+                          cancelSelectVoucher={() => this.cancelSelectVoucher()}
+                          cancelSelectPoint={() => this.cancelSelectPoint()}
+                          handleRedeemVoucher={() => this.handleRedeemVoucher()}
+                          handleRedeemPoint={() => this.handleRedeemPoint()}
+                          getCurrency={(price) => this.getCurrency(price)}
+                          handleClear={(dataBasket) =>
+                            this.handleClear(dataBasket)
+                          }
+                          handleRemoveItem={(dataBasket, key) =>
+                            this.handleRemoveItem(dataBasket, key)
+                          }
+                          scrollPoint={(data) => this.scrollPoint(data)}
+                          setPoint={(point) => this.setPoint(point)}
+                          handleSettle={() => this.handleSettle()}
+                          handleSubmit={() => this.handleSubmit()}
+                          setOrderingMode={(mode) => this.setOrderingMode(mode)}
+                          handleSetProvaider={(item) =>
+                            this.handleSetProvaider(item)
+                          }
+                          setViewCart={(status) => this.setViewCart(status)}
+                          handleSetState={(field, value) => {
+                            this.handleSetState(field, value);
+                          }}
+                          handleOpenLogin={() => this.handleOpenLogin()}
+                          updateCartInfo={this.updateCartInfo}
+                          timeslotData={this.state.timeslotData}
+                        />
+                      )}
+                      {!viewCart && (
+                        <ViewProsessBasket
+                          data={this.state}
+                          dataBasket={dataBasket}
+                          countryCode={countryCode}
+                          isLoggedIn={isLoggedIn}
+                          getCurrency={(price) => this.getCurrency(price)}
+                          setViewCart={(status) => this.setViewCart(status)}
+                          handleCompletedOrdering={(status) =>
+                            this.handleCompletedOrdering(status)
+                          }
+                        />
+                      )}
+                    </div>
+                  )}
+              </main>
+            </div>
           </div>
+          <span
+            data-toggle='modal'
+            data-target='#detail-product-modal'
+            id='open-modal-product'
+            style={{ color: 'white' }}
+          ></span>
+          {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
         </div>
-        <span
-          data-toggle='modal'
-          data-target='#detail-product-modal'
-          id='open-modal-product'
-          style={{ color: 'white' }}
-        ></span>
-        {/* {isLoading ? Swal.showLoading() : Swal.close()} */}
-      </div>
-    );
+      );
+    }
   }
 }
 
