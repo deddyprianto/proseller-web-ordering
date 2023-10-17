@@ -242,10 +242,148 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
 };
 
 export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
-  const renderLabelDiscount =
-    paymentFomoPay.totalMembershipDiscountAmount === 0 &&
-    paymentFomoPay.totalDiscountAmount > 0;
-
+  const renderLabelDiscount = () => {
+    if (
+      paymentFomoPay.totalMembershipDiscountAmount === 0 &&
+      paymentFomoPay.totalDiscountAmount === 0
+    ) {
+      return null;
+    }
+    if (
+      paymentFomoPay.totalMembershipDiscountAmount ===
+      paymentFomoPay.totalDiscountAmount
+    ) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              color: 'var(--text-color-primary, #343A4A)',
+            }}
+          >
+            Membership Discount
+          </div>
+          <div
+            style={{
+              color: 'var(--semantic-color-success, #1A883C)',
+              fontWeight: 700,
+              fontSize: '14px',
+            }}
+          >
+            -
+            {getCurrencyHelper(
+              paymentFomoPay?.totalMembershipDiscountAmount,
+              companyInfo
+            )}
+          </div>
+        </div>
+      );
+    } else if (
+      paymentFomoPay.totalMembershipDiscountAmount === 0 &&
+      paymentFomoPay.totalDiscountAmount > 0
+    ) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              color: 'var(--text-color-primary, #343A4A)',
+            }}
+          >
+            Discount
+          </div>
+          <div
+            style={{
+              color: 'var(--semantic-color-success, #1A883C)',
+              fontWeight: 700,
+              fontSize: '14px',
+            }}
+          >
+            -
+            {getCurrencyHelper(
+              paymentFomoPay?.totalDiscountAmount,
+              companyInfo
+            )}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <React.Fragment>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 700,
+                color: 'var(--text-color-primary, #343A4A)',
+              }}
+            >
+              Discount
+            </div>
+            <div
+              style={{
+                color: 'var(--semantic-color-success, #1A883C)',
+                fontWeight: 700,
+                fontSize: '14px',
+              }}
+            >
+              -
+              {getCurrencyHelper(
+                paymentFomoPay?.totalDiscountAmount,
+                companyInfo
+              )}
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 700,
+                color: 'var(--text-color-primary, #343A4A)',
+              }}
+            >
+              Membership Discount
+            </div>
+            <div
+              style={{
+                color: 'var(--semantic-color-success, #1A883C)',
+                fontWeight: 700,
+                fontSize: '14px',
+              }}
+            >
+              -
+              {getCurrencyHelper(
+                paymentFomoPay?.totalMembershipDiscountAmount,
+                companyInfo
+              )}
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    }
+  };
   return (
     <div
       style={{
@@ -281,68 +419,7 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
           {getCurrencyHelper(paymentFomoPay?.totalGrossAmount, companyInfo)}
         </div>
       </div>
-      {renderLabelDiscount && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              color: 'var(--text-color-primary, #343A4A)',
-            }}
-          >
-            Discount
-          </div>
-          <div
-            style={{
-              color: 'var(--semantic-color-success, #1A883C)',
-              fontWeight: 700,
-              fontSize: '14px',
-            }}
-          >
-            -
-            {getCurrencyHelper(
-              paymentFomoPay?.totalDiscountAmount,
-              companyInfo
-            )}
-          </div>
-        </div>
-      )}
-      {paymentFomoPay?.totalMembershipDiscountAmount > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              color: 'var(--text-color-primary, #343A4A)',
-            }}
-          >
-            Membership Discount
-          </div>
-          <div
-            style={{
-              color: 'var(--semantic-color-success, #1A883C)',
-              fontWeight: 700,
-              fontSize: '14px',
-            }}
-          >
-            -
-            {getCurrencyHelper(
-              paymentFomoPay?.totalMembershipDiscountAmount,
-              companyInfo
-            )}
-          </div>
-        </div>
-      )}
+      {renderLabelDiscount()}
 
       {paymentFomoPay?.totalSurchargeAmount > 0 && (
         <div
@@ -595,7 +672,9 @@ const AwaitingPayment = () => {
                 labelRow1: 'Ordering Mode',
                 row1: paymentFomoPay?.orderingMode,
                 labelRow2: 'Delivery Address',
-                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                row2: paymentFomoPay?.deliveryAddress?.addressName
+                  ? paymentFomoPay?.deliveryAddress?.addressName
+                  : paymentFomoPay?.deliveryAddress?.streetName,
                 labelRow3: 'Delivery Provider',
                 row3: paymentFomoPay?.deliveryProvider,
                 labelRow4: 'Delivery  Date & Time',

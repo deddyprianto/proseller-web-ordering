@@ -19,7 +19,7 @@ function CountdownTimer({
 
       if (remainingTime.totalSeconds <= 0) {
         clearInterval(timer);
-        onCountdownComplete(true); // Call the callback with true when countdown is complete
+        onCountdownComplete(true);
       }
     }, 1000);
 
@@ -51,15 +51,15 @@ function CountdownTimer({
   return (
     <div
       style={{
-        fontWeight: 500,
+        fontWeight: 700,
         fontSize: '14px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         color: isBackgroundColor ? 'white' : color.primary,
-        padding: '10px',
-        margin: '10px 0px',
+        padding: '8px 10px',
         backgroundColor: isBackgroundColor && backgroundColor,
+        height: '37px',
       }}
     >
       <div>Waiting for payment</div>

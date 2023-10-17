@@ -240,7 +240,6 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
     });
   };
   const renderProduct = (item) => {
-    console.log('item =>', item);
     return (
       <div
         style={{
@@ -310,6 +309,7 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
           style={{
             height: '4px',
             backgroundColor: '#D6D6D6',
+            marginTop: '8px',
           }}
         />
       </div>
@@ -329,7 +329,7 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '30px 1fr 30px',
+          gridTemplateColumns: '20px 1fr 20px',
           gridTemplateRows: '1fr',
           gap: '0px 0px',
           gridAutoFlow: 'row',
@@ -337,6 +337,8 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
           cursor: 'pointer',
           margin: '10px 0',
           alignItems: 'center',
+          height: '40px',
+          padding: '8px 16px',
         }}
       >
         <ArrowBackIosIcon
@@ -349,7 +351,7 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
         />
         <div
           style={{
-            fontWeight: 500,
+            fontWeight: 700,
             fontSize: '16px',
             color: 'black',
           }}
@@ -364,7 +366,7 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
     <div style={fontStyles}>
       {gadgetScreen ? (
         <div style={{ paddingBottom: 70 }}>
-          <div style={{ padding: '1px 16px' }}>{renderHeader()}</div>
+          {renderHeader()}
           {renderTimeCounter()}
           <div
             style={{
@@ -378,13 +380,30 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
               setIsLoadingDownloadImage={setIsLoadingDownloadImage}
               isLoadingDownloadImage={isLoadingDownloadImage}
             />
-
+            <hr
+              style={{
+                height: '2px',
+                backgroundColor: '#D6D6D6',
+                margin: '16px 0px',
+              }}
+            />
             {paymentFomoPay?.details.map((item) => {
-              return renderProduct(item);
+              return (
+                <>
+                  {renderProduct(item)}
+                  <hr
+                    style={{
+                      height: '2px',
+                      backgroundColor: '#D6D6D6',
+                      margin: '13px 0px',
+                    }}
+                  />
+                </>
+              );
             })}
             {renderBoxItem({
               labelRow1: 'Status Order',
-              row1: paymentFomoPay?.status,
+              row1: paymentFomoPay?.status.split('_').join(' '),
               color: color.primary,
               fontWeight: 700,
             })}
@@ -412,7 +431,9 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
                 color: 'black',
                 fontWeight: 700,
                 labelRow2: 'Delivery Address',
-                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                row2: paymentFomoPay?.deliveryAddress?.addressName
+                  ? paymentFomoPay?.deliveryAddress?.addressName
+                  : paymentFomoPay?.deliveryAddress?.streetName,
                 labelRow3: 'Delivery Provider',
                 row3: paymentFomoPay?.deliveryProvider,
                 labelRow4: 'Delivery  Date & Time',
@@ -420,6 +441,11 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
                   date: changeFormatDateDefault,
                   time: paymentFomoPay?.orderActionTimeSlot,
                 },
+                labelRow5: 'Delivery Fee',
+                row5: getCurrencyHelper(
+                  paymentFomoPay?.deliveryFee,
+                  companyInfo
+                ),
               })}
             {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
               renderBoxItem({
@@ -494,7 +520,7 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
             />
             {renderBoxItem({
               labelRow1: 'Status Order',
-              row1: paymentFomoPay?.status,
+              row1: paymentFomoPay?.status.split('_').join(' '),
               color: color.primary,
             })}
             {renderBoxItem({

@@ -152,7 +152,7 @@ class ModalDetailHistory extends Component {
                             lineHeight: '17px',
                           }}
                         >
-                          {detail.status}
+                          {detail?.status?.split('_').join(' ')}
                         </div>
                       </div>
 
