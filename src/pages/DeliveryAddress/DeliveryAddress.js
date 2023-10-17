@@ -370,7 +370,7 @@ const DeliveryAddress = () => {
     getDataDeliveryAddress();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSuccess]);
-
+  console.log(addressDelivery);
   return (
     <LoadingOverlayCustom active={loading} spinner>
       <Box className='site-main' sx={style.mainBox}>
@@ -488,7 +488,7 @@ const DeliveryAddress = () => {
                                 fontSize={14}
                                 fontWeight={700}
                               >
-                                {items.recipient}
+                                {items?.recipient?.name}
                               </Typography>
                               <Typography
                                 variant='body2'

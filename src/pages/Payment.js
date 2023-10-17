@@ -38,6 +38,7 @@ import UseSVCPaymentDialog from './SVC/components/UseSVCPaymentDialog';
 import Sound_Effect from '../assets/sound/Sound_Effect.mp3';
 import ModalInfoTransferDialog from 'components/payment/ModalInfoTransferDialog';
 import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import commonAlert from 'components/template/commonAlert';
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const deliveryLocal = encryptor.decrypt(
@@ -908,7 +909,7 @@ const Payment = ({ ...props }) => {
       }
       return `${cardIssuer} ${maskedAccountNumber} (SGD ${handlePaymentCardPrice()})`;
     } else {
-      return 'Payment With Card';
+      return 'Payment Method';
     }
   };
 
@@ -1354,9 +1355,19 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(selectedPoint)) {
       payload.payments.push(selectedPoint);
     }
+    if (!isEmptyObject(useSVCPayment)) {
+      payload.payments.push(useSVCPayment);
+    }
     setIsLoading(true);
     const response = await props.dispatch(OrderAction.submitAndPay(payload));
     setIsLoading(false);
+    if (response.resultCode >= 400) {
+      return commonAlert({
+        title: 'Payment Failed',
+        color: props.color.primary,
+        content: response?.data?.message,
+      });
+    }
     props.dispatch({
       type: 'RESPONSE_FOMOPAY',
       data: response.data,

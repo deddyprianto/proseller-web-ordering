@@ -13,6 +13,7 @@ import CountDownTime from 'components/awaitingpayment/CountDownTime';
 import commonAlert from 'components/template/commonAlert';
 import { isEmptyArray } from 'helpers/CheckEmpty';
 import Paper from '@mui/material/Paper';
+import { OrderAction } from 'redux/actions/OrderAction';
 
 const RenderHeader = ({ color, history, label, route }) => {
   return (
@@ -62,6 +63,8 @@ export const renderBoxItem = ({
   row3,
   labelRow4,
   row4,
+  labelRow5,
+  row5,
 }) => {
   return (
     <div
@@ -118,7 +121,7 @@ export const renderBoxItem = ({
         <div
           style={{
             color: 'var(--text-color-primary, #343A4A)',
-            fontWeight: 500,
+            fontWeight: 700,
             fontSize: '14px',
           }}
         >
@@ -136,7 +139,25 @@ export const renderBoxItem = ({
         <div
           style={{
             color: 'var(--text-color-primary, #343A4A)',
-            fontWeight: 500,
+            fontWeight: 700,
+            fontSize: '14px',
+          }}
+        >
+          {labelRow5}
+        </div>
+        <div style={{ color, fontWeight, fontSize: '14px' }}>{row5}</div>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <div
+          style={{
+            color: 'var(--text-color-primary, #343A4A)',
+            fontWeight: 700,
             fontSize: '14px',
           }}
         >
@@ -173,44 +194,47 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
           >
             {label}
           </div>
-          {data.map((paymentMethodItem) => (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-              key={paymentMethodItem}
-            >
+          {data.map((paymentMethodItem) => {
+            return (
               <div
                 style={{
-                  fontSize: '14px',
-                  textTransform:
-                    paymentMethodItem?.paymentType === 'PayNow'
-                      ? 'uppercase'
-                      : 'capitalize',
-                  fontWeight: 700,
-                  color: 'var(--text-color-primary, #343A4A)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
+                key={paymentMethodItem}
               >
-                {paymentMethodItem?.paymentType === 'PayNow'
-                  ? paymentMethodItem?.paymentType
-                  : `${paymentMethodItem?.paymentType}s`}
+                <div
+                  style={{
+                    fontSize: '14px',
+                    textTransform:
+                      paymentMethodItem?.paymentType === 'PayNow'
+                        ? 'uppercase'
+                        : 'capitalize',
+                    fontWeight: 700,
+                    color: 'var(--text-color-primary, #343A4A)',
+                  }}
+                >
+                  {paymentMethodItem?.paymentType === 'point' ||
+                  paymentMethodItem?.paymentType === 'voucher'
+                    ? paymentMethodItem?.paymentType + 's'
+                    : paymentMethodItem?.paymentType}
+                </div>
+                <div
+                  style={{
+                    color: color.primary,
+                    fontWeight: 700,
+                    fontSize: '14px',
+                  }}
+                >
+                  {getCurrencyHelper(
+                    paymentMethodItem?.paymentAmount,
+                    companyInfo
+                  )}
+                </div>
               </div>
-              <div
-                style={{
-                  color: color.primary,
-                  fontWeight: 700,
-                  fontSize: '14px',
-                }}
-              >
-                {getCurrencyHelper(
-                  paymentMethodItem?.paymentAmount,
-                  companyInfo
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
@@ -218,6 +242,10 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
 };
 
 export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
+  const renderLabelDiscount =
+    paymentFomoPay.totalMembershipDiscountAmount === 0 &&
+    paymentFomoPay.totalDiscountAmount > 0;
+
   return (
     <div
       style={{
@@ -253,7 +281,7 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
           {getCurrencyHelper(paymentFomoPay?.totalGrossAmount, companyInfo)}
         </div>
       </div>
-      {paymentFomoPay?.totalDiscountAmount > 0 && (
+      {renderLabelDiscount && (
         <div
           style={{
             display: 'flex',
@@ -261,7 +289,14 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
             alignItems: 'center',
           }}
         >
-          <div>Discount</div>
+          <div
+            style={{
+              fontWeight: 700,
+              color: 'var(--text-color-primary, #343A4A)',
+            }}
+          >
+            Discount
+          </div>
           <div
             style={{
               color: 'var(--semantic-color-success, #1A883C)',
@@ -269,6 +304,7 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
               fontSize: '14px',
             }}
           >
+            -
             {getCurrencyHelper(
               paymentFomoPay?.totalDiscountAmount,
               companyInfo
@@ -276,7 +312,7 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
           </div>
         </div>
       )}
-      {paymentFomoPay?.totalMembershipDiscount > 0 && (
+      {paymentFomoPay?.totalMembershipDiscountAmount > 0 && (
         <div
           style={{
             display: 'flex',
@@ -284,7 +320,14 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
             alignItems: 'center',
           }}
         >
-          <div>Membership Discount</div>
+          <div
+            style={{
+              fontWeight: 700,
+              color: 'var(--text-color-primary, #343A4A)',
+            }}
+          >
+            Membership Discount
+          </div>
           <div
             style={{
               color: 'var(--semantic-color-success, #1A883C)',
@@ -292,8 +335,9 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
               fontSize: '14px',
             }}
           >
+            -
             {getCurrencyHelper(
-              paymentFomoPay?.totalMembershipDiscount,
+              paymentFomoPay?.totalMembershipDiscountAmount,
               companyInfo
             )}
           </div>
@@ -308,7 +352,14 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
             alignItems: 'center',
           }}
         >
-          <div>Surcharge</div>
+          <div
+            style={{
+              fontWeight: 700,
+              color: 'var(--text-color-primary, #343A4A)',
+            }}
+          >
+            Surcharge
+          </div>
           <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
             {getCurrencyHelper(
               paymentFomoPay?.totalSurchargeAmount,
@@ -318,7 +369,7 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
         </div>
       )}
 
-      <hr style={{ backgroundColor: '#D6D6D6' }} />
+      <hr style={{ backgroundColor: '#D6D6D6', margin: '6px 0px' }} />
       <div
         style={{
           display: 'flex',
@@ -366,6 +417,7 @@ const AwaitingPayment = () => {
   const history = useHistory();
   const responsiveDesign = screen();
   const [isLoadingDownloadImage, setIsLoadingDownloadImage] = useState(false);
+  const [idGuestCheckout, setIdGuestCheckout] = useState();
   const color = useSelector((state) => state.theme.color);
   const companyInfo = useSelector((state) => state.masterdata.companyInfo.data);
   const showMessageConfirm = useSelector(
@@ -382,6 +434,26 @@ const AwaitingPayment = () => {
     marginTop: '50px',
     padding: '16px',
   };
+
+  useEffect(() => {
+    const idGuestCheckout = localStorage.getItem('idGuestCheckout');
+    if (idGuestCheckout) {
+      setIdGuestCheckout(idGuestCheckout);
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (idGuestCheckout) {
+        await dispatch(
+          OrderAction.getCartGuestMode(`guest::${idGuestCheckout}`)
+        );
+      } else {
+        await dispatch(OrderAction.getCart());
+      }
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (showMessageConfirm) {
@@ -498,7 +570,7 @@ const AwaitingPayment = () => {
 
             {renderBoxItem({
               labelRow1: 'Status Order',
-              row1: paymentFomoPay?.status,
+              row1: paymentFomoPay?.status.split('_').join(' '),
               fontWeight: 700,
               color: color.primary,
             })}
@@ -531,6 +603,11 @@ const AwaitingPayment = () => {
                   date: changeFormatDateDefault,
                   time: paymentFomoPay?.orderActionTimeSlot,
                 },
+                labelRow5: 'Delivery Fee',
+                row5: getCurrencyHelper(
+                  paymentFomoPay?.deliveryFee,
+                  companyInfo
+                ),
                 color: 'black',
                 fontWeight: 700,
               })}
