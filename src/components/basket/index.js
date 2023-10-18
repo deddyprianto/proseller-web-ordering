@@ -1572,8 +1572,16 @@ class Basket extends Component {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
-    if (dataBasket?.action?.name === 'PAYNOW') {
-      return <SeeOrderDetail paymentFomoPay={dataBasket} />;
+
+    if (
+      dataBasket?.action?.name === 'PAYNOW' ||
+      this.props.paymentDataFomoPay.action?.name === 'PAYNOW'
+    ) {
+      return (
+        <SeeOrderDetail
+          paymentFomoPay={dataBasket || this.props.paymentDataFomoPay}
+        />
+      );
     } else {
       return (
         <div
@@ -1695,6 +1703,7 @@ const mapStateToProps = (state, ownProps) => {
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
+    paymentDataFomoPay: state.payment.responseFomoPayPayment,
   };
 };
 
