@@ -229,7 +229,6 @@ function getCart(isSetData = true) {
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else if (response.data && response.data.message !== 'No details data') {
-      console.log('lol');
       if (response.data.status === 'PENDING_PAYMENT') {
         await OrderingService.api('DELETE', null, 'cart/delete', 'Bearer');
         return {};
