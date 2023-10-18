@@ -1331,7 +1331,7 @@ const Payment = ({ ...props }) => {
     let payload = {
       cartID: props.basket.cartID,
       totalNettAmount: props.basket.totalNettAmount,
-      payments: [{ ...paymentCardFomoPayDetail, paymentAmount: totalPrice }],
+      payments: [],
       isNeedConfirmation,
       payAtPOS: false,
       tableNo: props.noTable ? props.noTable : null,
@@ -1357,6 +1357,19 @@ const Payment = ({ ...props }) => {
     }
     if (!isEmptyObject(useSVCPayment)) {
       payload.payments.push(useSVCPayment);
+    }
+
+    if (!isEmptyObject(paymentCardFomoPayDetail)) {
+      const totalWithSVC = totalPrice - (useSVCPayment.paymentAmount || 0);
+
+      const dataPaymentMethod = {
+        paymentID: paymentCardFomoPayDetail.paymentID,
+        paymentName: paymentCardFomoPayDetail.paymentName,
+        paymentType: paymentCardFomoPayDetail.paymentType,
+        paymentAmount: Number(totalWithSVC),
+      };
+
+      payload.payments.push(dataPaymentMethod);
     }
     setIsLoading(true);
     const response = await props.dispatch(OrderAction.submitAndPay(payload));

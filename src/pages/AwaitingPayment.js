@@ -218,6 +218,8 @@ export const RenderPaymentMethod = ({ label, data, companyInfo, color }) => {
                   {paymentMethodItem?.paymentType === 'point' ||
                   paymentMethodItem?.paymentType === 'voucher'
                     ? paymentMethodItem?.paymentType + 's'
+                    : paymentMethodItem?.paymentType === 'Store Value Card'
+                    ? 'Stored Value Card'
                     : paymentMethodItem?.paymentType}
                 </div>
                 <div
