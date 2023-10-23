@@ -441,11 +441,6 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
                   date: changeFormatDateDefault,
                   time: paymentFomoPay?.orderActionTimeSlot,
                 },
-                labelRow5: 'Delivery Fee',
-                row5: getCurrencyHelper(
-                  paymentFomoPay?.deliveryFee,
-                  companyInfo
-                ),
               })}
             {paymentFomoPay?.orderingMode === 'TAKEAWAY' &&
               renderBoxItem({
