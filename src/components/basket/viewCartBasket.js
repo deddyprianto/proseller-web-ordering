@@ -320,7 +320,7 @@ const ViewCartBasket = ({
                 fontSize: 16,
               }}
             >
-              GRAND TOTAL ASD
+              GRAND TOTAL
             </div>
             <div
               style={{
