@@ -91,6 +91,7 @@ function CountDownTime({ targetDate, color, backgroundColor }) {
 
   useEffect(() => {
     if (countdownComplete) {
+    localStorage.removeItem('RESPONSE_FOMOPAY');
       history.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

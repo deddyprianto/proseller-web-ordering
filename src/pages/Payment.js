@@ -1378,9 +1378,11 @@ const Payment = ({ ...props }) => {
       return commonAlert({
         title: 'Payment Failed',
         color: props.color.primary,
-        content: response?.data?.message,
+        content: response?.data?.message || response?.message,
+        onConfirm: () => history.push('/cart'),
       });
     }
+    localStorage.setItem('RESPONSE_FOMOPAY', JSON.stringify(response.data));
     props.dispatch({
       type: 'RESPONSE_FOMOPAY',
       data: response.data,

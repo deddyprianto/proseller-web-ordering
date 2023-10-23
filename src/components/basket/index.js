@@ -83,6 +83,7 @@ class Basket extends Component {
       longitude: 0,
       timeslotData: [],
       selectedDeliveryProvider: {},
+      paymentResponse: {},
     };
     this.audio = new Audio(Sound_Effect);
   }
@@ -107,6 +108,12 @@ class Basket extends Component {
     await this.checkOfflineCart();
     this.audio.addEventListener('ended', () => this.setState({ play: false }));
 
+    const dataFromLocal = localStorage.getItem('RESPONSE_FOMOPAY');
+    if (dataFromLocal) {
+      this.setState({
+        paymentResponse: JSON.parse(dataFromLocal),
+      });
+    }
     let param = this.getUrlParameters();
     if (param && param['input']) {
       param = this.getUrlParameters(base64.decode(decodeURI(param['input'])));
@@ -1565,8 +1572,14 @@ class Basket extends Component {
   };
 
   render() {
-    let { loadingShow, dataBasket, countryCode, viewCart, storeDetail } =
-      this.state;
+    let {
+      loadingShow,
+      dataBasket,
+      countryCode,
+      viewCart,
+      storeDetail,
+      paymentResponse,
+    } = this.state;
     let { isLoggedIn, product } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;
@@ -1575,13 +1588,9 @@ class Basket extends Component {
 
     if (
       dataBasket?.action?.name === 'PAYNOW' ||
-      this.props.paymentDataFomoPay.action?.name === 'PAYNOW'
+      paymentResponse?.action?.name === 'PAYNOW'
     ) {
-      return (
-        <SeeOrderDetail
-          paymentFomoPay={dataBasket || this.props.paymentDataFomoPay}
-        />
-      );
+      return <SeeOrderDetail paymentFomoPay={dataBasket || paymentResponse} />;
     } else {
       return (
         <div
@@ -1703,7 +1712,6 @@ const mapStateToProps = (state, ownProps) => {
     orderActionDate: state.order.orderActionDate,
     orderActionTime: state.order.orderActionTime,
     orderActionTimeSlot: state.order.orderActionTimeSlot,
-    paymentDataFomoPay: state.payment.responseFomoPayPayment,
   };
 };
 

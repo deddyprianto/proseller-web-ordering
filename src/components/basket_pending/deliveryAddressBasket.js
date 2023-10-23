@@ -12,16 +12,14 @@ class DeliveryAddressBasket extends Component {
     return (
       <div
         style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
         }}
       >
-        <div style={{ fontSize: 14 }}>
-          Delivery Address
-        </div>
-        <div style={{fontWeight: "bold", fontSize: 14}}>
-          {props.dataBasket.deliveryAddress.addressName.substring(0, 15)}
+        <div style={{ fontSize: 14 }}>Delivery Address</div>
+        <div style={{ fontWeight: 'bold', fontSize: 14 }}>
+          {props.dataBasket?.deliveryAddress?.addressName?.substring(0, 15)}
         </div>
       </div>
     );
