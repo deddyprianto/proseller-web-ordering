@@ -63,8 +63,6 @@ export const renderBoxItem = ({
   row3,
   labelRow4,
   row4,
-  labelRow5,
-  row5,
 }) => {
   return (
     <div
@@ -128,24 +126,6 @@ export const renderBoxItem = ({
           {labelRow3}
         </div>
         <div style={{ color, fontWeight, fontSize: '14px' }}>{row3}</div>
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            color: 'var(--text-color-primary, #343A4A)',
-            fontWeight: 700,
-            fontSize: '14px',
-          }}
-        >
-          {labelRow5}
-        </div>
-        <div style={{ color, fontWeight, fontSize: '14px' }}>{row5}</div>
       </div>
       <div
         style={{
@@ -447,6 +427,27 @@ export const RenderTotalMain = ({ companyInfo, paymentFomoPay, color }) => {
           </div>
         </div>
       )}
+      {paymentFomoPay?.deliveryFee > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              color: 'var(--text-color-primary, #343A4A)',
+            }}
+          >
+            Delivery Fee
+          </div>
+          <div style={{ color: 'black', fontWeight: 700, fontSize: '14px' }}>
+            {getCurrencyHelper(paymentFomoPay?.deliveryFee, companyInfo)}
+          </div>
+        </div>
+      )}
 
       <hr style={{ backgroundColor: '#D6D6D6', margin: '6px 0px' }} />
       <div
@@ -684,11 +685,6 @@ const AwaitingPayment = () => {
                   date: changeFormatDateDefault,
                   time: paymentFomoPay?.orderActionTimeSlot,
                 },
-                labelRow5: 'Delivery Fee',
-                row5: getCurrencyHelper(
-                  paymentFomoPay?.deliveryFee,
-                  companyInfo
-                ),
                 color: 'black',
                 fontWeight: 700,
               })}
@@ -837,7 +833,9 @@ const AwaitingPayment = () => {
                 color: 'black',
                 fontWeight: 700,
                 labelRow2: 'Delivery Address',
-                row2: paymentFomoPay?.deliveryAddress?.addressName,
+                row2: paymentFomoPay?.deliveryAddress?.addressName
+                  ? paymentFomoPay?.deliveryAddress?.addressName
+                  : paymentFomoPay?.deliveryAddress?.streetName,
                 labelRow3: 'Delivery Provider',
                 row3: paymentFomoPay?.deliveryProvider,
                 labelRow4: 'Delivery  Date & Time',
