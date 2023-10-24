@@ -437,6 +437,9 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
     }
+    if (!isEmptyObject(props.useSVC)) {
+      price = price - props.useSVC.paymentAmount;
+    }
 
     if (price < 0) {
       return 0;
