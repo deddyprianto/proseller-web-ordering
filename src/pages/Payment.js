@@ -450,16 +450,15 @@ const Payment = ({ ...props }) => {
   const handlePaymentCardPrice = () => {
     let price = props.basket?.totalNettAmount || 0;
 
-    if (!isEmptyObject(useSVCPayment)) {
-      price = price - useSVCPayment.paymentAmount;
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
     }
-
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
     }
 
-    if (!isEmptyObject(props.dataVoucher)) {
-      price = props.dataVoucher.total;
+    if (!isEmptyObject(useSVCPayment)) {
+      price = price - useSVCPayment.paymentAmount;
     }
 
     if (price === 0) {
