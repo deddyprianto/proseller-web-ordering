@@ -437,6 +437,9 @@ const Payment = ({ ...props }) => {
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
     }
+    if (!isEmptyObject(useSVCPayment)) {
+      price = price - useSVCPayment.paymentAmount;
+    }
 
     if (price < 0) {
       return 0;
@@ -447,16 +450,15 @@ const Payment = ({ ...props }) => {
   const handlePaymentCardPrice = () => {
     let price = props.basket?.totalNettAmount || 0;
 
-    if (!isEmptyObject(useSVCPayment)) {
-      price = price - useSVCPayment.paymentAmount;
+    if (!isEmptyObject(props.dataVoucher)) {
+      price = props.dataVoucher.total;
     }
-
     if (!isEmptyObject(selectedPoint)) {
       price = price - selectedPoint.paymentAmount;
     }
 
-    if (!isEmptyObject(props.dataVoucher)) {
-      price = props.dataVoucher.total;
+    if (!isEmptyObject(useSVCPayment)) {
+      price = price - useSVCPayment.paymentAmount;
     }
 
     if (price === 0) {
@@ -500,12 +502,12 @@ const Payment = ({ ...props }) => {
 
   useEffect(() => {
     const price = handlePrice();
+    setUseSVCPayment(props.useSVC);
     setSelectedPoint(props.selectedPoint);
     setSelectedVouchers(props.selectedVoucher);
     getCampaignPoints();
     getSVCData();
     setTotalPrice(price);
-    setUseSVCPayment(props.useSVC);
     props.dispatch(PaymentAction.setData(price, 'SET_TOTAL_PAYMENT_AMOUNT'));
     if (!isEmptyObject(props.selectedPaymentCard) && price === 0) {
       handleRemovePaymentCard();
@@ -513,6 +515,7 @@ const Payment = ({ ...props }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     props.useSVC,
+    useSVCPayment,
     selectedPoint,
     props.selectedVoucher,
     props.selectedPoint,
@@ -1360,13 +1363,11 @@ const Payment = ({ ...props }) => {
     }
 
     if (!isEmptyObject(paymentCardFomoPayDetail)) {
-      const totalWithSVC = totalPrice - (useSVCPayment.paymentAmount || 0);
-
       const dataPaymentMethod = {
         paymentID: paymentCardFomoPayDetail.paymentID,
         paymentName: paymentCardFomoPayDetail.paymentName,
         paymentType: paymentCardFomoPayDetail.paymentType,
-        paymentAmount: Number(totalWithSVC),
+        paymentAmount: totalPrice,
       };
 
       payload.payments.push(dataPaymentMethod);
