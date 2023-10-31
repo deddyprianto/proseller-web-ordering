@@ -24,54 +24,58 @@ const RenderQrCode = ({
   setIsLoadingDownloadImage,
   isLoadingDownloadImage,
 }) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'column',
-      }}
-    >
-      <img
-        height={256}
-        width={256}
-        alt='qrcode fomopay'
-        src={paymentFomoPay?.action?.url}
-      />
+  if (paymentFomoPay.status === 'PENDING_PAYMENT') {
+    return (
       <div
-        onClick={() => {
-          downloadImage(
-            paymentFomoPay?.action?.url,
-            'qrcode.jpg',
-            setIsLoadingDownloadImage
-          );
-          console.log('donwload success');
-        }}
         style={{
-          width: '256px',
-          padding: '5px 16px',
-          borderRadius: '8px',
-          color: color.primary,
-          fontWeight: 500,
-          cursor: 'pointer',
-          fontSize: '14px',
-          border: `1px solid ${color.primary}`,
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
         }}
       >
+        <img
+          height={256}
+          width={256}
+          alt='qrcode fomopay'
+          src={paymentFomoPay?.action?.url}
+        />
         <div
+          onClick={() => {
+            downloadImage(
+              paymentFomoPay?.action?.url,
+              'qrcode.jpg',
+              setIsLoadingDownloadImage
+            );
+            console.log('donwload success');
+          }}
           style={{
-            width: '100%',
-            textAlign: 'center',
-            backgroundColor: 'white',
+            width: '256px',
+            padding: '5px 16px',
+            borderRadius: '8px',
+            color: color.primary,
+            fontWeight: 500,
+            cursor: 'pointer',
+            fontSize: '14px',
+            border: `1px solid ${color.primary}`,
           }}
         >
-          {isLoadingDownloadImage
-            ? 'Please wait...'
-            : 'SAVE QR CODE TO GALLERY'}
+          <div
+            style={{
+              width: '100%',
+              textAlign: 'center',
+              backgroundColor: 'white',
+            }}
+          >
+            {isLoadingDownloadImage
+              ? 'Please wait...'
+              : 'SAVE QR CODE TO GALLERY'}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return null;
+  }
 };
 
 const SeeOrderDetail = ({ paymentFomoPay }) => {
@@ -321,6 +325,7 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
         targetDate={paymentFomoPay?.action?.expiry}
         color={color}
         backgroundColor='#CF3030'
+        statusPayment={paymentFomoPay?.status}
       />
     );
   };
@@ -380,13 +385,15 @@ const SeeOrderDetail = ({ paymentFomoPay }) => {
               setIsLoadingDownloadImage={setIsLoadingDownloadImage}
               isLoadingDownloadImage={isLoadingDownloadImage}
             />
-            <hr
-              style={{
-                height: '2px',
-                backgroundColor: '#D6D6D6',
-                margin: '16px 0px',
-              }}
-            />
+            {paymentFomoPay.status === 'PENDING_PAYMENT' && (
+              <hr
+                style={{
+                  height: '2px',
+                  backgroundColor: '#D6D6D6',
+                  margin: '16px 0px',
+                }}
+              />
+            )}
             {paymentFomoPay?.details.map((item) => {
               return (
                 <>

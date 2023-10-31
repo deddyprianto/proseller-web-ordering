@@ -40,7 +40,7 @@ const RenderHeader = ({ color, history, label, route }) => {
       />
       <div
         style={{
-          fontWeight: 500,
+          fontWeight: 600,
           fontSize: '16px',
           color: color.primary,
           justifySelf: 'center',
@@ -594,6 +594,7 @@ const AwaitingPayment = () => {
         <CountDownTime
           targetDate={paymentFomoPay?.action?.expiry}
           color={color}
+          statusPayment={paymentFomoPay?.status}
         />
         <div
           onClick={() => {

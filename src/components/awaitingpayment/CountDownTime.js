@@ -80,7 +80,7 @@ function CountdownTimer({
   );
 }
 
-function CountDownTime({ targetDate, color, backgroundColor }) {
+function CountDownTime({ targetDate, color, backgroundColor, statusPayment }) {
   const history = useHistory();
 
   const [countdownComplete, setCountdownComplete] = useState(false);
@@ -90,23 +90,24 @@ function CountDownTime({ targetDate, color, backgroundColor }) {
   };
 
   useEffect(() => {
-    if (countdownComplete) {
-    localStorage.removeItem('RESPONSE_FOMOPAY');
+    if (statusPayment === 'PENDING_PAYMENT' && countdownComplete) {
+      localStorage.removeItem('RESPONSE_FOMOPAY');
       history.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countdownComplete]);
-
-  return (
-    <div>
+  }, [countdownComplete, statusPayment]);
+  if (statusPayment === 'PENDING_PAYMENT') {
+    return (
       <CountdownTimer
         targetDate={targetDate}
         onCountdownComplete={handleCountdownComplete}
         color={color}
         backgroundColor={backgroundColor}
       />
-    </div>
-  );
+    );
+  } else {
+    return null;
+  }
 }
 
 export default CountDownTime;
