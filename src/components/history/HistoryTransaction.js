@@ -109,7 +109,7 @@ const HistoryTransaction = ({ countryCode, isAppointment, color }) => {
                 item
                 xs={4}
                 md={6}
-                key={items}
+                key={items.id}
                 data-toggle='modal'
                 data-target='#detail-transaction-modal'
                 onClick={() => setDetailData(items)}

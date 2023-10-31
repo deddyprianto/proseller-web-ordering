@@ -339,7 +339,9 @@ class Basket extends Component {
     }
 
     if (dataBasket && dataBasket.outlet !== undefined) {
-      if (!orderingMode) orderingMode = this.state.orderingMode;
+      if (!orderingMode) {
+        orderingMode = this.state.orderingMode;
+      }
       dataBasket.orderingMode = orderingMode;
       const isOutletChanged = await localStorage.getItem(
         `${config.prefix}_isOutletChanged`
@@ -1572,25 +1574,20 @@ class Basket extends Component {
   };
 
   render() {
-    let {
-      loadingShow,
-      dataBasket,
-      countryCode,
-      viewCart,
-      storeDetail,
-      paymentResponse,
-    } = this.state;
+    let { loadingShow, countryCode, viewCart, storeDetail } = this.state;
+
+    let dataBasket = encryptor.decrypt(
+      JSON.parse(localStorage.getItem(`${config.prefix}_dataBasket`))
+    );
+
     let { isLoggedIn, product } = this.props;
     if (product && storeDetail && !storeDetail.product) {
       storeDetail.product = product;
       this.setState({ storeDetail });
     }
 
-    if (
-      dataBasket?.action?.name === 'PAYNOW' ||
-      paymentResponse?.action?.name === 'PAYNOW'
-    ) {
-      return <SeeOrderDetail paymentFomoPay={dataBasket || paymentResponse} />;
+    if (dataBasket?.action?.name === 'PAYNOW') {
+      return <SeeOrderDetail paymentFomoPay={dataBasket} />;
     } else {
       return (
         <div
