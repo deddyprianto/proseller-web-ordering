@@ -9,7 +9,7 @@ import TabPending from './TabPending';
 import TabStampDetails from './TabStampDetails';
 
 const Tab = ({ tabs }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(1);
   const color = useSelector((state) => state.theme.color);
 
   const handleTabClick = (index) => {
@@ -80,10 +80,6 @@ const Modal = ({
 
   const tabs = [
     {
-      label: `Pending ${type === "point" ? "Points" : "Stamp"}`,
-      content: <TabPending type={type} />,
-    },
-    {
       label: `${type === "point" ? "Points" : "Stamp"} Details`,
       content:
         type === "point" ? (
@@ -94,6 +90,10 @@ const Modal = ({
         ) : (
           <TabStampDetails />
         ),
+    },
+    {
+      label: `Pending ${type === "point" ? "Points" : "Stamp"}`,
+      content: <TabPending type={type} />,
     },
   ];
 
