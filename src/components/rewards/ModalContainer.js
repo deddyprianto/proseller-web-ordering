@@ -80,9 +80,13 @@ const Modal = ({
 
   const tabs = [
     {
-      label: `${type === 'point' ? 'Points' : 'Stamp'} Details`,
+      label: `Pending ${type === "point" ? "Points" : "Stamp"}`,
+      content: <TabPending type={type} />,
+    },
+    {
+      label: `${type === "point" ? "Points" : "Stamp"} Details`,
       content:
-        type === 'point' ? (
+        type === "point" ? (
           <TabPointDetails
             campaignDescription={campaignDescription}
             detailPoint={detailPoint}
@@ -90,10 +94,6 @@ const Modal = ({
         ) : (
           <TabStampDetails />
         ),
-    },
-    {
-      label: `Pending ${type === 'point' ? 'Points' : 'Stamp'}`,
-      content: <TabPending type={type} />,
     },
   ];
 
