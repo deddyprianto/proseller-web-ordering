@@ -2013,9 +2013,21 @@ const ProductAddModal = ({
                 }}
               />
             ) : (
-              <Typography style={styles.productDescription}>
-                {product.description || productDetail?.description}
-              </Typography>
+              <Typography
+              paragraph
+              noWrap
+              gutterBottom={false}
+              sx={{
+                whiteSpace: 'pre-line',
+                marginBottom: 0,
+                fontWeight: 500,
+                fontSize: '12px',
+                color: props.color.font,
+                display: '-webkit-box',
+              }}
+             >
+             {product.description || productDetail?.description}
+             </Typography>             
             )}
           </div>
 
