@@ -1971,7 +1971,19 @@ const ProductAddModal = ({
       <DialogContent style={styles.backgroundColor}>
         <div style={styles.header}>
         {renderCloseButtonGadgetSize()}
-        <SwiperSlideImageCustom images={product.imageFiles}/>
+        {
+          !isEmptyArray(product.imageFiles) ? (
+            <SwiperSlideImageCustom images={product.imageFiles}/>
+          ) :(
+            <img
+            style={styles.imageSize}
+            src={renderImageProduct()}
+            alt={product.name}
+            title={product.name}
+          />
+          )
+        }
+
 
 
           <div style={styles.fullWidth}>
