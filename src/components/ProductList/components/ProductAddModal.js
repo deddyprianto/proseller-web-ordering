@@ -26,6 +26,11 @@ import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import { isEmpty } from 'helpers/utils';
 import commonAlert from 'components/template/commonAlert';
 
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss';
+import './style/swiperstyle.css';
+import { Pagination, Navigation } from 'swiper';
+
 import { OrderAction } from 'redux/actions/OrderAction';
 import Swal from 'sweetalert2';
 import { isEmptyArray, isEmptyObject } from 'helpers/CheckEmpty';
@@ -51,6 +56,25 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
+
+const SwiperSlideImageCustom = ({ images }) => {
+  return (
+    <Swiper
+        pagination={{
+          type: 'fraction',
+        }}
+        navigation={true}
+        modules={[Pagination, Navigation]}
+      >
+        {images?.map((item) => (
+          <SwiperSlide key={item}>
+            <img src={item} alt='images' />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+     
+  );
+};
 
 const ProductAddModal = ({
   open,
@@ -319,8 +343,9 @@ const ProductAddModal = ({
     displayFlex: { display: 'flex' },
     buttonCloseGadgetSize: {
       position: 'absolute',
-      top: 0,
-      right: 0,
+      top: 10,
+      right: 10,
+      zIndex:9999
     },
     buttonIconClose: {
       height: 33,
@@ -1945,16 +1970,9 @@ const ProductAddModal = ({
     >
       <DialogContent style={styles.backgroundColor}>
         <div style={styles.header}>
-          <div style={styles.imageAndButtonCloseGadgetSize}>
-            <img
-              style={styles.imageSize}
-              src={renderImageProduct()}
-              alt={product.name}
-              title={product.name}
-            />
+        {renderCloseButtonGadgetSize()}
+        <SwiperSlideImageCustom images={product.imageFiles}/>
 
-            {renderCloseButtonGadgetSize()}
-          </div>
 
           <div style={styles.fullWidth}>
             <div
