@@ -186,16 +186,16 @@ const Home = () => {
   }, []);
 
   const renderLayout = () => {
-    if (settingCategoryHeader?.settingValue === 'CATEGORY_ONLY') {
+    if (settingCategoryHeader?.settingValue === "WITH_CATEGORY_PAGE") {
       return <LayoutTypeA />;
     }
 
-    if (settingCategoryHeader?.settingValue === 'CATEGORY_WITH_ALL_PRODUCT') {
+    if (settingCategoryHeader?.settingValue === "CATEGORY_WITH_ALL_PRODUCT") {
       return <LayoutTypeB />;
     }
 
     return (
-      <div style={{ padding: gadgetScreen ? '0 3%' : '0 10%' }}>
+      <div style={{ padding: gadgetScreen ? "0 3%" : "0 10%" }}>
         <ProductList />
       </div>
     );
