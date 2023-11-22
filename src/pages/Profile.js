@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 import { connect } from 'react-redux';
-
+import imageEmptyState from 'assets/images/imageEmptyState.png'
 import config from 'config';
 
 const RewardsPage = loadable(() => import('../components/rewards'));
@@ -84,14 +84,16 @@ class Profile extends Component {
               style={{ display: 'flex', justifyContent: 'center' }}
             >
               <main id='main' className='site-main' style={{ width: '100%' }}>
-                <div>
+                <div style={{display:"flex", justifyContent:'center', alignItems:'center'}}>
                   <img
-                    src={config.url_emptyImage}
+                    src={imageEmptyState}
                     alt='is empty'
-                    style={{ marginTop: 30 }}
+                    width={246}
+                    height={246}
+                    style={{ marginTop: 30}}
                   />
-                  <div style={{ textAlign: 'center' }}>Please login first</div>
                 </div>
+                  <div style={{ textAlign: 'center' ,marginTop:"10px"}}>You’ve been logged out.Please log back in.</div>
               </main>
             </div>
           </div>
