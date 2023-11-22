@@ -191,6 +191,7 @@ const HeaderWebOrdering = () => {
   const [appointmentMenu, setAppointmentMenu] = useState(false);
   const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
+  const [settingOnlineOrdering, setSettingOnlineOrdering] = useState()
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { defaultOutlet } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
@@ -210,6 +211,13 @@ const HeaderWebOrdering = () => {
     const settingAppoinment = setting.find((items) => {
       return items.settingKey === 'EnableAppointment';
     });
+    const settingOnlineOrdering = setting.find((items) => {
+      return items.settingKey === 'EnableOrdering';
+    });
+
+    if (settingOnlineOrdering?.settingValue) {
+      setSettingOnlineOrdering(settingOnlineOrdering.settingValue);
+    }
     if (settingAppoinment?.settingValue) {
       setAppointmentMenu(settingAppoinment.settingValue);
     }
@@ -448,7 +456,7 @@ const HeaderWebOrdering = () => {
   };
 
   const renderBasket = () => {
-    if (enableOrdering && location.pathname !== '/outlets') {
+    if (settingOnlineOrdering && location.pathname !== '/outlets') {
       return (
         <Link
           id='cart-icon'
@@ -483,6 +491,8 @@ const HeaderWebOrdering = () => {
           </Badge>
         </Link>
       );
+    }else{
+      return <div style={{visibility:'hidden'}}></div>
     }
   };
 
