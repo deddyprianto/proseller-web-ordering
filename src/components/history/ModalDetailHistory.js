@@ -40,6 +40,7 @@ class ModalDetailHistory extends Component {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
+                key={i}
               >
                 <div style={{ fontSize: 14, fontWeight: 'bold' }}>
                   {detail.payments[i].paymentType}
@@ -614,7 +615,7 @@ class ModalDetailHistory extends Component {
                       <div style={{ fontSize: 14, textAlign: 'left' }}>
                         PAYMENT TYPE
                       </div>
-                      {detail.paymentType && (
+                      {detail.paymentType && detail.paymentCard && (
                         <div
                           style={{
                             marginLeft: 10,
