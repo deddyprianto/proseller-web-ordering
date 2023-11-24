@@ -93,7 +93,10 @@ class Profile extends Component {
                     style={{ marginTop: 30}}
                   />
                 </div>
-                  <div style={{ textAlign: 'center' ,marginTop:"10px"}}>You’ve been logged out.Please log back in.</div>
+                <div style={{ textAlign: 'center', marginTop:"10px"}}>
+                  <div style={{fontWeight: 700}}>Welcome aboard!</div>
+                  <span style={{fontSize: '14px'}}>Please log in to access all features.</span>
+                </div>
               </main>
             </div>
           </div>
