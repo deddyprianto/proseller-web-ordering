@@ -71,14 +71,16 @@ class Profile extends Component {
     if (!this.props.isLoggedIn) {
       return (
         <div
-          className='col-full'
           style={{
-            marginTop: config.prefix === 'emenu' ? 90 : 110,
-            marginBottom: 50,
             padding: 0,
+            margin:0,
+            height:'100vh',
+            display:'flex',
+            justifyContent:'center',
+            alignItems:'center'
           }}
         >
-          <div id='primary' className='content-area'>
+          <div id='primary'>
             <div
               className='stretch-full-width'
               style={{ display: 'flex', justifyContent: 'center' }}
