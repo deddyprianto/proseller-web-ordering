@@ -9,6 +9,7 @@ import IconsArrowLeft from 'assets/images/IconsArrowLeft.png';
 import fontStyleCustom from 'pages/GuestCheckout/style/styles.module.css';
 import Button from '@mui/material/Button';
 import { IconPlace, renderIconInformation } from 'assets/iconsSvg/Icons';
+import { renderOutletInfo } from 'helpers/headerOutletCart';
 const mapStateToProps = (state) => {
   return {
     basket: state.order.basket,
@@ -219,33 +220,10 @@ const ProductCartList = ({ ...props }) => {
     }
   };
 
-  const renderOutletInfo = () => {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          borderBottom: '1px solid #C1C1C1',
-          margin: '0 -15px 20px',
-          padding: '0 15px 15px',
-        }}
-      >
-        <div style={{ color: '#9D9D9D' }}>You are ordering from</div>
-        <div
-          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
-        >
-          <IconPlace stroke={props.color.primary} />{' '}
-          <span style={{ marginLeft: '8px', color: props.color.primary }}>
-            <strong>{props.defaultOutlet?.name}</strong>
-          </span>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div>
       {renderTitleNameForCart()}
-      {renderOutletInfo()}
+      {renderOutletInfo(props.defaultOutlet?.name,props.color.primary,IconPlace)}
       {renderTextInformationUnAvailabeItem()}
       {renderBasketItems()}
       {renderLabelNeedAnythingElse()}

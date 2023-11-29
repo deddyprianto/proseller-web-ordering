@@ -59,6 +59,7 @@ import {
   RenderTableMode,
 } from 'components/componentHelperCart';
 import alertWarning from 'components/template/alertWarning';
+import { renderOutletInfo } from 'helpers/headerOutletCart';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -2665,36 +2666,13 @@ const CartGuestCheckout = () => {
     }
   };
 
-  const renderOutletInfo = () => {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          borderBottom: '1px solid #C1C1C1',
-          margin: '0 -15px 20px',
-          padding: '0 15px 15px',
-        }}
-      >
-        <div style={{ color: '#9D9D9D' }}>You are ordering from</div>
-        <div
-          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
-        >
-          <IconPlace stroke={color.primary} />{' '}
-          <span style={{ marginLeft: '8px', color: color.primary }}>
-            <strong>{defaultOutlet?.name}</strong>
-          </span>
-        </div>
-      </div>
-    );
-  };
-
   const renderCartForGuestCheckoutMode = () => {
     if (gadgetScreen) {
       return (
         <>
           <div style={styles.rootCartGadgetSize}>
             {renderTitleNameForCart()}
-            {renderOutletInfo()}
+            {renderOutletInfo(defaultOutlet?.name,color.primary,IconPlace)}
             {renderTextInformationUnAvailabeItem()}
             {renderCartProductList()}
             {renderLabelNeedAnythingElse()}
@@ -2746,6 +2724,7 @@ const CartGuestCheckout = () => {
             }}
           >
             {renderTitleNameForCart()}
+            {renderOutletInfo(defaultOutlet?.name,color.primary,IconPlace)}
             {renderLabelNeedAnythingElse()}
             {renderTextInformationUnAvailabeItem()}
             {renderCartProductList()}
