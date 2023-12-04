@@ -130,6 +130,7 @@ const MyVoucherList = ({ ...props }) => {
             <Voucher
               item={voucher.values[0]}
               quantity={voucher.values.length}
+              voucherValues={voucher.values}
             />
           </Grid>
         );

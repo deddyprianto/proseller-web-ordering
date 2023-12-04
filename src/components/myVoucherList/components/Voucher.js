@@ -10,6 +10,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import dateFormatter from 'helpers/dateFormatter';
 import { PaymentAction } from 'redux/actions/PaymentAction';
 import PicVoucherDefault from 'assets/images/voucher-icon.png';
+import commonAlert from "components/template/commonAlert";
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -141,7 +142,7 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   const history = useHistory();
 
-  const handleSelectVoucher = async () => {
+  const applyVoucher = () => {
     props.dispatch(
       PaymentAction.setData(
         [
@@ -150,17 +151,33 @@ const Voucher = ({ item, quantity, ...props }) => {
             name: item.name,
             isVoucher: true,
             voucherId: item.id,
-            paymentType: 'voucher',
+            paymentType: "voucher",
             serialNumber: item.serialNumber,
             cannotBeMixed: item.validity?.cannotBeMixed,
             capAmount: item?.capAmount,
             applyToLowestItem: item?.applyToLowestItem,
           },
         ],
-        'SELECT_VOUCHER'
+        "SELECT_VOUCHER"
       )
     );
-    history.push('/payment');
+    history.push("/payment");
+  };
+
+  const handleSelectVoucher = async () => {
+    const isVoucher = props.voucherValues.find(
+      (item) => item?.earnedFrom?.source === "TRANSACTION"
+    );
+    if (isVoucher) {
+      return commonAlert({
+        color: props.color.primary,
+        title: "Voucher Redemption Terms",
+        content:
+          "Redeeming the voucher from a previous transaction for your current one will make the previous transaction non-refundable.",
+        onConfirm: applyVoucher,
+      });
+    }
+    applyVoucher();
   };
 
   const renderImageProduct = (item) => {
@@ -178,7 +195,7 @@ const Voucher = ({ item, quantity, ...props }) => {
       return (
         <div style={styles.rootDescription}>
           <div style={styles.iconDescription}>
-            <i className='fa fa-commenting-o' />
+            <i className="fa fa-commenting-o" />
           </div>
           <Typography style={styles.typographyDescription}>
             {item?.voucherDesc}
@@ -201,7 +218,7 @@ const Voucher = ({ item, quantity, ...props }) => {
   };
 
   const renderDiscountValue = () => {
-    if (item.voucherType === 'discAmount') {
+    if (item.voucherType === "discAmount") {
       return (
         <Typography style={styles.typographyDiscount}>
           Discount ${item?.voucherValue}
@@ -230,12 +247,12 @@ const Voucher = ({ item, quantity, ...props }) => {
 
   return (
     <>
-      <Box component='div' sx={styles.root} onClick={handleSelectVoucher}>
+      <Box component="div" sx={styles.root} onClick={handleSelectVoucher}>
         <div onClick={handleSelectVoucher} style={styles.rootBody}>
           <img
             style={styles.image}
             src={renderImageProduct(item)}
-            alt={item?.name || ''}
+            alt={item?.name || ""}
             title={item?.name}
           />
         </div>
