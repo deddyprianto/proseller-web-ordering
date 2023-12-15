@@ -336,7 +336,7 @@ const Referral = () => {
               padding: "10px 0px",
             }}
           >
-            {dataReferralInfo?.referral}
+            {dataReferralInfo?.referral ? dataReferralInfo?.referral :'Loading...'}
           </div>
           <CopyToClipboard
             text={dataReferralInfo?.referral}
