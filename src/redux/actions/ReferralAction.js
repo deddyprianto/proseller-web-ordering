@@ -9,13 +9,31 @@ function getReferral(payload) {
   };
 }
 
+function getReferralList() {
+  return async () => {
+    let response = await CRMService.api('GET', null, 'referral', 'bearer');
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
+function getReferralInfo() {
+  return async () => {
+    let response = await CRMService.api("GET", null, "referral-info", "bearer");
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
 function createReferral(payload) {
   return async () => {
     let response = await CRMService.api(
-      'POST',
+      "POST",
       payload,
-      'referral/create',
-      'bearer'
+      "referral/create",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -26,10 +44,10 @@ function createReferral(payload) {
 function resendReferral(id) {
   return async () => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       null,
-      'referral/resend/' + id,
-      'bearer'
+      "referral/resend/" + id,
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -40,10 +58,10 @@ function resendReferral(id) {
 function deleteReferral(id) {
   return async () => {
     let response = await CRMService.api(
-      'DELETE',
+      "DELETE",
       null,
-      'referral/delete/' + id,
-      'bearer'
+      "referral/delete/" + id,
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -54,10 +72,10 @@ function deleteReferral(id) {
 function getReferralById(id) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       null,
-      'referral/' + id,
-      'bearer'
+      "referral/" + id,
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -65,17 +83,17 @@ function getReferralById(id) {
       response.data &&
       response.data.list &&
       response.data.list[0] &&
-      response.data.list[0].signUpStatus !== 'DONE'
+      response.data.list[0].signUpStatus !== "DONE"
     ) {
       console.log(response.data.list[0]);
       if (response.Data.list[0].email) {
         dispatch({
-          type: 'SET_DEFAULT_EMAIL',
+          type: "SET_DEFAULT_EMAIL",
           data: response.data.list[0].email,
         });
       } else {
         dispatch({
-          type: 'SET_DEFAULT_PHONE_NUMBER',
+          type: "SET_DEFAULT_PHONE_NUMBER",
           data: response.data.list[0].mobileNo,
         });
       }
@@ -92,4 +110,6 @@ export const ReferralAction = {
   createReferral,
   resendReferral,
   deleteReferral,
+  getReferralInfo,
+  getReferralList
 };

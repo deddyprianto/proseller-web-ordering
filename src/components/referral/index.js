@@ -1,402 +1,651 @@
-import React, { Component } from 'react';
-import { Col, Row, Button, Table } from 'reactstrap';
-import Shimmer from 'react-shimmer-effect';
-import { ReferralAction } from '../../redux/actions/ReferralAction';
-import { connect } from 'react-redux';
-import SendIcon from '@material-ui/icons/Send';
-import ModalReferral from './ModalReferral';
-import DeleteIcon from '@material-ui/icons/Delete';
-import LoadingOverlayCustom from 'components/loading/LoadingOverlay';
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  IconCopyCode,
+  IconInformation,
+  IconIssuedPrice,
+  IconNoReferredFriend,
+  IconPendingPrice,
+} from "./iconComponentReferral";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import IconCheckClipBoard from "assets/images/icon-check.png";
+import { useHistory } from "react-router-dom";
+import { ReferralAction } from "redux/actions/ReferralAction";
+import LoadingOverlayCustom from "components/loading/LoadingOverlay";
+import screen from "hooks/useWindowSize";
+import { isEmptyArray } from "helpers/CheckEmpty";
 
-const Swal = require('sweetalert2');
+const Referral = () => {
+  const responsiveDesign = screen();
+  const gadgetScreen = responsiveDesign.width < 980;
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataReferralInfo, setDataReferralInfo] = useState([]);
+  const [referralList, setReferralList] = useState([]);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-class Referral extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loadingShow: true,
-      isLoading: false,
-      referral: null,
-      modeInvitation: 'mobileno',
-      address: '',
-      mobileNo: '',
+  const [copyRefNo, setCopyRefNo] = useState(false);
+
+  const color = useSelector((state) => state.theme.color);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await dispatch(ReferralAction.getReferralInfo());
+        setDataReferralInfo(response?.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
     };
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const loadDataReferralList = async () => {
+      try {
+        setIsLoading(true);
+        const response = await dispatch(ReferralAction.getReferralList());
+        setReferralList(response?.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadDataReferralList();
+  }, []);
+
+  console.log(referralList);
+
+  useEffect(() => {
+    const clear = setTimeout(() => {
+      setCopyRefNo(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(clear);
+    };
+  }, [copyRefNo]);
+
+  // some function
+  function formatDate(inputDate) {
+    const date = new Date(inputDate);
+
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+
+    return date.toLocaleString("en-US", options);
   }
 
-  viewShimmer = (isHeight = 100) => {
+  function maskName(fullName) {
+    const parts = fullName.split(" ");
+    let maskedName = parts
+      .map((part) => {
+        return part.charAt(0).toUpperCase() + "*".repeat(part.length - 1);
+      })
+      .join(" ");
+
+    return maskedName;
+  }
+
+  const renderHeader = () => {
     return (
-      <Shimmer>
-        <div
+      <div
+        onClick={() => history.goBack()}
+        style={{
+          alignSelf: "stretch",
+          backgroundColor: "var(--brand-color-tertiary, #F2F2F2)",
+          display: "flex",
+          gap: "5px",
+          padding: "8px 80px 8px 16px",
+          boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+        }}
+      >
+        <img
+          loading="lazy"
+          src="https://cdn.builder.io/api/v1/image/assets/TEMP/7de4038b825f5fb1a0f49d52025ab2b9f3049a4a1915f7533987a48257cc1626?apiKey=7ef2d401d2464e0bb0e4708e7eee43f9&"
           style={{
-            width: '100%',
-            height: isHeight,
-            alignSelf: 'center',
-            borderRadius: '8px',
-            marginBottom: 10,
+            aspectRatio: "1",
+            objectFit: "contain",
+            objectPosition: "center",
+            width: "24px",
+            overflow: "hidden",
+            maxWidth: "100%",
           }}
         />
-      </Shimmer>
+        <div
+          style={{
+            justifyContent: "center",
+            color: "var(--text-color-primary, #343A4A)",
+            alignSelf: "center",
+            flexGrow: "1",
+            whiteSpace: "nowrap",
+            margin: "auto 0",
+            font: "500 16px Plus Jakarta Sans, sans-serif ",
+          }}
+        >
+          Back
+        </div>
+      </div>
     );
   };
 
-  componentDidMount = async () => {
-    this.getDataReferral();
-  };
+  const renderBoxReferral = () => {
+    const senderBenefit = dataReferralInfo?.senderBenefit;
+    const receiverBenefits = dataReferralInfo?.receiverBenefits;
 
-  getDataReferral = async () => {
-    let response = await this.props.dispatch(
-      ReferralAction.getReferral({ customerId: this.props.account.signAs })
-    );
-    if (response.ResultCode === 200) this.setState({ referral: response.Data });
-
-    // this.state.loadingShow = false
-    this.setState({ loadingShow: false });
-  };
-
-  getStatusReferral = (item) => {
-    if (item.signUpStatus === 'PENDING' && item.purchaseStatus === 'PENDING') {
-      return 'Pending';
-    }
-    if (item.signUpStatus === 'DONE' && item.purchaseStatus === 'PENDING') {
-      return 'Customer Register';
-    }
-    if (item.signUpStatus === 'DONE' && item.purchaseStatus === 'DONE') {
-      return 'Customer Purchased';
-    }
-  };
-
-  sendInvitation = async () => {
-    const { modeInvitation, address, mobileNo } = this.state;
-    let payload = {};
-    const domainName = window.location.host;
-    this.setState({ isLoading: true });
-    if (modeInvitation === 'email') {
-      payload = { email: address, domain: domainName };
-    } else {
-      payload = { mobileNo: `+${mobileNo}`, domain: domainName };
-    }
-
-    let response = await this.props.dispatch(
-      ReferralAction.createReferral(payload)
-    );
-
-    if (response.Data.status) {
-      this.setState({ isLoading: false });
-      Swal.fire({
-        icon: 'success',
-        timer: 1500,
-        title: 'Referral Sent!',
-        showConfirmButton: false,
-      });
-
-      await this.getDataReferral();
-
-      if (payload.mobileNo !== undefined) {
-        window.open(response.Data.url);
-      }
-    } else {
-      let message = 'Please try again.';
-      if (response.message !== undefined) message = response.message;
-      this.setState({ isLoading: false });
-      Swal.fire({
-        icon: 'error',
-        timer: 1500,
-        title: message,
-        showConfirmButton: false,
-      });
-    }
-
-    this.setState({ address: '', mobileNo: '' });
-  };
-
-  resendReferral = (referral) => {
-    Swal.fire({
-      title: 'Resend Referral Code',
-      text: 'Are you sure want to resend this referral code ?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Resend',
-      cancelButtonText: 'Cancel',
-    }).then(async (result) => {
-      if (result.value) {
-        this.setState({ isLoading: true });
-        try {
-          let response = await this.props.dispatch(
-            ReferralAction.resendReferral(referral.id)
-          );
-
-          if (response.Data.status) {
-            this.setState({ isLoading: false });
-            Swal.fire({
-              icon: 'success',
-              timer: 1500,
-              title: 'Referral Sent!',
-              showConfirmButton: false,
-            });
-
-            await this.getDataReferral();
-
-            if (referral.mobileNo !== undefined) {
-              window.open(response.Data.url);
-            }
-          } else {
-            let message = 'Please try again.';
-            if (response.message !== undefined) message = response.message;
-            this.setState({ isLoading: false });
-            Swal.fire({
-              icon: 'error',
-              timer: 1500,
-              title: message,
-              showConfirmButton: false,
-            });
-          }
-        } catch (err) {
-          console.log(err);
-          let error = 'Something went wrong, please try again.';
-          this.setState({ isLoading: false });
-          Swal.fire({
-            icon: 'error',
-            timer: 1500,
-            title: error,
-            showConfirmButton: false,
-          });
-        }
-      }
-    });
-  };
-
-  cancelReferral = (referral) => {
-    Swal.fire({
-      title: 'Cancel Invitation ?',
-      text: 'Are you sure want to cancel this invitation ?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ok',
-      cancelButtonText: 'Cancel',
-    }).then(async (result) => {
-      if (result.value) {
-        this.setState({ isLoading: true });
-        try {
-          let response = await this.props.dispatch(
-            ReferralAction.deleteReferral(referral.id)
-          );
-
-          if (response.Data.status) {
-            this.setState({ isLoading: false });
-            Swal.fire({
-              icon: 'success',
-              timer: 1500,
-              title: 'Invitation has been cancelled!',
-              showConfirmButton: false,
-            });
-
-            await this.getDataReferral();
-          } else {
-            let message = 'Please try again.';
-            if (response.message !== undefined) message = response.message;
-            this.setState({ isLoading: false });
-            Swal.fire({
-              icon: 'error',
-              timer: 1500,
-              title: message,
-              showConfirmButton: false,
-            });
-          }
-        } catch (err) {
-          let error = 'Something went wrong, please try again.';
-          this.setState({ isLoading: false });
-          Swal.fire({
-            icon: 'error',
-            timer: 1500,
-            title: error,
-            showConfirmButton: false,
-          });
-        }
-      }
-    });
-  };
-
-  render() {
-    let {
-      loadingShow,
-      isLoading,
-      referral,
-      modeInvitation,
-      address,
-      mobileNo,
-    } = this.state;
     return (
-      <div className='col-full' style={{ marginTop: 120 }}>
-        <LoadingOverlayCustom active={isLoading} spinner />
-        <ModalReferral
-          modeInvitation={modeInvitation}
-          address={address}
-          mobileNo={mobileNo}
-          setModeInvite={(e) =>
-            this.setState({ modeInvitation: e.target.value })
-          }
-          changeAddress={(e) => this.setState({ address: e.target.value })}
-          changeMobileNo={(e) => this.setState({ mobileNo: e })}
-          sendInvitation={() => this.sendInvitation()}
-        />
-        <div id='primary' className='content-area'>
-          <div className='stretch-full-width'>
+      <div
+        style={{
+          justifyContent: "center",
+          alignItems: "flex-start",
+          alignSelf: "stretch",
+          borderRadius: "8px",
+          border: "1px dashed var(--grey-scale-color-grey-scale-3, #D6D6D6)",
+          boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.10)",
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px",
+          marginTop: "16px",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            color: "#000",
+            textAlign: "center",
+            alignSelf: "start",
+            whiteSpace: "nowrap",
+            font: "500 14px Plus Jakarta Sans, sans-serif ",
+          }}
+        >
+          As a sender you will get
+        </div>
+        {senderBenefit?.map((nameSender) => {
+          return (
             <div
+              key={nameSender}
               style={{
-                flexDirection: 'row',
-                position: 'fixed',
-                zIndex: 10,
-                width: '100%',
-                marginTop: -60,
-                boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
-                display: 'flex',
-                height: 40,
+                color: color.primary,
+                textAlign: "center",
+                alignSelf: "start",
+                marginTop: "4px",
+                whiteSpace: "nowrap",
+                font: "500 14px Plus Jakarta Sans, sans-serif ",
               }}
-              className='background-theme'
             >
-              <div
-                style={{ marginLeft: 10, fontSize: 16 }}
-                onClick={() => this.props.history.goBack()}
-              >
-                <i className='fa fa-chevron-left'></i> Back
-              </div>
+              <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
+                <li>{nameSender}</li>
+              </ul>
             </div>
-            <main
-              id='main'
-              className='site-main'
-              style={{ textAlign: 'center' }}
-            >
-              {loadingShow && (
-                <Row>
-                  <Col sm={6}>{this.viewShimmer()}</Col>
-                  <Col sm={6}>{this.viewShimmer()}</Col>
-                </Row>
-              )}
-              {referral && !loadingShow && (
-                <div style={{ marginBottom: 20 }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 20,
-                    }}
-                  >
-                    <div
-                      className='customer-group-name'
-                      style={{ fontWeight: 'bold' }}
-                    >
-                      {`Referral ( ${referral.amount}/${referral.capacity} )`}
-                    </div>
-                    <Button
-                      className='button'
-                      data-toggle='modal'
-                      data-target='#referral-modal'
-                      style={{
-                        width: 170,
-                        paddingLeft: 5,
-                        paddingRight: 5,
-                        borderRadius: 5,
-                        height: 40,
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                      disabled={
-                        referral.amount === referral.capacity ? true : false
-                      }
-                    >
-                      <SendIcon style={{ fontSize: 20, marginRight: 5 }} />
-                      Send New Invite
-                    </Button>
-                  </div>
+          );
+        })}
 
-                  {referral.list.length > 0 && (
-                    <Table responsive striped bordered style={{ fontSize: 11 }}>
-                      <thead>
-                        <tr style={{ textAlign: 'center' }}>
-                          <th style={{ verticalAlign: 'middle' }}>No.</th>
-                          <th style={{ verticalAlign: 'middle' }}>Contact</th>
-                          <th>Status</th>
-                          <th style={{ verticalAlign: 'middle' }}>
-                            <center>Action</center>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {referral.list.map((item, key) => (
-                          <tr key={key}>
-                            <td style={{ width: 5 }}> {key + 1} </td>
-                            <td>
-                              {' '}
-                              {item.email !== undefined
-                                ? item.email
-                                : item.mobileNo}{' '}
-                            </td>
-                            <td style={{ textAlign: 'center' }}>
-                              {' '}
-                              {this.getStatusReferral(item)}{' '}
-                            </td>
-                            <td style={{ width: 50 }}>
-                              <center>
-                                {item.signUpStatus === 'PENDING' && (
-                                  <div
-                                    style={{
-                                      marginLeft: -5,
-                                      marginRight: -5,
-                                      display: 'flex',
-                                      justifyContent: 'center',
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        color: 'green',
-                                        cursor: 'pointer',
-                                      }}
-                                      onClick={() => this.resendReferral(item)}
-                                    >
-                                      <SendIcon />
-                                    </div>
-                                    <div
-                                      style={{
-                                        marginLeft: 5,
-                                        color: '#c00a27',
-                                        cursor: 'pointer',
-                                      }}
-                                      onClick={() => this.cancelReferral(item)}
-                                    >
-                                      <DeleteIcon />
-                                    </div>
-                                  </div>
-                                )}
-                              </center>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  )}
-                </div>
-              )}
-            </main>
+        <div
+          style={{
+            backgroundColor: "#D6D6D6",
+            alignSelf: "stretch",
+            marginTop: "7px",
+            height: "1px",
+          }}
+        />
+        <div
+          style={{
+            color: "#000",
+            alignSelf: "stretch",
+            marginTop: "8px",
+            font: "500 14px Plus Jakarta Sans, sans-serif ",
+          }}
+        >
+          Your referred friend will get
+        </div>
+
+        {receiverBenefits?.map((rewardMe) => {
+          return (
+            <div
+              key={rewardMe}
+              style={{
+                color: color.primary,
+                alignSelf: "stretch",
+                marginTop: "4px",
+                font: "500 14px Plus Jakarta Sans, sans-serif ",
+              }}
+            >
+              <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
+                <li>{rewardMe}</li>
+              </ul>
+            </div>
+          );
+        })}
+
+        <div
+          style={{
+            backgroundColor: "#D6D6D6",
+            alignSelf: "stretch",
+            marginTop: "7px",
+            height: "1px",
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "8px",
+            gap: "8px",
+          }}
+        >
+          <div>
+            <IconInformation />
+          </div>
+
+          <div
+            style={{
+              color: "var(--text-color-tertiary, #9D9D9D)",
+              alignSelf: "stretch",
+              flexGrow: "1",
+              flexBasis: "auto",
+              font: "500 14px Plus Jakarta Sans, sans-serif ",
+            }}
+          >
+            After you and your friend made [criteria total visit and/or total
+            purchase] in [accumulate within day/week/month]
           </div>
         </div>
       </div>
     );
-  }
-}
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    account: state.auth.account.idToken.payload,
   };
+  const renderTextRichEditor = () => {
+    console.log(dataReferralInfo.howItWorks)
+    return (
+      <div
+        style={{
+          width: "100%",
+          alignItems: "start",
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "16px",
+        }}
+      >
+        <div
+          style={{
+            color: "var(--text-color-primary, #343A4A)",
+            alignSelf: "stretch",
+            whiteSpace: "nowrap",
+            font: "700 16px Plus Jakarta Sans, sans-serif ",
+            textAlign: "center",
+          }}
+        >
+          How it works
+        </div>
+
+        <div
+          style={{
+            marginTop: "16px",
+          }}
+          dangerouslySetInnerHTML={{
+            __html: dataReferralInfo?.howItWorks,
+          }}
+        />
+      </div>
+    );
+  };
+
+  const renderReferralCode = () => {
+    return (
+      <div
+        style={{
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "16px",
+        }}
+      >
+        <div
+          style={{
+            color: "var(--text-color-primary, #343A4A)",
+            textAlign: "center",
+            whiteSpace: "nowrap",
+            font: "700 16px Plus Jakarta Sans, sans-serif ",
+          }}
+        >
+          Your referral code
+        </div>
+        <div
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            alignSelf: "stretch",
+            display: "flex",
+            marginTop: "4px",
+            width: "100%",
+            flexDirection: "column",
+            padding: "0 80px",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              font: "600 36px Poppins, sans-serif ",
+              color: color.primary,
+              padding: "10px 0px",
+            }}
+          >
+            {dataReferralInfo?.referral}
+          </div>
+          <CopyToClipboard
+            text={dataReferralInfo?.referral}
+            onCopy={(text, result) => {
+              setCopyRefNo(result);
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "8px",
+                border: `1px solid ${color.primary}`,
+                marginTop: "4px",
+                width: "145px",
+                maxWidth: "100%",
+                gap: "8px",
+                padding: "7px 16px",
+              }}
+            >
+              <IconCopyCode color={color.primary} />
+              <div
+                style={{
+                  whiteSpace: "nowrap",
+                  font: "500 14px Poppins, sans-serif ",
+                  color: color.primary,
+                }}
+              >
+                COPY CODE
+              </div>
+            </div>
+          </CopyToClipboard>
+          {copyRefNo && (
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "10px",
+              }}
+            >
+              <img
+                width={20}
+                height={20}
+                src={IconCheckClipBoard}
+                alt="icon check"
+              />
+              <div style={{ color: "green" }}>referral code copied</div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderListPeopleInvited = () => {
+    if (!isEmptyArray(referralList?.list)) {
+      return referralList?.list?.map((itemStatus) => {
+        return (
+          <div
+            key={itemStatus?.status}
+            style={{
+              justifyContent: "center",
+              alignItems: "start",
+              alignSelf: "stretch",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.10)",
+              backgroundColor: "var(--brand-color-tertiary, #F2F2F2)",
+              display: "flex",
+              width: "100%",
+              flexDirection: "column",
+              padding: "16px",
+              marginTop: "16px",
+            }}
+          >
+            <div
+              style={{
+                justifyContent: "space-between",
+                alignSelf: "stretch",
+                display: "flex",
+                gap: "20px",
+                padding: "2px 0",
+              }}
+            >
+              <div
+                style={{
+                  color: "var(--text-color-primary, #343A4A)",
+                  textAlign: "center",
+                  font: "500 14px Plus Jakarta Sans, sans-serif ",
+                }}
+              >
+                {itemStatus?.name}
+              </div>
+              <div
+                style={{
+                  color: "var(--text-color-tertiary, #9D9D9D)",
+                  textAlign: "center",
+                  font: "500 12px Plus Jakarta Sans, sans-serif ",
+                }}
+              >
+                {formatDate(itemStatus.date)}
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                marginTop: "8px",
+                gap: "8px",
+              }}
+            >
+              {itemStatus?.status === "PENDING_PRIZE" ? (
+                <IconPendingPrice />
+              ) : (
+                <IconIssuedPrice />
+              )}
+              <div
+                style={{
+                  color:
+                    itemStatus?.status === "PENDING_PRIZE"
+                      ? "#F8B200"
+                      : "#4EBE19",
+                  textAlign: "center",
+                  alignSelf: "center",
+                  flexGrow: "1",
+                  whiteSpace: "nowrap",
+                  margin: "auto 0",
+                  font: "500 14px Plus Jakarta Sans, sans-serif ",
+                }}
+              >
+                {itemStatus?.status}
+              </div>
+            </div>
+            <div
+              style={{
+                alignSelf: "stretch",
+                color: "var(--text-color-tertiary, #9D9D9D)",
+                marginTop: "4px",
+                font: "500 14px Plus Jakarta Sans, sans-serif ",
+              }}
+            >
+              {itemStatus?.description}
+            </div>
+          </div>
+        );
+      });
+    } else {
+      return (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            marginTop: "16px",
+          }}
+        >
+          <IconNoReferredFriend />
+          <div
+            style={{
+              marginTop: "16px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "black" }}>
+              No Referred Friend
+            </div>
+            <div
+              style={{
+                color: "var(--text-color-tertiary, #888787)",
+                fontSize: "12px",
+                lineHeight: "18px",
+                textAlign: "center",
+                fontWeight: 600,
+              }}
+            >
+              Start share your referral link or code <br /> to your friend to
+              get bonus
+            </div>
+          </div>
+        </div>
+      );
+    }
+  };
+
+  const contentComponent = () => {
+    return (
+      <div style={{ marginTop: "66px", paddingBottom: 100 }}>
+        {renderHeader()}
+        <div style={{ padding: "16px" }}>
+          <div
+            style={{
+              color: "var(--text-color-primary, #343A4A)",
+              font: "700 24px Plus Jakarta Sans, sans-serif ",
+              textAlign: "center",
+              marginTop: "16px",
+            }}
+          >
+            Refer a friend and get bonus!
+          </div>
+
+          {renderBoxReferral()}
+          <div
+            style={{
+              backgroundColor: "#D6D6D6",
+              alignSelf: "stretch",
+              marginTop: "16px",
+              height: "1px",
+            }}
+          />
+          {renderTextRichEditor()}
+          <div
+            style={{
+              backgroundColor: "#D6D6D6",
+              alignSelf: "stretch",
+              height: "1px",
+              marginTop: "20px",
+            }}
+          />
+          {renderReferralCode()}
+          <div
+            style={{
+              backgroundColor: "#D6D6D6",
+              alignSelf: "stretch",
+              marginTop: "16px",
+              height: "1px",
+            }}
+          />
+          <div
+            style={{
+              color: "var(--text-color-primary, #343A4A)",
+              width: "100%",
+              justifyContent: "center",
+              alignSelf: "stretch",
+              font: "600 16px Plus Jakarta Sans, sans-serif ",
+              marginTop: "16px",
+            }}
+          >
+            {`${referralList?.list?.length}/${referralList?.dataLength} people invited`}
+          </div>
+          {renderListPeopleInvited()}
+        </div>
+      </div>
+    );
+  };
+
+  const responsiveDesignComponent = () => {
+    if (gadgetScreen) {
+      return contentComponent();
+    } else {
+      return (
+        <div
+          style={{
+            width: "100vw",
+          }}
+        >
+          <div
+            style={{
+              width: "45%",
+              marginLeft: "auto",
+              marginRight: "auto",
+              backgroundColor: "white",
+              height: "98vh",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gridTemplateRows: "1fr 55px",
+              gap: "0px 15px",
+              gridTemplateAreas: '"."\n    "."',
+              overflowY: "auto",
+              marginTop: "10px",
+              paddingLeft: "16px",
+              paddingRight: "16px",
+              position: "relative",
+            }}
+          >
+            {contentComponent()}
+          </div>
+        </div>
+      );
+    }
+  };
+
+//   {
+//     "phoneNumber": "+65123123098",
+//     "email": "kenanganterindah@pahit.com",
+//     "password": "I20HwtvY",
+//     "username": "kenanganterindah@pahit.com",
+//     "referralCode": "MARV62CMA",
+//     "dataType": "text",
+//     "defaultValue": "-",
+//     "birthDate": "1997-12-31",
+//     "name": "kenangan",
+//     "smsNotification": true,
+//     "emailNotification": true
+// }
+
+  return (
+    <LoadingOverlayCustom active={isLoading} spinner text="Please wait...">
+      {responsiveDesignComponent()}
+    </LoadingOverlayCustom>
+  );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Referral);
+export default Referral;
