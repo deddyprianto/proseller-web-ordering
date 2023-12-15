@@ -15,6 +15,7 @@ import loadable from '@loadable/component';
 import moment from 'moment';
 import { isEmptyArray } from '../../helpers/CheckEmpty';
 import Loading from 'components/loading/Loading';
+import { IconReferral } from 'components/referral/iconComponentReferral';
 
 const ModalQRCode = loadable(() => import('./ModalQRCode'));
 const ModalTermAndCondition = loadable(() => import('./ModalTermAndCondition'));
@@ -293,6 +294,11 @@ class DetailProfile extends Component {
     let enableTermAndCondition = setting.find((items) => {
       return items.settingKey === 'TermCondition';
     });
+
+    let enableReferralMenu = setting.find((items) => {
+      return items.settingKey === 'HideReferralMenu';
+    });
+
     let showSvcOnProfileSubMenu = setting.find((items) => {
       return items.settingKey === 'ShowSvcOnProfileSubMenu';
     });
@@ -360,33 +366,6 @@ class DetailProfile extends Component {
               </Link>
             )}
 
-            {referall.split('/')[1] !== '0' && (
-              <Link to='/referral'>
-                <div
-                  className='background-theme'
-                  style={{
-                    padding: 10,
-                    borderRadius: 10,
-                    marginTop: 10,
-                    border: '1px solid #CDCDCD',
-                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <div style={{ textAlign: 'center' }}>
-                    <div
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {`Referral ( ${referall} )`}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            )}
-
             {showRewardMenu && (
               <Link to='/rewards'>
                 <div
@@ -408,6 +387,39 @@ class DetailProfile extends Component {
                 </div>
               </Link>
             )}
+
+            {!enableReferralMenu?.settingValue && (
+              <Link to='/referral'>
+                <div
+                  className='background-theme'
+                  style={{
+                    padding: 10,
+                    borderRadius: 10,
+                    marginTop: 10,
+                    border: '1px solid #CDCDCD',
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    cursor: 'pointer',
+                    display:"flex",
+                    justifyContent:"center",
+                    alignItems:"center",
+                    gap:"5px"
+                  }}
+                >
+                  <IconReferral/>
+                  <div style={{ textAlign: 'center' }}>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Referral
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
+
 
             <Link to='/profile/payment-method'>
               <div
