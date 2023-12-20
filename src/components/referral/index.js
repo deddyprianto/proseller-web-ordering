@@ -554,7 +554,6 @@ import { Typography } from "@mui/material";
       };
 
       const renderListPeopleInvited = () => {
-        // LOL
         if (!isEmptyArray(referralList?.list)) {
           return referralList?.list?.map((itemStatus) => {
             return (
