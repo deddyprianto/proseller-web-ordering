@@ -834,14 +834,6 @@ import { isEmptyArray } from "helpers/CheckEmpty";
               </div>
 
               {renderBoxReferral()}
-              <div
-                style={{
-                  backgroundColor: "#D6D6D6",
-                  alignSelf: "stretch",
-                  marginTop: "16px",
-                  height: "1px",
-                }}
-              />
               {renderTextRichEditor()}
               <div
                 style={{
