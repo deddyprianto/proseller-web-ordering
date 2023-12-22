@@ -13,17 +13,13 @@ import { ReferralAction } from "redux/actions/ReferralAction";
 import LoadingOverlayCustom from "components/loading/LoadingOverlay";
 import screen from "hooks/useWindowSize";
 import { isEmptyArray } from "helpers/CheckEmpty";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Typography } from "@mui/material";
 
     const Referral = () => {
       const responsiveDesign = screen();
       const gadgetScreen = responsiveDesign.width < 980;
       const [isLoading, setIsLoading] = useState(false);
-      const [expandAccordion, setExpandAccordion] = useState(true);
+      const [expandAccordionSender, setExpandAccordionSender] = useState(true);
+      const [expandAccordionReceiver, setExpandAccordionReceiver] = useState(true);
       const [dataReferralInfo, setDataReferralInfo] = useState([]);
       const [referralList, setReferralList] = useState([]);
       const dispatch = useDispatch();
@@ -70,9 +66,11 @@ import { Typography } from "@mui/material";
         };
       }, [copyRefNo]);
 
-      // some function
-      function formatDate(inputDate) {
-        const date = new Date(inputDate);
+  const senderBenefit = dataReferralInfo?.senderBenefit;
+  const receiverBenefits = dataReferralInfo?.receiverBenefits;
+
+  function formatDate(inputDate) {
+    const date = new Date(inputDate);
 
         const options = {
           year: "numeric",
@@ -192,269 +190,394 @@ import { Typography } from "@mui/material";
         );
       };
 
-      const renderBoxReferral = () => {
-        const senderBenefit = dataReferralInfo?.senderBenefit;
-        const receiverBenefits = dataReferralInfo?.receiverBenefits;
+  const renderIconDropDownSender = () => {
+    if (expandAccordionSender) {
+      return (
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M11.2929 8.29289C11.6834 7.90237 12.3166 7.90237 12.7071 8.29289L18.7071 14.2929C19.0976 14.6834 19.0976 15.3166 18.7071 15.7071C18.3166 16.0976 17.6834 16.0976 17.2929 15.7071L12 10.4142L6.70711 15.7071C6.31658 16.0976 5.68342 16.0976 5.29289 15.7071C4.90237 15.3166 4.90237 14.6834 5.29289 14.2929L11.2929 8.29289Z"
+            fill="black"
+          />
+        </svg>
+      );
+    } else {
+      return (
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+            fill="black"
+          />
+        </svg>
+      );
+    }
+  };
+  const renderIconDropDownReceiver = () => {
+    if (expandAccordionReceiver) {
+      return (
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M11.2929 8.29289C11.6834 7.90237 12.3166 7.90237 12.7071 8.29289L18.7071 14.2929C19.0976 14.6834 19.0976 15.3166 18.7071 15.7071C18.3166 16.0976 17.6834 16.0976 17.2929 15.7071L12 10.4142L6.70711 15.7071C6.31658 16.0976 5.68342 16.0976 5.29289 15.7071C4.90237 15.3166 4.90237 14.6834 5.29289 14.2929L11.2929 8.29289Z"
+            fill="black"
+          />
+        </svg>
+      );
+    } else {
+      return (
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+            fill="black"
+          />
+        </svg>
+      );
+    }
+  };
+  const accordionDetailReceiver = () => {
+    return (
+      <div
+        style={{
+          maxHeight: expandAccordionReceiver ? "200px" : "0",
+          overflow: "hidden",
+          transition: "max-height 0.3s ease-out",
+          overflowY: "auto",
+          width: "100%",
+        }}
+      >
+        {receiverBenefits?.map((rewardMe) => {
+          return (
+            <div
+              key={rewardMe}
+              style={{
+                color: color.primary,
+                alignSelf: "stretch",
+                font: "500 14px Plus Jakarta Sans, sans-serif ",
+              }}
+            >
+              <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
+                <li style={{ marginTop: "6px" }}>{rewardMe}</li>
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+  const accordionDetailSender = () => {
+    return (
+      <div
+        style={{
+          maxHeight: expandAccordionSender ? "200px" : "0",
+          overflow: "hidden",
+          transition: "max-height 0.3s ease-out",
+          overflowY: "auto",
+          width: "100%",
+        }}
+      >
+        {senderBenefit?.map((rewardMe) => {
+          return (
+            <div
+              key={rewardMe}
+              style={{
+                color: color.primary,
+                alignSelf: "stretch",
+                font: "500 14px Plus Jakarta Sans, sans-serif ",
+              }}
+            >
+              <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
+                <li style={{ marginTop: "6px" }}>{rewardMe}</li>
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
-        return (
-          <div
-            style={{
-              justifyContent: "center",
-              alignItems: "flex-start",
-              alignSelf: "stretch",
-              borderRadius: "8px",
-              border:
-                "1px dashed var(--grey-scale-color-grey-scale-3, #D6D6D6)",
-              boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.10)",
-              display: "flex",
-              flexDirection: "column",
-              padding: "16px",
-              marginTop: "16px",
-              width: "100%",
-            }}
-          >
-            {senderBenefit?.length > 3 ? (
-              <Accordion
-                sx={{ boxShadow: "none", width: "100%" }}
-                expanded={expandAccordion}
-                onClick={() => setExpandAccordion(!expandAccordion)}
+  const renderBoxReferral = () => {
+    if (
+      dataReferralInfo?.criteria ||
+      !isEmptyArray(senderBenefit) ||
+      !isEmptyArray(receiverBenefits)
+    ) {
+      return (
+        <div
+          style={{
+            justifyContent: "center",
+            alignItems: "flex-start",
+            alignSelf: "stretch",
+            borderRadius: "8px",
+            border: "1px dashed var(--grey-scale-color-grey-scale-3, #D6D6D6)",
+            boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.10)",
+            display: "flex",
+            flexDirection: "column",
+            padding: "16px",
+            marginTop: "16px",
+            width: "100%",
+          }}
+        >
+          {!isEmptyArray(senderBenefit) && (
+            <>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                <AccordionSummary
-                  sx={{
-                    padding: 0,
-                    margin: 0,
-                  }}
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography
-                    sx={{
-                      padding: 0,
-                      margin: 0,
-                      color: "#000",
-                      font: "500 14px Plus Jakarta Sans, sans-serif ",
-                    }}
-                  >
-                    As a sender you will get
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ padding: 0, margin: 0 }}>
-                  {senderBenefit?.map((nameSender) => {
-                    return (
-                      <div
-                        key={nameSender}
-                        style={{
-                          color: color.primary,
-                          marginTop: "4px",
-                          whiteSpace: "nowrap",
-                          font: "500 14px Plus Jakarta Sans, sans-serif ",
-                        }}
-                      >
-                        <ul
-                          style={{ margin: 0, padding: 0, marginLeft: "21px" }}
-                        >
-                          <li>{nameSender}</li>
-                        </ul>
-                      </div>
-                    );
-                  })}
-                </AccordionDetails>
-              </Accordion>
-            ) : (
-              <>
                 <div
                   style={{
                     color: "#000",
-                    textAlign: "center",
-                    alignSelf: "start",
-                    whiteSpace: "nowrap",
                     font: "500 14px Plus Jakarta Sans, sans-serif ",
                   }}
                 >
                   As a sender you will get
                 </div>
-                {senderBenefit?.map((nameSender) => {
-                  return (
-                    <div
-                      key={nameSender}
-                      style={{
-                        color: color.primary,
-                        textAlign: "center",
-                        alignSelf: "start",
-                        marginTop: "4px",
-                        whiteSpace: "nowrap",
-                        font: "500 14px Plus Jakarta Sans, sans-serif ",
-                      }}
-                    >
-                      <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
-                        <li>{nameSender}</li>
-                      </ul>
-                    </div>
-                  );
-                })}
-              </>
-            )}
-
-            {receiverBenefits?.length > 3 ? (
-              <Accordion
-                sx={{ boxShadow: "none", width: "100%" }}
-                expanded={expandAccordion}
-                onClick={() => setExpandAccordion(!expandAccordion)}
-              >
-                <AccordionSummary
-                  sx={{
-                    padding: 0,
-                    margin: 0,
-                  }}
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography
-                    sx={{
-                      padding: 0,
-                      margin: 0,
-                      color: "#000",
-                      font: "500 14px Plus Jakarta Sans, sans-serif ",
+                {senderBenefit.length > 3 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
+                    onClick={() =>
+                      setExpandAccordionSender(!expandAccordionSender)
+                    }
                   >
-                    As a sender you will get
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ padding: 0, margin: 0 }}>
+                    {renderIconDropDownSender()}
+                  </div>
+                )}
+              </div>
+
+              {senderBenefit.length > 3 && (
+                <>
+                  {accordionDetailSender()}
+                  <div
+                    style={{
+                      backgroundColor: "#D6D6D6",
+                      alignSelf: "stretch",
+                      marginTop: "7px",
+                      height: "1px",
+                    }}
+                  />
+                </>
+              )}
+
+              {senderBenefit.length <= 3 && (
+                <>
                   {senderBenefit?.map((nameSender) => {
                     return (
                       <div
                         key={nameSender}
                         style={{
                           color: color.primary,
+                          textAlign: "center",
+                          alignSelf: "start",
                           marginTop: "4px",
                           whiteSpace: "nowrap",
                           font: "500 14px Plus Jakarta Sans, sans-serif ",
                         }}
                       >
                         <ul
-                          style={{ margin: 0, padding: 0, marginLeft: "21px" }}
+                          style={{
+                            margin: 0,
+                            padding: 0,
+                            marginLeft: "21px",
+                          }}
                         >
                           <li>{nameSender}</li>
                         </ul>
                       </div>
                     );
                   })}
-                </AccordionDetails>
-              </Accordion>
-            ) : (
-              <div>
-                {!isEmptyArray(receiverBenefits) && (
-                  <>
-                    <div
-                      style={{
-                        backgroundColor: "#D6D6D6",
-                        alignSelf: "stretch",
-                        marginTop: "7px",
-                        height: "1px",
-                      }}
-                    />
-                    <div
-                      style={{
-                        color: "#000",
-                        alignSelf: "stretch",
-                        marginTop: "8px",
-                        font: "500 14px Plus Jakarta Sans, sans-serif ",
-                      }}
-                    >
-                      Your referred friend will get
-                    </div>
-                    {receiverBenefits?.map((rewardMe) => {
-                      return (
-                        <div
-                          key={rewardMe}
-                          style={{
-                            color: color.primary,
-                            alignSelf: "stretch",
-                            marginTop: "4px",
-                            font: "500 14px Plus Jakarta Sans, sans-serif ",
-                          }}
-                        >
-                          <ul
-                            style={{
-                              margin: 0,
-                              padding: 0,
-                              marginLeft: "21px",
-                            }}
-                          >
-                            <li>{rewardMe}</li>
-                          </ul>
-                        </div>
-                      );
-                    })}
-                  </>
-                )}
-              </div>
-            )}
-
-            {!dataReferralInfo?.criteria && (
-              <React.Fragment>
-                <div
-                  style={{
-                    backgroundColor: "#D6D6D6",
-                    alignSelf: "stretch",
-                    marginTop: "7px",
-                    height: "1px",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginTop: "8px",
-                    gap: "8px",
-                  }}
-                >
-                  <div>
-                    <IconInformation />
-                  </div>
-
                   <div
                     style={{
-                      color: "var(--text-color-tertiary, #9D9D9D)",
+                      backgroundColor: "#D6D6D6",
                       alignSelf: "stretch",
-                      flexGrow: "1",
-                      flexBasis: "auto",
-                      font: "500 14px Plus Jakarta Sans, sans-serif ",
+                      marginTop: "7px",
+                      height: "1px",
                     }}
-                  >
-                    {dataReferralInfo?.criteria}
-                  </div>
+                  />
+                </>
+              )}
+            </>
+          )}
+
+          {!isEmptyArray(receiverBenefits) && (
+            <>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: !isEmptyArray(senderBenefit) && "8px",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#000",
+                    font: "500 14px Plus Jakarta Sans, sans-serif ",
+                  }}
+                >
+                  Your referred friend will get
                 </div>
-              </React.Fragment>
-            )}
-          </div>
-        );
-      };
-      const renderTextRichEditor = () => {
-        return (
-          <div
-            style={{
-              width: "100%",
-              alignItems: "start",
-              display: "flex",
-              flexDirection: "column",
-              marginTop: "16px",
-            }}
-          >
+                {receiverBenefits.length > 3 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onClick={() =>
+                      setExpandAccordionReceiver(!expandAccordionReceiver)
+                    }
+                  >
+                    {renderIconDropDownReceiver()}
+                  </div>
+                )}
+              </div>
+              {receiverBenefits.length > 3 && (
+                <>
+                  {accordionDetailReceiver()}
+                  <div
+                    style={{
+                      backgroundColor: "#D6D6D6",
+                      alignSelf: "stretch",
+                      marginTop: "7px",
+                      height: "1px",
+                    }}
+                  />
+                </>
+              )}
+
+              {receiverBenefits.length <= 3 && (
+                <>
+                  {receiverBenefits?.map((rewardMe) => {
+                    return (
+                      <div
+                        key={rewardMe}
+                        style={{
+                          color: color.primary,
+                          alignSelf: "stretch",
+                          font: "500 14px Plus Jakarta Sans, sans-serif ",
+                        }}
+                      >
+                        <ul
+                          style={{
+                            margin: 0,
+                            padding: 0,
+                            marginLeft: "21px",
+                          }}
+                        >
+                          <li style={{ marginTop: "6px" }}>{rewardMe}</li>
+                        </ul>
+                      </div>
+                    );
+                  })}
+                  <div
+                    style={{
+                      backgroundColor: "#D6D6D6",
+                      alignSelf: "stretch",
+                      marginTop: "7px",
+                      height: "1px",
+                    }}
+                  />
+                </>
+              )}
+            </>
+          )}
+
+          {dataReferralInfo?.criteria && (
             <div
               style={{
-                color: "var(--text-color-primary, #343A4A)",
-                alignSelf: "stretch",
-                whiteSpace: "nowrap",
-                font: "700 16px Plus Jakarta Sans, sans-serif ",
-                textAlign: "center",
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop:
+                  (!isEmptyArray(senderBenefit) ||
+                    !isEmptyArray(receiverBenefits)) &&
+                  "8px",
+                gap: "8px",
               }}
             >
-              How it works
+              <div>
+                <IconInformation />
+              </div>
+              <div
+                style={{
+                  color: "var(--text-color-tertiary, #9D9D9D)",
+                  alignSelf: "stretch",
+                  flexGrow: "1",
+                  flexBasis: "auto",
+                  font: "500 14px Plus Jakarta Sans, sans-serif ",
+                  lineHeight: "20px",
+                }}
+              >
+                {dataReferralInfo?.criteria}
+              </div>
             </div>
+          )}
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const renderTextRichEditor = () => {
+    return (
+      <div
+        style={{
+          width: "100%",
+          alignItems: "start",
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "16px",
+        }}
+      >
+        <div
+          style={{
+            color: "var(--text-color-primary, #343A4A)",
+            alignSelf: "stretch",
+            whiteSpace: "nowrap",
+            font: "700 16px Plus Jakarta Sans, sans-serif ",
+            textAlign: "center",
+          }}
+        >
+          How it works
+        </div>
 
             <div
               style={{
@@ -711,14 +834,6 @@ import { Typography } from "@mui/material";
               </div>
 
               {renderBoxReferral()}
-              <div
-                style={{
-                  backgroundColor: "#D6D6D6",
-                  alignSelf: "stretch",
-                  marginTop: "16px",
-                  height: "1px",
-                }}
-              />
               {renderTextRichEditor()}
               <div
                 style={{
