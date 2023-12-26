@@ -16,7 +16,7 @@ import moment from 'moment';
 import { isEmptyArray } from '../../helpers/CheckEmpty';
 import Loading from 'components/loading/Loading';
 import { IconReferral } from 'components/referral/iconComponentReferral';
-
+import iconPackage from 'assets/images/iconPackage.png'
 const ModalQRCode = loadable(() => import('./ModalQRCode'));
 const ModalTermAndCondition = loadable(() => import('./ModalTermAndCondition'));
 
@@ -366,6 +366,38 @@ class DetailProfile extends Component {
               </Link>
             )}
 
+{!enableReferralMenu?.settingValue && (
+              <Link to='/packageinformation'>
+                <div
+                  className='background-theme'
+                  style={{
+                    padding: 10,
+                    borderRadius: 10,
+                    marginTop: 10,
+                    border: '1px solid #CDCDCD',
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    cursor: 'pointer',
+                    display:"flex",
+                    justifyContent:"center",
+                    alignItems:"center",
+                    gap:"5px"
+                  }}
+                >
+                  <img src={iconPackage} width={18} height={18}/>
+                  <div style={{ textAlign: 'center' }}>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Your Package
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
+
             {showRewardMenu && (
               <Link to='/rewards'>
                 <div
@@ -387,6 +419,8 @@ class DetailProfile extends Component {
                 </div>
               </Link>
             )}
+            
+
 
             {!enableReferralMenu?.settingValue && (
               <Link to='/referral'>
