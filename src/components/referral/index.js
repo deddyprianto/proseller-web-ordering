@@ -18,13 +18,13 @@ import { isEmptyArray } from "helpers/CheckEmpty";
       const responsiveDesign = screen();
       const gadgetScreen = responsiveDesign.width < 980;
       const [isLoading, setIsLoading] = useState(false);
-      const [expandAccordionSender, setExpandAccordionSender] = useState(true);
-      const [expandAccordionReceiver, setExpandAccordionReceiver] = useState(true);
+      const [expandAccordionSender, setExpandAccordionSender] = useState(false);
+      const [expandAccordionReceiver, setExpandAccordionReceiver] =
+        useState(false);
       const [dataReferralInfo, setDataReferralInfo] = useState([]);
       const [referralList, setReferralList] = useState([]);
       const dispatch = useDispatch();
       const history = useHistory();
-
       const [copyRefNo, setCopyRefNo] = useState(false);
 
       const color = useSelector((state) => state.theme.color);
@@ -66,11 +66,22 @@ import { isEmptyArray } from "helpers/CheckEmpty";
         };
       }, [copyRefNo]);
 
-  const senderBenefit = dataReferralInfo?.senderBenefit;
-  const receiverBenefits = dataReferralInfo?.receiverBenefits;
+      const senderBenefit = dataReferralInfo?.senderBenefit;
+      const receiverBenefits = dataReferralInfo?.receiverBenefits;
 
-  function formatDate(inputDate) {
-    const date = new Date(inputDate);
+      const handleHTMLStringCustomization = (descriptionHTML) => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(descriptionHTML, "text/html");
+        const customStyleForLink = dom.getElementsByTagName("a");
+        for (const link of customStyleForLink) {
+          link.style.color = "blue";
+        }
+        const updatedHtmlString = dom.documentElement.innerHTML;
+        return updatedHtmlString;
+      };
+
+      function formatDate(inputDate) {
+        const date = new Date(inputDate);
 
         const options = {
           year: "numeric",
@@ -190,394 +201,348 @@ import { isEmptyArray } from "helpers/CheckEmpty";
         );
       };
 
-  const renderIconDropDownSender = () => {
-    if (expandAccordionSender) {
-      return (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M11.2929 8.29289C11.6834 7.90237 12.3166 7.90237 12.7071 8.29289L18.7071 14.2929C19.0976 14.6834 19.0976 15.3166 18.7071 15.7071C18.3166 16.0976 17.6834 16.0976 17.2929 15.7071L12 10.4142L6.70711 15.7071C6.31658 16.0976 5.68342 16.0976 5.29289 15.7071C4.90237 15.3166 4.90237 14.6834 5.29289 14.2929L11.2929 8.29289Z"
-            fill="black"
-          />
-        </svg>
-      );
-    } else {
-      return (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-            fill="black"
-          />
-        </svg>
-      );
-    }
-  };
-  const renderIconDropDownReceiver = () => {
-    if (expandAccordionReceiver) {
-      return (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M11.2929 8.29289C11.6834 7.90237 12.3166 7.90237 12.7071 8.29289L18.7071 14.2929C19.0976 14.6834 19.0976 15.3166 18.7071 15.7071C18.3166 16.0976 17.6834 16.0976 17.2929 15.7071L12 10.4142L6.70711 15.7071C6.31658 16.0976 5.68342 16.0976 5.29289 15.7071C4.90237 15.3166 4.90237 14.6834 5.29289 14.2929L11.2929 8.29289Z"
-            fill="black"
-          />
-        </svg>
-      );
-    } else {
-      return (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-            fill="black"
-          />
-        </svg>
-      );
-    }
-  };
-  const accordionDetailReceiver = () => {
-    return (
-      <div
-        style={{
-          maxHeight: expandAccordionReceiver ? "200px" : "0",
-          overflow: "hidden",
-          transition: "max-height 0.3s ease-out",
-          overflowY: "auto",
-          width: "100%",
-        }}
-      >
-        {receiverBenefits?.map((rewardMe) => {
+      const renderIconDropDown = (arrowTop) => {
+        if (arrowTop) {
           return (
-            <div
-              key={rewardMe}
-              style={{
-                color: color.primary,
-                alignSelf: "stretch",
-                font: "500 14px Plus Jakarta Sans, sans-serif ",
-              }}
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
-                <li style={{ marginTop: "6px" }}>{rewardMe}</li>
-              </ul>
-            </div>
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M11.2929 8.29289C11.6834 7.90237 12.3166 7.90237 12.7071 8.29289L18.7071 14.2929C19.0976 14.6834 19.0976 15.3166 18.7071 15.7071C18.3166 16.0976 17.6834 16.0976 17.2929 15.7071L12 10.4142L6.70711 15.7071C6.31658 16.0976 5.68342 16.0976 5.29289 15.7071C4.90237 15.3166 4.90237 14.6834 5.29289 14.2929L11.2929 8.29289Z"
+                fill="black"
+              />
+            </svg>
           );
-        })}
-      </div>
-    );
-  };
-  const accordionDetailSender = () => {
-    return (
-      <div
-        style={{
-          maxHeight: expandAccordionSender ? "200px" : "0",
-          overflow: "hidden",
-          transition: "max-height 0.3s ease-out",
-          overflowY: "auto",
-          width: "100%",
-        }}
-      >
-        {senderBenefit?.map((rewardMe) => {
+        } else {
           return (
-            <div
-              key={rewardMe}
-              style={{
-                color: color.primary,
-                alignSelf: "stretch",
-                font: "500 14px Plus Jakarta Sans, sans-serif ",
-              }}
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
-                <li style={{ marginTop: "6px" }}>{rewardMe}</li>
-              </ul>
-            </div>
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                fill="black"
+              />
+            </svg>
           );
-        })}
-      </div>
-    );
-  };
+        }
+      };
 
-  const renderBoxReferral = () => {
-    if (
-      dataReferralInfo?.criteria ||
-      !isEmptyArray(senderBenefit) ||
-      !isEmptyArray(receiverBenefits)
-    ) {
-      return (
-        <div
-          style={{
-            justifyContent: "center",
-            alignItems: "flex-start",
-            alignSelf: "stretch",
-            borderRadius: "8px",
-            border: "1px dashed var(--grey-scale-color-grey-scale-3, #D6D6D6)",
-            boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.10)",
-            display: "flex",
-            flexDirection: "column",
-            padding: "16px",
-            marginTop: "16px",
-            width: "100%",
-          }}
-        >
-          {!isEmptyArray(senderBenefit) && (
-            <>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+      const accordionDetails = (isAccordion, data) => {
+        return (
+          <div
+            style={{
+              maxHeight: isAccordion ? "120px" : "75px",
+              overflow: "hidden",
+              transition: "max-height 0.3s ease-out",
+              overflowY: "auto",
+              width: "100%",
+            }}
+          >
+            {data
+              ?.slice(0, isAccordion ? data.length : 3)
+              ?.map((rewardMe, index) => (
                 <div
+                  key={index}
                   style={{
-                    color: "#000",
+                    color: color.primary,
+                    alignSelf: "stretch",
                     font: "500 14px Plus Jakarta Sans, sans-serif ",
                   }}
                 >
-                  As a sender you will get
+                  <ul style={{ margin: 0, padding: 0, marginLeft: "21px" }}>
+                    <li style={{ marginTop: "6px" }}>{rewardMe}</li>
+                  </ul>
                 </div>
-                {senderBenefit.length > 3 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    onClick={() =>
-                      setExpandAccordionSender(!expandAccordionSender)
-                    }
-                  >
-                    {renderIconDropDownSender()}
-                  </div>
-                )}
-              </div>
+              ))}
+          </div>
+        );
+      };
 
-              {senderBenefit.length > 3 && (
-                <>
-                  {accordionDetailSender()}
-                  <div
-                    style={{
-                      backgroundColor: "#D6D6D6",
-                      alignSelf: "stretch",
-                      marginTop: "7px",
-                      height: "1px",
-                    }}
-                  />
-                </>
-              )}
-
-              {senderBenefit.length <= 3 && (
-                <>
-                  {senderBenefit?.map((nameSender) => {
-                    return (
-                      <div
-                        key={nameSender}
-                        style={{
-                          color: color.primary,
-                          textAlign: "center",
-                          alignSelf: "start",
-                          marginTop: "4px",
-                          whiteSpace: "nowrap",
-                          font: "500 14px Plus Jakarta Sans, sans-serif ",
-                        }}
-                      >
-                        <ul
-                          style={{
-                            margin: 0,
-                            padding: 0,
-                            marginLeft: "21px",
-                          }}
-                        >
-                          <li>{nameSender}</li>
-                        </ul>
-                      </div>
-                    );
-                  })}
-                  <div
-                    style={{
-                      backgroundColor: "#D6D6D6",
-                      alignSelf: "stretch",
-                      marginTop: "7px",
-                      height: "1px",
-                    }}
-                  />
-                </>
-              )}
-            </>
-          )}
-
-          {!isEmptyArray(receiverBenefits) && (
-            <>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: !isEmptyArray(senderBenefit) && "8px",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#000",
-                    font: "500 14px Plus Jakarta Sans, sans-serif ",
-                  }}
-                >
-                  Your referred friend will get
-                </div>
-                {receiverBenefits.length > 3 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    onClick={() =>
-                      setExpandAccordionReceiver(!expandAccordionReceiver)
-                    }
-                  >
-                    {renderIconDropDownReceiver()}
-                  </div>
-                )}
-              </div>
-              {receiverBenefits.length > 3 && (
-                <>
-                  {accordionDetailReceiver()}
-                  <div
-                    style={{
-                      backgroundColor: "#D6D6D6",
-                      alignSelf: "stretch",
-                      marginTop: "7px",
-                      height: "1px",
-                    }}
-                  />
-                </>
-              )}
-
-              {receiverBenefits.length <= 3 && (
-                <>
-                  {receiverBenefits?.map((rewardMe) => {
-                    return (
-                      <div
-                        key={rewardMe}
-                        style={{
-                          color: color.primary,
-                          alignSelf: "stretch",
-                          font: "500 14px Plus Jakarta Sans, sans-serif ",
-                        }}
-                      >
-                        <ul
-                          style={{
-                            margin: 0,
-                            padding: 0,
-                            marginLeft: "21px",
-                          }}
-                        >
-                          <li style={{ marginTop: "6px" }}>{rewardMe}</li>
-                        </ul>
-                      </div>
-                    );
-                  })}
-                  <div
-                    style={{
-                      backgroundColor: "#D6D6D6",
-                      alignSelf: "stretch",
-                      marginTop: "7px",
-                      height: "1px",
-                    }}
-                  />
-                </>
-              )}
-            </>
-          )}
-
-          {dataReferralInfo?.criteria && (
+      const renderBoxReferral = () => {
+        if (
+          dataReferralInfo?.criteria ||
+          !isEmptyArray(senderBenefit) ||
+          !isEmptyArray(receiverBenefits)
+        ) {
+          return (
             <div
               style={{
+                justifyContent: "center",
+                alignItems: "flex-start",
+                alignSelf: "stretch",
+                borderRadius: "8px",
+                border:
+                  "1px dashed var(--grey-scale-color-grey-scale-3, #D6D6D6)",
+                boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.10)",
                 display: "flex",
-                justifyContent: "space-between",
-                marginTop:
-                  (!isEmptyArray(senderBenefit) ||
-                    !isEmptyArray(receiverBenefits)) &&
-                  "8px",
-                gap: "8px",
+                flexDirection: "column",
+                padding: "16px",
+                marginTop: "16px",
+                width: "100%",
               }}
             >
-              <div>
-                <IconInformation />
-              </div>
-              <div
-                style={{
-                  color: "var(--text-color-tertiary, #9D9D9D)",
-                  alignSelf: "stretch",
-                  flexGrow: "1",
-                  flexBasis: "auto",
-                  font: "500 14px Plus Jakarta Sans, sans-serif ",
-                  lineHeight: "20px",
-                }}
-              >
-                {dataReferralInfo?.criteria}
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
+              {!isEmptyArray(senderBenefit) && (
+                <React.Fragment>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: "#000",
+                        font: "500 14px Plus Jakarta Sans, sans-serif ",
+                      }}
+                    >
+                      As a sender you will get
+                    </div>
+                    {senderBenefit.length > 3 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onClick={() =>
+                          setExpandAccordionSender(!expandAccordionSender)
+                        }
+                      >
+                        {renderIconDropDown(expandAccordionSender)}
+                      </div>
+                    )}
+                  </div>
 
-  const renderTextRichEditor = () => {
-    return (
-      <div
-        style={{
-          width: "100%",
-          alignItems: "start",
-          display: "flex",
-          flexDirection: "column",
-          marginTop: "16px",
-        }}
-      >
-        <div
-          style={{
-            color: "var(--text-color-primary, #343A4A)",
-            alignSelf: "stretch",
-            whiteSpace: "nowrap",
-            font: "700 16px Plus Jakarta Sans, sans-serif ",
-            textAlign: "center",
-          }}
-        >
-          How it works
-        </div>
+                  {senderBenefit.length > 3 && (
+                    <React.Fragment>
+                      {accordionDetails(expandAccordionSender, senderBenefit)}
+                      {dataReferralInfo?.criteria ||
+                      !isEmptyArray(receiverBenefits) ? (
+                        <div
+                          style={{
+                            backgroundColor: "#D6D6D6",
+                            alignSelf: "stretch",
+                            marginTop: "7px",
+                            height: "1px",
+                          }}
+                        />
+                      ) : null}
+                    </React.Fragment>
+                  )}
+
+                  {senderBenefit.length <= 3 && (
+                    <>
+                      {senderBenefit?.map((nameSender, index) => {
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              color: color.primary,
+                              textAlign: "center",
+                              alignSelf: "start",
+                              marginTop: "4px",
+                              whiteSpace: "nowrap",
+                              font: "500 14px Plus Jakarta Sans, sans-serif ",
+                            }}
+                          >
+                            <ul
+                              style={{
+                                margin: 0,
+                                padding: 0,
+                                marginLeft: "21px",
+                              }}
+                            >
+                              <li>{nameSender}</li>
+                            </ul>
+                          </div>
+                        );
+                      })}
+                      {dataReferralInfo?.criteria ||
+                      !isEmptyArray(receiverBenefits) ? (
+                        <div
+                          style={{
+                            backgroundColor: "#D6D6D6",
+                            alignSelf: "stretch",
+                            marginTop: "7px",
+                            height: "1px",
+                          }}
+                        />
+                      ) : null}
+                    </>
+                  )}
+                </React.Fragment>
+              )}
+
+              {!isEmptyArray(receiverBenefits) && (
+                <>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: !isEmptyArray(senderBenefit) && "8px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: "#000",
+                        font: "500 14px Plus Jakarta Sans, sans-serif ",
+                      }}
+                    >
+                      Your referred friend will get
+                    </div>
+                    {receiverBenefits.length > 3 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onClick={() => {
+                          setExpandAccordionReceiver(!expandAccordionReceiver);
+                        }}
+                      >
+                        {renderIconDropDown(expandAccordionReceiver)}
+                      </div>
+                    )}
+                  </div>
+
+                  {receiverBenefits.length > 3 && (
+                    <React.Fragment>
+                      {accordionDetails(
+                        expandAccordionReceiver,
+                        receiverBenefits
+                      )}
+                      {dataReferralInfo?.criteria ||
+                      (isEmptyArray(senderBenefit) &&
+                      isEmptyArray(receiverBenefits)) ? (
+                        <div
+                          style={{
+                            backgroundColor: "#D6D6D6",
+                            alignSelf: "stretch",
+                            marginTop: "7px",
+                            height: "1px",
+                          }}
+                        />
+                      ) : null}
+                    </React.Fragment>
+                  )}
+
+                  {receiverBenefits.length <= 3 && (
+                    <React.Fragment>
+                      {receiverBenefits?.map((rewardMe, index) => {
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              color: color.primary,
+                              alignSelf: "stretch",
+                              font: "500 14px Plus Jakarta Sans, sans-serif ",
+                            }}
+                          >
+                            <ul
+                              style={{
+                                margin: 0,
+                                padding: 0,
+                                marginLeft: "21px",
+                              }}
+                            >
+                              <li style={{ marginTop: "6px" }}>{rewardMe}</li>
+                            </ul>
+                          </div>
+                        );
+                      })}
+                      {/* LOL */}
+                      {dataReferralInfo?.criteria ||
+                      (isEmptyArray(senderBenefit) &&
+                        isEmptyArray(receiverBenefits)) ? (
+                        <div
+                          style={{
+                            backgroundColor: "#D6D6D6",
+                            alignSelf: "stretch",
+                            marginTop: "7px",
+                            height: "1px",
+                          }}
+                        />
+                      ) : null}
+                    </React.Fragment>
+                  )}
+                </>
+              )}
+
+              {dataReferralInfo?.criteria && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop:
+                      (!isEmptyArray(senderBenefit) ||
+                        !isEmptyArray(receiverBenefits)) &&
+                      "8px",
+                    gap: "8px",
+                  }}
+                >
+                  <div>
+                    <IconInformation />
+                  </div>
+                  <div
+                    style={{
+                      color: "var(--text-color-tertiary, #9D9D9D)",
+                      alignSelf: "stretch",
+                      flexGrow: "1",
+                      flexBasis: "auto",
+                      font: "500 14px Plus Jakarta Sans, sans-serif ",
+                      lineHeight: "20px",
+                    }}
+                  >
+                    {dataReferralInfo?.criteria}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        } else {
+          return null;
+        }
+      };
+
+      const renderTextRichEditor = () => {
+        return (
+          <div
+            style={{
+              width: "100%",
+              alignItems: "start",
+              display: "flex",
+              flexDirection: "column",
+              marginTop: "16px",
+            }}
+          >
+            <div
+              style={{
+                color: "var(--text-color-primary, #343A4A)",
+                alignSelf: "stretch",
+                whiteSpace: "nowrap",
+                font: "700 16px Plus Jakarta Sans, sans-serif ",
+                textAlign: "center",
+              }}
+            >
+              How it works
+            </div>
 
             <div
               style={{
@@ -585,7 +550,9 @@ import { isEmptyArray } from "helpers/CheckEmpty";
                 fontFamily: "Plus Jakarta Sans, sans-serif",
               }}
               dangerouslySetInnerHTML={{
-                __html: dataReferralInfo?.howItWorks,
+                __html: handleHTMLStringCustomization(
+                  dataReferralInfo?.howItWorks
+                ),
               }}
             />
           </div>
@@ -681,7 +648,7 @@ import { isEmptyArray } from "helpers/CheckEmpty";
           return referralList?.list?.map((itemStatus) => {
             return (
               <div
-                key={itemStatus?.status}
+                key={itemStatus?.id}
                 style={{
                   justifyContent: "center",
                   alignItems: "start",
@@ -852,18 +819,34 @@ import { isEmptyArray } from "helpers/CheckEmpty";
                   height: "1px",
                 }}
               />
-              <div
-                style={{
-                  color: "var(--text-color-primary, #343A4A)",
-                  width: "100%",
-                  justifyContent: "center",
-                  alignSelf: "stretch",
-                  font: "600 16px Plus Jakarta Sans, sans-serif ",
-                  marginTop: "16px",
-                }}
-              >
-                {`${referralList?.list?.length}/${referralList?.dataLength} people invited`}
-              </div>
+              {referralList?.capacity > 0 ? (
+                <div
+                  style={{
+                    color: "var(--text-color-primary, #343A4A)",
+                    width: "100%",
+                    justifyContent: "center",
+                    alignSelf: "stretch",
+                    font: "600 16px Plus Jakarta Sans, sans-serif ",
+                    marginTop: "16px",
+                  }}
+                >
+                  {`${referralList?.dataLength}/${referralList?.capacity} People Invited`}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    color: "var(--text-color-primary, #343A4A)",
+                    width: "100%",
+                    justifyContent: "center",
+                    alignSelf: "stretch",
+                    font: "600 16px Plus Jakarta Sans, sans-serif ",
+                    marginTop: "16px",
+                  }}
+                >
+                  People Invited
+                </div>
+              )}
+
               {renderListPeopleInvited()}
             </div>
           </div>
