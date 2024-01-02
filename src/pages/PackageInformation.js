@@ -1,73 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { ReferralAction } from "redux/actions/ReferralAction";
 import LoadingOverlayCustom from "components/loading/LoadingOverlay";
 import screen from "hooks/useWindowSize";
 import ImageItem from "assets/images/iconPro1.png";
+import { PackageAction } from "redux/actions/PackageAction";
+import { CONSTANT } from "helpers";
+
 const PackageInformation = () => {
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
   const [isLoading, setIsLoading] = useState(false);
-  const [dataReferralInfo, setDataReferralInfo] = useState([]);
-  const [referralList, setReferralList] = useState([]);
+  const [listPackage, setListPackage] = useState([
+    {
+      packageName: "15 Creambath Package",
+      remainingBalance: 13,
+      packageId: "package02",
+      endValidPeriod: "06 June 2024",
+      imageUrl: "http://loremipsum.com/image.jpg",
+    },
+    {
+      packageName: "Ten Session Package",
+      remainingBalance: 9,
+      packageId: "package01",
+      endValidPeriod: "05 December 2024",
+      imageUrl: "http://loremipsum.com/image2.jpg",
+    },
+  ]);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const [copyRefNo, setCopyRefNo] = useState(false);
+  console.log(listPackage);
 
   const color = useSelector((state) => state.theme.color);
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await dispatch(ReferralAction.getReferralInfo());
-        setDataReferralInfo(response?.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    const loadDataReferralList = async () => {
-      try {
-        setIsLoading(true);
-        const response = await dispatch(ReferralAction.getReferralList());
-        setReferralList(response?.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    loadDataReferralList();
-  }, []);
-
-  useEffect(() => {
-    const clear = setTimeout(() => {
-      setCopyRefNo(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(clear);
-    };
-  }, [copyRefNo]);
-
-  function formatDate(inputDate) {
-    const date = new Date(inputDate);
-
-    const options = {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-
-    return date.toLocaleString("en-US", options);
-  }
+  // useEffect(() => {
+  //   const loadData = async () => {
+  //     let params = { skip: 0, take: 100 };
+  //     try {
+  //       setIsLoading(true);
+  //       const response = await dispatch(
+  //         PackageAction.getPackageCustomerList(params)
+  //       );
+  //       setListPackage(response?.data);
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   loadData();
+  // }, []);
 
   const renderSnackBar = () => {
     return (
@@ -166,10 +146,17 @@ const PackageInformation = () => {
     );
   };
 
-  const renderItem = () => {
+  const renderItem = (item) => {
     return (
       <div
-        onClick={() => history.push('/packagedetail')}
+        key={item?.packageId}
+        onClick={() => {
+          history.push("/packagedetail");
+          dispatch({
+            type: CONSTANT.PACKAGE_ID_CUSTOMER,
+            payload: item?.packageId,
+          });
+        }}
         style={{
           display: "grid",
           gridTemplateColumns: "60px 1fr",
@@ -193,7 +180,7 @@ const PackageInformation = () => {
         >
           <img
             loading="lazy"
-            src={ImageItem}
+            src={item?.imageUrl}
             style={{
               aspectRatio: "1",
               objectFit: "contain",
@@ -226,9 +213,7 @@ const PackageInformation = () => {
                   lineHeight: "23px",
                 }}
               >
-                Ultimate Serenity and Revitalization Extravaganza: A Harmonious
-                Symphony of Personalized Wellness, Tranquil Indulgence, and
-                Transformational Treatments for Mind, Body, and Soul Bliss
+                {item?.packageName}
               </td>
             </tr>
           </table>
@@ -267,7 +252,7 @@ const PackageInformation = () => {
                   marginTop: "5px",
                 }}
               >
-                19 December 2024
+                {item?.endValidPeriod}
               </div>
             </div>
             <div
@@ -296,7 +281,7 @@ const PackageInformation = () => {
                   marginTop: "5px",
                 }}
               >
-                10
+                {item?.remainingBalance}
               </div>
             </div>
           </div>
@@ -321,8 +306,9 @@ const PackageInformation = () => {
           >
             My Packages
           </p>
-          {/* LOL */}
-          {renderItem()}
+          {listPackage.map((item) => {
+            return renderItem(item);
+          })}
         </div>
       </div>
     );

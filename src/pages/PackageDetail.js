@@ -9,7 +9,8 @@ const PackageDetail = () => {
   const history = useHistory();
 
   const color = useSelector((state) => state.theme.color);
-
+  const packageId = useSelector((state) => state.packageReducer.packageId);
+  console.log(packageId);
   const renderItem = (index) => {
     return (
       <div

@@ -18,6 +18,7 @@ import svc from './SVCReducer';
 import getSpaceLogo from './LogoReducer';
 import guestCheckoutCart from './GuestCheckoutCart';
 import appointmentReducer from './AppointmentReducer';
+import packageReducer from "./PackageReducer";
 
 const rootReducer = combineReducers({
   auth,
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   getSpaceLogo,
   guestCheckoutCart,
   appointmentReducer,
+  packageReducer,
 });
 
 export default rootReducer;
