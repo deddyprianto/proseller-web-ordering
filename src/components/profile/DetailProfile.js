@@ -308,6 +308,10 @@ class DetailProfile extends Component {
     let showPackageInfo = setting.find((items) => {
       return items.settingKey === 'ShowPackageInfo';
     });
+    let hidePaymentMethod = setting.find((items) => {
+      return items.settingKey === 'HidePaymentMethodMenu';
+    });
+
     return (
       <div>
         <ModalTermAndCondition
@@ -455,27 +459,28 @@ class DetailProfile extends Component {
               </Link>
             )}
 
-
-            <Link to='/profile/payment-method'>
-              <div
-                className='background-theme'
-                style={{
-                  padding: 10,
-                  marginTop: 10,
-                  borderRadius: 10,
-                  border: '1px solid #CDCDCD',
-                  boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                    <i className='fa fa-credit-card-alt' aria-hidden='true' />{' '}
-                    Payment Method
+            {!hidePaymentMethod?.settingValue && (
+              <Link to='/profile/payment-method'>
+                <div
+                  className='background-theme'
+                  style={{
+                    padding: 10,
+                    marginTop: 10,
+                    borderRadius: 10,
+                    border: '1px solid #CDCDCD',
+                    boxShadow: '0px 0px 5px rgba(128, 128, 128, 0.5)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                      <i className='fa fa-credit-card-alt' aria-hidden='true' />{' '}
+                      Payment Method
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
             <Link to='/profile/delivery-address'>
               <div
