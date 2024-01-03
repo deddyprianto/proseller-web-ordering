@@ -64,6 +64,8 @@ const EditProfile = loadable(() =>
 );
 const Categories = loadable(() => import('../../pages/AllCategory'));
 const Products = loadable(() => import('../../pages/Products'));
+const PackageInformation = loadable(() => import('../../pages/PackageInformation'));
+const PackageDetail = loadable(() => import('../../pages/PackageDetail'));
 const Promotions = loadable(() =>
   import('../../components/ordering/Promotions')
 );
@@ -283,6 +285,12 @@ class Layout extends Component {
             )}
             {isLoggedIn && (
               <Route exact path='/referral' component={Referral} />
+            )}
+              {isLoggedIn && (
+              <Route exact path='/packageinformation' component={PackageInformation} />
+            )}
+            {isLoggedIn && (
+              <Route exact path='/packagedetail' component={PackageDetail} />
             )}
             {isLoggedIn && (
               <Route exact path='/edit-profile' component={EditProfile} />
