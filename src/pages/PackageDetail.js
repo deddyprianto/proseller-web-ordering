@@ -1,17 +1,50 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import moment from "moment";
+
 import screen from "hooks/useWindowSize";
+import { PackageAction } from "redux/actions/PackageAction";
+import LoadingOverlayCustom from "components/loading/LoadingOverlay";
 
 const PackageDetail = () => {
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const color = useSelector((state) => state.theme.color);
   const packageId = useSelector((state) => state.packageReducer.packageId);
-  console.log(packageId);
-  const renderItem = (index) => {
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [packageData, setPackageData] = useState({});
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await dispatch(
+          PackageAction.getPackageById(packageId)
+        );
+        setPackageData(response?.data?.[0]);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadData();
+  }, [dispatch, packageId]);
+
+  const dateFormatter = (date, type) => {
+    const dateFormat = type === "date" ? "DD MMM YYYY" : "HH:mm:ss";
+    return date && moment(date).format(dateFormat);
+  };
+
+  const priceFormatter = (price) => {
+    return price && `$ ${parseFloat(price.toFixed(2))}`;
+  };
+
+  const renderItem = (item, index) => {
     return (
       <div
         style={{
@@ -41,50 +74,27 @@ const PackageDetail = () => {
               font: "500 12px Poppins, sans-serif ",
             }}
           >
-            23121910800003
+            {item?.transactionRefNo}
           </div>
           <div
             style={{
-              alignItems: "center",
+              color: "var(--Text-color-Tertiary, #B7B7B7)",
               display: "flex",
-              marginTop: "4px",
-              gap: "8px",
+              alignItems: "center",
+              font: "500 12px Poppins, sans-serif ",
             }}
           >
-            <div
-              style={{
-                color: "var(--Text-color-Tertiary, #B7B7B7)",
-                textAlign: "center",
-                alignSelf: "stretch",
-                flexGrow: "1",
-                whiteSpace: "nowrap",
-                font: "500 12px Poppins, sans-serif ",
-              }}
-            >
-              25 Dec 2023
-            </div>
+            {dateFormatter(item?.allocationDate, "date")}
             <div
               style={{
                 borderRadius: "50%",
-                display: "flex",
                 width: "4px",
                 height: "4px",
-                flexDirection: "column",
-                margin: "auto 0",
+                backgroundColor: "var(--Text-color-Tertiary, #B7B7B7)",
+                margin: "10px 5px"
               }}
             />
-            <div
-              style={{
-                color: "var(--Text-color-Tertiary, #B7B7B7)",
-                textAlign: "center",
-                alignSelf: "stretch",
-                flexGrow: "1",
-                whiteSpace: "nowrap",
-                font: "500 12px Poppins, sans-serif ",
-              }}
-            >
-              11:45:53
-            </div>
+            {dateFormatter(item?.allocationDate, "time")}
           </div>
         </div>
         <div
@@ -97,7 +107,7 @@ const PackageDetail = () => {
             paddingLeft: "20px",
           }}
         >
-          <div>-1</div>
+          <div>{item?.amount}</div>
         </div>
       </div>
     );
@@ -116,6 +126,7 @@ const PackageDetail = () => {
         }}
       >
         <img
+          alt=""
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/7de4038b825f5fb1a0f49d52025ab2b9f3049a4a1915f7533987a48257cc1626?apiKey=7ef2d401d2464e0bb0e4708e7eee43f9&"
           style={{
@@ -165,39 +176,49 @@ const PackageDetail = () => {
             Remaining Balance
           </div>
           <div style={{ color: color.primary, fontWeight: 500 }}>
-            12 desemeber
+            {packageData?.remainingBalance}
           </div>
         </div>
         <div>
           <div style={{ color: "#B7B7B7", fontWeight: 500 }}>Expired</div>
-          <div style={{ color: color.primary, fontWeight: 500 }}>19:00</div>
+          <div style={{ color: color.primary, fontWeight: 500 }}>
+            {packageData?.expiredBalance}
+          </div>
         </div>
         <div>
           <div style={{ color: "#B7B7B7", fontWeight: 500 }}>
             Start Valid Period
           </div>
-          <div style={{ color: color.primary, fontWeight: 500 }}>deddy</div>
+          <div style={{ color: color.primary, fontWeight: 500 }}>
+            {dateFormatter(packageData?.startValidPeriod, 'date')}
+          </div>
         </div>
         <div>
           <div style={{ color: "#B7B7B7", fontWeight: 500 }}>
             End Valid Period
           </div>
-          <div style={{ color: color.primary, fontWeight: 500 }}>01:00:01</div>
+          <div style={{ color: color.primary, fontWeight: 500 }}>
+            {dateFormatter(packageData?.endValidPeriod, 'date')}
+          </div>
         </div>
         <div>
           <div style={{ color: "#B7B7B7", fontWeight: 500 }}>Value</div>
-          <div style={{ color: color.primary, fontWeight: 500 }}>01:00:01</div>
+          <div style={{ color: color.primary, fontWeight: 500 }}>
+            {priceFormatter(packageData?.value)}
+          </div>
         </div>
         <div>
           <div style={{ color: "#B7B7B7", fontWeight: 500 }}>Breakdown</div>
-          <div style={{ color: color.primary, fontWeight: 500 }}>01:00:01</div>
+          <div style={{ color: color.primary, fontWeight: 500 }}>
+            {priceFormatter(packageData?.valueBreakdown)}
+          </div>
         </div>
       </div>
     );
   };
   const renderLabelBottom = () => {
-    const isHistoryExist = true;
-    const data = ["danu", "riska", "brian"];
+    const isHistoryExist = !!packageData?.history?.length;
+    const data = packageData?.history;
     return (
       <div
         style={{
@@ -250,40 +271,20 @@ const PackageDetail = () => {
                 <div
                   style={{
                     color: "var(--Text-color-Secondary, #FFF)",
-                    textAlign: "center",
+                    textAlign: "left",
                     flexGrow: "1",
                     whiteSpace: "nowrap",
                     font: "700 12px Poppins, sans-serif ",
                   }}
                 >
-                  Ref. No.
-                </div>
-                <div
-                  style={{
-                    color: "var(--Text-color-Secondary, #FFF)",
-                    textAlign: "center",
-                    font: "700 12px Poppins, sans-serif ",
-                  }}
-                >
-                  &
-                </div>
-                <div
-                  style={{
-                    color: "var(--Text-color-Secondary, #FFF)",
-                    textAlign: "center",
-                    flexGrow: "1",
-                    whiteSpace: "nowrap",
-                    font: "700 12px Poppins, sans-serif ",
-                  }}
-                >
-                  Allocation Date
+                  Ref. No. & Allocation Date
                 </div>
               </div>
 
               <div
                 style={{
                   color: "var(--Text-color-Secondary, #FFF)",
-                  textAlign: "center",
+                  textAlign: "right",
                   whiteSpace: "nowrap",
                   backgroundColor: color.primary,
                   flexGrow: "1",
@@ -298,7 +299,7 @@ const PackageDetail = () => {
             </div>
 
             {data.map((item, index) => {
-              return <div key={item}>{renderItem(index)}</div>;
+              return <div key={item}>{renderItem(item, index)}</div>;
             })}
           </div>
         ) : (
@@ -352,12 +353,7 @@ const PackageDetail = () => {
               height: "1px",
             }}
           />
-          {/* LOL */}
-          <div>
-            Ultimate Serenity and Revitalization Extravaganza: A Harmonious
-            Symphony of Personalized Wellness, Tranquil Indulgence, and
-            Transformational Treatments for Mind, Body, and Soul Bliss
-          </div>
+          <div>{packageData?.packageName}</div>
           {renderGridDetail()}
           {renderLabelBottom()}
         </div>
@@ -403,7 +399,11 @@ const PackageDetail = () => {
     }
   };
 
-  return <>{responsiveDesignComponent()}</>;
+  return (
+    <LoadingOverlayCustom active={isLoading} spinner text="Please wait...">
+      {responsiveDesignComponent()}
+    </LoadingOverlayCustom>
+  );
 };
 
 export default PackageDetail;

@@ -1,108 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import moment from "moment";
+
 import LoadingOverlayCustom from "components/loading/LoadingOverlay";
 import screen from "hooks/useWindowSize";
-import ImageItem from "assets/images/iconPro1.png";
 import { PackageAction } from "redux/actions/PackageAction";
 import { CONSTANT } from "helpers";
+import emptyPackageImage from "../assets/images/emptyPackage.png";
 
 const PackageInformation = () => {
   const responsiveDesign = screen();
   const gadgetScreen = responsiveDesign.width < 980;
   const [isLoading, setIsLoading] = useState(false);
-  const [listPackage, setListPackage] = useState([
-    {
-      packageName: "15 Creambath Package",
-      remainingBalance: 13,
-      packageId: "package02",
-      endValidPeriod: "06 June 2024",
-      imageUrl: "http://loremipsum.com/image.jpg",
-    },
-    {
-      packageName: "Ten Session Package",
-      remainingBalance: 9,
-      packageId: "package01",
-      endValidPeriod: "05 December 2024",
-      imageUrl: "http://loremipsum.com/image2.jpg",
-    },
-  ]);
+  const [listPackage, setListPackage] = useState([]);
   const dispatch = useDispatch();
   const history = useHistory();
-  console.log(listPackage);
 
-  const color = useSelector((state) => state.theme.color);
-  // useEffect(() => {
-  //   const loadData = async () => {
-  //     let params = { skip: 0, take: 100 };
-  //     try {
-  //       setIsLoading(true);
-  //       const response = await dispatch(
-  //         PackageAction.getPackageCustomerList(params)
-  //       );
-  //       setListPackage(response?.data);
-  //       setIsLoading(false);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   loadData();
-  // }, []);
-
-  const renderSnackBar = () => {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          top: "10%",
-          left: "50%",
-          width: "90%",
-          margin: "auto",
-          transform: "translate(-50%, -50%)",
-          zIndex: 999999,
-        }}
-      >
-        <div
-          style={{
-            alignSelf: "stretch",
-            borderRadius: "4px",
-            backgroundColor: color.primary,
-            display: "flex",
-            gap: "12px",
-            padding: "17px 16px",
-          }}
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 22 22"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M10.9999 1.83334C5.93742 1.83334 1.83325 5.93751 1.83325 11C1.83325 16.0625 5.93742 20.1667 10.9999 20.1667C16.0624 20.1667 20.1666 16.0625 20.1666 11C20.1666 5.93751 16.0624 1.83334 10.9999 1.83334ZM14.9733 9.45001C15.0464 9.36638 15.1021 9.26896 15.1371 9.16348C15.172 9.05801 15.1855 8.9466 15.1768 8.83583C15.1681 8.72506 15.1373 8.61715 15.0862 8.51845C15.0352 8.41975 14.9649 8.33226 14.8795 8.26113C14.7942 8.18999 14.6955 8.13665 14.5892 8.10423C14.4829 8.07181 14.3712 8.06098 14.2607 8.07237C14.1501 8.08375 14.043 8.11713 13.9455 8.17054C13.8481 8.22394 13.7623 8.2963 13.6933 8.38334L10.1099 12.6825L8.25575 10.8275C8.09858 10.6757 7.88808 10.5917 7.66958 10.5936C7.45109 10.5955 7.24208 10.6832 7.08757 10.8377C6.93306 10.9922 6.84542 11.2012 6.84352 11.4197C6.84162 11.6382 6.92562 11.8487 7.07742 12.0058L9.57742 14.5058C9.6593 14.5877 9.75733 14.6515 9.86526 14.6934C9.9732 14.7352 10.0887 14.7541 10.2043 14.7489C10.32 14.7436 10.4332 14.7143 10.5369 14.6629C10.6406 14.6114 10.7325 14.5389 10.8066 14.45L14.9733 9.45001Z"
-              fill="white"
-            />
-          </svg>
-
-          <div
-            style={{
-              color: "var(--Brand-color-Secondary, #FFF)",
-              alignSelf: "center",
-              flexGrow: "1",
-              whiteSpace: "nowrap",
-              margin: "auto 0",
-              font: "500 14px Plus Jakarta Sans, sans-serif ",
-            }}
-          >
-            Referral code copied successfully!
-          </div>
-        </div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      let params = { skip: 0, take: 100 };
+      try {
+        setIsLoading(true);
+        const response = await dispatch(
+          PackageAction.getPackageCustomerList(params)
+        );
+        setListPackage(response?.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadData();
+  }, [dispatch]);
 
   const renderHeader = () => {
     return (
@@ -118,6 +48,7 @@ const PackageInformation = () => {
         }}
       >
         <img
+          alt=""
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/7de4038b825f5fb1a0f49d52025ab2b9f3049a4a1915f7533987a48257cc1626?apiKey=7ef2d401d2464e0bb0e4708e7eee43f9&"
           style={{
@@ -179,6 +110,7 @@ const PackageInformation = () => {
           }}
         >
           <img
+            alt=""
             loading="lazy"
             src={item?.imageUrl}
             style={{
@@ -252,7 +184,7 @@ const PackageInformation = () => {
                   marginTop: "5px",
                 }}
               >
-                {item?.endValidPeriod}
+                {item?.endValidPeriod && moment(item?.endValidPeriod).format("DD MMM YYYY")}
               </div>
             </div>
             <div
@@ -306,9 +238,32 @@ const PackageInformation = () => {
           >
             My Packages
           </p>
-          {listPackage.map((item) => {
-            return renderItem(item);
-          })}
+
+          {listPackage.length ? (
+            listPackage.map((item) => {
+              return renderItem(item);
+            })
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                marginTop: '10vh'
+              }}
+            >
+              <img
+                src={emptyPackageImage}
+                width={246}
+                height={246}
+                alt="is empty"
+              />
+              <p style={{ fontWeight: 700, margin: "15px 0 0" }}>Empty Package</p>
+              <p style={{ fontSize: 14 }}>
+                You have not purchased any package
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );

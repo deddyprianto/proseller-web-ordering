@@ -305,6 +305,9 @@ class DetailProfile extends Component {
     let showDeliveryAddressOnProfileSubMenu = setting.find((items) => {
       return items.settingKey === 'ShowDeliveryAddressOnProfileSubMenu';
     });
+    let showPackageInfo = setting.find((items) => {
+      return items.settingKey === 'ShowPackageInfo';
+    });
     return (
       <div>
         <ModalTermAndCondition
@@ -366,7 +369,7 @@ class DetailProfile extends Component {
               </Link>
             )}
 
-{!enableReferralMenu?.settingValue && (
+            {showPackageInfo?.settingValue && (
               <Link to='/packageinformation'>
                 <div
                   className='background-theme'
@@ -419,8 +422,6 @@ class DetailProfile extends Component {
                 </div>
               </Link>
             )}
-            
-
 
             {!enableReferralMenu?.settingValue && (
               <Link to='/referral'>
