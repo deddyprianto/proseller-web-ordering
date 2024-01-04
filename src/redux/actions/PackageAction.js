@@ -19,7 +19,7 @@ function getPackageById(id) {
     let response = await CRMService.api(
       "GET",
       null,
-      "customer/package" + id,
+      `customer/package/${id}`,
       "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)

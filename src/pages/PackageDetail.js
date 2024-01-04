@@ -36,7 +36,7 @@ const PackageDetail = () => {
   }, [dispatch, packageId]);
 
   const dateFormatter = (date, type) => {
-    const dateFormat = type === "date" ? "DD MMM YYYY" : "HH:mm:ss";
+    const dateFormat = type === "date" ? "DD MMM YYYY" : "HH:mm";
     return date && moment(date).format(dateFormat);
   };
 
@@ -99,7 +99,7 @@ const PackageDetail = () => {
         </div>
         <div
           style={{
-            color: "var(--Semantic-color-Error, #CE1111)",
+            color: item?.amount < 0 ? "#CE1111" : "#009E4E",
             backgroundColor: index % 2 === 0 ? "#FFF" : "#F9F9F9",
             font: "500 12px Poppins, sans-serif ",
             display: "flex",
@@ -190,7 +190,7 @@ const PackageDetail = () => {
             Start Valid Period
           </div>
           <div style={{ color: color.primary, fontWeight: 500 }}>
-            {dateFormatter(packageData?.startValidPeriod, 'date')}
+            {packageData?.startValidPeriod}
           </div>
         </div>
         <div>
@@ -198,7 +198,7 @@ const PackageDetail = () => {
             End Valid Period
           </div>
           <div style={{ color: color.primary, fontWeight: 500 }}>
-            {dateFormatter(packageData?.endValidPeriod, 'date')}
+            {packageData?.endValidPeriod}
           </div>
         </div>
         <div>
