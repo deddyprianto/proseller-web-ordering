@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import moment from "moment";
 
 import LoadingOverlayCustom from "components/loading/LoadingOverlay";
 import screen from "hooks/useWindowSize";
@@ -184,7 +183,7 @@ const PackageInformation = () => {
                   marginTop: "5px",
                 }}
               >
-                {item?.endValidPeriod && moment(item?.endValidPeriod).format("DD MMM YYYY")}
+                {item?.endValidPeriod}
               </div>
             </div>
             <div
