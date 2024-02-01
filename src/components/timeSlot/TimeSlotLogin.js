@@ -62,7 +62,7 @@ const TimeSlotLogin = ({ open, onClose, validationOrdering }) => {
     >
       <DialogTitle style={styles.dialogTitle}>
         <Typography style={styles.typoGraphy}>
-          Choose Delivery Schedule
+        Choose Date & Time
         </Typography>
       </DialogTitle>
       <DialogContent>
