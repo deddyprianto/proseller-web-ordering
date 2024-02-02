@@ -61,7 +61,7 @@ const TimeSlotDialog = ({ open, onClose, validationOrderingGuestMode }) => {
     >
       <DialogTitle style={stylesGuest.dialogTitle}>
         <Typography style={stylesGuest.typoGraphy}>
-          Choose Delivery Schedule
+        Choose Date & Time
         </Typography>
       </DialogTitle>
       <DialogContent>
