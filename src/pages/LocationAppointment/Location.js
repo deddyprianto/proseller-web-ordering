@@ -27,7 +27,7 @@ const Location = () => {
     paper: { minWidth: '350px', overflow: 'hidden' },
   }));
   const classes = useStyles();
-
+  const [isOutletUnavailable, setIsOutletUnavailable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [openDropDownTimeSelected, setOpenDropDownTimeSelected] =
     useState(false);
@@ -367,7 +367,15 @@ const Location = () => {
     };
     return (
       <div
-        style={localStyle.container}
+        style={{
+          boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+          borderRadius: "10px",
+          padding: "10px 0px",
+          marginBottom: "15px",
+          cursor: "pointer",
+          pointerEvents: item.orderingStatus === "UNAVAILABLE" && "none",
+          opacity: item.orderingStatus === "UNAVAILABLE" && 0.3,
+        }}
         onClick={() => handleSelectedOutlet(item)}
       >
         <div
@@ -476,6 +484,45 @@ const Location = () => {
         (item) => !isEmpty(item.appointmentTimeSlot)
       );
     }
+    
+    const handleFilterOutlet = (filterOutlet) => {
+      if (filterOutlet.every((item) => item.orderingStatus === "UNAVAILABLE")) {
+        setIsOutletUnavailable(true)
+        return (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              textAlign: "center",
+              height: "100vh",
+            }}
+          >
+            <span style={{ marginBottom: "24px" }}>
+              <img
+                src={imgOutletClosed}
+                width={164}
+                height={164}
+                alt="ic_button"
+              />
+            </span>
+            <span style={{ fontWeight: 700 }}>No Outlet Available</span>
+            <p style={{ fontSize: "14px" }}>
+              Oops! It looks like all the outlet are currently closed.
+              <br />
+              Please check back later for more booking options.
+            </p>
+          </div>
+        );
+      }
+      if (!isEmpty(filterOutlet)) {
+        return filterOutletSelected.map((item) => (
+          <ListLocations key={item.name} item={item} />
+        ));
+      }
+    };
+
     return (
       <React.Fragment>
         {!isEmpty(selectedLocation) && (
@@ -496,37 +543,7 @@ const Location = () => {
               Other Location
             </div>
           )}
-          {!isEmpty(filterOutletSelected) ? (
-            filterOutletSelected.map((item) => (
-              <ListLocations key={item.name} item={item} />
-            ))
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                textAlign: 'center',
-                height: `${height * 0.8}px`,
-              }}
-            >
-              <span style={{ marginBottom: '24px' }}>
-                <img
-                  src={imgOutletClosed}
-                  width={164}
-                  height={164}
-                  alt='ic_button'
-                />
-              </span>
-              <span style={{ fontWeight: 700 }}>No Outlet Available</span>
-              <p style={{ fontSize: '14px' }}>
-                Oops! It looks like all the outlet are currently closed.
-                <br />
-                Please check back later for more booking options.
-              </p>
-            </div>
-          )}
+          {handleFilterOutlet(filterOutletSelected)}
         </div>
       </React.Fragment>
     );
@@ -549,8 +566,17 @@ const Location = () => {
         >
           <AppointmentHeader
             color={color}
-            label='Location'
-            onBack={() => history.goBack()}
+            label="Location"
+            onBack={() => {
+              const locationPersisted = localStorage.getItem(
+                'LOCATION_APPOINTMENT_PERSISTED'
+              );
+              if (isOutletUnavailable || !locationPersisted) {
+                history.push("/outlets");
+              } else {
+                history.goBack();
+              }
+            }}
           />
           <div
             style={{

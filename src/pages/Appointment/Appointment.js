@@ -27,6 +27,8 @@ import AppointmentHeader from 'components/appointmentHeader';
 import { isEmpty } from 'helpers/utils';
 import Swal from 'sweetalert2';
 import { IconHistoryTime, IconPlace } from 'assets/iconsSvg/Icons';
+import imgOutletClosed from 'assets/images/outlet-closed.png';
+
 
 const SearchBar = loadable(() => import('./component/SearchBar'));
 const ItemService = loadable(() => import('./component/ItemService'));
@@ -61,6 +63,7 @@ const Appointment = (props) => {
   const setting = useSelector((state) => state.order.setting);
   const menuSidebar = useSelector((state) => state.theme.menu);
   const indexPath = useSelector((state) => state.appointmentReducer.indexPath);
+  const outlets = useSelector((state) => state.outlet.outlets);
   const responseAddCart = useSelector(
     (state) => state.appointmentReducer.responseAddCart
   );
@@ -336,24 +339,30 @@ const Appointment = (props) => {
         fontSize: '16px',
       },
     };
+    
+  const outletFilter = outlets.filter(
+      (item) => !isEmpty(item.appointmentTimeSlot) && item.orderingStatus === "AVAILABLE"
+  );
     return (
       <div style={localStyle.container}>
         <div style={{ fontWeight: 'bold', color: 'black', fontSize: '16px' }}>
           Chosen Location
         </div>
-        <div
-          style={{
-            color: color.primary,
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '16px',
-          }}
-          onClick={() => {
-            window.location.href = changeFormatURl('/location');
-          }}
-        >
-          Change
-        </div>
+        {outletFilter.length > 1 && (
+          <div
+            style={{
+              color: color.primary,
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '16px',
+            }}
+            onClick={() => {
+              window.location.href = changeFormatURl('/location');
+            }}
+          >
+            Change
+          </div>
+        )}
       </div>
     );
   };
@@ -503,7 +512,6 @@ const Appointment = (props) => {
         color: 'black',
       },
     };
-
     return (
       <div style={localStyle.container}>
         <div
@@ -960,9 +968,43 @@ const Appointment = (props) => {
     }
   };
 
+  const renderConditionalComponent = () => {
+    if (outlets.every((item) => item.orderingStatus === "UNAVAILABLE" || isEmpty(item.appointmentTimeSlot))) {
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            textAlign: "center",
+            height: "100vh",
+          }}
+        >
+          <span style={{ marginBottom: "24px" }}>
+            <img
+              src={imgOutletClosed}
+              width={164}
+              height={164}
+              alt="ic_button"
+            />
+          </span>
+          <span style={{ fontWeight: 700 }}>No Outlet Available</span>
+          <p style={{ fontSize: "14px" }}>
+            Oops! It looks like all the outlet are currently closed.
+            <br />
+            Please check back later for more booking options.
+          </p>
+        </div>
+      );
+    } else if (openWarningOutletNotSelected) {
+      return <ResponsiveLayout />;
+    }
+  };
+
   return (
     <React.Fragment>
-      {openWarningOutletNotSelected && <ResponsiveLayout />}
+      {renderConditionalComponent()}
       <Dialog
         fullWidth
         maxWidth='xs'
