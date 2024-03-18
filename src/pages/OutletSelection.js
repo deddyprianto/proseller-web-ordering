@@ -49,6 +49,9 @@ class OutletSelection extends Component {
   };
 
   componentDidMount = async () => {
+      localStorage.removeItem(
+      'LOCATION_APPOINTMENT_PERSISTED'
+    );
     let response = await this.props.dispatch(OutletAction.fetchAllOutlet(true));
     try {
       let cart = await this.props.dispatch(OrderAction.getCart());
