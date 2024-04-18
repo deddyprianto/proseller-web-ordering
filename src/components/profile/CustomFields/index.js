@@ -29,9 +29,13 @@ const CustomFields = ({
 
   const [value, setValue] = useState(defaultValue);
 
-  const handleValueChange = (e) => {
-    setValue({ ...value, [e.target.name]: e.target.value });
-    handleChange(e.target.name, e.target.value);
+  const handleValueChange = (e, fieldType) => {
+    if (fieldType) {
+      handleChange(fieldType, e);
+    } else {
+      setValue({ ...value, [e.target.name]: e.target.value });
+      handleChange(e.target.name, e.target.value);
+    }
   };
 
   const initialRender = useRef(true);

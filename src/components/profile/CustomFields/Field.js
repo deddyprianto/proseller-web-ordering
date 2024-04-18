@@ -5,20 +5,9 @@ import moment from 'moment';
 import styles from './styles.module.css';
 import cx from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
-import { CONSTANT } from 'helpers';
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { CONSTANT } from "helpers";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {
-  iconArrowDown,
-  iconArrowUp,
-  radioInputIcons,
-  radioInputIconsCheck,
-} from "assets/iconsSvg/Icons";
+import { MultipleItemComponent } from "./MultipleItemComponent";
 const Swal = require("sweetalert2");
 
 const Field = ({
@@ -34,11 +23,6 @@ const Field = ({
   const matches = useMediaQuery("(max-width:1200px)");
   const dispatch = useDispatch();
   const color = useSelector((state) => state.theme.color);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const toggle = () => {
-    setDropdownOpen((prevState) => !prevState);
-  };
   const [modalTrigger, setModalTrigger] = useState(null);
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
@@ -398,129 +382,20 @@ const Field = ({
 
   if (field.type === "dropdownmultiple") {
     return (
-      <div
-        className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide"
-        style={{ marginTop: 10 }}
-      >
-        <label style={{ fontSize: 14 }} htmlFor={field.fieldName}>
-          {displayName}{" "}
-          <span className="required">{field.mandatory && "*"}</span>
-        </label>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            border: "1px solid rgba(141, 141, 141, 0.44)",
-            borderRadius: "7px",
-            boxShadow:
-              "0px 0px 0.2px rgba(0, 0, 0, 0.02),\n  0px 0px 0.5px rgba(0, 0, 0, 0.028),\n  0px 0px 0.9px rgba(0, 0, 0, 0.035),\n  0px 0px 1.6px rgba(0, 0, 0, 0.042),\n  0px 0px 2.9px rgba(0, 0, 0, 0.05),\n  0px 0px 7px rgba(0, 0, 0, 0.07)",
-          }}
-        >
-          <input
-            value={
-              selectedOption || value[field.fieldName] || field?.defaultValue
-            }
-            placeholder={
-              selectedOption || value[field.fieldName] || field?.defaultValue
-            }
-            className={cx(styles.select, {
-              [styles.rounded]: roundedBorder,
-            })}
-            style={{
-              border: "none",
-            }}
-          />
-          <Dropdown
-            isOpen={dropdownOpen}
-            toggle={toggle}
-            direction="down"
-            className={styles.dropDownMenu}
-            size="100px"
-          >
-            <DropdownToggle
-              style={{
-                width: "100%",
-                backgroundColor: "transparent",
-                display: "flex",
-                justifyContent: "space-around",
-                alignItems: "center",
-                fontWeight: 500,
-                fontSize: "16px",
-                color: color.primary,
-                outline: "none",
-              }}
-            >
-              {dropdownOpen ? iconArrowDown() : iconArrowUp()}
-            </DropdownToggle>
-            <DropdownMenu
-              className={styles.DropdownMenuCustom}
-              style={{
-                width: matches ? "85vw" : "27.5vw",
-                borderRadius: "10px",
-                paddingLeft: "10px",
-                height: "235px",
-                overflowY: "auto",
-                marginTop: "10px",
-              }}
-            >
-              <DropdownItem className={styles.dropDownItem}>
-                {field?.options?.map((option) => {
-                  return (
-                    <label
-                      key={option.value}
-                      style={{
-                        display: "flex",
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                    >
-                      <div onClick={() => setSelectedOption(option.value)}>
-                        <input
-                          type="radio"
-                          name={field?.fieldName}
-                          value={option.value}
-                          checked={selectedOption === option.value}
-                          onChange={handleValueChange}
-                          style={{
-                            opacity: 0,
-                            position: "absolute",
-                            marginLeft: "5px",
-                            marginTop: "5px",
-                          }}
-                        />
-                        {selectedOption === option.value
-                          ? radioInputIconsCheck()
-                          : radioInputIcons()}
-                      </div>
-                      <div
-                        style={{
-                          marginLeft: "10px",
-                        }}
-                      >
-                        {option.text}
-                      </div>
-                    </label>
-                  );
-                })}
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-
-        {error && error[field?.fieldName] !== "" && (
-          <div className="text text-warning-theme small">
-            {" "}
-            <em>{error[field?.fieldName]}</em>{" "}
-          </div>
-        )}
-      </div>
+      <MultipleItemComponent
+        field={field}
+        value={value}
+        error={error}
+        roundedBorder={roundedBorder}
+        styles={styles}
+        color={color}
+        matches={matches}
+        fieldType={field.fieldName}
+        handleValueChange={handleValueChange}
+        dataCustomer={dataCustomer}
+      />
     );
   }
-
-  console.log("value =>", value);
 
   if (field.change) {
     return (
