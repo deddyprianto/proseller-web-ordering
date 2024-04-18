@@ -11,6 +11,8 @@ const defaultState = {
   isAllFieldHasBeenFullFiled: {},
   isCustomFieldHaveValue: [],
   showMessageConfirm: true,
+  saveMultipleCustomField: {},
+  payloadNew: {},
 };
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -39,17 +41,17 @@ export default function reducer(state = defaultState, action) {
         ...state,
         stamps: action.payload,
       };
-    case 'SET_DEFAULT_PHONE_NUMBER':
+    case "SET_DEFAULT_PHONE_NUMBER":
       return {
         ...state,
         defaultPhoneNumber: action.data,
       };
-    case 'SHOW_MESSAGE_CONFIRM':
+    case "SHOW_MESSAGE_CONFIRM":
       return {
         ...state,
         showMessageConfirm: action.data,
       };
-    case 'SET_DEFAULT_EMAIL':
+    case "SET_DEFAULT_EMAIL":
       return {
         ...state,
         defaultEmail: action.data,
@@ -66,12 +68,23 @@ export default function reducer(state = defaultState, action) {
         ...state,
         placeholderForEditAddressCustomer: action.data,
       };
-    case 'IS_USER_COMPLETED_FILL_ALL_DATA':
+    case "IS_USER_COMPLETED_FILL_ALL_DATA":
       return {
         ...state,
         isUserHasBeenCompletedfillData: action.data,
       };
-    case 'IS_CUSTOM_FIELD_HAVE_VALUE':
+    case "MULTIPLE_TYPE_CUSTOM_FIELD":
+      return {
+        ...state,
+        saveMultipleCustomField: action.data,
+      };
+    case "PAYLOAD_CUSTOM":
+      return {
+        ...state,
+        payloadNew: action.data,
+      };
+
+    case "IS_CUSTOM_FIELD_HAVE_VALUE":
       return { ...state, isCustomFieldHaveValue: action.data };
     default:
       return state;
