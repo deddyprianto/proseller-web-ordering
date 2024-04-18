@@ -11,3 +11,16 @@
 .rounded {
   border-radius: 50px;
 }
+
+.dropDownMenu{
+  border: none !important;
+  border-radius: 7px !important;
+  background-color: transparent !important;
+}
+.DropdownMenuCustom{
+  left: -22px !important;
+}
+.dropDownItem{
+  background-color: white !important;
+}
+
