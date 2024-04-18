@@ -5,7 +5,7 @@ import {
   radioInputIconsCheck,
   radioInputIcons,
 } from "assets/iconsSvg/Icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dropdown,
   DropdownToggle,
@@ -28,11 +28,20 @@ export const MultipleItemComponent = ({
   const dataCustomer = useSelector(
     (state) => state.customer.isAllFieldHasBeenFullFiled
   );
-  const options = dataCustomer && dataCustomer[field?.fieldName];
+  const [selectedOptions, setSelectedOptions] = useState([]);
+
+  useEffect(() => {
+    if (dataCustomer?.[field?.fieldName]) {
+      if (typeof dataCustomer?.[field?.fieldName] === "string") {
+        setSelectedOptions([]);
+      } else {
+        setSelectedOptions(dataCustomer?.[field?.fieldName]);
+      }
+    }
+  }, [dataCustomer, field?.fieldName]);
 
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState([]);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const handleValueChangeEl = (option) => {
@@ -87,13 +96,11 @@ export const MultipleItemComponent = ({
       >
         <input
           value={
-            options?.map((o) => o.text).join(", ") ||
             selectedOptions.map((o) => o.text).join(", ") ||
             value[field.fieldName] ||
             field?.defaultValue
           }
           placeholder={
-            options?.map((o) => o.text).join(", ") ||
             selectedOptions.map((o) => o.text).join(", ") ||
             value[field.fieldName] ||
             field?.defaultValue
@@ -162,10 +169,9 @@ export const MultipleItemComponent = ({
                       type="checkbox"
                       name={field?.fieldName}
                       value={option.value}
-                      checked={
-                        options?.some((o) => o.value === option.value) ||
-                        selectedOptions.some((o) => o.value === option.value)
-                      }
+                      checked={selectedOptions.some(
+                        (o) => o.value === option.value
+                      )}
                       onChange={() => handleValueChangeEl(option)}
                       style={{
                         opacity: 0,
@@ -174,8 +180,7 @@ export const MultipleItemComponent = ({
                         marginTop: "5px",
                       }}
                     />
-                    {options?.some((o) => o.value === option.value) ||
-                    selectedOptions.some((o) => o.value === option.value)
+                    {selectedOptions.some((o) => o.value === option.value)
                       ? radioInputIconsCheck()
                       : radioInputIcons()}
                   </div>
