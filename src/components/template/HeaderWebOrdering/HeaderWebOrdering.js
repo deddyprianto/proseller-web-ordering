@@ -16,6 +16,10 @@ import useMobileSize from 'hooks/useMobileSize';
 import Sidebar from './components/Sidebar';
 import { getLogoInfo } from '../../../redux/actions/LogoAction';
 import ImageContainer from 'components/imageContainer/ImageContainer';
+import { CONSTANT } from 'helpers';
+import '../../../styles/home.css';
+import { InputSearch } from 'components/InputSearch';
+
 const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
 
 const useStyles = (location) => {
@@ -178,6 +182,7 @@ const useStyles = (location) => {
 
 const HeaderWebOrdering = () => {
   const allState = useSelector((state) => state);
+  const { color } = useSelector((state) => state.theme);
   const location = useLocation();
   const styles = useStyles(location);
   const history = useHistory();
@@ -196,6 +201,7 @@ const HeaderWebOrdering = () => {
   const { defaultOutlet } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
   const [mode, setMode] = useState();
+  const {isSearchItem} = useSelector(state => state.getSpaceLogo);
   const [guessCheckout, setGuessCheckout] = useState();
   const responseGuestCheckOut = useSelector(
     (state) => state.guestCheckoutCart.response
@@ -546,6 +552,27 @@ const HeaderWebOrdering = () => {
       return <LoginRegister />;
     }
   };
+
+  const searchIcon =  () => {
+    return (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 34 34"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="15" cy="15" r="10.5" stroke="white" strokeWidth="3" />
+        <path
+          d="M22.5 22.5L31.5 31.5"
+          stroke="white"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  };
+
   const renderNavbarResponsive = () => {
     const styleWarp = mobileSize
       ? styles.wrapNavbarForMobile
@@ -568,7 +595,28 @@ const HeaderWebOrdering = () => {
           {renderSiderBar()}
           {renderLogoAndOutletNamed()}
           {renderRouteMenu()}
-          {renderBasket()}
+          <div style={{ display: "flex" }}>
+            {renderBasket()}
+            <div
+              style={{
+                backgroundColor: color.primary,
+                borderRadius: "100%",
+                height: "40px",
+                width: "40px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                dispatch({
+                  type: CONSTANT.IS_SEARCH_ITEM,
+                  payload: true
+                })
+              }}
+            >
+              {searchIcon()}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -582,7 +630,10 @@ const HeaderWebOrdering = () => {
         id='login-register-btn'
       />
       {renderLoginRegister()}
-      {renderNavbarResponsive()}
+      {
+        isSearchItem ?  <InputSearch/> : renderNavbarResponsive()
+      }
+    
     </>
   );
 };

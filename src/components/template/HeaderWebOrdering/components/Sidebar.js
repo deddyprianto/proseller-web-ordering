@@ -353,7 +353,7 @@ const Sidebar = ({ guessCheckout }) => {
     }
   };
   return (
-    <div style={{ width: '30px', height: '30px' }}>
+    <div style={{  height: '30px' }}>
       <FontAwesomeIcon
         id='menu-hamburger-button'
         onClick={() => handleUpdateOpen(true)}

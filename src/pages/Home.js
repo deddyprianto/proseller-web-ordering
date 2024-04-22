@@ -15,6 +15,7 @@ import { CONSTANT } from 'helpers';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import useWindowSize from 'hooks/useWindowSize';
 import commonAlert from 'components/template/commonAlert';
+import { ItemResults } from 'components/InputSearch/ItemResults';
 
 const LayoutTypeA = loadable(() => import('components/template/LayoutTypeA'));
 const LayoutTypeB = loadable(() => import('components/template/LayoutTypeB'));
@@ -34,6 +35,7 @@ const Home = () => {
   const isLanding = window.location.href.includes('landing');
 
   const setting = useSelector((state) => state.order.setting);
+  const {isSearchItem} = useSelector(state => state.getSpaceLogo);
   const outletSelection = useSelector((state) => state.order.outletSelection);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -211,12 +213,19 @@ const Home = () => {
     } else {
       return (
         <div style={styles.rootProduct}>
-          {settingCategoryHeader?.settingValue !==
+          {isSearchItem ||  settingCategoryHeader?.settingValue !==
             'CATEGORY_WITH_ALL_PRODUCT' && (
             <Banner outletId={defaultOutlet?.id || 0} />
           )}
-
+          
+            {isSearchItem ? (
+              <ItemResults/>
+            ): (
+              <div>
+          <div className={isSearchItem && 'product-item'}/> 
           {renderLayout()}
+          </div>
+            )}
 
           {!isEmptyArray(productList) && (
             <ModalAppointment
@@ -229,7 +238,6 @@ const Home = () => {
       );
     }
   };
-
   return <div style={styles.root}>{renderProductListOrOutletSelection()}</div>;
 };
 
