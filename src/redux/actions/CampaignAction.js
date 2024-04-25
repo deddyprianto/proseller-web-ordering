@@ -52,7 +52,7 @@ function getCampaignStamps() {
         expiryDate,
         stampsItem,
         campaignStampsAnnouncement,
-        ...(stampsImage && { stampsImage }),
+        emptyStampImage,
       };
       dispatch({ type: CONSTANT.GET_CAMPAIGN_STAMPS, payload });
     }
