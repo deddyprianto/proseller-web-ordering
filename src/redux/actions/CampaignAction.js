@@ -36,11 +36,11 @@ function getCampaignStamps() {
 
       const campaignStampsAnnouncement =
         trigger &&
-        trigger.campaignTrigger === 'COMPLETE_PROFILE' &&
+        trigger.campaignTrigger === "COMPLETE_PROFILE" &&
         !trigger.status;
 
       const stampsImage =
-        totalStampsEarned < 1
+        totalStampsEarned <= 1
           ? emptyStampImage
           : stampsItem[totalStampsEarned - 1].reward.imageURL;
 
@@ -52,7 +52,7 @@ function getCampaignStamps() {
         expiryDate,
         stampsItem,
         campaignStampsAnnouncement,
-        emptyStampImage,
+        ...(stampsImage && { stampsImage }),
       };
       dispatch({ type: CONSTANT.GET_CAMPAIGN_STAMPS, payload });
     }

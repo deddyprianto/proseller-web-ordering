@@ -128,7 +128,7 @@ const RewardsDetail = () => {
                 <MyStamps
                   openModal={openModal}
                   items={stamps.stampsItem}
-                  image={stamps.emptyStampImage}
+                  image={stamps.stampsImage}
                 />
               )}
             </div>
