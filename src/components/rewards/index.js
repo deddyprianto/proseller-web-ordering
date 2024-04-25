@@ -79,7 +79,6 @@ const RewardsDetail = () => {
   };
 
   const viewLeftPage = (loadingShow) => {
-    console.log(stamps);
     return (
       <div style={{ marginBottom: 10 }}>
         {loadingShow && (
