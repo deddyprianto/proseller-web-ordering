@@ -149,6 +149,7 @@ const Payment = ({ ...props }) => {
   }, []);
 
   const calculateVoucher = async () => {
+    setIsLoading(true);
     const payload = {
       details: props.basket?.details,
       outletId: props.basket?.outletID,
@@ -160,20 +161,13 @@ const Payment = ({ ...props }) => {
         voucherId: item.voucherId,
       })),
     };
-    Swal.fire({
-      title: 'Please Wait !',
-      html: 'Voucher will be applied',
-      allowOutsideClick: false,
-      onBeforeOpen: () => {
-        Swal.showLoading();
-      },
-    });
+
 
     const dataVoucher = await props.dispatch(
       PaymentAction.calculateVoucher(payload)
     );
+    setIsLoading(false)
     const isVoucherCannotApplied = dataVoucher.data.message;
-
     if (isVoucherCannotApplied) {
       setIsFilteredVoucher(true);
       const filterSelectedVoucher = props.selectedVoucher.filter((itemData) => {
@@ -200,15 +194,9 @@ const Payment = ({ ...props }) => {
         confirmButtonText: 'OK',
         confirmButtonColor: props.color.primary,
       });
-    } else {
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'successfully applied the voucher!',
-        confirmButtonColor: props.color.primary,
-      });
     }
   };
+
 
   useEffect(() => {
     if (
@@ -639,6 +627,7 @@ const Payment = ({ ...props }) => {
     const selectVoucher = selectedVouchers.filter(
       (selectedVoucher) => selectedVoucher.serialNumber !== value
     );
+
     const payload = {
       details: props.basket?.details,
       outletId: props.basket?.outletID,
