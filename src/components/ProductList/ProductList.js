@@ -60,6 +60,7 @@ const mapStateToProps = (state) => {
     orderingMode: state.order.orderingMode,
     orderingSetting: state.order.orderingSetting,
     promotion: state.promotion.banners,
+    isSearchItem: state.getSpaceLogo.isSearchItem
   };
 };
 
@@ -185,6 +186,8 @@ const ProductList = ({ ...props }) => {
   });
 
   const observer = useRef();
+  const containerRef =useRef();
+
   const lastEl = useCallback(
     (node) => {
       if (loading) return;
@@ -198,7 +201,18 @@ const ProductList = ({ ...props }) => {
     },
     [loading, hasMore]
   );
-
+  // useEffect(() => {
+  //   if (props.isSearchItem) {
+  //     const scrollToTop = containerRef.current;
+  //     if (scrollToTop) {
+  //       scrollToTop.scrollTo({
+  //         top: 0,
+  //         behavior: 'smooth', // Adding smooth behavior for a smooth scroll effect
+  //       });
+  //     }
+  //   }
+  // }, [props.isSearchItem]);
+  
   useEffect(() => {
     if (selectedCategory.sequence >= 0) {
       setPageNumber(1);
@@ -243,6 +257,7 @@ const ProductList = ({ ...props }) => {
         setOutlet(props.defaultOutlet);
         setCategories(categories);
         setSelectedCategory(categories[0]);
+        props.dispatch(ProductAction.setSelectedCategory(categories[0]));
       };
       loadData();
     } catch (e) {
@@ -325,6 +340,7 @@ const ProductList = ({ ...props }) => {
               onClick={() => {
                 setSelectedCategory(category);
                 setIsMore(false);
+                props.dispatch(ProductAction.setSelectedCategory(category));
               }}
             >
               <table>
@@ -332,12 +348,12 @@ const ProductList = ({ ...props }) => {
                   <tr>
                     <td
                       style={{
-                        textAlign: 'center',
-                        width: '100%',
-                        display: '-webkit-box',
-                        WebkitLineClamp: '2',
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
+                        textAlign: "center",
+                        width: "100%",
+                        display: "-webkit-box",
+                        WebkitLineClamp: "2",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                         padding: 0,
                         margin: 0,
                       }}

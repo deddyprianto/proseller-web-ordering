@@ -35,7 +35,7 @@ const Home = () => {
   const isLanding = window.location.href.includes('landing');
 
   const setting = useSelector((state) => state.order.setting);
-  const {isSearchItem} = useSelector(state => state.getSpaceLogo);
+  const {isSearchItem,keywordSearch} = useSelector(state => state.getSpaceLogo);
   const outletSelection = useSelector((state) => state.order.outletSelection);
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -218,14 +218,16 @@ const Home = () => {
             <Banner outletId={defaultOutlet?.id || 0} />
           )}
           
-            {isSearchItem ? (
-              <ItemResults/>
-            ): (
-              <div>
-          <div className={isSearchItem && 'product-item'}/> 
-          {renderLayout()}
-          </div>
-            )}
+          {
+              keywordSearch ? (
+                <ItemResults/>
+              )  : (
+                <div>
+                <div className={isSearchItem && 'product-item'}/> 
+                {renderLayout()}
+                </div>
+              )
+            }
 
           {!isEmptyArray(productList) && (
             <ModalAppointment

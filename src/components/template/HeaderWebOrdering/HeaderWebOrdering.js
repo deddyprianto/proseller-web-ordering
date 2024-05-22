@@ -213,12 +213,16 @@ const HeaderWebOrdering = () => {
     `${config.prefix}_infoCompany`
   );
 
+  const enableItemSearch = setting.find((items) => {
+    return items.settingKey === "EnableItemSearch";
+  });
+
   useEffect(() => {
     const settingAppoinment = setting.find((items) => {
-      return items.settingKey === 'EnableAppointment';
+      return items.settingKey === "EnableAppointment";
     });
     const settingOnlineOrdering = setting.find((items) => {
-      return items.settingKey === 'EnableOrdering';
+      return items.settingKey === "EnableOrdering";
     });
 
     if (settingOnlineOrdering?.settingValue) {
@@ -232,7 +236,7 @@ const HeaderWebOrdering = () => {
   useEffect(() => {
     const enableOrderingChecker = () => {
       let enableOrderingCheck = allState.order.setting.find((items) => {
-        return items.settingKey === 'EnableOrdering';
+        return items.settingKey === "EnableOrdering";
       });
       if (enableOrderingCheck) {
         setShowMenu(enableOrderingCheck.settingValue);
@@ -242,14 +246,14 @@ const HeaderWebOrdering = () => {
   }, [allState]);
 
   useEffect(() => {
-    if (isGuestMode === 'GuestMode') {
+    if (isGuestMode === "GuestMode") {
       setMode(isGuestMode);
     }
   }, [isGuestMode]);
 
   useEffect(() => {
     const settingGuestCheckout = setting.find((items) => {
-      return items.settingKey === 'GuestMode';
+      return items.settingKey === "GuestMode";
     });
 
     if (settingGuestCheckout?.settingValue) {
@@ -259,12 +263,12 @@ const HeaderWebOrdering = () => {
 
   const handleAllowedURL = (url) => {
     const allowedOriginUrl =
-      'https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com';
+      "https://cdn-bucket-file-manager.s3.ap-southeast-1.amazonaws.com";
     const getOriginUrlImg = new URL(url).origin;
     if (allowedOriginUrl === getOriginUrlImg) {
       return url;
     } else {
-      return '';
+      return "";
     }
   };
 
@@ -280,7 +284,7 @@ const HeaderWebOrdering = () => {
 
   const handleUpdateEnableOrdering = (setEnableOrdering) => {
     const enableOrdering = setting?.find((items) => {
-      return items.settingKey === 'EnableOrdering';
+      return items.settingKey === "EnableOrdering";
     });
     if (enableOrdering) {
       setEnableOrdering(enableOrdering);
@@ -290,7 +294,7 @@ const HeaderWebOrdering = () => {
   useEffect(() => {
     const infoCompany = encryptor.decrypt(JSON.parse(encryptedInfoCompany));
     const logoCompany = setting.find((items) => {
-      return items.settingKey === 'Logo';
+      return items.settingKey === "Logo";
     });
     dispatch(OutletAction.fetchAllOutlet(true));
     setCompanyName(infoCompany?.companyName);
@@ -300,7 +304,7 @@ const HeaderWebOrdering = () => {
   }, [setting, encryptedInfoCompany]);
 
   useEffect(() => {
-    if (history.location.pathname === '/') {
+    if (history.location.pathname === "/") {
       setShowOutletSelection(true);
     } else {
       setShowOutletSelection(false);
@@ -308,7 +312,7 @@ const HeaderWebOrdering = () => {
   }, [history.location.pathname]);
 
   useEffect(() => {
-    if (mode === 'GuestMode') {
+    if (mode === "GuestMode") {
       let basketLength = 0;
       if (responseGuestCheckOut && responseGuestCheckOut.details) {
         responseGuestCheckOut.details.forEach((cart) => {
@@ -334,7 +338,7 @@ const HeaderWebOrdering = () => {
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
-    history.push('/');
+    history.push("/");
   };
 
   const renderOutletNamed = () => {
@@ -345,10 +349,10 @@ const HeaderWebOrdering = () => {
       return (
         <div
           style={styles.wrapOutletName}
-          onClick={() => history.push('/outlets')}
+          onClick={() => history.push("/outlets")}
         >
-          <PlaceIcon sx={{ fontSize: '17px' }} />
-          <Typography sx={{ fontSize: '15px', fontWeight: 'bold' }}>
+          <PlaceIcon sx={{ fontSize: "17px" }} />
+          <Typography sx={{ fontSize: "15px", fontWeight: "bold" }}>
             {defaultOutlet?.name}
           </Typography>
           <ChevronRightIcon />
@@ -358,11 +362,11 @@ const HeaderWebOrdering = () => {
       return (
         <Typography
           sx={{
-            fontSize: '15px',
-            marginTop: '7px',
-            fontWeight: 'bold',
-            color: '#4D86A0',
-            textAlign: 'center',
+            fontSize: "15px",
+            marginTop: "7px",
+            fontWeight: "bold",
+            color: "#4D86A0",
+            textAlign: "center",
           }}
         >
           Choose Outlet
@@ -375,7 +379,7 @@ const HeaderWebOrdering = () => {
     if (showMenu) {
       return (
         <ListItem>
-          <Link to='/'>Menu</Link>
+          <Link to="/">Menu</Link>
         </ListItem>
       );
     }
@@ -384,7 +388,7 @@ const HeaderWebOrdering = () => {
     if (!isLoggedIn && guessCheckout) {
       return (
         <ListItem>
-          <Link to='/trackorder'>TrackOrder</Link>
+          <Link to="/trackorder">TrackOrder</Link>
         </ListItem>
       );
     }
@@ -394,7 +398,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn || !enableOrdering) {
       return (
         <ListItem>
-          <Link to='/profile'>Profile</Link>
+          <Link to="/profile">Profile</Link>
         </ListItem>
       );
     }
@@ -403,7 +407,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn && appointmentMenu) {
       return (
         <ListItem>
-          <Link to='/appointment'>Booking</Link>
+          <Link to="/appointment">Booking</Link>
         </ListItem>
       );
     }
@@ -412,7 +416,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn) {
       return (
         <ListItem>
-          <Link to='/history'>History</Link>
+          <Link to="/history">History</Link>
         </ListItem>
       );
     }
@@ -421,7 +425,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn) {
       return (
         <ListItem>
-          <Link to='/inbox'>Inbox</Link>
+          <Link to="/inbox">Inbox</Link>
         </ListItem>
       );
     }
@@ -430,7 +434,7 @@ const HeaderWebOrdering = () => {
     if (isLoggedIn) {
       return (
         <ListItem>
-          <Link to='/voucher'>Voucher</Link>
+          <Link to="/voucher">Voucher</Link>
         </ListItem>
       );
     }
@@ -438,8 +442,8 @@ const HeaderWebOrdering = () => {
   const linkLogout = () => {
     if (isLoggedIn) {
       return (
-        <ListItem data-toggle='modal' onClick={handleLogout}>
-          <Typography style={{ color: 'red', fontSize: '15px' }}>
+        <ListItem data-toggle="modal" onClick={handleLogout}>
+          <Typography style={{ color: "red", fontSize: "15px" }}>
             Logout
           </Typography>
         </ListItem>
@@ -449,11 +453,11 @@ const HeaderWebOrdering = () => {
   const modalLogin = () => {
     if (!isLoggedIn) {
       return (
-        <ListItem data-toggle='modal' data-target='#login-register-modal'>
+        <ListItem data-toggle="modal" data-target="#login-register-modal">
           <input
-            type='submit'
-            name='login'
-            value='LogIn / SignUp'
+            type="submit"
+            name="login"
+            value="LogIn / SignUp"
             style={styles.input}
           />
         </ListItem>
@@ -462,43 +466,43 @@ const HeaderWebOrdering = () => {
   };
 
   const renderBasket = () => {
-    if (settingOnlineOrdering && location.pathname !== '/outlets') {
+    if (settingOnlineOrdering && location.pathname !== "/outlets") {
       return (
         <Link
-          id='cart-icon'
-          to={mode === 'GuestMode' ? '/cartguestcheckout' : '/cart'}
+          id="cart-icon"
+          to={mode === "GuestMode" ? "/cartguestcheckout" : "/cart"}
         >
           <Badge
-            color='info'
+            color="info"
             badgeContent={
-              mode === 'GuestMode' ? basketLengthGuestCheckout : basketLength
+              mode === "GuestMode" ? basketLengthGuestCheckout : basketLength
             }
             style={styles.iconBasket}
           >
             <div
-              data-toggle='modal'
+              data-toggle="modal"
               data-target={
-                mode === 'GuestMode' || isLoggedIn
-                  ? ''
-                  : '#login-register-modal'
+                mode === "GuestMode" || isLoggedIn
+                  ? ""
+                  : "#login-register-modal"
               }
               style={{
                 width: 35,
                 height: 35,
-                borderRadius: '50%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                border: '1px solid rgb(0 0 0)',
+                borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "1px solid rgb(0 0 0)",
               }}
             >
-              <ShoppingBasket sx={{ width: 25, height: 25, color: 'black' }} />
+              <ShoppingBasket sx={{ width: 25, height: 25, color: "black" }} />
             </div>
           </Badge>
         </Link>
       );
-    }else{
-      return <div style={{visibility:'hidden'}}></div>
+    } else {
+      return <div style={{ visibility: "hidden" }}></div>;
     }
   };
 
@@ -510,21 +514,21 @@ const HeaderWebOrdering = () => {
   const renderLogoAndOutletNamed = () => (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Link
         style={{
           ...styles.logoAndOuletName,
-          visibility: logo ? 'visible' : 'hidden',
+          visibility: logo ? "visible" : "hidden",
           height: logo ? 50 : 0,
         }}
-        to='/'
+        to="/"
       >
-        <ImageContainer image={logo} fetchpriority='high' />
+        <ImageContainer image={logo} fetchpriority="high" />
       </Link>
       {renderOutletNamed()}
     </div>
@@ -553,7 +557,7 @@ const HeaderWebOrdering = () => {
     }
   };
 
-  const searchIcon =  () => {
+  const searchIcon = () => {
     return (
       <svg
         width="24"
@@ -580,15 +584,15 @@ const HeaderWebOrdering = () => {
     return (
       <div
         style={
-          companyName === 'PinkCity'
-            ? { ...styles.container, backgroundColor: '#FFFFFF' }
+          companyName === "PinkCity"
+            ? { ...styles.container, backgroundColor: "#FFFFFF" }
             : styles.container
         }
       >
         <div
           style={
-            companyName === 'PinkCity'
-              ? { ...styleWarp, backgroundColor: '#FFFFFF' }
+            companyName === "PinkCity"
+              ? { ...styleWarp, backgroundColor: "#FFFFFF" }
               : styleWarp
           }
         >
@@ -597,25 +601,41 @@ const HeaderWebOrdering = () => {
           {renderRouteMenu()}
           <div style={{ display: "flex" }}>
             {renderBasket()}
-            <div
-              style={{
-                backgroundColor: color.primary,
-                borderRadius: "100%",
-                height: "40px",
-                width: "40px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => {
-                dispatch({
-                  type: CONSTANT.IS_SEARCH_ITEM,
-                  payload: true
-                })
-              }}
-            >
-              {searchIcon()}
-            </div>
+            {location.pathname !== "/outlets" &&
+              enableItemSearch?.settingValue &&  (
+                <div
+                style={{
+                  width: "1px",
+                  height: "40px",
+                  backgroundColor: "#D6D6D6",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              />
+              )}
+          
+            {location.pathname !== "/outlets" &&
+              enableItemSearch?.settingValue && (
+                <div
+                  style={{
+                    backgroundColor: color.primary,
+                    borderRadius: "100%",
+                    height: "40px",
+                    width: "40px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onClick={() => {
+                    dispatch({
+                      type: CONSTANT.IS_SEARCH_ITEM,
+                      payload: true,
+                    });
+                  }}
+                >
+                  {searchIcon()}
+                </div>
+              )}
           </div>
         </div>
       </div>
