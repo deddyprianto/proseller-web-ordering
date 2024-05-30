@@ -933,6 +933,11 @@ const ProductAddModal = ({
         data: !props.basketUpdate,
       });
 
+      props.dispatch({
+        type: CONSTANT.IS_SEARCH_ITEM,
+        payload: false,
+      });
+
       if (!isEmptyObject(props.deliveryProviderSelected)) {
         const payloadCalculateFee = {
           outletId: basket.outlet.id,
@@ -958,7 +963,7 @@ const ProductAddModal = ({
           );
 
           await props.dispatch(
-            OrderAction.setData(filteredData, 'SET_SELECTED_DELIVERY_PROVIDERS')
+            OrderAction.setData(filteredData, "SET_SELECTED_DELIVERY_PROVIDERS")
           );
         }
       }
@@ -970,8 +975,16 @@ const ProductAddModal = ({
         type: CONSTANT.SAVE_SELECTED_PRODUCT_MODIFIER,
         payload: [],
       });
+      props.dispatch({
+        type: CONSTANT.IS_SEARCH_ITEM,
+        payload: false,
+      });
     }
 
+    props.dispatch({
+      type: "KEYWORD_SEARCH",
+      payload: "",
+    });
     setIsLoading(false);
     handleClose();
     handleClear();
@@ -1029,6 +1042,10 @@ const ProductAddModal = ({
     });
     handleClose();
     handleClear();
+    props.dispatch({
+      type: "KEYWORD_SEARCH",
+      payload: "",
+    });
   };
   const handleDisabledCheckbox = ({ modifier, max, productModifier }) => {
     const productModifierId = productModifier.modifierID || productModifier.id;
