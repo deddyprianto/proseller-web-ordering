@@ -23,6 +23,12 @@ const ItemCard = ({
   const defaultOutlet = useSelector((state) => state.outlet.defaultOutlet);
   const companyInfo = useSelector((state) => state.masterdata);
 
+  const originalString = item?.product?.name;
+  const modifiedString = originalString.replace(/\(([^)]+)\)/g, (match, p1) => {
+    const modifiedContent = p1.split(",").join(", ");
+    return `(${modifiedContent})`;
+  });
+
   return (
     <div
       key={item?.id}
@@ -39,14 +45,14 @@ const ItemCard = ({
     >
       <div
         style={{
-          width:"100%",
-          display: "grid", 
-          gridTemplateColumns: "1fr 65px", 
-          gridTemplateRows: "1fr", 
-          gridAutoColumns: "1fr", 
-          gap: "0px 0px", 
-          gridAutoFlow: "row", 
-          gridTemplateAreas: "\". .\"",
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "1fr 65px",
+          gridTemplateRows: "1fr",
+          gridAutoColumns: "1fr",
+          gap: "0px 0px",
+          gridAutoFlow: "row",
+          gridTemplateAreas: '". ."',
         }}
       >
         <div
@@ -63,7 +69,7 @@ const ItemCard = ({
               fontFamily: "Plus Jakarta Sans, sans-serif",
             }}
           >
-            {item?.product?.name}
+            {modifiedString}
           </div>
           <div
             style={{
@@ -105,7 +111,7 @@ const ItemCard = ({
             alignSelf: "start",
             marginTop: "14px",
             font: "16px Plus Jakarta Sans, sans-serif ",
-            fontWeight:700
+            fontWeight: 700,
           }}
         >
           {handleCurrency({ companyInfo, price: item?.product?.retailPrice })}
@@ -138,7 +144,7 @@ const ItemCard = ({
             whiteSpace: "nowrap",
             padding: "8px 16px",
             alignItems: "center",
-            width:'87px'
+            width: "87px",
           }}
         >
           <img

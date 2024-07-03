@@ -121,16 +121,7 @@ const useStyles = (location) => {
       marginBottom: 0,
     },
     childList: {
-      paddingTop: '1rem',
-    },
-    wrapOutletName: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingTop: '10px',
-      width: '100%',
-      color: '#4D86A0',
-      marginTop: '2px',
+      paddingTop: "1rem",
     },
     colorIconMenu: {
       color: 'black',
@@ -162,13 +153,11 @@ const useStyles = (location) => {
       paddingTop: 4,
       paddingBottom: 4,
       borderRadius: 10,
-      fontSize: '13px',
+      fontSize: "13px",
     },
     iconBasket: {
       fontSize: 20,
-      fontWeight: 'bold',
-      marginRight: 3,
-      marginTop: 5,
+      fontWeight: "bold",
       color: color.primary,
     },
     logoAndOuletName: {
@@ -190,25 +179,25 @@ const HeaderWebOrdering = () => {
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(true);
   const [enableOrdering, setEnableOrdering] = useState(true);
-  const [logo, setLogo] = useState('');
-  const [companyName, setCompanyName] = useState('');
+  const [logo, setLogo] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [basketLength, setBasketLength] = useState(0);
   const [appointmentMenu, setAppointmentMenu] = useState(false);
   const [basketLengthGuestCheckout, setBasketLengthGuestCheckout] = useState(0);
   const [showOutletSelection, setShowOutletSelection] = useState(false);
-  const [settingOnlineOrdering, setSettingOnlineOrdering] = useState()
+  const [settingOnlineOrdering, setSettingOnlineOrdering] = useState();
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { defaultOutlet } = useSelector((state) => state.outlet);
   const { setting, basket } = useSelector((state) => state.order);
   const [mode, setMode] = useState();
-  const {isSearchItem} = useSelector(state => state.getSpaceLogo);
+  const { isSearchItem } = useSelector((state) => state.getSpaceLogo);
   const [guessCheckout, setGuessCheckout] = useState();
   const responseGuestCheckOut = useSelector(
     (state) => state.guestCheckoutCart.response
   );
   const data = useSelector((state) => state.guestCheckoutCart.data);
 
-  const isGuestMode = localStorage.getItem('settingGuestMode');
+  const isGuestMode = localStorage.getItem("settingGuestMode");
   const encryptedInfoCompany = localStorage.getItem(
     `${config.prefix}_infoCompany`
   );
@@ -348,14 +337,34 @@ const HeaderWebOrdering = () => {
     if (defaultOutlet?.name) {
       return (
         <div
-          style={styles.wrapOutletName}
+          style={{
+            display: "grid",
+            gridAutoColumns: "1fr",
+            gridTemplateColumns: "15px 1fr 10px",
+            gridTemplateRows: "1fr",
+            gap: "0px 0px",
+            gridTemplateAreas: '". . ."',
+            alignItems: "start",
+            paddingTop: "10px",
+            color: "#4D86A0",
+          }}
           onClick={() => history.push("/outlets")}
         >
-          <PlaceIcon sx={{ fontSize: "17px" }} />
-          <Typography sx={{ fontSize: "15px", fontWeight: "bold" }}>
+          <PlaceIcon sx={{ fontSize: "17px", marginTop: "3px" }} />
+          <Typography
+            sx={{
+              padding: 0,
+              margin: 0,
+              fontSize: "15px",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
             {defaultOutlet?.name}
           </Typography>
-          <ChevronRightIcon />
+          <div>
+            <ChevronRightIcon />
+          </div>
         </div>
       );
     } else {
@@ -599,29 +608,35 @@ const HeaderWebOrdering = () => {
           {renderSiderBar()}
           {renderLogoAndOutletNamed()}
           {renderRouteMenu()}
-          <div style={{ display: "flex" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             {renderBasket()}
             {location.pathname !== "/outlets" &&
-              enableItemSearch?.settingValue &&  (
+              enableItemSearch?.settingValue && (
                 <div
-                style={{
-                  width: "1px",
-                  height: "40px",
-                  backgroundColor: "#D6D6D6",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              />
+                  style={{
+                    width: "1px",
+                    height: "35px",
+                    backgroundColor: "#D6D6D6",
+                    marginLeft: "5px",
+                    marginRight: "5px",
+                  }}
+                />
               )}
-          
+
             {location.pathname !== "/outlets" &&
               enableItemSearch?.settingValue && (
                 <div
                   style={{
                     backgroundColor: color.primary,
                     borderRadius: "100%",
-                    height: "40px",
-                    width: "40px",
+                    height: "35px",
+                    width: "35px",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
@@ -645,15 +660,12 @@ const HeaderWebOrdering = () => {
   return (
     <>
       <span
-        data-toggle='modal'
-        data-target='#login-register-modal'
-        id='login-register-btn'
+        data-toggle="modal"
+        data-target="#login-register-modal"
+        id="login-register-btn"
       />
       {renderLoginRegister()}
-      {
-        isSearchItem ?  <InputSearch/> : renderNavbarResponsive()
-      }
-    
+      {isSearchItem ? <InputSearch /> : renderNavbarResponsive()}
     </>
   );
 };
