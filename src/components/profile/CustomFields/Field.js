@@ -20,6 +20,7 @@ const Field = ({
   touched,
   dataCustomer,
 }) => {
+  const oneTimeEntry = field?.oneTimeEntry;
   const matches = useMediaQuery("(max-width:1200px)");
   const dispatch = useDispatch();
   const color = useSelector((state) => state.theme.color);
@@ -103,11 +104,23 @@ const Field = ({
                 cursor: "pointer",
                 marginRight: 10,
               }}
-              onClick={() =>
-                handleValueChange({
-                  target: { value: option.value, name: field.fieldName },
-                })
-              }
+              onClick={() => {
+                if (oneTimeEntry) {
+                  Swal.fire({
+                    icon: "info",
+                    iconColor: "#333",
+                    title: "Oppss!",
+                    text: "This Field can only be entered once",
+                    allowOutsideClick: false,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: color.primary,
+                  });
+                } else {
+                  handleValueChange({
+                    target: { value: option.value, name: field.fieldName },
+                  });
+                }
+              }}
             >
               <div
                 className={
@@ -157,6 +170,19 @@ const Field = ({
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <select
+          onClick={() => {
+            if (oneTimeEntry) {
+              Swal.fire({
+                icon: "info",
+                iconColor: "#333",
+                title: "Oppss!",
+                text: "This Field can only be entered once",
+                allowOutsideClick: false,
+                confirmButtonText: "OK",
+                confirmButtonColor: color.primary,
+              });
+            }
+          }}
           name={field.fieldName}
           onChange={handleValueChange}
           className={cx(styles.select, { [styles.rounded]: roundedBorder })}
@@ -194,7 +220,7 @@ const Field = ({
         style={{ marginTop: 10 }}
       >
         <label style={{ fontSize: 14 }}>
-          {displayName}{" "}
+          {displayName}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div className="customDatePickerWidth">
@@ -216,10 +242,7 @@ const Field = ({
             <div
               id={`${field?.fieldName?.toLowerCase()}-input`}
               onClick={() => {
-                const isDefaultValueBirthDateExist = dataCustomer?.birthDate;
-                if (!isDefaultValueBirthDateExist) {
-                  setOpenDatePicker(true);
-                } else {
+                if (dataCustomer[field.fieldName]) {
                   Swal.fire({
                     icon: "info",
                     iconColor: "#333",
@@ -229,6 +252,8 @@ const Field = ({
                     confirmButtonText: "OK",
                     confirmButtonColor: color.primary,
                   });
+                } else {
+                  setOpenDatePicker(true);
                 }
               }}
               style={{
@@ -306,6 +331,19 @@ const Field = ({
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <textarea
+          onClick={() => {
+            if (oneTimeEntry) {
+              Swal.fire({
+                icon: "info",
+                iconColor: "#333",
+                title: "Oppss!",
+                text: "This Field can only be entered once",
+                allowOutsideClick: false,
+                confirmButtonText: "OK",
+                confirmButtonColor: color.primary,
+              });
+            }
+          }}
           type={field.type}
           className="woocommerce-Input woocommerce-Input--text input-text"
           id={field.fieldName}
@@ -335,14 +373,26 @@ const Field = ({
         <div style={{ display: "flex" }}>
           <div
             style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-            onClick={() =>
-              handleValueChange({
-                target: {
-                  value: !value[field.fieldName],
-                  name: field.fieldName,
-                },
-              })
-            }
+            onClick={() => {
+              if (oneTimeEntry) {
+                Swal.fire({
+                  icon: "info",
+                  iconColor: "#333",
+                  title: "Oppss!",
+                  text: "This Field can only be entered once",
+                  allowOutsideClick: false,
+                  confirmButtonText: "OK",
+                  confirmButtonColor: color.primary,
+                });
+              } else {
+                handleValueChange({
+                  target: {
+                    value: !value[field.fieldName],
+                    name: field.fieldName,
+                  },
+                });
+              }
+            }}
           >
             <div
               className={
@@ -412,7 +462,7 @@ const Field = ({
           }}
         ></div>
         <label style={{ fontSize: 14 }} htmlFor={field.fieldName}>
-          {displayName}{" "}
+          {displayName}
           <span className="required">{field.mandatory && "*"}</span>
         </label>
         <div
@@ -442,9 +492,23 @@ const Field = ({
       style={{ marginTop: 10 }}
     >
       <label style={{ fontSize: 14 }} htmlFor={field.fieldName}>
-        {displayName} <span className="required">{field.mandatory && "*"}</span>
+        {displayName}
+        <span className="required">{field.mandatory && "*"}</span>
       </label>
       <input
+        onClick={() => {
+          if (oneTimeEntry) {
+            Swal.fire({
+              icon: "info",
+              iconColor: "#333",
+              title: "Oppss!",
+              text: "This Field can only be entered once",
+              allowOutsideClick: false,
+              confirmButtonText: "OK",
+              confirmButtonColor: color.primary,
+            });
+          }
+        }}
         placeholder={field?.defaultValue}
         type={field.type}
         className={cx(styles.input, {
