@@ -41,10 +41,12 @@ export function ItemResults() {
         }}
       >
         <img alt="icon" src={SearchNotFound} />
-        <h1 style={{ fontSize: "16px", marginTop: "16px" }}>Item Not Found</h1>
+        <h1 style={{ fontSize: "16px", marginTop: "16px" }}>
+          Item <span style={{ margin: "0px 3px" }}>Not</span> Found
+        </h1>
         <p style={{ fontSize: "14px", textAlign: "center" }}>
-          We couldn't find the item you searched for.Please double-check your
-          keyword.
+          We couldn't find the item you searched for. <br />
+          Please double-check your keyword.
         </p>
       </div>
     );
