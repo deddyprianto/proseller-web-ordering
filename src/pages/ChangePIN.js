@@ -6,46 +6,66 @@ import { CustomerAction } from "redux/actions/CustomerAction";
 import ModalPinPass from "components/ModalPinPass";
 import Swal from "sweetalert2";
 
-const CreateNewPin = () => {
+const ChangePIN = () => {
+  const inputOldPIN = useRef();
   const inputRefNewPin = useRef();
   const inputRefConfirmNewPin = useRef();
   const dispatch = useDispatch();
   const { color } = useSelector((state) => state.theme);
   const [showError, setShowError] = useState(false);
+  const [checkIsEmpty, setCheckIsEmpty] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const orderingSetting = useSelector((state) => state);
-  const payload = {
-    phoneNumber: orderingSetting.auth?.account?.idToken?.payload?.phoneNumber,
-  };
+  // const payload = {
+  //   phoneNumber: orderingSetting.auth?.account?.idToken?.payload?.phoneNumber,
+  // };
 
-  const handleCreatePin = async () => {
-    if (inputRefConfirmNewPin.current.value !== inputRefNewPin.current.value) {
-      setShowError(true);
-      return;
-    }
-    setShowError(false);
-    try {
-      Swal.showLoading();
-      const data = await dispatch(
-        CustomerAction.getCustomerPin({ pin: inputRefNewPin.current.value })
-      );
-      Swal.hideLoading();
-      if (data?.status === "SUCCESS") {
-        Swal.fire({
-          icon: "success",
-          title: data.message,
-          confirmButtonText: "OK",
-        });
-      } else {
-        Swal.fire({
-          icon: "info",
-          iconColor: "#333",
-          title: data.message,
-          confirmButtonText: "OK",
-        });
+  const handleCreateChangePin = async () => {
+    if (
+      inputOldPIN.current.value &&
+      inputRefConfirmNewPin.current.value &&
+      inputRefNewPin.current.value
+    ) {
+      setCheckIsEmpty(false);
+      if (
+        inputRefConfirmNewPin.current.value !== inputRefNewPin.current.value
+      ) {
+        setShowError(true);
+        return;
       }
-    } catch (error) {
-      console.log(error);
+      setShowError(false);
+      try {
+        Swal.showLoading();
+        const data = await dispatch(
+          CustomerAction.getCustomerPin(
+            {
+              oldPin: inputOldPIN.current.value,
+              newPin: inputRefNewPin.current.value,
+            },
+            "PUT"
+          )
+        );
+        Swal.hideLoading();
+        if (data?.status === "FAILED") {
+          Swal.fire({
+            icon: "info",
+            iconColor: "#333",
+            title: data.message,
+            allowOutsideClick: false,
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        iconColor: "#333",
+        title: "Make sure all fields are filled in",
+        allowOutsideClick: false,
+        confirmButtonText: "OK",
+      });
     }
   };
 
@@ -58,11 +78,34 @@ const CreateNewPin = () => {
           height: "85vh",
         }}
       >
-        <PinPasswordHeader label="Create New Pin" />
-        <div style={{ marginTop: "16px" }}>
+        <PinPasswordHeader label="Change PIN" />
+        <div style={{ marginTop: "24px", width: "100%" }}>
+          <InputCustom
+            inputRef={inputOldPIN}
+            label="Current PIN"
+            placeholder="Enter PIN"
+          />
+          <div style={{ display: "flex", justifyContent: "end" }}>
+            <div
+              onClick={() => setIsOpenModal(true)}
+              style={{
+                fontSize: "14px",
+                color: "#306AFF",
+                textDecoration: "underline",
+                cursor: "pointer",
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              Forget PIN?
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: checkIsEmpty ? "0px" : "16px" }}>
           <InputCustom
             inputRef={inputRefNewPin}
-            label="New Pin"
+            label="New PIN"
             placeholder="Enter PIN"
           />
         </div>
@@ -104,7 +147,7 @@ const CreateNewPin = () => {
         }}
       >
         <button
-          onClick={handleCreatePin}
+          onClick={handleCreateChangePin}
           style={{
             display: "flex",
             padding: "8px 16px",
@@ -124,4 +167,4 @@ const CreateNewPin = () => {
   );
 };
 
-export default CreateNewPin;
+export default ChangePIN;

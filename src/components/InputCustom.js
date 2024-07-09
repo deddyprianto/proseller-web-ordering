@@ -1,8 +1,9 @@
 import { iconNotSeen, iconSeen } from "assets/iconsSvg/Icons";
 import React, { useState } from "react";
 
-export function InputCustom({ label, placeholder }) {
+export function InputCustom({ label, placeholder, inputRef }) {
   const [seenText, setSeenText] = useState(false);
+  const [isActiveInput, setIsActiveInput] = useState(false);
   return (
     <div
       style={{
@@ -39,19 +40,19 @@ export function InputCustom({ label, placeholder }) {
 
       <div
         style={{
-          justifyContent: "space-between",
           borderRadius: "8px",
-          boxShadow: "0px 0px 0px 3px rgba(159, 135, 255, 0.20)",
-          borderColor: "rgba(136, 135, 135, 1)",
-          borderStyle: "solid",
-          borderWidth: "1px",
-          backgroundColor: "var(--Brand-color-Secondary, #FFF)",
+          border: "1px solid var(--Button-color-Disable, #B7B7B7)",
+          boxShadow:
+            isActiveInput && "0px 0px 0px 3px rgba(159, 135, 255, 0.20)",
+          backgroundColor: "var(--Brand-color-Secondary, #fff)",
           display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           marginTop: "4px",
           width: "100%",
           gap: "20px",
           color: "var(--Text-color-Tertiary, #888787)",
-          padding: "12px 16px",
+          padding: "5px 16px",
         }}
       >
         <div
@@ -62,16 +63,26 @@ export function InputCustom({ label, placeholder }) {
           }}
         >
           <input
+            ref={inputRef}
+            onClick={() => setIsActiveInput(!isActiveInput)}
             placeholder={placeholder}
             type={seenText ? "text" : "password"}
             style={{
               border: "none",
               width: "100%",
               outline: "none",
+              fontWeight: "500",
             }}
           />
         </div>
-        <div onClick={() => setSeenText(!seenText)}>
+        <div
+          onClick={() => setSeenText(!seenText)}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {seenText ? iconSeen() : iconNotSeen()}
         </div>
       </div>

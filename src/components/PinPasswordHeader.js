@@ -9,7 +9,7 @@ const PinPasswordHeader = ({ label }) => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "40px 1fr",
+        gridTemplateColumns: "40px 1fr 40px",
         gridTemplateRows: "1fr",
         gridAutoColumns: "1fr",
         gap: "0px 0px",
@@ -41,11 +41,11 @@ const PinPasswordHeader = ({ label }) => {
           fontWeight: "600",
           fontSize: "16px",
           color: "black",
-          marginLeft: "-52px",
         }}
       >
         {label}
       </div>
+      <div></div>
     </div>
   );
 };

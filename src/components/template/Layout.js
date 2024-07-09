@@ -27,6 +27,7 @@ const BookingConfirm = loadable(() =>
 );
 const Cart = loadable(() => import('../../pages/Cart'));
 const CreateNewPin = loadable(() => import("../../pages/CreateNewPin"));
+const ChangePIN = loadable(() => import("../../pages/ChangePIN"));
 const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
 const Payment = loadable(() => import('pages/Payment'));
 const MyVoucher = loadable(() => import('pages/MyVoucher'));
@@ -189,6 +190,9 @@ class Layout extends Component {
             {enableOrdering && <Route exact path="/cart" component={Cart} />}
             {enableOrdering && (
               <Route exact path="/newpin" component={CreateNewPin} />
+            )}
+            {enableOrdering && (
+              <Route exact path="/changepin" component={ChangePIN} />
             )}
             {enableOrdering && (
               <Route
