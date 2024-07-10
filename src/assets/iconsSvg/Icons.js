@@ -387,7 +387,75 @@ const radioInputIconsCheck = () => {
   );
 };
 
+const iconNotSeen = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <g clipPath="url(#clip0_8376_732)">
+        <path
+          d="M9.9 4.24002C10.5883 4.0789 11.2931 3.99836 12 4.00003C19 4.00003 23 12 23 12C22.393 13.1356 21.6691 14.2048 20.84 15.19M14.12 14.12C13.8454 14.4148 13.5141 14.6512 13.1462 14.8151C12.7782 14.9791 12.3809 15.0673 11.9781 15.0744C11.5753 15.0815 11.1752 15.0074 10.8016 14.8565C10.4281 14.7056 10.0887 14.4811 9.80385 14.1962C9.51897 13.9113 9.29439 13.572 9.14351 13.1984C8.99262 12.8249 8.91853 12.4247 8.92563 12.0219C8.93274 11.6191 9.02091 11.2219 9.18488 10.8539C9.34884 10.4859 9.58525 10.1547 9.88 9.88003M17.94 17.94C16.2306 19.243 14.1491 19.9649 12 20C5 20 1 12 1 12C2.24389 9.68192 3.96914 7.65663 6.06 6.06003L17.94 17.94Z"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M1 1L23 23"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_8376_732">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+const iconSeen = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+  <g clipPath="url(#clip0_3174_4475)">
+    <path d="M1.92725 12C1.92725 12 5.92725 4 12.9272 4C19.9272 4 23.9272 12 23.9272 12C23.9272 12 19.9272 20 12.9272 20C5.92725 20 1.92725 12 1.92725 12Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12.9272 15C14.5841 15 15.9272 13.6569 15.9272 12C15.9272 10.3431 14.5841 9 12.9272 9C11.2704 9 9.92725 10.3431 9.92725 12C9.92725 13.6569 11.2704 15 12.9272 15Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_3174_4475">
+      <rect width="24" height="24" fill="white" transform="translate(0.927246)"/>
+    </clipPath>
+  </defs>
+</svg>
+  )
+}
+const iconLock = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M13.5 6H12.75V4.5C12.75 2.43 11.07 0.75 9 0.75C6.93 0.75 5.25 2.43 5.25 4.5V6H4.5C3.675 6 3 6.675 3 7.5V15C3 15.825 3.675 16.5 4.5 16.5H13.5C14.325 16.5 15 15.825 15 15V7.5C15 6.675 14.325 6 13.5 6ZM9 12.75C8.175 12.75 7.5 12.075 7.5 11.25C7.5 10.425 8.175 9.75 9 9.75C9.825 9.75 10.5 10.425 10.5 11.25C10.5 12.075 9.825 12.75 9 12.75ZM11.325 6H6.675V4.5C6.675 3.2175 7.7175 2.175 9 2.175C10.2825 2.175 11.325 3.2175 11.325 4.5V6Z"
+        fill="#808080"
+      />
+    </svg>
+  );
+};
 export {
+  iconLock,
+  iconNotSeen,
+  iconSeen,
   radioInputIcons,
   radioInputIconsCheck,
   iconArrowDown,

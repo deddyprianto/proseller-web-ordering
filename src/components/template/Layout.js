@@ -26,6 +26,8 @@ const BookingConfirm = loadable(() =>
   import('../../pages/BookingAppointmentConfirm')
 );
 const Cart = loadable(() => import('../../pages/Cart'));
+const CreateNewPin = loadable(() => import("../../pages/CreateNewPin"));
+const ChangePIN = loadable(() => import("../../pages/ChangePIN"));
 const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
 const Payment = loadable(() => import('pages/Payment'));
 const MyVoucher = loadable(() => import('pages/MyVoucher'));
@@ -175,189 +177,199 @@ class Layout extends Component {
     const { isLoggedIn } = this.props;
     const { isEmenu, enableOrdering } = this.state;
     return (
-      <div id='page' className='hfeed site'>
+      <div id="page" className="hfeed site">
         {isEmenu ? <HeaderEmenu /> : <HeaderWebOrdering />}
-        <div id='content' className='site-content'>
+        <div id="content" className="site-content">
           <Switch>
-            {enableOrdering && <Route exact path='/' component={Home} />}
-            {enableOrdering && <Route exact path='/landing' component={Home} />}
+            {enableOrdering && <Route exact path="/" component={Home} />}
+            {enableOrdering && <Route exact path="/landing" component={Home} />}
             {enableOrdering && (
-              <Route exact path='/outlets' component={OutletSelection} />
+              <Route exact path="/outlets" component={OutletSelection} />
             )}
-            {enableOrdering && <Route exact path='/signIn' component={Home} />}
-            {enableOrdering && <Route exact path='/cart' component={Cart} />}
+            {enableOrdering && <Route exact path="/signIn" component={Home} />}
+            {enableOrdering && <Route exact path="/cart" component={Cart} />}
+            {enableOrdering && (
+              <Route exact path="/newpin" component={CreateNewPin} />
+            )}
+            {enableOrdering && (
+              <Route exact path="/changepin" component={ChangePIN} />
+            )}
             {enableOrdering && (
               <Route
                 exact
-                path='/cartguestcheckout'
+                path="/cartguestcheckout"
                 component={CartGuestCheckout}
               />
             )}
             {enableOrdering && (
-              <Route exact path='/appointment' component={Appointment} />
+              <Route exact path="/appointment" component={Appointment} />
             )}
             {enableOrdering && (
               <Route
                 exact
-                path='/cartappointment'
+                path="/cartappointment"
                 component={Cartappointment}
               />
             )}
             {enableOrdering && (
               <Route
                 exact
-                path='/bookingsubmitted'
+                path="/bookingsubmitted"
                 component={BookingSubmitted}
               />
             )}
             {enableOrdering && (
-              <Route exact path='/bookingconfirm' component={BookingConfirm} />
+              <Route exact path="/bookingconfirm" component={BookingConfirm} />
             )}
             {enableOrdering && (
-              <Route exact path='/location' component={LocationAppointment} />
+              <Route exact path="/location" component={LocationAppointment} />
             )}
             {/* TODO: component basket will remove later */}
             {enableOrdering && (
-              <Route exact path='/basket' component={Basket} />
+              <Route exact path="/basket" component={Basket} />
             )}
             {(isLoggedIn || !enableOrdering) && (
-              <Route exact path='/profile' component={Profile} />
+              <Route exact path="/profile" component={Profile} />
             )}
             {(isLoggedIn || !enableOrdering) && (
               <Route
                 exact
-                path='/profile/delivery-address'
+                path="/profile/delivery-address"
                 component={DeliveryAddress}
               />
             )}
-            {isGuestMode === 'GuestMode' && (
-              <Route exact path='/thankyoupage' component={ThankyouPage} />
+            {isGuestMode === "GuestMode" && (
+              <Route exact path="/thankyoupage" component={ThankyouPage} />
             )}
-            <Route exact path='/trackorder' component={TrackOrder} />
+            <Route exact path="/trackorder" component={TrackOrder} />
             <Route
               exact
-              path='/ordertrackhistory'
+              path="/ordertrackhistory"
               component={OrderTrackHistory}
             />
 
             {(isLoggedIn || !enableOrdering) && (
               <Route
                 exact
-                path='/profile/payment-method'
+                path="/profile/payment-method"
                 component={PaymentMethod}
               />
             )}
             {(isLoggedIn || !enableOrdering) && (
               <Route
                 exact
-                path='/awaitingpayment'
+                path="/awaitingpayment"
                 component={AwaitingPayment}
               />
             )}
             {(isLoggedIn || !enableOrdering) && (
-              <Route exact path='/seeorderdetail' component={SeeOrderDetail} />
+              <Route exact path="/seeorderdetail" component={SeeOrderDetail} />
             )}
             {(isLoggedIn || !enableOrdering) && (
-              <Route exact path='/rewards' component={Profile} />
+              <Route exact path="/rewards" component={Profile} />
             )}
-            {isLoggedIn && <Route exact path='/inbox' component={Inbox} />}
+            {isLoggedIn && <Route exact path="/inbox" component={Inbox} />}
             {isLoggedIn && (
-              <Route exact path='/inboxdetail' component={InboxDetail} />
+              <Route exact path="/inboxdetail" component={InboxDetail} />
             )}
-            {isLoggedIn && <Route exact path='/voucher' component={Voucher} />}
+            {isLoggedIn && <Route exact path="/voucher" component={Voucher} />}
             {isLoggedIn && (
-              <Route exact path='/svc' component={StoreValueCard} />
+              <Route exact path="/svc" component={StoreValueCard} />
             )}
             {isLoggedIn && (
-              <Route exact path='/buy-svc' component={BuyStoreValueCard} />
+              <Route exact path="/buy-svc" component={BuyStoreValueCard} />
             )}
-            {isLoggedIn && <Route exact path='/use-svc' component={UseSVC} />}
-            {isLoggedIn && <Route exact path='/setting' component={Setting} />}
+            {isLoggedIn && <Route exact path="/use-svc" component={UseSVC} />}
+            {isLoggedIn && <Route exact path="/setting" component={Setting} />}
             {isLoggedIn && (
-              <Route exact path='/payment-method' component={PaymentMethod} />
+              <Route exact path="/payment-method" component={PaymentMethod} />
             )}
-            {(isLoggedIn || isGuestMode === 'GuestMode') && (
+            {(isLoggedIn || isGuestMode === "GuestMode") && (
               <Route
                 exact
-                path='/delivery-address'
+                path="/delivery-address"
                 component={DeliveryAddress}
               />
             )}
             {isLoggedIn && (
-              <Route exact path='/referral' component={Referral} />
-            )}
-              {isLoggedIn && (
-              <Route exact path='/packageinformation' component={PackageInformation} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/packagedetail' component={PackageDetail} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/edit-profile' component={EditProfile} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/my-voucher' component={MyVoucher} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/scanTable' component={ScanTable} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/settleSuccess' component={SettleSuccess} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/history/detail' component={PendingDetail} />
-            )}
-            {isLoggedIn && (
-              <Route exact path='/paid-membership' component={ListMembership} />
+              <Route exact path="/referral" component={Referral} />
             )}
             {isLoggedIn && (
               <Route
                 exact
-                path='/detail-membership'
+                path="/packageinformation"
+                component={PackageInformation}
+              />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/packagedetail" component={PackageDetail} />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/edit-profile" component={EditProfile} />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/my-voucher" component={MyVoucher} />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/scanTable" component={ScanTable} />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/settleSuccess" component={SettleSuccess} />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/history/detail" component={PendingDetail} />
+            )}
+            {isLoggedIn && (
+              <Route exact path="/paid-membership" component={ListMembership} />
+            )}
+            {isLoggedIn && (
+              <Route
+                exact
+                path="/detail-membership"
                 component={DetailMembership}
               />
             )}
             {isLoggedIn && (
               <Route
                 exact
-                path='/waiting-payment'
+                path="/waiting-payment"
                 component={WaitingPaymentLoading}
               />
             )}
-            <Route exact path='/cart' component={Cart} />
-            <Route exact path='/history' component={History} />
-            <Route exact path='/category' component={Categories} />
-            <Route exact path='/category/:childId' component={Categories} />
+            <Route exact path="/cart" component={Cart} />
+            <Route exact path="/history" component={History} />
+            <Route exact path="/category" component={Categories} />
+            <Route exact path="/category/:childId" component={Categories} />
             <Route
               exact
-              path='/category/:categoryId/products'
+              path="/category/:categoryId/products"
               component={Products}
             />
-            <Route exact path='/promotions' component={Promotions} />
+            <Route exact path="/promotions" component={Promotions} />
             <Route
               exact
-              path='/promotions-detail/:id'
+              path="/promotions-detail/:id"
               component={PromotionsDetail}
             />
-            <Route exact path='/products' component={ProductSearchResult} />
-            <Route exact path='/search' component={Search} />
-            <Route exact path='/payment' component={Payment} />
-            <Route exact path='/map' component={Map} />
-            <Route exact path='/scan-barcode' component={ScanBarcode} />
-            <Redirect from='*' to={!enableOrdering ? '/profile' : '/'} />
+            <Route exact path="/products" component={ProductSearchResult} />
+            <Route exact path="/search" component={Search} />
+            <Route exact path="/payment" component={Payment} />
+            <Route exact path="/map" component={Map} />
+            <Route exact path="/scan-barcode" component={ScanBarcode} />
+            <Redirect from="*" to={!enableOrdering ? "/profile" : "/"} />
           </Switch>
-          <div style={{ clear: 'both' }}></div>
+          <div style={{ clear: "both" }}></div>
           <span
-            data-toggle='modal'
-            data-target='#detail-product-modal'
-            id='open-modal-product'
-            style={{ color: 'white' }}
+            data-toggle="modal"
+            data-target="#detail-product-modal"
+            id="open-modal-product"
+            style={{ color: "white" }}
           ></span>
           <span
-            data-toggle='modal'
-            data-target='#ordering-mode'
-            id='open-modal-ordering-mode'
-            style={{ color: 'white' }}
+            data-toggle="modal"
+            data-target="#ordering-mode"
+            id="open-modal-ordering-mode"
+            style={{ color: "white" }}
           ></span>
         </div>
         {isEmenu ? <FooterEmenu /> : <FooterWebOrdering />}

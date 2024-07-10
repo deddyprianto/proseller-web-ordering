@@ -24,13 +24,27 @@ function getCustomerProfile() {
   };
 }
 
+function getCustomerPin(payload,method = 'POST') {
+  return async () => {
+    let response = await CRMService.api(
+      method,
+      payload,
+      "customer/pin",
+      "Bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
 function getSalesByReference(referenceNo) {
   return async () => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       null,
       `sales/status?referenceNo=${referenceNo}&ignorePendingRewards=${true}`,
-      'bearer'
+      "bearer"
     );
     return response;
   };
@@ -39,10 +53,10 @@ function getSalesByReference(referenceNo) {
 function checkStatusPayment(referenceNo) {
   return async () => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       null,
       `sales/status?referenceNo=${referenceNo}`,
-      'bearer'
+      "bearer"
     );
     if (response.ResultCode === 200) return response;
     else return {};
@@ -52,10 +66,10 @@ function checkStatusPayment(referenceNo) {
 function getDeliveryAddress() {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       null,
-      'customer/getProfile',
-      'bearer'
+      "customer/getProfile",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -70,10 +84,10 @@ function getDeliveryAddress() {
       } else if (deliveryAddress.address) {
         deliveryAddress = [
           {
-            addressName: 'My Default Address',
+            addressName: "My Default Address",
             address: deliveryAddress.address,
-            postalCode: '',
-            city: '',
+            postalCode: "",
+            city: "",
           },
         ];
       } else deliveryAddress = null;
@@ -88,10 +102,10 @@ function updateCustomerProfile(payload = null) {
   return async (dispatch) => {
     console.log(payload);
     let response = await CRMService.api(
-      'PUT',
+      "PUT",
       payload,
-      'customer/updateProfile',
-      'bearer'
+      "customer/updateProfile",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -103,10 +117,10 @@ function updateCustomerProfile(payload = null) {
 function updateCustomerAccount(payload = null) {
   return async () => {
     let response = await CRMService.api(
-      'PUT',
+      "PUT",
       payload,
-      'customer/updateProfile?requestOtp=true',
-      'bearer'
+      "customer/updateProfile?requestOtp=true",
+      "bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -117,10 +131,10 @@ function updateCustomerAccount(payload = null) {
 function updatePassword(payload = null) {
   return async () => {
     let response = await CRMService.api(
-      'POST',
+      "POST",
       payload,
-      'profile/changePassword',
-      'Bearer'
+      "profile/changePassword",
+      "Bearer"
     );
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
@@ -131,58 +145,58 @@ function updatePassword(payload = null) {
 function mandatoryField(payload = null) {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       payload,
-      'mandatoryfield/customer'
+      "mandatoryfield/customer"
     );
     const data = await response.data;
     if (response.ResultCode >= 400 || response.resultCode >= 400)
       console.log(response);
     else {
       const customFieldsResponse = await MasterDataService.api(
-        'GET',
+        "GET",
         payload,
-        'customfields/customer'
+        "customfields/customer"
       );
       const customFields = await customFieldsResponse.data;
       const fields =
         data.fields &&
         data.fields.map((field) => {
           switch (field.fieldName) {
-            case 'birthDate':
+            case "birthDate":
               return {
                 ...field,
-                type: 'date',
+                type: "date",
               };
-            case 'gender':
+            case "gender":
               return {
                 ...field,
-                type: 'radio',
+                type: "radio",
                 options: [
                   {
-                    value: 'male',
-                    text: 'Male',
+                    value: "male",
+                    text: "Male",
                   },
                   {
-                    value: 'female',
-                    text: 'Female',
+                    value: "female",
+                    text: "Female",
                   },
                 ],
               };
-            case 'address':
+            case "address":
               return {
                 ...field,
-                type: 'multipleField',
+                type: "multipleField",
                 children: [
                   {
-                    fieldName: 'street',
-                    displayName: 'Street',
-                    type: 'text',
+                    fieldName: "street",
+                    displayName: "Street",
+                    type: "text",
                   },
                   {
-                    fieldName: 'unitNo',
-                    displayName: 'Unit No.',
-                    type: 'text',
+                    fieldName: "unitNo",
+                    displayName: "Unit No.",
+                    type: "text",
                   },
                 ],
               };
@@ -191,10 +205,10 @@ function mandatoryField(payload = null) {
                 (item) => item.fieldName === field.fieldName
               );
               const type = customField
-                ? customField.dataType === 'dropdown'
-                  ? 'select'
+                ? customField.dataType === "dropdown"
+                  ? "select"
                   : customField.dataType
-                : 'text';
+                : "text";
               return {
                 ...field,
                 ...customField,
@@ -207,34 +221,34 @@ function mandatoryField(payload = null) {
 
       let mandatory = [
         {
-          dataType: 'text',
-          defaultValue: '-',
-          displayName: 'Name',
-          fieldName: 'name',
+          dataType: "text",
+          defaultValue: "-",
+          displayName: "Name",
+          fieldName: "name",
           mandatory: false,
           show: true,
-          type: 'text',
+          type: "text",
           signUpField: false,
         },
         {
-          dataType: 'text',
-          defaultValue: '-',
-          displayName: 'Email',
-          fieldName: 'email',
+          dataType: "text",
+          defaultValue: "-",
+          displayName: "Email",
+          fieldName: "email",
           mandatory: false,
           show: true,
-          type: 'text',
+          type: "text",
           signUpField: false,
           change: true,
         },
         {
-          dataType: 'text',
-          defaultValue: '-',
-          displayName: 'Phone Number',
-          fieldName: 'phoneNumber',
+          dataType: "text",
+          defaultValue: "-",
+          displayName: "Phone Number",
+          fieldName: "phoneNumber",
           mandatory: false,
           show: true,
-          type: 'text',
+          type: "text",
           signUpField: false,
           change: true,
         },
@@ -252,10 +266,10 @@ function mandatoryField(payload = null) {
 function getVoucher() {
   return async (dispatch) => {
     let response = await CRMService.api(
-      'GET',
+      "GET",
       null,
-      'customer/vouchers',
-      'bearer'
+      "customer/vouchers",
+      "bearer"
     );
 
     if (response.ResultCode >= 400 || response.resultCode >= 400) {
@@ -268,6 +282,7 @@ function getVoucher() {
 }
 
 export const CustomerAction = {
+  getCustomerPin,
   getCustomerProfile,
   getDeliveryAddress,
   updateCustomerProfile,

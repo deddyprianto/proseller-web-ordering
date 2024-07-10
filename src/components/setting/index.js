@@ -5,6 +5,7 @@ import Shimmer from 'react-shimmer-effect';
 import { CustomerAction } from '../../redux/actions/CustomerAction';
 import config from '../../config';
 import CheckBox from './checkBoxCostume';
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const Swal = require('sweetalert2');
 
@@ -108,37 +109,37 @@ class Setting extends Component {
     let { loadingShow, dataCustomer, isLoading, isMobileSize } = this.state;
     return (
       <div
-        className='col-full'
+        className="col-full"
         style={{
-          marginTop: config.prefix === 'emenu' ? 120 : isMobileSize ? 65 : 75,
+          marginTop: config.prefix === "emenu" ? 120 : isMobileSize ? 65 : 75,
         }}
       >
-        <div id='primary' className='content-area'>
-          <div className='stretch-full-width'>
+        <div id="primary" className="content-area">
+          <div className="stretch-full-width">
             <div
               style={{
-                flexDirection: 'row',
-                position: 'fixed',
+                flexDirection: "row",
+                position: "fixed",
                 zIndex: 10,
-                width: '100%',
-                boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
-                display: 'flex',
+                width: "100%",
+                boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+                display: "flex",
                 height: 40,
-                alignItems: 'center',
+                alignItems: "center",
               }}
-              className='background-theme'
+              className="background-theme"
             >
               <div
                 style={{ marginLeft: 10, fontSize: 16 }}
                 onClick={() => this.props.history.goBack()}
               >
-                <i className='fa fa-chevron-left'></i> Back
+                <i className="fa fa-chevron-left"></i> Back
               </div>
             </div>
             <main
-              id='main'
-              className='site-main'
-              style={{ textAlign: 'center' }}
+              id="main"
+              className="site-main"
+              style={{ textAlign: "center", marginBottom: "0px" }}
             >
               {loadingShow ? (
                 <Row style={{ paddingTop: 55 }}>
@@ -150,12 +151,12 @@ class Setting extends Component {
                   <Col sm={6}>
                     <div
                       style={{
-                        boxShadow: '1px 2px 5px rgba(128, 128, 128, 0.5)',
+                        boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
                         padding: 10,
-                        alignItems: 'center',
+                        alignItems: "center",
                         borderRadius: 5,
                         marginBottom: 10,
-                        cursor: 'pointer',
+                        cursor: "pointer",
                       }}
                     >
                       <strong>Notification</strong>
@@ -163,15 +164,15 @@ class Setting extends Component {
                       <div style={{ marginLeft: 10, marginRight: 10 }}>
                         <div
                           style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
+                            display: "flex",
+                            justifyContent: "space-between",
                             marginBottom: 5,
                           }}
                         >
                           <div style={{ fontSize: 14 }}>Email Notification</div>
                           <CheckBox
                             handleChange={(status) =>
-                              this.handleChange('emailNotification', status)
+                              this.handleChange("emailNotification", status)
                             }
                             selected={
                               dataCustomer.emailNotification ? true : false
@@ -183,8 +184,8 @@ class Setting extends Component {
 
                         <div
                           style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
+                            display: "flex",
+                            justifyContent: "space-between",
                             marginBottom: 5,
                           }}
                         >
@@ -192,7 +193,7 @@ class Setting extends Component {
                           <CheckBox
                             handleChange={(status) =>
                               this.handleChange(
-                                'enableEReceiptNotification',
+                                "enableEReceiptNotification",
                                 status
                               )
                             }
@@ -208,15 +209,15 @@ class Setting extends Component {
 
                         <div
                           style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
+                            display: "flex",
+                            justifyContent: "space-between",
                             marginBottom: 5,
                           }}
                         >
                           <div style={{ fontSize: 14 }}>SMS Notification</div>
                           <CheckBox
                             handleChange={(status) =>
-                              this.handleChange('smsNotification', status)
+                              this.handleChange("smsNotification", status)
                             }
                             selected={
                               dataCustomer.smsNotification ? true : false
@@ -228,19 +229,19 @@ class Setting extends Component {
                       </div>
 
                       <Button
-                        className='profile-dashboard'
+                        className="profile-dashboard"
                         style={{
-                          width: '100%',
+                          width: "100%",
                           paddingLeft: 5,
                           paddingRight: 5,
                           borderRadius: 5,
                           height: 40,
                           marginTop: 10,
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                         }}
                         onClick={() => this.handleSave()}
                       >
-                        <i className='fa fa-floppy-o' aria-hidden='true' /> Save
+                        <i className="fa fa-floppy-o" aria-hidden="true" /> Save
                         Setting
                       </Button>
                     </div>
@@ -251,6 +252,81 @@ class Setting extends Component {
           </div>
         </div>
         {isLoading ? Swal.showLoading() : Swal.close()}
+        <div
+          onClick={() => {
+            this.props.history.push("/changepin");
+          }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridTemplateRows: "1fr",
+            gridAutoColumns: "1fr",
+            gap: "0px 0px",
+            gridAutoFlow: "row",
+            gridTemplateAreas: '". ."',
+            width: "100%",
+            alignItems: "center",
+            borderRadius: "8px",
+            boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              color: "var(--Text-color-Primary, #2F2F2F)",
+              fontFamily: '"Plus Jakarta Sans"',
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "normal",
+            }}
+          >
+            Change PIN
+          </div>
+          <ArrowForwardIosIcon
+            sx={{
+              fontWeight: 700,
+              justifySelf: "end",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            marginTop: "16px",
+            marginBottom: "16px",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridTemplateRows: "1fr",
+            gridAutoColumns: "1fr",
+            gap: "0px 0px",
+            gridAutoFlow: "row",
+            gridTemplateAreas: '". ."',
+            width: "100%",
+            alignItems: "center",
+            borderRadius: "8px",
+            boxShadow: "1px 2px 5px rgba(128, 128, 128, 0.5)",
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              color: "var(--Text-color-Primary, #2F2F2F)",
+              fontFamily: '"Plus Jakarta Sans"',
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "normal",
+            }}
+          >
+            Change Password
+          </div>
+          <ArrowForwardIosIcon
+            sx={{
+              fontWeight: 700,
+              justifySelf: "end",
+            }}
+          />
+        </div>
       </div>
     );
   }
