@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { CustomerAction } from "redux/actions/CustomerAction";
 import ModalPinPass from "components/ModalPinPass";
 import Swal from "sweetalert2";
+import { useHistory } from "react-router-dom";
 
 const ChangePIN = () => {
+  const history = useHistory();
   const inputOldPIN = useRef();
   const inputRefNewPin = useRef();
   const inputRefConfirmNewPin = useRef();
@@ -15,11 +17,6 @@ const ChangePIN = () => {
   const [showError, setShowError] = useState(false);
   const [checkIsEmpty, setCheckIsEmpty] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const orderingSetting = useSelector((state) => state);
-  // const payload = {
-  //   phoneNumber: orderingSetting.auth?.account?.idToken?.payload?.phoneNumber,
-  // };
-
   const handleCreateChangePin = async () => {
     if (
       inputOldPIN.current.value &&
@@ -46,11 +43,21 @@ const ChangePIN = () => {
           )
         );
         Swal.hideLoading();
-        if (data?.status === "FAILED") {
+        if (data?.status === "SUCCESS") {
+          Swal.fire({
+            icon: "success",
+            title: data?.message,
+            confirmButtonText: "OK",
+          }).then((res) => {
+            if (res.isConfirmed) {
+              history.push("/profile");
+            }
+          });
+        } else {
           Swal.fire({
             icon: "info",
             iconColor: "#333",
-            title: data.message,
+            title: data?.message,
             allowOutsideClick: false,
             confirmButtonText: "OK",
           });
@@ -95,6 +102,7 @@ const ChangePIN = () => {
                 cursor: "pointer",
                 margin: 0,
                 padding: 0,
+                fontWeight: 600,
               }}
             >
               Forget PIN?

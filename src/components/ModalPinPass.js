@@ -1,10 +1,82 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import { InputCustom } from "./InputCustom";
+import { useSelector, useDispatch } from "react-redux";
+import { AuthActions } from "redux/actions/AuthAction";
+import OTPCountdown from "./OtpCountDown";
+import { CustomerAction } from "redux/actions/CustomerAction";
+import { CONSTANT } from "helpers";
+import { useHistory } from "react-router-dom";
 
 const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const refEnterOTP = useRef();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showErrorField, setShowErrorField] = useState(false);
+  const [minutes, setMinutes] = useState(1);
+  const [seconds, setSeconds] = useState(0);
+  const [disableButtonResendOTP, setDisableButtonResendOTP] = useState(true);
+  const [resendOTP, setResendOTP] = useState(true);
+  const orderingSetting = useSelector((state) => state);
+  const payload = {
+    phoneNumber: orderingSetting.auth?.account?.idToken?.payload?.phoneNumber,
+  };
+  const handleOTP = async () => {
+    setResendOTP(true);
+    setMinutes(1); // Reset to 1 minute
+    setSeconds(0);
+    try {
+      const data = await dispatch(AuthActions.sendOtp(payload));
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("RESEND OTP");
+  };
+  useEffect(() => {
+    if (isOpenModal) {
+      handleOTP();
+    }
+  }, [isOpenModal]);
+
+  function formatPhoneNumber(phoneNumber) {
+    console.log(phoneNumber);
+    if (phoneNumber.length < 8) {
+      throw new Error("Phone number is too short");
+    }
+    const countryCode = phoneNumber.slice(0, 3);
+    const firstTwoDigits = phoneNumber.slice(3, 5);
+    const lastFourDigits = phoneNumber.slice(-4);
+    const formattedPhoneNumber = `${countryCode} ${firstTwoDigits} *** ${lastFourDigits}`;
+    return formattedPhoneNumber;
+  }
+
+  const handleVerifyOTP = async () => {
+    if (!refEnterOTP.current.value) {
+      setShowErrorField(true);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const data = await dispatch(
+        CustomerAction.verifyCustomerPin({ otp: refEnterOTP.current.value })
+      );
+      setIsLoading(false);
+      if (data.status === "SUCCESS") {
+        dispatch({
+          type: CONSTANT.OTP_VERIFY,
+          payload: data.data.token,
+        });
+        history.push(`/resetpin?verify=${data.data.token}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Dialog
       fullWidth
@@ -44,7 +116,10 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
           <div></div>
           <div>Forget PIN</div>
           <button
-            onClick={() => setIsOpenModal(false)}
+            onClick={() => {
+              setShowErrorField(false);
+              setIsOpenModal(false);
+            }}
             style={{
               fontWeight: 600,
               backgroundColor: "transparent",
@@ -90,11 +165,17 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
             fontStyle: "normal",
             fontWeight: "700",
             lineHeight: "140%",
+            marginTop: "4px",
           }}
         >
-          We’ve sent a code to +65 **** 1234.
+          We’ve sent a code to{" "}
+          {formatPhoneNumber(
+            orderingSetting.auth?.account?.idToken?.payload?.phoneNumber
+          )}
         </div>
         <button
+          onClick={handleOTP}
+          disabled={disableButtonResendOTP}
           style={{
             display: "flex",
             padding: "8px 16px",
@@ -107,7 +188,9 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
             width: "100%",
             backgroundColor: "transparent",
             marginTop: "16px",
-            color: "var(--Button-color-Disable, #B7B7B7)",
+            color: !disableButtonResendOTP
+              ? "black"
+              : "var(--Button-color-Disable, #B7B7B7)",
             fontFamily: '"Plus Jakarta Sans"',
             fontSize: "14px",
             fontStyle: "normal",
@@ -117,20 +200,18 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
         >
           Resend OTP via Email
         </button>
-        <div
-          style={{
-            color: "#000",
-            textAlign: "center",
-            fontFamily: '"Plus Jakarta Sans"',
-            fontSize: "14px",
-            fontStyle: "normal",
-            fontWeight: "500",
-            lineHeight: "normal",
-            marginTop: "16px",
-          }}
-        >
-          Resend after 4:59
-        </div>
+        {resendOTP && (
+          <OTPCountdown
+            setSeconds={setSeconds}
+            setMinutes={setMinutes}
+            seconds={seconds}
+            minutes={minutes}
+            setResendOTP={setResendOTP}
+            resendOTP={resendOTP}
+            setDisableButtonResendOTP={setDisableButtonResendOTP}
+          />
+        )}
+
         <hr
           style={{
             backgroundColor: "#D6D6D6",
@@ -146,8 +227,25 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
           paddingRight: "16px",
         }}
       >
-        <InputCustom label="Enter 4 Digit OTP" placeholder="Enter OTP" />
+        <InputCustom
+          inputRef={refEnterOTP}
+          label="Enter 4 Digit OTP"
+          placeholder="Enter OTP"
+        />
       </div>
+      {showErrorField && (
+        <div
+          style={{
+            color: "red",
+            marginLeft: "15px",
+            fontSize: "10px",
+            fontStyle: "italic",
+            fontWeight: 600,
+          }}
+        >
+          This field still empty
+        </div>
+      )}
       <hr
         style={{
           backgroundColor: "#D6D6D6",
@@ -163,7 +261,7 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
         }}
       >
         <button
-          disabled
+          onClick={handleVerifyOTP}
           style={{
             color: "white",
             width: "100%",
@@ -172,7 +270,7 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
             fontSize: "14px",
           }}
         >
-          Continue
+          {isLoading ? "Loading..." : "Continue"}
         </button>
       </DialogActions>
     </Dialog>

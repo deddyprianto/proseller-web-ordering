@@ -1,20 +1,32 @@
-import React, { useState, useRef } from "react";
 import { InputCustom } from "components/InputCustom";
 import PinPasswordHeader from "components/PinPasswordHeader";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { CustomerAction } from "redux/actions/CustomerAction";
-import ModalPinPass from "components/ModalPinPass";
 import Swal from "sweetalert2";
 
-const CreateNewPin = () => {
+const ResetPin = () => {
+  const dispatch = useDispatch();
   const inputRefNewPin = useRef();
   const inputRefConfirmNewPin = useRef();
-  const dispatch = useDispatch();
-  const { color } = useSelector((state) => state.theme);
   const [showError, setShowError] = useState(false);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const { color } = useSelector((state) => state.theme);
+  const history = useHistory();
+  const verifyID = useSelector((state) => state.customer.otpVerify);
+  const urlObj = new URL(window.location.href);
+  const hash = urlObj.hash;
+  const queryString = hash.substring(hash.indexOf("?") + 1);
+  const params = new URLSearchParams(queryString);
+  const qs = params.get("verify");
 
-  const handleCreatePin = async () => {
+  useEffect(() => {
+    if (qs !== verifyID) {
+      history.push("/");
+    }
+  }, []);
+
+  const handleResetPIN = async () => {
     if (!inputRefConfirmNewPin.current.value && !inputRefNewPin.current.value) {
       Swal.fire({
         icon: "error",
@@ -25,22 +37,29 @@ const CreateNewPin = () => {
       });
       return;
     }
-    if (inputRefConfirmNewPin.current.value !== inputRefNewPin.current.value) {
+    if (inputRefNewPin.current.value !== inputRefConfirmNewPin.current.value) {
       setShowError(true);
       return;
     }
     setShowError(false);
+
     try {
+      const payload = {
+        token: qs,
+        newPin: inputRefNewPin.current.value,
+      };
       Swal.showLoading();
-      const data = await dispatch(
-        CustomerAction.getCustomerPin({ pin: inputRefNewPin.current.value })
-      );
+      const data = await dispatch(CustomerAction.resetCustomerPin(payload));
       Swal.hideLoading();
       if (data?.status === "SUCCESS") {
         Swal.fire({
           icon: "success",
           title: data?.message,
           confirmButtonText: "OK",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            history.push("/profile");
+          }
         });
       } else {
         Swal.fire({
@@ -50,6 +69,7 @@ const CreateNewPin = () => {
           confirmButtonText: "OK",
         });
       }
+      // resetCustomerPin
     } catch (error) {
       console.log(error);
     }
@@ -64,7 +84,20 @@ const CreateNewPin = () => {
           height: "85vh",
         }}
       >
-        <PinPasswordHeader label="Create New Pin" />
+        <PinPasswordHeader label="New PIN" />
+        <p
+          style={{
+            marginTop: "24px",
+            color: "var(--Text-color-Primary, #2F2F2F)",
+            fontFamily: '"Plus Jakarta Sans"',
+            fontSize: "14px",
+            fontStyle: "normal",
+            fontWeight: "500",
+            lineHeight: "normal",
+          }}
+        >
+          Your new PIN must be different from previously used password.
+        </p>
         <div style={{ marginTop: "16px" }}>
           <InputCustom
             inputRef={inputRefNewPin}
@@ -110,7 +143,7 @@ const CreateNewPin = () => {
         }}
       >
         <button
-          onClick={handleCreatePin}
+          onClick={handleResetPIN}
           style={{
             display: "flex",
             padding: "8px 16px",
@@ -121,13 +154,12 @@ const CreateNewPin = () => {
             backgroundColor: color.primary,
           }}
         >
-          Confirm
+          Update
         </button>
       </div>
       {/* end button */}
-      <ModalPinPass isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} />
     </div>
   );
 };
 
-export default CreateNewPin;
+export default ResetPin;
