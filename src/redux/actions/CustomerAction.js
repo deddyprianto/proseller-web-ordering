@@ -38,6 +38,34 @@ function getCustomerPin(payload,method = 'POST') {
   };
 }
 
+function verifyCustomerPin(payload) {
+  return async () => {
+    let response = await CRMService.api(
+      "POST",
+      payload,
+      "customer/pin/verify-otp",
+      "Bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
+function resetCustomerPin(payload) {
+  return async () => {
+    let response = await CRMService.api(
+      "POST",
+      payload,
+      "customer/pin/reset",
+      "Bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
 function getSalesByReference(referenceNo) {
   return async () => {
     let response = await CRMService.api(
@@ -282,6 +310,8 @@ function getVoucher() {
 }
 
 export const CustomerAction = {
+  resetCustomerPin,
+  verifyCustomerPin,
   getCustomerPin,
   getCustomerProfile,
   getDeliveryAddress,

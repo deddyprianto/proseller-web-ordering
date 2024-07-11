@@ -27,64 +27,67 @@ const BookingConfirm = loadable(() =>
 );
 const Cart = loadable(() => import('../../pages/Cart'));
 const CreateNewPin = loadable(() => import("../../pages/CreateNewPin"));
+const ResetPin = loadable(() => import("../../pages/ResetPin"));
 const ChangePIN = loadable(() => import("../../pages/ChangePIN"));
-const CartGuestCheckout = loadable(() => import('../../pages/GuestCheckout'));
-const Payment = loadable(() => import('pages/Payment'));
-const MyVoucher = loadable(() => import('pages/MyVoucher'));
-const Profile = loadable(() => import('../../pages/Profile'));
-const ListMembership = loadable(() => import('../../pages/ListMembership'));
-const DetailMembership = loadable(() => import('../../pages/DetailMembership'));
-const History = loadable(() => import('../../pages/History'));
-const ThankyouPage = loadable(() => import('../../pages/ThankyouPage'));
-const TrackOrder = loadable(() => import('../../pages/TrackOrder'));
+const CartGuestCheckout = loadable(() => import("../../pages/GuestCheckout"));
+const Payment = loadable(() => import("pages/Payment"));
+const MyVoucher = loadable(() => import("pages/MyVoucher"));
+const Profile = loadable(() => import("../../pages/Profile"));
+const ListMembership = loadable(() => import("../../pages/ListMembership"));
+const DetailMembership = loadable(() => import("../../pages/DetailMembership"));
+const History = loadable(() => import("../../pages/History"));
+const ThankyouPage = loadable(() => import("../../pages/ThankyouPage"));
+const TrackOrder = loadable(() => import("../../pages/TrackOrder"));
 const OrderTrackHistory = loadable(() =>
-  import('../../pages/OrderTrackHistory')
+  import("../../pages/OrderTrackHistory")
 );
-const Inbox = loadable(() => import('../../pages/Inbox'));
-const InboxDetail = loadable(() => import('../../pages/InboxDetail'));
-const Voucher = loadable(() => import('../../pages/Voucher'));
-const Map = loadable(() => import('../../pages/Map/Map'));
-const ScanBarcode = loadable(() => import('../../pages/ScanBarcode'));
-const OutletSelection = loadable(() => import('../../pages/OutletSelection'));
-const StoreValueCard = loadable(() => import('../../pages/StoreValueCard'));
-const BuyStoreValueCard = loadable(() => import('../../components/svc/BuySVC'));
-const UseSVC = loadable(() => import('../../components/svc/useSVC'));
-const DeliveryAddress = loadable(() => import('../../pages/DeliveryAddress'));
-const PaymentMethod = loadable(() => import('../../pages/PaymentMethod'));
-const AwaitingPayment = loadable(() => import('../../pages/AwaitingPayment'));
-const SeeOrderDetail = loadable(() => import('../../pages/SeeOrderDetail'));
-const Setting = loadable(() => import('../../components/setting'));
-const Referral = loadable(() => import('../../components/referral'));
-const Basket = loadable(() => import('../../components/basket'));
-const PendingDetail = loadable(() => import('../../components/basket_pending'));
+const Inbox = loadable(() => import("../../pages/Inbox"));
+const InboxDetail = loadable(() => import("../../pages/InboxDetail"));
+const Voucher = loadable(() => import("../../pages/Voucher"));
+const Map = loadable(() => import("../../pages/Map/Map"));
+const ScanBarcode = loadable(() => import("../../pages/ScanBarcode"));
+const OutletSelection = loadable(() => import("../../pages/OutletSelection"));
+const StoreValueCard = loadable(() => import("../../pages/StoreValueCard"));
+const BuyStoreValueCard = loadable(() => import("../../components/svc/BuySVC"));
+const UseSVC = loadable(() => import("../../components/svc/useSVC"));
+const DeliveryAddress = loadable(() => import("../../pages/DeliveryAddress"));
+const PaymentMethod = loadable(() => import("../../pages/PaymentMethod"));
+const AwaitingPayment = loadable(() => import("../../pages/AwaitingPayment"));
+const SeeOrderDetail = loadable(() => import("../../pages/SeeOrderDetail"));
+const Setting = loadable(() => import("../../components/setting"));
+const Referral = loadable(() => import("../../components/referral"));
+const Basket = loadable(() => import("../../components/basket"));
+const PendingDetail = loadable(() => import("../../components/basket_pending"));
 const SettleSuccess = loadable(() =>
-  import('../../components/basket/settleSuccess')
+  import("../../components/basket/settleSuccess")
 );
-const ScanTable = loadable(() => import('../../components/basket/scanTable'));
+const ScanTable = loadable(() => import("../../components/basket/scanTable"));
 const EditProfile = loadable(() =>
-  import('../../components/profile/EditProfile')
+  import("../../components/profile/EditProfile")
 );
-const Categories = loadable(() => import('../../pages/AllCategory'));
-const Products = loadable(() => import('../../pages/Products'));
-const PackageInformation = loadable(() => import('../../pages/PackageInformation'));
-const PackageDetail = loadable(() => import('../../pages/PackageDetail'));
+const Categories = loadable(() => import("../../pages/AllCategory"));
+const Products = loadable(() => import("../../pages/Products"));
+const PackageInformation = loadable(() =>
+  import("../../pages/PackageInformation")
+);
+const PackageDetail = loadable(() => import("../../pages/PackageDetail"));
 const Promotions = loadable(() =>
-  import('../../components/ordering/Promotions')
+  import("../../components/ordering/Promotions")
 );
-const PromotionsDetail = loadable(() => import('../../pages/Promotions'));
-const Search = loadable(() => import('../../pages/Search'));
-const ProductSearchResult = loadable(() => import('../../pages/ProductSearch'));
+const PromotionsDetail = loadable(() => import("../../pages/Promotions"));
+const Search = loadable(() => import("../../pages/Search"));
+const ProductSearchResult = loadable(() => import("../../pages/ProductSearch"));
 const WaitingPaymentLoading = loadable(() =>
-  import('../../pages/WaitingPaymentLoading')
+  import("../../pages/WaitingPaymentLoading")
 );
 
-const encryptor = require('simple-encryptor')(process.env.REACT_APP_KEY_DATA);
+const encryptor = require("simple-encryptor")(process.env.REACT_APP_KEY_DATA);
 
 class Layout extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEmenu: window.location.hostname.includes('emenu'),
+      isEmenu: window.location.hostname.includes("emenu"),
       enableOrdering: true,
       logoCompany: config.url_logo,
       infoCompany: {},
@@ -101,13 +104,13 @@ class Layout extends Component {
     if (isLoggedIn) {
       Promise.all([
         this.props.dispatch(InboxAction.getBroadcast({ take: 5, skip: 0 })),
-        window.location.hash.split('#')[1] !== '/cart' &&
+        window.location.hash.split("#")[1] !== "/cart" &&
           this.props.dispatch(HistoryAction.getBasketPending()),
       ]).then((res) => {
         const basketPendingRes = res[1];
         if (basketPendingRes) {
           this.props.dispatch({
-            type: 'PENDING_ORDERS',
+            type: "PENDING_ORDERS",
             payload: basketPendingRes?.dataLength,
           });
         }
@@ -120,11 +123,11 @@ class Layout extends Component {
     );
 
     if (infoCompany) {
-      document.title = `${isEmenu ? 'E-Menu' : 'Web Ordering'} - ${
+      document.title = `${isEmenu ? "E-Menu" : "Web Ordering"} - ${
         infoCompany.companyName
       }`;
       try {
-        document.getElementById('icon-theme').href =
+        document.getElementById("icon-theme").href =
           infoCompany.imageURL || this.state.logoCompany;
       } catch (e) {
         console.log(e);
@@ -133,11 +136,11 @@ class Layout extends Component {
     }
 
     // TODO: Change this with react router use useRouteMatch
-    if (window.location.href.includes('/signin')) {
+    if (window.location.href.includes("/signin")) {
       try {
-        console.log('SIGN IN');
+        console.log("SIGN IN");
         setTimeout(() => {
-          document.getElementById('login-register-btn').click();
+          document.getElementById("login-register-btn").click();
         }, 700);
       } catch (e) {
         console.log(e);
@@ -149,18 +152,18 @@ class Layout extends Component {
     if (this.props !== prevProps) {
       let infoCompany = this.state.infoCompany;
       let enableOrdering = this.props.setting.find((items) => {
-        return items.settingKey === 'EnableOrdering';
+        return items.settingKey === "EnableOrdering";
       });
       if (enableOrdering) {
         this.setState({ enableOrdering: enableOrdering.settingValue });
       }
 
       let logoCompany = this.props.setting.find((items) => {
-        return items.settingKey === 'Logo';
+        return items.settingKey === "Logo";
       });
       if (logoCompany) {
         try {
-          document.getElementById('icon-theme').href =
+          document.getElementById("icon-theme").href =
             infoCompany.imageURL || logoCompany.settingValue;
         } catch (e) {
           console.log(e);
@@ -173,7 +176,7 @@ class Layout extends Component {
   }
 
   render() {
-    const isGuestMode = localStorage.getItem('settingGuestMode');
+    const isGuestMode = localStorage.getItem("settingGuestMode");
     const { isLoggedIn } = this.props;
     const { isEmenu, enableOrdering } = this.state;
     return (
@@ -193,6 +196,9 @@ class Layout extends Component {
             )}
             {enableOrdering && (
               <Route exact path="/changepin" component={ChangePIN} />
+            )}
+            {enableOrdering && (
+              <Route exact path="/resetpin" component={ResetPin} />
             )}
             {enableOrdering && (
               <Route

@@ -13,13 +13,20 @@ const defaultState = {
   showMessageConfirm: true,
   saveMultipleCustomField: {},
   payloadNew: {},
+  otpVerify: "",
 };
+
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
     case CONSTANT.KEY_MENU_TOGGLE:
       return {
         ...state,
         isOpen: action.isOpen,
+      };
+    case CONSTANT.OTP_VERIFY:
+      return {
+        ...state,
+        otpVerify: action.payload,
       };
     case CONSTANT.GET_VOUCHER:
       return {
