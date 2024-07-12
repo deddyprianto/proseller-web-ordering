@@ -191,15 +191,9 @@ class Layout extends Component {
             )}
             {enableOrdering && <Route exact path="/signIn" component={Home} />}
             {enableOrdering && <Route exact path="/cart" component={Cart} />}
-            {enableOrdering && (
-              <Route exact path="/newpin" component={CreateNewPin} />
-            )}
-            {enableOrdering && (
-              <Route exact path="/changepin" component={ChangePIN} />
-            )}
-            {enableOrdering && (
-              <Route exact path="/resetpin" component={ResetPin} />
-            )}
+            <Route exact path="/newpin" component={CreateNewPin} />
+            <Route exact path="/changepin" component={ChangePIN} />
+            <Route exact path="/resetpin" component={ResetPin} />
             {enableOrdering && (
               <Route
                 exact

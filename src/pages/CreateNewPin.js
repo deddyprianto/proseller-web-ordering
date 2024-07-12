@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { CustomerAction } from "redux/actions/CustomerAction";
 import ModalPinPass from "components/ModalPinPass";
 import Swal from "sweetalert2";
+import { useHistory } from "react-router-dom";
 
 const CreateNewPin = () => {
+  const history = useHistory();
   const inputRefNewPin = useRef();
   const inputRefConfirmNewPin = useRef();
   const dispatch = useDispatch();
@@ -41,6 +43,10 @@ const CreateNewPin = () => {
           icon: "success",
           title: data?.message,
           confirmButtonText: "OK",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            history.push("/profile");
+          }
         });
       } else {
         Swal.fire({
@@ -48,6 +54,10 @@ const CreateNewPin = () => {
           iconColor: "#333",
           title: data?.message,
           confirmButtonText: "OK",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            history.push("/profile");
+          }
         });
       }
     } catch (error) {
