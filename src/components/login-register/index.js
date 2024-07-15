@@ -1168,6 +1168,7 @@ const LoginRegister = (props) => {
         >
           {userStatus === 'REGISTERED' ? (
             <Login
+            errorPassword={errorPassword}
               method={method}
               username={method === 'email' ? email : phoneNumber}
               enablePassword={enableRegisterWithPassword}

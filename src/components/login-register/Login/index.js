@@ -12,6 +12,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Login = ({
+  errorPassword,
   method,
   handleBackButtonClick,
   handleSubmit,
@@ -73,7 +74,7 @@ const Login = ({
             Sign in to <span style={{ fontWeight: 'bold' }}>{username}</span>{' '}
           </p>
           {enablePassword ? (
-            <PasswordField handleChange={handleChange}></PasswordField>
+            <PasswordField handleChange={handleChange} error={errorPassword}/>
           ) : (
             <OtpField
               method={method}
