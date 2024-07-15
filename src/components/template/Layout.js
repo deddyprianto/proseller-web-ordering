@@ -28,7 +28,9 @@ const BookingConfirm = loadable(() =>
 const Cart = loadable(() => import('../../pages/Cart'));
 const CreateNewPin = loadable(() => import("../../pages/CreateNewPin"));
 const ResetPin = loadable(() => import("../../pages/ResetPin"));
+const ResetPassword = loadable(() => import("../../pages/ResetPassword"));
 const ChangePIN = loadable(() => import("../../pages/ChangePIN"));
+const ChangePassword = loadable(() => import("../../pages/ChangePassword"));
 const CartGuestCheckout = loadable(() => import("../../pages/GuestCheckout"));
 const Payment = loadable(() => import("pages/Payment"));
 const MyVoucher = loadable(() => import("pages/MyVoucher"));
@@ -191,9 +193,21 @@ class Layout extends Component {
             )}
             {enableOrdering && <Route exact path="/signIn" component={Home} />}
             {enableOrdering && <Route exact path="/cart" component={Cart} />}
-            <Route exact path="/newpin" component={CreateNewPin} />
-            <Route exact path="/changepin" component={ChangePIN} />
-            <Route exact path="/resetpin" component={ResetPin} />
+            {(isLoggedIn || !enableOrdering) && (
+              <Route exact path="/newpin" component={CreateNewPin} />
+            )}
+            {(isLoggedIn || !enableOrdering) && (
+              <Route exact path="/changepin" component={ChangePIN} />
+            )}
+            {(isLoggedIn || !enableOrdering) && (
+              <Route exact path="/changepassword" component={ChangePassword} />
+            )}
+            {(isLoggedIn || !enableOrdering) && (
+              <Route exact path="/resetpin" component={ResetPin} />
+            )}
+            {(isLoggedIn || !enableOrdering) && (
+              <Route exact path="/resetpassword" component={ResetPassword} />
+            )}
             {enableOrdering && (
               <Route
                 exact

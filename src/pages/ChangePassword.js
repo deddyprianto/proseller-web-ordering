@@ -7,27 +7,26 @@ import ModalPinPass from "components/ModalPinPass";
 import Swal from "sweetalert2";
 import { useHistory } from "react-router-dom";
 
-const ChangePIN = () => {
+const ChangePassword = () => {
   const history = useHistory();
   const [btnSubmit, setBtnSubmit] = useState(true);
-  const [newPin, setNewPin] = useState("");
-  const [oldPin, setOldPin] = useState("");
-  const [showErrorOldPIN, setShowErrorOldPIN] = useState("");
-  const [showErrorNewPIN, setShowErrorNewPIN] = useState("");
-  const [showErrorConfirmPIN, setShowErrorConfirmPIN] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [showErrorOldPassword, setShowErrorOldPassword] = useState("");
+  const [showErrorNewPassword, setShowErrorNewPassword] = useState("");
+  const [showErrorConfirmPassword, setShowErrorConfirmPassword] = useState("");
   const dispatch = useDispatch();
   const { color } = useSelector((state) => state.theme);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  //
-  const handleChangePassword = async () => {
+  const handleCreateChangePassword = async () => {
     try {
       Swal.showLoading();
       const data = await dispatch(
-        CustomerAction.getCustomerPin(
+        CustomerAction.editCustomerPassword(
           {
-            oldPin: oldPin,
-            newPin: newPin,
+            oldPassword: oldPassword,
+            newPassword: newPassword,
           },
           "PUT"
         )
@@ -66,22 +65,33 @@ const ChangePIN = () => {
           height: "85vh",
         }}
       >
-        <PinPasswordHeader label="Change PIN" />
+        <PinPasswordHeader label="Change Password" />
         <div style={{ marginTop: "24px", width: "100%" }}>
           <div style={{ marginTop: "16px" }}>
             <InputCustom
               handleChangeCustom={(e) => {
-                setOldPin(e.target.value);
-                if (e.target.value.length < 4) {
-                  setShowErrorOldPIN("PIN consists of 4 characters or more");
+                const data = e.target.value;
+                if (data === "") {
+                  setShowErrorOldPassword("Password is required");
+                } else if (data.length < 8) {
+                  setShowErrorOldPassword(
+                    "Password consists of 8 characters or more"
+                  );
+                } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
+                  setShowErrorOldPassword(
+                    "Password must contain 1 uppercase, 1 lowercase, and 1 special character"
+                  );
+                  setBtnSubmit(false);
                 } else {
-                  setShowErrorOldPIN("");
+                  setOldPassword(data);
+                  setShowErrorOldPassword("");
+                  setBtnSubmit(true);
                 }
               }}
-              label="Current PIN"
-              placeholder="Enter PIN"
+              label="Current Password"
+              placeholder="Enter Password"
             />
-            {showErrorOldPIN && (
+            {showErrorOldPassword && (
               <div
                 style={{
                   color: "red",
@@ -90,7 +100,7 @@ const ChangePIN = () => {
                   fontWeight: 700,
                 }}
               >
-                {showErrorOldPIN}
+                {showErrorOldPassword}
               </div>
             )}
           </div>
@@ -107,7 +117,7 @@ const ChangePIN = () => {
                 fontWeight: 600,
               }}
             >
-              Forget PIN?
+              Forget Password?
             </div>
           </div>
         </div>
@@ -115,17 +125,28 @@ const ChangePIN = () => {
         <div style={{ marginTop: "16px" }}>
           <InputCustom
             handleChangeCustom={(e) => {
-              setNewPin(e.target.value);
-              if (e.target.value.length < 4) {
-                setShowErrorNewPIN("PIN consists of 4 characters or more");
+              const data = e.target.value;
+              if (data === "") {
+                setShowErrorNewPassword("Password is required");
+              } else if (data.length < 8) {
+                setShowErrorNewPassword(
+                  "Password consists of 8 characters or more"
+                );
+              } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
+                setShowErrorNewPassword(
+                  "Password must contain 1 uppercase, 1 lowercase, and 1 special character"
+                );
+                setBtnSubmit(false);
               } else {
-                setShowErrorNewPIN("");
+                setNewPassword(data);
+                setShowErrorNewPassword("");
+                setBtnSubmit(true);
               }
             }}
-            label="Current PIN"
-            placeholder="Enter PIN"
+            label="New Password"
+            placeholder="Enter Password"
           />
-          {showErrorNewPIN && (
+          {showErrorNewPassword && (
             <div
               style={{
                 color: "red",
@@ -134,25 +155,27 @@ const ChangePIN = () => {
                 fontWeight: 700,
               }}
             >
-              {showErrorNewPIN}
+              {showErrorNewPassword}
             </div>
           )}
         </div>
         <div style={{ marginTop: "16px" }}>
           <InputCustom
             handleChangeCustom={(e) => {
-              if (e.target.value !== newPin) {
+              if (e.target.value !== newPassword) {
                 setBtnSubmit(true);
-                setShowErrorConfirmPIN("fields are not the same with new PIN");
+                setShowErrorConfirmPassword(
+                  "fields are not the same with `new Password`"
+                );
               } else {
                 setBtnSubmit(false);
-                setShowErrorConfirmPIN("");
+                setShowErrorConfirmPassword("");
               }
             }}
-            label="Current PIN"
-            placeholder="Enter PIN"
+            label="Confirm New Password"
+            placeholder="Enter Password"
           />
-          {showErrorConfirmPIN && (
+          {showErrorConfirmPassword && (
             <div
               style={{
                 color: "red",
@@ -161,7 +184,7 @@ const ChangePIN = () => {
                 fontWeight: 700,
               }}
             >
-              {showErrorConfirmPIN}
+              {showErrorConfirmPassword}
             </div>
           )}
         </div>
@@ -185,7 +208,7 @@ const ChangePIN = () => {
       >
         <button
           disabled={btnSubmit}
-          onClick={handleChangePassword}
+          onClick={handleCreateChangePassword}
           style={{
             display: "flex",
             padding: "8px 16px",
@@ -200,9 +223,13 @@ const ChangePIN = () => {
         </button>
       </div>
       {/* end button */}
-      <ModalPinPass isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} />
+      <ModalPinPass
+        isOpenModal={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        labelHeader="Forget Password"
+      />
     </div>
   );
 };
 
-export default ChangePIN;
+export default ChangePassword;

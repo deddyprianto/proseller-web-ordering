@@ -10,12 +10,13 @@ import { CustomerAction } from "redux/actions/CustomerAction";
 import { CONSTANT } from "helpers";
 import { useHistory } from "react-router-dom";
 
-const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
+const ModalPinPass = ({ isOpenModal, setIsOpenModal, labelHeader }) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const refEnterOTP = useRef();
+  const [btnSubmit, setBtnSubmit] = useState(true);
+  const [inputanOTP, setInputanOTP] = useState("");
+  const [showErrorOTP, setShowErrorOTP] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showErrorField, setShowErrorField] = useState(false);
   const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
   const [disableButtonResendOTP, setDisableButtonResendOTP] = useState(true);
@@ -55,14 +56,10 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
   }
 
   const handleVerifyOTP = async () => {
-    if (!refEnterOTP.current.value) {
-      setShowErrorField(true);
-      return;
-    }
     try {
       setIsLoading(true);
       const data = await dispatch(
-        CustomerAction.verifyCustomerPin({ otp: refEnterOTP.current.value })
+        CustomerAction.verifyCustomerPin({ otp: inputanOTP })
       );
       setIsLoading(false);
       if (data.status === "SUCCESS") {
@@ -70,7 +67,13 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
           type: CONSTANT.OTP_VERIFY,
           payload: data.data.token,
         });
-        history.push(`/resetpin?verify=${data.data.token}`);
+        if (labelHeader === "Forget Password") {
+          history.push(`/resetpassword?verify=${data.data.token}`);
+        } else {
+          history.push(`/resetpin?verify=${data.data.token}`);
+        }
+      } else {
+        setShowErrorOTP(data.message);
       }
     } catch (error) {
       console.log(error);
@@ -114,10 +117,9 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
           }}
         >
           <div></div>
-          <div>Forget PIN</div>
+          <div>{labelHeader}</div>
           <button
             onClick={() => {
-              setShowErrorField(false);
               setIsOpenModal(false);
             }}
             style={{
@@ -221,31 +223,35 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
         />
       </div>
 
-      <div
-        style={{
-          paddingLeft: "16px",
-          paddingRight: "16px",
-        }}
-      >
+      <div style={{ margin: "0px 16px" }}>
         <InputCustom
-          inputRef={refEnterOTP}
+          notSeenIcon={false}
+          handleChangeCustom={(e) => {
+            setInputanOTP(e.target.value);
+            if (e.target.value.length < 4) {
+              setBtnSubmit(true);
+              setShowErrorOTP("OTP must 4 length");
+            } else {
+              setBtnSubmit(false);
+              setShowErrorOTP("");
+            }
+          }}
           label="Enter 4 Digit OTP"
           placeholder="Enter OTP"
         />
+        {showErrorOTP && (
+          <div
+            style={{
+              color: "red",
+              fontStyle: "italic",
+              fontSize: "14px",
+              fontWeight: 700,
+            }}
+          >
+            {showErrorOTP}
+          </div>
+        )}
       </div>
-      {showErrorField && (
-        <div
-          style={{
-            color: "red",
-            marginLeft: "15px",
-            fontSize: "10px",
-            fontStyle: "italic",
-            fontWeight: 600,
-          }}
-        >
-          This field still empty
-        </div>
-      )}
       <hr
         style={{
           backgroundColor: "#D6D6D6",
@@ -261,6 +267,7 @@ const ModalPinPass = ({ isOpenModal, setIsOpenModal }) => {
         }}
       >
         <button
+          disabled={btnSubmit}
           onClick={handleVerifyOTP}
           style={{
             color: "white",

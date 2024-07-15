@@ -1,7 +1,12 @@
 import { iconNotSeen, iconSeen } from "assets/iconsSvg/Icons";
 import React, { useState } from "react";
 
-export function InputCustom({ label, placeholder, inputRef }) {
+export function InputCustom({
+  label,
+  placeholder,
+  handleChangeCustom,
+  notSeenIcon = true,
+}) {
   const [seenText, setSeenText] = useState(false);
   const [isActiveInput, setIsActiveInput] = useState(false);
   return (
@@ -63,7 +68,7 @@ export function InputCustom({ label, placeholder, inputRef }) {
           }}
         >
           <input
-            ref={inputRef}
+            onChange={handleChangeCustom}
             onClick={() => setIsActiveInput(!isActiveInput)}
             placeholder={placeholder}
             type={seenText ? "text" : "password"}
@@ -75,16 +80,18 @@ export function InputCustom({ label, placeholder, inputRef }) {
             }}
           />
         </div>
-        <div
-          onClick={() => setSeenText(!seenText)}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {seenText ? iconSeen() : iconNotSeen()}
-        </div>
+        {notSeenIcon && (
+          <div
+            onClick={() => setSeenText(!seenText)}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {seenText ? iconSeen() : iconNotSeen()}
+          </div>
+        )}
       </div>
     </div>
   );
