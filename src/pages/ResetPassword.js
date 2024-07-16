@@ -6,11 +6,11 @@ import { useHistory } from "react-router-dom";
 import { CustomerAction } from "redux/actions/CustomerAction";
 import Swal from "sweetalert2";
 
-const ResetPin = () => {
+const ResetPassword = () => {
   const [btnSubmit, setBtnSubmit] = useState(true);
-  const [showErrorInputPin, setShowErrorInputPin] = useState("");
-  const [showErrorInputPin2, setShowErrorInputPin2] = useState("");
-  const [inputPIN, setInputPIN] = useState("");
+  const [showErrorInputPassword, setShowErrorInputPassword] = useState("");
+  const [showErrorInputPassword2, setShowErrorInputPassword2] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
   const dispatch = useDispatch();
   const { color } = useSelector((state) => state.theme);
   const history = useHistory();
@@ -27,16 +27,14 @@ const ResetPin = () => {
     }
   }, []);
 
-  const handleResetPIN = async () => {
-
-
+  const handleResetPassword = async () => {
     try {
       const payload = {
         token: qs,
-        newPin: inputPIN,
+        newPassword: inputPassword,
       };
       Swal.showLoading();
-      const data = await dispatch(CustomerAction.resetCustomerPin(payload));
+      const data = await dispatch(CustomerAction.changePassword(payload));
       Swal.hideLoading();
       if (data?.status === "SUCCESS") {
         Swal.fire({
@@ -70,7 +68,7 @@ const ResetPin = () => {
           height: "85vh",
         }}
       >
-        <PinPasswordHeader label="New PIN" />
+        <PinPasswordHeader label="New Password" />
         <p
           style={{
             marginTop: "24px",
@@ -82,22 +80,33 @@ const ResetPin = () => {
             lineHeight: "normal",
           }}
         >
-          Your new PIN must be different from previously used password.
+          Your new password must be different from previously used password.
         </p>
         <div style={{ marginTop: "16px" }}>
           <InputCustom
             handleChangeCustom={(e) => {
-              setInputPIN(e.target.value);
-              if (e.target.value.length < 4) {
-                setShowErrorInputPin("PIN consists of 4 characters or more");
+              const data = e.target.value;
+              if (data === "") {
+                setShowErrorInputPassword("Password is required");
+              } else if (data.length < 8) {
+                setShowErrorInputPassword(
+                  "Password consists of 8 characters or more"
+                );
+              } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(data)) {
+                setShowErrorInputPassword(
+                  "Password must contain 1 uppercase, 1 lowercase, and 1 special character"
+                );
+                setBtnSubmit(false);
               } else {
-                setShowErrorInputPin("");
+                setInputPassword(data);
+                setShowErrorInputPassword("");
+                setBtnSubmit(true);
               }
             }}
-            label="New Pin"
-            placeholder="Enter PIN"
+            label="New Password"
+            placeholder="Enter Password"
           />
-          {showErrorInputPin && (
+          {showErrorInputPassword && (
             <div
               style={{
                 color: "red",
@@ -106,25 +115,27 @@ const ResetPin = () => {
                 fontWeight: 700,
               }}
             >
-              {showErrorInputPin}
+              {showErrorInputPassword}
             </div>
           )}
         </div>
         <div style={{ marginTop: "16px" }}>
           <InputCustom
             handleChangeCustom={(e) => {
-              if (e.target.value !== inputPIN) {
+              if (e.target.value !== inputPassword) {
                 setBtnSubmit(true);
-                setShowErrorInputPin2("fields are not the same with new PIN");
+                setShowErrorInputPassword2(
+                  "fields are not the same with new Password"
+                );
               } else {
                 setBtnSubmit(false);
-                setShowErrorInputPin2("");
+                setShowErrorInputPassword2("");
               }
             }}
-            label="Confirm New PIN"
-            placeholder="Enter PIN"
+            label="Confirm New Password"
+            placeholder="Enter Password"
           />
-          {showErrorInputPin2 && (
+          {showErrorInputPassword2 && (
             <div
               style={{
                 color: "red",
@@ -133,7 +144,7 @@ const ResetPin = () => {
                 fontWeight: 700,
               }}
             >
-              {showErrorInputPin2}
+              {showErrorInputPassword2}
             </div>
           )}
         </div>
@@ -157,7 +168,7 @@ const ResetPin = () => {
       >
         <button
           disabled={btnSubmit}
-          onClick={handleResetPIN}
+          onClick={handleResetPassword}
           style={{
             display: "flex",
             padding: "8px 16px",
@@ -176,4 +187,4 @@ const ResetPin = () => {
   );
 };
 
-export default ResetPin;
+export default ResetPassword;

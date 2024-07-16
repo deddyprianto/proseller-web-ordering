@@ -38,6 +38,34 @@ function getCustomerPin(payload,method = 'POST') {
   };
 }
 
+function editCustomerPassword(payload, method = "POST") {
+  return async () => {
+    let response = await CRMService.api(
+      method,
+      payload,
+      "customer/change-password",
+      "Bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
+function changePassword(payload) {
+  return async () => {
+    let response = await CRMService.api(
+      "POST",
+      payload,
+      "customer/password/reset",
+      "Bearer"
+    );
+    if (response.ResultCode >= 400 || response.resultCode >= 400)
+      console.log(response);
+    return response;
+  };
+}
+
 function verifyCustomerPin(payload) {
   return async () => {
     let response = await CRMService.api(
@@ -310,6 +338,8 @@ function getVoucher() {
 }
 
 export const CustomerAction = {
+  changePassword,
+  editCustomerPassword,
   resetCustomerPin,
   verifyCustomerPin,
   getCustomerPin,

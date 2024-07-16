@@ -291,6 +291,9 @@ class Setting extends Component {
           />
         </div>
         <div
+          onClick={() => {
+            this.props.history.push("/changepassword");
+          }}
           style={{
             marginTop: "16px",
             marginBottom: "16px",

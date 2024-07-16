@@ -5,35 +5,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { CustomerAction } from "redux/actions/CustomerAction";
 import ModalPinPass from "components/ModalPinPass";
 import Swal from "sweetalert2";
+import { useHistory } from "react-router-dom";
 
 const CreateNewPin = () => {
+  const [btnSubmit, setBtnSubmit] = useState(true);
+  const [showErrorInputPin, setShowErrorInputPin] = useState("");
+  const [showErrorInputPin2, setShowErrorInputPin2] = useState("");
+  const [inputPIN, setInputPIN] = useState("");
+  const history = useHistory();
   const inputRefNewPin = useRef();
-  const inputRefConfirmNewPin = useRef();
   const dispatch = useDispatch();
   const { color } = useSelector((state) => state.theme);
-  const [showError, setShowError] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const handleCreatePin = async () => {
-    if (!inputRefConfirmNewPin.current.value && !inputRefNewPin.current.value) {
-      Swal.fire({
-        icon: "error",
-        iconColor: "#333",
-        title: "Make sure all fields are filled in",
-        allowOutsideClick: false,
-        confirmButtonText: "OK",
-      });
-      return;
-    }
-    if (inputRefConfirmNewPin.current.value !== inputRefNewPin.current.value) {
-      setShowError(true);
-      return;
-    }
-    setShowError(false);
     try {
       Swal.showLoading();
       const data = await dispatch(
-        CustomerAction.getCustomerPin({ pin: inputRefNewPin.current.value })
+        CustomerAction.getCustomerPin({ pin: inputPIN })
       );
       Swal.hideLoading();
       if (data?.status === "SUCCESS") {
@@ -41,6 +30,10 @@ const CreateNewPin = () => {
           icon: "success",
           title: data?.message,
           confirmButtonText: "OK",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            history.push("/profile");
+          }
         });
       } else {
         Swal.fire({
@@ -48,6 +41,10 @@ const CreateNewPin = () => {
           iconColor: "#333",
           title: data?.message,
           confirmButtonText: "OK",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            history.push("/profile");
+          }
         });
       }
     } catch (error) {
@@ -67,18 +64,18 @@ const CreateNewPin = () => {
         <PinPasswordHeader label="Create New Pin" />
         <div style={{ marginTop: "16px" }}>
           <InputCustom
-            inputRef={inputRefNewPin}
+            handleChangeCustom={(e) => {
+              setInputPIN(e.target.value);
+              if (e.target.value.length < 4) {
+                setShowErrorInputPin("PIN consists of 4 characters or more");
+              } else {
+                setShowErrorInputPin("");
+              }
+            }}
             label="New Pin"
             placeholder="Enter PIN"
           />
-        </div>
-        <div style={{ marginTop: "16px" }}>
-          <InputCustom
-            inputRef={inputRefConfirmNewPin}
-            label="Confirm New PIN"
-            placeholder="Enter PIN"
-          />
-          {showError && (
+          {showErrorInputPin && (
             <div
               style={{
                 color: "red",
@@ -87,7 +84,34 @@ const CreateNewPin = () => {
                 fontWeight: 700,
               }}
             >
-              fields are not the same with new PIN
+              {showErrorInputPin}
+            </div>
+          )}
+        </div>
+        <div style={{ marginTop: "16px" }}>
+          <InputCustom
+            handleChangeCustom={(e) => {
+              if (e.target.value !== inputPIN) {
+                setBtnSubmit(true);
+                setShowErrorInputPin2("fields are not the same with new PIN");
+              } else {
+                setBtnSubmit(false);
+                setShowErrorInputPin2("");
+              }
+            }}
+            label="Confirm New PIN"
+            placeholder="Enter PIN"
+          />
+          {showErrorInputPin2 && (
+            <div
+              style={{
+                color: "red",
+                fontStyle: "italic",
+                fontSize: "14px",
+                fontWeight: 700,
+              }}
+            >
+              {showErrorInputPin2}
             </div>
           )}
         </div>
@@ -110,6 +134,7 @@ const CreateNewPin = () => {
         }}
       >
         <button
+          disabled={btnSubmit}
           onClick={handleCreatePin}
           style={{
             display: "flex",

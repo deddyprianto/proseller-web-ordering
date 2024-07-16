@@ -29,10 +29,10 @@ const PhoneForm = ({
   const [agreeTC, setAgreeTC] = useState(false);
   const orderState = useSelector((state) => state.order.setting);
 
-  const [userNameValue, setUserNameValue] = useState('');
-  const [userEmailValue, setUserEmailValue] = useState('');
+  const [userNameValue, setUserNameValue] = useState("");
+  const [userEmailValue, setUserEmailValue] = useState("");
   const [settingFilterEmail] = orderState.filter(
-    (setting) => setting.settingKey === 'RegistrationEmailMandatory'
+    (setting) => setting.settingKey === "RegistrationEmailMandatory"
   );
 
   //TODO: this is not the best practice and must be removed when backend is ready.
@@ -40,7 +40,7 @@ const PhoneForm = ({
   if (
     termsAndConditions === undefined ||
     termsAndConditions === null ||
-    termsAndConditions === ''
+    termsAndConditions === ""
   ) {
     isTCAvailable = false;
   }
@@ -49,11 +49,11 @@ const PhoneForm = ({
     if (settingFilterEmail?.settingValue) {
       return (
         <div>
-          Email <span className='required'>*</span>
+          Email <span className="required">*</span>
         </div>
       );
     } else {
-      return 'Email';
+      return "Email";
     }
   };
   const handleDisabelButtonForTNC = () => {
@@ -98,25 +98,25 @@ const PhoneForm = ({
 
   const renderEmailInput = () => {
     return (
-      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-        <label for='email'>{renderEmailTextRequired()}</label>
+      <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+        <label for="email">{renderEmailTextRequired()}</label>
         <input
-          id='email-input'
-          type='email'
-          className='woocommerce-Input woocommerce-Input--text input-text'
+          id="email-input"
+          type="email"
+          className="woocommerce-Input woocommerce-Input--text input-text"
           style={{ borderRadius: 5 }}
           onChange={(e) => {
-            handleChange('email', e.target.value, true);
+            handleChange("email", e.target.value, true);
             setUserEmailValue(e.target.value);
           }}
         />
-        {error !== '' && (
+        {error !== "" && (
           <div
             style={{
               marginTop: 5,
               marginBottom: 5,
-              color: 'red',
-              lineHeight: '15px',
+              color: "red",
+              lineHeight: "15px",
             }}
           >
             {error}
@@ -138,29 +138,29 @@ const PhoneForm = ({
   };
 
   return (
-    <div className='modal-body'>
-      <p className='text-muted'>{`Register for ${phoneNumber || '-'}`}</p>
-      <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-        <label for='name'>
-          Name <span className='required'>*</span>
+    <div className="modal-body">
+      <p className="text-muted">{`Register for ${phoneNumber || "-"}`}</p>
+      <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+        <label for="name">
+          Name <span className="required">*</span>
         </label>
         <input
-          id='name-phone-input'
-          type='text'
-          className='woocommerce-Input woocommerce-Input--text input-text'
+          id="name-phone-input"
+          type="text"
+          className="woocommerce-Input woocommerce-Input--text input-text"
           style={{ borderRadius: 5 }}
           onChange={(e) => {
-            handleChange('name', e.target.value, true);
+            handleChange("name", e.target.value, true);
             setUserNameValue(e.target.value);
           }}
         />
-        {errorName !== '' && (
+        {errorName !== "" && (
           <div
             style={{
               marginTop: 5,
               marginBottom: 5,
-              color: 'red',
-              lineHeight: '15px',
+              color: "red",
+              lineHeight: "15px",
             }}
           >
             {errorName}
@@ -176,29 +176,29 @@ const PhoneForm = ({
         ></PasswordField>
       )}
       {invitationCode && (
-        <p className='woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide'>
-          <label for='referral'>Referral Code</label>
+        <p className="woocommerce-FormRow woocommerce-FormRow--wide form-row form-row-wide">
+          <label for="referral">Referral Code</label>
           <input
-            type='text'
+            type="text"
             value={invitationCode}
             disabled
-            className='woocommerce-Input woocommerce-Input--text input-text'
+            className="woocommerce-Input woocommerce-Input--text input-text"
             style={{ borderRadius: 5 }}
-            onChange={(e) => handleChange('referral', e.target.value, true)}
+            onChange={(e) => handleChange("referral", e.target.value, true)}
           />
         </p>
       )}
       {isTCAvailable && (
         <>
-          <div style={{ marginTop: '2rem' }}>
+          <div style={{ marginTop: "2rem" }}>
             <div
-              className='card card-body'
-              style={{ textAlign: 'justify', fontSize: 11 }}
+              className="card card-body"
+              style={{ textAlign: "justify", fontSize: 11 }}
             >
               <textarea
                 rows={10}
                 readOnly
-                style={{ backgroundColor: '#F8F8F8' }}
+                style={{ backgroundColor: "#F8F8F8" }}
               >
                 {termsAndConditions}
               </textarea>
@@ -206,30 +206,30 @@ const PhoneForm = ({
           </div>
           <div
             onClick={() => setAgreeTC(!agreeTC)}
-            className='form-group form-check'
+            className="form-group form-check"
             style={{ marginTop: 5 }}
           >
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               <CheckBox
-                id='tnc-checkbox'
-                className='form-check-input'
+                id="tnc-checkbox"
+                className="form-check-input"
                 handleChange={() => setAgreeTC(!agreeTC)}
                 selected={agreeTC}
                 setRadius={5}
                 setHeight={20}
               />
               <label
-                className='form-check-label'
-                for='exampleCheck1'
+                className="form-check-label"
+                for="exampleCheck1"
                 style={{ marginLeft: 10 }}
               >
-                I Agree to Terms & Conditions{' '}
+                I Agree to Terms & Conditions{" "}
               </label>
             </div>
           </div>
@@ -237,11 +237,11 @@ const PhoneForm = ({
       )}
       {isTCAvailable ? (
         <Button
-          id='create-account-button'
+          id="create-account-button"
           disabled={handleDisabelButtonForTNC()}
-          className='button'
+          className="button"
           style={{
-            width: '100%',
+            width: "100%",
             marginTop: 10,
             borderRadius: 5,
             height: 50,
@@ -252,11 +252,11 @@ const PhoneForm = ({
         </Button>
       ) : (
         <Button
-          id='create-account-button'
+          id="create-account-button"
           disabled={handleDisabelButton()}
-          className='button'
+          className="button"
           style={{
-            width: '100%',
+            width: "100%",
             marginTop: 10,
             borderRadius: 5,
             height: 50,
